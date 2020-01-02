@@ -19,7 +19,7 @@
         "express-method-override": "0.0.3",
         "jsonwebtoken": "^8.5.1",
         "lodash": "^4.17.15",
-        "mongoose": "^5.4.19",
+        "mongoose": "^5.7.5",
         "mongoose-unique-validator": "^2.0.2",
         "nodemon": "^1.18.10",
         "pg": "^7.11.0",
