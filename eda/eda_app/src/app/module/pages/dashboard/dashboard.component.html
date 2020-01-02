@@ -1,0 +1,96 @@
+<div class="main-content">
+
+  <div class="ui-g-12" style="padding:2px">
+    <eda-dashboard-panel class="pointer" (click)="setTitle(true)" >
+      <div class="d-flex justify-content-center">
+        <h3 *ngIf="!titleClick" style="line-height : 0.7; text-align : center; margin-bottom: auto"> {{title}} </h3>
+        <input *ngIf="!!titleClick" (focusout)="setTitle(false)" (keydown.enter)="setTitle(false)" type="text"
+          class="w-100" [(ngModel)]="title" pInputText autofocus>
+      </div>
+    </eda-dashboard-panel>
+  </div>
+  <!-- ============================================================== -->
+  <!-- GLOBAL FILTERS (TEMPORAL UBICATION) -->
+  <!-- ============================================================== -->
+  <div class="ui-g-12" style="padding:2px">
+    <span *ngFor="let filter of this.filtersList">
+      <p-multiSelect [options]="filter.data"  [(ngModel)]="filter.selectedItems" [virtualScroll]="true" itemSize="30"
+        defaultLabel="{{filter.column.label}}" [style]="{'width':'10%', 'vertical-align': 'middle'}"  maxSelectedLabels="1" (onPanelHide)="applyGlobalFilter(filter)">
+        <p-footer>
+          <!-- <button type="button" pButton (click)="applyGlobalFilter(filter)" label="Aplicar "></button> -->
+          <!-- <button type="submit" pButton (click)="removeGlobalFilter(filter)" icon="fa fa-trash"
+            class="ui-button-danger ml-2" style="float: right;"></button> -->
+            <button type="submit" pButton (click)="removeGlobalFilter(filter)" icon="fa fa-trash"
+            class="ui-button-danger" ></button>
+        </p-footer>
+
+      </p-multiSelect>
+    </span>
+  </div>
+
+
+  <ngx-gridster [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions" #gridster1
+    class="dashboard-grid">
+
+    <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop"
+      [resizable]="panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y"
+      (change)="itemChange($event, gridster1)">
+
+      <eda-blank-panel #edaPanel [inject]="{panel: panel, data_source: dataSource, dashboard_id: dashboard.id, applyToAllfilter:applyToAllfilter  }"
+        (remove)="onRemovePanel($event)"></eda-blank-panel>
+
+    </ngx-gridster-item>
+
+  </ngx-gridster>
+
+</div>
+
+<!-- ============================================================== -->
+<!-- GLOBAL FILTERS PANEL -->
+<!-- ============================================================== -->
+<dashboard-filter-dialog *ngIf="filterController" [controller]="filterController"></dashboard-filter-dialog>
+
+<!-- ============================================================== -->
+<!-- Right sidebar -->
+<!-- ============================================================== -->
+<p-sidebar [(visible)]="display_v.rightSidebar" position="right" [baseZIndex]="10000">
+  <!-- <div class="slimscrollright">
+    <div class="right-sidebar-rpanel-title"> Service Panel </div>
+  </div> -->
+
+  <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="addWidget()">
+    <div>
+      <i class="fa fa-columns"></i>
+      <span class="ml-2">AGREGAR PANEL </span>
+    </div>
+  </div>
+
+  <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="addGlobalFilter()">
+    <div>
+      <i class="fa fa-filter"></i>
+      <span class="ml-2">AGREGAR FILTRO</span>
+    </div>
+  </div>
+
+  <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="resetWidgets()">
+    <div>
+      <i class="fa fa-ban"></i>
+      <span class="ml-2">BORRAR PANELES</span>
+    </div>
+  </div>
+
+  <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveDashboard()">
+    <div>
+      <i class="fa fa-save"></i>
+      <span class="ml-2">GUARDAR</span>
+    </div>
+  </div>
+
+</p-sidebar>
+
+<div>
+  <button (click)="display_v.rightSidebar = true"
+    class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
+    <i class="ti-settings text-white"></i>
+  </button>
+</div>

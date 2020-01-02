@@ -1,0 +1,118 @@
+{
+    "ds" : {
+        "connection" : {
+            "host" : "jortilles.com",
+            "port" : 1120,
+            "type" : "mysql",
+            "user" : "aaa",
+            "password" : "asdfgh"
+        },
+        "metadata" : {
+            "model_name" : "My Awesome Model",
+            "model_id" : "1235443456"
+        },
+        "model" : {
+            "tables" : [ 
+                {
+                    "columns" : [ 
+                        {
+                            "column_name" : "Column 1",
+                            "display_name" : "Mi magnifica columna",
+                            "column_type" : "varchar"
+                        }, 
+                        {
+                            "column_name" : "Column 2",
+                            "display_name" : "Super columna",
+                            "column_type" : "varchar"
+                        }, 
+                        {
+                            "column_name" : "Column 3",
+                            "display_name" : "Simple columna",
+                            "column_type" : "varchar"
+                        }
+                    ],
+                    "relations" : [ 
+                        {
+                            "source_table" : "table1",
+                            "source_column" : "Column 1",
+                            "target_table" : "table2",
+                            "target_column" : "Column  table 2"
+                        }
+                    ],
+                    "table_name" : "table1",
+                    "display_name" : "My fucking great table",
+                    "table_type" : [ 
+                        "dimension", 
+                        "fact"
+                    ]
+                }, 
+                {
+                    "columns" : [ 
+                        {
+                            "column_name" : "Column  table 2",
+                            "display_name" : "Simple columna",
+                            "column_type" : "varchar"
+                        }, 
+                        {
+                            "column_name" : "Column table 2 2",
+                            "display_name" : "Simple columna",
+                            "column_type" : "varchar"
+                        }
+                    ],
+                    "relations" : [ 
+                        {
+                            "source_table" : "table2",
+                            "source_column" : "Column  table 2",
+                            "target_table" : "table1",
+                            "target_column" : "Column 1"
+                        }
+                    ],
+                    "table_name" : "table2",
+                    "display_name" : "My fucking great table 2",
+                    "table_type" : [ 
+                        "dimension", 
+                        "fact"
+                    ]
+                }, 
+                {
+                    "columns" : [ 
+                        {
+                            "column_name" : "id_client",
+                            "display_name" : "cliente id",
+                            "column_type" : "varchar"
+                        }, 
+                        {
+                            "column_name" : "name",
+                            "display_name" : "NOMBRE",
+                            "column_type" : "varchar"
+                        }, 
+                        {
+                            "column_name" : "nif",
+                            "display_name" : "NIF",
+                            "column_type" : "varchar"
+                        }, 
+                        {
+                            "column_name" : "tel",
+                            "display_name" : "Telefono",
+                            "column_type" : "varchar"
+                        }
+                    ],
+                    "relations" : [ 
+                        {
+                            "source_table" : "table3",
+                            "source_column" : "id_client",
+                            "target_table" : "table4",
+                            "target_column" : "poblacion_id"
+                        }
+                    ],
+                    "table_name" : "table3",
+                    "display_name" : "My fucking great table 3",
+                    "table_type" : [ 
+                        "dimension", 
+                        "fact"
+                    ]
+                }
+            ]
+        }
+    }
+}

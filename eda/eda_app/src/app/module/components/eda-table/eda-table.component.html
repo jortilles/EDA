@@ -1,0 +1,81 @@
+<div class="eda-table">
+    <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body">
+        <!-- Search -->
+        <ng-template pTemplate="caption" *ngIf="inject.search">
+<!--            <ng-container>-->
+<!--                <div class="text-left">-->
+<!--                    <button type="button" pButton [label]="" style="float:left" (click)=""> </button>-->
+<!--                </div>-->
+<!--            </ng-container>-->
+            <div class="text-right">
+                <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                <input type="text" pInputText size="50" placeholder="Cercador" [disabled]="inject.value.length === 0" (input)="table.filterGlobal($event.target.value, 'contains')">
+            </div>
+        </ng-template>
+        <!-- Header -->
+        <ng-template pTemplate="header" let-columns>
+            <tr class="header-title">
+                <ng-container *ngFor="let col of inject.cols">
+                    <th *ngIf="col.type" [pSortableColumn]="col.field" [width]="col.width">
+                        {{col.header}}
+                        <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
+                    </th>
+                </ng-container>
+            </tr>
+            <tr class="header-filter" *ngIf="verifyFilter()">
+                <ng-container *ngFor="let col of inject.cols">
+                    <th>
+                        <ng-container *ngIf="col.filter" [ngSwitch]="col.filter.type">
+                            <ng-container *ngSwitchCase="'EdaColumnFilterMultiSelect'">
+                                <p-multiSelect [showHeader]="true" defaultLabel="Tot" [(ngModel)]="col.filter.ngModel" [options]="col.filter.options" [style]="col.filter.style" (onChange)="_tableFilter(table, $event.value, col)" appendTo="body">
+                                </p-multiSelect>
+                            </ng-container>
+                        </ng-container>
+                    </th>
+                </ng-container>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <tr>
+                <ng-container *ngFor="let col of inject.cols">
+                    <td [width]="col.width">
+                        <ng-container [ngSwitch]="col.type">
+                            <ng-container *ngSwitchCase="'EdaColumnText'">
+                                {{ lodash.get(rowData, col.field) }}
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'EdaColumnContextMenu'">
+                                <i class="fa fa-cog btn pl-1"
+                                   (click)="inject._showContextMenu(rowData)"></i>
+                            </ng-container>
+                        </ng-container>
+                    </td>
+                </ng-container>
+            </tr>
+
+<!--            <tr>-->
+<!--                <td style="padding-bottom: 1px; padding-top: 1px;" [style.text-align]="rowData[col.field]-rowData[col.field] === 0 ? 'right': 'left'" *ngFor="let col of columns">-->
+<!--                    {{rowData[col.field]}}-->
+<!--                </td>-->
+<!--            </tr>-->
+        </ng-template>
+
+        <ng-template pTemplate="summary">
+            <div class="ui-helper-clearfix">
+                <div class="ui-g-12">
+<!--                    <button type="button" pButton icon="fas fa-file-pdf" iconPos="left" label="Excel" style="float:left" [disabled]="inject.getFilteredValues() == undefined || inject.getFilteredValues().length == 0"> </button>-->
+
+<!--                    <button type="button" pButton icon="fa fa-file-download" style="float:left; margin-left: 10px" iconPos="left" label="PDF" [disabled]="inject.getFilteredValues() == undefined || inject.getFilteredValues().length == 0"> </button>-->
+
+                    <span *ngIf="table.filteredValue != undefined" class="items-length float-right">{{ table.filteredValue.length }} registres</span>
+                    <span *ngIf="!table.filteredValue && table.value.length" class="items-length float-right">{{ table.value.length }} registres</span>
+                </div>
+            </div>
+        </ng-template>
+
+    </p-table>
+
+</div>
+
+<eda-context-menu [inject]="inject.contextMenu"></eda-context-menu>
+

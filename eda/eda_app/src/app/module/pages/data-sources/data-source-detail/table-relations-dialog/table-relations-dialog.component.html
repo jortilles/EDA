@@ -1,0 +1,26 @@
+<eda-dialog [inject]="dialog">
+    <h3></h3>
+
+    <div class="ui-g-12 ui-lg-4">
+        <p-dropdown [options]="sourceCols" [(ngModel)]="sourceCol" filter="true" optionLabel="display_name.default"
+                    placeholder='Columna origen'>
+        </p-dropdown>
+    </div>
+    <div class="ui-g-12 ui-lg-4">
+        <p-dropdown [options]="targetTables" [(ngModel)]="targetTable" filter="true" (onChange)="getColumnsByTable()"
+                    optionLabel="label" placeholder='tabla destino'>
+        </p-dropdown>
+    </div>
+    <div class="ui-g-12 ui-lg-4">
+        <p-dropdown [options]="targetCols" [(ngModel)]="targetCol" filter="true" optionLabel="label"
+                    placeholder='Columna destino'>
+        </p-dropdown>
+    </div>
+
+    <p-footer class="footer">
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+            <button type="button" pButton (click)="saveRelation()" class="ui-button " label="Guardar"></button>
+            <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" label="Cerrar"></button>
+        </div>
+    </p-footer>
+</eda-dialog>

@@ -1,0 +1,24 @@
+<eda-dialog [inject]="dialog">
+    <form [formGroup]="form" class="form-horizontal form-material" (ngSubmit)="createNewDashboard()">
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 mt-2">
+        <span class="ui-float-label">
+          <input id="float-dash" formControlName="name" type="text" pInputText required>
+          <label for="float-dash">Dame un nombre *</label>
+        </span>
+            </div>
+            <div class="ui-g-12">
+                <p-dropdown id="float-ds" formControlName="ds" [options]="dss" optionLabel="model_name"
+                            [showClear]="true" placeholder="Selecciona una fuente de datos *" required></p-dropdown>
+            </div>
+        </div>
+
+        <p-footer class="footer">
+            <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+                <button type="submit" pButton icon="fa fa-save" label="Guardar"></button>
+                <button type="button" pButton icon="fa fa-times" (click)="closeDialog()" class="ui-button-danger ml-2" label="Cancelar"></button>
+            </div>
+        </p-footer>
+
+    </form>
+</eda-dialog>

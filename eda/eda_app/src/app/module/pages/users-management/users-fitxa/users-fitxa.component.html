@@ -1,0 +1,32 @@
+<eda-dialog [inject]="dialog">
+
+    <form [formGroup]="form" (ngSubmit)="registrarUser()" class="form-horizontal form-material" >
+        <div class="form-group">
+            <div class="ui-g-6 ui-sm-12">
+                <input pInputText formControlName="name" class="w-100" type="text" placeholder="Nombre" required/>
+            </div>
+            <div class="ui-g-6 ui-sm-12">
+                <input pInputText formControlName="email" class="w-100" type="email" placeholder="Correo" required/>
+            </div>
+            <div class="ui-g-6 ui-sm-12">
+                <input pInputText formControlName="password" class="w-100" type="password" placeholder="Contraseña" autocomplete="new-password" required/>
+            </div>
+            <div class="ui-g-6 ui-sm-12">
+                <input pInputText formControlName="role" class="w-100" type="text" placeholder="Role" required/>
+            </div>
+        </div>
+
+        <div class="form-group text-center mt-2">
+            <div class="ui-g-3 ui-g-offset-9">
+                <button pButton type="submit" [label]="btnLabel" class="w-100"></button>
+            </div>
+        </div>
+    </form>
+
+    <p-footer class="footer">
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+            <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" label="Cerrar"></button>
+        </div>
+    </p-footer>
+
+</eda-dialog>

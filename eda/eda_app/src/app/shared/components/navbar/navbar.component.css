@@ -1,0 +1,20 @@
+.top-bar {
+    height: 45px;;
+    position: fixed;
+    width: 100%;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+    z-index: 50;
+    background: red; /* use for the colors */
+}
+
+.top-bar .top-navbar {
+    min-height: 50px;
+    padding: 0px;
+}
+
+.top-bar .top-navbar .navbar-nav>.nav-item>.nav-link {
+    padding-left: 15px;
+    padding-right: 15px;
+    font-size: 17px;
+    line-height: 30px;
+}

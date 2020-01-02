@@ -1,0 +1,125 @@
+<!-- ============================================================== -->
+<!-- Left Sidebar - style you can find in sidebar.scss  -->
+<!-- ============================================================== -->
+<aside class="left-sidebar">
+
+    <li class="user-profile text-center" style="list-style: none;">
+        <a class="" style="text-decoration: none;" routerLink="/home" aria-expanded="false">
+            <img src="assets/images/logos/logo.png" alt="logo icono" class="dark-logo w-75" />
+        </a>
+    </li>
+
+    <div class="scroll-sidebar">
+
+        <nav class="sidebar-nav">
+
+            <ul id="sidebarnav">
+
+                <li class="nav-devider"></li>
+
+                <li class="user-profile">
+                    <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
+                        <img [src]="user.img | image" alt="user" />
+                        <span class="hide-menu ml-2"> {{ user.name }} </span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li>
+                            <a routerLinkActive="active" routerLink="/profile">
+                                <i class="mdi mdi-account"></i> Perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a routerLinkActive="active" routerLink="/account-settings">
+                                <i class="mdi mdi-settings"></i> Ajustes de Cuenta
+                            </a>
+                        </li>
+                        <li>
+                            <a routerLinkActive="active" routerLink="/users-management">
+                                <i class="mdi mdi-settings"></i> Gestión de Usuarios
+                            </a>
+                        </li>
+                        <li>
+                            <a (click)="userService.logout()" class="pointer">
+                                <i class="mdi mdi-logout"></i> Salir
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-devider"></li>
+
+                <li class="user-profile">
+                    <a class="has-arrow waves-effect waves-dark" routerLink="/home" aria-expanded="false">
+                        <i class="mdi mdi-view-dashboard"></i>
+                        <span class="hide-menu ml-2">Mis Dashboards</span>
+                    </a>
+                </li>
+
+                <li class="nav-devider"></li>
+
+                <li class="user-profile">
+                    <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
+                        <i class="mdi mdi-database"></i>
+                        <span class="hide-menu ml-2">Fuente de Datos</span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li>
+                            <a routerLinkActive="active" routerLink="/data-source">
+                                <i class="mdi mdi-database-plus"></i> Nueva Fuente
+                            </a>
+                        </li>
+                        <li>
+                            <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
+                                <i class="mdi mdi-pencil"></i> Editar Fuente
+                            </a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li *ngFor="let item of dataSourceMenu" class="pointer">
+                                    <a (click)="goToDataSource(item)">
+                                        <i class="mdi mdi-database"></i> {{item.model_name}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-devider"></li>
+
+                <!-- <li class="nav-small-cap"> OPCIONES </li>
+
+                <li *ngFor="let item of dataSourceMenu">
+
+                  <a class="has-arrow waves-effect waves-dark" aria-expanded="false">
+                    <i [class]="item.icon"></i>
+                    <span class="hide-menu"> {{ item.title }}
+                      <span class="label label-rouded label-themecolor pull-right">
+                        {{ item.submenu.length }}
+                      </span>
+                    </span>
+                  </a>
+
+                  <ul aria-expanded="false" class="collapse">
+                    <li *ngFor="let submenu of item.submenu">
+                      <a routerLinkActive="active" [routerLink]="'/dashboard'"> {{ submenu.model_name }} </a>
+                    </li>
+                    <li>
+                      <a (click)="openDialog()" class="has-arrow waves-effect waves-dark" aria-expanded="false">
+                        <i class="mdi mdi-database-plus"></i>
+                        <span class="hide-menu">Nueva Fuente</span>
+                      </a>
+                    </li>
+                  </ul>
+
+                </li>
+                <li class="nav-devider"></li> -->
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+</aside>
+<!-- ============================================================== -->
+<!-- End Left Sidebar - style you can find in sidebar.scss  -->
+<!-- ============================================================== -->

@@ -1,0 +1,11 @@
+<div class="ui-g">
+    <div class="ui-g-12">
+        <div class="float-right">
+            <button type="button" pButton icon="fas fa-file-pdf" iconPos="left" label="Crear usuario" style="float:left" (click)="crateNewUser()"> </button>
+        </div>
+    </div>
+    <eda-table [inject]="table"></eda-table>
+
+</div>
+
+<app-users-fitxa *ngIf="userFitxa" [controller]="userFitxa"></app-users-fitxa>

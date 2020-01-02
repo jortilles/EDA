@@ -1,0 +1,177 @@
+<header class="topbar">
+    <nav class="navbar top-navbar navbar-expand-md navbar-light" style="height: 45px">
+        <!-- ============================================================== -->
+        <!-- Logo -->
+        <!-- ============================================================== -->
+        <div class="navbar-header">
+            <a class="navbar-brand" routerLink="/home">
+                <!-- Logo icon -->
+                <b>
+                    <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
+                    <!-- Dark Logo icon -->
+                    <img src="assets/images/logos/logo.png" alt="logo icono" class="dark-logo w-75" />
+                    <!-- Light Logo icon -->
+                    <img src="assets/images/logo.png" alt="logo text" class="light-logo" />
+                </b>
+                <!--End Logo icon -->
+                <!-- Logo text -->
+                <span>
+          <!-- dark Logo text -->
+          <img src="../assets/images/logos/logo-texto.png" alt="homepage" class="dark-logo logo-text" />
+                    <!-- Light Logo text -->
+                    <!--<img src="../assets/images/logo-texto.png" class="light-logo" alt="homepage" /> -->
+        </span>
+            </a>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Logo -->
+        <!-- ============================================================== -->
+        <div class="navbar-collapse">
+            <!-- ============================================================== -->
+            <!-- toggle and nav items -->
+            <!-- ============================================================== -->
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a id="puta" class="nav-link sidebartoggler hidden-sm-down waves-effect waves-dark"
+                       href="javascript:void(0)"><i class="ti-menu"></i>
+                    </a>
+                </li>
+                <li class="nav-item hidden-sm-down"></li>
+            </ul>
+            <!-- ============================================================== -->
+            <!-- User profile and search -->
+            <!-- ============================================================== -->
+            <ul class="navbar-nav my-lg-0">
+                <!-- ============================================================== -->
+                <!-- Search -->
+                <!-- ============================================================== -->
+                <li class="nav-item hidden-xs-down search-box">
+                    <a class="nav-link hidden-sm-down waves-effect waves-dark" href="javascript:void(0)">
+                        <i class="ti-search"></i>
+                    </a>
+                    <form class="app-search">
+                        <input type="text" class="form-control" placeholder="Search & enter">
+                        <a class="srh-btn"><i class="ti-close"></i></a>
+                    </form>
+                </li>
+
+                <!-- ============================================================== -->
+                <!-- Messages -->
+                <!-- ============================================================== -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle waves-effect waves-dark" href="" id="2" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false"> <i class="mdi mdi-email"></i>
+                        <div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+                    </a>
+                    <div class="dropdown-menu mailbox dropdown-menu-right animated fadeIn" aria-labelledby="2">
+                        <ul>
+                            <li>
+                                <div class="drop-title">You have 4 new messages</div>
+                            </li>
+                            <li>
+                                <div class="message-center">
+                                    <!-- Message -->
+                                    <a href="#">
+                                        <!-- <div class="user-img">
+                                                <img src="assets/images/users/1.jpg" alt="user" class="img-circle">
+                                                <span class="profile-status online pull-right"></span>
+                                            </div>
+                                        -->
+                                        <div class="mail-contnet">
+                                            <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span>
+                                            <span class="time">9:30 AM</span>
+                                        </div>
+                                    </a>
+                                    <!-- Message -->
+                                    <a href="#">
+                                        <!-- <div class="user-img">
+                                                    <img src="assets/images/users/2.jpg" alt="user" class="img-circle">
+                                                    <span class="profile-status busy pull-right"></span>
+                                                </div>
+                                            -->
+                                        <div class="mail-contnet">
+                                            <h5>Sonu Nigam</h5>
+                                            <span class="mail-desc">I've sung a song! See you at</span>
+                                            <span class="time">9:10 AM</span>
+                                        </div>
+                                    </a>
+                                    <!-- Message -->
+                                    <a href="#">
+                                        <!-- <div class="user-img">
+                                                <img src="assets/images/users/3.jpg" alt="user" class="img-circle">
+                                                <span class="profile-status away pull-right"></span>
+                                            </div>
+                                        -->
+                                        <div class="mail-contnet">
+                                            <h5>Arijit Sinh</h5>
+                                            <span class="mail-desc">I am a singer!</span>
+                                            <span class="time">9:08 AM</span>
+                                        </div>
+                                    </a>
+                                    <!-- Message -->
+                                    <a href="#">
+                                        <!-- <div class="user-img"> <img src="assets/images/users/4.jpg" alt="user"
+                                                                    class="img-circle"> <span
+                                                                    class="profile-status offline pull-right"></span> </div> -->
+                                        <div class="mail-contnet">
+                                            <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span>
+                                            <span class="time">9:02 AM</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+                            <li>
+                                <a class="nav-link text-center" href="javascript:void(0);">
+                                    <strong>See all e-Mails</strong>
+                                    <i class="fa fa-angle-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <!-- ============================================================== -->
+                <!-- End Messages -->
+                <!-- ============================================================== -->
+
+                <!-- ============================================================== -->
+                <!-- Language -->
+                <!-- ============================================================== -->
+                <!-- <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="flag-icon flag-icon-us"></i></a>
+                                <div class="dropdown-menu dropdown-menu-right animated bounceInDown"> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-in"></i> India</a> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-fr"></i> French</a> <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-cn"></i> China</a>                        <a class="dropdown-item" href="#"><i class="flag-icon flag-icon-de"></i> Dutch</a> </div>
+                            </li> -->
+                <!-- ============================================================== -->
+                <!-- Profile -->
+                <!-- ============================================================== -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle waves-effect waves-dark" href="" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false"><img [src]="user.img | image" alt="user"
+                                                                       class="profile-pic" /></a>
+                    <div class="dropdown-menu dropdown-menu-right animated fadeIn">
+                        <ul class="dropdown-user">
+                            <li>
+                                <div class="dw-user-box">
+                                    <div class="u-img"><img [src]="user.img | image" alt="user"></div>
+                                    <div class="u-text">
+                                        <h4> {{ user.name }} </h4>
+                                        <p class="text-muted">{{ user.email }}</p>
+                                        <a routerLink="/profile" class="btn btn-rounded btn-danger btn-sm">Ver Perfil</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li><a routerLink="/profile"><i class="ti-user"></i> Perfil</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a routerLink="/account-settings"><i class="ti-settings"></i> Ajustes de Cuenta</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a (click)="_userService.logout()" class="pointer"><i class="fa fa-power-off"></i> Salir</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<!-- ============================================================== -->
+<!-- End Topbar header -->
+<!-- ============================================================== -->

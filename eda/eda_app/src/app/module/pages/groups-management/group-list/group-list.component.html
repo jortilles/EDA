@@ -1,0 +1,71 @@
+<div class="ui-g animated fadeIn">
+    <div class="ui-g-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="ui-g-10">
+                    <input pInputText #input (keyup)="searchGroup( input.value )"  type="text" class="form-control" placeholder="Buscar grupo">
+                </div>
+                <div class="ui-g-2 text-right">
+                    <button label="Añadir grupo" (click)="openDialog()" pButton></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row animated fadeIn" *ngIf="loading">
+
+    <div class="col-sm-12">
+        <div class="alert alert-warning text-center">
+            <strong>Cargando</strong>
+            <br>
+            <i class="fa fa-refresh fa-spin fa-2x"></i>
+            <span>Espere por favor</span>
+        </div>
+    </div>
+
+</div>
+
+<div class="ui-g animated fadeIn" *ngIf="!loading">
+    <div class="ui-g-12">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title"> Grupos ( <small>{{totalGroups}}</small> ) </h3>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Nombre</th>
+                        <th>Role</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let group of groups">
+                            <td>
+                                <img [src]="group.img | image" alt="user image" class="img-50 img-circle">
+                            </td>
+                            <td> {{group.name}} </td>
+                            <td> {{group.role}} </td>
+                            <td>
+                                <button class="btn btn-primary">
+                                    <i class="fa fa-save"></i>
+                                </button>
+                                <button class="btn btn-danger" (click)="deleteGroup( group )">
+                                    <i class="fa fa-trash-o"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button (click)="changeBetween(-5)" class="btn btn-secondary p-0" style="width: 25px;"> <i class="fa fa-angle-left"></i> </button>
+
+                <button (click)="changeBetween(+5)" class="btn btn-secondary p-0" style="width: 25px;"> <i class="fa fa-angle-right"></i> </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-group-detail *ngIf="fitxaGroup" [controller]="fitxaGroup"></app-group-detail>

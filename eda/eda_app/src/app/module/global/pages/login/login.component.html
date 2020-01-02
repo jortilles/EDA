@@ -1,0 +1,70 @@
+
+<div class="ui-g login-register login-sidebar" style="background-image:url(assets/images/background/data-bg.png);">
+  <div class="ui-lg-8 ui-xl-9" style="background: none;"></div>
+
+  <div class="ui-g-10 ui-g-offset-1 ui-md-6 ui-md-offset-3 ui-lg-4 ui-lg-offset-0 ui-xl-3 login-box card" style="background: none;">
+      
+    <div class="card-login">
+          <form ngNativeValidate #f="ngForm" class="form-horizontal form-material" (ngSubmit)="login( f )">
+    
+            <a href="javascript:void(0)" class="text-center db">
+              <img src="assets/images/logos/logo.png" alt="logo" />
+              <br />
+              <img src="assets/images/logos/logo-texto.png" style="height: 8vh;" alt="logo texto" />
+            </a>
+
+            <div class="form-group mt-5">
+              <div class="ui-g-12">
+                <input pInputText [ngModel]="email" name="email" class="w-100" type="email" placeholder="Usuario" autocomplete="username" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="ui-g-12">
+                <input pInputText [ngModel] name="password" class="w-100" type="password" placeholder="Contraseña" autocomplete="current-password" required />
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="ui-g-12">
+                <div class="checkbox checkbox-primary pull-left pt-0">
+                  <input [ngModel]="remember" name="remember" id="checkbox-signup" type="checkbox" class="-in chk-col-light-blufillede" />
+                  <label for="checkbox-signup"> Recuérdame </label>
+                </div>
+                <a href="javascript:void(0)" id="to-recover" class="text-dark pull-right">
+                  <i class="fa fa-lock mr-1"></i> Olvide la contraseña?
+                </a>
+              </div>
+            </div>
+            <div class="form-group text-center mt-2">
+              <div class="ui-g-12">
+                  <button pButton type="submit" label="Ingresar" class="ui-button-rounded w-100"></button>
+                <!-- <button class="btn btn-info btn-lg btn-block text-uppercase btn-rounded" type="submit">
+                  Ingresar
+                </button> -->
+              </div>
+            </div>
+<!--            <div class="ui-g">-->
+<!--              <div class="ui-g-12 mt-1 text-center">-->
+<!--                <div class="social">-->
+<!--                  <button type="button" id="btnGoogle" class="btn btn-googleplus" data-toggle="tooltip"-->
+<!--                    title="Login with Google">-->
+<!--                    <i aria-hidden="true" class="fa fa-google-plus"></i>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div class="form-group mb-0">-->
+<!--              <div class="ui-g-12 text-center">-->
+<!--                No tienes cuenta?-->
+<!--                <a [routerLink]="['/register']" class="text-primary ml-2">-->
+<!--                  <b>Crear cuenta</b>-->
+<!--                </a>-->
+<!--              </div>-->
+<!--            </div>-->
+    
+          </form>
+    
+    </div>
+
+  </div>
+
+</div>

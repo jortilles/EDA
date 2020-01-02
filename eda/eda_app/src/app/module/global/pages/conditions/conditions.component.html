@@ -1,0 +1,12 @@
+<eda-dialog [inject]="dialog">
+    <div class="m-1">
+        <p>Esta aplicación es una demo.</p>
+        <p>No ofrece ninguna garantía y no somos responsables del uso que  se haga de la misma.</p>
+        <p>Usala bajo tu responsabilidad.</p>
+    </div>
+    <p-footer class="footer">
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+            <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" label="Cerrar"></button>
+        </div>
+    </p-footer>
+</eda-dialog>

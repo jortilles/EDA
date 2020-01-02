@@ -1,0 +1,318 @@
+{
+    "ds" : {
+        "connection" : {
+            "type" : "postgres",
+            "host" : "ayt.jortilles.com",
+            "port" : 5432,
+            "database" : "stg",
+            "schema" : "",
+            "user" : "postgres",
+            "password" : "viladrau-2018"
+        },
+        "metadata" : {
+            "model_name" : "ATY STG",
+            "model_id" : "5d03b4bc6d7313905189298f",
+            "model_granted_roles" : [ 
+                "rol1", 
+                "rol2"
+            ]
+        },
+        "model" : {
+            "tables" : [ 
+                {
+                    "table_name" : "x_invoices",
+                    "display_name" : "Facturas",
+                    "table_granted_roles" : [ 
+                        "rol1", 
+                        "rol2"
+                    ],
+                    "table_type" : [ 
+                        "dimension", 
+                        "fact"
+                    ],
+                    "columns" : [ 
+                        {
+                            "column_name" : "currencycode",
+                            "display_name" : {
+                                "default" : "Moneda",
+                                "localized" : [ 
+                                    {
+                                        "ES_es" : "Moneda"
+                                    }, 
+                                    {
+                                        "CA_es" : "Moneda"
+                                    }
+                                ]
+                            },
+                            "column_type" : "varchar",
+                            "aggregation_type" : [ 
+                                "none"
+                            ],
+                            "column_granted_roles" : [ 
+                                "rol1", 
+                                "rol2"
+                            ],
+                            "row_granted_roles" : "true"
+                        }, 
+                        {
+                            "column_name" : "status",
+                            "display_name" : {
+                                "default" : "Estado",
+                                "localized" : [ 
+                                    {
+                                        "ES_es" : "Estado"
+                                    }, 
+                                    {
+                                        "CA_es" : "Estat"
+                                    }
+                                ]
+                            },
+                            "column_type" : "varchar",
+                            "aggregation_type" : [ 
+                                "none"
+                            ],
+                            "column_granted_roles" : [ 
+                                "rol1", 
+                                "rol2"
+                            ],
+                            "row_granted_roles" : "true"
+                        }, 
+                        {
+                            "column_name" : "invoicenumber",
+                            "display_name" : {
+                                "default" : "Factura",
+                                "localized" : [ 
+                                    {
+                                        "ES_es" : "Factura"
+                                    }, 
+                                    {
+                                        "CA_es" : "Factura"
+                                    }
+                                ]
+                            },
+                            "column_type" : "varchar",
+                            "aggregation_type" : [ 
+                                "none"
+                            ],
+                            "column_granted_roles" : [ 
+                                "rol1", 
+                                "rol2"
+                            ],
+                            "row_granted_roles" : "true"
+                        }, 
+                        {
+                            "column_name" : "total",
+                            "display_name" : {
+                                "default" : "Importe",
+                                "localized" : [ 
+                                    {
+                                        "ES_es" : "Total"
+                                    }, 
+                                    {
+                                        "CA_es" : "Total"
+                                    }
+                                ]
+                            },
+                            "column_type" : "numeric",
+                            "aggregation_type" : [ 
+                                "sum", 
+                                "avg", 
+                                "max", 
+                                "min"
+                            ],
+                            "column_granted_roles" : [ 
+                                "rol1", 
+                                "rol2"
+                            ],
+                            "row_granted_roles" : "true"
+                        }, 
+                        {
+                            "column_name" : "totaltax",
+                            "display_name" : {
+                                "default" : "Impuestos",
+                                "localized" : [ 
+                                    {
+                                        "ES_es" : "Impuestos"
+                                    }, 
+                                    {
+                                        "CA_es" : "Impostos"
+                                    }
+                                ]
+                            },
+                            "column_type" : "numeric",
+                            "aggregation_type" : [ 
+                                "sum", 
+                                "avg", 
+                                "max", 
+                                "min"
+                            ],
+                            "column_granted_roles" : [ 
+                                "rol1", 
+                                "rol2"
+                            ],
+                            "row_granted_roles" : "true"
+                        }
+                    ],
+                    "relations" : [ 
+                        {
+                            "source_table" : "x_invoices",
+                            "source_column" : "contact_id",
+                            "target_table" : "x_contacts",
+                            "target_column" : "contactid"
+                        }
+                    ]
+                }, 
+                {
+                    "table_name" : "x_contacts",
+                    "display_name" : "Contactos",
+                    "table_granted_roles" : [ 
+                        "rol1", 
+                        "rol2"
+                    ],
+                    "table_type" : [ 
+                        "dimension"
+                    ],
+                    "columns" : [ 
+                        {
+                            "column_name" : "Name",
+                            "display_name" : {
+                                "default" : "Nombre",
+                                "localized" : [ 
+                                    {
+                                        "ES_es" : "Nombre"
+                                    }, 
+                                    {
+                                        "CA_es" : "Nom"
+                                    }
+                                ]
+                            },
+                            "column_type" : "varchar",
+                            "aggregation_type" : [ 
+                                "none"
+                            ],
+                            "column_granted_roles" : [ 
+                                "rol1", 
+                                "rol2"
+                            ],
+                            "row_granted_roles" : "true"
+                        }, 
+                        {
+                            "column_name" : "phonetype",
+                            "display_name" : {
+                                "default" : "Telefono",
+                                "localized" : [ 
+                                    {
+                                        "ES_es" : "Telefono"
+                                    }, 
+                                    {
+                                        "CA_es" : "Telefono"
+                                    }
+                                ]
+                            },
+                            "column_type" : "varchar",
+                            "aggregation_type" : [ 
+                                "none"
+                            ],
+                            "column_granted_roles" : [ 
+                                "rol1", 
+                                "rol2"
+                            ],
+                            "row_granted_roles" : "true"
+                        }
+                    ],
+                    "relations" : [ 
+                        {
+                            "source_table" : "x_contacts",
+                            "source_column" : "contactid",
+                            "target_table" : "x_invoices",
+                            "target_column" : "contactid"
+                        }
+                    ]
+                }, 
+                {
+                    "table_name" : "ed_schools",
+                    "display_name" : "Escuelas",
+                    "table_granted_roles" : [ 
+                        "rol1", 
+                        "rol2"
+                    ],
+                    "table_type" : [ 
+                        "dimension"
+                    ],
+                    "columns" : [ 
+                        {
+                            "column_name" : "name",
+                            "display_name" : {
+                                "default" : "Nombre",
+                                "localized" : [ 
+                                    {
+                                        "ES_es" : "Nombre"
+                                    }, 
+                                    {
+                                        "CA_es" : "Nom"
+                                    }
+                                ]
+                            },
+                            "column_type" : "varchar",
+                            "aggregation_type" : [ 
+                                "none"
+                            ],
+                            "column_granted_roles" : [ 
+                                "rol1", 
+                                "rol2"
+                            ],
+                            "row_granted_roles" : "true"
+                        }, 
+                        {
+                            "column_name" : "phone",
+                            "display_name" : {
+                                "default" : "Telefono",
+                                "localized" : [ 
+                                    {
+                                        "ES_es" : "Telefono"
+                                    }, 
+                                    {
+                                        "CA_es" : "Telefono"
+                                    }
+                                ]
+                            },
+                            "column_type" : "varchar",
+                            "aggregation_type" : [ 
+                                "none"
+                            ],
+                            "column_granted_roles" : [ 
+                                "rol1", 
+                                "rol2"
+                            ],
+                            "row_granted_roles" : "true"
+                        }, 
+                        {
+                            "column_name" : "website",
+                            "display_name" : {
+                                "default" : "Web",
+                                "localized" : [ 
+                                    {
+                                        "ES_es" : "Web"
+                                    }, 
+                                    {
+                                        "CA_es" : "Web"
+                                    }
+                                ]
+                            },
+                            "column_type" : "varchar",
+                            "aggregation_type" : [ 
+                                "none"
+                            ],
+                            "column_granted_roles" : [ 
+                                "rol1", 
+                                "rol2"
+                            ],
+                            "row_granted_roles" : "true"
+                        }
+                    ],
+                    "relations" : []
+                }
+            ]
+        }
+    }
+}

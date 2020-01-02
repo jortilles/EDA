@@ -1,0 +1,5 @@
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
+
+<div [ngClass]="{'lock-on': displaySpinner, 'lock-off': !displaySpinner}"></div>
+<p-progressSpinner strokeWidth="5" *ngIf="displaySpinner" class="spinner-load"></p-progressSpinner>
+<router-outlet></router-outlet>

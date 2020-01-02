@@ -1,0 +1,28 @@
+<div class="ui-g">
+
+    <div class="ui-g-4">
+        <p-panel class="ui-g-12">
+            <p-header>
+
+                <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-left">
+                    <button pButton (click)="this.refreshModel()" icon="fa fa-refresh" iconPos="center"
+                        title="Refrescar modelo de datos"> </button>
+                    <button pButton (click)="this.DataModelService.sendModel()" icon="fa fa-save" iconPos="center"
+                        title="Guardar modelo de datos"></button>
+                    <button pButton (click)="reLoadModelFromDb()" icon="fa fa-database" iconPos="center"
+                        title="Actualizar modelo de la base de datos"> </button>
+                    <span> Modelo de datos</span> 
+                    <button pButton (click)="deleteDatasource()" icon="fa fa-trash" iconPos="center" style="float: right;"
+                        title="Borrar modelo de datos"> </button>
+                </div>
+            </p-header>
+            <p-tree [style]="{'width':'100%'}" [value]="treeData" [filter]="false" selectionMode="single"
+                [(selection)]="selectedFile" (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)"
+                (onNodeExpand)="nodeSelect($event)"></p-tree>
+        </p-panel>
+    </div>
+    <div class="ui-g-8">
+        <app-data-source-detail></app-data-source-detail>
+    </div>
+
+</div>

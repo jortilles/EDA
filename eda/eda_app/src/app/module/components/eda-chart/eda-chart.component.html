@@ -1,0 +1,48 @@
+
+
+<div class="eda-chart">
+    <canvas
+            baseChart
+            [data]="inject.chartData"
+            [datasets]="inject.chartDataset"
+            [labels]="inject.chartLabels"
+            [chartType]="inject.chartType"
+            [options]="inject.chartOptions"
+            [colors]="(inject.chartType === 'line')  ? lineChartColors : inject.chartType === 'bar' ? barChartColors : inject.chartColors"
+            [legend]="inject.chartLegend"
+            [plugins]="inject.chartPlugins"
+            (chartClick)="chartClicked($event)"
+            (chartHover)="chartHovered($event)"
+    >
+    </canvas>
+<!--    <div class="ui-g justify-content-center ui-overflow-hidden" *ngIf="inject.chartData || inject.chartDataset">-->
+
+<!--        <ng-container *ngIf="inject.chartData">-->
+<!--            <div *ngFor="let label of inject.chartLabels" class="ui-g-1"-->
+<!--                 [ngStyle]="{'background-color': getColors(label), 'color': '#000', 'text-align': 'center', 'border': '1px solid black', 'font-size': '9px'}">-->
+<!--                <span> {{ label }}  </span>-->
+<!--            </div>-->
+<!--        </ng-container>-->
+<!--        <ng-container *ngIf="!!inject.chartDataset">-->
+<!--            <div class="">-->
+<!--                <div *ngFor="let serie of inject.chartDataset" class="" style="display: flex;-->
+<!--                    flex-direction: row;-->
+<!--                    align-items: center;-->
+<!--                    justify-content: center;-->
+<!--                    text-align: center;-->
+<!--                    font-size: 9px;-->
+<!--                    min-width: 100%;-->
+<!--                    margin: 1px;" -->
+<!--                    [ngStyle]="{'background-color': getColors(serie.label), 'color': '#000'}">-->
+<!--                    <span> {{ serie.label }}  </span>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </ng-container>-->
+
+<!--    </div>-->
+</div>
+
+
+
+
+

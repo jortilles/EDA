@@ -1,0 +1,155 @@
+<eda-dialog [inject]="dialog">
+    <div class="ui-g">
+        <p-panel class="ui-g-12 pt-0" header="Filtrar">
+            <div class="ui-g mt-2">
+                <div class="ui-g-12 mt-1" [ngClass]="{ 'ui-md-6': !display.between }">
+                        <span class="ui-float-label">
+                              <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
+                                          [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
+                                          (onChange)="handleFilterChange(filterSelected)">
+                                </p-dropdown>
+                                <label for="types">Tipos de filtro</label>
+                        </span>
+                </div>
+
+                <ng-container *ngIf="!display.between">
+                    <div class="ui-g-12 ui-md-6">
+                        <ng-container *ngIf="!!display.calendar && !filter.switch">
+                            <div class="form-group">
+                                <label class="fck-label" for="datepicker">Fecha</label>
+                                <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
+                                       (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+                            </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="!display.calendar && !filter.switch">
+                                <span *ngIf="display.filterValue" class="ui-float-label">
+                                    <input id="float-input" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
+                                           (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+                                    <label for="float-input">Valor a filtrar</label>
+                                </span>
+                        </ng-container>
+
+                        <ng-container *ngIf="filter.switch">
+                                <span class="ui-float-label mt-1">
+                                    <p-multiSelect id="float-input" [options]="dropDownFields" [(ngModel)]="filterValue.value1" [virtualScroll]="true" [itemSize]="34" [filter]="false"
+                                                   defaultLabel="Selecciona..." [style]="{width: '100%'}" (onChange)="handleValidForm({value1: filterValue.value1})"
+                                                   [selectionLimit]="limitSelectionFields">
+                                    </p-multiSelect>
+                                    <label for="float-input">Valor a filtrar</label>
+                                </span>
+                        </ng-container>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="!!display.between">
+                    <ng-container *ngIf="!!display.calendar && !filter.switch">
+                        <div class="ui-g-6 mt-3">
+                            <div class="form-group mb-0">
+                                <label class="fck-label" style="top: 9.20em!important;" for="datepicker">Fecha inicio</label>
+                                <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
+                                       (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+                            </div>
+                        </div>
+                        <div class="ui-g-6 mt-3">
+                            <div class="form-group mb-0">
+                                <label class="fck-label" style="top: 9.20em!important;" for="datepicker">Fecha final</label>
+                                <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value2"
+                                       (input)="handleValidForm({value2: $event.target.value})" pInputText required>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="!display.calendar && !filter.switch">
+                        <div class="ui-g-6 mt-3">
+                                <span class="ui-float-label">
+                                    <input id="float-input" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
+                                           (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+                                    <label for="float-input">Valor 1</label>
+                                </span>
+                        </div>
+
+                        <div class="ui-g-6 mt-3">
+                                <span class="ui-float-label">
+                                    <input id="float-input" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value2"
+                                           (input)="handleValidForm({value2: $event.target.value})" pInputText required>
+                                    <label for="float-input">Valor 2</label>
+                                </span>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="filter.switch">
+                        <div class="ui-g-6 mt-3">
+                            <div class="form-group mb-0">
+                                <label class="fck-label" style="top: 9.20em!important;" for="datepicker">Valor 1</label>
+                                <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value1" [virtualScroll]="true" [itemSize]="34" [filter]="false"
+                                               [style]="{width: '100%'}" [panelStyle]="{minWidth:'100%'}" (onChange)="handleValidForm({value1: filterValue.value1})"
+                                               defaultLabel="Selecciona..." [selectionLimit]="limitSelectionFields">
+                                </p-multiSelect>
+                            </div>
+                        </div>
+                        <div class="ui-g-6 mt-3">
+                            <div class="form-group mb-0">
+                                <label class="fck-label" style="top: 9.20em!important;" for="datepicker">Valor 2</label>
+                                <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34" [filter]="false"
+                                               [style]="{width: '100%'}" [panelStyle]="{minWidth:'100%'}" (onChange)="handleValidForm({value2: filterValue.value2})"
+                                               defaultLabel="Selecciona..." [selectionLimit]="limitSelectionFields">
+                                </p-multiSelect>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                </ng-container>
+
+                <ng-container>
+                    <div class="ui-g-12">
+                        <div class="ui-g-2">
+                            <label for="filter_options">Options</label> <br>
+                            <p-inputSwitch id="filter_options" [(ngModel)]="filter.switch" [disabled]="display.switchButton" (onChange)="loadDropDrownData()">
+                            </p-inputSwitch>
+                            <span class="state-label" *ngIf="filter.switch">Si</span>
+                            <span class="state-label" *ngIf="!filter.switch">No</span>
+                        </div>
+                        <div class="ui-g-3 ui-g-offset-7">
+                            <div class="d-flex justify-content-center mt-2">
+                                <p-button (onClick)="addFilter()" [disabled]="display.filterButton" label="Añadir filtro"></p-button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+
+            </div>
+        </p-panel>
+
+        <div *ngIf="filter.forDisplay.length !== 0" class="ui-g-12">
+            <div class="ui-g-12 foot-card">
+                <p-scrollPanel [style]="{width: '100%', height: '90px'}" styleClass="custombar1">
+                    <ng-container *ngFor="let filtre of filter.forDisplay">
+                        <p *ngIf="filtre.filter_elements.length === 0" class="d-flex align-items-center">
+                            <b class="mr-2">* {{ controller.params.selectedColumn.display_name.default }} is {{ filtre.filter_type }}
+                            </b>
+                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                        </p>
+                        <p *ngIf="filtre.filter_elements.length === 1" class="d-flex align-items-center">
+                            <b class="mr-2">* {{ controller.params.selectedColumn.display_name.default }} {{ filtre.filter_type }}
+                                "{{ filtre.filter_elements[0].value1 }}"</b>
+                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                        </p>
+                        <p *ngIf="filtre.filter_elements.length === 2" class="d-flex align-items-center">
+                            <b class="mr-2">* {{ controller.params.selectedColumn.display_name.default }} {{ filtre.filter_type }}
+                                "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}" </b>
+                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                        </p>
+                    </ng-container>
+                </p-scrollPanel>
+            </div>
+        </div>
+    </div>
+
+
+    <p-footer class="footer">
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+            <button type="button" pButton (click)="closeDialog()" class="ui-button ml-2" label="Guardar"></button>
+        </div>
+    </p-footer>
+</eda-dialog>

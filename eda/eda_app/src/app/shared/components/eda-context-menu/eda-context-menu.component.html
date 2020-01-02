@@ -1,0 +1,8 @@
+<p-dialog #dialog class="eda-context" appendTo="body" *ngIf="inject.display" [(visible)]="inject.display" modal="true" [closable]="false" resizable="false"
+          (document:keydown.esc)="inject.hideContextMenu()" [header]="inject.header" [positionLeft]="inject.left" [positionTop]="inject.top">
+    <p-panelMenu [model]="inject.contextMenuItems" [style]="{'width':'300px'}"></p-panelMenu>
+    <p-footer>
+        <span class="pointer" (click)="inject.hideContextMenu()"> <i class="fa fa-times font-16"></i> </span>
+<!--        <button pButton type="button" icon="fa fa-times" label="Cerrar" class="ui-button-danger" (click)="inject.hideContextMenu()"></button>-->
+    </p-footer>
+</p-dialog>

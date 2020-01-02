@@ -1,0 +1,155 @@
+import {Injectable} from '@angular/core';
+import {Observable, throwError} from 'rxjs';
+import { URL_SERVICES } from '../../config/config';
+import {catchError, map} from 'rxjs/internal/operators';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import * as _ from 'lodash';
+
+@Injectable()
+export class ApiService {
+    public API = URL_SERVICES;
+
+    constructor( protected http: HttpClient ) { }
+
+
+    public handleError(error: any) {
+        console.warn(error);
+
+        const result: {[k: string]: any} = {};
+        result.status = error.status;
+
+        switch (error.status) {
+            case 400:
+                result.text = error.error.message;
+                break;
+            case 500:
+                result.text = error.error.message;
+                break;
+            case 401: /* Token error */
+                result.text = 'La session ha expirado';
+                result.nextPage = 'logout';
+                break;
+            default:
+                if (!_.isNil(error.error.errors.message)) {
+                    result.text = error.error.message;
+                }
+                result.text = error.error.message;
+                break;
+
+        }
+        console.log(result);
+        return throwError(result);
+    }
+
+    public getBodyEmpty() {
+        return {};
+    }
+
+    private getHeaders() {
+        const headers = new HttpHeaders();
+        headers.append('Content-Type', 'application/json');
+        return headers;
+    }
+
+    private getSearchParamToken() {
+        const token = localStorage.getItem('token');
+        let params: HttpParams = new HttpParams();
+
+        if ( token ) {
+            params = params.set('token', token);
+        }
+
+        return params;
+    }
+
+    public get(route: any, skipToken?: boolean) {
+
+        let options;
+        if (!skipToken) {
+            options = {
+                headers: this.getHeaders(),
+                params: this.getSearchParamToken()
+            };
+        } else {
+            options = {
+                headers: this.getHeaders()
+            };
+    }
+    
+    return this.http
+            .get(this.API + route, options).pipe(
+                map(response => response || {}),
+                catchError(this.handleError)
+            );
+    }
+
+    public getParams(route: any, params: any) {
+
+        let search = this.getSearchParamToken();
+        _.forEach(params, (value, key) => {
+            if (!_.isNil(value)) {
+                if (_.isEqual(typeof value, 'object')) {
+                    search = search.append(String(key), value);
+                } else {
+                    search = search.append(String(key), value);
+                }
+            }
+        });
+
+        const options = {
+            headers: this.getHeaders(),
+            params: search
+        };
+
+        return this.http
+            .get(this.API + route, options).pipe(
+                map(response => response || {}),
+                catchError(this.handleError)
+            );
+    }
+
+    public delete(route: any) {
+        const options = {
+            headers: this.getHeaders(),
+            params: this.getSearchParamToken()
+        };
+
+        return this.http
+            .delete(this.API + route, options).pipe(
+                map(response => response || {}),
+                catchError(this.handleError)
+            );
+    }
+
+    public post(route: any, body: any, skipToken?: boolean) {
+        let options;
+        if (!skipToken) {
+            options = {
+                headers: this.getHeaders(),
+                params: this.getSearchParamToken()
+            };
+        } else {
+            options = {
+                headers: this.getHeaders()
+            };
+        }
+        return this.http.post(this.API + route, body, options).pipe(
+                map(response => response || {}),
+                catchError(this.handleError)
+            );
+    }
+
+    public put(route: any, body: any) {
+        const options = {
+            headers: this.getHeaders(),
+            params: this.getSearchParamToken()
+        };
+
+        return this.http
+            .put(this.API + route, body, options).pipe(
+                map(response => response || {}),
+                catchError(this.handleError)
+            );
+    }
+
+}

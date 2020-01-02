@@ -1,0 +1,45 @@
+{
+    "id":23424234,
+    "model_id": "1235443456",
+    "user":{
+        "user_id":"usuario",
+        "user_roles":[ "rol1", "rol3"]
+    },
+    "dashboard":{
+        "dashboard_id":987897,
+        "panel_id":9890
+    },
+    "query":{
+        "fields":[
+            { 
+                "table_name": "table_1",
+                "column_name":"customer_id" ,
+                "aggregation_type": "note", // pot ser none, sum, max, avg
+                "order":1
+            },
+            {   "table_name": "table_2",
+                "column_name":"column2" ,
+                "aggregation_type": "note", // pot ser none, sum, max, avg
+                "order":2
+              },
+              { 
+                "table_name": "table_2",
+                "column_name":"salesvalue" ,
+                "aggregation_type": "sum", // pot ser none, sum, max, avg
+                "order":3
+              }
+        ] ,
+        "filters":[
+            { 
+                "filter_table": "table_1",
+                "filter_column":"customer_id" ,
+                "filter_type": "=" ,// pot ser =, !=,>, <  
+                "filter_elements": []
+            }
+        ] 
+    },
+    "output": {
+        "labels": [ ] ,
+        "data": [ ]
+    }
+}

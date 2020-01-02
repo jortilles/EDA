@@ -1,0 +1,47 @@
+.login-register {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top top;
+    height: 100%;
+    width: 100%;
+    padding: 10% 0;
+    position: fixed;
+}
+
+.card-login {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    padding-top: 0%;
+    padding-bottom: 0%;
+}
+
+.login-box {
+    overflow: hidden;
+    margin: 0 auto;
+    padding-top: 0;
+}
+
+.login-box .footer {
+    width: 100%;
+    left: 0px;
+    right: 0px;
+}
+
+.login-box .social {
+    display: block;
+    margin-bottom: 10px;
+}
+
+#recoverform {
+    display: none;
+}
+
+.login-sidebar {
+    padding: 0px;
+    margin-top: 0px;
+}
+
+.login-sidebar .login-box {
+    right: 0px;
+    height: 100%;
+}

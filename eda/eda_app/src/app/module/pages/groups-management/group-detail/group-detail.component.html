@@ -1,0 +1,58 @@
+<eda-dialog [inject]="dialog">
+    <form [formGroup]="form">
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6">
+                <div class="form-group">
+                    <label>NOMBRE *</label>
+                    <input type="text" class="form-control" formControlName="name" pInputText>
+                </div>
+            </div>
+
+            <div class="ui-g-12 ui-md-6">
+                <div class="form-group">
+                    <label>ROLE *</label>
+                    <p-dropdown [options]="roles" formControlName="role" placeholder="Selecciona un role" optionLabel="label" [style]="{width:'100%', padding: '.2rem .75rem'}">
+                    </p-dropdown>
+                </div>
+            </div>
+            <div class="ui-g-6">
+                <p-card header="Usuarios" [style]="{'height': '250px'}">
+                    <p-pickList [source]="lists.avaibles" [target]="lists.selecteds" [responsive]="true" sourceHeader="Disponibles" targetHeader="Seleccionados"
+                                [sourceStyle]="{width: '100%'}" [targetStyle]="{width: '100%'}" [showSourceControls]="false" [showTargetControls]="false">
+                        <ng-template let-user pTemplate="item">
+                            <div class="ui-helper-clearfix">
+                                <img [src]="user.img | image" alt="user image" style="display:inline-block;margin:2px 0 2px 2px" width="25">
+                                <div style="font-size:14px;float:right;margin:15px 5px 0 0">{{user.name}}</div>
+                            </div>
+                        </ng-template>
+                    </p-pickList>
+                </p-card>
+            </div>
+            <div class="ui-g-6">
+                <p-card header="Imagen Grupo" [style]="{'height': '250px'}">
+                    <div class="card-body">
+                        <div class="text-center">
+<!--                            <img *ngIf="!imageTemp" [src]="group.img | image" class="w-150">-->
+                            <img *ngIf="imageTemp" [src]="imageTemp" class="w-150">
+                        </div>
+
+                        <input (change)="selectImage( $event.target.files[0] )" type="file" class="mt-1">
+
+                        <br><br>
+
+                        <button (click)="changeImage()" [disabled]="!imageUpload" type="button" class="btn btn-block btn-success waves-effect waves-light m-r-10">
+                            <i class="fa fa-save"></i>
+                            Actualizar Foto
+                        </button>
+                    </div>
+                </p-card>
+            </div>
+        </div>
+    </form>
+
+    <p-footer class="footer">
+        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+            <button type="button" pButton (click)="closeDialog()" class="ui-button ml-2" label="Guardar"></button>
+        </div>
+    </p-footer>
+</eda-dialog>
