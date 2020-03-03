@@ -1,4 +1,4 @@
-import {EdaColumnFilter} from '@eda_components/eda-table/eda-column-filter/eda-column-filter';
+import {EdaColumnFilter} from '@eda/components/eda-table/eda-column-filter/eda-column-filter';
 
 export abstract class EdaColumn {
     width: any;
@@ -15,6 +15,7 @@ export abstract class EdaColumn {
     group: string;
 
     cellStyle: (value: any, row: any) => any = () => {};
+    joinArray: (value: any, row: any) => any = () => {};
 
     constructor() {
 

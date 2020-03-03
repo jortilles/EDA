@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SettingsService } from '@eda_services/service.index';
+import { SettingsService } from '@eda/services/service.index';
 
 declare function init_plugins();
 

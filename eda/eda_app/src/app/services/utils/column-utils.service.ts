@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { FilterType } from '@eda_services/utils/chart-utils.service';
-import { FileUtiles } from '@eda_services/utils/file-utils.service';
+import { FilterType } from '@eda/services/utils/chart-utils.service';
+import { FileUtiles } from '@eda/services/utils/file-utils.service';
 import * as _ from 'lodash';
 
 @Injectable()

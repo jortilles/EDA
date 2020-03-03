@@ -1,7 +1,8 @@
 import { Component, ViewChild, Input } from '@angular/core';
 import { Table } from 'primeng/table';
-import { EdaTable } from './eda-table';
 import { FilterUtils } from 'primeng/api';
+import { EdaTable } from './eda-table';
+import { EdaColumn } from './eda-columns/eda-column';
 import * as _ from 'lodash';
 
 @Component({
@@ -15,7 +16,8 @@ export class EdaTableComponent {
 
     public lodash: any = _;
 
-    constructor() { }
+    constructor() { 
+     }
 
     _tableFilter(table: Table, value: any, col: any) {
         if (_.isNil(FilterUtils['between'])) {

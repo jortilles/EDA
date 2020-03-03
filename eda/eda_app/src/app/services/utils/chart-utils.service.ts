@@ -20,13 +20,20 @@ export interface OrdenationType {
     selected: boolean;
 }
 
+export interface FormatDates {
+    display_name: string;
+    value: string;
+    selected: boolean;
+}
+
 @Injectable()
 export class ChartUtilsService {
 
     public chartTypes: EdaChartType[] = [
         { label: 'Table', value: 'table', icon: 'pi pi-exclamation-triangle', ngIf: true },
+        { label: 'CrossTable', value: 'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true },
         { label: 'KPI', value: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true },
-        { label: 'Pie Chart', value: 'pie', icon: 'pi pi-exclamation-triangle', ngIf: true },
+        { label: 'Pie Chart', value: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true },
         { label: 'Bar Chart', value: 'bar', icon: 'pi pi-exclamation-triangle', ngIf: true },
         { label: 'Line Chart', value: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true },
     ];
@@ -46,63 +53,59 @@ export class ChartUtilsService {
     ];
 
     public ordenationTypes: OrdenationType[] = [
-        { display_name: 'Asc', value: 'Asc', selected: false },
-        { display_name: 'Desc', value: 'Desc', selected: false },
-        { display_name: 'No', value: 'No', selected: false }
+        { display_name: 'ASC', value: 'Asc', selected: false },
+        { display_name: 'DESC', value: 'Desc', selected: false },
+        { display_name: 'NO', value: 'No', selected: false }
     ];
 
-    transformDataQuery(type: ChartType, values: any[], isSimple?: any[]) {
-        const transformed_labels = [];
-        const transformed_values = [];
-        const output = [];
+    public formatDates: FormatDates[] = [
+        { display_name: 'AÑO', value: 'year', selected: false },
+        { display_name: 'MES', value: 'month', selected: false },
+        { display_name: 'DIA', value: 'day', selected: false },
+        { display_name: 'NO', value: 'No', selected: false }
+    ];
 
-        if (type === 'pie') {
-            for (let i = 0; i < values.length; i += 1) {
-                for (let e = 0; e < values[i].length; e += 1) {
-                    if (typeof values[i][e] === 'number') {  // Si es tipus number l'introduixo a l'array de valors
-                        transformed_values.push(values[i][e]);
-                    } else if (typeof values[i][e] === 'string') { // Si es string, l'introdueixo a labels
-                        transformed_labels.push(values[i][e]);
-                    }
-                }
-            }
+    transformDataQuery(type: ChartType, values: any[], dataTypes: string[], isSimple?: any[]) {
+        const output = [];
+        const idx = [];
+
+        dataTypes.forEach((e: any) => {
+            e === 'numeric' ? idx.push('n') : idx.includes('l') ? idx.push('s') : idx.push('l');
+        });
+        const label_idx = idx.indexOf('l');
+        const serie_idx = idx.indexOf('s');
+        const number_idx = idx.indexOf('n');
+
+        if (type === 'doughnut') {
+            const _labels = values.map(v => v[label_idx]);
+            const _values = values.map(v => v[number_idx]).filter(elem => elem != null);
             // Faig push a l'array output, que sera retornat per l'inicialització del PieChart
-            output.push(transformed_labels, transformed_values);
+            output.push(_labels, _values);
             return output;
 
         } else if (type === 'bar' || type === 'line') {
             const idx = [];
-            values[0].forEach((e: any) => {
-                typeof e === 'number' ? idx.push('n') : idx.includes('l') ? idx.push('s') : idx.push('l');
-            });
-            const l_idx = idx.indexOf('l');
-            const s_idx = idx.indexOf('s');
-            const n_idx = idx.indexOf('n');
-            // values = values.map(v => {
-            //     v[l_idx].length > 20 ?  v[l_idx] = `${v[l_idx].slice(0, 20)}...` : '';
-            //     return v;
-            // })
-            const l = Array.from(new Set(values.map(v => v[l_idx])));
-            const s = s_idx !== -1 ? Array.from(new Set(values.map(v => v[s_idx]))) : null;
+            const l = Array.from(new Set(values.map(v => v[label_idx])));
+            const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
             const _output = [[], []];
 
             _output[0] = l;
             if (isSimple.length === 1) {
                 _output[1] = [{
-                    data: values.map(v => v[n_idx]),
+                    data: values.map(v => v[number_idx]),
                     label: isSimple[0]
                 }];
             } else {
                 let series = [];
                 s.forEach((s) => {
-                    _output[1].push({data: [], label: s});
-                    let serie = values.filter(v => v[s_idx] === s);
+                    _output[1].push({ data: [], label: s });
+                    let serie = values.filter(v => v[serie_idx] === s);
                     series.push(serie);
                 });
                 l.forEach((l) => {
-                   // let data_point = null;
-                    series.forEach((serie,  i) => {
-                        const t = serie.filter(s =>  s[l_idx] === l).map(e => e[n_idx])[0];
+                    // let data_point = null;
+                    series.forEach((serie, i) => {
+                        const t = serie.filter(s => s[label_idx] === l).map(e => e[number_idx])[0];
                         t != null ? _output[1][i].data.push(t) : _output[1][i].data.push(null);
                     });
                 });
@@ -124,13 +127,28 @@ export class ChartUtilsService {
         return output;
     }
 
+    /**
+     * Takes current query and returs not allowedCharts
+     * @param tables all model's tables
+     * @param table  origin table
+     * @param vMap   Map() to keep tracking visited nodes -> first call is just a new Map()
+     */
+    verifyData(currentQuery:any[]) : {labeling:any[], notAllowedCharts:any[]}{
+
+        return {labeling:[], notAllowedCharts:[]};
+    }
+
+    getColumnTypes(currentQuery:any[]):any[]{
+        return []
+    }
+
     initChartOptions(type: string) {
         const options = {
             chartOptions: {},
             chartPlugins: {}
         };
         switch (type) {
-            case 'pie':
+            case 'doughnut':
                 options.chartOptions = {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -140,6 +158,10 @@ export class ChartUtilsService {
                         fontSize: 11,
                         fontStyle: 'normal',
                         position: 'bottom'
+                    },
+                    animation: {
+                        //duration : 0,
+                        // easyng : 'easeInOutCubic'
                     }
                 };
                 // options.chartPlugins = [pluginDataLabels];
@@ -154,18 +176,20 @@ export class ChartUtilsService {
                         position: 'bottom',
                         fontSize: 11,
                         fontStyle: 'normal',
-                        labels : {boxWidth : 10}
+                        labels: { boxWidth: 10 }
                     },
                     tooltips: {
                         callbacks: {
                             title: (tootltipItem, data) => {
-                                if (data) return data.datasets[0].label;
+                                if (data)
+                                return data.labels[tootltipItem[0].index];
                             },
                             label: (tooltipItem, data) => {
-                                if (data && tooltipItem)  return data.labels[tooltipItem.index];
+                                if (data && tooltipItem)
+                                    return data.datasets[tooltipItem.datasetIndex].label;
                             },
                             afterLabel: (t, d) => {
-                                if (t) return t.value;
+                                if (t) return  t.value;
                             }
                         }
                     },
@@ -174,20 +198,21 @@ export class ChartUtilsService {
                             // stacked: true,
                             ticks: {
                                 callback: (value) => {
-                                    if (value) return  value.length > 17 ? (value.substr(0, 17) + '...') : value;
+                                    if (value)
+                                        return value.length > 17 ? (value.substr(0, 17) + '...') : value;
                                 },
                                 autoSkip: false,
                                 maxTicksLimit: 2000,
                                 fontSize: 11,
                             },
-                            gridLines: {display: false}
+                            gridLines: { display: false }
                         }], yAxes: [{
                             // stacked: true
-                            ticks: {fontSize: 9, min: 0}
+                            ticks: { fontSize: 9, min: 0 }
                         }]
                     },
                     plugins: {
-                        datalabels: {anchor: 'end', align: 'end',}
+                        datalabels: { anchor: 'end', align: 'end' }
                     },
                 };
                 // options.chartPlugins = [];
@@ -196,36 +221,40 @@ export class ChartUtilsService {
                 options.chartOptions = {
                     showLines: true,
                     spanGaps: true,
-                    // devicePixelRatio: 2,
                     responsive: true,
                     maintainAspectRatio: false,
-                    fill: false,
                     legend: {
                         display: true,
                         position: 'bottom',
                         fontSize: 11,
                         fontStyle: 'normal',
-                        labels : {boxWidth : 10}
+                        labels: { boxWidth: 10 }
                     },
                     tooltips: {
+                        mode: 'index',
+                        intersect: false,
                         callbacks: {
-                            title: (t, data) => {
-                                if (data) return data.datasets[t[0].datasetIndex].label;
+                            title: (tooltipItem, data) => {
+                                if (data)
+                                    return data.labels[tooltipItem[0].index];
                             },
-                            label: (t, data) => {
-                                if (data && t) return data.labels[t.index];
+                            label: (tooltipItem, data) => {
+                                if (data && tooltipItem)
+                                    return data.datasets[tooltipItem.datasetIndex].label;
                             },
                             afterLabel: (t, d) => {
-                                if (t) return t.value;
+                                if (t)
+                                    return t.value;
                             }
                         }
                     },
                     scales: {
                         xAxes: [{
-                            gridLines: {display: false},
+                            gridLines: { display: false },
                             ticks: {
                                 callback: (value) => {
-                                   if (value) return value.length > 30 ? (value.substr(0, 17) + '...') : value;
+                                    if (value)
+                                        return value.length > 30 ? (value.substr(0, 17) + '...') : value;
                                 },
                                 fontSize: 11, fontStyle: 'bold'
                             }
@@ -233,13 +262,14 @@ export class ChartUtilsService {
                         yAxes: [
                             {
                                 id: 'y-axis-0', position: 'left',
-                                ticks: {fontSize: 9, min: 0}
+                                ticks: { fontSize: 9, min: 0 },
+                                stacked: false
                             }
                         ]
                     },
                     elements: {
-                        point: {radius: 2, hitRadius: 5, hoverRadius: 4, hoverBorderWidth: 2},
-                        line: {borderWidth: 1}
+                        point: { radius: 2, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
+                        line: { borderWidth: 1.5, fill: false, tension: 0.3 }
                     }
                 };
                 // options.chartPlugins = [];
@@ -247,4 +277,5 @@ export class ChartUtilsService {
         }
         return options;
     }
+
 }

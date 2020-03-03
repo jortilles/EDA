@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { SelectItem } from 'primeng/api';
-import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda_shared/components/shared-components.index';
+import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/components/shared-components.index';
 import {
     DashboardService,
     FilterType,
     ChartUtilsService,
     AlertService,
     OrdenationType,
-    ColumnUtilsService
-} from '@eda_services/service.index';
-import { Column, Query } from '@eda_models/model.index';
+    ColumnUtilsService, FormatDates, QueryBuilderService
+} from '@eda/services/service.index';
+import { Column, Query } from '@eda/models/model.index';
 import * as _ from 'lodash';
 
 @Component({
@@ -20,7 +20,7 @@ import * as _ from 'lodash';
 
 export class ColumnDialogComponent extends EdaDialogAbstract {
     public dialog: EdaDialog;
-    public selectedColumn: any;
+    public selectedColumn: Column;
 
     public display = {
         calendar: false, // calendars inputs
@@ -39,19 +39,22 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public filterValue: any = {};
 
     public ordenationTypes: OrdenationType[];
+    public formatDates: FormatDates[];
     public aggregationsTypes: any[] = [];
     public inputType: string;
     public dropDownFields: SelectItem[];
     public limitSelectionFields: number;
 
-    constructor( private dashboardService: DashboardService,
-                 private chartUtils: ChartUtilsService,
-                 private columnUtils: ColumnUtilsService,
-                 private alertService: AlertService) {
+    constructor(private dashboardService: DashboardService,
+        private chartUtils: ChartUtilsService,
+        private columnUtils: ColumnUtilsService,
+        private queryBuilder: QueryBuilderService,
+        private alertService: AlertService) {
         super();
 
         this.filter.types = this.chartUtils.filterTypes;
         this.ordenationTypes = this.chartUtils.ordenationTypes;
+        this.formatDates = this.chartUtils.formatDates;
 
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
@@ -62,14 +65,12 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     onShow(): void {
         this.selectedColumn = this.controller.params.selectedColumn;
-
         const allowed = [];
         const title = this.selectedColumn.display_name.default;
         this.dialog.title = `Columna ${title} de la tabla ${this.controller.params.table}`;
 
-
         this.carregarValidacions();
-
+        
         for (let i = 0, n = this.filter.types.length; i < n; i += 1) {
             if (this.selectedColumn.column_type === 'varchar') {
                 this.filter.types[i].typeof.map(type => {
@@ -95,24 +96,27 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         if (!_.isEmpty(allowed)) {
             this.filter.types = allowed;
         }
+
     }
 
     carregarValidacions() {
         this.carregarFilters();
         this.handleAggregationType(this.selectedColumn);
         this.handleOrdTypes(this.selectedColumn);
+        if(this.selectedColumn.column_type === "date"){
+            this.handleDataFormatTypes(this.selectedColumn);
+        }
         this.handleInputTypes();
     }
 
     addFilter() {
-        const table =  this.selectedColumn.table_id;
+        const table = this.selectedColumn.table_id;
         const column = this.selectedColumn.column_name;
         const type = this.filterSelected.value;
 
         this.filter.selecteds.push(
             this.columnUtils.addFilter(this.filterValue, table, column, type)
         );
-
         this.carregarFilters();
 
         /* Reset Filter Form */
@@ -122,63 +126,78 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     removeFilter(item: any) {
-        this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id) ).removed = true;
+        this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id)).removed = true;
 
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
             return _.startsWith(f.filter_table, this.selectedColumn.table_id) &&
                 _.startsWith(f.filter_column, this.selectedColumn.column_name) &&
                 !f.removed;
         });
+        
     }
 
     addAggregation(type) {
-        // Posem l'agregacció a la columna
-        const s = this.aggregationsTypes.find(ag => ag.value === type.value);
-        if (!_.isNil(s)) {
-            s.selected = true;
-        }
+        _.find(this.aggregationsTypes, ag => ag.value === type.value).selected = true;
 
-        // Aqui busquem si aquella columna ja tenia una agregació, si te agregació la treiem
-        const d = this.aggregationsTypes.find(ag => ag.selected === true && s.value !== ag.value);
-        if (!_.isNil(d)) {
-            d.selected = false;
-        }
+        _.forEach(this.aggregationsTypes, ag => {
+            if (ag.selected === true && type.value !== ag.value) {
+                ag.selected = false;
+            }
+        });
 
         // Recarguem les agregacions d'aquella columna + la seleccionada
         this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
 
         // Introduim l'agregació a la Select
-        const addAggr: Column = this.controller.params.select.find(c => {
+        const addAggr: Column = this.controller.params.currentQuery.find(c => {
             return this.selectedColumn.column_name === c.column_name &&
                 this.selectedColumn.table_id === c.table_id;
         });
 
         addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
-        this.controller.params.select.find(c => {
-            return this.selectedColumn.column_name === c.column_name &&
-                this.selectedColumn.table_id === c.table_id;
-        }).aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
     }
 
     addOrdenation(ord: any) {
-        const s = this.ordenationTypes.find(o => o.value === ord.value);
-        if (!_.isNil(s)) {
-            s.selected = true;
-        }
+        const select = this.controller.params.currentQuery;
 
-        const d = this.ordenationTypes.find(o => o.selected === true && s.value !== o.value);
-        if (!_.isNil(d)) {
-            d.selected = false;
-        }
+        _.find(this.ordenationTypes, o => o.value === ord.value).selected = true;
+
+        _.forEach(this.ordenationTypes, o => {
+            if (o.selected === true && ord.value !== o.value) {
+                o.selected = false;
+            }
+        });
 
         this.selectedColumn.ordenation_type = ord.value;
-        console.log(this.controller.params);
-        const addOrd: Column = this.controller.params.select.find(c => {
+
+        _.find(select, c =>
+            this.selectedColumn.column_name === c.column_name &&
+            this.selectedColumn.table_id === c.table_id
+        ).ordenation_type = this.selectedColumn.ordenation_type;
+    }
+
+    addFormatDate(format: FormatDates) {
+        const select = this.controller.params.currentQuery;
+
+        _.find(this.formatDates, o => o.value === format.value).selected = true;
+
+        _.forEach(this.formatDates, o => {
+            if (o.selected === true && format.value !== o.value) {
+                o.selected = false;
+            }
+        });
+
+        _.find(select, c =>
+            this.selectedColumn.column_name === c.column_name &&
+            this.selectedColumn.table_id === c.table_id
+        ).format = format.value;
+
+        // Introduim l'agregació a la Select
+        const column: Column = this.controller.params.currentQuery.find(c => {
             return this.selectedColumn.column_name === c.column_name &&
                 this.selectedColumn.table_id === c.table_id;
         });
-        addOrd.ordenation_type = this.selectedColumn.ordenation_type;
-
+        column.format = format.value; 
     }
 
     handleFilterChange(filter: FilterType) {
@@ -197,7 +216,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 this.display.switchButton = true;
             }
 
-            if ( !_.isEqual(filter.value, 'between') ) {
+            if (!_.isEqual(filter.value, 'between')) {
                 this.filterValue = {};
             }
         } else {
@@ -220,9 +239,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     handleAggregationType(column: Column) {
-        if (this.controller.params.inject.panel.content) {
+        if (this.controller.params.panel.content) {
             const tmpAggTypes = [];
-            const found = this.controller.params.select
+            const found = this.controller.params.currentQuery
                 .find(c => c.column_name === column.column_name)
                 .aggregation_type.find(agg => agg.selected === true);
 
@@ -232,63 +251,85 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                     tmpAggTypes.push(agg);
                 });
                 this.aggregationsTypes = tmpAggTypes;
-                this.controller.params.select.find(c => {
+                this.controller.params.currentQuery.find(c => {
                     return column.column_name === c.column_name && column.table_id === c.table_id;
                 }).aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
                 return;
             }
-            // Si encara no hem carregat les dades a this.select
-            const queryFromServer = this.controller.params.inject.panel.content.query.query.fields;
-            let aggregation = queryFromServer.filter(c => c.column_name === column.column_name && c.table_id === column.table_id)[0];
-            if (aggregation) {
-                aggregation = aggregation.aggregation_type;
-                column.aggregation_type.forEach((agg, index) => {
-                    tmpAggTypes.push(agg.value === aggregation ? { display_name: agg.display_name, value: agg.value, selected: true }
-                        : { display_name: agg.display_name, value: agg.value, selected: false });
-                });
-
-                // Si tenim panell però hem de carregar les dades d'una columna nova que no era a la consulta original
-            } else {
-                column.aggregation_type.forEach((agg, index) => {
-                    tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'none'});
-                });
-            }
-            this.aggregationsTypes = tmpAggTypes;
-            this.controller.params.select.find(c => {
-                return column.column_name === c.column_name && column.table_id === c.table_id;
-            }).aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
-            return;
-            // Si no hi ha dades a la consulta
         } else {
-            const found = this.controller.params.select.find(c => c.column_name === column.column_name);
+            const found = this.controller.params.currentQuery.find(c => c.column_name === column.column_name);
             if (!found) {
                 const tmpAggTypes = [];
                 column.aggregation_type.forEach((agg, index) => {
-                    tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'none'});
+                    tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'none' });
                 });
                 this.aggregationsTypes = tmpAggTypes;
             } else {
                 this.aggregationsTypes = JSON.parse(JSON.stringify(column.aggregation_type));
             }
         }
-        this.controller.params.select.find(c => {
+        this.controller.params.currentQuery.find(c => {
             return column.column_name === c.column_name && column.table_id === c.table_id;
         }).aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
+    }
+
+    handleDataFormatTypes(column: Column) {
+        let tmpDateFormat = '';
+        if (this.controller.params.panel.content) {
+            const found = this.controller.params.currentQuery
+                .find(c => c.column_name === column.column_name)
+                .format;
+            if (found) {
+                this.addFormatDate({ display_name: '', value: found, selected: true });
+                this.controller.params.currentQuery.find(c => {
+                    return column.column_name === c.column_name && column.table_id === c.table_id;
+                }).format = found;
+                return;
+            } else {
+                // Si encara no hem carregat les dades a this.select
+                const queryFromServer = this.controller.params.panel.content.query.query.fields;
+                let dateFormat = queryFromServer.filter(c => c.column_name === column.column_name && c.table_id === column.table_id)[0];
+                if (dateFormat && dateFormat.format) {
+                    tmpDateFormat = dateFormat.format;
+                } else {
+                    tmpDateFormat = 'No';
+                }
+                this.addFormatDate({ display_name: '', value: tmpDateFormat, selected: true })
+                this.controller.params.currentQuery.find(c => {
+                    return column.column_name === c.column_name && column.table_id === c.table_id;
+                }).format = tmpDateFormat;
+                return;
+            }
+        } else {
+            const found = this.controller.params.currentQuery.find(c => c.column_name === column.column_name);
+            let tmpDateFormat = '';
+            if (!found || !found.format) {
+                tmpDateFormat = 'No';
+                this.addFormatDate({ display_name: '', value: 'No', selected: true });
+            } else {
+                tmpDateFormat = found.format;
+                this.addFormatDate({ display_name: '', value: tmpDateFormat, selected: true });
+            }
+            this.controller.params.currentQuery.find(c => {
+                return column.column_name === c.column_name && column.table_id === c.table_id;
+            }).format = tmpDateFormat;
+
+        }
     }
 
     handleOrdTypes(column: Column) {
         let addOrd: Column;
 
-        if (this.controller.params.inject.panel.content) {
+        if (this.controller.params.panel.content) {
 
-            const queryFromServer = this.controller.params.inject.panel.content.query.query.fields;
-            const found = this.controller.params.select.find(c => c.column_name === column.column_name).ordenation_type;
+            const queryFromServer = this.controller.params.panel.content.query.query.fields;
+            const found = this.controller.params.currentQuery.find(c => c.column_name === column.column_name).ordenation_type;
             if (found) {
                 this.ordenationTypes.forEach(o => {
                     o.value !== column.ordenation_type ? o.selected = false : o.selected = true;
                 });
 
-                addOrd = this.controller.params.select.find(c => column.column_name === c.column_name && column.table_id === c.table_id);
+                addOrd = this.controller.params.currentQuery.find(c => column.column_name === c.column_name && column.table_id === c.table_id);
                 addOrd.ordenation_type = column.ordenation_type;
                 return;
             }
@@ -320,7 +361,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             });
         }
 
-        addOrd = this.controller.params.select.find(c => column.column_name === c.column_name && column.table_id === c.table_id);
+        addOrd = this.controller.params.currentQuery.find(c => column.column_name === c.column_name && column.table_id === c.table_id);
         addOrd.ordenation_type = this.ordenationTypes.filter(ord => ord.selected === true)[0].value;
 
     }
@@ -331,7 +372,12 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     carregarFilters() {
-        this.filter.selecteds = this.controller.params.filters;
+        this.controller.params.filters.forEach(filter => {
+            this.filter.selecteds.push(filter);
+        });
+        this.filter.selecteds = _.uniqBy(this.filter.selecteds, (e) => {
+            return e.filter_id;
+        });
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
             return f.filter_table === this.selectedColumn.table_id &&
                 f.filter_column === this.selectedColumn.column_name &&
@@ -349,54 +395,19 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     /** Query per dropdown  */
-    buildDropDownQuery(column: Column) {
-        const labels = [];
-        const queryColumns = [];
-        const col: any = {};
-        col.table_id = column.table_id;
-        col.column_name = column.column_name;
-        col.display_name = column.display_name.default;
-        col.column_type = column.column_type;
-        col.aggregation_type = column.aggregation_type.filter(ag => ag.selected === true);
-        col.aggregation_type = col.aggregation_type[0] ? col.aggregation_type[0].value : 'none';
-        col.ordenation_type = column.ordenation_type;
-        col.order = 0;
-        col.column_granted_roles = column.column_granted_roles;
-        col.row_granted_roles = column.row_granted_roles;
-
-        queryColumns.push(col);
-
-
-        const body: Query = {
-            id: '1',
-            model_id: this.controller.params.inject.data_source._id,
-            user: {
-                user_id: localStorage.getItem('id'),
-                user_roles: ['USER_ROLE']
-            },
-            dashboard: {
-                dashboard_id: this.controller.params.inject.dashboard_id,
-                panel_id: this.controller.params.inject.panel.id,
-            },
-            query: {
-                fields: queryColumns,
-                filters : [],
-                simple : true
-            },
-            output: {
-                labels,
-                data: []
-            }
-        };
-        return body;
-    }
-
     loadDropDrownData() {
         this.filterValue.value1 = null;
         this.filterValue.value2 = null;
         if (this.filter.switch) {
-            this.dashboardService.executeQuery(this.buildDropDownQuery(this.selectedColumn)).subscribe(
-                res => this.dropDownFields = res[1].map(item => ({label : item[0], value: item[0]}) ),
+            const params = {
+                table: this.selectedColumn.table_id,
+                dataSource: this.controller.params.inject.dataSource._id,
+                dashboard: this.controller.params.inject.dashboard_id,
+                panel: this.controller.params.panel._id,
+                filters: []
+            };
+            this.dashboardService.executeQuery(this.queryBuilder.simpleQuery(this.selectedColumn, params)).subscribe(
+                res => this.dropDownFields = res[1].map(item => ({ label: item[0], value: item[0] })),
                 err => this.alertService.addError(err)
             );
         }

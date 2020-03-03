@@ -11,6 +11,7 @@ export class EdaDialog {
     title: string;
     dialog: Dialog;
     closable: boolean = false;
+    style: any = {width: '80%', height: '70%', top: '93px', left: '205px'};
     show: () => void = () => {};
     hide: () => void = () => {};
 
@@ -20,7 +21,7 @@ export class EdaDialog {
     }
 
     setTitle(title: string) {
-        // this.page.setTitle(title);
+        this.title = title;
     }
 
     center() {

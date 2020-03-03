@@ -14,17 +14,18 @@ export class EdaDialogComponent implements AfterViewInit {
     @Input() inject: EdaDialog;
     @ViewChild('dialog', {static: false}) dialog: Dialog;
 
-    constructor(private ngZone: NgZone) {
-    }
+    constructor(private ngZone: NgZone) { }
 
     ngAfterViewInit() {
         this.inject.dialog = this.dialog;
 
-        // this.ngZone.runOutsideAngular(() => {
-        //     setTimeout(() => {
-        //         this.dialog.center();
-        //     }, 100);
-        // });
+        // window.setTimeout(() => { this.dialog.center(); });
+
+        this.ngZone.runOutsideAngular(() => {
+            setTimeout(() => {
+                this.dialog.center();
+            }, 100);
+        });
     }
 
     // ngDoCheck() {

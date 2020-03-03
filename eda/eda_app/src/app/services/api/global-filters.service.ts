@@ -1,15 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ApiService } from './api.service';
 
 @Injectable()
-export class GlobalFiltersService extends ApiService {
+export class GlobalFiltersService {
 
-    constructor(protected http: HttpClient) {
-        super(http);
-    }
+    constructor() { }
 
-    panelsToDisplay(tables, panels, refferencePanel) {
+    public panelsToDisplay(tables, panels, refferencePanel) {
 
         const panelsTables = [];
         const panelsToDisplay: Array<{title, id, active, avaliable}> = [];
@@ -37,7 +33,7 @@ export class GlobalFiltersService extends ApiService {
         return panelsToDisplay;
     }
 
-    relatedTables(tables: Array<any>, modeltables): Map<string, any> {
+    public relatedTables(tables: Array<any>, modeltables): Map<string, any> {
         let visited = new Map();
         const startTable = modeltables.find(t => t.table_name === tables[0]);
         visited = this.findRelations(modeltables, startTable, visited);
@@ -47,9 +43,9 @@ export class GlobalFiltersService extends ApiService {
         return visited;
     }
 
-    findRelations(tables: any, table: any, vMap: any) {
+    public findRelations(tables: any, table: any, vMap: any) {
         vMap.set(table.table_name, table);
-        table.relations.forEach(rel => {
+        table.relations.filter(rel => rel.visible === true).forEach(rel => {
             const newTable = tables.find(t => t.table_name === rel.target_table);
             if (!vMap.has(newTable.table_name)) {
                 this.findRelations(tables, newTable, vMap);

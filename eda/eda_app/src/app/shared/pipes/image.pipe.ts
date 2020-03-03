@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ApiService, FileUtiles } from '@eda_services/service.index';
+import { ApiService, FileUtiles } from '@eda/services/service.index';
 
 @Pipe({
     name: 'image'
@@ -11,20 +11,20 @@ export class ImagePipe extends ApiService implements PipeTransform {
     }
 
     transform(img: string, type: string = 'user'): any {
-        let url = '/user/profile-img/';
+        let url = '/admin/user/profile-img';
 
         if (!img) {
-            return url = this.fileUtiles.connection(url + 'xxx');
+            return url = this.fileUtiles.connection(url + '/xxx');
         }
 
         switch (type) {
             case 'user':
-                url = this.fileUtiles.connection(`/user/profile-img/${img}`);
+                url = this.fileUtiles.connection(`${url}/${img}`);
                 break;
 
             default:
                 console.log('Error cargando imagen');
-                url = this.fileUtiles.connection(url + 'xxx');
+                url = this.fileUtiles.connection(url + '/xxx');
         }
         return url;
     }

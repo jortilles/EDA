@@ -19,8 +19,8 @@ export class DashboardService extends ApiService {
         return this.post( this.route,  dashboard);
     }
 
-    updateDashboard( id, dashboard ): Observable<any> {
-        return this.put( `${this.route}${id}`, {config: dashboard} );
+    updateDashboard( id, body ): Observable<any> {
+        return this.put( `${this.route}${id}`, body );
     }
 
     deleteDashboard( id ): Observable<any> {
@@ -28,7 +28,7 @@ export class DashboardService extends ApiService {
     }
 
     executeQuery(body): Observable<any> {
-        return this.post( `${this.routeDataManager}/query`,  body );
+        return this.post( `${this.route}query`,  body );
     }
 
 }

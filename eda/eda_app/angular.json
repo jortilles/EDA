@@ -24,8 +24,8 @@
                         ],
                         "styles": [
                             "node_modules/font-awesome/css/font-awesome.css",
-                            "node_modules/primeicons/primeicons.css",
                             "node_modules/primeng/resources/primeng.min.css",
+                            "node_modules/primeicons/primeicons.css",
                             "src/assets/prime-styles/custom.css",
                             "src/assets/css/style.css"
                         ],

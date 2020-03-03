@@ -2,7 +2,7 @@
     <p-dialog #dialog [(visible)]="display" [modal]="true" [header]="inject.title"
               (onShow)="inject.show()" (onHide)="inject.hide()" [closeOnEscape]="false"
               [closable]="false" [transitionOptions]="'0ms'" [dismissableMask]="true"
-              [draggable]="false" [resizable]="false" [style]="{width: '80%', height: '70%', top: '93px', left: '205px'}" [contentStyle]="{minHeight: '95%'}"
+              [draggable]="false" [resizable]="false" [style]="inject.style" [contentStyle]="{minHeight: '95%'}"
               appendTo="body">
 
         <div class="ui-g-12">

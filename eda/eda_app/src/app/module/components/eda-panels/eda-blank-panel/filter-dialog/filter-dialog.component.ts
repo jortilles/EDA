@@ -1,14 +1,14 @@
 import {Component} from '@angular/core';
 import {SelectItem} from 'primeng/api';
-import {EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent} from '@eda_shared/components/shared-components.index';
-import {Column} from '@eda_models/model.index';
+import {EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent} from '@eda/shared/components/shared-components.index';
+import {Column} from '@eda/models/model.index';
 import {
     AlertService,
     ChartUtilsService,
     ColumnUtilsService,
     DashboardService,
     FilterType, QueryBuilderService,
-} from '@eda_services/service.index';
+} from '@eda/services/service.index';
 import * as _ from 'lodash';
 
 @Component({
@@ -159,11 +159,14 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filterValue.value1 = null;
         this.filterValue.value2 = null;
         if (this.filter.switch) {
-            const table = this.selectedColumn.table_id;
-            const datasource = this.controller.params.inject.data_source._id;
-            const dashboard = this.controller.params.inject.dashboard_id;
-            const panel = this.controller.params.inject.panel._id;
-            this.dashboardService.executeQuery(this.queryBuilder.simpleQuery(this.selectedColumn, table, datasource, dashboard, panel )).subscribe(
+            const params = {
+                table: this.selectedColumn.table_id,
+                dataSource: this.controller.params.inject.dataSource._id,
+                dashboard: this.controller.params.inject.dashboard_id,
+                panel: this.controller.params.panel._id,
+                filters: []
+            };
+            this.dashboardService.executeQuery(this.queryBuilder.simpleQuery(this.selectedColumn, params)).subscribe(
                 res => this.dropDownFields = res[1].map(item => ({label : item[0], value: item[0]}) ),
                 err => this.alertService.addError(err)
             );

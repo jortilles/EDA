@@ -17,12 +17,12 @@ export { SpinnerService } from './shared/spinner.service';
 
 // Api Services
 export { ApiService } from './api/api.service';
-export { UserService } from './api/user.service';
-export { DashboardService } from './api/dashboard.service';
-export { GlobalService } from './api/global.service';
-export { DataSourceService } from './api/datasource.service';
-export { GlobalFiltersService } from './api/global-filters.service';
-export { GroupService } from './api/group.service';
+export * from './api/user.service'; // User
+export * from './api/dashboard.service'; // Dashboard
+export * from './api/global.service'; // Global
+export * from './api/datasource.service'; // Datasource
+export * from './api/global-filters.service'; // Global filter
+export * from './api/group.service'; // Group
 
 // Guards
 export { LoginGuardGuard } from './guards/login-guard.guard';

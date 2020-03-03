@@ -1,4 +1,4 @@
-import {EdaColumn} from '@eda_components/eda-table/eda-columns/eda-column';
+import {EdaColumn} from '@eda/components/eda-table/eda-columns/eda-column';
 
 export class EdaColumnContextMenu extends EdaColumn {
     constructor() {

@@ -5,8 +5,8 @@ import {
     DashboardService,
     FileUtiles,
     QueryBuilderService
-} from '@eda_services/service.index';
-import {  EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda_shared/components/shared-components.index';
+} from '@eda/services/service.index';
+import {  EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/components/shared-components.index';
 
 @Component({
     selector: 'dashboard-filter-dialog',
@@ -71,12 +71,15 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     setTablesAndColumnsToFilter() {
         const tablesMap = new Map();
         const tables = [];
+        let notVisibleTables = [];
         this.targetTables = [];
 
-        this.dashboard.dataSource.model.tables.forEach(table => {
-            tablesMap.set(table.table_name, table.display_name.default);
-        });
+        // this.dashboard.dataSource.model.tables.forEach(table => {
+        //     tablesMap.set(table.table_name, table.display_name.default);
+        //     if(table.visible === false) notVisibleTables.push(table.table_name);
+        // });
 
+        notVisibleTables = this.dashboard.dataSource.model.tables.filter(t => t.visible === false).map(t => t.table_name);
         this.panelstoFilter.forEach(panel => {
             const tmpPanel = this.dashboard.panels.find(p => p.id === panel.id);
             tmpPanel.content.query.query.fields.forEach(field => {
@@ -88,9 +91,11 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
 
         const fMap = this.globalFiltersService.relatedTables(tables, this.dashboard.dataSource.model.tables);
         fMap.forEach((value: any, key: string) => {
-            this.targetTables.push({ label: value.display_name.default, value: key });
+            if(!notVisibleTables.includes(key)){
+                this.targetTables.push({ label: value.display_name.default, value: key });
+            }
         });
-
+   
         this.targetTables = this.targetTables.slice();
     }
 
@@ -137,9 +142,16 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.onClose(EdaDialogCloseEvent.NEW, response);
     }
 
-    loadGLobalFiltersData() {
+    loadGlobalFiltersData() {
+        const params = {
+            table: this.targetTable.value,
+            dataSource: this.dashboard.dataSource._id,
+            dashboard: '',
+            panel: '',
+            filters: []
+        };
         this.dashboardService.executeQuery(
-            this.queryBuilderService.simpleQuery(this.targetCol.value, this.targetTable.value, this.dashboard.dataSource._id, '', '')
+            this.queryBuilderService.simpleQuery(this.targetCol.value, params)
         ).subscribe(
             res => this.targetValues = res[1].map(item => ({ label: item[0], value: item[0] })),
             err => this.alertService.addError(err)

@@ -1,0 +1,79 @@
+<div class="ui-g animated fadeIn">
+
+    <div class="ui-g-12">
+        <eda-dashboard-panel class="pointer" (click)="initDialog()">
+            <div class="d-flex justify-content-center">
+                <h3>NUEVO INFORME</h3>
+            </div>
+        </eda-dashboard-panel>
+    </div>
+
+    <div class="ui-g-12">
+        <h4>PÚBLICOS</h4>
+        <div *ngFor="let dashboard of dashboards.publics" class="ui-g-12 ui-md-4 mb-2">
+
+            <eda-dashboard-panel>
+                <div class="d-flex justify-content-between align-items-end">
+                    <h3 (click)="goToDashboard(dashboard)" class="pointer"> {{dashboard.config.title}} </h3>
+                    <span (click)="deleteDashboard(dashboard)" class="pointer">
+                        <i class="fa fa-trash" style="font-size: 16px"></i>
+                    </span>
+                </div>
+            </eda-dashboard-panel>
+
+        </div>
+    </div>
+
+    <div class="ui-g-12">
+        <h4>MIS GRUPOS</h4>
+        <div *ngFor="let group of groups" class="ui-g-12">
+            <h6>{{group.name}}:</h6>
+            <div *ngFor="let dashboard of dashboards.grups | ids:'group':group" class="ui-g-12 ui-md-4 mb-2">
+
+                <eda-dashboard-panel>
+                    <div class="d-flex justify-content-between align-items-end">
+                        <h3 (click)="goToDashboard(dashboard)" class="pointer"> {{dashboard.config.title}} </h3>
+                        <span (click)="deleteDashboard(dashboard)" class="pointer">
+                        <i class="fa fa-trash" style="font-size: 16px"></i>
+                    </span>
+                    </div>
+                </eda-dashboard-panel>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="ui-g-12">
+        <h4>PERSONALES</h4>
+        <div *ngFor="let dashboard of dashboards.privats" class="ui-g-12 ui-md-4 mb-2">
+
+            <ng-container *ngIf="!isAdmin">
+                <eda-dashboard-panel>
+                    <div class="d-flex justify-content-between align-items-end">
+                        <h3 (click)="goToDashboard(dashboard)" class="pointer">{{dashboard.config.title}} </h3>
+                        <span (click)="deleteDashboard(dashboard)" class="pointer">
+                            <i class="fa fa-trash" style="font-size: 16px"></i>
+                        </span>
+                    </div>
+                </eda-dashboard-panel>
+            </ng-container>
+
+            <ng-container *ngIf="isAdmin">
+                <eda-dashboard-panel>
+                    <h3 (click)="goToDashboard(dashboard)" class="pointer">{{dashboard.config.title}} </h3>
+                    <div class="d-flex justify-content-between align-items-end">
+                        <span>{{dashboard.user.name}}</span>
+                        <span (click)="deleteDashboard(dashboard)" class="pointer">
+                            <i class="fa fa-trash" style="font-size: 16px"></i>
+                        </span>
+                    </div>
+                </eda-dashboard-panel>
+            </ng-container>
+
+        </div>
+    </div>
+
+</div>
+
+<app-add-dashboard *ngIf="dashController" [controller]="dashController"></app-add-dashboard>

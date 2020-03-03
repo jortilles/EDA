@@ -1,24 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SidebarService, UserService } from '@eda_services/service.index';
-import { User } from '@eda_models/model.index';
-import { AlertService } from '@eda_services/alerts/alert.service';
+import { User } from '@eda/models/model.index';
+import { SidebarService, UserService, AlertService } from '@eda/services/service.index';
 
 
 @Component({
     selector: 'app-sidebar',
     templateUrl: './sidebar.component.html',
-    styles: []
+    styles: ['']
 })
 export class SidebarComponent implements OnInit {
     public user: User;
+    public isAdmin: boolean;
     public dataSourceMenu: any[] = [];
 
     constructor(public router: Router,
-                private sidebarService: SidebarService,
                 public userService: UserService,
+                private sidebarService: SidebarService,
                 private alertService: AlertService ) {
-        // Obtenir noms dels datasources
         this.getDataSourcesNames();
     }
 
@@ -26,20 +25,15 @@ export class SidebarComponent implements OnInit {
         this.user = this.userService.user;
 
         // Ens subscribim a l'observable currentDatasources que ha de tenir el valor actual dels noms dels datasources.
-        this.sidebarService.currentDatasources.subscribe(data => this.dataSourceMenu = data);
+        this.sidebarService.currentDatasources.subscribe(
+            data => this.dataSourceMenu = data,
+            err => this.alertService.addError(err)
+        );
     }
 
-    openDialog() {
-        this.router.navigate(['/data-source']);
+    logout() {
+        this.userService.logout();
     }
-
-    // getDataSourcesNames() {
-    //   this._sidebarService.getDataSourceNames()
-    //     .subscribe(resp => {
-    //       this.dataSourceMenu = resp.ds;
-    //     }, err => this.alertService.addError(err)
-    //     );
-    // }
 
     getDataSourcesNames() {
         this.sidebarService.getDataSourceNames();

@@ -1,5 +1,5 @@
 import {Dialog} from 'primeng/dialog';
-import {EdaContextMenuItem} from '@eda_shared/components/eda-context-menu/eda-context-menu-item';
+import {EdaContextMenuItem} from '@eda/shared/components/eda-context-menu/eda-context-menu-item';
 import * as _ from 'lodash';
 
 export class EdaContextMenu {

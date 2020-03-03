@@ -1,8 +1,7 @@
-import { DataSourceService } from './../../../services/api/datasource.service';
 import { Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AlertService, SidebarService, SpinnerService } from '@eda_services/service.index';
+import { AlertService, SidebarService, SpinnerService, DataSourceService } from '@eda/services/service.index';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,7 +14,8 @@ export class DataSourcesComponent {
     public dbTypes: any[] = [
         { name: 'Postgres', value: 'postgres' },
         { name: 'Sql Server', value: 'sqlserver' },
-        { name: 'MongoDB', value: 'mongo' }
+        { name: 'MongoDB', value: 'mongo' },
+        { name: 'MySQL', value: 'mysql' }
     ];
 
     constructor(private formBuilder: FormBuilder,
@@ -102,9 +102,9 @@ export class DataSourcesComponent {
 
     goToDataSource(datasource) {
         if (datasource) {
-          this.router.navigate(['/data-source/', datasource._id]);
+            this.router.navigate(['/data-source/', datasource._id]);
         } else {
-          this.alertService.addError('Ha ocurrido un error');
+            this.alertService.addError('Ha ocurrido un error');
         }
-      }
+    }
 }

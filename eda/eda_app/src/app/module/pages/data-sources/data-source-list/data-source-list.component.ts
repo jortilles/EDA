@@ -1,7 +1,7 @@
 import { TreeNode } from 'primeng/api';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { AlertService, DataSourceService } from '@eda_services/service.index';
+import { AlertService, DataSourceService } from '@eda/services/service.index';
 import Swal from 'sweetalert2';
 
 
@@ -11,31 +11,33 @@ import Swal from 'sweetalert2';
     styleUrls: ['./data-source-list.component.css']
 })
 export class DataSourceListComponent implements OnInit, OnDestroy {
-
-
     public treeData: any[] = [];
     public selectedFile: TreeNode;
     public id: string;
     navigationSubscription: any;
 
-    constructor(private route: ActivatedRoute,
-                public DataModelService: DataSourceService,
+    constructor(public DataModelService: DataSourceService,
                 private alertService: AlertService,
+                private route: ActivatedRoute,
                 private router: Router) {
 
-        this.navigationSubscription = this.router.events.subscribe((e: any) => {
-
-            if (e instanceof NavigationEnd) {
-                this.ngOnInit();
-            }
-        });
+        this.navigationSubscription = this.router.events.subscribe(
+            (e: any) => {
+                if (e instanceof NavigationEnd) {
+                    this.ngOnInit();
+                }
+            }, (err) => this.alertService.addError(err)
+        );
 
     }
 
-
     ngOnInit(): void {
         this.getDataSourceId();
-        this.DataModelService.currentTreeData.subscribe(data => this.treeData = data);
+        this.DataModelService.currentTreeData.subscribe(
+            (data) => this.treeData = data,
+            (err) => this.alertService.addError(err)
+        );
+
         this.DataModelService.getModelById(this.id);
     }
 
@@ -48,8 +50,8 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
 
     getDataSourceId() {
         this.route.paramMap.subscribe(
-            params => this.id = params.get('id'),
-            err => this.alertService.addError(err)
+            (params) => this.id = params.get('id'),
+            (err) => this.alertService.addError(err)
         );
     }
 
@@ -91,7 +93,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
 
     reLoadModelFromDb(){
         this.DataModelService.realoadModelFromDb(this.id).subscribe(
-            (res) => this.refreshModel(),
+            () => this.refreshModel(),
             err => this.alertService.addError(err)
         );
     }

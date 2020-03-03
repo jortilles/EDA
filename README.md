@@ -20,9 +20,9 @@ Configuration is done in:
 
 The easies way to test eda is using docker: 
 
-**docker run -p 8080:8080 -p8666:8666 jortilles/eda:eda_1**
+**docker run -p 80:80 jortilles/eda:eda_1.2**
 
-Once the process if finish, just go to **http://localhost:8080**
+Once the process if finish, just go to **http://localhost**
 
 * The default user is: **eda@jortilles.com**
 * The default password is: **default**

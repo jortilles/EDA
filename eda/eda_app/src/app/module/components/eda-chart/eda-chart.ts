@@ -1,12 +1,14 @@
 import { ChartType, ChartDataSets, ChartOptions } from 'chart.js';
 
 export class EdaChart {
-    chartType: ChartType;
-    chartData: any[] = [];
-    chartDataset: ChartDataSets[] = [];
-    chartLabels: string[] = [];
-    chartColors: any[] = [];
-    chartLegend: boolean = false;
-    chartOptions: ChartOptions;
-    chartPlugins: any[] = [];
+    public chartType: ChartType;
+    public chartData: any[] = [];
+    public chartDataset: ChartDataSets[] = [];
+    public chartLabels: string[] = [];
+    public chartColors: any[] = [];
+    public chartLegend: boolean = false;
+    public chartOptions: ChartOptions;
+    public chartPlugins: any[] = [];
+
+    constructor() { }
 }

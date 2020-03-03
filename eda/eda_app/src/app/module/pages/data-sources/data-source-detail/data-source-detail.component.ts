@@ -1,10 +1,11 @@
+import { EdaTable, EdaColumnText, EdaColumnContextMenu } from '@eda/components/component.index';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { SelectItem } from 'primeng/api';
-import { AlertService, DataSourceService } from '@eda_services/service.index';
-import { EditTablePanel, EditColumnPanel, EditModelPanel } from '@eda_models/data-source-model/data-source-models';
-import { EdaDialogController, EdaDialogCloseEvent } from '@eda_shared/components/shared-components.index';
+import { AlertService, DataSourceService } from '@eda/services/service.index';
+import { EditTablePanel, EditColumnPanel, EditModelPanel } from '@eda/models/data-source-model/data-source-models';
+import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
 
 @Component({
@@ -14,6 +15,7 @@ import * as _ from 'lodash';
 })
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public form: FormGroup;
+    public table: EdaTable;
     public navigationSubscription: any;
     // Properties
     public tablePanel: EditTablePanel;
@@ -21,6 +23,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public modelPanel: EditModelPanel;
     public typePanel: string;
     public relationController: EdaDialogController;
+    public permissionsController: EdaDialogController;
 
     // Types
     public columnTypes: SelectItem[] = [
@@ -50,9 +53,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public tiposBD: SelectItem[] = [{ label: 'postgres', value: 'postgres' }, { label: 'mySQL', value: 'mySQL' }];
     public selectedTipoBD: SelectItem;
 
+    // Permisisons table
+    public permissions: Array<any>;
+
     constructor(public dataModelService: DataSourceService,
-                private alertService: AlertService,
-                private router: Router) {
+        private alertService: AlertService,
+        private router: Router) {
         //
         this.navigationSubscription = this.router.events.subscribe(
             (res: any) => {
@@ -65,6 +71,28 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.alertService.addError(err);
             }
         );
+
+        this.table = new EdaTable({
+            contextMenu: new EdaContextMenu({
+                contextMenuItems: [
+                    new EdaContextMenuItem({
+                        label: 'ELIMINAR', command: () => {
+                            this.modelPanel.metadata.model_granted_roles =
+                                this.modelPanel.metadata.model_granted_roles.filter(r => r.users[0] != this.table.getContextMenuRow()._id[0])
+                            console.log(this.modelPanel.metadata.model_granted_roles);
+                            this.updateColumn();
+                            this.table._hideContexMenu();
+                        }
+                    })
+                ]
+            }),
+            cols: [
+                new EdaColumnContextMenu(),
+                new EdaColumnText({ field: 'user', header: 'USUARIO' }),
+                new EdaColumnText({ field: 'value', header: 'VALOR' }),
+            ]
+        });
+
     }
 
     ngOnInit() {
@@ -94,6 +122,15 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.columnPanel = columnPanel;
                 this.selectedcolumnType = this.columnPanel.column_type;
                 this.selectedAggType = this.columnPanel.aggregation_type;
+
+                this.permissions = this.modelPanel.metadata ? this.modelPanel.metadata.model_granted_roles : [];
+                this.table.value = [];
+                this.permissions.forEach(permission => {
+                    if (this.columnPanel.technical_name === permission.column) {
+                        this.table.value.push({ user: permission.usersName, value: permission.value, _id: permission.users });
+                    }
+                });
+
             }, err => {
                 this.alertService.addError(err);
             }
@@ -135,6 +172,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     updateColumn() {
         if (this.columnPanel.technical_name) {
+
             this.dataModelService.changeColumnPanel(this.columnPanel);
         }
     }
@@ -175,14 +213,28 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     openTableRelationDialog() {
         this.relationController = new EdaDialogController({
-            params: {table: this.tablePanel},
+            params: { table: this.tablePanel },
             close: (event, response) => {
 
-                if ( !_.isEqual(event, EdaDialogCloseEvent.NONE) ) {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
                     this.dataModelService.addRelation(response);
                 }
 
                 this.relationController = undefined;
+            }
+        });
+    }
+
+    openPermissionsRelationDialog() {
+        this.permissionsController = new EdaDialogController({
+            params: { column: this.columnPanel, table: this.tablePanel },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addPermission(response);
+                    this.updateColumn();
+                }
+
+                this.permissionsController = undefined;
             }
         });
     }

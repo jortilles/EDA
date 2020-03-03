@@ -3,11 +3,11 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "@eda_components/*": ["app/module/components/*"],
-      "@eda_services/*": ["app/services/*"],
-      "@eda_models/*": ["app/shared/models/*"],
-      "@eda_pipes/*": ["app/shared/pipes/*"],
-      "@eda_shared/*": ["app/shared/*"]
+      "@eda/components/*": ["app/module/components/*"],
+      "@eda/services/*": ["app/services/*"],
+      "@eda/models/*": ["app/shared/models/*"],
+      "@eda/pipes/*": ["app/shared/pipes/*"],
+      "@eda/shared/*": ["app/shared/*"]
     },
     "outDir": "./dist/out-tsc",
     "sourceMap": true,

@@ -1,0 +1,24 @@
+import * as mongoose from 'mongoose';
+import {IGroup} from '../../admin/model/group.model';
+import {IUser} from '../../admin/model/user.model';
+
+export interface IDashboard extends mongoose.Document {
+    config: IDashboardConfig;
+    user: IUser;
+    group: IGroup;
+}
+
+interface IDashboardConfig {
+    title: string;
+    visible: string;
+    ds: any;
+    panel: any[];
+}
+
+const DashboardSchema = new mongoose.Schema({
+    config: { type: Object },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    group: { type: mongoose.Schema.Types.ObjectId, ref: 'Group', required: false },
+},{ collection: 'dashboard', strict: false });
+
+export default mongoose.model<IDashboard>('Dashboard', DashboardSchema);

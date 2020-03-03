@@ -24,7 +24,7 @@ app.use(function(req, res, next ) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.header("Acces-Controll-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
     next();
-})
+});
 app.use(fileUpload());
 
 // Configuring the database
@@ -51,21 +51,22 @@ RoutesLoader(app);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     console.log(next);
-    var err = new Error('Not Found');
+    let err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
 
 // error handler
-// app.use(function(err, req, res, next) {
-//     // set locals, only providing error in development
-//     res.locals.message = err.message;
-//     res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function(err, req, res, next) {
+    // set locals, only providing error in development
+    res.message = err.message;
+    res.error = err;
   
-//     // render the error page
-//     res.status(err.status || 500);
-//     res.render('error');
-// });
+    // render the error page
+    res.status(err.status || 500);
+    res.status(err.status).json(err);
+    // res.render('error');
+});
 
 
 app.listen(8666, function() {

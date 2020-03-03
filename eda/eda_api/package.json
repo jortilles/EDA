@@ -1,32 +1,53 @@
 {
     "name": "api-eda",
-    "version": "0.0.2",
+    "version": "0.1.0",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "nodemon ./app.js",
+        "start": "nodemon ./dist/server.js",
+        "build": "tsc",
+        "dev": "nodemon",
+        "prod": "npm run build && npm run start",
+        "old": "node app.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@types/bcryptjs": "^2.4.2",
+        "@types/body-parser": "^1.17.1",
+        "@types/cors": "^2.8.6",
+        "@types/express": "^4.17.2",
+        "@types/express-fileupload": "^1.1.0",
+        "@types/lodash": "^4.14.149",
+        "@types/mongoose": "^5.5.32",
+        "@types/mysql": "^2.15.8",
+        "@types/node": "^12.12.14",
         "bcryptjs": "^2.4.3",
         "bluebird": "^3.5.5",
-        "body-parser": "^1.18.3",
+        "body-parser": "^1.19.0",
         "cors": "^2.8.5",
-        "express": "^4.16.4",
-        "express-fileupload": "^1.1.4",
+        "express": "^4.17.1",
+        "express-fileupload": "^1.1.6",
+        "express-ip": "^1.0.3",
         "express-method-override": "0.0.3",
         "jsonwebtoken": "^8.5.1",
         "lodash": "^4.17.15",
-        "mongoose": "^5.4.19",
-        "mongoose-unique-validator": "^2.0.2",
-        "nodemon": "^1.18.10",
+        "mongoose": "^5.7.12",
+        "mongoose-unique-validator": "^2.0.3",
+        "mysql": "^2.17.1",
+        "nodemon": "^2.0.1",
         "pg": "^7.11.0",
-        "pug": "^2.0.4"
+        "pug": "^2.0.4",
+        "ts-node": "^8.5.4",
+        "typescript": "^3.7.2",
+        "winston": "^3.2.1"
     },
     "compilerOptions": {
         "target": "ES6",
         "module": "commonjs"
+    },
+    "devDependencies": {
+        "@types/pg": "^7.14.1"
     }
 }

@@ -1,25 +1,29 @@
 import { Observable } from 'rxjs';
 import { EdaColumn } from './eda-columns/eda-column';
-import { AlertService } from '@eda_services/service.index';
+import { AlertService } from '@eda/services/service.index';
 import * as _ from 'lodash';
-import {EdaContextMenu} from '@eda_shared/components/eda-context-menu/eda-context-menu';
+import {EdaContextMenu} from '@eda/shared/components/eda-context-menu/eda-context-menu';
+import { EdaColumnText } from './eda-columns/eda-column-text';
 
 export class EdaTable {
     private _value: any[] = [];
 
     cols: EdaColumn[] = [];
-    search: boolean = true;
+    search: boolean = false;
     loading: boolean = false;
     alertService: AlertService;
     filteredValue: any[] | undefined;
+
+
+    //Input switch
+    oldvalue: any[] = [];
+    oldcols: EdaColumn[] = [];
+    pivot: boolean = false;
 
     contextMenu: EdaContextMenu = new EdaContextMenu({});
     contextMenuRow: any;
 
     private lastFunctLoad: Observable<any>;
-
-
-
 
     public constructor(init: Partial<EdaTable>) {
         Object.assign(this, init);
@@ -41,6 +45,10 @@ export class EdaTable {
                 }
             });
         }
+
+        if (this.pivot) {
+            this.pivotTable();
+        }
     }
 
     clear() {
@@ -56,6 +64,7 @@ export class EdaTable {
                 response => {
                     this.value = response;
                     this.loading = false;
+
                     resolve();
                 },
                 err => {
@@ -72,6 +81,7 @@ export class EdaTable {
     reload() {
         return this.load(this.lastFunctLoad);
     }
+
 
     getFilteredValues() {
         const me = this;
@@ -98,5 +108,59 @@ export class EdaTable {
 
     getContextMenuRow() {
         return this.contextMenuRow;
+    }
+
+    /**
+     * Pivota la taula sobre la columna 2, agregant els valors de la columna 3
+     *
+     */
+    pivotTable() {
+        let mainColumn = this.cols[0];
+        let pivotColumn = this.cols[1];
+        let newColumns = _.orderBy(_.uniq(_.map(this.value, pivotColumn.field)));
+        let oldRows = this.getValues();
+        let newRows = [];
+        let pivotMap = new Map();
+        let mainCol = Object.keys(oldRows[0])[0];
+        let pivot = Object.keys(oldRows[0])[1];
+        let value = Object.keys(oldRows[0])[2];
+
+        /**
+         * pivotMap is a map with maincolumn values as keys.
+         * Each map's value is a map with pivot column values as keys and  column3 aggregated values  as values
+         */
+        oldRows.forEach(row => {
+            if (pivotMap.has(row[mainCol])) {
+                const node = pivotMap.get(row[mainCol]);
+                node.set(row[pivot], node.get(row[pivot]) + row[value] );
+            } else {
+                const tmpNode = new Map();
+                newColumns.forEach(col => {
+                    tmpNode.set(col, 0);
+                });
+                tmpNode.set(row[pivot], row[value]);
+                pivotMap.set(row[mainCol], tmpNode);
+            }
+        });
+
+        const field = mainColumn.field;
+        pivotMap.forEach((value, key) => {
+            let row = {};
+            row[field] = key;
+            value.forEach((value, key) => {
+                row[key] = value;
+            });
+
+            newRows.push(row);
+        });
+
+        const tableColumns = [];
+        tableColumns.push(new EdaColumnText({ header: mainColumn.header, field: mainColumn.field }));
+        newColumns.forEach(col => {
+            tableColumns.push(new EdaColumnText({ header: col, field: col }));
+        });
+
+        this.cols = tableColumns;
+        this._value = newRows;
     }
 }

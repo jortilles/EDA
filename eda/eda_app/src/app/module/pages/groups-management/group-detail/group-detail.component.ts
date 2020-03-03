@@ -1,9 +1,10 @@
 import {Component} from '@angular/core';
-import {EdaDialogAbstract} from '@eda_shared/components/eda-dialogs/eda-dialog/eda-dialog-abstract';
-import {EdaDialog, EdaDialogCloseEvent} from '@eda_shared/components/eda-dialogs/eda-dialog/eda-dialog';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {GroupService, AlertService, UserService} from '@eda_services/service.index';
-import {Group} from '@eda_models/group-model';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent} from '@eda/shared/components/shared-components.index';
+import {AlertService, GroupService, UserService} from '@eda/services/service.index';
+import {Group} from '@eda/models/user-models/group-model';
+import {IGroup} from '@eda/services/api/group.service';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'app-group-detail',
@@ -22,8 +23,7 @@ export class GroupDetailComponent extends EdaDialogAbstract {
     public imageUpload: File;
     public imageTemp: any;
 
-    constructor( private formBuilder: FormBuilder,
-                 private userService: UserService,
+    constructor( private userService: UserService,
                  private groupService: GroupService,
                  private alertService: AlertService) {
         super();
@@ -31,37 +31,59 @@ export class GroupDetailComponent extends EdaDialogAbstract {
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
+            title: 'CREAR NUEVO GRUPO'
         });
 
-        this.form = this.formBuilder.group({
-            name: [null, Validators.required],
-            role: [null, Validators.required],
-            img: null,
-            users: null
+        this.form = new FormGroup({
+            name: new FormControl(null, Validators.required),
+            role: new FormControl(null, Validators.required),
+            img: new FormControl(null),
+            users: new FormControl(null),
         });
+
+        this.roles = [{label: 'USER', value: 'USER_ROLE'}, {label: 'ADMIN', value: 'ADMIN_ROLE'}];
+        this.lists.avaibles = [];
+        this.lists.selecteds = [];
     }
 
     onShow(): void {
         this.load();
     }
 
-    load() {
-        this.roles = [{label: 'USER', value: 'user'}, {label: 'ADMIN', value: 'admin'}];
+    load(): void {
         this.userService.getUsers().subscribe(
-            res => {
-                this.lists.avaibles = res.users;
-            }, err => this.alertService.addError(err)
+            users => {
+                this.lists.avaibles = users;
+                if (this.controller.params.id) {
+                    this.dialog.setTitle(`GRUPO: ${this.controller.params.name}`);
+                    this.groupService.getGroup(this.controller.params.id).subscribe(
+                        group => {
+                            this.group = group;
+
+                            for (const user of group.users) {
+                                this.lists.selecteds.push(_.find(this.lists.avaibles, userA => _.isEqual(user._id, userA._id)));
+                            }
+
+                            this.lists.avaibles = _.difference(this.lists.avaibles, this.lists.selecteds);
+                            this.form.patchValue({name: group.name, role: _.find(this.roles, r => _.isEqual(r.value, group.role))});
+                        },
+                        err => this.alertService.addError(err)
+                    );
+                }
+            },
+            err => this.alertService.addError(err)
         );
+
+
     }
 
-
-    selectImage( file: File ) {
-        if ( !file ) {
+    selectImage(file: File): void {
+        if (!file) {
             this.imageUpload = null;
             return;
         }
 
-        if ( file.type.indexOf('image') < 0 ) {
+        if (file.type.indexOf('image') < 0) {
             this.alertService.addError('El archivo seleccionado no es una imagen');
             this.imageUpload = null;
             return;
@@ -75,11 +97,32 @@ export class GroupDetailComponent extends EdaDialogAbstract {
         reader.onloadend = () => this.imageTemp = reader.result;
     }
 
-    changeImage() {
-        this.userService.changeImage( this.imageUpload, this.controller.params.id, 'group');
+    save(): void {
+        this.form.controls['role'].setValue('USER_ROLE');
+
+        if (this.form.valid) {
+            const group: IGroup = {
+                name: this.form.value.name,
+                role: this.form.value.role,
+                img: this.imageUpload,
+                users: this.lists.selecteds.map(user => user._id)
+            };
+
+            if (!this.controller.params.id) {
+                this.groupService.insertGroup(group).subscribe(
+                    () => this.onClose(EdaDialogCloseEvent.NEW),
+                    err => this.alertService.addError(err)
+                );
+           } else {
+                this.groupService.updateGroup(this.controller.params.id, group).subscribe(
+                    () => this.onClose(EdaDialogCloseEvent.UPDATE),
+                    err => this.alertService.addError(err)
+                );
+            }
+        }
     }
 
-    closeDialog() {
+    closeDialog(): void {
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 

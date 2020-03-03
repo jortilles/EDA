@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Input, ViewChild, ViewEncapsulation} from '@angular/core';
-import {EdaContextMenu} from '@eda_shared/components/eda-context-menu/eda-context-menu';
+import {EdaContextMenu} from '@eda/shared/components/eda-context-menu/eda-context-menu';
 import {Dialog} from 'primeng/dialog';
 
 @Component({

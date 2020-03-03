@@ -1,43 +1,46 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { GlobalService } from './global.service';
+import { AlertService } from '../alerts/alert.service';
 
-import { User } from '@eda_models/model.index';
+import { User } from '@eda/models/model.index';
 import Swal from 'sweetalert2';
 
 @Injectable()
 export class UserService extends ApiService {
-    private route = '/user';
+    private route = '/admin/user';
 
     public user: User;
+    public isAdmin: boolean;
     public token: string;
 
     constructor( protected http: HttpClient,
                  private router: Router,
-                 private globalService: GlobalService) {
+                 private globalService: GlobalService,
+                 private alertService: AlertService) {
         super(http);
         this.loadStorage();
     }
 
-    getUsers(between: number = 0): Observable<any> {
-        return this.getParams(this.route, between);
+    getUsers(): Observable<any> {
+        return this.get(this.route);
     }
 
-    getUser(id): Observable<any> {
+    getUser(id: string): Observable<any> {
         return this.get(`${this.route}/${id}`);
     }
 
-    searchUser(param: string) {
-        return this.globalService.search(param).pipe(
-            map((res: any) => {
-                return res.users;
-            })
-        );
+    getIsAdminUser(id: string): Observable<any> {
+        return this.get(`${this.route}/is-admin/${id}`);
+    }
 
+    searchUser(param: string) {
+        return this.globalService.search(param)
+            .pipe(map((res: any) => (res.users)));
     }
 
     /** Create new user */
@@ -47,13 +50,17 @@ export class UserService extends ApiService {
 
     /** Update User credentials and save in localstorage */
     updateUser(user: User): Observable<any> {
-        return this.put(`${this.route}/${user._id}`, user).pipe(
+        return this.put(`${this.route}/me/${user._id}`, user).pipe(
             map((res: any) => {
                 this.savingStorage(res.user._id, this.token, res.user);
                 Swal.fire('Usuario actualizado', user.name, 'success');
                 return true;
             })
         );
+    }
+
+    manageUpdateUsers(user: User): Observable<any> {
+        return this.put(`${this.route}/management/${user._id}`, user);
     }
 
     /** Delete User */
@@ -74,6 +81,11 @@ export class UserService extends ApiService {
 
         this.user = user;
         this.token = token;
+
+        this.getIsAdminUser(this.user._id).subscribe(
+            (value: any) => this.isAdmin = value.isAdmin,
+            (err) => this.alertService.addError(err)
+        );
     }
 
     /** Login user into app */
@@ -84,11 +96,11 @@ export class UserService extends ApiService {
             localStorage.removeItem('email');
         }
 
-        return this.post(`${this.route}/login`, user, true).pipe(
-            map((res: any) => {
+        return this.post(`${this.route}/login`, user, true)
+            .pipe(map((res: any) => {
                 this.savingStorage(res.id, res.token, res.user);
                 return true;
-            }, err => console.log(err))
+            }, (err) =>this.alertService.addError(err))
         );
     }
 
@@ -119,6 +131,11 @@ export class UserService extends ApiService {
         if (localStorage.getItem('token')) {
             this.token = localStorage.getItem('token');
             this.user = JSON.parse(localStorage.getItem('user'));
+
+            this.getIsAdminUser(this.user._id).subscribe(
+                (value: any) => this.isAdmin = value.isAdmin,
+                (err) => this.alertService.addError(err)
+            );
         } else {
             this.token = '';
             this.user = null;
@@ -128,7 +145,7 @@ export class UserService extends ApiService {
     /** Verify if user is logged */
     isLogged() {
         // return localStorage.getItem('token') ? true : false;
-        return this.token.length > 5 ? true : false;
+        return this.token.length > 5;
     }
 
     /** Logout user and clean localstorage */
@@ -146,17 +163,17 @@ export class UserService extends ApiService {
     changeImage(file: File, id: string, from?: string) {
         const params = {file, id, from};
         this.globalService.uploadFile(params)
-            .then(
-                (res: any) => {
-                    if (from === 'user') {
-                        this.user.img = res.user.img;
-                        Swal.fire('Imagen Actualizada', this.user.name, 'success');
-                        this.savingStorage(id, this.token, this.user);
-                    } else if (from === 'group') {
+            .then((res: any) => {
+                if (from === 'user') {
+                    this.user.img = res.user.img;
+                    Swal.fire('Imagen Actualizada', this.user.name, 'success');
+                    this.savingStorage(id, this.token, this.user);
+                } else if (from === 'group') {
 
-                    }
                 }
-            ).catch(res => console.log(res));
+            }).catch((err) => {
+                this.alertService.addError(err)
+            });
     }
 }
 

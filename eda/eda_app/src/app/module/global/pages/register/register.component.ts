@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UserService, AlertService } from '@eda_services/service.index';
-import { User } from '@eda_models/model.index';
+import { UserService, AlertService } from '@eda/services/service.index';
+import { EdaDialogController } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-controller';
+import { User } from '@eda/models/model.index';
 import Swal from 'sweetalert2';
-import {EdaDialogController} from '@eda_shared/components/eda-dialogs/eda-dialog/eda-dialog-controller';
 
 declare function init_plugins();
 

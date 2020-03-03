@@ -1,6 +1,4 @@
-<!-- ============================================================== -->
-<!-- Left Sidebar - style you can find in sidebar.scss  -->
-<!-- ============================================================== -->
+
 <aside class="left-sidebar">
 
     <li class="user-profile text-center" style="list-style: none;">
@@ -33,13 +31,16 @@
                                 <i class="mdi mdi-settings"></i> Ajustes de Cuenta
                             </a>
                         </li>
-                        <li>
+                        <li *ngIf="userService.isAdmin">
                             <a routerLinkActive="active" routerLink="/users-management">
                                 <i class="mdi mdi-settings"></i> Gestión de Usuarios
                             </a>
+                            <a routerLinkActive="active" routerLink="/groups-management">
+                                <i class="mdi mdi-settings"></i> Gestión de Grupos
+                            </a>
                         </li>
                         <li>
-                            <a (click)="userService.logout()" class="pointer">
+                            <a (click)="logout()" class="pointer">
                                 <i class="mdi mdi-logout"></i> Salir
                             </a>
                         </li>
@@ -51,13 +52,13 @@
                 <li class="user-profile">
                     <a class="has-arrow waves-effect waves-dark" routerLink="/home" aria-expanded="false">
                         <i class="mdi mdi-view-dashboard"></i>
-                        <span class="hide-menu ml-2">Mis Dashboards</span>
+                        <span class="hide-menu ml-2">Mis informes</span>
                     </a>
                 </li>
 
-                <li class="nav-devider"></li>
+                <li *ngIf="userService.isAdmin" class="nav-devider"></li>
 
-                <li class="user-profile">
+                <li *ngIf="userService.isAdmin" class="user-profile">
                     <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
                         <i class="mdi mdi-database"></i>
                         <span class="hide-menu ml-2">Fuente de Datos</span>
@@ -82,37 +83,7 @@
                         </li>
                     </ul>
                 </li>
-
                 <li class="nav-devider"></li>
-
-                <!-- <li class="nav-small-cap"> OPCIONES </li>
-
-                <li *ngFor="let item of dataSourceMenu">
-
-                  <a class="has-arrow waves-effect waves-dark" aria-expanded="false">
-                    <i [class]="item.icon"></i>
-                    <span class="hide-menu"> {{ item.title }}
-                      <span class="label label-rouded label-themecolor pull-right">
-                        {{ item.submenu.length }}
-                      </span>
-                    </span>
-                  </a>
-
-                  <ul aria-expanded="false" class="collapse">
-                    <li *ngFor="let submenu of item.submenu">
-                      <a routerLinkActive="active" [routerLink]="'/dashboard'"> {{ submenu.model_name }} </a>
-                    </li>
-                    <li>
-                      <a (click)="openDialog()" class="has-arrow waves-effect waves-dark" aria-expanded="false">
-                        <i class="mdi mdi-database-plus"></i>
-                        <span class="hide-menu">Nueva Fuente</span>
-                      </a>
-                    </li>
-                  </ul>
-
-                </li>
-                <li class="nav-devider"></li> -->
-
             </ul>
 
         </nav>
@@ -120,6 +91,3 @@
     </div>
 
 </aside>
-<!-- ============================================================== -->
-<!-- End Left Sidebar - style you can find in sidebar.scss  -->
-<!-- ============================================================== -->

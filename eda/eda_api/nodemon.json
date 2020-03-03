@@ -1,0 +1,11 @@
+{
+  "watch": ["lib"],
+  "ext": "ts",
+  "ignore": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    ".git",
+    "node_modules"
+  ],
+  "exec": "ts-node ./lib/server.ts"
+}

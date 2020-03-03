@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Observable, throwError} from 'rxjs';
-import { URL_SERVICES } from '../../config/config';
-import {catchError, map} from 'rxjs/internal/operators';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {throwError} from 'rxjs';
+import {catchError, map} from 'rxjs/internal/operators';
+import {URL_SERVICES} from '../../config/config';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -22,22 +22,26 @@ export class ApiService {
             case 400:
                 result.text = error.error.message;
                 break;
+            case 404:
+                result.text = error.error.message;
+                break;
             case 500:
                 result.text = error.error.message;
                 break;
             case 401: /* Token error */
-                result.text = 'La session ha expirado';
+                result.text = 'La sessión ha expirado';
                 result.nextPage = 'logout';
                 break;
-            default:
-                if (!_.isNil(error.error.errors.message)) {
-                    result.text = error.error.message;
-                }
-                result.text = error.error.message;
+            case 403:
+                result.text = result.text = error.error.message;
+                result.nextPage = 'home';
                 break;
-
+            default:
+                if (error.statusText === 'Unknow Error') {
+                    result.text = ' - Error del servidor, avisar a JortillesDEV';
+                }
+                break;
         }
-        console.log(result);
         return throwError(result);
     }
 
@@ -75,8 +79,8 @@ export class ApiService {
                 headers: this.getHeaders()
             };
     }
-    
-    return this.http
+
+        return this.http
             .get(this.API + route, options).pipe(
                 map(response => response || {}),
                 catchError(this.handleError)

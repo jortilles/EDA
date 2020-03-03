@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { AlertService, UserService, SpinnerService } from './services/service.index';
 import * as _ from 'lodash';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-root',
@@ -29,8 +30,9 @@ import * as _ from 'lodash';
 export class AppComponent implements OnInit {
     displaySpinner: boolean = false;
 
-    constructor( private _userService: UserService,
+    constructor( private userService: UserService,
                  private spinnerService: SpinnerService,
+                 private router: Router,
                  public alertService: AlertService,
                  public messageService: MessageService ) { }
 
@@ -39,8 +41,15 @@ export class AppComponent implements OnInit {
         this.alertService.getAlerts$.subscribe(
             alert => {
                 this.messageService.add({severity: alert.severity, summary: alert.summary, detail: alert.detail});
-                if (!_.isNil(alert.nextPage))
-                    if (_.isEqual(alert.nextPage, 'logout')) this._userService.logout();
+                if (!_.isNil(alert.nextPage)) {
+                    if (_.isEqual(alert.nextPage, 'logout')) {
+                        this.userService.logout();
+                    }
+                    if (_.isEqual(alert.nextPage, 'home')) {
+                        this.router.navigate(['/home']);
+                    }
+                }
+
             }
         );
 

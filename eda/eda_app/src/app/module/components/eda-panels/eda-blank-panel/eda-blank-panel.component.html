@@ -1,6 +1,6 @@
 <div class="panel-heading d-flex justify-content-between">
     <div class="d-flex justify-content-between align-items-center">
-        <h6 id="p-header" class="panel-title" style="cursor: default"> {{ inject.panel.title || title }} </h6>
+        <h6 id="p-header" class="panel-title" style="cursor: default"> {{ panel.title || title }} </h6>
     </div>
     <div>
         <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
@@ -10,11 +10,13 @@
 <!-- Body of Panel -->
 <div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner === true}">
 
-    <div *ngIf="display_v.saved_panel" class="mt-2 p-1">
+    <div *ngIf="display_v.saved_panel" class="p-1" style="height: 100%">
 
         <eda-table *ngIf=" display_v.chart === 'table' " [inject]="table"></eda-table>
 
-        <eda-chart *ngIf=" display_v.chart === 'chart' " [inject]="graficos"></eda-chart>
+        <eda-table *ngIf=" display_v.chart === 'crosstable' " [inject]="crosstable"></eda-table>
+
+        <eda-chart #edaChart *ngIf=" display_v.chart === 'chart' " [inject]="graficos"></eda-chart>
 
         <eda-kpi *ngIf=" display_v.chart === 'kpi' " [inject]="graficos"></eda-kpi>
 
@@ -28,14 +30,15 @@
 
     <div class="ui-g" *ngIf="display_v.minispinner">
         <div class="ui-g-12">
-            <p-progressSpinner [style]="{width: '5vw', height: '5vh'}" strokeWidth="8" class="" fill="#EEEEEE" animationDuration=".5s"></p-progressSpinner>
+            <p-progressSpinner [style]="{width: '5vw', height: '5vh'}" strokeWidth="8" class="" fill="#EEEEEE"
+                animationDuration=".5s"></p-progressSpinner>
         </div>
     </div>
 
 </div>
 
 <!-- Page Dialog -->
-<eda-page-dialog #pdialog [inject]="{display: this.display_v.page_dialog, title: inject.panel.title}">
+<eda-page-dialog #pdialog [inject]="{display: this.display_v.page_dialog, title: panel.title}">
 
     <div (window:resize)="onResize($event)">
 
@@ -46,31 +49,33 @@
                 <div class="ui-g">
 
                     <div class="ui-g-6 ui-md-2 pl-2 pr-2">
-                        <h4>Tablas</h4>
-                        <hr>
+                        <h4>Entidades</h4>
+                        <hr class="mb-0">
                         <div class="column-list">
                             <div class="our-table-box" *ngFor="let table of tableToShow" (click)="loadColumns(table)"
-                                 [className]="table.table_name === userSelectedTable ? 'selected-table-class' : 'our-table-box'"
-                                 (mouseover)="showDescription(table)" (mouseout)="description = ''">
+                                [className]="table.table_name === userSelectedTable ? 'selected-table-class' : 'our-table-box'"
+                                (mouseover)="showDescription(table)" (mouseout)="description = ''">
 
-                                <span class="text-left" title="{{table.description.default}}">{{table.display_name.default}}</span>
+                                <span class="text-left"
+                                    title="{{table.description.default}}">{{table.display_name.default}}</span>
 
                             </div>
                         </div>
                     </div>
 
                     <div class="ui-g-6 ui-md-2 pl-2">
-                        <h4>Columnas</h4>
-                        <hr>
+                        <h4>Atributos</h4>
+                        <hr class="mb-0">
                         <div class="column-list" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
-                             [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
-                             [cdkDropListEnterPredicate]="isAllowed">
+                            [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
+                            [cdkDropListEnterPredicate]="isAllowed">
 
                             <div class="column-box" *ngFor="let column of columns" (click)="moveItem(column)"
-                                 (mouseover)="showDescription(column)" (mouseout)="description = ''" cdkDrag
-                                 (cdkDragDropped)="searchRelations(column, $event)">
+                                (mouseover)="showDescription(column)" (mouseout)="description = ''" cdkDrag
+                                (cdkDragDropped)="searchRelations(column, $event)">
 
-                                <span class="text-left" title="{{column.description.default}}">{{column.display_name.default}}</span>
+                                <span class="text-left"
+                                    title="{{column.description.default}}">{{column.display_name.default}}</span>
 
                             </div>
 
@@ -79,12 +84,14 @@
 
                     <div class="ui-g-12 ui-md-8 pl-2">
                         <h4>Selección</h4>
-                        <hr>
-                        <div class="select-list" cdkDropList cdkDropListOrientation="horizontal" #selectList="cdkDropList"
-                             [cdkDropListData]="select" [cdkDropListConnectedTo]="[columnsList]" (cdkDropListDropped)="drop($event)">
+                        <hr class="mb-0">
+                        <div class="select-list" cdkDropList cdkDropListOrientation="horizontal"
+                            #selectList="cdkDropList" [cdkDropListData]="currentQuery"
+                            [cdkDropListConnectedTo]="[columnsList]" (cdkDropListDropped)="drop($event)">
 
-                            <div class="select-box col-3 col-md-2 p-1" *ngFor="let item of select" (click)="showDialog(item)"
-                                 (mouseover)="showDescription(item)" (mouseout)="description = ''" cdkDrag>
+                            <div class="select-box col-3 col-md-2 p-1" *ngFor="let item of currentQuery"
+                                (click)="openColumnDialog(item)" (mouseover)="showDescription(item)"
+                                (mouseout)="description = ''" cdkDrag>
 
                                 <span class="close-thin pointer" (click)="removeColumn( item, 'select' )"></span>
                                 <span class="text-center">{{item.display_name.default}}</span>
@@ -95,32 +102,62 @@
 
                         <h4 class="mt-4">Filtros</h4>
                         <hr>
-                        <div class="filter-list" cdkDropList cdkDropListOrientation="horizontal" #filterList="cdkDropList"
-                          [cdkDropListData]="filtredColumns" [cdkDropListConnectedTo]="[columnsList]" (cdkDropListDropped)="drop($event)">
+                        <div class="filter-list" cdkDropList cdkDropListOrientation="horizontal"
+                            #filterList="cdkDropList" [cdkDropListData]="filtredColumns"
+                            [cdkDropListConnectedTo]="[columnsList]" (cdkDropListDropped)="drop($event)">
 
-                          <div class="select-box col-3 col-md-2 p-1" *ngFor="let item of filtredColumns" (click)="showDialog(item, true)"
-                            (mouseover)="showDescription(item)" (mouseout)="description = ''" cdkDrag>
+                            <div class="select-box col-3 col-md-2 p-1" *ngFor="let item of filtredColumns"
+                                (click)="openColumnDialog(item, true)" (mouseover)="showDescription(item)"
+                                (mouseout)="description = ''" cdkDrag>
 
-                            <span class="close-thin pointer" (click)="removeColumn( item, 'filter' )"></span>
-                            <span class="text-center">{{item.display_name.default}}</span>
+                                <span class="close-thin pointer" (click)="removeColumn( item, 'filter' )"></span>
+                                <span class="text-center">{{item.display_name.default}}</span>
 
-                          </div>
+                            </div>
 
                         </div>
+
+                        <div id="infoFiltres">
+                        <h4 class="mt-4">Nuestra consulta</h4>
+                        <hr>
+                        <div class="ui-g-12 ui-md-6 pl-2">
+                            <h6>Resumen de atributos</h6>
+                            <div *ngFor='let column of this.currentQuery'>
+                                <span> {{column.table_id}}</span>
+                                <span> .  {{column.display_name.default}}</span>
+                                <span *ngFor='let aggregation of column.aggregation_type'>
+                                    <span *ngIf='aggregation.selected === true && aggregation.display_name !== "no"'>
+                                        ( {{aggregation.display_name}} )
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="ui-g-12 ui-md-6 pl-2">
+                            <h6>Resumen de filtros</h6>
+                            <div *ngFor='let filter of this.selectedFilters'>
+                                <span> {{filter.filter_table}}</span>
+                                <span> .  {{filter.filter_column}}</span>
+                                <span> ( {{filter.filter_type}} ) </span>
+
+                            </div>
+                        </div>
                     </div>
-                    
+                </div>
+
                 </div>
 
             </p-tabPanel>
 
             <p-tabPanel header="VISTA PREVIA">
-                <div class="ui-g p-0">
+                <div class="ui-g p-0" style="height: 100%">
 
-                    <div class="ui-g-8 p-1">
+                    <div class="ui-g-8 p-1" style="height: 400px">
                         <!-- EDA Chart -->
-                        <eda-chart *ngIf=" display_v.chart === 'chart' " [inject]="graficos"></eda-chart>
+                        <eda-chart #edaChart *ngIf=" display_v.chart === 'chart' " [inject]="graficos"></eda-chart>
                         <!-- EDA Table -->
                         <eda-table *ngIf=" display_v.chart === 'table' " [inject]="table"></eda-table>
+                        <!-- EDA CrossTable -->
+                        <eda-table *ngIf=" display_v.chart === 'crosstable' " [inject]="crosstable"></eda-table>
                         <!--EDA KPI-->
                         <eda-kpi *ngIf="display_v.chart === 'kpi'" [inject]="graficos"></eda-kpi>
                     </div>
@@ -128,14 +165,18 @@
                     <div class="ui-g-2 ui-g-offset-2 p-1">
                         <!-- <p>Table is for default</p> -->
                         <form [formGroup]="chartForm">
-                            <p-dropdown [style]="{'width':'100%'}" [options]="chartTypes" formControlName="chart" (onChange)="changeChartType(chartForm.value.chart.value)" optionLabel="label" [autoDisplayFirst]="false">
+                            <p-dropdown [style]="{'width':'100%'}" [options]="chartTypes" formControlName="chart"
+                                (onChange)="changeChartType(chartForm.value.chart.value, getChartStyles(chartForm.value.chart.value))"
+                                optionLabel="label" [autoDisplayFirst]="false">
                                 <ng-template let-item pTemplate="selectedItem">
-                                    <i *ngIf="!!item.value.ngIf" class="{{item.value.icon}}" style="color: #eeac57!important;vertical-align:middle;"></i>
+                                    <i *ngIf="!!item.value.ngIf" class="{{item.value.icon}}"
+                                        style="color: #eeac57!important;vertical-align:middle;"></i>
                                     <span style="vertical-align:middle; margin-left: .5em">{{item.value.label}}</span>
                                 </ng-template>
                                 <ng-template let-chart pTemplate="item">
                                     <div class="d-flex align-items-center" style="position: relative;height: 25px;">
-                                        <i *ngIf="chart.value.ngIf" class="pi pi-exclamation-triangle" style="color: #eeac57!important;"></i>
+                                        <i *ngIf="chart.value.ngIf" class="pi pi-exclamation-triangle"
+                                            style="color: #eeac57!important;"></i>
                                         <span class="ml-2 ">{{chart.label}}</span>
                                     </div>
                                 </ng-template>
@@ -157,9 +198,12 @@
 
     <p-footer class="footer">
         <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-            <button type="button" pButton (click)="runQuery(false)" icon="fa fa-flask" class="ui-button-success ml-2" [disabled]="select.length === 0 && index === 0" label="Ejecutar"></button>
-            <button type="submit" pButton (click)="savePanel()" [disabled]="display_v.btnSave" icon="fa fa-save" class="ui-button ml-2" label="Guardar"></button>
-            <button type="button" pButton (click)="closePanelConfig()" icon="fa fa-times" class="ui-button-danger ml-2" label="Cancelar"></button>
+            <button type="button" pButton (click)="runQuery(false)" icon="fa fa-flask" class="ui-button-success ml-2"
+                [disabled]="currentQuery.length === 0 && index === 0" label="Ejecutar"></button>
+            <button type="submit" pButton (click)="savePanel()" [disabled]="display_v.btnSave" icon="fa fa-save"
+                class="ui-button ml-2" label="Guardar"></button>
+            <button type="button" pButton (click)="closeEditarConsulta()" icon="fa fa-times" class="ui-button-danger ml-2"
+                label="Cancelar"></button>
         </div>
     </p-footer>
 
@@ -168,5 +212,7 @@
 <app-column-dialog *ngIf="configController" [controller]="configController"></app-column-dialog>
 
 <app-filter-dialog *ngIf="filterController" [controller]="filterController"></app-filter-dialog>
+
+<app-chart-dialog *ngIf="chartController" [controller]="chartController"></app-chart-dialog>
 
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>

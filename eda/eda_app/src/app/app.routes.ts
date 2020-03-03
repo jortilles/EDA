@@ -14,7 +14,6 @@ import {ConditionsComponent} from './module/global/pages/conditions/conditions.c
 export const appRoutes: Routes = [
     { path: '', component: LoginComponent },
     { path: 'login', component: LoginComponent },
-    // { path: 'register', component: RegisterComponent },
     { path: 'conditions', component: ConditionsComponent },
     {
         path: '',

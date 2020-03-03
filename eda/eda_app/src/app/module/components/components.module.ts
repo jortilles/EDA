@@ -13,7 +13,8 @@ import {
     EdaDashboardPanelComponent,
     EdaKpiComponent,
     ColumnDialogComponent,
-    FilterDialogComponent
+    FilterDialogComponent,
+    ChartDialogComponent
  } from './component.index';
 
 
@@ -30,7 +31,8 @@ import {
         EdaChartComponent,
         EdaKpiComponent,
         ColumnDialogComponent,
-        FilterDialogComponent
+        FilterDialogComponent,
+        ChartDialogComponent
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -38,7 +40,6 @@ import {
         EdaTableComponent,
         EdaChartComponent,
         EdaKpiComponent,
-        FilterDialogComponent
     ]
 })
 export class ComponentsModule { }

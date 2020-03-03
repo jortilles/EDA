@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import * as _ from 'lodash';
 import { EdaPageDialog } from './eda-page-dialog';
 
 @Component({

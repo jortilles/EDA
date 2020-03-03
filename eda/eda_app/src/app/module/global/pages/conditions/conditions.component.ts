@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract} from '@eda_shared/components/shared-components.index';
+import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract} from '@eda/shared/components/shared-components.index';
 
 @Component({
     selector: 'app-conditions',

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { User } from '@eda_models/model.index';
-import { UserService, AlertService } from '@eda_services/service.index';
+import { User } from '@eda/models/model.index';
+import { UserService, AlertService } from '@eda/services/service.index';
 
 @Component({
     selector: 'app-profile',
