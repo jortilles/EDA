@@ -43,13 +43,3 @@ tail -f /eda/eda_api/api.log
 
 
 
-
-
-
-
-cd /eda/eda_app/dist/app-eda/
-pwd
-echo "Starting EDA"
-http-server .
-
-
