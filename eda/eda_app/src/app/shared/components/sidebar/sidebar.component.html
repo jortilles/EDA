@@ -1,8 +1,7 @@
-
 <aside class="left-sidebar">
 
     <li class="user-profile text-center" style="list-style: none;">
-        <a class="" style="text-decoration: none;" routerLink="/home" aria-expanded="false">
+        <a style="text-decoration: none;" routerLink="/home" aria-expanded="false">
             <img src="assets/images/logos/logo.png" alt="logo icono" class="dark-logo w-75" />
         </a>
     </li>
@@ -23,25 +22,25 @@
                     <ul aria-expanded="false" class="collapse">
                         <li>
                             <a routerLinkActive="active" routerLink="/profile">
-                                <i class="mdi mdi-account"></i> Perfil
+                                <i class="mdi mdi-account"></i> <span i18n="@@sidebarProfile">Perfil</span>
                             </a>
                         </li>
                         <li>
                             <a routerLinkActive="active" routerLink="/account-settings">
-                                <i class="mdi mdi-settings"></i> Ajustes de Cuenta
+                                <i class="mdi mdi-settings"></i> <span i18n="@@sidebarSettings">Ajustes de Cuenta</span>
                             </a>
                         </li>
                         <li *ngIf="userService.isAdmin">
                             <a routerLinkActive="active" routerLink="/users-management">
-                                <i class="mdi mdi-settings"></i> Gestión de Usuarios
+                                <i class="mdi mdi-settings"></i> <span i18n="@@sidebarUserManagement">Gestión de Usuarios</span>
                             </a>
                             <a routerLinkActive="active" routerLink="/groups-management">
-                                <i class="mdi mdi-settings"></i> Gestión de Grupos
+                                <i class="mdi mdi-settings"></i> <span i18n="@@sidebarGroupManagement">Gestión de Grupos</span>
                             </a>
                         </li>
                         <li>
                             <a (click)="logout()" class="pointer">
-                                <i class="mdi mdi-logout"></i> Salir
+                                <i class="mdi mdi-logout"></i> <span i18n="@@sidebarLogOut">Cerrar sesión</span>
                             </a>
                         </li>
                     </ul>
@@ -52,7 +51,7 @@
                 <li class="user-profile">
                     <a class="has-arrow waves-effect waves-dark" routerLink="/home" aria-expanded="false">
                         <i class="mdi mdi-view-dashboard"></i>
-                        <span class="hide-menu ml-2">Mis informes</span>
+                        <span class="hide-menu ml-2" i18n="@@sidebarMyDashboards">Mis informes</span>
                     </a>
                 </li>
 
@@ -61,17 +60,17 @@
                 <li *ngIf="userService.isAdmin" class="user-profile">
                     <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
                         <i class="mdi mdi-database"></i>
-                        <span class="hide-menu ml-2">Fuente de Datos</span>
+                        <span class="hide-menu ml-2" i18n="@@sidebarDataFonts">Fuente de Datos</span>
                     </a>
                     <ul aria-expanded="false" class="collapse">
                         <li>
                             <a routerLinkActive="active" routerLink="/data-source">
-                                <i class="mdi mdi-database-plus"></i> Nueva Fuente
+                                <i class="mdi mdi-database-plus"></i> <span i18n="@@sidebarNewDb">Nueva Fuente</span>
                             </a>
                         </li>
                         <li>
                             <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
-                                <i class="mdi mdi-pencil"></i> Editar Fuente
+                                <i class="mdi mdi-pencil"></i> <span i18n="@@sidebarEditDb">Editar Fuente</span>
                             </a>
                             <ul aria-expanded="false" class="collapse">
                                 <li *ngFor="let item of dataSourceMenu" class="pointer">

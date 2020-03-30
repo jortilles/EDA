@@ -33,7 +33,7 @@ export class AlertService {
             if (err.text) {
                 message = err.text;
             } else {
-                message = ' - Error del servidor, avisar a JortillesDEV';
+                message = ' - Server Error';
             }
         }
 
@@ -51,7 +51,7 @@ export class AlertService {
         this.getSource.next(
             {
                 detail: message,
-                summary: 'Alerta',
+                summary: 'Alert',
                 severity: 'warn'
             }
         );

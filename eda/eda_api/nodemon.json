@@ -7,5 +7,5 @@
     ".git",
     "node_modules"
   ],
-  "exec": "ts-node ./lib/server.ts"
+  "exec": "tsc && node ./dist/server.js"
 }

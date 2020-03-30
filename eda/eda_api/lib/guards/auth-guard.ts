@@ -1,10 +1,9 @@
-import {Response, NextFunction} from 'express';
-import {IUserRequest} from '../module/global/model/user-request.model';
-import HttpException from '../module/global/model/http-exception.model';
-import _ = require('lodash');
+import { Response, NextFunction } from 'express';
+import { IUserRequest, HttpException } from '../module/global/model/index';
 
-const jwt = require ('jsonwebtoken');
+import _ = require('lodash');
 const SEED = require('../../config/seed').SEED;
+const jwt = require ('jsonwebtoken');
 
 
 
@@ -13,7 +12,6 @@ export const authGuard = async function (req: IUserRequest, res: Response, next:
     let token = req.query.token;
     // return next(new HttpException(401, 'Invalid Token'));
     if ( !_.isNil(token) ) {
-
         jwt.verify(token, SEED, (err, decoded) => {
 
             if (err) {
@@ -30,9 +28,7 @@ export const authGuard = async function (req: IUserRequest, res: Response, next:
             // console.log('\x1b[34m=====\x1b[0m Route Guard -- url: [' + url + '] method: [' + req.method + '] userAuth: [ USER_ROLE ] \x1b[34m=====\x1b[0m');
 
             next();
-
         });
-
     } else {
         return next(new HttpException(401, 'Token required'));
     }

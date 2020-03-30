@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
-import {IGroup} from '../../admin/model/group.model';
-import {IUser} from '../../admin/model/user.model';
+import {IGroup} from '../../admin/groups/model/group.model';
+import {IUser} from '../../admin/users/model/user.model';
 
 export interface IDashboard extends mongoose.Document {
     config: IDashboardConfig;

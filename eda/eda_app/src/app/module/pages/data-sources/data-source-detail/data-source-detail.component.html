@@ -3,51 +3,52 @@
 		<p-panel header="Editar {{tablePanel.type ? tablePanel.type + ' ' + tablePanel.name : ''}}">
 
 			<div style="margin: 10px">
-				<h6>Nombre</h6>
-				<p>
-					<input pInputText type="text" size="50" [(ngModel)]="tablePanel.name" (keyup)="update()">
-				</p>
+				<h6 i18n="@@inputNombre">Nombre</h6>
+				<p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.name" (keyup)="update()"></p>
 			</div>
+
 			<div style="margin: 10px">
-				<h6>Nombre técnico</h6>
-				<p>
-					{{tablePanel.technical_name}}
-				</p>
+				<h6 i18n="@@inputNombreTecnico">Nombre técnico</h6>
+				<p>{{tablePanel.technical_name}}</p>
 			</div>
+
 			<div style="margin: 10px">
-				<h6> Descripción </h6>
-				<p>
-					<input pInputText type="text" size="50" [(ngModel)]="tablePanel.description" (keyup)="update()">
-				</p>
+				<h6 i18n="@@inputDescripcion"> Descripción </h6>
+				<p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.description" (keyup)="update()"></p>
 			</div>
+
 			<div style="margin: 10px">
-				<h6>Esconder tabla</h6>
+				<h6 i18n="@@inputEsconderTabla">Esconder tabla</h6>
 				<p-inputSwitch (onChange)="toggle_table(tablePanel.visible)" [(ngModel)]="!tablePanel.visible">
 				</p-inputSwitch>
-
 			</div>
+
 			<div style="margin: 10px">
-				<h6>Tipo de tabla</h6>
-				<p-selectButton [options]="tableTypes" [(ngModel)]="selectedTableType" (onChange)=updateTableType()>
+				<h6 i18n="@@inputTipoTabla">Tipo de tabla</h6>
+				<p-selectButton [options]="tableTypes" [(ngModel)]="selectedTableType" (onChange)="updateTableType()">
 				</p-selectButton>
 			</div>
 
 			<p-virtualScroller [value]="tmpRelations" scrollHeight="200px" [itemSize]="50">
-				<p-header>
+				<p-header i18n="@@virtualScrollerRelaciones">
 					Relaciones
 				</p-header>
 				<ng-template let-relation pTemplate="item" let-i="index">
+
 					<div *ngIf="relation.visible" class="ui-g " style="font-size: 12px">
+
 						<div class="ui-g-3 ui-md-3">
 							<div class="ui-g">
-								<div class="ui-g-10 ui-sm-6">{{relation?.source_column}}
+								<div class="ui-g-10 ui-sm-6">
+									{{relation?.source_column}}
 								</div>
-
 							</div>
 						</div>
+
 						<div class="ui-g-1 ui-md-1">
 							<i class="fa fa-long-arrow-right"></i>
 						</div>
+
 						<div class="ui-g-5 ui-md-5">
 							<div class="ui-g">
 								<div class="ui-g-10 ui-sm-6">
@@ -55,22 +56,22 @@
 								</div>
 							</div>
 						</div>
+
 						<div class="ui-g-1 ui-md-1">
-							<button pButton class="ui-button-rounded ui-button-secondary" (click)="deleteRelation(relation)"
-								icon="fa fa-remove"></button>
+							<button pButton class="ui-button-rounded ui-button-secondary"
+								(click)="deleteRelation(relation)" icon="fa fa-remove"></button>
 						</div>
+
 					</div>
+
 				</ng-template>
 
 			</p-virtualScroller>
-			<button pButton (click)="openTableRelationDialog()" icon="fa fa-plus-circle" class=" ui-button" title="Añadir relación"></button>
 
-			<!-- <div style="margin: 10px">
-				<h6>Roles y permisos</h6>
-				<p>
-					<input pInputText type="text" size="50" [(ngModel)]="tablePanel.table_granted_roles" (keyup)="update()">
-				</p>
-			</div> -->
+			<button pButton icon="fa fa-plus-circle" class="ui-button" i18n-title="@@addRelation"
+				title="Añadir relación" (click)="openTableRelationDialog()">
+			</button>
+
 		</p-panel>
 	</div>
 </div>
@@ -78,96 +79,133 @@
 <div *ngIf="typePanel==='columna' && columnPanel.technical_name" class="tp-container ui-g-12">
 	<div>
 		<p-panel header="Editar {{columnPanel.type ? columnPanel.type + ' ' + columnPanel.name : ''}}">
-			<div style="margin: 10px">
-				<h6>Nombre</h6>
-				<p>
-					<input pInputText type="text" size="50" [(ngModel)]="columnPanel.name" (keyup)="update()">
-				</p>
-			</div>
-			<div style="margin: 10px">
-				<h6>Nombre técnico</h6>
-				<p>
-					{{columnPanel.technical_name}}
-				</p>
-			</div>
-			<div style="margin: 10px">
-				<h6> Descripción </h6>
-				<p>
-					<input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" (keyup)="update()">
-				</p>
-			</div>
-			<div style="margin: 10px">
-				<h6>Tipo de columna</h6>
-				<p>
-					<p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" (onChange)=updateColumnType()>
-					</p-selectButton>
-				</p>
-			</div>
-			<div style="margin: 10px">
-				<h6>Agregación</h6>
 
+			<div style="margin: 10px">
+				<h6 i18n="@@inputNombre">
+					Nombre
+				</h6>
+				<p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.name" (keyup)="update()"></p>
+			</div>
+
+			<div style="margin: 10px">
+				<h6 i18n="@@inputNombreTecnico">
+					Nombre técnico
+				</h6>
+				<p>{{columnPanel.technical_name}}</p>
+			</div>
+
+			<div style="margin: 10px">
+				<h6 i18n="@@inputDescripcion">
+					Descripción
+				</h6>
+				<p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" (keyup)="update()"></p>
+			</div>
+
+			<div style="margin: 10px">
+				<h6 i18n="@@inputTipoColumna">
+					Tipo de columna
+				</h6>
 				<p>
-					<p-selectButton [options]="aggTypes" [(ngModel)]="selectedAggType" multiple="multiple" (onChange)=updateAgg()>
+					<p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType"
+						(onChange)=updateColumnType()>
 					</p-selectButton>
 				</p>
 			</div>
+
 			<div style="margin: 10px">
-				<h6>Roles y permisos de fila</h6>
+				<h6 i18n="@@agregacionH6">
+					Agregación
+				</h6>
+				<p>
+					<p-selectButton [options]="aggTypes" [(ngModel)]="selectedAggType" multiple="multiple"
+						(onChange)=updateAgg()>
+					</p-selectButton>
+				</p>
+
+			</div>
+
+			<div style="margin: 10px">
+				<h6 i18n="@@rolesPermisos">Roles y permisos de fila</h6>
 				<eda-table [inject]="table"></eda-table>
 			</div>
-			<button pButton (click)="openPermissionsRelationDialog()" icon="fa fa-plus-circle" class=" ui-button" title="Añadir permiso"
-							style="margin-left: 11px"></button>
+
+			<button pButton (click)="openPermissionsRelationDialog()" icon="fa fa-plus-circle" class=" ui-button"
+				i18n-title="@@addPermissions" title="Añadir permiso" style="margin-left: 11px">
+			</button>
+
 			<div style="margin: 10px">
-				<h6>Esconder columna</h6>
+				<h6 i18n="@@esconderColumna">Esconder columna</h6>
 				<p>
 					<p-inputSwitch (onChange)="toggle_column(columnPanel.visible)" [(ngModel)]="!columnPanel.visible">
 					</p-inputSwitch>
 				</p>
 			</div>
+
 		</p-panel>
 	</div>
 </div>
 
 <app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
-<app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController"></app-column-permission-dialog>
+<app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController">
+</app-column-permission-dialog>
 
 
 <div *ngIf="typePanel==='root' && modelPanel.metadata" class="tp-container ui-g-12">
 	<div>
 		<p-panel header="Editar {{modelPanel.type ? 'Modelo' + ' ' + modelPanel.metadata.model_name : ''}}">
-			<h5> Metadata</h5>
+
+			<h5 i18n="@@metadata">
+				Metadata
+			</h5>
+
 			<div style="margin: 10px">
-				<h6>Nombre</h6>
+				<h6 i18n="@@inputNombre">
+					Nombre
+				</h6>
 				<input pInputText type="text" size="50" [(ngModel)]="modelPanel.metadata.model_name" (keyup)="update()">
 			</div>
-			<!-- <div style="margin: 10px">
-				<h6>Roles y permisos</h6>
-				<input pInputText type="text" size="50" [(ngModel)]="modelPanel.metadata.model_granted_roles"
-					(keyup)="update()">
 
-			</div> -->
-			<h5> Conexión</h5>
+			<h5 i18n="@@conexionH5">
+				Conexión
+			</h5>
 			<div style="margin: 10px">
-				<h6>Tipo</h6>
-				<p-dropdown [options]="tiposBD" [(ngModel)]="selectedTipoBD" placeholder="Tipo" optionLabel="label"
-					(onChange)=setDbType()></p-dropdown>
+				<h6 i18n="@@inputTipo">
+					Tipo
+				</h6>
+				<p-dropdown [options]="tiposBD" [(ngModel)]="selectedTipoBD"
+					i18n-placeholder="placeholder|Dropdown tipos@@placeholderDropdown" i18n-placeholder="@@inputTipo"
+					placeholder="Tipo" optionLabel="label" (onChange)="setDbType()">
+				</p-dropdown>
 			</div>
+
 			<div style="margin: 10px">
-				<h6>Host</h6>
+				<h6 i18n="@@inputHost">
+					Host
+				</h6>
 				<input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
 			</div>
+
 			<div style="margin: 10px">
-				<h6>Base de datos</h6>
+				<h6 i18n="@@inputNombreDB">
+					Base de datos
+				</h6>
 				<input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.database" (keyup)="update()">
 			</div>
+
 			<div style="margin: 10px">
-				<h6>Usuario</h6>
+				<h6 i18n="@@inputNombreUsuario">
+					Usuario
+				</h6>
 				<input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.user" (keyup)="update()">
 			</div>
+
 			<div style="margin: 10px">
-				<h6>Password</h6>
+				<h6 i18n="password@@inputPassword">
+					Password
+				</h6>
 				<input pPassword type="password" [(ngModel)]="modelPanel.connection.password" (keyup)="update()" autocomplete="new-password">
 			</div>
+
 		</p-panel>
 	</div>
 </div>

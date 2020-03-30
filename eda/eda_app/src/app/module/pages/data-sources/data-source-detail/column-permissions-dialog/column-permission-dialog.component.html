@@ -1,28 +1,32 @@
 <eda-dialog [inject]="dialog">
-  <h3>Añadir permiso</h3>
+
+  <h3 i18n="@@tituloPermisosColumna">Añadir permiso</h3>
+
   <div class="ui-g">
+
     <div class="ui-g-2">
       <p-multiSelect [options]="users" [(ngModel)]="selectedUsers" [virtualScroll]="true" itemSize="30"
         [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }" [panelStyle]="{minWidth:'15em'}"
         maxSelectedLabels="1" defaultLabel="Usuario">
       </p-multiSelect>
     </div>
-    <!-- <p-multiSelect [options]="roles" [(ngModel)]="selectedRoles" [virtualScroll]="true" itemSize="30"
-    [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }" [panelStyle]="{minWidth:'15em'}"
-    maxSelectedLabels="1" defaultLabel="Valor por defecto">
-  </p-multiSelect> -->
+
     <div class="ui-g-2">
       <p-multiSelect [options]="values" [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30"
         [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }" [panelStyle]="{minWidth:'15em'}"
         maxSelectedLabels="1" defaultLabel="ID">
       </p-multiSelect>
     </div>
+
   </div>
 
   <p-footer class="footer">
+
     <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-      <button type="button" pButton (click)="savePermission()" class="ui-button " label="Guardar"></button>
-      <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" label="Cerrar"></button>
+      <button type="button" pButton (click)="savePermission()" class="ui-button" i18n-label="@@guardarBtn" label="Guardar"></button>
+      <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn" label="Cerrar"></button>
     </div>
+    
   </p-footer>
+
 </eda-dialog>

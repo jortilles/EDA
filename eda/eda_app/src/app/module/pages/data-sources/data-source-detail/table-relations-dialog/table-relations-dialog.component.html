@@ -1,28 +1,39 @@
 <eda-dialog [inject]="dialog">
 
     <form [formGroup]="form" class="form-horizontal form-material">
+
         <div class="ui-g-12 ui-lg-4">
-            <p-dropdown [options]="sourceCols" formControlName="sourceCol" filter="true" optionLabel="display_name.default"
-                        placeholder='Columna origen' (onChange)=enableTargetTables()>
+            <p-dropdown [options]="sourceCols" formControlName="sourceCol" filter="true"
+                optionLabel="display_name.default" i18n-placeholder="@@placeholderSourceColumns"
+                placeholder="Columna origen" (onChange)="enableTargetTables()">
             </p-dropdown>
         </div>
         <div class="ui-g-12 ui-lg-4">
-            <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true" (onChange)="getColumnsByTable()"
-                        optionLabel="label" placeholder='tabla destino'  >
+            <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true"
+                (onChange)="getColumnsByTable()" optionLabel="label" i18n-placeholder="@@placeholderTargetTables"
+                placeholder="tabla destino">
             </p-dropdown>
         </div>
         <div class="ui-g-12 ui-lg-4">
-            <p-dropdown [options]="targetCols" formControlName="targetCol" filter="true" placeholder='Columna destino'  > 
+            <p-dropdown [options]="targetCols" formControlName="targetCol" filter="true"
+                i18n-placeholder="@@placeholderTargetColumns" placeholder="Columna destino">
             </p-dropdown>
         </div>
+
         <p-footer class="footer">
             <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-                <button type="button" pButton (click)="saveRelation()" class="ui-button " label="Guardar"></button>
-                <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" label="Cerrar"></button>
+
+                <button type="button" pButton (click)="saveRelation()" class="ui-button" i18n-label="@@guardarBtn"
+                    label="Guardar">
+                </button>
+
+                <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2"
+                    i18n-label="@@cerrarBtn" label="Cerrar">
+                </button>
+
             </div>
         </p-footer>
 
     </form>
-
 
 </eda-dialog>

@@ -9,7 +9,7 @@ export interface QueryParams {
     dashboard?: string;
     panel?: string;
     filters?: any[];
-    styles?: any[];
+    layout?:any;
 }
 
 @Injectable()
@@ -64,7 +64,7 @@ export class QueryBuilderService extends ApiService {
   }
 
   public normalQuery(select: any[], params: QueryParams): Query {
-      const labels = [];
+    const labels = [];
       const queryColumns = [];
       for (let i = 0, n = select.length; i < n; i += 1) {
           const col: any = {};
@@ -79,9 +79,9 @@ export class QueryBuilderService extends ApiService {
           col.order = i;
           col.column_granted_roles = select[i].column_granted_roles;
           col.row_granted_roles = select[i].row_granted_roles;
-
           queryColumns.push(col);
           labels.push(select[i].column_name);
+
       }
 
       return {
@@ -100,11 +100,11 @@ export class QueryBuilderService extends ApiService {
               filters: params.filters,
               simple: false
           },
-          output: {
+          output:  {
               labels,
-              data: [],
-              styles: params.styles
-          }
+              data : [],
+              styles : params.layout}
+ 
       };
     }
 }

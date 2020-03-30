@@ -15,7 +15,8 @@ export class DataSourcesComponent {
         { name: 'Postgres', value: 'postgres' },
         { name: 'Sql Server', value: 'sqlserver' },
         { name: 'MongoDB', value: 'mongo' },
-        { name: 'MySQL', value: 'mysql' }
+        { name: 'MySQL', value: 'mysql' },
+        { name: 'Vertica', value: 'vertica' }
     ];
 
     constructor(private formBuilder: FormBuilder,
@@ -32,7 +33,8 @@ export class DataSourcesComponent {
             db: [null, Validators.required],
             port: [null, Validators.required],
             user: [null, Validators.required],
-            password: [null, Validators.required]
+            password: [null, Validators.required],
+            schema:[null, null]
         });
     }
 
@@ -49,6 +51,7 @@ export class DataSourcesComponent {
                 port: this.form.value.port,
                 user: this.form.value.user,
                 password: this.form.value.password,
+                schema: this.form.value.schema
             };
 
             this.dataSourceService.testConnection(connection).subscribe(

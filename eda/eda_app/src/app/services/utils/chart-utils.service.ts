@@ -1,5 +1,7 @@
+import { Column } from './../../shared/models/dashboard-models/column.model';
+import { EdaColumn } from '@eda/components/eda-table/eda-columns/eda-column';
 import { Injectable } from '@angular/core';
-import { ChartType } from 'chart.js';
+import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 
 export interface EdaChartType {
     label: string;
@@ -35,6 +37,7 @@ export class ChartUtilsService {
         { label: 'KPI', value: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true },
         { label: 'Pie Chart', value: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true },
         { label: 'Bar Chart', value: 'bar', icon: 'pi pi-exclamation-triangle', ngIf: true },
+        { label: 'Horizontal Bar Chart', value: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true },
         { label: 'Line Chart', value: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true },
     ];
 
@@ -65,7 +68,7 @@ export class ChartUtilsService {
         { display_name: 'NO', value: 'No', selected: false }
     ];
 
-    transformDataQuery(type: ChartType, values: any[], dataTypes: string[], isSimple?: any[]) {
+    transformDataQuery(type: string, values: any[], dataTypes: string[], dataDescription: any) {
         const output = [];
         const idx = [];
 
@@ -83,17 +86,16 @@ export class ChartUtilsService {
             output.push(_labels, _values);
             return output;
 
-        } else if (type === 'bar' || type === 'line') {
-            const idx = [];
+        } else if (type === 'bar' || type === 'line' || type === 'horizontalBar') {
             const l = Array.from(new Set(values.map(v => v[label_idx])));
             const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
             const _output = [[], []];
 
             _output[0] = l;
-            if (isSimple.length === 1) {
+            if (dataDescription.otherColumns.length === 1) {
                 _output[1] = [{
                     data: values.map(v => v[number_idx]),
-                    label: isSimple[0]
+                    label: dataDescription.otherColumns[0].name
                 }];
             } else {
                 let series = [];
@@ -129,20 +131,96 @@ export class ChartUtilsService {
 
     /**
      * Takes current query and returs not allowedCharts
-     * @param tables all model's tables
-     * @param table  origin table
-     * @param vMap   Map() to keep tracking visited nodes -> first call is just a new Map()
+     * @param currentQuery 
+     * @return [] notAllowed chart types
      */
-    verifyData(currentQuery:any[]) : {labeling:any[], notAllowedCharts:any[]}{
+    getNotAllowedCharts(dataDescription: any): any[] {
 
-        return {labeling:[], notAllowedCharts:[]};
+        let notAllowed = ['table', 'crosstable', 'kpi', 'doughnut', 'line', 'bar', 'horizontalBar'];
+        //table (at least one column)
+        if (dataDescription.totalColumns > 0) notAllowed.splice(notAllowed.indexOf('table'), 1);
+
+        // KPI (only one numeric column)
+        if (dataDescription.totalColumns === 1 && dataDescription.numericColumns.length === 1) {
+            notAllowed.splice(notAllowed.indexOf('kpi'), 1);
+        }
+        // Pie (Only one numeric column and one char/date column)
+        if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1) {
+            notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
+        }
+        // Bar && Line (One numeric column, max 3 columns)
+        if (dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4) {
+            notAllowed.splice(notAllowed.indexOf('bar'), 1);
+            notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
+            notAllowed.splice(notAllowed.indexOf('line'), 1);
+        }
+        // Crosstable (At least three columns, one numeric)
+        if (dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 0) {
+            notAllowed.splice(notAllowed.indexOf('crosstable'), 1);
+        }
+
+        return notAllowed;
     }
 
-    getColumnTypes(currentQuery:any[]):any[]{
-        return []
+    /**
+     * Check if actual config is compatible with actual chart and returns a valid color configuration
+     * @param currentChartype 
+     * @param layout 
+     */
+    recoverChartColors(currentChartype: string, layout: any) {
+        if (layout && layout.chartType === currentChartype) {
+            return this.mergeColors(layout)
+        }
+        else {
+            switch (currentChartype) {
+                case 'doughnut': return EdaChartComponent.generatePiecolors();
+                case 'bar': return EdaChartComponent.generateChartColors();
+                case 'line': return EdaChartComponent.generateChartColors();
+                case 'horizontalBar': return EdaChartComponent.generateChartColors();
+            }
+        }
     }
 
-    initChartOptions(type: string) {
+    mergeColors(layout) {
+        if (layout.chartType === 'doughnut') {
+            let colors = EdaChartComponent.generatePiecolors();
+            layout.styles[0].backgroundColor.forEach((element, i) => {
+                colors[0].backgroundColor[i] = element;
+            });
+            layout.styles[0].backgroundColor = colors[0].backgroundColor;
+            return layout.styles;
+
+        } else if (['line', 'bar', 'horizontalBar'].includes(layout.chartType)) {
+            return layout.styles;
+        }
+    }
+
+    describeData(currentQuery: any, labels: any) {
+        let names = this.pretifyLabels(currentQuery, labels);
+        let out = { numericColumns: [], otherColumns: [], totalColumns: 0 }
+        currentQuery.forEach((col, i) => {
+            if (col.column_type === 'numeric') {
+                out.numericColumns.push({ name: names[i], index: i });
+            } else {
+                out.otherColumns.push({ name: names[i], index: i });
+            }
+            out.totalColumns += 1;
+        });
+        return out;
+    }
+    pretifyLabels(columns : Array<Column>, labels:Array<string>){
+        let names = [];
+        labels.forEach(label => {
+            columns.forEach(column => {
+                if (column.column_name === label) {
+                    names.push(column.display_name.default);
+                }
+            });
+        });
+        return names
+    }
+
+    initChartOptions(type: string, numericColumn: string, labelColum: any[]) {
         const options = {
             chartOptions: {},
             chartPlugins: {}
@@ -158,6 +236,20 @@ export class ChartUtilsService {
                         fontSize: 11,
                         fontStyle: 'normal',
                         position: 'bottom'
+                    },
+                    tooltips: {
+                        mode: 'label',
+                        callbacks: {
+                            title: (tooltipItem, data) => {
+                                return `${labelColum[0].name}`
+                            },
+                            label: (tooltipItem, data) => {
+                                if (data && tooltipItem)
+                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${data.datasets[0].data[tooltipItem.index]}`;
+                            },
+                            afterLabel: (t, d) => {
+                            }
+                        }
                     },
                     animation: {
                         //duration : 0,
@@ -180,33 +272,78 @@ export class ChartUtilsService {
                     },
                     tooltips: {
                         callbacks: {
-                            title: (tootltipItem, data) => {
-                                if (data)
-                                return data.labels[tootltipItem[0].index];
+                            title: (tooltipItem, data) => {
+                                if (data && tooltipItem)
+                                    return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
                             },
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
-                                    return data.datasets[tooltipItem.datasetIndex].label;
+                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${tooltipItem.yLabel}`;
                             },
                             afterLabel: (t, d) => {
-                                if (t) return  t.value;
                             }
                         }
                     },
                     scales: {
                         xAxes: [{
-                            // stacked: true,
+                            gridLines: { display: false },
                             ticks: {
                                 callback: (value) => {
                                     if (value)
-                                        return value.length > 17 ? (value.substr(0, 17) + '...') : value;
+                                        return value.length > 30 ? (value.substr(0, 17) + '...') : value;
                                 },
-                                autoSkip: false,
-                                maxTicksLimit: 2000,
-                                fontSize: 11,
-                            },
-                            gridLines: { display: false }
-                        }], yAxes: [{
+                                fontSize: 11, fontStyle: 'bold'
+                            }
+                        }],
+                        yAxes: [{
+                            // stacked: true
+                            ticks: { fontSize: 9, min: 0 }
+                        }]
+                    },
+                    plugins: {
+                        datalabels: { anchor: 'end', align: 'end' }
+                    },
+                };
+                // options.chartPlugins = [];
+                break;
+            case 'horizontalBar':
+                options.chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    devicePixelRatio: 2,
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        fontSize: 11,
+                        fontStyle: 'normal',
+                        labels: { boxWidth: 10 }
+                    },
+                    tooltips: {
+                        // callbacks: {
+                        //     title: (tooltipItem, data) => {
+                        //         if (data && tooltipItem)
+                        //             return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
+                        //     },
+                        //     label: (tooltipItem, data) => {
+                        //         if (data && tooltipItem)
+                        //             return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${tooltipItem.yLabel}`;
+                        //     },
+                        //     afterLabel: (t, d) => {
+                        //     }
+                        // }
+                    },
+                    scales: {
+                        xAxes: [{
+                            gridLines: { display: false },
+                            ticks: {
+                                callback: (value) => {
+                                    if (value)
+                                        return value.length > 30 ? (value.substr(0, 17) + '...') : value;
+                                },
+                                fontSize: 11, fontStyle: 'bold'
+                            }
+                        }],
+                        yAxes: [{
                             // stacked: true
                             ticks: { fontSize: 9, min: 0 }
                         }]
@@ -235,16 +372,15 @@ export class ChartUtilsService {
                         intersect: false,
                         callbacks: {
                             title: (tooltipItem, data) => {
-                                if (data)
-                                    return data.labels[tooltipItem[0].index];
+                                if (data && tooltipItem) {
+                                    return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
+                                }
                             },
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
-                                    return data.datasets[tooltipItem.datasetIndex].label;
+                                    return ` ${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${tooltipItem.yLabel}`;
                             },
-                            afterLabel: (t, d) => {
-                                if (t)
-                                    return t.value;
+                            afterLabel: (tooltipItem, data) => {
                             }
                         }
                     },

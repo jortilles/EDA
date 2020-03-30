@@ -2,7 +2,9 @@ import { Component, ViewChild, Input } from '@angular/core';
 import { Table } from 'primeng/table';
 import { FilterUtils } from 'primeng/api';
 import { EdaTable } from './eda-table';
-import { EdaColumn } from './eda-columns/eda-column';
+import { registerLocaleData } from '@angular/common';
+import es from '@angular/common/locales/es';
+
 import * as _ from 'lodash';
 
 @Component({
@@ -17,6 +19,7 @@ export class EdaTableComponent {
     public lodash: any = _;
 
     constructor() { 
+        registerLocaleData( es );
      }
 
     _tableFilter(table: Table, value: any, col: any) {

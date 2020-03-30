@@ -1,86 +1,65 @@
 <eda-dialog [inject]="dialog">
+
     <div class="ui-g">
+
         <div class="ui-g-8">
+
             <div class="eda-chart-panel">
+
                 <div style="height: 70%">
-                    <eda-chart #myEdaChart *ngIf="chart" [inject]="chart" ></eda-chart>
+                    <eda-chart #myEdaChart *ngIf="chart" [inject]="chart"></eda-chart>
                 </div>
+
             </div>
+
         </div>
+
         <div class="ui-g-4">
-            <h6 class="custom-border-b1">Colores</h6>
+
+            <h6 i18n="@@colorsChartH6" class="custom-border-b1">
+                Colores
+            </h6>
+
             <div class="chart-color-selection">
+
                 <ng-container *ngFor="let serie of series; let i = index">
+
                     <div class="mb-1">
-                        <input type="text" pInputText style="width: 40%" [value]="serie.label" [style.border-color]="serie.border"/>
-                        <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex" appendTo="body"></p-colorPicker>
-                        <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg" (input)="handleInputColor(serie)" minlength="7">
+                        <input type="text" pInputText style="width: 40%" [value]="serie.label"
+                            [style.border-color]="serie.border" />
+
+                        <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex"
+                            appendTo="body">
+                        </p-colorPicker>
+
+                        <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg"
+                            (input)="handleInputColor(serie)" minlength="7">
+
                     </div>
+                    
                 </ng-container>
+
             </div>
+
         </div>
+
     </div>
 
 
-
-<!--    <div class="ui-g">-->
-<!--        <div class="ui-g-8 mt-1" style="height: 80%;">-->
-<!--            <eda-chart #myEdaChart *ngIf="chart" [inject]="chart"></eda-chart>-->
-<!--        </div>-->
-<!--        <div class="ui-g-4 mt-1">-->
-<!--            <h6 class="custom-border-b1">Colores</h6>-->
-<!--            <div class="chart-color-selection">-->
-<!--                <ng-container *ngFor="let serie of series; let i = index">-->
-<!--                    <div class="mb-1">-->
-<!--                        <input type="text" pInputText style="width: 40%" [value]="serie.label" [style.border-color]="serie.border"/>-->
-<!--                        <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex" appendTo="body"></p-colorPicker>-->
-<!--                        <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg" (input)="handleInputColor(serie)" minlength="7">-->
-<!--                    </div>-->
-<!--                </ng-container>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--            <ng-container *ngIf="chart" [ngSwitch]="chart.chartType">-->
-<!--                <ng-container *ngSwitchCase="'doughnut'">-->
-<!--                </ng-container>-->
-<!--                <ng-container *ngSwitchCase="'bar'">-->
-<!--                    <div class="mb-5">-->
-<!--                        <span class="ui-float-label">-->
-<!--                            <p-dropdown id="direction" [options]="drops.direction" [(ngModel)]="direction" optionLabel="label" [autoDisplayFirst]="false" required></p-dropdown>-->
-<!--                            <label for="direction">Dirección</label>-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                    <div class="mb-5">-->
-<!--                        <span class="ui-float-label">-->
-<!--                            <p-dropdown id="stacked" [options]="drops.stacked" [autoDisplayFirst]="false" required></p-dropdown>-->
-<!--                            <label for="stacked">Apilar</label>-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </ng-container>-->
-<!--                <ng-container *ngSwitchCase="'line'">-->
-<!--                    <div class="mb-5">-->
-<!--                        <span class="ui-float-label">-->
-<!--                            <p-dropdown id="point-styles" [options]="drops.pointStyles" [(ngModel)]="pointStyle" optionLabel="label" (onChange)="onChangePointStyles(pointStyle)" [autoDisplayFirst]="false" required></p-dropdown>-->
-<!--                            <label for="point-styles">Estilos de puntos</label>-->
-<!--                        </span>-->
-<!--                    </div>-->
-
-<!--                    <div class="mb-5">-->
-<!--                        <span class="ui-float-label">-->
-<!--                            <p-dropdown id="gridLines" [options]="drops.gridLines" [autoDisplayFirst]="false" required></p-dropdown>-->
-<!--                            <label for="gridLines">Líneas de cuadrícula</label>-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--&lt;!&ndash;                    <h6 class="custom-border-b1">Colores Líneas de cuadrícula</h6>&ndash;&gt;-->
-<!--                </ng-container>-->
-<!--            </ng-container>-->
-
-
     <p-footer class="footer">
+
         <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-            <button type="submit" pButton (click)="saveChartConfig()"  icon="fa fa-save" class="ui-button ml-2" label="Guardar"></button>
-            <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="ui-button-danger ml-2" label="Cancelar"></button>
+
+            <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-save" class="ui-button ml-2"
+                i18n-label="@@guardarButton" label="Guardar">
+            </button>
+
+            <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="ui-button-danger ml-2"
+                i18n-label="@@cancelarButton" label="Cancelar">
+            </button>
+
         </div>
+
     </p-footer>
+
 </eda-dialog>

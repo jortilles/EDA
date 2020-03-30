@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { AlertService, UserService, SpinnerService } from './services/service.index';
-import * as _ from 'lodash';
 import { Router } from '@angular/router';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'app-root',

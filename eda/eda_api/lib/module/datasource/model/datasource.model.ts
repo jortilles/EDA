@@ -1,7 +1,11 @@
 import * as mongoose from 'mongoose';
 
 export interface IDataSource extends mongoose.Document {
-    ds: any;
+    ds: {
+        connection: any,
+        metadata: any,
+        model: any
+    };
 }
 
 const DataSourceSchema = new mongoose.Schema({

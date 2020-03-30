@@ -9,8 +9,3 @@ echo "--------------------------------------------------------------------------
 echo "instalando...."
 
 npm install
-
-echo "arrancando.... " 
-
-nohup npm start &
-

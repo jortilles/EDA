@@ -4,6 +4,9 @@ import { NgModule } from '@angular/core';
 import { GlobalModule } from '../module/global/global.module';
 import { PipesModule } from './pipes/pipes.module';
 
+// Directives
+import { BlockCopyPaste } from './directives/block-copy-paste.directive';
+
 // Components
 import {
     EdaPageDialogComponent,
@@ -20,7 +23,8 @@ import {
         SidebarComponent,
         EdaDialogComponent,
         EdaDialogComponent,
-        EdaContextMenuComponent
+        EdaContextMenuComponent,
+        BlockCopyPaste
     ],
     imports: [
         GlobalModule,
@@ -33,7 +37,8 @@ import {
         EdaDialogComponent,
         PipesModule,
         EdaDialogComponent,
-        EdaContextMenuComponent
+        EdaContextMenuComponent,
+        BlockCopyPaste
     ]
 })
 export class SharedModule {}

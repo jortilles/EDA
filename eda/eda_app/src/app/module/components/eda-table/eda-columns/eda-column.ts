@@ -13,6 +13,7 @@ export abstract class EdaColumn {
     max: boolean = false;
     min: boolean = false;
     group: string;
+    rowspan: number = 4;
 
     cellStyle: (value: any, row: any) => any = () => {};
     joinArray: (value: any, row: any) => any = () => {};

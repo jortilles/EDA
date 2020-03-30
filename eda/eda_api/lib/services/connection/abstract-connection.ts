@@ -1,18 +1,15 @@
-import { Client as PgClient } from 'pg';
-import { createConnection , Connection as SqlConnection } from 'mysql';
-
 export abstract class AbstractConnection {
     config: any;
-    pool: PgClient | SqlConnection;
+    pool: any
 
     constructor(config: any) {
-        
         this.config = config;
-        this.pool = getPool(this.config);
+        //this.pool = this.getPool(this.config).catch((err)=> {throw err});
+
     }
 
     itsConnected() {
-        console.log('\x1b[36m%s\x1b[0m', 'Successfully connected to '+ this.config.type +' database! \n');
+        console.log('\x1b[36m%s\x1b[0m', 'Successfully connected to ' + this.config.type + ' database! \n');
     }
 
     async connect() {
@@ -33,17 +30,25 @@ export abstract class AbstractConnection {
 
     abstract async getQueryBuilded(queryData: any, dataModel: any, user: string): Promise<any>;
 
+    abstract async getPool():Promise<any>;
+
 }
 
-// Obte el Pool depenen del tipus de base de dades
-function getPool(config: any): PgClient | SqlConnection  {
-    switch (config.type) {
-        case 'mssql':
-        // return new MsPool(config);
-        case 'mysql':
-            return createConnection(config);
-        case 'postgres':
-            return new PgClient(config);
-    }
-}
+// // Obte el Pool depenen del tipus de base de dades
+// function getPool(config: any): any {
+//     try {
+//         switch (config.type) {
+//             case 'mssql':
+//             // return new MsPool(config);
+//             case 'mysql':
+//                 return createConnection(config);
+//             case 'postgres':
+//                 return new PgClient(config);
+//             case 'vertica':
+//                 return Vertica.connect(config);
+//         }
+//     } catch (err) {
+//         throw err;
+//     }
+// }
 

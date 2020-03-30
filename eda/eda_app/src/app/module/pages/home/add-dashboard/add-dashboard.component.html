@@ -4,11 +4,11 @@
             <div class="ui-g-12 mt-2">
                 <span class="ui-float-label">
                   <input id="float-dash" formControlName="name" type="text" pInputText required>
-                  <label for="float-dash">Dame un nombre *</label>
+                  <label i18n="@@labelDameNombre" for="float-dash">Dame un nombre *</label>
                 </span>
             </div>
             <div class="ui-g-12">
-                <p-dropdown id="float-ds" formControlName="ds" [options]="dss" optionLabel="model_name" [showClear]="true" placeholder="Selecciona una fuente de datos *" required></p-dropdown>
+                <p-dropdown id="float-ds" formControlName="ds" [options]="dss" optionLabel="model_name" [showClear]="true" i18n-placeholder="@@selectFuenteDatos" placeholder="Selecciona una fuente de datos *" required></p-dropdown>
             </div>
 
             <div style="margin: 8px">
@@ -16,14 +16,14 @@
             </div>
 
             <div class="ui-g-12" *ngIf="display.groups">
-                <p-dropdown id="float-grups" formControlName="group" [options]="grups" optionLabel="name" [showClear]="true" placeholder="Selecciona un grup *"></p-dropdown>
+                <p-dropdown id="float-grups" formControlName="group" [options]="grups" optionLabel="name" [showClear]="true" i18n-placeholder="@@selectGrup" placeholder="Selecciona un grupo *"></p-dropdown>
             </div>
         </div>
 
         <p-footer class="footer">
-            <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-                <button type="submit" pButton icon="fa fa-save" label="Guardar"></button>
-                <button type="button" pButton icon="fa fa-times" (click)="closeDialog()" class="ui-button-danger ml-2" label="Cancelar"></button>
+            <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
+                <button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Guardar"></button>
+                <button type="button" pButton icon="fa fa-times" (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn" label="Cancelar"></button>
             </div>
         </p-footer>
 

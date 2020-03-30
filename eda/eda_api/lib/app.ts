@@ -4,12 +4,12 @@ import * as cors from 'cors';
 import * as fileUpload from 'express-fileupload';
 import { NextFunction, Request, Response } from 'express';
 import errorMiddleware from './middleware/error.middleware';
-import RoutesLoader from './module/global/routes/RoutesLoader';
+
+import Router from './router';
 
 const path = require('path');
 const database = require('../config/database.config');
 const mongoose = require('mongoose');
-
 
 class App {
     public app: express.Application;
@@ -19,11 +19,7 @@ class App {
         this.app = express();
         this.initApplication();
         this.mongoSetup();
-        RoutesLoader(this.app);
-        this.initErrorHandling();
-    }
-
-    private initErrorHandling() {
+        this.app.use(Router);
         this.app.use(errorMiddleware);
     }
 
@@ -44,7 +40,6 @@ class App {
             res.header("Acces-Controll-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
             next();
         });
-      
 
         // File Upload
         this.app.use(fileUpload());

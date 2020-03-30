@@ -8,68 +8,17 @@ import { BaseChartDirective, Color } from 'ng2-charts';
     styleUrls: []
 })
 
-export class EdaChartComponent implements OnInit, OnChanges {
+export class EdaChartComponent implements OnInit {
     @ViewChild('edaChart', { static: false }) edaChart: BaseChartDirective;
     @Input() inject: EdaChart;
 
     public update: boolean;
 
     public static defaultChartColors: Color[] = EdaChartComponent.generateChartColors();
-    /* [
-        { // main
-            backgroundColor: 'rgba(53,115,136,0.5)',
-            borderColor: 'rgba(53,115,136,1)',
-            pointBackgroundColor: 'rgba(53,115,136,1)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(53,115,136,0.8)'
-        },
-        { // dark grey
-            backgroundColor: 'rgba(42,126,104,0.5)',
-            borderColor: 'rgba(42,126,104,1)',
-            pointBackgroundColor: 'rgba(42,126,104,1)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(42,126,104,1)'
-        },
-        { // red
-            backgroundColor: 'rgba(23,90,140,0.5)',
-            borderColor: 'rgba(23,90,140,1)',
-            pointBackgroundColor: 'rgba(23,90,140,1)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(23,90,140,0.8)'
-        },
-        { // dark grey
-            backgroundColor: 'rgba(153, 81, 146,0.5)',
-            borderColor: 'rgba(153, 81, 146,1)',
-            pointBackgroundColor: 'rgba(153, 81, 146,1)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(153, 81, 146,1)'
-        },
-    ];
-    */
-    public static defaultPieColors: Color[] = EdaChartComponent.generatePiecolors();
-    /* [
-        {
-            backgroundColor: [
-                'rgba(53,115,136,0.5)',
-                'rgba(42,126,104,0.5)',
-                'rgba(23,90,140,0.5)',
-                'rgba(153, 81, 146,0.5)'
-            ],
-            borderColor: [
-                'rgba(255,255,255,1)',
-                'rgba(255,255,255,1)',
-                'rgba(255,255,255,1)',
-                'rgba(255,255,255,1)'
-            ]
-        }
-    ];
-    */
 
-    private static generateChartColors(iterations?: number) {
+    public static defaultPieColors: Color[] = EdaChartComponent.generatePiecolors();
+
+    public static generateChartColors(iterations?: number) {
         let MAX_ITERATIONS = 200;
         let out = [];
         let col =
@@ -98,7 +47,7 @@ export class EdaChartComponent implements OnInit, OnChanges {
         return out;
     }
 
-    private static generatePiecolors() {
+    public static generatePiecolors() {
 
         let MAX_ITERATIONS = 1000;
         let out = [{ backgroundColor: [], borderColor: [] }];
@@ -127,16 +76,7 @@ export class EdaChartComponent implements OnInit, OnChanges {
     }
 
     ngOnInit(): void {
-
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes) {
-            if (changes.inject.previousValue !== changes.inject.currentValue) {
-                // this.ngOnInit();
-                this.recoverChartColors(changes);
-            }
-        }
+        
     }
 
     chartClicked(e: any): void {
@@ -176,51 +116,5 @@ export class EdaChartComponent implements OnInit, OnChanges {
         this.edaChart.chart.update();
 
     }
-
-    recoverChartColors(changes: any) {
-        if (this.inject.chartColors) {
-            if (changes.inject.currentValue.chartType === 'doughnut') {
-                if (changes.inject.previousValue === undefined) {
-                    if (changes.inject.currentValue.chartColors[0].pointBackgroundColor !== undefined) {
-                        this.inject.chartColors = EdaChartComponent.generatePiecolors();
-                    } else {
-                        const SIZE = this.inject.chartColors[0].backgroundColor.length;
-                        const colors = EdaChartComponent.generatePiecolors();
-                        for (let i = SIZE; i < this.inject.chartData.length; i++) {
-                            this.inject.chartColors[0].backgroundColor.push(colors[0].backgroundColor[i]);
-                        }
-                    }
-                } else if (changes.inject.previousValue.chartType === 'doughnut') {
-                    const SIZE = this.inject.chartColors[0].backgroundColor.length;
-                    const colors = EdaChartComponent.generatePiecolors();
-                    for (let i = SIZE; i < this.inject.chartData.length; i++) {
-                        this.inject.chartColors[0].backgroundColor.push(colors[0].backgroundColor[i]);
-                    }
-                } else {
-                    this.inject.chartColors = EdaChartComponent.generatePiecolors();
-                }
-            } else if (['line', 'bar'].includes(changes.inject.currentValue.chartType)) {
-                if (changes.inject.previousValue === undefined) {
-
-                } else if (['line', 'bar'].includes(changes.inject.previousValue.chartType)) {
-                    this.inject.chartColors = changes.inject.previousValue.chartColors;
-                }
-            }
-
-        } else if (changes.inject.currentValue.chartType === 'doughnut') {
-            this.inject.chartColors = EdaChartComponent.generatePiecolors();
-
-        } else {
-            this.inject.chartColors = EdaChartComponent.generateChartColors();
-        }
-
-    }
-
-    // getColors(label: string) {
-    //   if ( this.inject.chartDataset ) {
-    //     return this.inject.chartDataset.find(chart => chart.label === label).backgroundColor;
-    //   }
-    //   return '#505aff';
-    // }
 
 }

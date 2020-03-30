@@ -1,7 +1,3001 @@
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 07:58:59 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 14552,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63344640,
+        heapTotal: 60071936,
+        heapUsed: 24193936,
+        external: 18770815 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 146457 },
+  trace: [],
+  timestamp: '2020-03-19T06:58:59.402Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:00:28 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 12348,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63250432,
+        heapTotal: 60071936,
+        heapUsed: 24124056,
+        external: 18775236 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 146546 },
+  trace: [],
+  timestamp: '2020-03-19T07:00:28.645Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:04:03 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 14824,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63279104,
+        heapTotal: 60071936,
+        heapUsed: 24118632,
+        external: 18770815 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 146761 },
+  trace: [],
+  timestamp: '2020-03-19T07:04:03.371Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:04:57 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 15320,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62472192,
+        heapTotal: 59547648,
+        heapUsed: 24293208,
+        external: 18755540 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 146816 },
+  trace: [],
+  timestamp: '2020-03-19T07:04:57.750Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:05:30 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 14504,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63451136,
+        heapTotal: 60071936,
+        heapUsed: 24247376,
+        external: 18779750 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 146849 },
+  trace: [],
+  timestamp: '2020-03-19T07:05:30.963Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:06:57 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 14356,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63447040,
+        heapTotal: 60596224,
+        heapUsed: 24208312,
+        external: 18775236 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 146936 },
+  trace: [],
+  timestamp: '2020-03-19T07:06:57.958Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:08:20 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 10848,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 49553408,
+        heapTotal: 28614656,
+        heapUsed: 23735336,
+        external: 18871242 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 147018 },
+  trace: [],
+  timestamp: '2020-03-19T07:08:20.424Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:10:46 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 7596,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63401984,
+        heapTotal: 60071936,
+        heapUsed: 24219824,
+        external: 18771924 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 147164 },
+  trace: [],
+  timestamp: '2020-03-19T07:10:46.267Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:12:36 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 14888,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63283200,
+        heapTotal: 60071936,
+        heapUsed: 24200656,
+        external: 18779750 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 147274 },
+  trace: [],
+  timestamp: '2020-03-19T07:12:36.334Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:13:47 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 6272,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62455808,
+        heapTotal: 59547648,
+        heapUsed: 24170216,
+        external: 18770815 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 147346 },
+  trace: [],
+  timestamp: '2020-03-19T07:13:47.994Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:15:45 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 10188,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63479808,
+        heapTotal: 60071936,
+        heapUsed: 24180360,
+        external: 18770815 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 147464 },
+  trace: [],
+  timestamp: '2020-03-19T07:15:45.854Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:17:52 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 10112,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63377408,
+        heapTotal: 60071936,
+        heapUsed: 24230224,
+        external: 18771924 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 147591 },
+  trace: [],
+  timestamp: '2020-03-19T07:17:52.931Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:18:47 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 14232,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63766528,
+        heapTotal: 61120512,
+        heapUsed: 24127520,
+        external: 18770815 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 147646 },
+  trace: [],
+  timestamp: '2020-03-19T07:18:47.746Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:19:53 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 9452,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62361600,
+        heapTotal: 59547648,
+        heapUsed: 24262544,
+        external: 18774178 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 147712 },
+  trace: [],
+  timestamp: '2020-03-19T07:19:53.777Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:22:17 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 8292,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63373312,
+        heapTotal: 60071936,
+        heapUsed: 24241816,
+        external: 18771509 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 147856 },
+  trace: [],
+  timestamp: '2020-03-19T07:22:17.775Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:23:25 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 3216,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62464000,
+        heapTotal: 59547648,
+        heapUsed: 24211472,
+        external: 18770815 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 147924 },
+  trace: [],
+  timestamp: '2020-03-19T07:23:26.029Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:25:31 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 14984,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63262720,
+        heapTotal: 60071936,
+        heapUsed: 24200872,
+        external: 18780502 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 148049 },
+  trace: [],
+  timestamp: '2020-03-19T07:25:31.513Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:37:23 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 8176,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63705088,
+        heapTotal: 61120512,
+        heapUsed: 24131888,
+        external: 18762623 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 148761 },
+  trace: [],
+  timestamp: '2020-03-19T07:37:23.192Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:40:23 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 8304,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63324160,
+        heapTotal: 60071936,
+        heapUsed: 24145752,
+        external: 18770815 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 148941 },
+  trace: [],
+  timestamp: '2020-03-19T07:40:23.048Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:44:38 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 11360,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62410752,
+        heapTotal: 59547648,
+        heapUsed: 24143088,
+        external: 18762623 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 149197 },
+  trace: [],
+  timestamp: '2020-03-19T07:44:38.971Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 08:45:53 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 10144,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62361600,
+        heapTotal: 59547648,
+        heapUsed: 24135240,
+        external: 18770815 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 149272 },
+  trace: [],
+  timestamp: '2020-03-19T07:45:53.992Z' }
 { level: 'info',
-  ip: '::1',
-  timestamp: '2020-02-25T11:01:33.129Z' }
-{ level: 'info',
+  action: 'newLogin',
   userMail: 'jj@jj.com',
   ip: '::1',
-  timestamp: '2020-02-25T11:03:29.919Z' }
+  timestamp: '2020-03-19T08:00:50.649Z' }
+{ error:
+   { Error: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433
+       at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)
+     errno: 'ENOTFOUND',
+     code: 'ENOTFOUND',
+     syscall: 'getaddrinfo',
+     hostname: 'Vertica.connect(config)',
+     host: 'Vertica.connect(config)',
+     port: '5433' },
+  level: 'error',
+  message:
+   'uncaughtException: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433\nError: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433\n    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)',
+  stack:
+   'Error: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433\n    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:01:14 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 1856,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 49475584,
+        heapTotal: 29138944,
+        heapUsed: 23376408,
+        external: 18942656 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 150193 },
+  trace:
+   [ { column: 26,
+       file: 'dns.js',
+       function: 'GetAddrInfoReqWrap.onlookup [as oncomplete]',
+       line: 56,
+       method: 'onlookup [as oncomplete]',
+       native: false } ],
+  timestamp: '2020-03-19T08:01:14.813Z' }
+{ error:
+   { Error: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433
+       at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)
+     errno: 'ENOTFOUND',
+     code: 'ENOTFOUND',
+     syscall: 'getaddrinfo',
+     hostname: 'Vertica.connect(config)',
+     host: 'Vertica.connect(config)',
+     port: '5433' },
+  level: 'error',
+  message:
+   'uncaughtException: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433\nError: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433\n    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)',
+  stack:
+   'Error: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433\n    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:06:31 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 1168,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62136320,
+        heapTotal: 59547648,
+        heapUsed: 23369160,
+        external: 18657843 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 150509 },
+  trace:
+   [ { column: 26,
+       file: 'dns.js',
+       function: 'GetAddrInfoReqWrap.onlookup [as oncomplete]',
+       line: 56,
+       method: 'onlookup [as oncomplete]',
+       native: false } ],
+  timestamp: '2020-03-19T08:06:31.440Z' }
+{ error:
+   { Error: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433
+       at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)
+     errno: 'ENOTFOUND',
+     code: 'ENOTFOUND',
+     syscall: 'getaddrinfo',
+     hostname: 'Vertica.connect(config)',
+     host: 'Vertica.connect(config)',
+     port: '5433' },
+  level: 'error',
+  message:
+   'uncaughtException: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433\nError: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433\n    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)',
+  stack:
+   'Error: getaddrinfo ENOTFOUND Vertica.connect(config) Vertica.connect(config):5433\n    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:07:07 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 5492,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63422464,
+        heapTotal: 60071936,
+        heapUsed: 23564696,
+        external: 18666035 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 150546 },
+  trace:
+   [ { column: 26,
+       file: 'dns.js',
+       function: 'GetAddrInfoReqWrap.onlookup [as oncomplete]',
+       line: 56,
+       method: 'onlookup [as oncomplete]',
+       native: false } ],
+  timestamp: '2020-03-19T08:07:07.890Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 09:12:51 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 13108,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 49475584,
+        heapTotal: 29138944,
+        heapUsed: 22893792,
+        external: 18631854 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 150889 },
+  trace: [],
+  timestamp: '2020-03-19T08:12:51.281Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 09:13:36 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 7060,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63471616,
+        heapTotal: 60071936,
+        heapUsed: 24278696,
+        external: 18765986 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 150934 },
+  trace: [],
+  timestamp: '2020-03-19T08:13:36.663Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 09:15:27 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 2668,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63148032,
+        heapTotal: 60071936,
+        heapUsed: 24281936,
+        external: 18765986 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 151045 },
+  trace: [],
+  timestamp: '2020-03-19T08:15:27.654Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 09:17:42 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 3344,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 48910336,
+        heapTotal: 29138944,
+        heapUsed: 23089648,
+        external: 18656502 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 151181 },
+  trace: [],
+  timestamp: '2020-03-19T08:17:42.771Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 09:18:18 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 13160,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63418368,
+        heapTotal: 60071936,
+        heapUsed: 24385112,
+        external: 18780171 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 151217 },
+  trace: [],
+  timestamp: '2020-03-19T08:18:18.840Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 09:20:11 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 11580,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62337024,
+        heapTotal: 59547648,
+        heapUsed: 24358288,
+        external: 18763601 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 151329 },
+  trace: [],
+  timestamp: '2020-03-19T08:20:11.163Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 09:24:35 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 6128,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62656512,
+        heapTotal: 60071936,
+        heapUsed: 24339128,
+        external: 18779985 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 151594 },
+  trace: [],
+  timestamp: '2020-03-19T08:24:35.885Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 09:26:28 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 13356,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 48525312,
+        heapTotal: 28090368,
+        heapUsed: 23085552,
+        external: 18657457 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 151707 },
+  trace: [],
+  timestamp: '2020-03-19T08:26:28.701Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 09:29:00 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 3812,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63496192,
+        heapTotal: 60596224,
+        heapUsed: 24349392,
+        external: 18780171 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 151858 },
+  trace: [],
+  timestamp: '2020-03-19T08:29:00.648Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 09:31:23 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 10892,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62955520,
+        heapTotal: 60071936,
+        heapUsed: 24394232,
+        external: 18780171 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 152001 },
+  trace: [],
+  timestamp: '2020-03-19T08:31:23.130Z' }
+{ error:
+   { Error: Invalid username or password
+     message: 'Invalid username or password',
+     fields:
+      { Severity: 'FATAL',
+        Code: '28000',
+        Message: 'Invalid username or password',
+        File:
+         '/data/qb_workspaces/jenkins2/ReleaseBuilds/Grader/REL-9_3_x-x_grader/build/vertica/Basics/ClientAuthentication.cpp',
+        Line: '2418',
+        Routine: 'authenticate' },
+     code: '28000' },
+  level: 'error',
+  message:
+   'uncaughtException: Invalid username or password\n  No stack trace',
+  stack: undefined,
+  exception: true,
+  date: 'Thu Mar 19 2020 09:32:41 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 10656,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63520768,
+        heapTotal: 60071936,
+        heapUsed: 24491648,
+        external: 18783348 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 152080 },
+  trace: [],
+  timestamp: '2020-03-19T08:32:41.828Z' }
+{ error:
+   { Error: connect ECONNREFUSED 127.0.0.1:3306
+       at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)
+       --------------------
+       at Protocol._enqueue (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+       at Protocol.handshake (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+       at Connection.connect (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\Connection.js:116:18)
+       at MysqlConnection.<anonymous> (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:28:27)
+       at Generator.next (<anonymous>)
+       at fulfilled (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:5:58)
+       at process._tickCallback (internal/process/next_tick.js:68:7)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '127.0.0.1',
+     port: 3306,
+     fatal: true },
+  level: 'error',
+  message:
+   'uncaughtException: connect ECONNREFUSED 127.0.0.1:3306\nError: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:27)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  stack:
+   'Error: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:27)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:45:13 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 7708,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 51548160,
+        heapTotal: 30187520,
+        heapUsed: 25361704,
+        external: 19174958 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 152831 },
+  trace:
+   [ { column: 14,
+       file: 'net.js',
+       function: 'TCPConnectWrap.afterConnect [as oncomplete]',
+       line: 1106,
+       method: 'afterConnect [as oncomplete]',
+       native: false },
+     { column: null,
+       file: '    --------------------',
+       function: null,
+       line: null,
+       method: null,
+       native: null },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol._enqueue',
+       line: 144,
+       method: '_enqueue',
+       native: false },
+     { column: 23,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol.handshake',
+       line: 51,
+       method: 'handshake',
+       native: false },
+     { column: 18,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js',
+       function: 'Connection.connect',
+       line: 116,
+       method: 'connect',
+       native: false },
+     { column: 27,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 28,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 58,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: 'fulfilled',
+       line: 5,
+       method: null,
+       native: false },
+     { column: 7,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 68,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T08:45:13.409Z' }
+{ error:
+   { Error: connect ECONNREFUSED 127.0.0.1:3306
+       at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)
+       --------------------
+       at Protocol._enqueue (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+       at Protocol.handshake (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+       at Connection.connect (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\Connection.js:116:18)
+       at MysqlConnection.<anonymous> (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:28:27)
+       at Generator.next (<anonymous>)
+       at fulfilled (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:5:58)
+       at process._tickCallback (internal/process/next_tick.js:68:7)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '127.0.0.1',
+     port: 3306,
+     fatal: true },
+  level: 'error',
+  message:
+   'uncaughtException: connect ECONNREFUSED 127.0.0.1:3306\nError: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:27)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  stack:
+   'Error: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:27)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:46:46 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 5416,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 49541120,
+        heapTotal: 28614656,
+        heapUsed: 24382944,
+        external: 18728387 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 152925 },
+  trace:
+   [ { column: 14,
+       file: 'net.js',
+       function: 'TCPConnectWrap.afterConnect [as oncomplete]',
+       line: 1106,
+       method: 'afterConnect [as oncomplete]',
+       native: false },
+     { column: null,
+       file: '    --------------------',
+       function: null,
+       line: null,
+       method: null,
+       native: null },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol._enqueue',
+       line: 144,
+       method: '_enqueue',
+       native: false },
+     { column: 23,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol.handshake',
+       line: 51,
+       method: 'handshake',
+       native: false },
+     { column: 18,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js',
+       function: 'Connection.connect',
+       line: 116,
+       method: 'connect',
+       native: false },
+     { column: 27,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 28,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 58,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: 'fulfilled',
+       line: 5,
+       method: null,
+       native: false },
+     { column: 7,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 68,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T08:46:46.860Z' }
+{ error:
+   { Error: connect ECONNREFUSED 127.0.0.1:3306
+       at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)
+       --------------------
+       at Protocol._enqueue (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+       at Protocol.handshake (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+       at Connection.connect (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\Connection.js:116:18)
+       at MysqlConnection.<anonymous> (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:28:27)
+       at Generator.next (<anonymous>)
+       at fulfilled (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:5:58)
+       at process._tickCallback (internal/process/next_tick.js:68:7)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '127.0.0.1',
+     port: 3306,
+     fatal: true },
+  level: 'error',
+  message:
+   'uncaughtException: connect ECONNREFUSED 127.0.0.1:3306\nError: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:27)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  stack:
+   'Error: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:27)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:49:02 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 13020,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63537152,
+        heapTotal: 60071936,
+        heapUsed: 26724296,
+        external: 19146993 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 153060 },
+  trace:
+   [ { column: 14,
+       file: 'net.js',
+       function: 'TCPConnectWrap.afterConnect [as oncomplete]',
+       line: 1106,
+       method: 'afterConnect [as oncomplete]',
+       native: false },
+     { column: null,
+       file: '    --------------------',
+       function: null,
+       line: null,
+       method: null,
+       native: null },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol._enqueue',
+       line: 144,
+       method: '_enqueue',
+       native: false },
+     { column: 23,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol.handshake',
+       line: 51,
+       method: 'handshake',
+       native: false },
+     { column: 18,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js',
+       function: 'Connection.connect',
+       line: 116,
+       method: 'connect',
+       native: false },
+     { column: 27,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 28,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 58,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: 'fulfilled',
+       line: 5,
+       method: null,
+       native: false },
+     { column: 7,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 68,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T08:49:02.676Z' }
+{ error:
+   { Error: connect ECONNREFUSED 127.0.0.1:3306
+       at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)
+       --------------------
+       at Protocol._enqueue (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+       at Protocol.handshake (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+       at Connection.connect (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\Connection.js:116:18)
+       at MysqlConnection.<anonymous> (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:28:27)
+       at Generator.next (<anonymous>)
+       at fulfilled (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:5:58)
+       at process._tickCallback (internal/process/next_tick.js:68:7)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '127.0.0.1',
+     port: 3306,
+     fatal: true },
+  level: 'error',
+  message:
+   'uncaughtException: connect ECONNREFUSED 127.0.0.1:3306\nError: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:27)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  stack:
+   'Error: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:27)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:49:41 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 15116,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63852544,
+        heapTotal: 60071936,
+        heapUsed: 26817096,
+        external: 19156294 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 153100 },
+  trace:
+   [ { column: 14,
+       file: 'net.js',
+       function: 'TCPConnectWrap.afterConnect [as oncomplete]',
+       line: 1106,
+       method: 'afterConnect [as oncomplete]',
+       native: false },
+     { column: null,
+       file: '    --------------------',
+       function: null,
+       line: null,
+       method: null,
+       native: null },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol._enqueue',
+       line: 144,
+       method: '_enqueue',
+       native: false },
+     { column: 23,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol.handshake',
+       line: 51,
+       method: 'handshake',
+       native: false },
+     { column: 18,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js',
+       function: 'Connection.connect',
+       line: 116,
+       method: 'connect',
+       native: false },
+     { column: 27,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 28,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 58,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: 'fulfilled',
+       line: 5,
+       method: null,
+       native: false },
+     { column: 7,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 68,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T08:49:41.693Z' }
+{ error:
+   { Error: connect ECONNREFUSED 127.0.0.1:3306
+       at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)
+       --------------------
+       at Protocol._enqueue (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+       at Protocol.handshake (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+       at Connection.connect (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\Connection.js:116:18)
+       at MysqlConnection.<anonymous> (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:28:33)
+       at Generator.next (<anonymous>)
+       at fulfilled (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:5:58)
+       at process._tickCallback (internal/process/next_tick.js:68:7)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '127.0.0.1',
+     port: 3306,
+     fatal: true },
+  level: 'error',
+  message:
+   'uncaughtException: connect ECONNREFUSED 127.0.0.1:3306\nError: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:33)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  stack:
+   'Error: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:33)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:50:35 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 5112,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63291392,
+        heapTotal: 60071936,
+        heapUsed: 26832152,
+        external: 19158548 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 153153 },
+  trace:
+   [ { column: 14,
+       file: 'net.js',
+       function: 'TCPConnectWrap.afterConnect [as oncomplete]',
+       line: 1106,
+       method: 'afterConnect [as oncomplete]',
+       native: false },
+     { column: null,
+       file: '    --------------------',
+       function: null,
+       line: null,
+       method: null,
+       native: null },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol._enqueue',
+       line: 144,
+       method: '_enqueue',
+       native: false },
+     { column: 23,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol.handshake',
+       line: 51,
+       method: 'handshake',
+       native: false },
+     { column: 18,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js',
+       function: 'Connection.connect',
+       line: 116,
+       method: 'connect',
+       native: false },
+     { column: 33,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 28,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 58,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: 'fulfilled',
+       line: 5,
+       method: null,
+       native: false },
+     { column: 7,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 68,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T08:50:35.135Z' }
+{ error:
+   { Error: connect ECONNREFUSED 127.0.0.1:3306
+       at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)
+       --------------------
+       at Protocol._enqueue (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+       at Protocol.handshake (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+       at Connection.connect (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\Connection.js:116:18)
+       at MysqlConnection.<anonymous> (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:28:33)
+       at Generator.next (<anonymous>)
+       at fulfilled (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:5:58)
+       at process._tickCallback (internal/process/next_tick.js:68:7)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '127.0.0.1',
+     port: 3306,
+     fatal: true },
+  level: 'error',
+  message:
+   'uncaughtException: connect ECONNREFUSED 127.0.0.1:3306\nError: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:33)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  stack:
+   'Error: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:33)\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:52:25 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 14868,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 63291392,
+        heapTotal: 60071936,
+        heapUsed: 26767984,
+        external: 19155185 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 153263 },
+  trace:
+   [ { column: 14,
+       file: 'net.js',
+       function: 'TCPConnectWrap.afterConnect [as oncomplete]',
+       line: 1106,
+       method: 'afterConnect [as oncomplete]',
+       native: false },
+     { column: null,
+       file: '    --------------------',
+       function: null,
+       line: null,
+       method: null,
+       native: null },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol._enqueue',
+       line: 144,
+       method: '_enqueue',
+       native: false },
+     { column: 23,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol.handshake',
+       line: 51,
+       method: 'handshake',
+       native: false },
+     { column: 18,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js',
+       function: 'Connection.connect',
+       line: 116,
+       method: 'connect',
+       native: false },
+     { column: 33,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 28,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 58,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: 'fulfilled',
+       line: 5,
+       method: null,
+       native: false },
+     { column: 7,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 68,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T08:52:25.091Z' }
+{ error:
+   { Error: connect ECONNREFUSED 127.0.0.1:3306
+       at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)
+       --------------------
+       at Protocol._enqueue (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+       at Protocol.handshake (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+       at Connection.connect (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\Connection.js:116:18)
+       at MysqlConnection.<anonymous> (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:28:33)
+       at Generator.next (<anonymous>)
+       at D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:8:71
+       at new Promise (<anonymous>)
+       at __awaiter (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:4:12)
+       at MysqlConnection.tryConnection (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:24:16)
+       at D:\Proyectos\EDA\eda_api\dist\module\datasource\datasource.controller.js:139:35
+       at Generator.next (<anonymous>)
+       at fulfilled (D:\Proyectos\EDA\eda_api\dist\module\datasource\datasource.controller.js:5:58)
+       at process._tickCallback (internal/process/next_tick.js:68:7)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '127.0.0.1',
+     port: 3306,
+     fatal: true },
+  level: 'error',
+  message:
+   'uncaughtException: connect ECONNREFUSED 127.0.0.1:3306\nError: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:33)\n    at Generator.next (<anonymous>)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:8:71\n    at new Promise (<anonymous>)\n    at __awaiter (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:4:12)\n    at MysqlConnection.tryConnection (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:24:16)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:139:35\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  stack:
+   'Error: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:33)\n    at Generator.next (<anonymous>)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:8:71\n    at new Promise (<anonymous>)\n    at __awaiter (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:4:12)\n    at MysqlConnection.tryConnection (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:24:16)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:139:35\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:54:02 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 1408,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 64217088,
+        heapTotal: 60071936,
+        heapUsed: 26993096,
+        external: 19266291 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 153360 },
+  trace:
+   [ { column: 14,
+       file: 'net.js',
+       function: 'TCPConnectWrap.afterConnect [as oncomplete]',
+       line: 1106,
+       method: 'afterConnect [as oncomplete]',
+       native: false },
+     { column: null,
+       file: '    --------------------',
+       function: null,
+       line: null,
+       method: null,
+       native: null },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol._enqueue',
+       line: 144,
+       method: '_enqueue',
+       native: false },
+     { column: 23,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol.handshake',
+       line: 51,
+       method: 'handshake',
+       native: false },
+     { column: 18,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js',
+       function: 'Connection.connect',
+       line: 116,
+       method: 'connect',
+       native: false },
+     { column: 33,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 28,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 71,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 8,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'new Promise',
+       line: null,
+       method: null,
+       native: false },
+     { column: 12,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: '__awaiter',
+       line: 4,
+       method: null,
+       native: false },
+     { column: 16,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: 'MysqlConnection.tryConnection',
+       line: 24,
+       method: 'tryConnection',
+       native: false },
+     { column: 35,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js',
+       function: null,
+       line: 139,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 58,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js',
+       function: 'fulfilled',
+       line: 5,
+       method: null,
+       native: false },
+     { column: 7,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 68,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T08:54:02.167Z' }
+{ error:
+   { Error: connect ECONNREFUSED 127.0.0.1:3306
+       at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)
+       --------------------
+       at Protocol._enqueue (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+       at Protocol.handshake (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+       at Connection.connect (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\Connection.js:116:18)
+       at MysqlConnection.<anonymous> (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:28:27)
+       at Generator.next (<anonymous>)
+       at D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:8:71
+       at new Promise (<anonymous>)
+       at __awaiter (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:4:12)
+       at MysqlConnection.tryConnection (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:24:16)
+       at D:\Proyectos\EDA\eda_api\dist\module\datasource\datasource.controller.js:139:35
+       at Generator.next (<anonymous>)
+       at fulfilled (D:\Proyectos\EDA\eda_api\dist\module\datasource\datasource.controller.js:5:58)
+       at process._tickCallback (internal/process/next_tick.js:68:7)
+     errno: 'ECONNREFUSED',
+     code: 'ECONNREFUSED',
+     syscall: 'connect',
+     address: '127.0.0.1',
+     port: 3306,
+     fatal: true },
+  level: 'error',
+  message:
+   'uncaughtException: connect ECONNREFUSED 127.0.0.1:3306\nError: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:27)\n    at Generator.next (<anonymous>)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:8:71\n    at new Promise (<anonymous>)\n    at __awaiter (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:4:12)\n    at MysqlConnection.tryConnection (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:24:16)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:139:35\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  stack:
+   'Error: connect ECONNREFUSED 127.0.0.1:3306\n    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1106:14)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:28:27)\n    at Generator.next (<anonymous>)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:8:71\n    at new Promise (<anonymous>)\n    at __awaiter (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:4:12)\n    at MysqlConnection.tryConnection (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:24:16)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:139:35\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:56:17 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 1152,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 49799168,
+        heapTotal: 29663232,
+        heapUsed: 23307552,
+        external: 18639150 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 153495 },
+  trace:
+   [ { column: 14,
+       file: 'net.js',
+       function: 'TCPConnectWrap.afterConnect [as oncomplete]',
+       line: 1106,
+       method: 'afterConnect [as oncomplete]',
+       native: false },
+     { column: null,
+       file: '    --------------------',
+       function: null,
+       line: null,
+       method: null,
+       native: null },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol._enqueue',
+       line: 144,
+       method: '_enqueue',
+       native: false },
+     { column: 23,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol.handshake',
+       line: 51,
+       method: 'handshake',
+       native: false },
+     { column: 18,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js',
+       function: 'Connection.connect',
+       line: 116,
+       method: 'connect',
+       native: false },
+     { column: 27,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 28,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 71,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 8,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'new Promise',
+       line: null,
+       method: null,
+       native: false },
+     { column: 12,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: '__awaiter',
+       line: 4,
+       method: null,
+       native: false },
+     { column: 16,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: 'MysqlConnection.tryConnection',
+       line: 24,
+       method: 'tryConnection',
+       native: false },
+     { column: 35,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js',
+       function: null,
+       line: 139,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 58,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js',
+       function: 'fulfilled',
+       line: 5,
+       method: null,
+       native: false },
+     { column: 7,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 68,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T08:56:17.639Z' }
+{ error:
+   { Error: ER_ACCESS_DENIED_ERROR: Access denied for user 'ay'@'92.177.16.39' (using password: YES)
+       at Handshake.Sequence._packetToError (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\sequences\Sequence.js:47:14)
+       at Handshake.ErrorPacket (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\sequences\Handshake.js:123:18)
+       at Protocol._parsePacket (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+       at Parser._parsePacket (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Parser.js:433:10)
+       at Parser.write (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Parser.js:43:10)
+       at Protocol.write (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+       at Socket.<anonymous> (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\Connection.js:88:28)
+       at Socket.<anonymous> (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\Connection.js:526:10)
+       at Socket.emit (events.js:198:13)
+       at addChunk (_stream_readable.js:288:12)
+       at readableAddChunk (_stream_readable.js:269:11)
+       at Socket.Readable.push (_stream_readable.js:224:10)
+       at TCP.onStreamRead [as onread] (internal/stream_base_commons.js:94:17)
+       --------------------
+       at Protocol._enqueue (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+       at Protocol.handshake (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+       at Connection.connect (D:\Proyectos\EDA\eda_api\node_modules\mysql\lib\Connection.js:116:18)
+       at MysqlConnection.<anonymous> (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:29:27)
+       at Generator.next (<anonymous>)
+       at D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:8:71
+       at new Promise (<anonymous>)
+       at __awaiter (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:4:12)
+       at MysqlConnection.tryConnection (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\mysql-connection.js:24:16)
+       at D:\Proyectos\EDA\eda_api\dist\module\datasource\datasource.controller.js:139:35
+       at Generator.next (<anonymous>)
+       at fulfilled (D:\Proyectos\EDA\eda_api\dist\module\datasource\datasource.controller.js:5:58)
+       at process._tickCallback (internal/process/next_tick.js:68:7)
+     code: 'ER_ACCESS_DENIED_ERROR',
+     errno: 1045,
+     sqlMessage:
+      'Access denied for user \'ay\'@\'92.177.16.39\' (using password: YES)',
+     sqlState: '28000',
+     fatal: true },
+  level: 'error',
+  message:
+   'uncaughtException: ER_ACCESS_DENIED_ERROR: Access denied for user \'ay\'@\'92.177.16.39\' (using password: YES)\nError: ER_ACCESS_DENIED_ERROR: Access denied for user \'ay\'@\'92.177.16.39\' (using password: YES)\n    at Handshake.Sequence._packetToError (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\sequences\\Sequence.js:47:14)\n    at Handshake.ErrorPacket (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\sequences\\Handshake.js:123:18)\n    at Protocol._parsePacket (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:291:23)\n    at Parser._parsePacket (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Parser.js:433:10)\n    at Parser.write (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Parser.js:43:10)\n    at Protocol.write (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:38:16)\n    at Socket.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:88:28)\n    at Socket.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:526:10)\n    at Socket.emit (events.js:198:13)\n    at addChunk (_stream_readable.js:288:12)\n    at readableAddChunk (_stream_readable.js:269:11)\n    at Socket.Readable.push (_stream_readable.js:224:10)\n    at TCP.onStreamRead [as onread] (internal/stream_base_commons.js:94:17)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:29:27)\n    at Generator.next (<anonymous>)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:8:71\n    at new Promise (<anonymous>)\n    at __awaiter (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:4:12)\n    at MysqlConnection.tryConnection (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:24:16)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:139:35\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  stack:
+   'Error: ER_ACCESS_DENIED_ERROR: Access denied for user \'ay\'@\'92.177.16.39\' (using password: YES)\n    at Handshake.Sequence._packetToError (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\sequences\\Sequence.js:47:14)\n    at Handshake.ErrorPacket (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\sequences\\Handshake.js:123:18)\n    at Protocol._parsePacket (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:291:23)\n    at Parser._parsePacket (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Parser.js:433:10)\n    at Parser.write (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Parser.js:43:10)\n    at Protocol.write (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:38:16)\n    at Socket.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:88:28)\n    at Socket.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:526:10)\n    at Socket.emit (events.js:198:13)\n    at addChunk (_stream_readable.js:288:12)\n    at readableAddChunk (_stream_readable.js:269:11)\n    at Socket.Readable.push (_stream_readable.js:224:10)\n    at TCP.onStreamRead [as onread] (internal/stream_base_commons.js:94:17)\n    --------------------\n    at Protocol._enqueue (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:144:48)\n    at Protocol.handshake (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js:51:23)\n    at Connection.connect (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js:116:18)\n    at MysqlConnection.<anonymous> (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:29:27)\n    at Generator.next (<anonymous>)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:8:71\n    at new Promise (<anonymous>)\n    at __awaiter (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:4:12)\n    at MysqlConnection.tryConnection (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js:24:16)\n    at D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:139:35\n    at Generator.next (<anonymous>)\n    at fulfilled (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js:5:58)\n    at process._tickCallback (internal/process/next_tick.js:68:7)',
+  exception: true,
+  date: 'Thu Mar 19 2020 09:58:55 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 2972,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 64311296,
+        heapTotal: 60596224,
+        heapUsed: 26866448,
+        external: 19155644 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 153653 },
+  trace:
+   [ { column: 14,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\sequences\\Sequence.js',
+       function: 'Handshake.Sequence._packetToError',
+       line: 47,
+       method: '_packetToError',
+       native: false },
+     { column: 18,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\sequences\\Handshake.js',
+       function: 'Handshake.ErrorPacket',
+       line: 123,
+       method: 'ErrorPacket',
+       native: false },
+     { column: 23,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol._parsePacket',
+       line: 291,
+       method: '_parsePacket',
+       native: false },
+     { column: 10,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Parser.js',
+       function: 'Parser._parsePacket',
+       line: 433,
+       method: '_parsePacket',
+       native: false },
+     { column: 10,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Parser.js',
+       function: 'Parser.write',
+       line: 43,
+       method: 'write',
+       native: false },
+     { column: 16,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol.write',
+       line: 38,
+       method: 'write',
+       native: false },
+     { column: 28,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js',
+       function: null,
+       line: 88,
+       method: null,
+       native: false },
+     { column: 10,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js',
+       function: null,
+       line: 526,
+       method: null,
+       native: false },
+     { column: 13,
+       file: 'events.js',
+       function: 'Socket.emit',
+       line: 198,
+       method: 'emit',
+       native: false },
+     { column: 12,
+       file: '_stream_readable.js',
+       function: 'addChunk',
+       line: 288,
+       method: null,
+       native: false },
+     { column: 11,
+       file: '_stream_readable.js',
+       function: 'readableAddChunk',
+       line: 269,
+       method: null,
+       native: false },
+     { column: 10,
+       file: '_stream_readable.js',
+       function: 'Socket.Readable.push',
+       line: 224,
+       method: 'push',
+       native: false },
+     { column: 17,
+       file: 'internal/stream_base_commons.js',
+       function: 'TCP.onStreamRead [as onread]',
+       line: 94,
+       method: 'onStreamRead [as onread]',
+       native: false },
+     { column: null,
+       file: '    --------------------',
+       function: null,
+       line: null,
+       method: null,
+       native: null },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol._enqueue',
+       line: 144,
+       method: '_enqueue',
+       native: false },
+     { column: 23,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\protocol\\Protocol.js',
+       function: 'Protocol.handshake',
+       line: 51,
+       method: 'handshake',
+       native: false },
+     { column: 18,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mysql\\lib\\Connection.js',
+       function: 'Connection.connect',
+       line: 116,
+       method: 'connect',
+       native: false },
+     { column: 27,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 29,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 71,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: null,
+       line: 8,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'new Promise',
+       line: null,
+       method: null,
+       native: false },
+     { column: 12,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: '__awaiter',
+       line: 4,
+       method: null,
+       native: false },
+     { column: 16,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\mysql-connection.js',
+       function: 'MysqlConnection.tryConnection',
+       line: 24,
+       method: 'tryConnection',
+       native: false },
+     { column: 35,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js',
+       function: null,
+       line: 139,
+       method: null,
+       native: false },
+     { column: null,
+       file: null,
+       function: 'Generator.next',
+       line: null,
+       method: 'next',
+       native: false },
+     { column: 58,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\module\\datasource\\datasource.controller.js',
+       function: 'fulfilled',
+       line: 5,
+       method: null,
+       native: false },
+     { column: 7,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 68,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T08:58:55.444Z' }
+{ error:
+   TypeError: Cannot read property 'fields' of undefined
+       at VerticaConnection.mapToJSON (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:20:41)
+       at Query.connection.query [as callback] (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:98:41)
+       at D:\Proyectos\EDA\eda_api\node_modules\vertica\lib\query.js:101:26
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Cannot read property \'fields\' of undefined\nTypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:98:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'TypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:98:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Mar 19 2020 10:31:53 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 7176,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 75038720,
+        heapTotal: 67936256,
+        heapUsed: 30018592,
+        external: 22914381 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 155632 },
+  trace:
+   [ { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'VerticaConnection.mapToJSON',
+       line: 20,
+       method: 'mapToJSON',
+       native: false },
+     { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'Query.connection.query [as callback]',
+       line: 98,
+       method: 'query [as callback]',
+       native: false },
+     { column: 26,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js',
+       function: null,
+       line: 101,
+       method: null,
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T09:31:53.686Z' }
+{ error:
+   TypeError: Cannot read property 'fields' of undefined
+       at VerticaConnection.mapToJSON (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:20:41)
+       at Query.connection.query [as callback] (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:96:41)
+       at D:\Proyectos\EDA\eda_api\node_modules\vertica\lib\query.js:101:26
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Cannot read property \'fields\' of undefined\nTypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:96:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'TypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:96:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Mar 19 2020 10:40:55 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 11504,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 55468032,
+        heapTotal: 32808960,
+        heapUsed: 28043200,
+        external: 19971122 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 156174 },
+  trace:
+   [ { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'VerticaConnection.mapToJSON',
+       line: 20,
+       method: 'mapToJSON',
+       native: false },
+     { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'Query.connection.query [as callback]',
+       line: 96,
+       method: 'query [as callback]',
+       native: false },
+     { column: 26,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js',
+       function: null,
+       line: 101,
+       method: null,
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T09:40:55.884Z' }
+{ error:
+   TypeError: Cannot read property 'fields' of undefined
+       at VerticaConnection.mapToJSON (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:20:41)
+       at Query.connection.query [as callback] (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:98:41)
+       at D:\Proyectos\EDA\eda_api\node_modules\vertica\lib\query.js:101:26
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Cannot read property \'fields\' of undefined\nTypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:98:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'TypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:98:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Mar 19 2020 11:15:20 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 7556,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 64262144,
+        heapTotal: 60071936,
+        heapUsed: 28590832,
+        external: 20183144 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 158239 },
+  trace:
+   [ { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'VerticaConnection.mapToJSON',
+       line: 20,
+       method: 'mapToJSON',
+       native: false },
+     { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'Query.connection.query [as callback]',
+       line: 98,
+       method: 'query [as callback]',
+       native: false },
+     { column: 26,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js',
+       function: null,
+       line: 101,
+       method: null,
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T10:15:20.985Z' }
+{ error:
+   TypeError: Cannot read property 'fields' of undefined
+       at VerticaConnection.mapToJSON (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:20:41)
+       at Query.connection.query [as callback] (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:100:41)
+       at D:\Proyectos\EDA\eda_api\node_modules\vertica\lib\query.js:101:26
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Cannot read property \'fields\' of undefined\nTypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:100:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'TypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:100:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Mar 19 2020 11:16:08 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 15112,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 64020480,
+        heapTotal: 60071936,
+        heapUsed: 29226912,
+        external: 20271654 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 158287 },
+  trace:
+   [ { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'VerticaConnection.mapToJSON',
+       line: 20,
+       method: 'mapToJSON',
+       native: false },
+     { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'Query.connection.query [as callback]',
+       line: 100,
+       method: 'query [as callback]',
+       native: false },
+     { column: 26,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js',
+       function: null,
+       line: 101,
+       method: null,
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T10:16:08.995Z' }
+{ error:
+   TypeError: Cannot read property 'fields' of undefined
+       at VerticaConnection.mapToJSON (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:20:41)
+       at Query.connection.query [as callback] (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:100:41)
+       at D:\Proyectos\EDA\eda_api\node_modules\vertica\lib\query.js:101:26
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Cannot read property \'fields\' of undefined\nTypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:100:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'TypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:100:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Mar 19 2020 11:17:55 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 12536,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 64090112,
+        heapTotal: 60071936,
+        heapUsed: 29366080,
+        external: 20272763 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 158393 },
+  trace:
+   [ { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'VerticaConnection.mapToJSON',
+       line: 20,
+       method: 'mapToJSON',
+       native: false },
+     { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'Query.connection.query [as callback]',
+       line: 100,
+       method: 'query [as callback]',
+       native: false },
+     { column: 26,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js',
+       function: null,
+       line: 101,
+       method: null,
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T10:17:55.352Z' }
+{ error:
+   TypeError: Cannot read property 'fields' of undefined
+       at VerticaConnection.mapToJSON (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:20:41)
+       at Query.connection.query [as callback] (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:100:41)
+       at D:\Proyectos\EDA\eda_api\node_modules\vertica\lib\query.js:101:26
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Cannot read property \'fields\' of undefined\nTypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:100:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'TypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:100:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Mar 19 2020 11:19:29 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 11288,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 64901120,
+        heapTotal: 60071936,
+        heapUsed: 29292952,
+        external: 20263462 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 158487 },
+  trace:
+   [ { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'VerticaConnection.mapToJSON',
+       line: 20,
+       method: 'mapToJSON',
+       native: false },
+     { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'Query.connection.query [as callback]',
+       line: 100,
+       method: 'query [as callback]',
+       native: false },
+     { column: 26,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js',
+       function: null,
+       line: 101,
+       method: null,
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T10:19:29.512Z' }
+{ error:
+   TypeError: Cannot read property 'fields' of undefined
+       at VerticaConnection.mapToJSON (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:20:41)
+       at Query.connection.query [as callback] (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:99:41)
+       at D:\Proyectos\EDA\eda_api\node_modules\vertica\lib\query.js:101:26
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Cannot read property \'fields\' of undefined\nTypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:99:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'TypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:99:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Mar 19 2020 11:20:19 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 7444,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 64557056,
+        heapTotal: 60071936,
+        heapUsed: 28442512,
+        external: 20231738 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 158537 },
+  trace:
+   [ { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'VerticaConnection.mapToJSON',
+       line: 20,
+       method: 'mapToJSON',
+       native: false },
+     { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'Query.connection.query [as callback]',
+       line: 99,
+       method: 'query [as callback]',
+       native: false },
+     { column: 26,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js',
+       function: null,
+       line: 101,
+       method: null,
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T10:20:19.129Z' }
+{ error:
+   TypeError: Cannot read property 'fields' of undefined
+       at VerticaConnection.mapToJSON (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:20:41)
+       at Query.connection.query [as callback] (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:99:41)
+       at D:\Proyectos\EDA\eda_api\node_modules\vertica\lib\query.js:101:26
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Cannot read property \'fields\' of undefined\nTypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:99:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'TypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:99:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Mar 19 2020 11:21:47 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 12348,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 51855360,
+        heapTotal: 30187520,
+        heapUsed: 25136472,
+        external: 19466466 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 158625 },
+  trace:
+   [ { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'VerticaConnection.mapToJSON',
+       line: 20,
+       method: 'mapToJSON',
+       native: false },
+     { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'Query.connection.query [as callback]',
+       line: 99,
+       method: 'query [as callback]',
+       native: false },
+     { column: 26,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js',
+       function: null,
+       line: 101,
+       method: null,
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T10:21:47.289Z' }
+{ error:
+   TypeError: Cannot read property 'fields' of undefined
+       at VerticaConnection.mapToJSON (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:20:41)
+       at Query.connection.query [as callback] (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:99:41)
+       at D:\Proyectos\EDA\eda_api\node_modules\vertica\lib\query.js:101:26
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Cannot read property \'fields\' of undefined\nTypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:99:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'TypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:99:41)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Mar 19 2020 11:22:38 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 10412,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 64655360,
+        heapTotal: 60071936,
+        heapUsed: 29239752,
+        external: 20272763 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 158677 },
+  trace:
+   [ { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'VerticaConnection.mapToJSON',
+       line: 20,
+       method: 'mapToJSON',
+       native: false },
+     { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'Query.connection.query [as callback]',
+       line: 99,
+       method: 'query [as callback]',
+       native: false },
+     { column: 26,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js',
+       function: null,
+       line: 101,
+       method: null,
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T10:22:38.878Z' }
+{ error:
+   TypeError: Cannot read property 'fields' of undefined
+       at VerticaConnection.mapToJSON (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:20:41)
+       at Query.connection.query [as callback] (D:\Proyectos\EDA\eda_api\dist\services\connection\db-systems\vertica-connection.js:98:37)
+       at D:\Proyectos\EDA\eda_api\node_modules\vertica\lib\query.js:101:26
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Cannot read property \'fields\' of undefined\nTypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:98:37)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'TypeError: Cannot read property \'fields\' of undefined\n    at VerticaConnection.mapToJSON (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:20:41)\n    at Query.connection.query [as callback] (D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js:98:37)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js:101:26\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Mar 19 2020 11:24:24 GMT+0100 (GMT+01:00)',
+  process:
+   { pid: 2020,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 64360448,
+        heapTotal: 60071936,
+        heapUsed: 29318120,
+        external: 20258633 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 158783 },
+  trace:
+   [ { column: 41,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'VerticaConnection.mapToJSON',
+       line: 20,
+       method: 'mapToJSON',
+       native: false },
+     { column: 37,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\services\\connection\\db-systems\\vertica-connection.js',
+       function: 'Query.connection.query [as callback]',
+       line: 98,
+       method: 'query [as callback]',
+       native: false },
+     { column: 26,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\vertica\\lib\\query.js',
+       function: null,
+       line: 101,
+       method: null,
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-03-19T10:24:25.018Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-03-19T11:50:18.419Z' }

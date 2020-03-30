@@ -1,7 +1,6 @@
-import {Response, NextFunction} from 'express';
-import {IUserRequest} from '../module/global/model/user-request.model';
-import HttpException from '../module/global/model/http-exception.model';
-import Group from '../module/admin/model/group.model';
+import { Response, NextFunction } from 'express';
+import { IUserRequest, HttpException } from '../module/global/model/index';
+import Group from '../module/admin/groups/model/group.model';
 import _ = require('lodash');
 
 

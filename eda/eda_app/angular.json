@@ -55,6 +55,14 @@
                                 "maximumWarning": "2mb",
                                 "maximumError": "5mb"
                             }]
+                        },
+                        "ca": {
+                            "aot": true,
+                            "outputPath": "dist/app-eda-ca/",
+                            "i18nFile": "src/locale/messages.ca.xlf",
+                            "i18nFormat": "xlf",
+                            "i18nLocale": "ca",
+                            "i18nMissingTranslation": "error"
                         }
                     }
                 },
@@ -66,6 +74,9 @@
                     "configurations": {
                         "production": {
                             "browserTarget": "app-eda:build:production"
+                        },
+                        "ca": {
+                            "browserTarget": "app-eda:build:ca"
                         }
                     }
                 },

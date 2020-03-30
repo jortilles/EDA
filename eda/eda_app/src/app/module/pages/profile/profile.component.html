@@ -3,27 +3,38 @@
     <div class="ui-lg-7">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Perfil del usuario</h4>
+                <h4 i18n="@@tituloPerfilUsuario" class="card-title">Perfil del usuario</h4>
 
                 <form ngNativeValidate #f="ngForm" (ngSubmit)="guardar(f.value)" class="form p-t-20">
                     <div class="form-group">
-                        <label>Nombre de usuario</label>
+                        <label i18n="@@labelNombreUsuario">Nombre de usuario</label>
                         <div class="ui-inputgroup">
                             <span class="ui-inputgroup-addon"><i class="fa fa-user"></i></span>
-                            <input pInputText [ngModel]="user.name" name="name" type="text" class="form-control" placeholder="Nombre de usuario" required>
+                            <input pInputText [ngModel]="user.name" name="name" type="text" class="form-control"
+                                i18n-placeholder="@@labelNombreUsuario" placeholder="Nombre de usuario" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Correo de usuario</label>
+                        <label i18n="@@labelUsuarioEmail">Correo de usuario</label>
                         <div class="ui-inputgroup">
                             <span class="ui-inputgroup-addon"><i class="fa fa-envelope"></i></span>
-                            <input pInputText [ngModel]="user.email" [disabled]="user.google" name="email" type="email" class="form-control" placeholder="Correo del usuario" required>
+                            <input pInputText [ngModel]="user.email" [disabled]="user.google" name="email" type="email"
+                                class="form-control" i18n-placeholder="@@labelUsuarioEmail"
+                                placeholder="Correo del usuario" required>
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</label>
+                        <input pInputText [(ngModel)]="newPassword" class="w-100" name="password" type="password" placeholder="Contraseña" autocomplete="new-password" />
+                    </div>
+                    <div class="form-group">
+                        <label>Repite la nueva contraseña </label>
+                        <input pInputText [(ngModel)]="newPasswordCheck" class="w-100"  name="newPassword" type="password" placeholder="Repite la contraseña" autocomplete="new-password" />
                     </div>
 
                     <button type="submit" class="btn btn-success waves-effect waves-light m-r-10">
                         <i class="fa fa-save"></i>
-                        Guardar
+                        <span i18n="@@guardarBtn">Guardar</span>
                     </button>
                 </form>
             </div>
@@ -34,7 +45,8 @@
     <div class="ui-lg-5">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Fotografía del usuario</h4>
+                <h4 i18n="Label Input Imagen|Label del input imagen de usuario@@labelImagenUsuario" class="card-title">
+                    Fotografía del usuario</h4>
 
                 <div class="text-center">
                     <img *ngIf="!imageTemp" [src]="user.img | image" class="w-150">
@@ -45,9 +57,10 @@
 
                 <br><br>
 
-                <button (click)="changeImage()" [disabled]="!imageUpload" type="button" class="btn btn-block btn-success waves-effect waves-light m-r-10">
+                <button (click)="changeImage()" [disabled]="!imageUpload" type="button"
+                    class="btn btn-block btn-success waves-effect waves-light m-r-10">
                     <i class="fa fa-save"></i>
-                    Actualizar Foto
+                    <span i18n="Button|Button actualizar foto profile@@button">Actualizar Foto</span>
                 </button>
             </div>
         </div>

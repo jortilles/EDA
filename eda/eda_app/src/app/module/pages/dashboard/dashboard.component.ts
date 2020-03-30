@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy } from '@angular/core';
 import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -9,16 +9,18 @@ import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupS
 import { SelectItem } from 'primeng/api';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Gridster ViewChild
     @ViewChild(GridsterComponent, { static: false }) gridster: GridsterComponent;
     @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
+    private edaPanelsSubscription: Subscription;
 
     // Dashboard Page Variables
     public id: string;
@@ -60,19 +62,43 @@ export class DashboardComponent implements OnInit {
     public filtersList: Array<{ table, column, panelList, data, selectedItems, id, isGlobal, applyToAll }> = [];
 
     constructor(private dashboardService: DashboardService,
-                private groupService: GroupService,
-                private queryBuilderService: QueryBuilderService,
-                private alertService: AlertService,
-                private fileUtiles: FileUtiles,
-                private formBuilder: FormBuilder,
-                private route: ActivatedRoute) {
-                    this.initializeGridsterOptions();
-                    this.initializeForm();
-            }
+        private groupService: GroupService,
+        private queryBuilderService: QueryBuilderService,
+        private alertService: AlertService,
+        private fileUtiles: FileUtiles,
+        private formBuilder: FormBuilder,
+        private route: ActivatedRoute) {
+        this.initializeGridsterOptions();
+        this.initializeForm();
+    }
 
     ngOnInit(): void {
         this.dashboard = new Dashboard({});
         this.loadDashboard();
+    }
+
+    /**
+     * Set applyToAllFilters for new panel when it's created
+     */
+    ngAfterViewInit(): void {
+        this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
+            const globalFilters = this.filtersList.filter(filter => filter.isGlobal === true);
+            const unsetPanels = this.edaPanels.filter(panel => panel.panel.content === undefined);
+            setTimeout(() => {
+                unsetPanels.forEach(panel => {
+                    globalFilters.forEach(filter => {
+                        filter.panelList.push(panel.panel.id);
+                        panel.setGlobalFilter(this.formatFilter(filter))
+                    });
+                });
+            }, 0);
+        });
+    }
+
+    ngOnDestroy() {
+        if (this.edaPanelsSubscription) {
+            this.edaPanelsSubscription.unsubscribe();
+        }
     }
 
     initializeGridsterOptions(): void {
@@ -115,9 +141,9 @@ export class DashboardComponent implements OnInit {
         });
 
         this.visibleTypes = [
-            {label: '',  value: 'public',  icon: 'fa fa-fw fa-globe'},
-            {label: '',  value: 'group',   icon: 'fa fa-fw fa-users'},
-            {label: '',  value: 'private', icon: 'fa fa-fw fa-lock'},
+            { label: '', value: 'public', icon: 'fa fa-fw fa-globe' },
+            { label: '', value: 'group', icon: 'fa fa-fw fa-users' },
+            { label: '', value: 'private', icon: 'fa fa-fw fa-lock' },
         ];
 
         this.groupService.getGroupsByUser().subscribe(
@@ -148,14 +174,14 @@ export class DashboardComponent implements OnInit {
                     me.filtersList = !_.isNil(config.filters) ? config.filters : []; // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
-                    
+
                     me.form.controls['visible'].setValue(config.visible);
-                    
+
                     if (config.visible === 'group') {
                         me.display_v.groups = true;
                         me.form.controls['group'].setValue(_.find(me.grups, g => g._id === res.dashboard.group));
                     }
-                    
+
                     if (!res.dashboard.config.panel) { // Si el dashboard no te cap panel es crea un automatic
                         me.panels.push(new EdaPanel(me.fileUtiles.generateUUID(), 'Nuevo', 20, 10, true, true));
                         me.dashboard = new Dashboard({
@@ -166,7 +192,7 @@ export class DashboardComponent implements OnInit {
                             user: res.dashboard.user,
                             datasSource: me.dataSource,
                             filters: [],
-                            applytoAllFilter: {present: false, refferenceTable: null, id: null}
+                            applytoAllFilter: { present: false, refferenceTable: null, id: null }
                         });
                     } else { // Si te panels els carrega
                         me.dashboard = new Dashboard({
@@ -201,7 +227,7 @@ export class DashboardComponent implements OnInit {
         this.inject = {
             dataSource: this.dataSource,
             dashboard_id: this.dashboard.id,
-            applyToAllfilter: this.applyToAllfilter 
+            applyToAllfilter: this.applyToAllfilter
         }
     }
 
@@ -241,7 +267,7 @@ export class DashboardComponent implements OnInit {
             this.edaPanels.forEach(panel => {
                 panel.savePanel();
             });
-    
+
             this.dashboardService.updateDashboard(this.id, body).subscribe(
                 () => {
                     this.display_v.rightSidebar = false;
@@ -329,7 +355,6 @@ export class DashboardComponent implements OnInit {
     /** Loads columns by given table */
     loadGlobalFiltersData(params): void {
         const filter = params.filterList;
-
         const queryParams = {
             table: params.targetTable,
             dataSource: this.dataSource._id,
@@ -345,35 +370,32 @@ export class DashboardComponent implements OnInit {
         );
     }
 
+    formatFilter(filter) {
+        const formatedFilter = {
+            filter_id: filter.id,
+            filter_table: filter.table.value,
+            filter_column: filter.column.value.column_name,
+            filter_type: 'in',
+            filter_elements: [{ value1: filter.selectedItems }],
+            isGlobal: true,
+            applyToAll: filter.applyToAll
+        }
+        return formatedFilter;
+    }
+
     /** Apply filter to panels when filter's selected value changes */
     applyGlobalFilter(filter): void {
-        // If filter has no values is removed from afected panels
-        if (filter.selectedItems.length === 0) {
-            this.edaPanels.toArray().forEach(panel => {
-                panel.selectedFilters = panel.selectedFilters.filter(f => f.filter_id !== filter.id);
-            });
-        } else {
-            filter.panelList.map(id => this.edaPanels.toArray().find(p => p.panel.id === id))
-                .forEach(
-                    (panel) => {
-                        console.log('APPYGLOBALFILTER')
-                        console.log(panel)
-                        // DELETE FILTER IF PRESENT IN PANEL AND SET NEW VALUES
-                        panel.selectedFilters = panel.selectedFilters.filter(f => f.filter_id !== filter.id);
-                        panel.selectedFilters.push(
-                            {
-                                filter_id: filter.id,
-                                filter_table: filter.table.value,
-                                filter_column: filter.column.value.column_name,
-                                filter_type: 'in',
-                                filter_elements: [{ value1: filter.selectedItems }],
-                                isGlobal: true,
-                                applyToAll: filter.applyToAll
-                            }
-                        );
-                    }
-                );
-        }
+        const newFilter = this.formatFilter(filter)
+        filter.panelList.map(id => this.edaPanels.toArray().find(p => p.panel.id === id))
+            .forEach(
+                (panel) => {
+                    // console.log('APPYGLOBALFILTER')
+                    // console.log(panel)
+                    // // DELETE FILTER IF PRESENT IN PANEL AND SET NEW VALUES
+                    panel.setGlobalFilter(newFilter);
+                }
+            );
+
         this.reloadPanels();
     }
 
@@ -387,7 +409,7 @@ export class DashboardComponent implements OnInit {
         // Update fileterList and clean panels' filters
         this.filtersList = this.filtersList.filter(f => f.id !== filter.id);
         this.edaPanels.forEach(panel => {
-            panel.selectedFilters = panel.selectedFilters.filter(f => f.filter_id !== filter.id);
+            panel.globalFilters = panel.globalFilters.filter(f => f.filter_id !== filter.id);
         });
 
         this.reloadPanels();

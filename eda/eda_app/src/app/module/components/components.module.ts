@@ -1,10 +1,13 @@
-import { NgModule } from '@angular/core';
+
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA  } from '@angular/core';
+import {AngularFittextModule} from 'angular-fittext';
 
 // Module
 import { GlobalModule } from '../global/global.module';
 import { SharedModule } from '../../shared/shared.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { EdaBlankPanelComponent } from './eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { PanelChartComponent} from './eda-panels/eda-blank-panel/panel-charts/panel-chart.component'
 
 // Component
 import {
@@ -23,6 +26,7 @@ import {
         GlobalModule,
         SharedModule,
         DragDropModule,
+        AngularFittextModule
     ],
     declarations: [
         EdaBlankPanelComponent,
@@ -32,7 +36,8 @@ import {
         EdaKpiComponent,
         ColumnDialogComponent,
         FilterDialogComponent,
-        ChartDialogComponent
+        ChartDialogComponent,
+        PanelChartComponent
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -40,6 +45,9 @@ import {
         EdaTableComponent,
         EdaChartComponent,
         EdaKpiComponent,
-    ]
+        PanelChartComponent
+    ],
+    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ComponentsModule { }

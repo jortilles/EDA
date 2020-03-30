@@ -10,6 +10,8 @@ export class ProfileComponent implements OnInit {
     public user: User;
     public imageUpload: File;
     public imageTemp: any;
+    public newPassword : string;
+    public newPasswordCheck : string;
 
     constructor(private userService: UserService,
                 private alertService: AlertService) {
@@ -24,10 +26,15 @@ export class ProfileComponent implements OnInit {
             this.user.email = user.email;
         }
 
-        this.userService.updateUser(this.user).subscribe(
-            () => console.log('user updated'),
-            err => this.alertService.addError(err)
-        );
+        if(this.checkNewPasswords(this.newPassword, this.newPasswordCheck)){
+            return this.alertService.addWarning(`Las contraseñas no coinciden`);
+        }else{
+            this.user.password = this.newPassword;
+            this.userService.updateUser(this.user).subscribe(
+                () => console.log('user updated'),
+                err => this.alertService.addError(err)
+            );
+        }
     }
 
     selectImage( file: File ) {
@@ -53,5 +60,7 @@ export class ProfileComponent implements OnInit {
     changeImage() {
         this.userService.changeImage( this.imageUpload, this.user._id, 'user' );
     }
-
+    private checkNewPasswords(a:string, b:string){
+        return a !== b;
+    }
 }

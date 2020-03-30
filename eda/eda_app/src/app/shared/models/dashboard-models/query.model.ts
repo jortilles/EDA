@@ -19,7 +19,8 @@ export interface Query {
     output: {
         labels: any[],
         data: any[],
-        styles: any[]
+        styles: any[],
+        configs?: any
     };
 }
 

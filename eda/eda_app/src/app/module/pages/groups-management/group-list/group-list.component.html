@@ -1,7 +1,9 @@
 <div class="ui-g">
     <div class="ui-g-12">
         <div class="float-right">
-            <button type="button" pButton icon="fas fa-file-pdf" iconPos="left" label="Crear grupo" (click)="crateNewGroup()" style="float:left"> </button>
+            <button type="button" pButton icon="fas fa-file-pdf" iconPos="left" i18n-label="@@crearGrupoLabel"
+                label="Crear grupo" (click)="crateNewGroup()" style="float:left">
+            </button>
         </div>
     </div>
     <eda-table [inject]="table"></eda-table>

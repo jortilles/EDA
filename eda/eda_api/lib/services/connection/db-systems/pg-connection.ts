@@ -1,4 +1,4 @@
-import { Client as PgClient, PoolClient } from 'pg';
+import { Client as PgClient } from 'pg';
 import { PgBuilderService } from "../../query-builder/qb-systems/pg-builder-service";
 import { AbstractConnection } from "../abstract-connection";
 import DataSource from '../../../module/datasource/model/datasource.model';
@@ -6,13 +6,23 @@ import DataSource from '../../../module/datasource/model/datasource.model';
 export class PgConnection extends AbstractConnection {
     private queryBuilder: PgBuilderService;
 
+    async getPool(){
+        try{
+            const connection = new PgClient(this.config);
+            return connection;
+        }catch(err){
+            throw err;
+        }
+    }
+
     async tryConnection(): Promise<any> {
         try {
-            this.pool = this.pool as PgClient;
+            this.pool = await this.getPool();
             console.log('\x1b[32m%s\x1b[0m', 'Connecting to PostgreSQL database...\n');
-            const client = await this.pool.connect();
+            this.pool.connect();
             this.itsConnected();
-            return this.pool;
+            this.pool.end();
+            return;
         } catch (err) {
             throw err;
         }
@@ -20,6 +30,7 @@ export class PgConnection extends AbstractConnection {
 
     async generateDataModel(): Promise<any> {
         try {
+            this.pool = await this.getPool();
             const tableNames = [];
             let tables = [];
             const query = `
@@ -43,7 +54,8 @@ export class PgConnection extends AbstractConnection {
                 let tableName = r['table_name'];
                 tableNames.push(tableName);
             });
-            this.pool = new PgClient(this.config);
+            //New client is needed, old client has been closed;
+            this.pool = await this.getPool();
             this.pool.connect();
             for (let i = 0; i < tableNames.length; i++) {
                 let new_table = await this.setTable(tableNames[i]);
@@ -63,16 +75,18 @@ export class PgConnection extends AbstractConnection {
     }
 
     async execQuery(query: string): Promise<any> {
-        let client;
+        let client: { connect: () => void; query: (arg0: string) => any; end: () => void; };
         try {
-            client = await this.tryConnection(); 
+            client = this.pool;
+            client.connect();
+            const searchPath = await client.query(`SET search_path TO '${this.config.schema || 'public'}';`)
             const result = await client.query(query);
             client.end();
             return result.rows;
         } catch (err) {
             console.log(err);
             throw err;
-        }finally{
+        } finally {
             client.end();
         }
     }
@@ -101,9 +115,6 @@ export class PgConnection extends AbstractConnection {
 
         return new Promise(async (resolve, reject) => {
             try {
-                // this.pool = new PgClient(this.config);
-                // this.pool.connect();
-                this.pool = this.pool as PgClient;
                 const getColumns = await this.pool.query(query);
                 const newTable = {
                     table_name: tableName,

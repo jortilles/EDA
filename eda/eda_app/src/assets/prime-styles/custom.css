@@ -1613,7 +1613,7 @@ body .ui-tabview.ui-tabview-top .ui-tabview-nav li a, body .ui-tabview.ui-tabvie
     float: none;
     display: inline-block;
     color: #333333;
-    padding: 0.571em 1em;
+    padding: 0.571em 12em;
     font-weight: 700;
 }
 body .ui-tabview.ui-tabview-top .ui-tabview-nav li a .ui-tabview-left-icon, body .ui-tabview.ui-tabview-bottom .ui-tabview-nav li a .ui-tabview-left-icon, body .ui-tabview.ui-tabview-left .ui-tabview-nav li a .ui-tabview-left-icon, body .ui-tabview.ui-tabview-right .ui-tabview-nav li a .ui-tabview-left-icon {
@@ -1830,11 +1830,11 @@ body .ui-table .ui-table-summary {
 }
 body .ui-table .ui-table-thead > tr > th {
     padding: .25em .5em;
-   /* border: 1px solid #c8c8c8;*/
+    border: 1px solid #c8c8c8;
     font-weight: 700;
     color: #333333;
     /* background-color: rgba(53,115,136,0.2); */
-    background-color: rgba(0, 12, 25, 0.16);
+    background-color: rgba(0, 12, 25, 0.055);
 }
 body .ui-table .ui-table-tbody > tr > td {
     padding: 0.571em 0.857em;

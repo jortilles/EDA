@@ -111,7 +111,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
   private renderEdaKpi() {
     let chartConfig: any = {};
     chartConfig.value = this.config.data.values[0][0];
-    chartConfig.header = this.config.data.labels[0];
+    chartConfig.header = this.config.query[0].display_name.default; 
     this.createEdaKpiComponent(chartConfig);
 
   }

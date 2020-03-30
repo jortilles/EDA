@@ -1,6 +1,7 @@
 <div class="eda-table">
-    <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="10"
-        [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body">
+    <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="inject.rows"
+        [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body" (onPage)="inject.onPage($event)">
+
         <!-- Search -->
         <ng-template pTemplate="caption" *ngIf="inject.search">
             <div class="text-right">
@@ -9,11 +10,27 @@
                     (input)="table.filterGlobal($event.target.value, 'contains')">
             </div>
         </ng-template>
+
         <!-- Header -->
         <ng-template pTemplate="header" let-columns>
-            <tr class="header-title">
+            <tr class="header-invisible" style="visibility: collapse!important">
                 <ng-container *ngFor="let col of inject.cols">
-                    <th *ngIf="col.type" [pSortableColumn]="col.field" [class]="col.styleClass" [width]="col.width">
+                    <th *ngIf="col.type" [width]="col.width"></th>
+                </ng-container>
+            </tr>
+
+            <tr *ngFor="let serie of inject.series">
+                <th *ngFor="let label of  serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan"
+                    style="text-align:center">
+                    {{label.title}}
+                </th>
+            </tr>
+
+
+            <tr *ngIf="!inject.pivot" class="header-title">
+                <ng-container *ngFor="let col of inject.cols">
+                    <th *ngIf="col.type" [pSortableColumn]="col.field" [class]="col.styleClass" [width]="col.width"
+                        [attr.rowspan]="col.rowspan">
                         {{col.header}}
                         <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
                     </th>
@@ -46,7 +63,7 @@
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
                             <ng-container *ngSwitchCase="'EdaColumnNumber'">
-                                {{ lodash.get(rowData, col.field) }}
+                                {{ lodash.get(rowData, col.field) | number:'':'es' }}
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
                             <ng-container *ngSwitchCase="'EdaColumnDate'">

@@ -1,63 +1,69 @@
 <div class="animated fadeIn">
 
   <form [formGroup]="form" (ngSubmit)="addDataSource()">
-    <div class="ui-g">
 
+    <div class="ui-g">
       <div class="ui-g-12 ui-md-6">
         <div class="form-group">
-          <label>NOMBRE *</label>
+          <label i18n="@@inputNombre">NOMBRE *</label>
           <input type="text" class="form-control" formControlName="name" pInputText>
         </div>
       </div>
 
       <div class="ui-g-12 ui-md-6">
         <div class="form-group">
-          <label>TIPO *</label>
-          <p-dropdown [options]="dbTypes" formControlName="type" placeholder="Selecciona un tipo" optionLabel="name"
+          <label i18n="@@inputTipo">TIPO *</label>
+          <p-dropdown [options]="dbTypes" formControlName="type" i18n-placeholder="@@placholderSelectTipo" placeholder="Selecciona un tipo" optionLabel="name"
             [style]="{width:'100%', padding:'.2rem .75rem'}" (onChange)="selectDefaultPort()">
           </p-dropdown>
         </div>
       </div>
 
-      <div class="ui-g-12 ui-md-6">
+      <div class="ui-g-6 ui-md-3">
         <div class="form-group">
-          <label>SERVIDOR *</label>
+          <label i18n="@@inputServidor">SERVIDOR *</label>
           <input type="text" class="form-control" formControlName="host" pInputText>
         </div>
       </div>
 
       <div class="ui-g-6 ui-md-3">
         <div class="form-group">
-          <label>BASE DE DATOS *</label>
+          <label i18n="@@inputNombreDb">BASE DE DATOS *</label>
           <input type="text" class="form-control" formControlName="db" pInputText>
         </div>
       </div>
 
       <div class="ui-g-6 ui-md-3">
         <div class="form-group">
-          <label>PUERTO *</label>
+          <label i18n="@@inputNombreEsquema" >ESQUEMA *</label>
+          <input type="text" class="form-control" formControlName="schema" pInputText>
+        </div>
+      </div>
+
+      <div class="ui-g-6 ui-md-3">
+        <div class="form-group">
+          <label i18n="@@inputPort">PUERTO *</label>
           <input type="number" class="form-control" formControlName="port" pInputText>
         </div>
       </div>
 
       <div class="ui-g-12 ui-md-6">
         <div class="form-group">
-          <label>USUARIO *</label>
+          <label i18n="@@inputUsuario">USUARIO *</label>
           <input type="text" class="form-control" formControlName="user" pInputText>
         </div>
       </div>
 
       <div class="ui-g-12 ui-md-6">
         <div class="form-group">
-          <label>CONTRASEÑA *</label>
+          <label i18n="@@inputPassword">CONTRASEÑA *</label>
           <input type="password" class="form-control" formControlName="password" pInputText>
         </div>
       </div>
-
     </div>
 
     <div class="footer text-right" style="background: none">
-      <button type="submit" pButton icon="fa fa-save" label="Guardar"></button>
+      <button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Guardar"></button>
     </div>
 
   </form>

@@ -1,37 +1,36 @@
 <eda-dialog [inject]="dialog">
     <form [formGroup]="form">
         <div class="ui-g-6 ui-sm-12">
-                <label>Nombre *</label>
-            <input pInputText formControlName="name" class="w-100" type="text" placeholder="Nombre" required/>
+            <label i18n="@@inputNombre">Nombre *</label>
+            <input pInputText formControlName="name" class="w-100" type="text" i18n-placeholder="@@inputNombre" placeholder="Nombre" required />
         </div>
         <div class="ui-g-6 ui-sm-12">
-                <label>Correo *</label>
-            <input pInputText formControlName="email" class="w-100" type="email" placeholder="Correo" autocomplete="username" required/>
+            <label i18n="@@inputEmail">Correo *</label>
+            <input pInputText formControlName="email" class="w-100" type="email" i18n-placeholder="@@inputEmail" placeholder="Correo" autocomplete="username" required />
         </div>
         <div class="ui-g-6 ui-sm-12">
-            <label>Contraseña *</label>
-            <input pInputText formControlName="password" class="w-100" type="password" placeholder="Contraseña" autocomplete="new-password" required/>
+            <label i18n="@@inputPassword">Contraseña *</label>
+            <input pInputText formControlName="password" class="w-100" type="password" i18n-placeholder="@@inputPassword" placeholder="Contraseña" autocomplete="new-password" required />
         </div>
         <div *ngIf="!controller.params.id" class="ui-g-6 ui-sm-12">
-            <label>Seguridad *</label>
-            <input pInputText formControlName="rpassword" class="w-100" type="password" placeholder="Repite la contraseña" autocomplete="new-password" required/>
+            <label i18n="@@inputSeguridad">Seguridad *</label>
+            <input pInputText formControlName="rpassword" class="w-100" type="password" i18n-placeholder="@@inputRepitePassword" placeholder="Repite la contraseña" autocomplete="new-password" required />
         </div>
         <div *ngIf="controller.params.id" class="ui-g-6 ui-sm-12">
         </div>
         <div class="ui-g-12">
-            <label>Grupo *</label>
+            <label i18n="@@inputGrupo">Grupo *</label>
             <div>
-                <p-selectButton [options]="roles" formControlName="role" optionLabel="name" multiple="multiple"></p-selectButton>
+                <p-selectButton [options]="roles" formControlName="role" optionLabel="name" multiple="multiple">
+                </p-selectButton>
             </div>
-<!--            <p-dropdown [options]="roles" formControlName="role" optionLabel="name" placeholder="Selecciona un grupo" [style]="{width:'100%'}">-->
-<!--            </p-dropdown>-->
         </div>
     </form>
 
     <p-footer class="footer">
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-            <button type="button" pButton (click)="saveUser()" class="ui-button ml-2" [label]="btnLabel"></button>
-            <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" label="Cerrar"></button>
+            <button type="button" pButton (click)="saveUser()" class="ui-button ml-2" i18n-label="@@guardarBtn" [label]="btnLabel"></button>
+            <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn" label="Cerrar"></button>
         </div>
     </p-footer>
 

@@ -32,7 +32,7 @@ body .eda-table .ui-table-thead tr th {
 body .eda-table .ui-table-tbody tr td {
     padding-top: 1px!important;
     padding-bottom: 1px!important;
-    border: 0px !important;
+    /* border: 1px !important; */
 
 }
 

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
-import es from '@angular/common/locales/es';
 import { EdaKpi } from './eda-kpi';
+import es from '@angular/common/locales/es';
 
 @Component({
     selector: 'eda-kpi',
@@ -16,4 +16,5 @@ export class EdaKpiComponent implements OnInit {
     ngOnInit() {
         registerLocaleData( es );
     }
+
 }

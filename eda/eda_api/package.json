@@ -4,12 +4,12 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "nodemon ./dist/server.js",
-        "build": "tsc",
-        "dev": "nodemon",
-        "prod": "npm run build && npm run start",
-        "old": "node app.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "nodemon",
+        "start:forever": "npm run build && forever start -c node ./dist/server.js",
+        "build": "tsc && npm run movejpgs",
+        "dev": "ts-node ./lib/server.ts",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "movejpgs": "copyfiles -u 4 -a -E lib/module/uploads/users/* dist/module/uploads/users && copyfiles -u 2 -a lib/assets/* dist/assets"
     },
     "author": "",
     "license": "ISC",
@@ -26,6 +26,7 @@
         "bcryptjs": "^2.4.3",
         "bluebird": "^3.5.5",
         "body-parser": "^1.19.0",
+        "copyfiles": "^2.2.0",
         "cors": "^2.8.5",
         "express": "^4.17.1",
         "express-fileupload": "^1.1.6",
@@ -41,6 +42,7 @@
         "pug": "^2.0.4",
         "ts-node": "^8.5.4",
         "typescript": "^3.7.2",
+        "vertica": "^0.5.5",
         "winston": "^3.2.1"
     },
     "compilerOptions": {

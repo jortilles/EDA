@@ -38,7 +38,6 @@ export class UsersLlistaComponent implements OnInit {
             }),
             cols: [
                 new EdaColumnContextMenu(),
-                new EdaColumnText({field: 'name',  header: 'NOMBRE', filter: new EdaColumnFilterMultiSelect()}),
                 new EdaColumnText({field: 'email', header: 'EMAIL'}),
                 new EdaColumnText({field: 'role',  header: 'GRUPS'}),
                 new EdaColumnText({field: 'auth',  header: 'AUTH'})

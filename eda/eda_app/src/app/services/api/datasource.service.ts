@@ -347,10 +347,9 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 model: { tables: this._databaseModel.getValue() }
             }
         };
-        console.log(body);
         this.updateModelInServer(this.model_id, body).subscribe(
             (r) => alert(r.message),
-            (err) => console.log(err)
+            (err) => this.alertService.addError(err)
         );
     }
 
