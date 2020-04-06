@@ -41,7 +41,8 @@ export class GroupListComponent implements OnInit {
                 new EdaColumnContextMenu(),
                 new EdaColumnText({field: 'name', header: 'NOMBRE'}),
                 new EdaColumnText({field: 'role', header: 'ROLE'})
-            ]
+            ],
+            autolayout:false
         });
     }
 

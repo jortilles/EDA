@@ -10,6 +10,7 @@ import { PageNotFoundComponent } from './pages/404/page-not-found.component';
 import { LogoutComponent } from './pages/logout/logout.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { ConditionsComponent } from './pages/conditions/conditions.component';
+import { AnonymousLoginComponent } from '../pages/anonimous-login/anonymous-login.component';
 
 
 
@@ -19,7 +20,8 @@ import { ConditionsComponent } from './pages/conditions/conditions.component';
         RegisterComponent,
         LogoutComponent,
         PageNotFoundComponent,
-        ConditionsComponent
+        ConditionsComponent,
+        AnonymousLoginComponent
     ],
     imports: [
         GlobalModule,
@@ -30,7 +32,8 @@ import { ConditionsComponent } from './pages/conditions/conditions.component';
         RegisterComponent,
         LogoutComponent,
         PageNotFoundComponent,
-        ConditionsComponent
+        ConditionsComponent,
+        AnonymousLoginComponent
     ]
 })
 export class InitModule {}

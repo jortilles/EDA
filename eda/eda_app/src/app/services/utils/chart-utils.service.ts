@@ -297,7 +297,7 @@ export class ChartUtilsService {
                         }],
                         yAxes: [{
                             // stacked: true
-                            ticks: { fontSize: 9, min: 0 }
+                            ticks: { fontSize: 9}
                         }]
                     },
                     plugins: {
@@ -398,7 +398,7 @@ export class ChartUtilsService {
                         yAxes: [
                             {
                                 id: 'y-axis-0', position: 'left',
-                                ticks: { fontSize: 9, min: 0 },
+                                ticks: { fontSize: 9},
                                 stacked: false
                             }
                         ]

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy } from '@angular/core';
 import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Dashboard, EdaPanel } from '@eda/models/model.index';
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { EdaDialogController, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
@@ -55,8 +55,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         minispinner: false, // mini spinner panel
         responsive: false, // responsive option
         rightSidebar: false, // sidebar dashboard options
-        groups: false
+        groups: false,
+        shared: false, //if shared copy url is displayed
+        edit_mode : true //editable dashboard
     };
+
+    public sharedURL:string;
 
     // Global filters vars
     public filtersList: Array<{ table, column, panelList, data, selectedItems, id, isGlobal, applyToAll }> = [];
@@ -67,7 +71,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         private alertService: AlertService,
         private fileUtiles: FileUtiles,
         private formBuilder: FormBuilder,
-        private route: ActivatedRoute) {
+        private route: ActivatedRoute,
+        private router: Router,) {
         this.initializeGridsterOptions();
         this.initializeForm();
     }
@@ -75,6 +80,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         this.dashboard = new Dashboard({});
         this.loadDashboard();
+        this.setEditMode();
     }
 
     /**
@@ -99,6 +105,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.edaPanelsSubscription) {
             this.edaPanelsSubscription.unsubscribe();
         }
+    }
+
+    setEditMode(){
+        const user = localStorage.getItem('user');
+        const userName = JSON.parse(user).name;
+        this.display_v.edit_mode = userName !== 'edaanonim';
     }
 
     initializeGridsterOptions(): void {
@@ -141,9 +153,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         this.visibleTypes = [
+            { label:  '', value : 'shared', icon : 'fa fa-share-alt'},
             { label: '', value: 'public', icon: 'fa fa-fw fa-globe' },
             { label: '', value: 'group', icon: 'fa fa-fw fa-users' },
-            { label: '', value: 'private', icon: 'fa fa-fw fa-lock' },
+            { label: '', value: 'private', icon: 'fa fa-fw fa-lock' }
         ];
 
         this.groupService.getGroupsByUser().subscribe(
@@ -158,6 +171,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         );
     }
 
+    checkVisibility(dashboard){
+      
+        if(!this.display_v.edit_mode && dashboard.config.visible !== 'shared'){
+            this.router.navigate(['/login']);
+        }
+
+        if(dashboard.config.visible === 'shared'){
+            this.sharedURL = this.getsharedURL();
+            this.display_v.shared = true;
+        }
+    }
+
     loadDashboard(): void {
         const me = this;
         me.route.paramMap.subscribe(
@@ -168,8 +193,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         if (me.id) {
             me.dashboardService.getDashboard(me.id).subscribe(
                 res => {
+    
                     /** res - retorna 2 objectes, el dashboard i el datasource per separat  */
                     const config = res.dashboard.config;
+
+                    //check dashboard owner
+                   this.checkVisibility(res.dashboard);
+
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
                     me.filtersList = !_.isNil(config.filters) ? config.filters : []; // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
@@ -215,6 +245,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
                 err => {
                     me.alertService.addError(err);
+                    if(err.text === "You don't have permission"){
+                        this.router.navigate(['/login']);
+                    }
                 }
             );
         } else {
@@ -424,10 +457,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    handleSelectedBtn(event): void {
+    handleSelectedBtn(event): void {        
         const groupControl = this.form.get('group');
         this.display_v.groups = event.value === 'group';
-
+        this.display_v.shared = event.value === 'shared';
         if (this.display_v.groups) {
             groupControl.setValidators(Validators.required);
         }
@@ -437,6 +470,38 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             groupControl.setValue(null);
         }
     }
+
+    getsharedURL(){
+        const url = location.href;
+        const baseURL = url.slice(0, url.indexOf('#'));
+        return `${baseURL}#/public/${this.id}`
+    }
+
+    copyURL(){
+        var $body = document.getElementsByTagName('body')[0];
+        const value =  this.getsharedURL();
+  
+        var copyToClipboard = function(value) {
+          var $tempInput = document.createElement('INPUT') as HTMLInputElement;
+          $body.appendChild($tempInput);
+          $tempInput.setAttribute('value', value) 
+          $tempInput.select();
+          document.execCommand('copy');
+          $body.removeChild($tempInput);
+        }
+
+        copyToClipboard(value);
+    }
+
+    // setVisibilityTooltip(visibility){
+    //     switch(visibility){
+    //         case 'shared' : this.visibilityTooltip = 'Público'; break;
+    //         case 'public' : this.visibilityTooltip = 'visible solo para usuarios registrados' ; break;
+    //         case 'group'  : this.visibilityTooltip = 'visible solo para mis grupos' ; break;
+    //         case 'private'  : this.visibilityTooltip = 'visible solo para mi' ; break;
+    //     }
+    // }
+
 
     setTitle(click: boolean): void {
         this.titleClick = click;

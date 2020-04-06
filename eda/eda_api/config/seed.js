@@ -1,1 +1,1 @@
-module.exports.SEED = 'que-haces-mirando-esto?-no-te interesa';
+module.exports.SEED  = 'que haces mirando esto';

@@ -1,3 +1,4 @@
+import { TableDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/table-dialog.component';
 // Eda Chart
 export { EdaChartComponent } from './eda-chart/eda-chart.component';
 
@@ -17,4 +18,5 @@ export { EdaKpiComponent } from './eda-kpi/eda-kpi.component';
 export { ColumnDialogComponent } from './eda-panels/eda-blank-panel/column-dialog/column-dialog.component';
 export { FilterDialogComponent } from './eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component';
 export { ChartDialogComponent } from './eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component';
+export { TableDialogComponent} from './eda-panels/eda-blank-panel/table-dialog/table-dialog.component'
 export { EdaDashboardPanelComponent } from './eda-panels/eda-dashboard-panel/eda-dashboard-panel.component';

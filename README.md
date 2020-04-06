@@ -20,7 +20,7 @@ Configuration is done in:
 
 The easies way to test eda is using docker: 
 
-**docker run -p 80:80 jortilles/eda:eda_1.2.1**
+**docker run -p 80:80 jortilles/eda:eda_1.2.2**
 
 Once the process if finish, just go to **http://localhost**
 

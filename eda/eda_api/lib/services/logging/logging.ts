@@ -6,7 +6,7 @@ var options = {
   file: {
     level: 'info',
     filename: `logs/app.log`,
-    handleExceptions: true,
+    handleExceptions: false,
     json: false,
     maxsize: 5242880, // 5MB
     maxFiles: 5,
@@ -14,7 +14,7 @@ var options = {
   },
   console: {
     level: 'debug',
-    handleExceptions: true,
+    handleExceptions: false,
     json: false,
     colorize: true,
   },

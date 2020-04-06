@@ -9,12 +9,14 @@ import { PagesComponent } from './module/pages/pages.component';
 // Guards
 import { LoginGuardGuard } from './services/guards/login-guard.guard';
 import {ConditionsComponent} from './module/global/pages/conditions/conditions.component';
+import { AnonymousLoginComponent } from './module/pages/anonimous-login/anonymous-login.component';
 
 
 export const appRoutes: Routes = [
     { path: '', component: LoginComponent },
     { path: 'login', component: LoginComponent },
     { path: 'conditions', component: ConditionsComponent },
+    { path: 'public/:dashboardID', component: AnonymousLoginComponent },
     {
         path: '',
         component: PagesComponent,

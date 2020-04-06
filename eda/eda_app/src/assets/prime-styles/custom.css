@@ -95,6 +95,11 @@ body .ui-corner-right {
     --danger-defaul-color: #c0555e;
     --danger-defaul-border-color: #e49da3;
 }
+
+.pi-sort:before {
+    content: "\e915";
+    color:white;
+}
 body a {
     color: var(--main-color);
     text-decoration: none;
@@ -1798,7 +1803,7 @@ body .ui-paginator .ui-paginator-pages .ui-paginator-page {
     /* vertical-align: top; */
 }
 body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
-    background-color: #007ad9;
+    background-color:#00000085;
     color: #ffffff;
 }
 body .ui-paginator .ui-paginator-pages .ui-paginator-page:not(.ui-state-active):hover {
@@ -1830,21 +1835,23 @@ body .ui-table .ui-table-summary {
 }
 body .ui-table .ui-table-thead > tr > th {
     padding: .25em .5em;
-    border: 1px solid #c8c8c8;
-    font-weight: 700;
-    color: #333333;
+    border: 1px solid #ffffff;
+    font-weight: normal;
+    color: white;
     /* background-color: rgba(53,115,136,0.2); */
-    background-color: rgba(0, 12, 25, 0.055);
+    background-color:#19a6a3;
 }
 body .ui-table .ui-table-tbody > tr > td {
     padding: 0.571em 0.857em;
 }
 body .ui-table .ui-table-tfoot > tr > td {
-    padding: 0.571em 0.857em;
-    border: 1px solid #c8c8c8;
-    font-weight: 700;
+    /* padding: 0.571em 0.857em; */
+    border: 1px solid #ffffff;
+    font-weight: normal;
     color: #333333;
     background-color: #ffffff;
+    padding-top: 1px!important;
+    padding-bottom: 1px!important;
 }
 body .ui-table .ui-sortable-column .ui-sortable-column-icon {
     color: #848484;
@@ -1857,7 +1864,7 @@ body .ui-table .ui-sortable-column:not(.ui-state-highlight):hover .ui-sortable-c
     color: #333333;
 }
 body .ui-table .ui-sortable-column.ui-state-highlight {
-    background-color: #007ad9;
+    background-color: #00000085;
     color: #ffffff;
 }
 body .ui-table .ui-sortable-column.ui-state-highlight .ui-sortable-column-icon {
@@ -1877,7 +1884,7 @@ body .ui-table .ui-table-tbody > tr {
 }
 body .ui-table .ui-table-tbody > tr > td {
     background-color: inherit;
-    border: 1px solid #c8c8c8;
+    border: 1px solid #faf8f8;
 }
 body .ui-table .ui-table-tbody > tr.ui-state-highlight {
     background-color: #007ad9;
@@ -1896,7 +1903,8 @@ body .ui-table .ui-table-tbody > tr.ui-table-dragpoint-bottom > td {
     box-shadow: inset 0 -2px 0 0 #007ad9;
 }
 body .ui-table .ui-table-tbody > tr:nth-child(even) {
-    background-color: #c7c8ce33;
+    background-color: #19a6a317;
+    color:black;
 }
 body .ui-table .ui-table-tbody > tr:nth-child(even).ui-state-highlight {
     background-color: #007ad9;

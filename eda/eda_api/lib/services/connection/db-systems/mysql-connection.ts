@@ -2,11 +2,13 @@ import { MysqlError, createConnection, Connection as SqlConnection } from 'mysql
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
 import DataSource from '../../../module/datasource/model/datasource.model';
+import { AggregationTypes }  from  "../../../module/global/model/aggregation-types";
 const util = require('util');
 
 
 export class MysqlConnection extends AbstractConnection {
     private queryBuilder: MySqlBuilderService;
+    private AggTypes: AggregationTypes;
 
     async getPool() {
         return createConnection(this.config);
@@ -72,7 +74,6 @@ export class MysqlConnection extends AbstractConnection {
             const rows = await this.pool.query(query);
             this.pool.end();
             return rows;
-
         } catch (err) {
             throw err;
         }
@@ -139,15 +140,7 @@ export class MysqlConnection extends AbstractConnection {
         column.column_type = this.normalizeType(column.column_type) || column.column_type;
 
         column.column_type === 'numeric'
-            ? column.aggregation_type = [
-                { value: 'sum', display_name: 'sum' },
-                { value: 'avg', display_name: 'avg' },
-                { value: 'max', display_name: 'max' },
-                { value: 'min', display_name: 'min' },
-                { value: 'count', display_name: 'count' },
-                { value: 'count_distinct', display_name: 'count distinct' },
-                { value: 'none', display_name: 'no' }
-            ]
+            ? column.aggregation_type =  AggregationTypes.getValues() 
             : column.aggregation_type = [{ value: 'none', display_name: 'no' }];
 
         column.column_granted_roles = [];
@@ -206,9 +199,10 @@ export class MysqlConnection extends AbstractConnection {
                         // Columnes
                         for (let i = 0; i < data_model[j].columns.length; i++) {
                             let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
-                            if ((sourceColumn.source_column.includes("_id") ||
-                                sourceColumn.source_column.includes("number") ||
-                                sourceColumn.source_column.includes("code"))
+                            if ((sourceColumn.source_column.toLowerCase().includes("_id") ||
+                                sourceColumn.source_column.toLowerCase().includes("id_") ||
+                                sourceColumn.source_column.toLowerCase().includes("number") ||
+                                sourceColumn.source_column.toLowerCase().includes("code"))
                                 && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
 
                                 // FER EL CHECK AMB ELS INNER JOINS ---- DESHABILITAT (Masses connexions a la db)

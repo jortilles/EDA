@@ -13,6 +13,22 @@ app-dashboard {
     display: flex!important;
     flex-direction: column!important;
 }
+#copy-link {
+    border: solid 1px #8b8a8a;
+    border-radius: 3px;
+    margin: 10px;
+    padding: 2px;
+    text-align: center;
+}
+#copy-link:hover {
+    border: solid 1px #8b8a8a;
+    border-radius: 3px;
+    background-color: rgba(152, 206, 219, 0.774);
+    margin: 10px;
+    padding: 2px;
+    text-align: center;
+    cursor: pointer;
+}
 
 .gridster-item-prototype {
     display: block;

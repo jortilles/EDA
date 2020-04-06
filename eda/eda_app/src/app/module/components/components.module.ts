@@ -17,7 +17,8 @@ import {
     EdaKpiComponent,
     ColumnDialogComponent,
     FilterDialogComponent,
-    ChartDialogComponent
+    ChartDialogComponent,
+    TableDialogComponent
  } from './component.index';
 
 
@@ -37,6 +38,7 @@ import {
         ColumnDialogComponent,
         FilterDialogComponent,
         ChartDialogComponent,
+        TableDialogComponent,
         PanelChartComponent
     ],
     exports: [

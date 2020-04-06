@@ -1,6 +1,10 @@
-<div class="text-center" style="width: 100%; height: 100%; padding: 7%;">
-    <div fittext>
-        <span > {{inject.value | number:'':'es'}} </span> <span *ngIf="inject.sufix"> {{inject.sufix}} </span>
+<div class="text-center" style="width: 100%; height: 100%;">
+    <div>
+            <div style=" padding-left:5%; padding-right: 5%;"  fittext minFontSize=18  activateOnResize=true >
+                <span   style="font-weight: bold;" > {{inject.value | number:'':'es'}} </span> 
+                <span *ngIf="inject.sufix"> {{inject.sufix}} </span>
+            </div>
+
         <h6 style="font-size: 16px;"> {{inject.header}} </h6>
     </div>
 </div>

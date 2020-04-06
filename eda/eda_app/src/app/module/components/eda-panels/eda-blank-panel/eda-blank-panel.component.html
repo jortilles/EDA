@@ -5,7 +5,7 @@
         </h6>
     </div>
 
-    <div>
+    <div *ngIf="display_v.edit_mode" id="edit">
         <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
     </div>
 </div>
@@ -235,5 +235,7 @@
 <app-filter-dialog *ngIf="filterController" [controller]="filterController"></app-filter-dialog>
 
 <app-chart-dialog *ngIf="chartController" [controller]="chartController"></app-chart-dialog>
+
+<app-table-dialog *ngIf="tableController" [controller]="tableController"></app-table-dialog>
 
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>

@@ -13,6 +13,7 @@ export class SidebarComponent implements OnInit {
     public user: User;
     public isAdmin: boolean;
     public dataSourceMenu: any[] = [];
+    public edit_mode : boolean = true;
 
     constructor(public router: Router,
                 public userService: UserService,
@@ -23,13 +24,20 @@ export class SidebarComponent implements OnInit {
 
     ngOnInit() {
         this.user = this.userService.user;
-
+        this.setEditMode()
         // Ens subscribim a l'observable currentDatasources que ha de tenir el valor actual dels noms dels datasources.
         this.sidebarService.currentDatasources.subscribe(
             data => this.dataSourceMenu = data,
             err => this.alertService.addError(err)
         );
     }
+
+    setEditMode(){
+        const user = localStorage.getItem('user');
+        const userName = JSON.parse(user).name;
+        this.edit_mode = userName !== 'edaanonim';
+    }
+
 
     logout() {
         this.userService.logout();

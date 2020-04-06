@@ -16,6 +16,7 @@ export class ChartDialogComponent extends EdaDialogAbstract {
     public dialog: EdaDialog;
     public chart: EdaChart;
 
+
     public drops = {
         pointStyles: [],
         pointSizes: [],

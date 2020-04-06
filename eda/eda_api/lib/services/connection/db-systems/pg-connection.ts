@@ -2,9 +2,12 @@ import { Client as PgClient } from 'pg';
 import { PgBuilderService } from "../../query-builder/qb-systems/pg-builder-service";
 import { AbstractConnection } from "../abstract-connection";
 import DataSource from '../../../module/datasource/model/datasource.model';
+import { AggregationTypes }  from  "../../../module/global/model/aggregation-types";
+
 
 export class PgConnection extends AbstractConnection {
     private queryBuilder: PgBuilderService;
+    private AggTypes: AggregationTypes;
 
     async getPool(){
         try{
@@ -145,16 +148,9 @@ export class PgConnection extends AbstractConnection {
         column.description = { default: this.normalizeName(column.column_name), localized: [] };
         column.column_type = this.normalizeType(column.column_type) || column.column_type;
 
+
         column.column_type === 'numeric'
-            ? column.aggregation_type = [
-                { value: 'sum', display_name: 'sum' },
-                { value: 'avg', display_name: 'avg' },
-                { value: 'max', display_name: 'max' },
-                { value: 'min', display_name: 'min' },
-                { value: 'count', display_name: 'count' },
-                { value: 'count_distinct', display_name: 'count distinct' },
-                { value: 'none', display_name: 'no' }
-            ]
+            ? column.aggregation_type =   AggregationTypes.getValues() 
             : column.aggregation_type = [{ value: 'none', display_name: 'no' }];
 
         column.column_granted_roles = [];
@@ -208,9 +204,10 @@ export class PgConnection extends AbstractConnection {
                         // Columnes
                         for (let i = 0; i < data_model[j].columns.length; i++) {
                             let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
-                            if ((sourceColumn.source_column.includes("_id") ||
-                                sourceColumn.source_column.includes("number") ||
-                                sourceColumn.source_column.includes("code"))
+                            if ((sourceColumn.source_column.toLowerCase().includes("_id") ||
+                                sourceColumn.source_column.toLowerCase().includes("id_") ||
+                                sourceColumn.source_column.toLowerCase().includes("number") ||
+                                sourceColumn.source_column.toLowerCase().includes("code"))
                                 && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
 
                                 // FER EL CHECK AMB ELS INNER JOINS ---- DESHABILITAT (Masses connexions a la db)

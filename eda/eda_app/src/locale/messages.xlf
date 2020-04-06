@@ -1,0 +1,1033 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="placeholderInputUsuario" datatype="html">
+        <source>Usuario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/global/pages/login/login.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholderInputPassword" datatype="html">
+        <source>Contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/global/pages/login/login.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <note priority="1" from="description">input password </note>
+        <note priority="1" from="meaning">placeholder</note>
+      </trans-unit>
+      <trans-unit id="spanRememberme" datatype="html">
+        <source>Recuérdame</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/global/pages/login/login.component.html</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="spanForgotPassword" datatype="html">
+        <source>Olvide la contraseña?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/global/pages/login/login.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="signinBtn" datatype="html">
+        <source>Ingresar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/global/pages/login/login.component.html</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebarProfile" datatype="html">
+        <source>Perfil</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebarSettings" datatype="html">
+        <source>Ajustes de Cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebarUserManagement" datatype="html">
+        <source>Gestión de Usuarios</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebarGroupManagement" datatype="html">
+        <source>Gestión de Grupos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebarLogOut" datatype="html">
+        <source>Cerrar sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebarMyDashboards" datatype="html">
+        <source>Mis informes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebarDataFonts" datatype="html">
+        <source>Fuente de Datos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebarNewDb" datatype="html">
+        <source>Nueva Fuente</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="sidebarEditDb" datatype="html">
+        <source>Editar Fuente</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="conditionsP1" datatype="html">
+        <source>Esta aplicación es una demo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/global/pages/conditions/conditions.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="conditionsP2" datatype="html">
+        <source>No ofrece ninguna garantía y no somos responsables del uso que se haga de la misma.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/global/pages/conditions/conditions.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="conditionsP3" datatype="html">
+        <source>Usala bajo tu responsabilidad.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/global/pages/conditions/conditions.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="cerrarBtn" datatype="html">
+        <source>Cerrar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/global/pages/conditions/conditions.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/home/add-dashboard/add-dashboard.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="agregacionesH4" datatype="html">
+        <source>
+                Agregaciones
+            </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ordenacionH4" datatype="html">
+        <source>
+                Ordenación
+            </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="filtrarH4" datatype="html">
+        <source>
+                Filtrar
+            </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tiposFiltrosLabel" datatype="html">
+        <source>
+                            Tipos de filtro
+                        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="fechaLabel" datatype="html">
+        <source>
+                                    Fecha
+                                </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">78</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="valorFiltrarLabel" datatype="html">
+        <source>
+                                    Valor a filtrar
+                                </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">116</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="fechaInicioLabel" datatype="html">
+        <source>
+                                    Fecha inicio
+                                </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">93</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="fechaFinalLabel" datatype="html">
+        <source>
+                                    Fecha final
+                                </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">151</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="valor1Label" datatype="html">
+        <source>
+                                    Valor 1
+                                </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">174</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">206</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">162</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="valor2Label" datatype="html">
+        <source>
+                                    Valor 2
+                                </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">190</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">225</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">146</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">181</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="optionsLabel" datatype="html">
+        <source>
+                                Opciones
+                            </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">250</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">206</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addFilterBtn" datatype="html">
+        <source>Añadir filtro</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">270</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dateFormatH4" datatype="html">
+        <source>
+                        Formato
+                    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">290</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="guardarButton" datatype="html">
+        <source>Guardar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
+          <context context-type="linenumber">362</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tiposFiltroLabel" datatype="html">
+        <source>
+                            Tipos de filtro
+                        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addFilterButton" datatype="html">
+        <source>Añadir filtro</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">226</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="guardarBtn" datatype="html">
+        <source>Guardar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
+          <context context-type="linenumber">291</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">222</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/home/add-dashboard/add-dashboard.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/groups-management/group-detail/group-detail.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="colorsChartH6" datatype="html">
+        <source>
+                Colores
+            </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="cancelarButton" datatype="html">
+        <source>Cancelar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="entidadesH4" datatype="html">
+        <source>
+                            Entidades
+                        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="atributosH4" datatype="html">
+        <source>
+                            Atributos
+                        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="seleccionH4" datatype="html">
+        <source>
+                            Selección
+                        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="filtrosH4" datatype="html">
+        <source>
+                            Filtros
+                        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">101</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="consultaH4" datatype="html">
+        <source>
+                                Nuestra consulta
+                            </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">124</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resumenAtrH6" datatype="html">
+        <source>
+                                    Resumen de atributos
+                                </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">130</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resumenFiltrosPanelH6" datatype="html">
+        <source>
+                                        Resumen de filtros del panel
+                                    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">147</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resumenFiltrosInformeH6" datatype="html">
+        <source>
+                                        Resumen de filtros del informe
+                                    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">157</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="vistaSeleccionador" datatype="html">
+        <source>EDITAR CONSULTA</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="vistaPrevia" datatype="html">
+        <source>VISTA PREVIA</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">172</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ejecutarBtn" datatype="html">
+        <source>Ejecutar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">218</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="cancelarBtn" datatype="html">
+        <source>Cancelar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">226</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tituloNuevoInforme" datatype="html">
+        <source>
+                    NUEVO INFORME
+                </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tituloGrupoPublicos" datatype="html">
+        <source>
+            PÚBLICOS
+        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tituloGrupoMisGrupos" datatype="html">
+        <source>
+            MIS GRUPOS
+        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tituloGrupoPersonales" datatype="html">
+        <source>
+            PERSONALES
+        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="labelDameNombre" datatype="html">
+        <source>Dame un nombre *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/home/add-dashboard/add-dashboard.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="selectFuenteDatos" datatype="html">
+        <source>Selecciona una fuente de datos *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/home/add-dashboard/add-dashboard.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="selectGrup" datatype="html">
+        <source>Selecciona un grupo *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/home/add-dashboard/add-dashboard.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="opcionTitulo1" datatype="html">
+        <source>NUEVO PANEL</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="opcionTitulo2" datatype="html">
+        <source>NUEVO FILTRO</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="opcionTitulo3" datatype="html">
+        <source>RECARGAR INFORME</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="opcionTitulo4" datatype="html">
+        <source>GUARDAR INFORME</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholderSelectGruop" datatype="html">
+        <source>Selecciona un grupo *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">89</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="temasColors" datatype="html">
+        <source>Temas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/account-settings/account-settings.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="menuClaro" datatype="html">
+        <source>Con el menu claro</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/account-settings/account-settings.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="menuOscuro" datatype="html">
+        <source>Con el menu oscuro</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/account-settings/account-settings.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tituloPerfilUsuario" datatype="html">
+        <source>Perfil del usuario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="labelNombreUsuario" datatype="html">
+        <source>Nombre de usuario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="labelUsuarioEmail" datatype="html">
+        <source>Correo de usuario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="labelImagenUsuario" datatype="html">
+        <source>
+                    Fotografía del usuario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+        <note priority="1" from="description">Label del input imagen de usuario</note>
+        <note priority="1" from="meaning">Label Input Imagen</note>
+      </trans-unit>
+      <trans-unit id="button" datatype="html">
+        <source>Actualizar Foto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+        <note priority="1" from="description">Button actualizar foto profile</note>
+        <note priority="1" from="meaning">Button</note>
+      </trans-unit>
+      <trans-unit id="nuevoUsuarioBtn" datatype="html">
+        <source>Crear usuario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/users-management/users-list/users-list.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputNombre" datatype="html">
+        <source>Nombre *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">162</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/groups-management/group-detail/group-detail.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputEmail" datatype="html">
+        <source>Correo *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputPassword" datatype="html">
+        <source>Contraseña *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">203</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputSeguridad" datatype="html">
+        <source>Seguridad *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputRepitePassword" datatype="html">
+        <source>Repite la contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputGrupo" datatype="html">
+        <source>Grupo *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputTipo" datatype="html">
+        <source>TIPO *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">172</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">177</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placholderSelectTipo" datatype="html">
+        <source>Selecciona un tipo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputServidor" datatype="html">
+        <source>SERVIDOR *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputNombreDb" datatype="html">
+        <source>BASE DE DATOS *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputPort" datatype="html">
+        <source>PUERTO *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputUsuario" datatype="html">
+        <source>USUARIO *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tituloCard" datatype="html">
+        <source>Modelo de datos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <note priority="1" from="description">Titulo card</note>
+        <note priority="1" from="meaning">Titulo Card</note>
+      </trans-unit>
+      <trans-unit id="inputNombreTecnico" datatype="html">
+        <source>Nombre técnico</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">91</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputDescripcion" datatype="html">
+        <source> Descripción </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputEsconderTabla" datatype="html">
+        <source>Esconder tabla</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputTipoTabla" datatype="html">
+        <source>Tipo de tabla</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="virtualScrollerRelaciones" datatype="html">
+        <source>
+					Relaciones
+				</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addRelation" datatype="html">
+        <source>Añadir relación</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputTipoColumna" datatype="html">
+        <source>
+					Tipo de columna
+				</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">105</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="agregacionH6" datatype="html">
+        <source>
+					Agregación
+				</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">116</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="rolesPermisos" datatype="html">
+        <source>Roles y permisos de fila</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">128</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addPermissions" datatype="html">
+        <source>Añadir permiso</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">133</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="esconderColumna" datatype="html">
+        <source>Esconder columna</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">137</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="metadata" datatype="html">
+        <source>
+				Metadata
+			</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">157</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="conexionH5" datatype="html">
+        <source>
+				Conexión
+			</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">168</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputHost" datatype="html">
+        <source>
+					Host
+				</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">182</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputNombreDB" datatype="html">
+        <source>
+					Base de datos
+				</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">189</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputNombreUsuario" datatype="html">
+        <source>
+					Usuario
+				</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">196</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholderSourceColumns" datatype="html">
+        <source>Columna origen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholderTargetTables" datatype="html">
+        <source>tabla destino</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholderTargetColumns" datatype="html">
+        <source>Columna destino</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="crearGrupoLabel" datatype="html">
+        <source>Crear grupo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/groups-management/group-list/group-list.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="0acf4e0f9350f920b529a38364281d337c54edfd" datatype="html">
+        <source>Cerrar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/groups-management/group-detail/group-detail.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+        <note priority="1" from="description">cerrarBtn</note>
+      </trans-unit>
+      <trans-unit id="aplyToAllPanelsH5" datatype="html">
+        <source>
+            ¿Aplica a todos los paneles?
+        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="panelsToAplyH5" datatype="html">
+        <source>
+                Paneles para los que aplica el filtro:
+            </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="filterForH5" datatype="html">
+        <source>
+                Filtrar por:
+            </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholderTables" datatype="html">
+        <source>Tablas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="placeholderColumns" datatype="html">
+        <source>Columnas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tituloPermisosColumna" datatype="html">
+        <source>Añadir permiso</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

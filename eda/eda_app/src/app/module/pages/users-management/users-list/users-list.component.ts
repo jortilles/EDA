@@ -41,7 +41,8 @@ export class UsersLlistaComponent implements OnInit {
                 new EdaColumnText({field: 'email', header: 'EMAIL'}),
                 new EdaColumnText({field: 'role',  header: 'GRUPS'}),
                 new EdaColumnText({field: 'auth',  header: 'AUTH'})
-            ]
+            ],
+            autolayout:false
         });
     }
 

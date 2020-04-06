@@ -8,7 +8,8 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'app-home',
-    templateUrl: './home.component.html'
+    templateUrl: './home.component.html',
+    styleUrls: ['../../../../assets/eda-styles/components/home.component.css']
 })
 export class HomeComponent implements OnInit {
     public dashController: EdaDialogController;
@@ -16,7 +17,8 @@ export class HomeComponent implements OnInit {
     public dashboards = {
         publics: [],
         privats: [],
-        grups: []
+        grups: [],
+        shared:[]
     };
     public groups: IGroup[] = [];
     public isAdmin: boolean;
@@ -30,11 +32,20 @@ export class HomeComponent implements OnInit {
 
     ngOnInit() {
         this.init();
+        this.ifAnonymousGetOut();
     }
 
     init() {
         this.initDatasources();
         this.initDashboards();
+    }
+
+    ifAnonymousGetOut(){
+        const user = localStorage.getItem('user');
+        const userName = JSON.parse(user).name;
+         if ( userName === 'edaanonim') {
+            this.router.navigate(['/login']);
+        }
     }
 
     initDatasources() {
@@ -50,6 +61,7 @@ export class HomeComponent implements OnInit {
                 this.dashboards.privats = res.dashboards;
                 this.dashboards.publics = res.publics;
                 this.dashboards.grups = res.group;
+                this.dashboards.shared = res.shared;
                 this.groups = _.map(_.uniqBy(res.group, 'group._id'), 'group');
 
                 this.isAdmin = res.isAdmin;

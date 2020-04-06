@@ -24,6 +24,7 @@ export class EdaTable {
 
     public cols: EdaColumn[] = [];
     public rows: number = 10;
+    public initRows: number = 10;
     public search: boolean = false;
     public loading: boolean = false;
     public alertService: AlertService;
@@ -41,10 +42,18 @@ export class EdaTable {
     private lastFunctLoad: Observable<any>;
 
     public series: Array<any>;
+    public partialTotalsRow: Array<any> = [];
+    public totalsRow: Array<any> = [];
+    public withColTotals: boolean = false;
+    public withRowTotals: boolean = false;
+    public withColSubTotals: boolean = false;
+    public autolayout : boolean = true;
 
     public constructor(init: Partial<EdaTable>) {
         Object.assign(this, init);
-
+        if (init['tableConfig']) {
+            this.initRows = init["tableConfig"].visibleRows || 10;
+        }
     }
 
     get value() {
@@ -74,6 +83,13 @@ export class EdaTable {
 
     public onPage(event: { first, rows }): void {
         this.rows = event.rows;
+        this.initRows = event.rows;
+        this.checkTotals(event);
+    }
+
+
+    onSort() {
+        this.checkTotals(null);
     }
 
     public load(funct: Observable<any>) {
@@ -144,6 +160,170 @@ export class EdaTable {
         });
         return out;
     }
+
+    checkTotals(event) {
+        if (this.withRowTotals) {
+            this.rowTotals();
+        } else {
+            if (this.series) {
+
+                this.deleteRowTotals();
+            }
+        }
+        if (this.withColTotals) {
+            this.coltotals();
+        }
+        if (this.withColSubTotals) {
+            event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
+        }
+    }
+
+    deleteRowTotals() {
+        const numSeries = this.series.length;
+        const withTotalcols = this.cols.filter(col => col.styleClass === 'total-col').length > 0;
+        const series = [];
+        this.series.forEach(serie => {
+            if(!series.includes(serie.title)){
+                series.push(serie);
+            }
+        })
+        if (withTotalcols) {
+            
+            this.cols = this.cols.filter(col => col.styleClass !== 'total-col');
+            this.series[numSeries - 2].labels = this.series[numSeries - 2].labels.filter(label => label.title !== "Totals");
+            // const rowLabelsLength = this.series[numSeries - 1].labels.length - series.length;
+            this.series[numSeries - 1].labels = this.series[numSeries - 1].labels.slice(0, this.cols.length -1)
+        }
+    }
+
+    rowTotals() {
+        if (this.pivot === true) {
+            const rowKeys = Object.keys(this._value[0]);
+            const colNames = this.cols.map(col => col.field);
+
+            //get unique names for same metric in each sub-set -> columns : A-income, B-income, A-amount, B-amount -> returns:  [income, amount]
+            const valuesKeys = Array.from(new Set(Object.keys(this._value[0]).slice(1).map(key => key.slice(key.lastIndexOf('-') + 1)))); //sorry not sorry :P
+
+            //get names for new columns from series array
+            let pretyNames;
+            if (this.series[0].labels.length > 2) {
+                pretyNames = Array.from(new Set(this.series[this.series.length - 1].labels.map(serie => serie.title)))
+            } else {
+                pretyNames = [this.series[0].labels[this.series[0].labels.length - 1].title];
+            }
+
+
+            //add total header
+            if (!colNames.includes(valuesKeys[0])) {
+                this.series[this.series.length - 2].labels.push({ title: `Totals`, rowspan: 1, colspan: valuesKeys.length });
+            }
+
+            //add cols and headers
+            valuesKeys.forEach((valueKey, i) => {
+                if (!colNames.includes(valueKey)) {
+                    const col = new EdaColumnNumber({ header: valueKey, field: valueKey });
+                    col.styleClass = 'total-col';
+                    this.cols.push(col);
+                    this.series[this.series.length - 1].labels.push({ title: pretyNames[i], rowspan: 2, colspan: 1 });
+                }
+            });
+
+            //put values in each row
+            this._value.forEach(row => {
+                let totals = {};
+                valuesKeys.forEach(key => {
+                    totals[key] = 0;
+                    row[key] = 0;
+                });
+                rowKeys.forEach(key => {
+                    valuesKeys.forEach(valueKey => {
+                        if (key.includes(valueKey)) {
+                            totals[valueKey] = totals[valueKey] + row[key];
+                        }
+                    });
+                });
+                Object.entries(totals).forEach(pair => {
+                    row[pair[0]] = pair[1];
+                })
+            });
+        }
+    }
+
+    colSubTotals(page) {
+        this.partialTotalsRow = [];
+        const offset = page * this.initRows - this.initRows;
+        let partialRow = this.sumPartialRows(offset);
+        //this.partialTotalsRow.push({ data: " ", style: "text-align:left border:0px" });
+        this.cols.forEach((col, i) => {
+            if (col.type === "EdaColumnNumber") {
+                this.partialTotalsRow.push(
+                    {
+                        data: parseFloat(partialRow[col.field].toFixed(2))
+                            .toLocaleString('de-DE'),
+                        style: "right",
+                        class: "sub-total-row",
+                        border: ''
+                    });
+            } else {
+                this.partialTotalsRow.push({ data: " ", border: "0px", class: '' });
+            }
+        })
+    }
+
+    coltotals() {
+        this.withColTotals = true;
+        this.totalsRow = [];
+        let row = this.buildTotalRow();
+        const values = this._value;
+        const keys = Object.keys(values[0]);
+        for (let i = 0; i < values.length; i++) {
+            for (let j = 0; j < keys.length; j++) {
+                if (j > 0 && i < values.length) {
+                    row[keys[j]] = row[keys[j]] + values[i][keys[j]];
+                }
+            }
+        }
+        this.cols.forEach((col, i) => {
+            if (col.type === "EdaColumnNumber") {
+                this.totalsRow.push(
+                    {
+                        data: parseFloat(row[col.field].toFixed(2))
+                            .toLocaleString('de-DE'),
+                        style: "right",
+                        class: "total-row",
+                        border: ''
+                    });
+            } else {
+                this.totalsRow.push({ data: " ", border: "0px", class: '' });
+            }
+        });
+    }
+    buildTotalRow() {
+        let row = {};
+        const keys = Object.keys(this._value[0]);
+        for (let i = 0; i < keys.length; i++) {
+            if (i > 0) row[keys[i]] = 0;
+            else row["total"] = 'total';
+        }
+        return row;
+    }
+    sumPartialRows(offset: number) {
+        let row = this.buildTotalRow();
+        const values = this._value;
+        const keys = Object.keys(values[0]);
+        const lastValue = this.initRows + offset;
+        for (let i = offset; i < lastValue; i++) {
+            for (let j = 0; j < keys.length; j++) {
+
+                if (j > 0 && i < values.length) {
+                    row[keys[j]] = row[keys[j]] + values[i][keys[j]];
+
+                }
+            }
+        }
+        return row;
+    }
+
     PivotTable() {
         const colsInfo = this.getColsInfo();
         const oldRows = this.getValues();
@@ -156,7 +336,6 @@ export class EdaTable {
         let newLabels;
         seriesLabels.forEach((serie, index) => {
             let colsRows = this.buildPivotSerie(index);
-            // console.log(colsRows)
             rowsToMerge.push(colsRows.rows);
             colsToMerge.push(colsRows.cols);
             if (index === 0) {
@@ -167,6 +346,8 @@ export class EdaTable {
         this.buildHeaders(newLabels, colsInfo);
         this._value = this.mergeRows(rowsToMerge);
         this.cols = this.mergeColumns(colsToMerge);
+        // this.colSubTotals(1);
+        // this.coltotals();
     }
     /**
      * Build a serie to pivot (one serie per metric)
@@ -369,7 +550,6 @@ export class EdaTable {
      * @param colsInfo contains userName for main column
      */
     buildHeaders(labels: any, colsInfo: any) {
-
         let series = [];
         const numRows = labels.seriesLabels.length + 1 //1 for metrics labels
         let numCols = 1;

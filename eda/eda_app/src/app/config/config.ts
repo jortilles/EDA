@@ -1,1 +1,1 @@
-export const URL_SERVICES = '/edapi';
+export const URL_SERVICES = 'http://localhost:8666';

@@ -16,7 +16,8 @@
         <span *ngFor="let filter of this.filtersList">
             <p-multiSelect [options]="filter.data" [(ngModel)]="filter.selectedItems" [virtualScroll]="true"
                 itemSize="30" defaultLabel="{{filter.column.label}}"
-                [style]="{'width':'10%', 'vertical-align': 'middle'}" maxSelectedLabels="1"
+                class="global-filter-dropdown"
+                 maxSelectedLabels="1"
                 (onPanelHide)="applyGlobalFilter(filter)">
 
                 <p-footer>
@@ -83,21 +84,30 @@
     <div>
         <form [formGroup]="form">
             <div style="margin: 8px; display: flex;">
-                <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)"></p-selectButton>
+                <p-selectButton [options]="visibleTypes" formControlName="visible" 
+                (onChange)="handleSelectedBtn($event)">
+                </p-selectButton>
                 <div>
                     <p-dropdown *ngIf="display_v.groups" id="float-grups" formControlName="group" [options]="grups"
                         optionLabel="name" [showClear]="true" i18n-placeholder="@@placeholderSelectGruop" placeholder="Selecciona un grupo *">
                     </p-dropdown>
                 </div>
+    
             </div>
         </form>
+        <button id="copy-link" (click)="copyURL()" *ngIf="display_v.shared">
+            <span>
+                <i class="fa fa-files-o" aria-hidden="true"></i>
+                copiar URL pública
+            </span>
+        </button>
     </div>
 
 
 
 </p-sidebar>
 
-<div>
+<div *ngIf="display_v.edit_mode">
     <button (click)="display_v.rightSidebar = true" class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
         <i class="fa fa-cog text-white"></i>
     </button>

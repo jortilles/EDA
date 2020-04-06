@@ -3,15 +3,15 @@ import { EdaTableComponent } from './../../../eda-table/eda-table.component';
 import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { PanelChart } from './panel-chart';
 import { ChartUtilsService } from '@eda/services/service.index';
-import * as _ from 'lodash';
-import {
-  EdaColumnText,
-  EdaColumnNumber,
-  EdaColumnDate,
-  EdaTable,
-  EdaChartComponent
-} from '@eda/components/component.index';
+
 import { Column } from '@eda/models/model.index';
+import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
+import { EdaColumnDate } from '@eda/components/eda-table/eda-columns/eda-column-date';
+import { EdaColumnNumber } from '@eda/components/eda-table/eda-columns/eda-column-number';
+import { EdaColumnText } from '@eda/components/eda-table/eda-columns/eda-column-text';
+import { EdaTable } from '@eda/components/eda-table/eda-table';
+
+import * as _ from 'lodash';
 
 @Component({
   selector: 'panel-chart',
@@ -35,7 +35,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
   public NO_DATA: boolean;
 
   constructor(
-    private resolver: ComponentFactoryResolver,
+    public resolver: ComponentFactoryResolver,
     private chartUtils: ChartUtilsService
   ) { }
 
@@ -111,7 +111,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
   private renderEdaKpi() {
     let chartConfig: any = {};
     chartConfig.value = this.config.data.values[0][0];
-    chartConfig.header = this.config.query[0].display_name.default; 
+    chartConfig.header = this.config.query[0].display_name.default;
     this.createEdaKpiComponent(chartConfig);
 
   }
@@ -141,9 +141,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.config.data.labels, this.config.data.values);
     const layout = this.config.layout;
     if (layout && layout.tableConfig) {
-      this.componentRef.instance.inject.rows = layout.tableConfig;
-    } 
+      this.componentRef.instance.inject.rows = layout.tableConfig.visibleRows;
+      this.setTableProperties(layout);
+    }
     this.currentConfig = this.componentRef.instance.inject;
+  }
+
+  private setTableProperties(layout) {
+   
+    this.componentRef.instance.inject.withColTotals= layout.tableConfig.withColTotals;
+    this.componentRef.instance.inject.withColSubTotals = layout.tableConfig.withColSubTotals;
+    this.componentRef.instance.inject.withRowTotals = layout.tableConfig.withRowTotals;
+    this.componentRef.instance.inject.checkTotals(null, layout.tableConfig.visibleRows);
   }
 
   /**

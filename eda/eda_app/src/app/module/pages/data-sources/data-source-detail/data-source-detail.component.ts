@@ -38,12 +38,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     // Aggregation Types
     public selectedAggType: any;
     public aggTypes: SelectItem[] = [
-        { label: 'sum', value: 'sum' },
-        { label: 'avg', value: 'avg' },
-        { label: 'max', value: 'max' },
-        { label: 'min', value: 'min' },
-        { label: 'count', value: 'count' },
-        { label: 'count distinct', value: 'count_distinct' }
+        { label: 'Suma', value: 'sum' },
+        { label: 'Media', value: 'avg' },
+        { label: 'Máximo', value: 'max' },
+        { label: 'Mínimo', value: 'min' },
+        { label: 'Cuenta Valores', value: 'count' },
+        { label: 'Valores Distintos', value: 'count_distinct' }
     ];
 
     // Relations

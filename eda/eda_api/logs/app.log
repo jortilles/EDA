@@ -2999,3 +2999,796 @@
   userMail: 'jj@jj.com',
   ip: '::1',
   timestamp: '2020-03-19T11:50:18.419Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'an@an.com',
+  ip: '::1',
+  timestamp: '2020-04-01T13:12:19.243Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'an@an.com',
+  ip: '::1',
+  timestamp: '2020-04-01T13:29:37.091Z' }
+{ error:
+   { Error: read ECONNRESET
+       at TLSWrap.onStreamRead (internal/stream_base_commons.js:111:27)
+     name: 'MongoNetworkError',
+     [Symbol(mongoErrorContextSymbol)]: {} },
+  level: 'error',
+  message:
+   'uncaughtException: read ECONNRESET\nError: read ECONNRESET\n    at TLSWrap.onStreamRead (internal/stream_base_commons.js:111:27)',
+  stack:
+   'Error: read ECONNRESET\n    at TLSWrap.onStreamRead (internal/stream_base_commons.js:111:27)',
+  exception: true,
+  date: 'Wed Apr 01 2020 15:50:47 GMT+0200 (GMT+02:00)',
+  process:
+   { pid: 18952,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 56086528,
+        heapTotal: 34381824,
+        heapUsed: 28832032,
+        external: 19628858 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 1294345 },
+  trace:
+   [ { column: 27,
+       file: 'internal/stream_base_commons.js',
+       function: 'TLSWrap.onStreamRead',
+       line: 111,
+       method: 'onStreamRead',
+       native: false } ],
+  timestamp: '2020-04-01T13:50:47.880Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'an@an.com',
+  ip: '::1',
+  timestamp: '2020-04-01T13:53:38.402Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'an@an.com',
+  ip: '::1',
+  timestamp: '2020-04-01T14:01:34.224Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'an@an.com',
+  ip: '::1',
+  timestamp: '2020-04-01T14:11:36.622Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'an@an.com',
+  ip: '::1',
+  timestamp: '2020-04-01T14:11:48.991Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'an@an.com',
+  ip: '::1',
+  timestamp: '2020-04-02T05:59:51.683Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T06:13:25.197Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T06:31:06.878Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T06:34:40.437Z' }
+{ error:
+   Error: Illegal arguments: undefined, string
+       at Object.bcrypt.hashSync (D:\Proyectos\EDA\eda_api\node_modules\bcryptjs\dist\bcrypt.js:189:19)
+       at user_model_1.default.findById (D:\Proyectos\EDA\eda_api\dist\module\admin\users\user.controller.js:197:48)
+       at D:\Proyectos\EDA\eda_api\node_modules\mongoose\lib\model.js:4791:16
+       at D:\Proyectos\EDA\eda_api\node_modules\mongoose\lib\query.js:4389:12
+       at process.nextTick (D:\Proyectos\EDA\eda_api\node_modules\mongoose\lib\query.js:2868:28)
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Illegal arguments: undefined, string\nError: Illegal arguments: undefined, string\n    at Object.bcrypt.hashSync (D:\\Proyectos\\EDA\\eda_api\\node_modules\\bcryptjs\\dist\\bcrypt.js:189:19)\n    at user_model_1.default.findById (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\admin\\users\\user.controller.js:197:48)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\model.js:4791:16\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:4389:12\n    at process.nextTick (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:2868:28)\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'Error: Illegal arguments: undefined, string\n    at Object.bcrypt.hashSync (D:\\Proyectos\\EDA\\eda_api\\node_modules\\bcryptjs\\dist\\bcrypt.js:189:19)\n    at user_model_1.default.findById (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\admin\\users\\user.controller.js:197:48)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\model.js:4791:16\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:4389:12\n    at process.nextTick (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:2868:28)\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Apr 02 2020 08:38:46 GMT+0200 (GMT+02:00)',
+  process:
+   { pid: 22172,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 48324608,
+        heapTotal: 30711808,
+        heapUsed: 25793296,
+        external: 19443436 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 1354824 },
+  trace:
+   [ { column: 19,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\bcryptjs\\dist\\bcrypt.js',
+       function: 'Object.bcrypt.hashSync',
+       line: 189,
+       method: 'hashSync',
+       native: false },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\module\\admin\\users\\user.controller.js',
+       function: 'user_model_1.default.findById',
+       line: 197,
+       method: 'findById',
+       native: false },
+     { column: 16,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\model.js',
+       function: null,
+       line: 4791,
+       method: null,
+       native: false },
+     { column: 12,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js',
+       function: null,
+       line: 4389,
+       method: null,
+       native: false },
+     { column: 28,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js',
+       function: 'process.nextTick',
+       line: 2868,
+       method: 'nextTick',
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-04-02T06:38:46.823Z' }
+{ error:
+   Error: Illegal arguments: undefined, string
+       at Object.bcrypt.hashSync (D:\Proyectos\EDA\eda_api\node_modules\bcryptjs\dist\bcrypt.js:189:19)
+       at user_model_1.default.findById (D:\Proyectos\EDA\eda_api\dist\module\admin\users\user.controller.js:197:48)
+       at D:\Proyectos\EDA\eda_api\node_modules\mongoose\lib\model.js:4791:16
+       at D:\Proyectos\EDA\eda_api\node_modules\mongoose\lib\query.js:4389:12
+       at process.nextTick (D:\Proyectos\EDA\eda_api\node_modules\mongoose\lib\query.js:2868:28)
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Illegal arguments: undefined, string\nError: Illegal arguments: undefined, string\n    at Object.bcrypt.hashSync (D:\\Proyectos\\EDA\\eda_api\\node_modules\\bcryptjs\\dist\\bcrypt.js:189:19)\n    at user_model_1.default.findById (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\admin\\users\\user.controller.js:197:48)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\model.js:4791:16\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:4389:12\n    at process.nextTick (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:2868:28)\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'Error: Illegal arguments: undefined, string\n    at Object.bcrypt.hashSync (D:\\Proyectos\\EDA\\eda_api\\node_modules\\bcryptjs\\dist\\bcrypt.js:189:19)\n    at user_model_1.default.findById (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\admin\\users\\user.controller.js:197:48)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\model.js:4791:16\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:4389:12\n    at process.nextTick (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:2868:28)\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Apr 02 2020 08:40:41 GMT+0200 (GMT+02:00)',
+  process:
+   { pid: 22544,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62328832,
+        heapTotal: 59547648,
+        heapUsed: 24115488,
+        external: 18755785 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 1354940 },
+  trace:
+   [ { column: 19,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\bcryptjs\\dist\\bcrypt.js',
+       function: 'Object.bcrypt.hashSync',
+       line: 189,
+       method: 'hashSync',
+       native: false },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\module\\admin\\users\\user.controller.js',
+       function: 'user_model_1.default.findById',
+       line: 197,
+       method: 'findById',
+       native: false },
+     { column: 16,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\model.js',
+       function: null,
+       line: 4791,
+       method: null,
+       native: false },
+     { column: 12,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js',
+       function: null,
+       line: 4389,
+       method: null,
+       native: false },
+     { column: 28,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js',
+       function: 'process.nextTick',
+       line: 2868,
+       method: 'nextTick',
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-04-02T06:40:42.045Z' }
+{ error:
+   Error: Illegal arguments: undefined, string
+       at Object.bcrypt.hashSync (D:\Proyectos\EDA\eda_api\node_modules\bcryptjs\dist\bcrypt.js:189:19)
+       at user_model_1.default.findById (D:\Proyectos\EDA\eda_api\dist\module\admin\users\user.controller.js:197:48)
+       at D:\Proyectos\EDA\eda_api\node_modules\mongoose\lib\model.js:4791:16
+       at D:\Proyectos\EDA\eda_api\node_modules\mongoose\lib\query.js:4389:12
+       at process.nextTick (D:\Proyectos\EDA\eda_api\node_modules\mongoose\lib\query.js:2868:28)
+       at process._tickCallback (internal/process/next_tick.js:61:11),
+  level: 'error',
+  message:
+   'uncaughtException: Illegal arguments: undefined, string\nError: Illegal arguments: undefined, string\n    at Object.bcrypt.hashSync (D:\\Proyectos\\EDA\\eda_api\\node_modules\\bcryptjs\\dist\\bcrypt.js:189:19)\n    at user_model_1.default.findById (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\admin\\users\\user.controller.js:197:48)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\model.js:4791:16\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:4389:12\n    at process.nextTick (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:2868:28)\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  stack:
+   'Error: Illegal arguments: undefined, string\n    at Object.bcrypt.hashSync (D:\\Proyectos\\EDA\\eda_api\\node_modules\\bcryptjs\\dist\\bcrypt.js:189:19)\n    at user_model_1.default.findById (D:\\Proyectos\\EDA\\eda_api\\dist\\module\\admin\\users\\user.controller.js:197:48)\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\model.js:4791:16\n    at D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:4389:12\n    at process.nextTick (D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js:2868:28)\n    at process._tickCallback (internal/process/next_tick.js:61:11)',
+  exception: true,
+  date: 'Thu Apr 02 2020 08:41:18 GMT+0200 (GMT+02:00)',
+  process:
+   { pid: 20420,
+     uid: null,
+     gid: null,
+     cwd: 'D:\\Proyectos\\EDA\\eda_api',
+     execPath: 'C:\\Program Files\\nodejs\\node.exe',
+     version: 'v10.16.0',
+     argv:
+      [ 'C:\\Program Files\\nodejs\\node.exe',
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\server.js' ],
+     memoryUsage:
+      { rss: 62783488,
+        heapTotal: 59547648,
+        heapUsed: 24766968,
+        external: 18763806 } },
+  os: { loadavg: [ 0, 0, 0 ], uptime: 1354976 },
+  trace:
+   [ { column: 19,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\bcryptjs\\dist\\bcrypt.js',
+       function: 'Object.bcrypt.hashSync',
+       line: 189,
+       method: 'hashSync',
+       native: false },
+     { column: 48,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\dist\\module\\admin\\users\\user.controller.js',
+       function: 'user_model_1.default.findById',
+       line: 197,
+       method: 'findById',
+       native: false },
+     { column: 16,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\model.js',
+       function: null,
+       line: 4791,
+       method: null,
+       native: false },
+     { column: 12,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js',
+       function: null,
+       line: 4389,
+       method: null,
+       native: false },
+     { column: 28,
+       file:
+        'D:\\Proyectos\\EDA\\eda_api\\node_modules\\mongoose\\lib\\query.js',
+       function: 'process.nextTick',
+       line: 2868,
+       method: 'nextTick',
+       native: false },
+     { column: 11,
+       file: 'internal/process/next_tick.js',
+       function: 'process._tickCallback',
+       line: 61,
+       method: '_tickCallback',
+       native: false } ],
+  timestamp: '2020-04-02T06:41:18.583Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'an@an.com',
+  ip: '::1',
+  timestamp: '2020-04-02T06:52:00.880Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T06:52:27.600Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'an@an.com',
+  ip: '::1',
+  timestamp: '2020-04-02T06:52:45.540Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T06:53:53.665Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:35:35.604Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:35:50.757Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:38:13.715Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:45:07.715Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:46:11.701Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:46:39.341Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:47:41.070Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:48:23.409Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:50:50.932Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:52:03.794Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:53:19.031Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T07:59:22.997Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T07:59:55.739Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T08:02:31.166Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:11:38.616Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T08:12:55.247Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T08:14:25.001Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T08:23:56.415Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:25:06.831Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T08:27:26.736Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:28:09.331Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:30:38.000Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'anonim@anonim',
+  ip: '::1',
+  timestamp: '2020-04-02T08:31:53.921Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:34:30.295Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:38:33.797Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:43:55.930Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:44:56.672Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:45:53.137Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:48:11.927Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:48:34.307Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T08:50:36.288Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T09:25:59.542Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T09:39:02.094Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T09:39:12.570Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T09:39:59.341Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T09:41:11.450Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T09:41:19.542Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T09:41:33.765Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T09:42:59.608Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T09:43:09.361Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T09:43:20.149Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T10:37:31.609Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T10:37:55.238Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T10:38:03.589Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T10:38:04.367Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T10:38:07.165Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T10:38:07.690Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T10:38:08.098Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T10:38:08.450Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T10:38:08.786Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T10:38:15.693Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T10:51:00.782Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:08:31.613Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:11:47.621Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:15:47.848Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:17:20.355Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:17:53.693Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:24:33.321Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:24:47.648Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:26:34.549Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:27:06.716Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:28:26.548Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:30:00.387Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:30:25.251Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:30:33.685Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:30:37.036Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:31:05.802Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:31:15.529Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:32:10.464Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T12:32:53.564Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-02T13:05:13.488Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T13:52:06.447Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T14:00:46.846Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T14:01:20.075Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T14:06:55.243Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T14:07:10.134Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-02T14:09:06.638Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-03T05:59:03.241Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-03T06:07:53.119Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-03T06:08:13.201Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-03T06:08:37.632Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-03T06:09:31.813Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'foo@foo',
+  ip: '::1',
+  timestamp: '2020-04-03T08:17:54.801Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'foo@foo',
+  ip: '::1',
+  timestamp: '2020-04-03T08:50:29.028Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-03T09:00:11.827Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'foo@foo',
+  ip: '::1',
+  timestamp: '2020-04-03T09:02:19.937Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-03T09:04:05.451Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-03T09:09:49.072Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'foo@foo',
+  ip: '::1',
+  timestamp: '2020-04-03T09:20:49.144Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'foo@foo',
+  ip: '::1',
+  timestamp: '2020-04-03T09:23:55.108Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-03T09:25:33.213Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'jj@jj.com',
+  ip: '::1',
+  timestamp: '2020-04-03T09:27:00.181Z' }
+{ level: 'info',
+  action: 'newLogin',
+  userMail: 'edaanonim@jortilles.com',
+  ip: '::1',
+  timestamp: '2020-04-03T09:34:51.406Z' }

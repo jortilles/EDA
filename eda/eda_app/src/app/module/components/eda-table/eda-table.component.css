@@ -1,0 +1,39 @@
+.total-col {
+  background-color: #5ba38b34 !important; 
+  color: #004d4b !important;
+  text-align: right;
+  font-weight: normal;
+}
+
+
+
+.sub-total-row {
+  background-color: #e9ba614d!important; 
+  color: #006b69 !important;
+  text-align: right;
+  border-top: 2px rgb(5, 128, 52);
+  font-weight: normal;
+}
+
+.total-row {
+  background-color: #e9b9619c!important; 
+  color: #006b69 !important;
+  text-align: right;
+  border-top: 2px rgb(5, 128, 52);
+  font-weight: normal;
+}
+/* 
+.total-col {
+
+  color: #097573 !important;
+  text-align: right;
+  font-weight: bold;
+}
+
+.total-row {
+
+  color: #097573 !important;
+  text-align: right;
+  border-top: 2px rgb(5, 128, 52);
+  font-weight: bold;
+} */

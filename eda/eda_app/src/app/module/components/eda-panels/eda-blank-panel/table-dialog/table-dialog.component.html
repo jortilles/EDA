@@ -1,0 +1,29 @@
+<eda-dialog [inject]="dialog">
+  <p-menubar [model]="items" styleClass="total-item">
+  </p-menubar>
+
+
+  <div class="ui-g-12" stye="margin-top: 50px;" class="table-div">
+    <panel-chart #PanelChartComponent [config]="panelChartConfig" (configUpdated)="setChartProperties()">
+    </panel-chart>
+  </div>
+
+
+
+  <p-footer class="footer">
+
+    <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
+
+      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-save" class="ui-button ml-2"
+        i18n-label="@@guardarButton" label="Guardar">
+      </button>
+
+      <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="ui-button-danger ml-2"
+        i18n-label="@@cancelarButton" label="Cancelar">
+      </button>
+
+
+    </div>
+
+  </p-footer>
+</eda-dialog>

@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
             const user = new User(null, form.value.email, form.value.password);
             // window.location.href = '#/'
             this.userService.login(user, form.value.remember).subscribe(
-                () => this.router.navigate(['/home']),
+                () => this.router.navigate(['/home']), 
                 err => Swal.fire('Error al iniciar sesión', err.text, 'error')
             );
         }

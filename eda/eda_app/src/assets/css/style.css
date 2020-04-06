@@ -1045,12 +1045,36 @@ pre {
     }
 }
 
+
+
+
+.global-filter-dropdown{
+    min-width: 8%;
+    max-width: 25%;
+    vertical-align: middle;
+}
+.ui-multiselect .ui-multiselect-panel {
+    min-width: max-content;
+}
+/* puesto por JJ para quitar el horrible overflow de la tabla */
+.ui-table-auto-layout > .ui-table-wrapper {
+    overflow-x: unset;
+}
+
+
+
 /*-- ============================================================== 
   Phone and below ipad(767px) 
   ============================================================== */
 @media (max-width: 767px) {
     .container-fluid {
         padding: 25px 15px 25px 15px;
+    }
+
+    .global-filter-dropdown{
+        min-width: 50%;
+        max-width: 100%;
+        vertical-align: middle;
     }
 
     .mega-dropdown .dropdown-menu {

@@ -9,7 +9,8 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'eda-table',
-    templateUrl: './eda-table.component.html'
+    templateUrl: './eda-table.component.html',
+    styleUrls: ['./eda-table.component.css']
 })
 export class EdaTableComponent {
     @ViewChild('table', {static: false}) table: Table;
