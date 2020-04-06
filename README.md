@@ -29,6 +29,6 @@ Once the process if finish, just go to **http://localhost**
 
 Easily, you can do dashboads as nice as this one: 
 
-![EDA Sample](https://eda.jortilles.com/wp-content/uploads/2020/04/ejemplo_demo_ventas.png)
+![EDA Sample](https://eda.jortilles.com/wp-content/uploads/2020/04/ejemplo_demo_venta.png)
 
 You can see it in action [here](https://www.youtube.com/watch?v=7KxIgob78Cg)
