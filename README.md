@@ -27,7 +27,7 @@ Once the process if finish, just go to **http://localhost**
 * The default user is: **eda@jortilles.com**
 * The default password is: **default**
 
-Easily, you can do dashboads as nice as this one:
+Easily, you can do dashboads as nice as this one: 
 
 ![EDA Sample](https://eda.jortilles.com/wp-content/uploads/2020/04/ejemplo_demo.png)
 
