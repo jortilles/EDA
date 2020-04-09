@@ -20,7 +20,7 @@ Configuration is done in:
 
 The easies way to test eda is using docker: 
 
-**docker run -p 80:80 jortilles/eda:eda_1.2.2**
+**docker run -p 80:80 jortilles/eda:eda_1.2.3**
 
 Once the process if finish, just go to **http://localhost**
 
@@ -31,4 +31,4 @@ Easily, you can do dashboads as nice as this one:
 
 ![EDA Sample](https://eda.jortilles.com/wp-content/uploads/2019/10/eda_sample_dashboard1-768x357.png)
 
-You can see it in action [here](https://www.youtube.com/watch?v=7KxIgob78Cg)
+You can see it in action [here](https://www.youtube.com/watch?v=S0wkoeRqz3k&t=5s)

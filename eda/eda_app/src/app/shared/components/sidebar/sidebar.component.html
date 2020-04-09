@@ -25,11 +25,13 @@
                                 <i class="mdi mdi-account"></i> <span i18n="@@sidebarProfile">Perfil</span>
                             </a>
                         </li>
+                        <!--
                         <li>
                             <a routerLinkActive="active" routerLink="/account-settings">
                                 <i class="mdi mdi-settings"></i> <span i18n="@@sidebarSettings">Ajustes de Cuenta</span>
                             </a>
                         </li>
+                         comentat per JJ... Sorry Pintxo -->
                         <li *ngIf="userService.isAdmin">
                             <a routerLinkActive="active" routerLink="/users-management">
                                 <i class="mdi mdi-settings"></i> <span i18n="@@sidebarUserManagement">Gestión de Usuarios</span>

@@ -7,6 +7,7 @@ import { AlertService, DataSourceService } from '@eda/services/service.index';
 import { EditTablePanel, EditColumnPanel, EditModelPanel } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
 import * as _ from 'lodash';
+import { aggTypes } from 'app/config/aggretation-types';
 
 @Component({
     selector: 'app-data-source-detail',
@@ -37,14 +38,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     // Aggregation Types
     public selectedAggType: any;
-    public aggTypes: SelectItem[] = [
-        { label: 'Suma', value: 'sum' },
-        { label: 'Media', value: 'avg' },
-        { label: 'Máximo', value: 'max' },
-        { label: 'Mínimo', value: 'min' },
-        { label: 'Cuenta Valores', value: 'count' },
-        { label: 'Valores Distintos', value: 'count_distinct' }
-    ];
+    public aggTypes: SelectItem[] = aggTypes;
 
     // Relations
     public tmpRelations: any = [];

@@ -1,13 +1,22 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { TreeNode } from 'primeng/api';
+import { TreeNode, SelectItem } from 'primeng/api';
 import { ApiService } from './api.service';
 import { EditModelPanel, EditColumnPanel, EditTablePanel, Relation } from '@eda/models/data-source-model/data-source-models';
 import { AlertService } from '../alerts/alert.service';
+import { aggTypes } from '../../config/aggretation-types';
+
+
+
 
 @Injectable()
 export class DataSourceService extends ApiService implements OnDestroy {
+
+
+
+
+    
 
     public void_tablePanel: EditTablePanel = {
         type: '',
@@ -186,6 +195,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         columnPanel.column_type = column.column_type === 'varchar' ? 'text' : column.column_type;
         columnPanel.technical_name = column.column_name;
         columnPanel.description = column.description.default;
+
         columnPanel.aggregation_type = column.aggregation_type.map((a: { value: any; }) => a.value);
         columnPanel.column_granted_roles = column.column_granted_roles;
         columnPanel.row_granted_roles = column.row_granted_roles;
@@ -325,9 +335,13 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_model[tableIndex].columns[columnindex].display_name.default = panel.name;
             tmp_model[tableIndex].columns[columnindex].column_type = panel.column_type;
             tmp_model[tableIndex].columns[columnindex].description.default = panel.description;
+            
             tmp_model[tableIndex].columns[columnindex].aggregation_type = panel.aggregation_type.map((a: any) => {
-                return { value: a, 'display_name': a };
+                let display_name = aggTypes.filter( tmp=>tmp.value === a );
+                return { value: a, 'display_name': display_name[0] ? display_name[0].label : 'No' };
             });
+
+
             tmp_model[tableIndex].columns[columnindex].column_granted_roles = panel.column_granted_roles;
             tmp_model[tableIndex].columns[columnindex].row_granted_roles = panel.row_granted_roles;
             tmp_model[tableIndex].columns[columnindex].visible = panel.visible;

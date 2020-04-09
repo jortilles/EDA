@@ -32,11 +32,12 @@ export class UploadController {
             const randomName = `${id}-${new Date().getMilliseconds()}.${extension}`;
 
             // Mover imagen del temporal a un path
-            const pathImage = path.resolve(__dirname, `../../uploads/users/${randomName}`);
+            const pathImage = path.resolve(__dirname, `../uploads/users/${randomName}`);
 
             file.mv(pathImage, err => {
 
                 if (err) {
+                    console.log(err);
                     return next(new HttpException(500, 'Error moving the image'));
                 }
 

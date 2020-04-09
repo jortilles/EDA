@@ -142,10 +142,11 @@ export class DashboardController {
                 }
 
                 const visibilityCheck = !['shared', 'public'].includes(dashboard.config.visible);
-                const roleCheck = !userRoles.includes('ADMIN') && (userGroupDashboards.length === 0) && (dashboard.user !== user);
+                const roleCheck = !userRoles.includes('ADMIN') && (userGroupDashboards.length === 0) && (dashboard.user.toString() !== user);
 
                 if(visibilityCheck && roleCheck){
-                    return next(new HttpException(500, "You don't have permission"));
+    
+                   return next(new HttpException(500, "You don't have permission"));
                 }
 
                 DataSource.findById({ _id: dashboard.config.ds._id }, (err, datasource) => {
