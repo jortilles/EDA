@@ -1056,6 +1056,12 @@ pre {
 .ui-multiselect .ui-multiselect-panel {
     min-width: max-content;
 }
+.ng-trigger.ng-trigger-overlayAnimation.ui-multiselect-panel.ui-widget.ui-widget-content{
+    min-width: 200px;
+    width: inherit;
+}
+
+
 /* puesto por JJ para quitar el horrible overflow de la tabla */
 .ui-table-auto-layout > .ui-table-wrapper {
     overflow-x: unset;
