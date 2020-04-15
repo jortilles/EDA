@@ -1,23 +1,10 @@
-/*
-Template Name: Admin Pro Admin
-Author: Wrappixel
-Email: niravjoshi87@gmail.com
-File: scss
-*/
-/*
-Template Name: Admin Pro Admin
-Author: Wrappixel
-Email: niravjoshi87@gmail.com
-File: scss
-*/
-/*Theme Colors*/
-/*bootstrap Color*/
-/*Light colors*/
-/*Normal Color*/
-/*Extra Variable*/
-/*******************
-/*Top bar
-*******************/
+.edaMyType{
+	background: #fff; 
+	text-align: center;
+	padding-left: 0px;
+	-webkit-box-shadow: none;
+	box-shadow: none; 
+}
 .topbar {
   background: #2a3e52; }
   .topbar .navbar-header {
