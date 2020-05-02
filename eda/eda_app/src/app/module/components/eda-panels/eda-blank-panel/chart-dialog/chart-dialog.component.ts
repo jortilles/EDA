@@ -1,8 +1,8 @@
-import {Component, ViewChild} from '@angular/core';
-import {PointStyle} from 'chart.js';
-import {EdaChart} from '@eda/components/eda-chart/eda-chart';
-import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract} from '@eda/shared/components/shared-components.index';
-import {EdaChartComponent} from '@eda/components/eda-chart/eda-chart.component';
+import { Component, ViewChild } from '@angular/core';
+import { PointStyle } from 'chart.js';
+import { EdaChart } from '@eda/components/eda-chart/eda-chart';
+import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/components/shared-components.index';
+import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import * as _ from 'lodash';
 
 @Component({
@@ -11,10 +11,11 @@ import * as _ from 'lodash';
 })
 
 export class ChartDialogComponent extends EdaDialogAbstract {
-    @ViewChild('myEdaChart', {static: false}) myEdaChart: EdaChartComponent;
+    @ViewChild('myEdaChart', { static: false }) myEdaChart: EdaChartComponent;
 
     public dialog: EdaDialog;
     public chart: EdaChart;
+    public oldChart : EdaChart;
 
 
     public drops = {
@@ -26,7 +27,7 @@ export class ChartDialogComponent extends EdaDialogAbstract {
     };
 
     public pointStyle: any;
-    public direction: any = {label: '', value: ''};
+    public direction: any = { label: '', value: '' };
     public stacked: any;
 
     public series: any[] = [];
@@ -42,32 +43,33 @@ export class ChartDialogComponent extends EdaDialogAbstract {
         });
 
         this.drops.pointStyles = [
-            {label: 'Puntos', value: 'circle'},
-            {label: 'Triangulos', value: 'triangle'},
-            {label: 'Rectangulos', value: 'rect'},
-            {label: 'Cruces', value: 'cross'},
-            {label: 'Estrella', value: 'star'},
-            {label: 'Linia', value: 'line'}
+            { label: 'Puntos', value: 'circle' },
+            { label: 'Triangulos', value: 'triangle' },
+            { label: 'Rectangulos', value: 'rect' },
+            { label: 'Cruces', value: 'cross' },
+            { label: 'Estrella', value: 'star' },
+            { label: 'Linia', value: 'line' }
         ];
 
         this.drops.gridLines = [
-            {label: 'Mostrar', value: true},
-            {label: 'Ocultar', value: false}
+            { label: 'Mostrar', value: true },
+            { label: 'Ocultar', value: false }
         ];
 
         this.drops.direction = [
-            {label: 'Vertical', value: 'bar'},
-            {label: 'Horizontal', value: 'horizontalBar'}
+            { label: 'Vertical', value: 'bar' },
+            { label: 'Horizontal', value: 'horizontalBar' }
         ];
 
         this.drops.stacked = [
-            {label: 'Sin apilar', value: false},
-            {label: 'Apilar', value: true}
+            { label: 'Sin apilar', value: false },
+            { label: 'Apilar', value: true }
         ];
     }
 
     onShow(): void {
         this.chart = this.controller.params.chart;
+        this.oldChart = this.controller.params.chart;
         this.load();
     }
 
@@ -77,21 +79,26 @@ export class ChartDialogComponent extends EdaDialogAbstract {
     }
 
     loadChartColors() {
-        if (this.chart.chartType !== 'doughnut') {
-            this.series = this.chart.chartDataset.map(dataset => ({
-                label: dataset.label,
-                bg: this.rgb2hex(dataset.backgroundColor),
-                border: dataset.borderColor
-            }));
-            this.chart.chartColors = this.series.map(s => ({backgroundColor: this.hex2rgb(s.bg, 90), borderColor: s.border}));
-        } else {
-            if (this.chart.chartLabels) {
-                this.series = this.chart.chartLabels.map((c, inx) => ({
-                    label: c,
-                    bg: this.rgb2hex(this.chart.chartColors[0].backgroundColor[inx])
+        const type = this.chart.chartType;
+        switch (type) {
+            case 'doughnut':
+            case 'polarArea':
+                if (this.chart.chartLabels) {
+                    this.series = this.chart.chartLabels.map((c, inx) => ({
+                        label: c,
+                        bg: this.rgb2hex(this.chart.chartColors[0].backgroundColor[inx])
+                    }));
+                    this.chart.chartColors[0].backgroundColor = this.series.map(d => (this.hex2rgb(d.bg, 90)));
+                }
+                break;
+            default:
+                this.series = this.chart.chartDataset.map(dataset => ({
+                    label: dataset.label,
+                    bg: this.rgb2hex(dataset.backgroundColor),
+                    border: dataset.borderColor
                 }));
-                this.chart.chartColors[0].backgroundColor = this.series.map(d => (this.hex2rgb(d.bg, 90)));
-            }
+                this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor: s.border }));
+                break;
         }
     }
 
@@ -105,6 +112,12 @@ export class ChartDialogComponent extends EdaDialogAbstract {
                     dataset[i].pointBorderColor = 'rgb(255,255,255)';
                     dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
                     dataset[i].borderColor = this.hex2rgb(event.bg, 100);
+                    this.chart.chartColors[i] = _.pick(dataset[i], ['pointBackgroundColor', 'pointBorderColor', 'backgroundColor', 'borderColor']);
+                } else {
+                    dataset[i].pointBackgroundColor = this.chart.chartColors[i].backgroundColor;
+                    dataset[i].pointBorderColor = 'rgb(255,255,255)';
+                    dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
+                    dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
                     this.chart.chartColors[i] = _.pick(dataset[i], ['pointBackgroundColor', 'pointBorderColor', 'backgroundColor', 'borderColor']);
                 }
                 newDatasets.push(dataset[i]);
@@ -147,19 +160,38 @@ export class ChartDialogComponent extends EdaDialogAbstract {
         switch (this.chart.chartType) {
             case 'bar':
                 if (_.startsWith(this.chart.chartType, 'bar')) {
-                    this.direction = {label: 'Vertical', value: 'bar'};
+                    this.direction = { label: 'Vertical', value: 'bar' };
                 }
                 break;
             case 'horizontalBar':
-                this.direction = {label: 'Horizontal', value: 'horizontalBar'};
+                this.direction = { label: 'Horizontal', value: 'horizontalBar' };
                 break;
             case 'line':
-                this.pointStyle =  _.find(this.drops.pointStyles, key =>
+                this.pointStyle = _.find(this.drops.pointStyles, key =>
                     key.value === _.get(this.chart.chartOptions, 'elements.point.pointStyle')
                 );
                 break;
             case 'doughnut':
+            case 'polarArea':
                 break;
+        }
+    }
+
+    uniformizeStyle() {
+        if (this.chart.chartDataset) {
+            const newDatasets = [];
+            const dataset = this.chart.chartDataset;
+            for (let i = 0, n = dataset.length; i < n; i += 1) {
+
+                dataset[i].pointBackgroundColor = this.chart.chartColors[i].backgroundColor;
+                dataset[i].pointBorderColor = 'rgb(255,255,255)';
+                dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
+                dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
+                this.chart.chartColors[i] = _.pick(dataset[i], ['pointBackgroundColor', 'pointBorderColor', 'backgroundColor', 'borderColor']);
+
+                newDatasets.push(dataset[i]);
+            }
+            this.chart.chartDataset = newDatasets;
         }
     }
 
@@ -181,10 +213,12 @@ export class ChartDialogComponent extends EdaDialogAbstract {
     }
 
     saveChartConfig() {
+        this.uniformizeStyle();
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
     }
 
     closeChartConfig() {
+        this.chart = this.oldChart;
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 

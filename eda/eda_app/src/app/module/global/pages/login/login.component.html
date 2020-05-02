@@ -1,44 +1,50 @@
 <div class="ui-g login-register login-sidebar" style="background-image:url(assets/images/background/data-bg.png);">
 	<div class="ui-lg-8 ui-xl-9" style="background: none;"></div>
 
-	<div class="ui-g-10 ui-g-offset-1 ui-md-6 ui-md-offset-3 ui-lg-4 ui-lg-offset-0 ui-xl-3 login-box" style="background: none;">
+	<div class="ui-g-10 ui-g-offset-1 ui-md-6 ui-md-offset-3 ui-lg-4 ui-lg-offset-0 ui-xl-3 login-box"
+		style="background: none;">
 
-		<div class="card-login" style="justify-content: center;">
+		<div class="card-login" style="justify-content: center;" id="loginForm">
 			<form ngNativeValidate #f="ngForm" class="form-horizontal form-material" (ngSubmit)="login( f )">
 
-				<a href="javascript:void(0)" class="text-center db">
+				<!-- a href="javascript:void(0)" class="text-center db"-->
+				<div class="text-center edaLoginCaption">
 					<img src="assets/images/logos/logo.png" alt="logo" />
 					<br />
-					<img src="assets/images/logos/logo-texto.png" style="height: 8vh;" alt="logo texto" />
-				</a>
+					<h1 class="edaLoginTitle">EDA </h1>
+					<!--span class="edaLoginTitle">by Jortilles </span-->
+				</div>
+				<!--img src="assets/images/logos/logo-texto.png" style="height: 8vh;" alt="logo texto" /-->
+				<!--/a -->
 
 				<div class="form-group mt-5">
 					<div class="ui-g-12">
 						<input pInputText [ngModel]="email" name="email" class="w-100" type="email"
-							i18n-placeholder="@@placeholderInputUsuario" placeholder="Usuario"
-							autocomplete="username" required />
+							i18n-placeholder="@@placeholderInputUsuario" placeholder="Usuario" autocomplete="username"
+							required />
 					</div>
 				</div>
 
 				<div class="form-group">
 					<div class="ui-g-12">
 						<input pInputText [ngModel] name="password" class="w-100" type="password"
-							i18n-placeholder="placeholder|input password @@placeholderInputPassword" placeholder="Contraseña"
-							autocomplete="current-password" required />
+							i18n-placeholder="placeholder|input password @@placeholderInputPassword"
+							placeholder="Contraseña" autocomplete="current-password" required />
 					</div>
 				</div>
 
 				<div class="form-group">
 					<div class="ui-g-12">
 						<div class="checkbox checkbox-primary pull-left pt-0">
-							<input [ngModel]="remember" name="remember" id="checkbox-signup" type="checkbox" class="-in chk-col-light-blufillede" />
+							<input [ngModel]="remember" name="remember" id="checkbox-signup" type="checkbox"
+								class="-in chk-col-light-blufillede" />
 							<label for="checkbox-signup">
 								<span i18n="@@spanRememberme">Recuérdame</span>
 							</label>
 						</div>
 
 						<a href="javascript:void(0)" id="to-recover" class="text-dark pull-right">
-							<i class="fa fa-lock mr-1"></i> 
+							<i class="fa fa-lock mr-1"></i>
 							<span i18n="@@spanForgotPassword">Olvide la contraseña?</span>
 						</a>
 					</div>
@@ -46,13 +52,33 @@
 
 				<div class="form-group text-center mt-2">
 					<div class="ui-g-12">
-						<button pButton type="submit" i18n-label="@@signinBtn" label="Ingresar" class="ui-button-rounded w-100"></button>
+						<button pButton type="submit" i18n-label="@@signinBtn" label="Ingresar"
+							class="ui-button-rounded w-100"></button>
 					</div>
 				</div>
 
+				<div class="text-center edaLoginCredits"> 
+					<a href="https://eda.jortilles.com/" target="_blank"> 
+					<span class="edaLoginCreditsCaption">E</span>nterprise 
+					<span class="edaLoginCreditsCaption">D</span>ata
+					<span class="edaLoginCreditsCaption">A</span>nalytics
+					</a>
+					<br>by<br>
+					<a href="https://www.jortilles.com/" target="_blank"> Jortilles</a>
+				</div>
+	
+
+
 			</form>
 
+
+
+
+
+
+
 		</div>
+
 
 	</div>
 

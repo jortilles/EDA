@@ -22,9 +22,9 @@ export class PgConnection extends AbstractConnection {
         try {
             this.pool = await this.getPool();
             console.log('\x1b[32m%s\x1b[0m', 'Connecting to PostgreSQL database...\n');
-            this.pool.connect();
+            await this.pool.connect();
             this.itsConnected();
-            this.pool.end();
+            await this.pool.end();
             return;
         } catch (err) {
             throw err;

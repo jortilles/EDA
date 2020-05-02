@@ -104,7 +104,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             value: this.display.filterValue,
             selected: this.filterSelected,
         };
-
         this.display.filterButton = this.columnUtils.handleValidForm(event, this.filterValue, validators);
     }
 
@@ -166,7 +165,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 panel: this.controller.params.panel._id,
                 filters: []
             };
-            this.dashboardService.executeQuery(this.queryBuilder.simpleQuery(this.selectedColumn, params)).subscribe(
+            this.selectedColumn.ordenation_type= 'ASC' ;
+            this.dashboardService.executeQuery(this.queryBuilder.normalQuery([this.selectedColumn], params)).subscribe(
                 res => this.dropDownFields = res[1].map(item => ({label : item[0], value: item[0]}) ),
                 err => this.alertService.addError(err)
             );

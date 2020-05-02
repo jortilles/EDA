@@ -1,11 +1,14 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, BehaviorSubject} from 'rxjs';
 import {ApiService} from './api.service';
 
 @Injectable()
 export class DashboardService extends ApiService {
     private route = '/dashboard/';
     private routeDataManager = '/database-manager';
+
+    public _notSaved = new BehaviorSubject<boolean>(false); // [{ display_name: { default: '' }, eda-columns: [] }] --> just in case
+    notSaved = this._notSaved.asObservable();
 
     getDashboards(): Observable<any> {
         return this.get( this.route );

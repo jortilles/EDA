@@ -1,16 +1,30 @@
-import { PgBuilderService } from "../../query-builder/qb-systems/pg-builder-service";
 import { AbstractConnection } from "../abstract-connection";
+import { AggregationTypes }  from  "../../../module/global/model/aggregation-types";
 import DataSource from "../../../module/datasource/model/datasource.model";
-import { AggregationTypes } from "../../../module/global/model/aggregation-types";
-const Vertica = require('vertica');
+import { SQLserviceBuilderService } from "../../query-builder/qb-systems/sqlserver-builder-service";
+
+const SQLservice = require('mssql')
 
 
-export class VerticaConnection extends AbstractConnection {
-  private queryBuilder: PgBuilderService;
 
-  async getPool() {
+export class SQLserverConnection extends AbstractConnection {
+
+  private queryBuilder: SQLserviceBuilderService;
+  async getPool(): Promise<any> {
+    let config = {
+      server: this.config.host,
+      port: parseInt(this.config.port),
+      user: this.config.user,
+      password: this.config.password,
+      database: this.config.database,
+      options: {
+        enableArithAbort: true,
+        encrypt: true
+      }
+    }
+    const pool = new SQLservice.ConnectionPool(config)
     return new Promise((resolve, reject) => {
-      Vertica.connect(this.config, (err, conn) => {
+      pool.connect((err, conn) => {
         if (err) {
           return reject(err);
         }
@@ -20,12 +34,11 @@ export class VerticaConnection extends AbstractConnection {
     }).catch((err) => {
       throw err;
     });
-
   }
 
-  async tryConnection(): Promise<any> {
+  async tryConnection(): Promise<void> {
     try {
-      console.log('\x1b[32m%s\x1b[0m', 'Connecting to Vertica database...\n');
+      console.log('\x1b[32m%s\x1b[0m', 'Connecting to SQLserver database...\n');
       this.pool = await this.getPool();
       this.itsConnected();
       return this.pool;
@@ -33,21 +46,22 @@ export class VerticaConnection extends AbstractConnection {
       throw err;
     }
   }
-
   async generateDataModel(): Promise<any> {
+    console.log(`${this.config.schema}`)
     try {
       this.pool = await this.getPool();
       let tableNames = [];
       let tables = [];
       const query = `
-              SELECT table_name FROM tables WHERE is_system_table = false and table_schema = '${this.config.schema}'
-              UNION ALL
-              SELECT table_name FROM v_catalog.views WHERE is_system_view = false and table_schema = '${this.config.schema}'`
+            select TABLE_NAME from INFORMATION_SCHEMA.tables WHERE table_type = 'BASE TABLE' and TABLE_SCHEMA = '${this.config.schema}'
+            UNION ALL
+            select TABLE_NAME from INFORMATION_SCHEMA.VIEWS v WHERE TABLE_SCHEMA = '${this.config.schema}'
+            `
         ;
 
       const getResults = await this.execQuery(query);
       getResults.forEach(r => {
-        let tableName = r['table_name'];
+        let tableName = r['TABLE_NAME'];
         tableNames.push(tableName);
       });
 
@@ -64,22 +78,24 @@ export class VerticaConnection extends AbstractConnection {
       return await this.commonColumns(tables);
     } catch (err) {
       throw err;
+    } finally{
+      this.pool.close();
     }
   }
-
   async execQuery(query: string): Promise<any> {
     let connection: { query: (arg0: string, arg1: (err: any, resultset: any) => void) => void; };
     connection = this.pool;
     return new Promise(async (resolve, reject) => {
-      connection.query(query, (err, resultset) => {
+      connection.query(query, (err, response) => {
         if (err) {
           return reject(err);
         }
-        let rows = this.mapToJSON(resultset);
+        let rows = response.recordset;
         resolve(rows);
       });
     }).catch(err => { throw err });
   }
+
 
   async getDataSource(id: string) {
     try {
@@ -94,16 +110,17 @@ export class VerticaConnection extends AbstractConnection {
       throw err;
     }
   }
-
-  async getQueryBuilded(queryData: any, dataModel: any, user: string) {
-    this.queryBuilder = new PgBuilderService(queryData, dataModel, user);
-    return this.queryBuilder.builder();
+  getQueryBuilded(queryData: any, dataModel: any, user: string): Promise<any> {
+    this.queryBuilder = new SQLserviceBuilderService(queryData, dataModel, user);
+        return this.queryBuilder.builder();
   }
 
   private async setTable(tableName: string): Promise<any> {
-    const query = `select column_name, data_type from v_catalog.columns WHERE table_name = '${tableName}' and table_schema = '${this.config.schema}'
-                    UNION
-                    SELECT column_name, data_type from view_columns WHERE table_name = '${tableName}' and table_schema = '${this.config.schema}'`;
+    const query = `
+                  SELECT COLUMN_NAME AS column_name, DATA_TYPE AS column_type
+                  FROM INFORMATION_SCHEMA.COLUMNS
+                  WHERE TABLE_SCHEMA = '${this.config.schema}' AND TABLE_NAME = '${tableName}';  
+                `;
     try {
       const columns = await this.execQuery(query);
       const newTable = {
@@ -133,7 +150,7 @@ export class VerticaConnection extends AbstractConnection {
 
     column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
     column.description = { default: this.normalizeName(column.column_name), localized: [] };
-    column.column_type = this.normalizeType(column.data_type) || column.data_type;
+    column.column_type = this.normalizeType(column.column_type) || column.column_type;
 
     column.column_type === 'numeric'
       ? column.aggregation_type = AggregationTypes.getValues()
@@ -145,6 +162,31 @@ export class VerticaConnection extends AbstractConnection {
     return column;
   }
 
+  private normalizeType(type: string) {
+    switch (type) {
+      case 'int': return 'numeric';
+      case 'tinyint': return 'numeric';
+      case 'smallint': return 'numeric';
+      case 'mediumint': return 'numeric';
+      case 'bigInt': return 'numeric';
+      case 'integer': return 'numeric';
+      case 'decimal': return 'numeric';
+      case 'dec': return 'numeric';
+      case 'double': return 'numeric';
+      case 'varbinary': return 'numeric';
+      case 'bit': return 'numeric'
+      case 'timestamp': return 'date';
+      case 'time': return 'date';
+      case 'datetime': return 'date';
+      case 'date': return 'date';
+      case 'bool': return 'boolean';
+      case 'char': return 'varchar';
+      case 'text': return 'varchar';
+      default: 'varchar';
+    }
+  }
+
+
   private normalizeName(name: string) {
     let out = name.split('_').join(' ');
     return out.toLowerCase()
@@ -153,36 +195,6 @@ export class VerticaConnection extends AbstractConnection {
       .join(' ');
   }
 
-  private normalizeType(type: string) {
-    let cleanType = type.replace(/ *\([^)]*\) */g, "");
-    switch (cleanType) {
-      case 'int': return 'numeric';
-      case 'integer': return 'numeric';
-      case 'smallint': return 'numeric';
-      case 'serial': return 'numeric';
-      case 'decimal': return 'numeric';
-      case 'float': return 'numeric';
-      case 'real': return 'numeric';
-      case 'timestamp': return 'date';
-      case 'time': return 'date';
-      case 'TIMESTAMP': return 'date';
-      case 'bool': return 'boolean';
-      case 'text': return 'varchar';
-      case 'char': return 'varchar';
-      default: return cleanType;
-    }
-  }
-
-  private mapToJSON = (dbResult) => {
-    const fieldNames = dbResult.fields.map(field => field.name) // List of all field names
-    return dbResult.rows.map(row => {
-      return row.reduce((obj, item, index) => {
-        const header = fieldNames[index]
-        obj[header] = item
-        return obj
-      }, {})
-    })
-  }
 
   private async commonColumns(dm) {
     let data_model = dm;
@@ -234,4 +246,6 @@ export class VerticaConnection extends AbstractConnection {
     }
     return data_model;
   }
+
+
 }

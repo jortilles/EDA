@@ -134,7 +134,7 @@ export class DataSourceController {
 
     static async CheckConnection(req: IUserRequest, res: Response, next: NextFunction) {
 
-        if (!['postgres','mysql', 'vertica'].includes(req.query.type)) {
+        if (!['postgres','mysql', 'vertica', 'sqlserver'].includes(req.query.type)) {
             next(new HttpException(404, 'Only postgres, MySQL and Vertica are accepted'));
         } else {
             try {

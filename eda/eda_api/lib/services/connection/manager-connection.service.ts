@@ -4,12 +4,14 @@ import { PgConnection } from './db-systems/pg-connection';
 import { AbstractConnection } from './abstract-connection';
 import DataSource from '../../module/datasource/model/datasource.model';
 import { EnCrypterService } from '../encrypter/encrypter.service';
+import { SQLserverConnection } from './db-systems/slqserver-connection';
 
 export const
     MS_CONNECTION = 'mssql',
     MY_CONNECTION = 'mysql',
     PG_CONNECTION = 'postgres',
-    VE_CONNECTION = 'vertica';
+    VE_CONNECTION = 'vertica',
+    SQLS_CONNECTION = 'sqlserver';
 
 
 
@@ -29,6 +31,8 @@ export class ManagerConnectionService {
                 return new PgConnection(config);
             case VE_CONNECTION:
                 return new VerticaConnection(config);
+            case SQLS_CONNECTION:
+                return new SQLserverConnection(config);
             default:
                 return null;
         }
@@ -39,11 +43,13 @@ export class ManagerConnectionService {
             case MS_CONNECTION:
             // return new MsConnection(config, secondary);
             case MY_CONNECTION:
-            return new MysqlConnection(config);
+                return new MysqlConnection(config);
             case PG_CONNECTION:
                 return new PgConnection(config);
             case VE_CONNECTION:
                 return new VerticaConnection(config);
+            case SQLS_CONNECTION:
+                return new SQLserverConnection(config);
             default:
                 return null;
         }

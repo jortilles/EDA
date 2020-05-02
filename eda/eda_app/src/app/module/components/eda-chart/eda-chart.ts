@@ -9,6 +9,7 @@ export class EdaChart {
     public chartLegend: boolean = false;
     public chartOptions: ChartOptions;
     public chartPlugins: any[] = [];
+    public isBarline : boolean =  false;
 
     constructor() { }
 }

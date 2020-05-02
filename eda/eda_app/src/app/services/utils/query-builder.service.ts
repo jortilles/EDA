@@ -38,7 +38,6 @@ export class QueryBuilderService extends ApiService {
 
       queryColumns.push(col);
 
-
       return {
           id: '1',
           model_id: params.dataSource,
@@ -63,12 +62,14 @@ export class QueryBuilderService extends ApiService {
       };
   }
 
+
   public normalQuery(select: any[], params: QueryParams): Query {
+   
     const labels = [];
       const queryColumns = [];
       for (let i = 0, n = select.length; i < n; i += 1) {
           const col: any = {};
-          col.table_id = select[i].table_id;
+          col.table_id = select[i].table_id || params.table; //DropDowns has only table + params, no select
           col.column_name = select[i].column_name;
           col.display_name = select[i].display_name.default;
           col.column_type = select[i].column_type;

@@ -13,7 +13,7 @@ RUN apt-get install -y mongodb-org build-essential apache2
 
 
 RUN echo n | npm install -g --silent @angular/cli
-RUN npm install -g nodemon http-server
+RUN npm install -g forever  forever-monitor nodemon http-server
 
 COPY /eda /eda
 RUN chmod u+x /eda/docker_run.sh

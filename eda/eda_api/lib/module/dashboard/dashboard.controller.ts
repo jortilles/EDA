@@ -253,7 +253,6 @@ export class DashboardController {
             const connection = await ManagerConnectionService.getConnection(req.body.model_id);
             const dataModel = await connection.getDataSource(req.body.model_id);
             const dataModelObject = JSON.parse(JSON.stringify(dataModel));
-            
             const query = await connection.getQueryBuilded(req.body.query, dataModelObject, req.user._id);
 
             console.log('YOUR QUERY --');

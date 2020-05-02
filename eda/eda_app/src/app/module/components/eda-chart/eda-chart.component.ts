@@ -76,7 +76,9 @@ export class EdaChartComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        
+        // if(this.inject.chartType === 'barline'){
+
+        // }
     }
 
     chartClicked(e: any): void {
@@ -91,7 +93,7 @@ export class EdaChartComponent implements OnInit {
                 const value = chart.data.datasets[0].data[clickedElementIndex];
                 // get color by index
                 let background;
-                if (this.inject.chartType === 'doughnut') {
+                if (this.inject.chartType === 'doughnut' || this.inject.chartType === 'polarArea') {
                     background = chart.data.datasets[0].backgroundColor[clickedElementIndex];
                 } else {
                     background = chart.data.datasets[0].backgroundColor;

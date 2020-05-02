@@ -87,3 +87,47 @@ app-dashboard {
     border: 1px solid #d5d8cc;
 }
 
+.pi-filter{
+    color:rgb(11, 139, 101);
+}
+.edaWarning{
+  /* border: 1px solid orange;
+  border-radius: 2px; */
+  color: #000;
+  background-color: inherit;
+  padding: 7px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.edaTitle{
+    font-family: sans-serif;
+    line-height : 0.7; 
+    text-align : center; 
+    margin-bottom: auto;
+    font-weight: 600;
+}
+
+.edaWarning:hover {background: #eee;}
+
+.edaOk{
+     border: 1px solid rgb(35, 95, 50);
+    border-radius: 4px;
+    color: rgb(35, 95, 50);
+    background-color: inherit;
+    padding: 7px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.edaOk:hover{  background: #eee; }
+
+.edaFilterFooter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+

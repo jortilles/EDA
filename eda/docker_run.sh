@@ -13,7 +13,7 @@ mongo --eval 'db.users.insert( { "_id" : ObjectId("135792467811111111111111"), "
 mongo --eval ' db.users.insert( { "_id" : ObjectId("135792467811111111111112"),   "role" : [],    "name" : "edaanonim",    "email" : "edaanonim@jortilles.com",    "password" : "$2a$10$ziukAcgjgTe2XPmjO1xsruKJW1HlX0I2pvCiKZHQ69DdaCzgZA4/2" } ) ' EDA
 
 
-
+npm install -g forever  forever-monitor nodemon http-server
 
 a2enmod proxy
 a2enmod proxy_http
@@ -41,3 +41,7 @@ echo "usuario eda@jortilles.com"
 echo "password default"
 
 npm start >/eda/eda_api/api.log 2>&1  
+
+
+tail -f /dev/null
+

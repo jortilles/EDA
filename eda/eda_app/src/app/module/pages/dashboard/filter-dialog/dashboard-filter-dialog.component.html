@@ -36,23 +36,33 @@
 
                 <div class="ui-g-4">
                     <p-dropdown [options]="targetTables" [(ngModel)]="targetTable" filter="true" optionLabel="label"
-                        [style]="{'width': '100%'}" i18n-placeholder="@@placeholderTables" placeholder="Tablas" (onChange)="getColumnsByTable()"
-                        (onChange)=resetSelectedValues()>
+                        [style]="{'width': '100%'}" i18n-placeholder="@@placeholderTables" placeholder="Tablas"
+                        (onChange)="getColumnsByTable()" (onChange)=resetSelectedValues()>
                     </p-dropdown>
                 </div>
 
                 <div class="ui-g-4">
                     <p-dropdown [options]="targetCols" [(ngModel)]="targetCol" filter="true" optionLabel="label"
-                        [style]="{'width': '100%'}" i18n-placeholder="@@placeholderColumns" placeholder="Columnas" (onChange)="loadGlobalFiltersData()"
-                        (onChange)=resetSelectedValues()>
+                        [style]="{'width': '100%'}" i18n-placeholder="@@placeholderColumns" placeholder="Columnas"
+                        (onChange)="loadGlobalFiltersData()" (onChange)=resetSelectedValues()>
                     </p-dropdown>
                 </div>
 
                 <div class="ui-g-4">
-                    <p-multiSelect [options]="targetValues" [(ngModel)]="selectedValues" [virtualScroll]="true"
-                        itemSize="30" [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
+                    <p-multiSelect class='eda-filter-multiselect'
+                        *ngIf=" targetCol && targetCol.value.column_type !== 'date'" [options]="targetValues"
+                        [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30"
+                        [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
                         [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto">
                     </p-multiSelect>
+                    <p-calendar #myCalendar *ngIf="targetCol && targetCol.value.column_type === 'date'" [(ngModel)]="rangeDates"
+                        selectionMode="range" [readonlyInput]="true" (onClose)="handleDates()"
+                        placeholder='Selecciona un rango'>
+                        <p-footer class="edaFilterFooter">
+                            <button class="btn success edaOk" (click)="handleDates();$event.stopPropagation()">Confirmar </button>
+                        </p-footer>
+
+                    </p-calendar>
                 </div>
 
             </div>
@@ -64,8 +74,10 @@
 
     <p-footer class="footer">
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-            <button type="submit" pButton (click)="saveGlobalFilter()" i18n-label="@@guardarBtn" label="Guardar" class="ui-button ml-2"></button>
-            <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cancelarBtn" label="Cancelar"></button>
+            <button type="submit" pButton (click)="saveGlobalFilter()" i18n-label="@@guardarBtn" label="Confirmar"
+                icon="fa fa-check" class="ui-button ml-2"></button>
+            <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2"
+                i18n-label="@@cancelarBtn" label="Cancelar"></button>
         </div>
     </p-footer>
 </eda-dialog>

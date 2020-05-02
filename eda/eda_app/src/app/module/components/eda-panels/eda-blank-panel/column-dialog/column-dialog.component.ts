@@ -406,7 +406,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 panel: this.controller.params.panel._id,
                 filters: []
             };
-            this.dashboardService.executeQuery(this.queryBuilder.simpleQuery(this.selectedColumn, params)).subscribe(
+            this.dashboardService.executeQuery(this.queryBuilder.normalQuery([this.selectedColumn], params)).subscribe(
                 res => this.dropDownFields = res[1].map(item => ({ label: item[0], value: item[0] })),
                 err => this.alertService.addError(err)
             );

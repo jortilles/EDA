@@ -45,7 +45,7 @@ body .ui-corner-all {
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
-    margin-right: 5px;
+    /* margin-right: 5px; */
 }
 body .ui-corner-top {
     -moz-border-radius-topleft: 3px;
@@ -86,7 +86,7 @@ body .ui-corner-right {
 :root {
     --main-color:#357388;
     --main-bg-color:#ffffff;
-    --header-bg-color: #1b667e;
+    --header-bg-color: #056677;
     --main-font-color:#1b667e;
     --header-font-color: #ffffff;
     --main-border-color:#c8c8c8;
@@ -125,7 +125,8 @@ body .ui-inputtext {
     font-size: 12px;
     color: var(--main-font-color);
     background: #ffffff;
-    padding: 0.4em;
+    padding-top: 0.34em;
+    padding-bottom: 0.19em;
     border: 1px solid var(--main-border-color);
     -moz-transition: border-color 0.2s;
     -o-transition: border-color 0.2s;
@@ -514,10 +515,13 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item:not(.ui-state-highl
 body .ui-multiselect {
     background: #ffffff;
     border: 1px solid #a6a6a6;
+    margin:1px;
     -moz-transition: border-color 0.2s;
     -o-transition: border-color 0.2s;
     -webkit-transition: border-color 0.2s;
     transition: border-color 0.2s;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
 }
 body .ui-multiselect:not(.ui-state-disabled):hover {
     border-color: #212121;
@@ -530,8 +534,8 @@ body .ui-multiselect:not(.ui-state-disabled).ui-state-focus {
     box-shadow: none;
 }
 body .ui-multiselect .ui-multiselect-label {
-    padding: 0.429em;
-    padding-right: 2em;
+    /* padding: 0.429em;
+    padding-right: 2em; */
     color: #333333;
 }
 body .ui-multiselect .ui-multiselect-trigger {
@@ -934,7 +938,7 @@ body .ui-datepicker table td > a, body .ui-datepicker table td > span {
 }
 body .ui-datepicker table td > a.ui-state-active, body .ui-datepicker table td > span.ui-state-active {
     color: #ffffff;
-    background-color: #007ad9;
+    background-color: #848484;
 }
 body .ui-datepicker table td > a {
     cursor: pointer;
@@ -945,7 +949,7 @@ body .ui-datepicker table td.ui-datepicker-today > a, body .ui-datepicker table 
 }
 body .ui-datepicker table td.ui-datepicker-today > a.ui-state-active, body .ui-datepicker table td.ui-datepicker-today > span.ui-state-active {
     color: #ffffff;
-    background-color: #007ad9;
+    background-color: rgb(11, 139, 101);;
 }
 body .ui-datepicker table td.ui-datepicker-weeknumber {
     border-right: 1px solid #a6a6a6;

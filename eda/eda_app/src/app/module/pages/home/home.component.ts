@@ -22,12 +22,19 @@ export class HomeComponent implements OnInit {
     };
     public groups: IGroup[] = [];
     public isAdmin: boolean;
+    public toLitle: boolean = false;
 
     constructor(private dashboardService: DashboardService,
                 private sidebarService: SidebarService,
                 private router: Router,
                 private alertService: AlertService) {
         this.sidebarService.getDataSourceNames();
+
+        if (window.innerWidth < 1000) {
+            this.toLitle = true;
+        }
+
+
     }
 
     ngOnInit() {
@@ -86,7 +93,7 @@ export class HomeComponent implements OnInit {
     deleteDashboard(dashboard) {
         Swal.fire({
             title: '¿Estas seguro?',
-            text: `Estas a punto de borrar el dashboard ${dashboard.config.title}`,
+            text: `Estas a punto de borrar el informe ${dashboard.config.title}`,
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -97,7 +104,7 @@ export class HomeComponent implements OnInit {
             if ( borrado.value ) {
                 this.dashboardService.deleteDashboard(dashboard._id).subscribe(
                     () => {
-                        Swal.fire('Eliminado!', 'Dashboard eliminado correctamente.', 'success');
+                        Swal.fire('Eliminado!', 'Informe eliminado correctamente.', 'success');
                         this.initDashboards();
                     }, err => this.alertService.addError(err)
                 );

@@ -3,7 +3,7 @@
   </p-menubar>
 
 
-  <div class="ui-g-12" stye="margin-top: 50px;" class="table-div">
+  <div class="ui-g-12" stye="margin-top: 50px;" class="table-div" style="overflow: auto; overflow-y: hidden;">
     <panel-chart #PanelChartComponent [config]="panelChartConfig" (configUpdated)="setChartProperties()">
     </panel-chart>
   </div>
@@ -14,8 +14,8 @@
 
     <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
 
-      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-save" class="ui-button ml-2"
-        i18n-label="@@guardarButton" label="Guardar">
+      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check" class="ui-button ml-2"
+        i18n-label="@@guardarButton" label="Confirmar">
       </button>
 
       <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="ui-button-danger ml-2"

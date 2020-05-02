@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
 import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,9 +7,9 @@ import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-pan
 import { EdaDialogController, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupService, IGroup } from '@eda/services/service.index';
 import { SelectItem } from 'primeng/api';
+import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-dashboard',
@@ -17,6 +17,8 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
+    @HostListener('window:resize', ['$event'])
+
     // Gridster ViewChild
     @ViewChild(GridsterComponent, { static: false }) gridster: GridsterComponent;
     @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
@@ -33,6 +35,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public filterController: EdaDialogController;
     public applyToAllfilter: { present: boolean, refferenceTable: string, id: string };
     public grups: IGroup[] = [];
+    public toLitle: boolean = false;
+    public toMedium: boolean = false;
 
     // Grid Global Variables
     public inject: any;
@@ -49,6 +53,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         minWidth: 6,
         minHeight: 4
     };
+    public rangeDates: {} = {};
+    public tmpRangedates: Date[];
 
     // Display Variables
     public display_v = {
@@ -57,10 +63,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         rightSidebar: false, // sidebar dashboard options
         groups: false,
         shared: false, //if shared copy url is displayed
-        edit_mode : true //editable dashboard
+        edit_mode: true, //editable dashboard
+        notSaved: false
     };
 
-    public sharedURL:string;
+    public sharedURL: string;
 
     // Global filters vars
     public filtersList: Array<{ table, column, panelList, data, selectedItems, id, isGlobal, applyToAll }> = [];
@@ -72,15 +79,40 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         private fileUtiles: FileUtiles,
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
-        private router: Router,) {
+        private router: Router) {
+
+        if (window.innerWidth >= 1200) {
+            this.toLitle = false;
+            this.toMedium = false;
+        }
+
+        if ((window.innerWidth < 1200) && (window.innerWidth > 1000) ){
+            this.lanes = 20;
+            this.toMedium = true;
+            this.toLitle = false;
+        }
+        if (window.innerWidth < 1000) {
+            this.lanes = 20;
+            this.toLitle = true;
+            this.toMedium = false;
+        }
+
         this.initializeGridsterOptions();
         this.initializeForm();
     }
 
     ngOnInit(): void {
+
+
         this.dashboard = new Dashboard({});
         this.loadDashboard();
         this.setEditMode();
+        this.dashboardService.notSaved.subscribe(
+            (data) => this.display_v.notSaved = data,
+            (err) => this.alertService.addError(err)
+        )
+        //JJ: Inicialitzo a false...
+        this.display_v.notSaved = false;
     }
 
     /**
@@ -107,7 +139,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    setEditMode(){
+    setEditMode() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
         this.display_v.edit_mode = userName !== 'edaanonim';
@@ -153,7 +185,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         this.visibleTypes = [
-            { label:  '', value : 'shared', icon : 'fa fa-share-alt'},
+            { label: '', value: 'shared', icon: 'fa fa-share-alt' },
             { label: '', value: 'public', icon: 'fa fa-fw fa-globe' },
             { label: '', value: 'group', icon: 'fa fa-fw fa-users' },
             { label: '', value: 'private', icon: 'fa fa-fw fa-lock' }
@@ -171,13 +203,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         );
     }
 
-    checkVisibility(dashboard){
-      
-        if(!this.display_v.edit_mode && dashboard.config.visible !== 'shared'){
+    checkVisibility(dashboard) {
+
+        if (!this.display_v.edit_mode && dashboard.config.visible !== 'shared') {
             this.router.navigate(['/login']);
         }
 
-        if(dashboard.config.visible === 'shared'){
+        if (dashboard.config.visible === 'shared') {
             this.sharedURL = this.getsharedURL();
             this.display_v.shared = true;
         }
@@ -193,17 +225,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         if (me.id) {
             me.dashboardService.getDashboard(me.id).subscribe(
                 res => {
-    
+
                     /** res - retorna 2 objectes, el dashboard i el datasource per separat  */
                     const config = res.dashboard.config;
-
                     //check dashboard owner
-                   this.checkVisibility(res.dashboard);
+                    this.checkVisibility(res.dashboard);
 
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
                     me.filtersList = !_.isNil(config.filters) ? config.filters : []; // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
+
+                    this.fillFiltersData();
 
                     me.form.controls['visible'].setValue(config.visible);
 
@@ -213,30 +246,40 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
 
                     if (!res.dashboard.config.panel) { // Si el dashboard no te cap panel es crea un automatic
-                        me.panels.push(new EdaPanel(me.fileUtiles.generateUUID(), 'Nuevo', 20, 10, true, true));
+                        me.panels.push(
+                            new EdaPanel({ id: me.fileUtiles.generateUUID(), title: 'Nuevo', w: 20, h: 10, dragAndDrop: true, resizable: true })
+                        );
+
+                        if (this.toLitle) {
+                            this.initMobileSizes();
+                        }
+
+                        if (this.toMedium) {
+                            this.initMediumSizes();
+                        }
+
                         me.dashboard = new Dashboard({
-                            id: me.id,
-                            title: me.title,
-                            visible: config.visible,
-                            panel: me.panels,
-                            user: res.dashboard.user,
-                            datasSource: me.dataSource,
-                            filters: [],
-                            applytoAllFilter: { present: false, refferenceTable: null, id: null }
+                            id: me.id, title: me.title, visible: config.visible, panel: me.panels, user: res.dashboard.user,
+                            datasSource: me.dataSource, filters: [], applytoAllFilter: { present: false, refferenceTable: null, id: null }
                         });
-                    } else { // Si te panels els carrega
-                        me.dashboard = new Dashboard({
-                            id: me.id,
-                            title: me.title,
-                            visible: config.visible,
-                            panel: config.panel,
-                            user: res.dashboard.user,
-                            datasSource: me.dataSource,
-                            filters: config.filters,
-                            applytoAllFilter: me.applyToAllfilter
-                        });
+
+                    } else {
+                        // Si te panels els carrega
                         me.panels = config.panel;
+
+                        if (this.toLitle) {
+                            this.initMobileSizes();
+                        }
+                        if (this.toMedium) {
+                            this.initMediumSizes();
+                        }
+
+                        me.dashboard = new Dashboard({ 
+                            id: me.id, title: me.title, visible: config.visible, panel: config.panel, user: res.dashboard.user, 
+                            datasSource: me.dataSource, filters: config.filters, applytoAllFilter: me.applyToAllfilter
+                        });
                     }
+
                     this.initializePanels();
                     // Fem una copia de seguretat per en cas de desastre :D
                     me.panels.forEach(p => {
@@ -245,7 +288,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
                 err => {
                     me.alertService.addError(err);
-                    if(err.text === "You don't have permission"){
+                    if (err.text === "You don't have permission") {
                         this.router.navigate(['/login']);
                     }
                 }
@@ -254,6 +297,48 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             // Si accedicis a un dashboard sense cap ID saltaria error
             me.alertService.addError('Error al cargar el Dashboard');
         }
+    }
+
+    fillFiltersData() {
+        this.filtersList.forEach(filter => {
+            const params = { filterList: filter, targetTable: filter.table.value }
+            if (filter.column.value.column_type === 'date') {
+                this.loadDatesFromFilter(filter)
+            } else {
+                this.loadGlobalFiltersData(params);
+            }
+        });
+    }
+
+    loadDatesFromFilter(filter) {
+        if(filter.selectedItems.length > 0){
+        let firstDate = filter.selectedItems[0];
+        let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+        this.rangeDates[filter.id] = []
+        this.rangeDates[filter.id].push(new Date(firstDate.replace(/-/g, '/')))
+        this.rangeDates[filter.id].push(new Date(lastDate.replace(/-/g, '/')))
+        }
+    }
+
+    handleDates(filter) {
+        if (this.rangeDates) {
+            const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' })
+            if (this.rangeDates[filter.id] && !this.rangeDates[filter.id][1]) {
+                this.rangeDates[filter.id][1] = this.rangeDates[filter.id][0]
+            }
+            let stringRange = [this.rangeDates[filter.id][0], this.rangeDates[filter.id][1]]
+                .map(date => {
+                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                    return `${ye}-${mo}-${da}`
+                })
+            filter.selectedItems = stringRange;
+            this.loadDatesFromFilter(filter)
+            this.applyGlobalFilter(filter);
+        }
+
+    }
+    deleteDates(filter) {
+        this.rangeDates[filter.id] = [new Date('1984-08-01'), new Date('2090-01-01')];
     }
 
     initializePanels(): void {
@@ -265,7 +350,36 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onAddWidget(): void {
-        this.panels.push(new EdaPanel(this.fileUtiles.generateUUID(), 'Nuevo', 20, 10, true, true));
+        let panel = new EdaPanel({
+            id: this.fileUtiles.generateUUID(),
+            title: 'Nuevo',
+            w: 20,
+            h: 10,
+            resizable: true,
+            dragAndDrop: true
+        })
+
+        if (this.toLitle) {
+            if (this.panels.length > 0) {
+                const lastPanel = this.panels[this.panels.length - 1];
+                panel.tamanyMobil.w = this.lanes;
+                panel.tamanyMobil.h = 10;
+                panel.tamanyMobil.x = 0;
+                panel.tamanyMobil.y = lastPanel.tamanyMobil.y + lastPanel.tamanyMobil.h;
+            }
+        }
+        if (this.toMedium) {
+            if (this.panels.length > 0) {
+                const lastPanel = this.panels[this.panels.length - 1];
+                panel.tamanyMig.w = 10;
+                panel.tamanyMig.h = 10;
+                panel.tamanyMig.x = 0;
+                panel.tamanyMig.y = lastPanel.tamanyMig.y + lastPanel.tamanyMig.h;
+            }
+        }
+
+
+        this.panels.push(panel);
     }
 
     onRemovePanel(panel): void {
@@ -280,6 +394,75 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.panels = this.panelsCopy.map(panel => ({ ...panel }));
     }
 
+    onResize(event) {
+        const innerWidth = event.target.innerWidth;
+ 
+
+        if (innerWidth >= 1200) {
+            this.lanes = 40;
+            this.toLitle = false;
+            this.toMedium  = false;
+            this.gridster.setOption('lanes', this.lanes).reload();
+        } else if( (innerWidth < 1200)  && (innerWidth >= 1000)  ){
+            this.lanes = 20;
+            this.toMedium = true;
+            this.toLitle = false;
+            this.gridster.setOption('lanes', this.lanes).reload();
+            this.initMediumSizes();
+        }else{
+            /*  if (innerWidth < 1000) {
+                this.lanes = 20;
+            }*/
+            this.toLitle = true;
+            this.toMedium = false;
+            this.gridster.setOption('lanes', this.lanes).reload();
+            this.initMobileSizes();
+        }
+    }
+
+
+    initMediumSizes() {
+        for (let i = 0, n = this.panels.length; i < n; i++) {
+            // Init tamanys mobils
+            const panel = this.panels[i];
+            panel.tamanyMig.x =  _.round(panel.x/2);
+            panel.tamanyMig.y =  _.round(panel.y/1.5);
+            panel.tamanyMig.w =  _.round(panel.w/2);
+            panel.tamanyMig.h =  _.round(panel.h/1.5);
+        }
+    }
+
+
+    initMobileSizes() {
+        let height = 0;
+        let pannelHeight=0;
+        for (let i = 0, n = this.panels.length; i < n; i++) {
+            // Init tamanys mobils
+            const panel = this.panels[i];
+            if (i !== 0) {
+                panel.tamanyMobil.y = height;
+            }
+            pannelHeight= _.round(panel.h*1.6);
+            // si el panell es mes gran que la pantalla ho ajusto a la pantalla. 
+            // tot això es fa per tenir el tamany d'una cela i multiplicar-ho per el 70% de la pantalla
+            // vertical
+            if(   ( pannelHeight  * ( window.innerWidth /  this.lanes  )    > window.innerHeight ) && ( window.innerHeight > window.innerWidth)  ){
+                pannelHeight= _.round( ( window.innerHeight / ( window.innerWidth /  this.lanes  ) )  * 0.8 )   ;
+            } 
+            //horitzontal
+            if(   ( pannelHeight  * ( window.innerWidth /  this.lanes  )    > window.innerHeight ) && ( window.innerHeight < window.innerWidth)  ){
+                pannelHeight= _.round( ( window.innerHeight / ( window.innerWidth /  this.lanes  ) )  * 1.1)   ;
+            } 
+
+            panel.tamanyMobil.w = this.lanes;
+            panel.tamanyMobil.h = pannelHeight;
+            panel.tamanyMobil.x = 0;
+            height += pannelHeight;
+
+
+        }
+    }
+
     saveDashboard(): void {
         if (this.form.invalid) {
             this.display_v.rightSidebar = false;
@@ -290,7 +473,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     title: this.title,
                     panel: this.dashboard.panel,
                     ds: { _id: this.dataSource._id },
-                    filters: this.filtersList,
+                    filters: this.cleanFiltersData(),
                     applyToAllfilter: this.applyToAllfilter,
                     visible: this.form.controls['visible'].value,
                 },
@@ -304,14 +487,28 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.dashboardService.updateDashboard(this.id, body).subscribe(
                 () => {
                     this.display_v.rightSidebar = false;
-                    this.alertService.addSuccess(`Dashboard guardado correctamente`);
+                    this.alertService.addSuccess(`Informe guardado correctamente`);
                 },
                 err => {
                     this.display_v.rightSidebar = false;
                     this.alertService.addError(err);
                 }
             );
+
+            //not saved alert message
+            this.dashboardService._notSaved.next(false);
         }
+    }
+
+    cleanFiltersData() {
+        const filtersCleaned = [];
+        this.filtersList.forEach(filter => {
+            const tmpFilter = _.cloneDeep(filter);
+            tmpFilter.data = null;
+            filtersCleaned.push(tmpFilter);
+        });
+        return filtersCleaned;
+
     }
 
     /** NOT USED !! */
@@ -358,8 +555,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 params,
                 close: (event, response) => {
                     if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
                         this.filtersList.push(response.filterList);
-                        this.loadGlobalFiltersData(response);
+                        if (response.filterList.column.value.column_type === 'date' && response.filterList.selectedItems.length > 0) {
+                            this.loadDatesFromFilter(response.filterList);
+                        } else {
+                            this.loadGlobalFiltersData(response);
+                        }
 
                         // If default values are selected filter is applied
                         if (response.filterList.selectedItems.length > 0) {
@@ -370,6 +572,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             this.applyToAllfilter = { present: true, refferenceTable: response.targetTable, id: response.filterList.id };
                             this.updateApplyToAllFilterInPanels();
                         }
+
+
+                        //not saved alert message
+                        this.dashboardService._notSaved.next(true);
                     }
                     this.filterController = undefined;
                 }
@@ -395,21 +601,25 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             panel: '',
             filters: []
         };
+        filter.column.value.ordenation_type= 'ASC' ;
         this.dashboardService.executeQuery(
-            this.queryBuilderService.simpleQuery(filter.column.value, queryParams)
+            
+            this.queryBuilderService.normalQuery([filter.column.value], queryParams)
         ).subscribe(
-            res => filter.data = res[1].map(item => ({ label: item[0], value: item[0] })),
+            res => { filter.data = res[1].map(item => ({ label: item[0], value: item[0] })); },
             err => this.alertService.addError(err)
         );
     }
 
     formatFilter(filter) {
+
+        const isDate = filter.column.value.column_type === "date";
         const formatedFilter = {
             filter_id: filter.id,
             filter_table: filter.table.value,
             filter_column: filter.column.value.column_name,
-            filter_type: 'in',
-            filter_elements: [{ value1: filter.selectedItems }],
+            filter_type: isDate ? 'between' : 'in',
+            filter_elements: isDate ? [{ value1: [filter.selectedItems[0]] }, { value2: [filter.selectedItems[1]] }] : [{ value1: filter.selectedItems }],
             isGlobal: true,
             applyToAll: filter.applyToAll
         }
@@ -422,13 +632,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         filter.panelList.map(id => this.edaPanels.toArray().find(p => p.panel.id === id))
             .forEach(
                 (panel) => {
-                    // console.log('APPYGLOBALFILTER')
-                    // console.log(panel)
-                    // // DELETE FILTER IF PRESENT IN PANEL AND SET NEW VALUES
                     panel.setGlobalFilter(newFilter);
                 }
             );
-
         this.reloadPanels();
     }
 
@@ -457,7 +663,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    handleSelectedBtn(event): void {        
+    handleSelectedBtn(event): void {
         const groupControl = this.form.get('group');
         this.display_v.groups = event.value === 'group';
         this.display_v.shared = event.value === 'shared';
@@ -471,36 +677,27 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    getsharedURL(){
+    getsharedURL() {
         const url = location.href;
         const baseURL = url.slice(0, url.indexOf('#'));
         return `${baseURL}#/public/${this.id}`
     }
 
-    copyURL(){
+    copyURL() {
         var $body = document.getElementsByTagName('body')[0];
-        const value =  this.getsharedURL();
-  
-        var copyToClipboard = function(value) {
-          var $tempInput = document.createElement('INPUT') as HTMLInputElement;
-          $body.appendChild($tempInput);
-          $tempInput.setAttribute('value', value) 
-          $tempInput.select();
-          document.execCommand('copy');
-          $body.removeChild($tempInput);
+        const value = this.getsharedURL();
+
+        var copyToClipboard = function (value) {
+            var $tempInput = document.createElement('INPUT') as HTMLInputElement;
+            $body.appendChild($tempInput);
+            $tempInput.setAttribute('value', value)
+            $tempInput.select();
+            document.execCommand('copy');
+            $body.removeChild($tempInput);
         }
 
         copyToClipboard(value);
     }
-
-    // setVisibilityTooltip(visibility){
-    //     switch(visibility){
-    //         case 'shared' : this.visibilityTooltip = 'Público'; break;
-    //         case 'public' : this.visibilityTooltip = 'visible solo para usuarios registrados' ; break;
-    //         case 'group'  : this.visibilityTooltip = 'visible solo para mis grupos' ; break;
-    //         case 'private'  : this.visibilityTooltip = 'visible solo para mi' ; break;
-    //     }
-    // }
 
 
     setTitle(click: boolean): void {

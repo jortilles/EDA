@@ -14,6 +14,8 @@ export abstract class EdaColumn {
     min: boolean = false;
     group: string;
     rowspan: number = 4;
+    rowTotal : boolean = false;
+    visible : boolean = true;
 
     cellStyle: (value: any, row: any) => any = () => {};
     joinArray: (value: any, row: any) => any = () => {};

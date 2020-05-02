@@ -1,9 +1,10 @@
-<div class="main-content">
+<div class="main-content" (window:resize)="onResize($event)">
 
     <div class="ui-g-12" style="padding:2px">
         <eda-dashboard-panel class="pointer" (click)="setTitle(true)">
             <div class="d-flex justify-content-center">
-                <h3 *ngIf="!titleClick" style="line-height : 0.7; text-align : center; margin-bottom: auto"> {{title}} </h3>
+                <h3 *ngIf="!titleClick"  class="edaTitle" >   {{title}}
+                </h3>
                 <input *ngIf="!!titleClick" (focusout)="setTitle(false)" (keydown.enter)="setTitle(false)" type="text"
                     class="w-100" [(ngModel)]="title" pInputText autofocus>
             </div>
@@ -12,33 +13,72 @@
     <!-- ============================================================== -->
     <!-- GLOBAL FILTERS (TEMPORAL UBICATION) -->
     <!-- ============================================================== -->
-    <div class="ui-g-12" style="padding:2px">
-        <span *ngFor="let filter of this.filtersList">
-            <p-multiSelect [options]="filter.data" [(ngModel)]="filter.selectedItems" [virtualScroll]="true"
+    <div class="ui-g-12" style="padding:2px;">
+        <span *ngIf="filtersList.length > 0">
+            <i class="pi pi-filter"></i>
+        </span>
+        <span *ngFor="let filter of filtersList">
+            <p-multiSelect  *ngIf="filter.column.value.column_type !== 'date'"  [options]="filter.data" [(ngModel)]="filter.selectedItems" [virtualScroll]="true"
                 itemSize="30" defaultLabel="{{filter.column.label}}"
                 class="global-filter-dropdown"
                  maxSelectedLabels="1"
                 (onPanelHide)="applyGlobalFilter(filter)">
-
+                
                 <p-footer>
                     <button type="submit" pButton (click)="removeGlobalFilter(filter)" icon="fa fa-trash" class="ui-button-danger"></button>
                 </p-footer>
 
             </p-multiSelect>
+            <p-calendar class='eda-filter-multiselect' *ngIf="filter.column.value.column_type === 'date'" [(ngModel)]="rangeDates[filter.id]" dateFormat="dd.mm.yy"
+            (onClickOutside)="handleDates(filter)" (onClose)="handleDates(filter)"  selectionMode="range" [readonlyInput]="true" 
+            [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030" placeholder='Selecciona un rango'>
+                <p-footer>
+                    <button class="btn warning edaWarning" (click)="deleteDates(filter)" > Todas </button>
+                    <button type="submit" pButton (click)="removeGlobalFilter(filter)" icon="fa fa-trash" class="ui-button-danger"></button>
+                </p-footer>
+            </p-calendar>
         </span>
     </div>
 
 
     <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions" #gridster1>
+        <!-- Normal Size -->
+        <ng-container *ngIf="!toLitle && !toMedium">
+            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop"
+                [resizable]="panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y"
+                (change)="itemChange($event, panel)">
 
-        <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop"
-            [resizable]="panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y"
-            (change)="itemChange($event, panel)">
+                <eda-blank-panel #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)">
+                </eda-blank-panel>
 
-            <eda-blank-panel #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" >
-            </eda-blank-panel>
+            </ngx-gridster-item>
+        </ng-container>
 
-        </ngx-gridster-item>
+        <!-- Mid  Size -->
+        <ng-container *ngIf="toMedium">
+            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop"
+                [resizable]="panel.resizable" [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h" [(x)]="panel.tamanyMig.x" [(y)]="panel.tamanyMig.y"
+                (change)="itemChange($event, panel)">
+
+                <eda-blank-panel #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)">
+                </eda-blank-panel>
+
+            </ngx-gridster-item>
+        </ng-container>
+
+        <!-- Mobile Size -->
+        <ng-container *ngIf="toLitle">
+            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop"
+                [resizable]="panel.resizable" [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h" [(x)]="panel.tamanyMobil.x" [(y)]="panel.tamanyMobil.y"
+                (change)="itemChange($event, panel)">
+
+                <eda-blank-panel #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)">
+                </eda-blank-panel>
+
+            </ngx-gridster-item>
+        </ng-container>
+
+
 
     </ngx-gridster>
 
@@ -84,15 +124,16 @@
     <div>
         <form [formGroup]="form">
             <div style="margin: 8px; display: flex;">
-                <p-selectButton [options]="visibleTypes" formControlName="visible" 
-                (onChange)="handleSelectedBtn($event)">
+                <p-selectButton [options]="visibleTypes" formControlName="visible"
+                    (onChange)="handleSelectedBtn($event)">
                 </p-selectButton>
                 <div>
                     <p-dropdown *ngIf="display_v.groups" id="float-grups" formControlName="group" [options]="grups"
-                        optionLabel="name" [showClear]="true" i18n-placeholder="@@placeholderSelectGruop" placeholder="Selecciona un grupo *">
+                        optionLabel="name" [showClear]="true" i18n-placeholder="@@placeholderSelectGruop"
+                        placeholder="Selecciona un grupo *">
                     </p-dropdown>
                 </div>
-    
+
             </div>
         </form>
         <button id="copy-link" (click)="copyURL()" *ngIf="display_v.shared">
@@ -108,7 +149,10 @@
 </p-sidebar>
 
 <div *ngIf="display_v.edit_mode">
-    <button (click)="display_v.rightSidebar = true" class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
+    <span class="div-cambios " *ngIf="display_v.notSaved"> Hay cambios sin guardar... </span>
+
+    <button (click)="display_v.rightSidebar = true"
+        class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
         <i class="fa fa-cog text-white"></i>
     </button>
 </div>

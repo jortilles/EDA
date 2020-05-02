@@ -13,12 +13,21 @@ export class SidebarComponent implements OnInit {
     public user: User;
     public isAdmin: boolean;
     public dataSourceMenu: any[] = [];
-    public edit_mode : boolean = true;
+    public edit_mode: boolean = true;
+    public mobileSize: boolean = false;
+    public sideBtn: boolean = false;
 
     constructor(public router: Router,
-                public userService: UserService,
-                private sidebarService: SidebarService,
-                private alertService: AlertService ) {
+        public userService: UserService,
+        public sidebarService: SidebarService,
+        private alertService: AlertService) {
+
+
+        this.sidebarService.getToggleSideNav().subscribe((value) => {
+            this.sideBtn = value;
+        });
+
+        this.getMobileSize();
         this.getDataSourcesNames();
     }
 
@@ -32,7 +41,35 @@ export class SidebarComponent implements OnInit {
         );
     }
 
-    setEditMode(){
+    getMobileSize(event?) {
+
+        if (!event) {
+            if (window.innerWidth <= 767) {
+                this.mobileSize = true;
+                this.sideBtn = true;
+                this.sidebarService.toggleSideNav = true;
+            } else if (window.innerWidth > 767) {
+                this.mobileSize = false;
+                this.sidebarService.setManualHideSideNav(false);
+            }
+        } else {
+            if (event.target.innerWidth <= 767) {
+                this.mobileSize = true;
+                this.sideBtn = true;
+                this.sidebarService.toggleSideNav = true;
+            } else if (event.target.innerWidth > 767) {
+                this.mobileSize = false;
+                this.sidebarService.toggleSideNav = false;
+                this.sidebarService.setManualHideSideNav(false);
+            }
+        }
+    }
+
+    toggleClassSide() {
+        this.sidebarService.setHideSideNav();
+    }
+
+    setEditMode() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
         this.edit_mode = userName !== 'edaanonim';

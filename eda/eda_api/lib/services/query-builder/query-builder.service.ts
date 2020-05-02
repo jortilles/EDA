@@ -16,14 +16,15 @@ export abstract class QueryBuilderService {
     }
 
     abstract getFilters(filters);
-    abstract getJoins(joinTree: any[], dest: any[]);
+    abstract getJoins(joinTree: any[], dest: any[], schema ?:String);
     abstract getSeparedColumns(origin: string, dest: string[]);
     abstract filterToString(filterObject:any);
     abstract processFilter(filter: any, columnType: string);
-    abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[]);
+    abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], Schema ?:String);
 
     public builder() {
         const graph = this.buildGraph();
+
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
         const origin = this.queryTODO.fields.find(x => x.order === 0).table_id;
         const dest = [];
@@ -48,7 +49,6 @@ export abstract class QueryBuilderService {
             });
         }
 
-
         /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
         const separedCols = this.getSeparedColumns(origin, dest);
         const columns = separedCols[0];
@@ -61,7 +61,7 @@ export abstract class QueryBuilderService {
             this.query = this.simpleQuery(columns, origin);
             return this.query;
         } else {
-            this.query = this.normalQuery(columns, origin, dest, joinTree, grouping);
+            this.query = this.normalQuery(columns, origin, dest, joinTree, grouping, this.dataModel.ds.connection.schema);
             return this.query;
         }
     }

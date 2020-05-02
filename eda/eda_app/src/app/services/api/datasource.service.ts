@@ -12,13 +12,8 @@ import { aggTypes } from '../../config/aggretation-types';
 
 @Injectable()
 export class DataSourceService extends ApiService implements OnDestroy {
-
-
-
-
     
-
-    public void_tablePanel: EditTablePanel = {
+ public void_tablePanel: EditTablePanel = {
         type: '',
         name: '',
         technical_name: '',

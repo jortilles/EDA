@@ -14,17 +14,17 @@ export class DataSourcesComponent {
     public dbTypes: any[] = [
         { name: 'Postgres', value: 'postgres' },
         { name: 'Sql Server', value: 'sqlserver' },
-        { name: 'MongoDB', value: 'mongo' },
+        /*   { name: 'MongoDB', value: 'mongo' },*/
         { name: 'MySQL', value: 'mysql' },
         { name: 'Vertica', value: 'vertica' }
     ];
 
     constructor(private formBuilder: FormBuilder,
-                private sidebarService: SidebarService,
-                private dataSourceService: DataSourceService,
-                private spinnerService: SpinnerService,
-                private alertService: AlertService,
-                private router: Router) {
+        private sidebarService: SidebarService,
+        private dataSourceService: DataSourceService,
+        private spinnerService: SpinnerService,
+        private alertService: AlertService,
+        private router: Router) {
 
         this.form = this.formBuilder.group({
             name: [null, Validators.required],
@@ -34,7 +34,7 @@ export class DataSourcesComponent {
             port: [null, Validators.required],
             user: [null, Validators.required],
             password: [null, Validators.required],
-            schema:[null, null]
+            schema: [null, null]
         });
     }
 
@@ -43,7 +43,7 @@ export class DataSourcesComponent {
             this.alertService.addError('Formulario incorrecto, revise los campos');
         } else {
             this.spinnerService.on();
-            const connection = {
+            let connection = {
                 name: this.form.value.name,
                 type: this.form.value.type.value,
                 host: this.form.value.host,
@@ -85,16 +85,16 @@ export class DataSourcesComponent {
         const type = this.form.value.type.value;
         switch (type) {
             case 'postgres':
-                this.form.patchValue({port: 5432});
+                this.form.patchValue({ port: 5432 });
                 break;
             case 'sqlserver':
-                this.form.patchValue({port: 1433});
+                this.form.patchValue({ port: 1433 });
                 break;
             case 'mongo':
-                this.form.patchValue({port: 27017});
+                this.form.patchValue({ port: 27017 });
                 break;
             default:
-                this.form.patchValue({port: null});
+                this.form.patchValue({ port: null });
                 break;
         }
     }

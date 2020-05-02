@@ -16,7 +16,7 @@ export class UserController {
         try {
             const body = req.body;
             let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
-            logger.log({ level: 'info', action: 'newLogin', userMail: body.email, ip: ip });
+            logger.log({ level: 'info', action: 'newLogin', userMail: body.email, ip: ip, type: "attempt" });
 
             User.findOne({ email: body.email }, async (err, userDB) => {
 
@@ -32,7 +32,7 @@ export class UserController {
                     return next(new HttpException(400, 'Incorrect credentials - password'));
                 }
 
-                
+                logger.log({ level: 'info', action: 'newLogin', userMail: body.email, ip: ip, type: "login" });
 
                 userDB.password = ':)';
 
@@ -200,8 +200,10 @@ export class UserController {
                 user.email = body.email;
                 user.role = body.role;
 
-                if (body.password !== '') {
-                    user.password = bcrypt.hashSync(body.password, 10);
+                if (body.password) {
+                    if (body.password !== '') {
+                        user.password = bcrypt.hashSync(body.password, 10);
+                    }
                 }
 
                 user.save(async (err, userSaved) => {

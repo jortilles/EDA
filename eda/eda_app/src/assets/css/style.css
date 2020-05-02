@@ -144,11 +144,14 @@ html body .db {
 
 .right-sidebar-blocks-options {
     display: block;
-    padding: 24px 20px;
-    color: #ffffff;
+    padding: 11px 11px;
+    margin: 2px;
+    border: 1px solid;
+    border-radius: 7px;
+    color: #fff;
     text-transform: uppercase;
     font-size: 14px;
-    background-color: #009688;
+    background-color: #a8bfbd;
 }
 
 .right-sidebar-footer {
@@ -872,6 +875,16 @@ pre {
     z-index: 10;
 }
 
+.div-cambios {
+    position: fixed;
+    bottom: 4px;
+    right: 56px;
+    padding: 25px;
+    z-index: 12;
+    margin: 0px;
+    font-size: 19px;
+}
+
 /*Radio button*/
 @-webkit-keyframes ripple {
     0% {
@@ -1066,6 +1079,29 @@ pre {
 .ui-table-auto-layout > .ui-table-wrapper {
     overflow-x: unset;
 }
+ 
+.edaLoginTitle{
+    font-family: "Scada", Sans-serif;
+    letter-spacing: 1em;
+    font-weight: 700;
+    color: #163c49;	
+    margin-left: 20px;
+
+}
+.edaLoginCaption{
+    margin: 20px 5px 5px 5px;
+}
+.edaLoginCredits{
+    margin-top: 250px;
+    font-weight: 100;
+}
+.edaLoginCreditsCaption{
+    font-family: "Scada", Sans-serif;
+    font-weight: 600;
+	color: #163c49;	
+
+}
+
 
 
 
@@ -1074,7 +1110,7 @@ pre {
   ============================================================== */
 @media (max-width: 767px) {
     .container-fluid {
-        padding: 25px 15px 25px 15px;
+        padding: 45px 15px 25px 15px;
     }
 
     .global-filter-dropdown{

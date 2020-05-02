@@ -1,10 +1,25 @@
-<aside class="left-sidebar">
+<ng-container *ngIf="mobileSize && sideBtn && edit_mode">
+    <div>
+        <img id="sidebar-btn-toggle" src="assets/images/logos/logo.png" (click)="toggleClassSide()" alt="logo icono" class="dark-logo" />
+    </div>
+</ng-container>
 
-    <li class="user-profile text-center" style="list-style: none;">
-        <a style="text-decoration: none;" routerLink="/home" aria-expanded="false">
-            <img src="assets/images/logos/logo.png" alt="logo icono" class="dark-logo w-75" />
-        </a>
-    </li>
+<aside id="sidebar" class="left-sidebar" [ngClass]="{'hidden': sidebarService.toggleSideNav }" (window:resize)="getMobileSize($event)">
+
+    <ng-container *ngIf="!mobileSize">
+        <li class="user-profile text-center" style="list-style: none;">
+            <a style="text-decoration: none;" routerLink="/home" aria-expanded="false">
+                <img src="assets/images/logos/logo.png" alt="logo icono" class="dark-logo w-75" />
+            </a>
+        </li>
+    </ng-container>
+
+    <ng-container *ngIf="mobileSize && !sideBtn && edit_mode">
+        <li class="user-profile text-center" style="list-style: none;">
+            <img src="assets/images/logos/logo.png" (click)="toggleClassSide()" alt="logo icono" class="dark-logo" />
+        </li>
+    </ng-container>
+
 
     <div class="scroll-sidebar" *ngIf="edit_mode">
 
@@ -60,7 +75,7 @@
                 <li *ngIf="userService.isAdmin" class="nav-devider"></li>
 
                 <li *ngIf="userService.isAdmin" class="user-profile">
-                    <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
+                    <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false" id="edaNewDataSource">
                         <i class="mdi mdi-database"></i>
                         <span class="hide-menu ml-2" i18n="@@sidebarDataFonts">Fuente de Datos</span>
                     </a>

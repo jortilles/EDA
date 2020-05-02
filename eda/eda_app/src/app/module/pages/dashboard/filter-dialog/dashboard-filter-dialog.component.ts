@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import {
     GlobalFiltersService,
     AlertService,
@@ -7,6 +7,7 @@ import {
     QueryBuilderService
 } from '@eda/services/service.index';
 import {  EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/components/shared-components.index';
+import {  Calendar } from 'primeng/components/calendar/calendar';
 
 @Component({
     selector: 'dashboard-filter-dialog',
@@ -15,6 +16,9 @@ import {  EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/
 })
 
 export class DashboardFilterDialogComponent extends EdaDialogAbstract {
+
+    @ViewChild('myCalendar',  {static: false}) datePicker: Calendar;
+    
     public dialog: EdaDialog;
     public dashboard: any;
 
@@ -30,6 +34,8 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public selectedValues: any = [];
     public applyToAll: boolean = true;
     public switchChecked: boolean = false;
+
+    public rangeDates : Date[];
 
     // Global filters vars
     public filtersList: Array<{ table, column, panelList, data, selectedItems, id, isGlobal, applyToAll }> = [];
@@ -69,15 +75,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     setTablesAndColumnsToFilter() {
-        const tablesMap = new Map();
         const tables = [];
         let notVisibleTables = [];
         this.targetTables = [];
-
-        // this.dashboard.dataSource.model.tables.forEach(table => {
-        //     tablesMap.set(table.table_name, table.display_name.default);
-        //     if(table.visible === false) notVisibleTables.push(table.table_name);
-        // });
 
         notVisibleTables = this.dashboard.dataSource.model.tables.filter(t => t.visible === false).map(t => t.table_name);
         this.panelstoFilter.forEach(panel => {
@@ -138,7 +138,6 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             filterList: this.filtersList[this.filtersList.length - 1],
             targetTable: this.targetTable.value
         };
-
         this.onClose(EdaDialogCloseEvent.NEW, response);
     }
 
@@ -146,16 +145,34 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         const params = {
             table: this.targetTable.value,
             dataSource: this.dashboard.dataSource._id,
-            dashboard: '',
+            dashboard: this.dashboard.id,
             panel: '',
             filters: []
         };
         this.dashboardService.executeQuery(
-            this.queryBuilderService.simpleQuery(this.targetCol.value, params)
+            this.queryBuilderService.normalQuery([this.targetCol.value], params)
         ).subscribe(
             res => this.targetValues = res[1].map(item => ({ label: item[0], value: item[0] })),
             err => this.alertService.addError(err)
         );
+    }
+
+    handleDates() {
+        if(this.rangeDates){
+
+            this.datePicker.overlayVisible = false;
+            const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' })
+            if (!this.rangeDates[1]) {
+                this.rangeDates[1] = this.rangeDates[0];
+            }
+            let stringRange = [this.rangeDates[0], this.rangeDates[1]]
+                .map(date => {
+                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                    return `${ye}-${mo}-${da}`
+                })
+            this.selectedValues = stringRange
+        }
+
     }
 
     applyToAllCheck() {

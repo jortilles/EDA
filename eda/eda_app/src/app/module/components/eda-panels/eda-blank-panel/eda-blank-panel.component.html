@@ -1,7 +1,7 @@
 <div class="panel-heading d-flex justify-content-between">
     <div class="d-flex justify-content-between align-items-center">
-        <h6 id="p-header" class="panel-title" style="cursor: default"> 
-            {{ panel.title || title }} 
+        <h6 id="p-header" class="panel-title" style="cursor: default">
+            {{ panel.title || title }}
         </h6>
     </div>
 
@@ -19,7 +19,8 @@
 
     <div class="ui-g" *ngIf="display_v.minispinner">
         <div class="ui-g-12">
-            <p-progressSpinner [style]="{width: '5vw', height: '5vh'}" strokeWidth="8" class="" fill="#EEEEEE" animationDuration=".5s"></p-progressSpinner>
+            <p-progressSpinner [style]="{width: '5vw', height: '5vh'}" strokeWidth="8" class="" fill="#EEEEEE"
+                animationDuration=".5s"></p-progressSpinner>
         </div>
     </div>
 </div>
@@ -135,7 +136,8 @@
                                     <span>{{column.table_id}} . {{column.display_name.default}}</span>
 
                                     <span *ngFor='let aggregation of column.aggregation_type'>
-                                        <span *ngIf='aggregation.selected === true && aggregation.display_name !== "no"'>
+                                        <span
+                                            *ngIf='aggregation.selected === true && aggregation.display_name !== "no"'>
                                             ( {{aggregation.display_name}} )
                                         </span>
                                     </span>
@@ -149,7 +151,8 @@
                                     </h6>
 
                                     <div *ngFor='let filter of this.selectedFilters'>
-                                        <span> {{filter.filter_table}} . {{filter.filter_column}} ( {{filter.filter_type}} )</span>
+                                        <span> {{filter.filter_table}} . {{filter.filter_column}} (
+                                            {{filter.filter_type}} )</span>
                                     </div>
                                 </div>
 
@@ -157,9 +160,10 @@
                                     <h6 i18n="@@resumenFiltrosInformeH6">
                                         Resumen de filtros del informe
                                     </h6>
-                                    
+
                                     <div *ngFor='let filter of this.globalFilters'>
-                                        <span> {{filter.filter_table}} . {{filter.filter_column}} ( {{filter.filter_type}} )</span>
+                                        <span> {{filter.filter_table}} . {{filter.filter_column}} (
+                                            {{filter.filter_type}} )</span>
                                     </div>
                                 </div>
                             </div>
@@ -193,12 +197,32 @@
 
                                 <ng-template let-chart pTemplate="item">
                                     <div class="d-flex align-items-center" style="position: relative;height: 25px;">
-                                        <i *ngIf="chart.value.ngIf" class="pi pi-exclamation-triangle"
-                                            style="color: #eeac57!important;"></i>
 
-                                        <span class="ml-2 ">
+                                        <i *ngIf="chart.value.value==='table'" i class="material-icons "
+                                            [ngClass]="{'orange-alert': chart.value.ngIf }">table_chart</i>
+                                        <i *ngIf="chart.value.value==='crosstable'" i class="material-icons "
+                                            [ngClass]="{'orange-alert': chart.value.ngIf}">grid_on</i>
+                                        <i *ngIf="chart.value.value==='kpi'" i class="material-icons "
+                                            [ngClass]="{'orange-alert': chart.value.ngIf}">attach_money</i>
+                                        <i *ngIf="chart.value.value==='doughnut'" i class="material-icons "
+                                            [ngClass]="{'orange-alert': chart.value.ngIf}">pie_chart</i>
+                                        <i *ngIf="chart.value.value==='polarArea'" i class="material-icons "
+                                            [ngClass]="{'orange-alert': chart.value.ngIf}">scatter_plot</i>
+                                        <i *ngIf="chart.value.value==='bar'" i class="material-icons "
+                                            [ngClass]="{'orange-alert': chart.value.ngIf}">bar_chart</i>
+                                        <i *ngIf="chart.value.value==='horizontalBar'" i class="material-icons "
+                                            [ngClass]="{'orange-alert': chart.value.ngIf }">notes</i>
+                                        <i *ngIf="chart.value.value==='line'" i class="material-icons "
+                                            [ngClass]="{'orange-alert': chart.value.ngIf}">timeline</i>
+                                        <i *ngIf="chart.value.value==='barline'" i class="material-icons "
+                                            [ngClass]="{'orange-alert': chart.value.ngIf }">multiline_chart</i>
+
+                                        <span class="ml-2 "  [ngClass]="{'texto-rallado-alert': chart.value.ngIf }">
+
                                             {{chart.label}}
                                         </span>
+                                        <!-- <i *ngIf="chart.value.ngIf" class="pi pi-exclamation-triangle"
+                                            style="color: #eeac57!important;"></i> -->
                                     </div>
                                 </ng-template>
 
@@ -218,8 +242,8 @@
                 [disabled]="currentQuery.length === 0 && index === 0" i18n-label="@@ejecutarBtn" label="Ejecutar">
             </button>
 
-            <button type="submit" pButton (click)="savePanel()" [disabled]="display_v.btnSave" icon="fa fa-save"
-                class="ui-button ml-2" i18n-label="@@guardarBtn" label="Guardar">
+            <button type="submit" pButton (click)="savePanel()" [disabled]="display_v.btnSave" icon="fa fa-check"
+                class="ui-button ml-2" i18n-label="@@guardarBtn" label="Confirmar">
             </button>
 
             <button type="button" pButton (click)="closeEditarConsulta()" icon="fa fa-times"
