@@ -1,5 +1,4 @@
-<div class="main-content" (window:resize)="onResize($event)">
-
+<div class="main-content"  (window:resize)="onResize($event)" id='myDashboard'>
     <div class="ui-g-12" style="padding:2px">
         <eda-dashboard-panel class="pointer" (click)="setTitle(true)">
             <div class="d-flex justify-content-center">
@@ -106,7 +105,7 @@
             <span i18n="@@opcionTitulo2" class="ml-2">NUEVO FILTRO</span>
         </div>
     </div>
-
+    <hr>
     <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onResetWidgets()">
         <div>
             <i class="fa fa-ban"></i>
@@ -120,7 +119,21 @@
             <span i18n="@@opcionTitulo4" class="ml-2">GUARDAR INFORME</span>
         </div>
     </div>
+    <hr>
+    <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="exportAsPDF();">
+        <div>
+            <i class="fa fa-download"></i>
+            <span i18n="@@opcionTitulo1" class="ml-2">DESCARGAR PDF</span>
+        </div>
+    </div>
 
+    <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="exportAsJPEG();">
+        <div>
+            <i class="fa fa-download"></i>
+            <span i18n="@@opcionTitulo1" class="ml-2">DESCARGAR IMAGEN</span>
+        </div>
+    </div>
+    <hr>
     <div>
         <form [formGroup]="form">
             <div style="margin: 8px; display: flex;">

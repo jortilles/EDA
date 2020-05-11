@@ -4,8 +4,6 @@ export abstract class AbstractConnection {
 
     constructor(config: any) {
         this.config = config;
-        //this.pool = this.getPool(this.config).catch((err)=> {throw err});
-
     }
 
     itsConnected() {
@@ -33,22 +31,4 @@ export abstract class AbstractConnection {
     abstract async getPool():Promise<any>;
 
 }
-
-// // Obte el Pool depenen del tipus de base de dades
-// function getPool(config: any): any {
-//     try {
-//         switch (config.type) {
-//             case 'mssql':
-//             // return new MsPool(config);
-//             case 'mysql':
-//                 return createConnection(config);
-//             case 'postgres':
-//                 return new PgClient(config);
-//             case 'vertica':
-//                 return Vertica.connect(config);
-//         }
-//     } catch (err) {
-//         throw err;
-//     }
-// }
 

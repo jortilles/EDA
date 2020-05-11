@@ -1,7 +1,7 @@
 <div class="ui-g">
 
     <div class="ui-g-4">
-        <p-panel class="ui-g-12">
+        <p-panel>
             <p-header>
 
                 <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-left">
@@ -23,7 +23,7 @@
                 </div>
             </p-header>
             
-            <p-tree [style]="{'width':'100%'}" [value]="treeData" [filter]="false" selectionMode="single"
+            <p-tree id="datasource-list" [style]="{'width':'100%'}" [value]="treeData" [filter]="false" selectionMode="single"
                 [(selection)]="selectedFile" (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)"
                 (onNodeExpand)="nodeSelect($event)">
             </p-tree>

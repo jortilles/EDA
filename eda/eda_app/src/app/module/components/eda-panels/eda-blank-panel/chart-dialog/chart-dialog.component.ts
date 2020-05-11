@@ -69,7 +69,7 @@ export class ChartDialogComponent extends EdaDialogAbstract {
 
     onShow(): void {
         this.chart = this.controller.params.chart;
-        this.oldChart = this.controller.params.chart;
+        this.oldChart = _.cloneDeep(this.controller.params.chart);
         this.load();
     }
 
@@ -212,14 +212,15 @@ export class ChartDialogComponent extends EdaDialogAbstract {
 
     }
 
+    //On save update styles and send current state
     saveChartConfig() {
         this.uniformizeStyle();
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
     }
 
+    //On cancel send prev state
     closeChartConfig() {
-        this.chart = this.oldChart;
-        this.onClose(EdaDialogCloseEvent.NONE);
+        this.onClose(EdaDialogCloseEvent.NONE), this.oldChart;
     }
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {

@@ -2273,7 +2273,7 @@ body .ui-orderlist .ui-orderlist-list .ui-orderlist-item.ui-state-highlight {
 body .ui-orderlist .ui-orderlist-list .ui-orderlist-droppoint-highlight {
     background-color: #007ad9;
 }
-body .ui-tree {
+body #datasource-list .ui-tree {
     border: 1px solid #c8c8c8;
     background-color: #ffffff;
     color: #333333;

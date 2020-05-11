@@ -100,6 +100,9 @@ app-dashboard {
   cursor: pointer;
   display: inline-block;
 }
+.gridster-item {
+    transition: unset !important;
+}
 
 .edaTitle{
     font-family: sans-serif;

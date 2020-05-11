@@ -1,8 +1,8 @@
 import { Client as PgClient } from 'pg';
-import { PgBuilderService } from "../../query-builder/qb-systems/pg-builder-service";
-import { AbstractConnection } from "../abstract-connection";
+import { PgBuilderService } from '../../query-builder/qb-systems/pg-builder-service';
+import { AbstractConnection } from '../abstract-connection';
+import { AggregationTypes }  from  '../../../module/global/model/aggregation-types';
 import DataSource from '../../../module/datasource/model/datasource.model';
-import { AggregationTypes }  from  "../../../module/global/model/aggregation-types";
 
 
 export class PgConnection extends AbstractConnection {
@@ -35,31 +35,37 @@ export class PgConnection extends AbstractConnection {
         try {
             this.pool = await this.getPool();
             const tableNames = [];
-            let tables = [];
+            const tables = [];
+
+            let whereTableSchema: string = !this.config.schema 
+                ? `NOT IN ('pg_catalog', 'information_schema')`
+                : `=  '${this.config.schema}' `
+            ;
+
+
             const query = `
-                SELECT 
-                    table_name 
-                FROM 
-                    information_schema.tables 
-                WHERE 
-                    table_type = 'BASE TABLE'  AND table_schema NOT IN ('pg_catalog', 'information_schema')
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_type = 'BASE TABLE' AND table_schema ${whereTableSchema}
                 UNION ALL
-                SELECT 
-                    table_name 
-                FROM 
-                    information_schema."views" 
-                WHERE
-                    table_schema NOT IN ('pg_catalog', 'information_schema');
+                SELECT  table_name 
+                FROM  information_schema.views 
+                WHERE table_schema ${whereTableSchema}
             `;
 
+            console.log(query);
+
             const getResults = await this.execQuery(query);
-            getResults.forEach(r => {
-                let tableName = r['table_name'];
-                tableNames.push(tableName);
-            });
-            //New client is needed, old client has been closed;
+            
+            for (let i = 0, n = getResults.length; i < n; i++) {
+                const result = getResults[i];
+                tableNames.push(result['table_name']);
+            }
+
+            // New client is needed, old client has been closed;
             this.pool = await this.getPool();
             this.pool.connect();
+
             for (let i = 0; i < tableNames.length; i++) {
                 let new_table = await this.setTable(tableNames[i]);
                 tables.push(new_table);
@@ -70,7 +76,9 @@ export class PgConnection extends AbstractConnection {
                     tables[i].columns[j] = this.setColumns(tables[i].columns[j]);
                 }
             }
+
             this.pool.end();
+
             return await this.commonColumns(tables);
         } catch (err) {
             throw err;
@@ -122,12 +130,12 @@ export class PgConnection extends AbstractConnection {
                 const newTable = {
                     table_name: tableName,
                     display_name: {
-                        "default": this.normalizeName(tableName),
-                        "localized": []
+                        'default': this.normalizeName(tableName),
+                        'localized': []
                     },
                     description: {
-                        "default": `${this.normalizeName(tableName)}`,
-                        "localized": []
+                        'default': `${this.normalizeName(tableName)}`,
+                        'localized': []
                     },
                     table_granted_roles: [],
                     table_type: [],
@@ -204,10 +212,10 @@ export class PgConnection extends AbstractConnection {
                         // Columnes
                         for (let i = 0; i < data_model[j].columns.length; i++) {
                             let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
-                            if ((sourceColumn.source_column.toLowerCase().includes("_id") ||
-                                sourceColumn.source_column.toLowerCase().includes("id_") ||
-                                sourceColumn.source_column.toLowerCase().includes("number") ||
-                                sourceColumn.source_column.toLowerCase().includes("code"))
+                            if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
+                                sourceColumn.source_column.toLowerCase().includes('id_') ||
+                                sourceColumn.source_column.toLowerCase().includes('number') ||
+                                sourceColumn.source_column.toLowerCase().includes('code'))
                                 && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
 
                                 // FER EL CHECK AMB ELS INNER JOINS ---- DESHABILITAT (Masses connexions a la db)

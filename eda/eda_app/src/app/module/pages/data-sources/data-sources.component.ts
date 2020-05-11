@@ -34,7 +34,7 @@ export class DataSourcesComponent {
             port: [null, Validators.required],
             user: [null, Validators.required],
             password: [null, Validators.required],
-            schema: [null, null]
+            schema: [null]
         });
     }
 

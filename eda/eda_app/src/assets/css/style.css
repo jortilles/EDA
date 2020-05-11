@@ -17,6 +17,21 @@
 @import url(../css/animate.css);
 @import url(../eda-styles/index-styles.css);
 
+
+body, html {
+    height: 100%;
+}
+
+body {
+    background: #fff;
+    font-family: sans-serif!important;
+    margin: 0;
+    overflow-y: initial;
+    overflow-x: hidden;
+    color: #67757c;
+    font-weight: 300;
+}
+
 /*******************
   Footer
  *******************/
@@ -31,34 +46,18 @@
     background: #ffffff;
 }
 
-body {
-    height: 100%;
-    background: #fff;
-    font-family: sans-serif!important;
-    margin: 0;
-    overflow-y: initial;
-    overflow-x: hidden;
-    color: #67757c;
-    font-weight: 300;
-}
-
 .container-fluid {
     padding: 10px 25px;
 }
 
 /* my css */
-*,
-:after,
-:before {
-    box-sizing: border-box;
-}
-
-* {
-    outline: none;
-}
-
 html body .db {
     display: block;
+}
+
+body .ui-tree {
+    max-height: 768px;
+    overflow: auto;
 }
 
 .right-side-toggle {
@@ -987,6 +986,13 @@ pre {
 
     .auto-height {
         min-height: 186px;
+    }
+}
+
+@media (max-width: 1366px) {
+    .side-datasource-list {
+        overflow-y: auto;
+        max-height: 260px;
     }
 }
 

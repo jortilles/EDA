@@ -5,11 +5,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Dashboard, EdaPanel } from '@eda/models/model.index';
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { EdaDialogController, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
-import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupService, IGroup } from '@eda/services/service.index';
+import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupService, IGroup, SpinnerService } from '@eda/services/service.index';
 import { SelectItem } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
+import * as jspdf from 'jspdf';
+import domtoimage from 'dom-to-image';
 
 @Component({
     selector: 'app-dashboard',
@@ -75,6 +77,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(private dashboardService: DashboardService,
         private groupService: GroupService,
         private queryBuilderService: QueryBuilderService,
+        private spinnerService: SpinnerService,
         private alertService: AlertService,
         private fileUtiles: FileUtiles,
         private formBuilder: FormBuilder,
@@ -86,7 +89,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.toMedium = false;
         }
 
-        if ((window.innerWidth < 1200) && (window.innerWidth > 1000) ){
+        if ((window.innerWidth < 1200) && (window.innerWidth > 1000)) {
             this.lanes = 20;
             this.toMedium = true;
             this.toLitle = false;
@@ -139,6 +142,40 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
+    exportAsPDF() {
+        this.display_v.rightSidebar = false;
+        this.spinnerService.on();
+        let data = document.getElementById('myDashboard');
+        const title = this.title;
+        domtoimage.toJpeg(document.getElementById('myDashboard'), { bgcolor: 'white' })
+            .then((dataUrl) => {
+                var img = new Image();
+                img.src = dataUrl;
+                img.onload = () => {
+                    let pdf = new jspdf('l', 'pt', [img.width, img.height]);
+                    var width = pdf.internal.pageSize.getWidth();
+                    var height = pdf.internal.pageSize.getHeight();
+                    pdf.addImage(img, 'JPEG', 0, 0, width, height);
+                    pdf.save(`${title}.pdf`);
+                }
+                this.spinnerService.off();
+            });
+       
+    }
+    exportAsJPEG() {
+        this.display_v.rightSidebar = false;
+        this.spinnerService.on();
+        let data = document.getElementById('myDashboard');
+        const title = this.title;
+        domtoimage.toJpeg(document.getElementById('myDashboard'), { bgcolor: 'white' })
+            .then((dataUrl) => {
+                var link = document.createElement('a');
+                link.download = `${title}.jpeg`;
+                link.href = dataUrl;
+                link.click();
+                this.spinnerService.off();
+            });
+    }
     setEditMode() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
@@ -274,8 +311,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             this.initMediumSizes();
                         }
 
-                        me.dashboard = new Dashboard({ 
-                            id: me.id, title: me.title, visible: config.visible, panel: config.panel, user: res.dashboard.user, 
+                        me.dashboard = new Dashboard({
+                            id: me.id, title: me.title, visible: config.visible, panel: config.panel, user: res.dashboard.user,
                             datasSource: me.dataSource, filters: config.filters, applytoAllFilter: me.applyToAllfilter
                         });
                     }
@@ -311,12 +348,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     loadDatesFromFilter(filter) {
-        if(filter.selectedItems.length > 0){
-        let firstDate = filter.selectedItems[0];
-        let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
-        this.rangeDates[filter.id] = []
-        this.rangeDates[filter.id].push(new Date(firstDate.replace(/-/g, '/')))
-        this.rangeDates[filter.id].push(new Date(lastDate.replace(/-/g, '/')))
+        if (filter.selectedItems.length > 0) {
+            let firstDate = filter.selectedItems[0];
+            let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+            this.rangeDates[filter.id] = []
+            this.rangeDates[filter.id].push(new Date(firstDate.replace(/-/g, '/')))
+            this.rangeDates[filter.id].push(new Date(lastDate.replace(/-/g, '/')))
         }
     }
 
@@ -396,27 +433,24 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onResize(event) {
         const innerWidth = event.target.innerWidth;
- 
-
         if (innerWidth >= 1200) {
             this.lanes = 40;
             this.toLitle = false;
-            this.toMedium  = false;
+            this.toMedium = false;
             this.gridster.setOption('lanes', this.lanes).reload();
-        } else if( (innerWidth < 1200)  && (innerWidth >= 1000)  ){
+        } else if ((innerWidth < 1200) && (innerWidth >= 1000)) {
             this.lanes = 20;
             this.toMedium = true;
             this.toLitle = false;
             this.gridster.setOption('lanes', this.lanes).reload();
             this.initMediumSizes();
-        }else{
-            /*  if (innerWidth < 1000) {
-                this.lanes = 20;
-            }*/
+        } else {
+            this.lanes = 20;
             this.toLitle = true;
             this.toMedium = false;
             this.gridster.setOption('lanes', this.lanes).reload();
             this.initMobileSizes();
+
         }
     }
 
@@ -425,42 +459,47 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         for (let i = 0, n = this.panels.length; i < n; i++) {
             // Init tamanys mobils
             const panel = this.panels[i];
-            panel.tamanyMig.x =  _.round(panel.x/2);
-            panel.tamanyMig.y =  _.round(panel.y/1.5);
-            panel.tamanyMig.w =  _.round(panel.w/2);
-            panel.tamanyMig.h =  _.round(panel.h/1.5);
+            if (panel.tamanyMig.h == 0) {
+                panel.tamanyMig.x = _.round(panel.x / 2);
+                panel.tamanyMig.y = _.round(panel.y / 1.5);
+                panel.tamanyMig.w = _.round(panel.w / 2);
+                panel.tamanyMig.h = _.round(panel.h / 1.5);
+            }
+
         }
     }
 
 
     initMobileSizes() {
         let height = 0;
-        let pannelHeight=0;
+        let pannelHeight = 0;
         for (let i = 0, n = this.panels.length; i < n; i++) {
             // Init tamanys mobils
             const panel = this.panels[i];
-            if (i !== 0) {
-                panel.tamanyMobil.y = height;
+            if (panel.tamanyMobil.h == 0) {
+                if (i !== 0) {
+                    panel.tamanyMobil.y = height;
+                }
+                pannelHeight = _.round(panel.h * 1.6);
+                // si el panell es mes gran que la pantalla ho ajusto a la pantalla. 
+                // tot això es fa per tenir el tamany d'una cela i multiplicar-ho per el 70% de la pantalla
+                // vertical
+                if ((pannelHeight * (window.innerWidth / this.lanes) > window.innerHeight) && (window.innerHeight > window.innerWidth)) {
+                    pannelHeight = _.round((window.innerHeight / (window.innerWidth / this.lanes)) * 0.8);
+                }
+                //horitzontal
+                if ((pannelHeight * (window.innerWidth / this.lanes) > window.innerHeight) && (window.innerHeight < window.innerWidth)) {
+                    pannelHeight = _.round((window.innerHeight / (window.innerWidth / this.lanes)) * 1.1);
+                }
+
+                panel.tamanyMobil.w = this.lanes;
+                panel.tamanyMobil.h = pannelHeight;
+                panel.tamanyMobil.x = 0;
+                height += pannelHeight;
             }
-            pannelHeight= _.round(panel.h*1.6);
-            // si el panell es mes gran que la pantalla ho ajusto a la pantalla. 
-            // tot això es fa per tenir el tamany d'una cela i multiplicar-ho per el 70% de la pantalla
-            // vertical
-            if(   ( pannelHeight  * ( window.innerWidth /  this.lanes  )    > window.innerHeight ) && ( window.innerHeight > window.innerWidth)  ){
-                pannelHeight= _.round( ( window.innerHeight / ( window.innerWidth /  this.lanes  ) )  * 0.8 )   ;
-            } 
-            //horitzontal
-            if(   ( pannelHeight  * ( window.innerWidth /  this.lanes  )    > window.innerHeight ) && ( window.innerHeight < window.innerWidth)  ){
-                pannelHeight= _.round( ( window.innerHeight / ( window.innerWidth /  this.lanes  ) )  * 1.1)   ;
-            } 
-
-            panel.tamanyMobil.w = this.lanes;
-            panel.tamanyMobil.h = pannelHeight;
-            panel.tamanyMobil.x = 0;
-            height += pannelHeight;
-
 
         }
+
     }
 
     saveDashboard(): void {
@@ -601,9 +640,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             panel: '',
             filters: []
         };
-        filter.column.value.ordenation_type= 'ASC' ;
+        filter.column.value.ordenation_type = 'ASC';
         this.dashboardService.executeQuery(
-            
+
             this.queryBuilderService.normalQuery([filter.column.value], queryParams)
         ).subscribe(
             res => { filter.data = res[1].map(item => ({ label: item[0], value: item[0] })); },

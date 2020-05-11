@@ -1,3 +1,52 @@
+
+.bg-full {
+    flex-direction: column;
+    box-sizing: border-box;
+    display: flex;
+    place-content: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-image: url(assets/images/background/data-bg.png);
+    background-size: cover;
+    background-position-x: center;
+    background-position-y: center;
+}
+
+.login-card {
+    max-width: 20rem;
+    border-radius: .25rem;
+    background-color: #fff;
+    -webkit-box-shadow: 0px 0px 9px 2px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 9px 2px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 9px 2px rgba(0,0,0,0.75);
+}
+
+.inputs-card {
+    flex-direction: column;
+    box-sizing: border-box;
+    display: flex;
+    padding: 1.5rem;
+    padding-top: 0.5rem;
+}
+
+.form-card {
+    margin-bottom: 16px;
+    flex-direction: column;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1 auto;
+}
+
+.logo-card {
+    flex-direction: column;
+    box-sizing: border-box;
+    display: flex;
+    place-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    text-align: center;
+}
+/* 
 .login-register {
     background-size: cover;
     background-repeat: no-repeat;
@@ -44,4 +93,4 @@
 .login-sidebar .login-box {
     right: 0px;
     height: 100%;
-}
+} */

@@ -125,9 +125,9 @@ export class ChartUtilsService {
                 });
                 // >1 numeric series and is mixed bar-line
             } else {
-           
+
                 dataDescription.numericColumns.forEach((col, i) => {
-                    let isLine = i === dataDescription.numericColumns.length - 1 ;
+                    let isLine = i === dataDescription.numericColumns.length - 1;
                     _output[1].push(
                         {
                             data: values.map(v => v[col.index]),
@@ -136,10 +136,10 @@ export class ChartUtilsService {
                             borderWidth: 1,
                             fill: false,
                             order: isLine ? 0 : i + 1,
-                            pointRadius : 2,
-                            pointHitRadius : 4,
-                            pointHoverRadius : 3,
-                            pointHoverBorderWidth : 2
+                            pointRadius: 2,
+                            pointHitRadius: 4,
+                            pointHoverRadius: 3,
+                            pointHoverBorderWidth: 2
                         });
                 });
 
@@ -168,7 +168,7 @@ export class ChartUtilsService {
      * @return [] notAllowed chart types
      */
     public getNotAllowedCharts(dataDescription: any): any[] {
-        let notAllowed = ['table', 'crosstable', 'kpi', 'doughnut', 'polarArea', 'line', 'bar', 'horizontalBar'];
+        let notAllowed = ['table', 'crosstable', 'kpi', 'doughnut', 'polarArea', 'line', 'bar', 'horizontalBar', 'barline'];
         //table (at least one column)
         if (dataDescription.totalColumns > 0) notAllowed.splice(notAllowed.indexOf('table'), 1);
 
@@ -187,6 +187,9 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('bar'), 1);
             notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
             notAllowed.splice(notAllowed.indexOf('line'), 1);
+        }
+        if (dataDescription.numericColumns.length > 1 && dataDescription.otherColumns.length < 2) {
+            notAllowed.splice(notAllowed.indexOf('barline'), 1);
         }
         // Crosstable (At least three columns, one numeric)
         if (dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 0 &&
@@ -314,9 +317,16 @@ export class ChartUtilsService {
                                 return `${labelColum[0].name}`
                             },
                             label: (tooltipItem, data) => {
-                                if (data && tooltipItem)
-                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} :
-                                    ${parseFloat(data.datasets[0].data[tooltipItem.index]).toLocaleString('de-DE')}`;
+                                if (data && tooltipItem) {
+                                    const realData = data.datasets[0].data;
+                                    const total = realData.reduce((a, b) => {
+                                        return a + b;
+                                    }, 0);
+                                    const elem = data.datasets[0].data[tooltipItem.index];
+                                    const percentage = elem / total * 100;
+                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE')} (${percentage.toFixed(2)}%)`;
+                                }
+
                             },
                             afterLabel: (t, d) => { }
                         }
@@ -341,8 +351,7 @@ export class ChartUtilsService {
                             },
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
-                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : 
-                                    ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE')} `;
+                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE')} `;
                             },
                             afterLabel: (t, d) => {
                             }
@@ -399,8 +408,7 @@ export class ChartUtilsService {
                             },
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
-                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : 
-                                    ${parseFloat(tooltipItem.xLabel).toLocaleString('de-DE')} `;
+                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.xLabel).toLocaleString('de-DE')} `;
                             },
                             afterLabel: (t, d) => {
                             }
@@ -465,8 +473,7 @@ export class ChartUtilsService {
                             },
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
-                                    return ` ${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : 
-                                    ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE')}  `;
+                                    return ` ${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE')}  `;
                             },
                             afterLabel: (tooltipItem, data) => {
                             }
