@@ -1,0 +1,6 @@
+Valores Distintos=Count Distinct
+Cuenta Valores=Count
+Mínimo=Minimum
+Máximo=Maximum
+Media=Average
+Suma=Sum

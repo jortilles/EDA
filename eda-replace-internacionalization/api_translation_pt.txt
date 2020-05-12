@@ -1,0 +1,6 @@
+Valores Distintos=Valores diferentes
+Cuenta Valores=Contar valores
+Mínimo=Mínimo
+Máximo=Máximo
+Media=Média
+Suma=Soma
