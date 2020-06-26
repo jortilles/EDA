@@ -2,7 +2,19 @@
 
 If you are on this page, we understand that you know what you are doing and you have programming knowledge.
 
-## DASHBOARD GLOBAL FILTER BY URL PARAMS
+## Native SQL queries
+
+### General information 
+You can make SQL queries about the schema defined in your model. To do this, enter the query in the text box and select the source table (it can be any of those that appear in the query). We will use this table to link the query to the report filters.
+
+Limitations:
+
+* It is only possible to use the tables of the schema defined in the model (if any)
+* Please use aliases for all tables in the query
+
+### Link query with panel filters
+
+## Dashboard global filter by url params
 
 If you need to pass a string or number value for a global filter through the url. You have to do it like this.
 
@@ -25,12 +37,12 @@ www.eda.jortilles.com/dashboard/dashboard_id?table_name.column_name=value1|value
 If you have a date range global filter you have to pass the value with this format.
 
 ```
-www.eda.jortilles.com/dashboard/dashboard_id?table_name.column_name=value1|value2
+www.eda.jortilles.com/dashboard/dashboard_id?table_name.column_name=date1|date2
 
 #table_name = "customers"
 #column_name = "sale_date"
-#value1 = "2020-01-01" #!important dates with "-"
-#value2 = "2020-12-31" #!important dates with "-"
+#date1 = "2020-01-01" #!important dates with "-"
+#date2 = "2020-12-31" #!important dates with "-"
 
 # Real example:
 www.eda.jortilles.com/dashboard/dashboard_id?customers.sale_date=2020-01-01|2020-12-31
