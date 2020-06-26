@@ -1,5 +1,7 @@
 # Technical Documentation
 
+If you are on this page, we understand that you know what you are doing and you have programming knowledge.
+
 ## DASHBOARD GLOBAL FILTER BY URL PARAMS
 
 If you need to pass a string or number value for a global filter through the url. You have to do it like this.
