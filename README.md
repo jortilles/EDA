@@ -1,8 +1,6 @@
 # EDA 
 
-Enterprise Data Analytics by  [Jortilles](http://eda.jortilles.com) 
-
-EDA is the easiest analytics tool.
+Enterprise Data Analytics by  [Jortilles](http://eda.jortilles.com)! The easiest analytics tool.
 
 ## Installation
 
@@ -55,5 +53,5 @@ Easily, you can do dashboads as nice as this one:
 
 You can see it in action [here](https://www.youtube.com/watch?v=S0wkoeRqz3k&t=5s)
 
-# Technical Documentation
+## Technical Documentation
 To see the technical documentation click [here](docs/technical-docs.md) 
