@@ -23,13 +23,13 @@ You can link the report filters with the query
 
 ### Examples
 
-** Simple query **
+**Simple query**
 
 ```
 SELECT c.customername FROM CUSTOMERS c
 ```
 
-** Query with linked report filters **
+**Query with linked report filters**
 
 We have a filter in the report for the "CITY" field of the "CUSTOMERS" table.
 
