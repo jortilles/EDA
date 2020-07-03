@@ -102,8 +102,11 @@ www.eda.jortilles.com/dashboard/dashboard_id?customers.sale_date=2020-01-01|2020
 ## Oracle Connectivity
 
 If you want to connect to an oracle database you need to have installed Oracle Instant client 
-For windows: https://www.oracle.com/database/technologies/instant-client/winx64-64-downloads.html
-For Linux: https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html
+
+* For windows: https://www.oracle.com/database/technologies/instant-client/winx64-64-downloads.html
+
+* For Linux: https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html
+
 For more detailed instructions see: https://oracle.github.io/node-oracledb/doc/api.html#usermanual
 
 Once you have installed the instant client. You need to set the installation path in EDA_API/config/oracle-config.js
