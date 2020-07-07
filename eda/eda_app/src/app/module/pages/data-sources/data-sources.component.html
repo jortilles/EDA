@@ -20,15 +20,24 @@
         </div>
       </div>
 
-      <div class="ui-g-6 ui-md-3">
+      <div  *ngIf="form.value.type && form.value.type.value ==='oracle'" class="ui-g-6 ui-md-2">
         <div class="form-group">
           <label i18n="@@inputServidor">SERVIDOR *</label>
           <input type="text" class="form-control" formControlName="host" id="eda_ds_host" pInputText>
         </div>
       </div>
 
-      <div *ngIf="form.value.type && form.value.type.value ==='oracle'" class="ui-g-6 ui-md-1">
-        <div class="form-group"></div>
+      <div *ngIf="!form.value.type || form.value.type.value !=='oracle'"  class="ui-g-6 ui-md-3">
+        <div class="form-group">
+          <label i18n="@@inputServidor">SERVIDOR *</label>
+          <input type="text" class="form-control" formControlName="host" id="eda_ds_host" pInputText>
+        </div>
+      </div>
+
+
+
+      <div *ngIf="form.value.type && form.value.type.value ==='oracle'" class="ui-g-6 ui-md-2">
+        <div class="form-group">
           <label i18n="@@inputServidor">SID?</label>
           <p-dropdown [options]="sidOpts" formControlName="sid" placeholder='SID/SERVICE_NAME' optionLabel="name"
           [style]="{width:'100%', padding:'.35rem .75rem'}" > </p-dropdown>
@@ -79,11 +88,7 @@
       </div>
     </div>
 
-    <!-- <div *ngIf="form.value.type && form.value.type.value ==='oracle'" class="ui-g-6 ui-md-2">
-      <div class="form-group">
-        <p-dropdown [options]="sidOpts" formControlName="sid" placeholder='SID/SERVICE_NAME' optionLabel="name"> </p-dropdown>
-      </div>
-    </div> -->
+
 
     <div class="footer text-right" style="background: none">
       <button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Guardar"
