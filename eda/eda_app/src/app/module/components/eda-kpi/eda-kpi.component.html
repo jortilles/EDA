@@ -1,9 +1,16 @@
-<div class="text-center" style="width: 100%; height: 100%;">
+<div class="text-center w-100 h-100">
+
     <div>
-            <div style=" padding-left:5%; padding-right: 5%;"  fittext minFontSize=18  activateOnResize=true >
-                <span   style="font-weight: bold;" > {{inject.value | number:'':'es'}} </span> 
-                <span *ngIf="inject.sufix"> {{inject.sufix}} </span>
+        <div class="pointer pl-5 pr-5" title="Añadir unidades"  >
+            <div style="font-weight: bold; display: inline; white-space: nowrap; " (click)="setSufix()"  fittext minFontSize="18" maxFontSize="70"  activateOnResize="true"  > {{inject.value | number:'':'es'}} {{inject.sufix}} </div>
+            <div *ngIf="!!sufixClick" class="ui-inputgroup w-100">
+                <input type="text" class="w-100" pInputText (focusout)="setSufix()" (keydown.enter)="setSufix()"
+                    name=unidades [(ngModel)]="inject.sufix" autofocusOnShow>
             </div>
-        <h6 style="font-size: 16px;"> {{inject.header}} </h6>
+        </div>
     </div>
+
 </div>
+
+
+

@@ -12,9 +12,11 @@ router.get('/names', authGuard,  DataSourceController.GetDataSourcesNames);
 
 router.get('/check-connection', authGuard, roleGuard, DataSourceController.CheckConnection);
 
+router.get('/check-connection/:id', authGuard, roleGuard, DataSourceController.CheckStoredConnection);
+
 router.get('/:id', authGuard, roleGuard, DataSourceController.GetDataSourceById);
 
-router.post('', authGuard, roleGuard, DataSourceController.GenerateDataModel);
+router.post('/add-data-source/:optimize', authGuard, roleGuard, DataSourceController.GenerateDataModel);
 
 router.post('/query', authGuard, roleGuard, DashboardController.execQuery);
 

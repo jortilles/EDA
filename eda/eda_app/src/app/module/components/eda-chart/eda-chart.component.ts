@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { EdaChart } from './eda-chart';
 import { BaseChartDirective, Color } from 'ng2-charts';
+import { ChartsColors } from '@eda/configs/index';
 
 @Component({
     selector: 'eda-chart',
@@ -21,13 +22,7 @@ export class EdaChartComponent implements OnInit {
     public static generateChartColors(iterations?: number) {
         let MAX_ITERATIONS = 200;
         let out = [];
-        let col =
-            [
-                [0, 156, 114],
-                [5, 81, 138],
-                [222, 150, 16],
-                [158, 6, 52]
-            ]
+        let col = ChartsColors;
 
         for (let i = 0; i < MAX_ITERATIONS; i += 50) {
             for (let j = 0; j < col.length; j++) {
@@ -51,17 +46,11 @@ export class EdaChartComponent implements OnInit {
 
         let MAX_ITERATIONS = 1000;
         let out = [{ backgroundColor: [], borderColor: [] }];
-        let col =
-            [
-                [0, 156, 114],
-                [5, 81, 138],
-                [222, 150, 16],
-                [158, 6, 52]
-            ]
+        let col = ChartsColors;
 
         for (let i = 0; i < MAX_ITERATIONS; i += 50) {
 
-            for (let j = 0; j < 4; j++) {
+            for (let j = 0; j < col.length; j++) {
                 out[0].backgroundColor.push(
                     `rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 0.8)`);
                 out[0].borderColor.push(`rgba(255,255,255,1)`)
@@ -76,9 +65,7 @@ export class EdaChartComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        // if(this.inject.chartType === 'barline'){
 
-        // }
     }
 
     chartClicked(e: any): void {
@@ -98,7 +85,7 @@ export class EdaChartComponent implements OnInit {
                 } else {
                     background = chart.data.datasets[0].backgroundColor;
                 }
-                console.log(clickedElementIndex, label, value, background);
+                // console.log(clickedElementIndex, label, value, background);
             }
         }
     }
@@ -116,7 +103,6 @@ export class EdaChartComponent implements OnInit {
 
     updateChart() {
         this.edaChart.chart.update();
-
     }
 
 }

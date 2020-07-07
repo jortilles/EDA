@@ -13,7 +13,8 @@
 <!-- Body of Panel -->
 <div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner === true}">
     <div *ngIf="display_v.saved_panel" class="p-1" style="height: 100%">
-        <panel-chart #PanelChartComponent [config]="panelChartConfig" (configUpdated)="setChartProperties()">
+        <panel-chart #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties()"
+            style="height: 100%; width: 100%; display:block">
         </panel-chart>
     </div>
 
@@ -26,21 +27,24 @@
 </div>
 
 <!-- Page Dialog -->
-<eda-page-dialog #pdialog [inject]="{display: this.display_v.page_dialog, title: panel.title}">
+<eda-page-dialog #pdialog [inject]="{display: this.display_v.page_dialog, title: panel.title}"
+    style="overflow: auto; overflow-y: auto;">
     <div (window:resize)="onResize($event)">
 
-        <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)" class="preview-tabview">
+        <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)" class="ui-g-11 preview-tabview" >
 
-            <p-tabPanel i18n-header="@@vistaSeleccionador" header="EDITAR CONSULTA">
+            <p-tabPanel  i18n-header="@@vistaSeleccionador" header="{{!modeSQL ? 'EDITAR CONSULTA' : 'EDITAR CONSULTA SQL'}}">
 
-                <div class="ui-g">
+                <div  *ngIf="!modeSQL" class="ui-g">
 
                     <div class="ui-g-6 ui-md-2 pl-2 pr-2">
                         <h4 i18n="@@entidadesH4">
                             Entidades
                         </h4>
-
                         <hr class="mb-0">
+
+                        <eda-input [inject]="inputs.findTable"></eda-input>
+
                         <div class="column-list">
                             <div class="our-table-box" *ngFor="let table of tableToShow" (click)="loadColumns(table)"
                                 [className]="table.table_name === userSelectedTable ? 'selected-table-class' : 'our-table-box'"
@@ -57,8 +61,11 @@
                         <h4 i18n="@@atributosH4">
                             Atributos
                         </h4>
-
+                        
                         <hr class="mb-0">
+
+                        <eda-input [inject]="inputs.findColumn"></eda-input>
+
                         <div class="column-list" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
                             [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
                             [cdkDropListEnterPredicate]="isAllowed">
@@ -79,8 +86,8 @@
                         <h4 i18n="@@seleccionH4">
                             Selección
                         </h4>
-
                         <hr class="mb-0">
+
                         <div class="select-list" cdkDropList cdkDropListOrientation="horizontal"
                             #selectList="cdkDropList" [cdkDropListData]="currentQuery"
                             [cdkDropListConnectedTo]="[columnsList]" (cdkDropListDropped)="drop($event)">
@@ -107,16 +114,15 @@
                         <div class="filter-list" cdkDropList cdkDropListOrientation="horizontal"
                             #filterList="cdkDropList" [cdkDropListData]="filtredColumns"
                             [cdkDropListConnectedTo]="[columnsList]" (cdkDropListDropped)="drop($event)">
-
                             <div class="select-box col-3 col-md-2 p-1" *ngFor="let item of filtredColumns"
                                 (click)="openColumnDialog(item, true)" (mouseover)="showDescription(item)"
                                 (mouseout)="description = ''" cdkDrag>
 
                                 <span class="close-thin pointer" (click)="removeColumn( item, 'filter' )"></span>
+
                                 <span class="text-center">
                                     {{item.display_name.default}}
                                 </span>
-
                             </div>
 
                         </div>
@@ -171,21 +177,131 @@
                     </div>
                 </div>
 
+                <div *ngIf="modeSQL">
+                    <div id="query-area" class="ui-g-7">
+                        <h6>Expresión SQL</h6>
+                        <hr>
+                        <textarea class="sqlInput" rows="10" cols="100" pInputTextarea autoResize="autoResize"
+                            [(ngModel)]="currentSQLQuery"></textarea>
+                        <div class="ui-g-6">
+                            <h6>Tabla origen</h6>
+                            <hr>
+                            <p-dropdown [options]="sqlOriginTables" filter="true" optionLabel="label"
+                                [(ngModel)]="sqlOriginTable" [style]="{'width': '100%'}"
+                                i18n-placeholder="@@placeholderTables" placeholder="Tablas">
+                            </p-dropdown>
+                        </div>
+
+                    </div>
+                    <div id="help-menu" class="ui-g-5">
+                        <!-- <h6><i class="fa fa-question-circle" aria-hidden="true"></i></h6> -->
+                        <h6>Indicaciones</h6>
+                        <hr>
+                        <p-accordion id="help-text">
+                            <p-accordionTab header="Información general">
+                                <p> Puedes realizar consultas SQL sobre el esquema definido en tu modelo. 
+                                    Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal 
+                                    (puede ser cualquiera de las que aparecen en la consulta).
+                                    Usaremos esta tabla para vincular la consulta a los filtros del informe. </p>
+                                <p> Limitaciones: </p>
+
+                                <ul>
+                                    <li>
+                                        Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
+                                    </li>
+                                    <li>
+                                        Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c )
+                                    </li>
+                                </ul>
+                            </p-accordionTab>
+                            <p-accordionTab header="Vincular consulta con los filtros del panel">
+                                <p> Puedes vincular los filtros del informe con la consulta</p>
+                                <ul>
+                                    <li> Para hacerlo sólo tienes que añadir:
+                                        <span style="color:rgb(0, 62, 119); font-weight: bold"> AND
+                                            ${{'{'}}alias_tabla.columna_filtrada}
+                                        </span> en la cláusula 'WHERE' de la consulta donde quieras inyectar el filtro
+                                    </li>
+                                    <li> Si no has añadido ningúna cláusula WHERE, añádela a la consulta y haz los joins necesarios, 
+                                        junto con el filtro en el formato
+                                        <span style="color:rgb(0, 62, 119); font-weight: bold">
+                                            ${{'{'}}alias_tabla.columna_filtrada} </span></li>
+                                    <li>Si la tabla por la que filtramos no está en la consulta, recuerda que debes
+                                        añadir las cláusulas JOIN necesarias
+                                        para poder vicular la tabla del filtro con tu consulta
+                                    </li>
+                                </ul>
+
+                            </p-accordionTab>
+                            <p-accordionTab header="Ejemplos">
+                                <p>Consulta simple</p>
+                                <ul>
+                                    <li style="font-weight: bold;"> SELECT c.customername FROM
+                                        CUSTOMERS c </li>
+                                </ul>
+                                <!-- <ul>
+                                <li style="font-weight: bold"> SELECT c.customername FROM
+                                    CUSTOMERS c WHERE ${{'{'}}c.customer_id}</li>
+                            </ul> -->
+                                <p>Consulta con los filtros del informe vinculados</p>
+                                <ul>
+                                    <p> Tenemos un filtro en el informe para el campo 'city' de la tabla CUSTOMERS</p>
+                                    <li> Consulta sin filtros vinculados</li>
+                                    <ul>
+                                        <li style="font-weight: bold;"> SELECT c.customername FROM
+                                            CUSTOMERS c WHERE c.customername IN ('Julia', 'John') </li>
+                                    </ul>
+                                    <li> Consulta con filtros vinculados</li>
+                                    <ul>
+                                        <li style=" font-weight: bold">SELECT c.customername FROM
+                                            CUSTOMERS c WHERE c.customername IN ('Julia', 'john') AND ${{'{'}}c.city}
+                                        </li>
+                                    </ul>
+                                </ul>
+                                <ul>
+                                    <p> Tenemos un filtro en el informe para el campo 'office_id' de la tabla OFFICES
+                                    </p>
+
+                                    <li> Consulta sin filtros vinculados</li>
+                                    <ul>
+
+                                        <li style=" font-weight: bold;"> SELECT e.employee_name FROM EMPLOYEE e
+                                            WHERE e.employee_name IN ('Julia', 'John') </li>
+                                    </ul>
+                                    <li> Consulta con filtros vinculados</li>
+                                    <ul>
+                                        <li style="font-weight: bold">
+                                            <p>SELECT e.employee_name FROM EMPLOYEE e</p>
+                                            <p> INNER JOIN OFFICES o ON o.office_id = e.office_id</p>
+                                            <p> WHERE e.employee_name IN ('Julia', 'John') AND ${{'{'}}o.office_id}</p>
+                                        </li>
+                                    </ul>
+                                </ul>
+
+                            </p-accordionTab>
+                        </p-accordion>
+
+                    </div>
+                </div>
+
             </p-tabPanel>
 
-            <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA" [disabled]="display_v.disablePreview">
-                <div class="ui-g p-0" style="height: 100%">
 
-                    <div class="ui-g-8 p-1" style="height: 400px">
-                        <panel-chart #PanelChartComponent [config]="panelChartConfig"></panel-chart>
+
+            <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA"
+                [disabled]="display_v.disablePreview || currentQuery.length === 0">
+                <div class="ui-g p-0 h-100">
+                    <div class="ui-g-8 p-1 preview-chart-box">
+                        <panel-chart #PanelChartComponent [props]="panelChartConfig"
+                            style="height: 100%; width: 100%; display:block"></panel-chart>
                     </div>
 
-                    <div class="ui-g-2 ui-g-offset-2 p-1">
+                    <div class="ui-g-3 ui-g-offset-1 p-1 edaChartSelector">
                         <form [formGroup]="chartForm">
                             <p-dropdown [style]="{'width':'100%'}" [options]="chartTypes" formControlName="chart"
-                                (onChange)="changeChartType(chartForm.value.chart.value, getChartStyles())"
+                                (onChange)="changeChartType(chartForm.value.chart.value, 
+                                            chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))"
                                 optionLabel="label" [autoDisplayFirst]="false">
-
                                 <ng-template let-item pTemplate="selectedItem">
                                     <i *ngIf="!!item.value.ngIf" class="{{item.value.icon}}"
                                         style="color: #eeac57!important;vertical-align:middle;"></i>
@@ -196,58 +312,56 @@
                                 </ng-template>
 
                                 <ng-template let-chart pTemplate="item">
-                                    <div class="d-flex align-items-center" style="position: relative;height: 25px;">
+                                    <div class="d-flex align-items-center" style="position: relative;height: 25px;"
+                                        [attr.title]="chart.value.tooManyData ? getTooManyDataDescription() : (chart.value.ngIf) ? getOptionDescription(chart.value.subValue) : '' ">
+                                        <i i class="material-icons"
+                                            [ngClass]="{'orange-alert': chart.value.ngIf, 'grey-alert': chart.value.tooManyData}">
+                                            {{getOptionIcon(chart.value.value)}}
+                                        </i>
 
-                                        <i *ngIf="chart.value.value==='table'" i class="material-icons "
-                                            [ngClass]="{'orange-alert': chart.value.ngIf }">table_chart</i>
-                                        <i *ngIf="chart.value.value==='crosstable'" i class="material-icons "
-                                            [ngClass]="{'orange-alert': chart.value.ngIf}">grid_on</i>
-                                        <i *ngIf="chart.value.value==='kpi'" i class="material-icons "
-                                            [ngClass]="{'orange-alert': chart.value.ngIf}">attach_money</i>
-                                        <i *ngIf="chart.value.value==='doughnut'" i class="material-icons "
-                                            [ngClass]="{'orange-alert': chart.value.ngIf}">pie_chart</i>
-                                        <i *ngIf="chart.value.value==='polarArea'" i class="material-icons "
-                                            [ngClass]="{'orange-alert': chart.value.ngIf}">scatter_plot</i>
-                                        <i *ngIf="chart.value.value==='bar'" i class="material-icons "
-                                            [ngClass]="{'orange-alert': chart.value.ngIf}">bar_chart</i>
-                                        <i *ngIf="chart.value.value==='horizontalBar'" i class="material-icons "
-                                            [ngClass]="{'orange-alert': chart.value.ngIf }">notes</i>
-                                        <i *ngIf="chart.value.value==='line'" i class="material-icons "
-                                            [ngClass]="{'orange-alert': chart.value.ngIf}">timeline</i>
-                                        <i *ngIf="chart.value.value==='barline'" i class="material-icons "
-                                            [ngClass]="{'orange-alert': chart.value.ngIf }">multiline_chart</i>
 
-                                        <span class="ml-2 "  [ngClass]="{'texto-rallado-alert': chart.value.ngIf }">
-
+                                        <span class="ml-2 "
+                                            [ngClass]="{'texto-rallado-alert': chart.value.ngIf  || chart.value.tooManyData}">
                                             {{chart.label}}
                                         </span>
-                                        <!-- <i *ngIf="chart.value.ngIf" class="pi pi-exclamation-triangle"
-                                            style="color: #eeac57!important;"></i> -->
+
+                                        <span *ngIf='chart.value.tooManyData' class="edaTooManyData"> - Demasiados
+                                            valores</span>
+
+                                        <span *ngIf='chart.value.ngIf' class="edaTooManyData"> - No Disponible</span>
                                     </div>
                                 </ng-template>
 
                             </p-dropdown>
+
                         </form>
                     </div>
                 </div>
             </p-tabPanel>
 
         </p-tabView>
+        <div class="ui-g-1">
+            <div *ngIf="!modeSQL">Modo EDA</div>
+            <div *ngIf="modeSQL">Modo SQL</div>
+            <p-inputSwitch class="ui-g-1 sql-switch" (onChange)="changeQueryMode()" [(ngModel)]="modeSQL"
+                pTooltip="Al cambiar de modo perderás la configuración de la consulta actual" tooltipPosition="left">
+            </p-inputSwitch>
+        </div>
 
     </div>
 
     <p-footer class="footer">
         <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-            <button type="button" pButton (click)="runQuery(false)" icon="fa fa-flask" class="ui-button-success ml-2"
-                [disabled]="currentQuery.length === 0 && index === 0" i18n-label="@@ejecutarBtn" label="Ejecutar">
+            <button type="button" pButton (click)="runManualQuery()" icon="fa fa-flask" class="ui-button-success ml-2"
+                [disabled]="(currentQuery.length === 0 && index === 0 && !modeSQL) || (modeSQL && !sqlOriginTable)" i18n-label="@@ejecutarBtn" label="Ejecutar">
             </button>
 
             <button type="submit" pButton (click)="savePanel()" [disabled]="display_v.btnSave" icon="fa fa-check"
-                class="ui-button ml-2" i18n-label="@@guardarBtn" label="Confirmar">
+                class="ui-button ml-2" i18n-label="@@guardarBtn" label="Confirmar" id="eda_blak_panel_confirmar">
             </button>
 
             <button type="button" pButton (click)="closeEditarConsulta()" icon="fa fa-times"
-                class="ui-button-danger ml-2" i18n-label="@@cancelarBtn" label="Cancelar">
+                class="ui-button-danger ml-2" i18n-label="@@cancelarBtn" label="Cancelar" id="eda_blak_panel_cancelar">
             </button>
         </div>
     </p-footer>
@@ -261,5 +375,7 @@
 <app-chart-dialog *ngIf="chartController" [controller]="chartController"></app-chart-dialog>
 
 <app-table-dialog *ngIf="tableController" [controller]="tableController"></app-table-dialog>
+
+<app-alert-dialog *ngIf="alertController" [controller]="alertController"></app-alert-dialog>
 
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>

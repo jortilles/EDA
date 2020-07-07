@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { IUserRequest, HttpException } from '../../global/model/index';
+import { HttpException } from '../../global/model/index';
+import { ActiveDirectoryService } from '../../../services/active-directory/active-directory.service';
 import User, { IUser } from './model/user.model';
 import Group, { IGroup } from '../groups/model/group.model';
-import logger from '../../../services/logging/logging';
+import ServerLogService from '../../../services/server-log/server-log.service';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -15,42 +16,125 @@ export class UserController {
     static async login(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body;
-            let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
-            logger.log({ level: 'info', action: 'newLogin', userMail: body.email, ip: ip, type: "attempt" });
+            let token: string;
+            let user: IUser = new User({ name: '', email: '', password: '', img: '', role: [] });
 
-            User.findOne({ email: body.email }, async (err, userDB) => {
+            insertServerLog(req, 'info', 'newLogin', body.email, 'attempt');
 
-                if (err) {
-                    return next(new HttpException(500, 'User not found with this email'));
+            // Busca artxiu de configuracio activedirectory
+            const ldapPath = path.resolve(__dirname, `../../../../config/activedirectory.json`);
+
+            if (fs.existsSync(ldapPath)) {
+                // Si el troba, login amb activedirectory
+                // Obtenim informacio del activedirectory
+                const userAD = await ActiveDirectoryService.login(body.email, body.password);
+                // Busquem si l'usuari ja el tenim registrat al mongo
+                const userEda = await UserController.getUserInfoByEmail(userAD.username, true);
+
+                if (!userEda) {
+                    // Si no esta registrat, l'afegim
+                    const userToSave: IUser = new User({
+                        name: userAD.displayName,
+                        email: userAD.username,
+                        password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
+                        img: body.img,
+                        role: []
+                    });
+
+                    if (userAD.adminRole) {
+                        const adminGroup = await Group.findOne({ role: "EDA_ADMIN_ROLE" }, '_id').exec();
+                        userToSave.role.push(adminGroup._id);
+                    }
+
+                    const roles = userToSave.role;
+
+                    userToSave.save(async (err, userSaved) => {
+                        if (err) {
+                            return next(new HttpException(400, 'Some error ocurred while creating the User'));
+                        }
+
+                        Object.assign(user, userSaved);
+                        user.password = ':)';
+                        token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
+
+                        // Borrem de tots els grups el usuari actualitzat
+                        await Group.updateMany({}, { $pull: { users: userSaved._id } });
+                        // Introduim de nou els grups seleccionat al usuari actualitzat
+                        await Group.updateMany({ _id: { $in: roles } }, { $push: { users: userSaved._id } }).exec();
+                        return res.status(200).json({ user, token: token, id: user._id });
+                    });
+                } else {
+                    // Si esta registrat, actualitzem algunes dades
+                    userEda.name = userAD.displayName;
+                    userEda.email = userAD.username;
+                    userEda.password = userEda.password;
+                    userEda.role = [];
+
+                    if (userAD.adminRole) {
+                        const adminGroup = await Group.findOne({ role: "EDA_ADMIN_ROLE" }, '_id').exec();
+                        userEda.role.push(adminGroup._id);
+                    }
+
+                    const roles = userEda.role;
+
+                    userEda.save(async (err, userSaved) => {
+                        if (err) {
+                            return next(new HttpException(400, 'Some error ocurred while creating the User'));
+                        }
+
+                        Object.assign(user, userSaved);
+                        user.password = ':)';
+                        token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
+
+                        // Borrem de tots els grups el usuari actualitzat
+                        await Group.updateMany({}, { $pull: { users: userSaved._id } });
+                        // Introduim de nou els grups seleccionat al usuari actualitzat
+                        await Group.updateMany({ _id: { $in: roles } }, { $push: { users: userSaved._id } }).exec();
+                        return res.status(200).json({ user, token: token, id: user._id });
+                    });
                 }
+            } else {
+                // Si no ho troba, login amb mongo
+                const userEda = await UserController.getUserInfoByEmail(body.email, false);
 
-                if (!userDB) {
-                    return next(new HttpException(400, 'Incorrect credentials - email'));
-                }
-
-                if (! await bcrypt.compareSync(body.password, userDB.password)) {
+                if (! await bcrypt.compareSync(body.password, userEda.password)) {
                     return next(new HttpException(400, 'Incorrect credentials - password'));
                 }
 
-                logger.log({ level: 'info', action: 'newLogin', userMail: body.email, ip: ip, type: "login" });
+                Object.assign(user, userEda);
+                user.password = ':)';
+                token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
 
-                userDB.password = ':)';
+                insertServerLog(req, 'info', 'newLogin', body.email, 'login');
 
-                const token = await jwt.sign({ user: userDB }, SEED, { expiresIn: 14400 }); // 4 hours
-
-                return res.status(200).json({
-                    ok: true,
-                    user: userDB,
-                    token: token,
-                    id: userDB._id
-                });
-            });
+                return res.status(200).json({ user, token: token, id: user._id });
+            }
         } catch (err) {
             next(err);
         }
     }
 
-    static async create(req: IUserRequest, res: Response, next: NextFunction) {
+    static async getUserInfoByEmail(usuari: string, ad: boolean): Promise<any> {
+
+        return new Promise((resolve, reject) => {
+            User.findOne({ email: usuari }, async (err, user) => {
+                if (err) {
+                    reject(new HttpException(500, 'Login error'));
+                }
+
+                if (!user && !ad) {
+                    reject(new HttpException(400, 'Incorrect user'));
+                } else if (!user && ad) {
+                    resolve();
+                }
+
+                resolve(user)
+            });
+        });
+
+    }
+
+    static async create(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body;
 
@@ -79,7 +163,7 @@ export class UserController {
         }
     }
 
-    static async refreshToken(req: IUserRequest, res: Response, next: NextFunction) {
+    static async refreshToken(req: Request, res: Response, next: NextFunction) {
         try {
             const token = jwt.sign({ user: req.user }, SEED, { expiresIn: 14400 }); // 4 hours
             return res.status(200).json({ ok: true, token });
@@ -129,7 +213,7 @@ export class UserController {
                         return next(new HttpException(500, 'Error waiting for user groups'));
                     }
 
-                    // const isAdmin = groups.filter(g => g.role === 'ADMIN_ROLE').length > 0;
+                    // const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
 
                     user.role = groups;
 
@@ -155,7 +239,7 @@ export class UserController {
                         return next(new HttpException(500, 'Error waiting for user groups'));
                     }
 
-                    const isAdmin = groups.filter(g => g.role === 'ADMIN_ROLE').length > 0;
+                    const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
 
                     return res.status(200).json({ isAdmin });
                 });
@@ -213,7 +297,7 @@ export class UserController {
                     }
 
                     // Borrem de tots els grups el usuari actualitzat
-                    await Group.updateMany({}, { $pull: { users: req.params.id } }).exec();
+                    await Group.updateMany({}, { $pull: { users: { $in: [req.params.id] } } }).exec();
                     // Introduim de nou els grups seleccionat al usuari actualitzat
                     await Group.updateMany({ _id: { $in: body.role } }, { $push: { users: req.params.id } }).exec();
 
@@ -246,4 +330,10 @@ export class UserController {
         }
     }
 
+}
+
+function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+
+    ServerLogService.log({ level, action, userMail, ip, type });
 }

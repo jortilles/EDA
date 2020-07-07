@@ -1,3 +1,4 @@
+import { SpinnerService } from '../../../../services/shared/spinner.service';
 import { TreeNode } from 'primeng/api';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
@@ -19,6 +20,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     constructor(public DataModelService: DataSourceService,
                 private alertService: AlertService,
                 private route: ActivatedRoute,
+                private spinnerService: SpinnerService,
                 private router: Router) {
 
         this.navigationSubscription = this.router.events.subscribe(
@@ -66,12 +68,17 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
             confirmButtonText: 'Si, Eliminalo!'
         }).then(borrado => {
             if (borrado.value) {
+                this.spinnerService.on();
                 this.DataModelService.deleteModel(this.id).subscribe(
                     () => {
                         Swal.fire('Eliminado!', 'Modelo eliminado correctamente.', 'success');
                         this.DataModelService.cleanAll();
                         this.router.navigate(['/home']);
-                    }, err => this.alertService.addError(err)
+                        this.spinnerService.off();
+                    }, err => {
+                        this.alertService.addError(err);
+                        this.spinnerService.off();
+                    }
                 );
             }
         });
@@ -92,9 +99,15 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     }
 
     reLoadModelFromDb(){
+        this.spinnerService.on();
         this.DataModelService.realoadModelFromDb(this.id).subscribe(
-            () => this.refreshModel(),
-            err => this.alertService.addError(err)
+            () => {
+                this.refreshModel(); 
+                this.alertService.addSuccess('Modelo actualizado correctamente');
+                this.spinnerService.off()},
+            err => {
+                this.alertService.addError(err);
+                this.spinnerService.off()},
         );
     }
 

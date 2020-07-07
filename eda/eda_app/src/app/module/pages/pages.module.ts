@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 
 // Modules
-import { GlobalModule } from '../global/global.module';
+import { CoreModule } from '../../core/core.module';
 import { SharedModule } from '../../shared/shared.module';
 import { ComponentsModule } from '../components/components.module';
 import { GridsterModule } from 'angular2gridster';
@@ -19,16 +19,17 @@ import { DashboardFilterDialogComponent } from './dashboard/filter-dialog/dashbo
 import { DataSourcesComponent } from './data-sources/data-sources.component';
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 import { DataSourceDetailComponent } from './data-sources/data-source-detail/data-source-detail.component';
-import { AddDashboardComponent } from './home/add-dashboard/add-dashboard.component';
+import { CreateDashboardComponent } from './home/create-dashboard/create-dashboard.component';
 import { TableRelationsDialogComponent } from './data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component';
 import { ColumnPermissionDialogComponent } from './data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component';
 
 // Routes
 import { PAGES_ROUTES } from './pages.routes';
+import { CalculatedColumnDialogComponent } from './data-sources/data-source-detail/calculatedColumn-dialog/calculated-column-dialog.component';
 
 @NgModule({
     imports: [
-        GlobalModule,
+        CoreModule,
         GridsterModule.forRoot(),
         SharedModule,
         ComponentsModule,
@@ -36,7 +37,7 @@ import { PAGES_ROUTES } from './pages.routes';
     ],
     declarations: [
         HomeComponent,
-        AddDashboardComponent,
+        CreateDashboardComponent,
         DashboardComponent,
         AccountSettingsComponent,
         ProfileComponent,
@@ -49,7 +50,8 @@ import { PAGES_ROUTES } from './pages.routes';
         GroupListComponent,
         GroupDetailComponent,
         DashboardFilterDialogComponent,
-        ColumnPermissionDialogComponent
+        ColumnPermissionDialogComponent,
+        CalculatedColumnDialogComponent
     ]
 })
 export class PagesModule { }

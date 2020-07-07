@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 
 // Module
-import { GlobalModule } from '../module/global/global.module';
+import { CoreModule } from '../core/core.module';
 import { PipesModule } from './pipes/pipes.module';
 
 // Directives
-import { BlockCopyPaste } from './directives/block-copy-paste.directive';
+import { FocusOnShowDirective } from './directives/autofocus.directive';
 
 // Components
 import {
@@ -13,7 +13,8 @@ import {
     EdaDialogComponent,
     NavbarComponent,
     SidebarComponent,
-    EdaContextMenuComponent
+    EdaContextMenuComponent,
+    EdaInputComponent
 } from './components/shared-components.index';
 
 @NgModule({
@@ -24,10 +25,11 @@ import {
         EdaDialogComponent,
         EdaDialogComponent,
         EdaContextMenuComponent,
-        BlockCopyPaste
+        EdaInputComponent,
+        FocusOnShowDirective
     ],
     imports: [
-        GlobalModule,
+        CoreModule,
         PipesModule
     ],
     exports: [
@@ -38,7 +40,8 @@ import {
         PipesModule,
         EdaDialogComponent,
         EdaContextMenuComponent,
-        BlockCopyPaste
+        EdaInputComponent,
+        FocusOnShowDirective
     ]
 })
 export class SharedModule {}

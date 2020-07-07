@@ -2,11 +2,14 @@ import { MysqlError, createConnection, Connection as SqlConnection } from 'mysql
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
 import DataSource from '../../../module/datasource/model/datasource.model';
-import { AggregationTypes }  from  "../../../module/global/model/aggregation-types";
+import { AggregationTypes } from "../../../module/global/model/aggregation-types";
 const util = require('util');
 
 
 export class MysqlConnection extends AbstractConnection {
+    GetDefaultSchema(): string {
+        return null;
+    }
     private queryBuilder: MySqlBuilderService;
     private AggTypes: AggregationTypes;
 
@@ -16,31 +19,34 @@ export class MysqlConnection extends AbstractConnection {
 
     async tryConnection(): Promise<any> {
         try {
-            this.pool = createConnection(this.config);
-            console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
-            this.pool.connect((err: MysqlError, connection: SqlConnection) => {
-                if (err) {
-                    throw err;
-                }
-                if (connection) {
-                    this.itsConnected();
-                    this.pool.end();
-                    return;
-                }
-            });
+            return new Promise((resolve, reject) => {
+                this.pool = createConnection(this.config);
+                console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
+                this.pool.connect((err: MysqlError, connection: SqlConnection) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    if (connection) {
+                        this.itsConnected();
+                        this.pool.end();
+                        return resolve(connection);
+                    }
+                });
+            })
+
         } catch (err) {
             throw err;
         }
     }
 
-    async generateDataModel(): Promise<any> {
+    async generateDataModel(optimize:string): Promise<any> {
         try {
             const tableNames = [];
             this.pool = await this.getPool();
             const schema = this.config.database;
             let tables = [];
             const query = `
-          SELECT * FROM information_schema.tables WHERE table_type = 'base table' and TABLE_SCHEMA = '${schema}';
+                SELECT * FROM information_schema.tables WHERE table_type = 'base table' and TABLE_SCHEMA = '${schema}';
             `;
 
             const getResults = await this.execQuery(query);
@@ -51,13 +57,20 @@ export class MysqlConnection extends AbstractConnection {
             this.pool = await this.getPool();
             this.pool.query = util.promisify(this.pool.query);
             for (let i = 0; i < tableNames.length; i++) {
+
                 let new_table = await this.setTable(tableNames[i]);
+                let count = 0;
+                if(optimize === '1'){
+                    const dbCount = await this.countTable(tableNames[i]);
+                    count = dbCount[0].count;
+                }
+                new_table.tableCount = count;
                 tables.push(new_table);
             }
 
             for (let i = 0; i < tables.length; i++) {
                 for (let j = 0; j < tables[i].columns.length; j++) {
-                    tables[i].columns[j] = this.setColumns(tables[i].columns[j]);
+                    tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
             this.pool.end();
@@ -69,12 +82,14 @@ export class MysqlConnection extends AbstractConnection {
 
     async execQuery(query: string): Promise<any> {
         try {
+            console.log(query)
             // this.pool = createConnection(this.config);
             this.pool.query = util.promisify(this.pool.query);
             const rows = await this.pool.query(query);
             this.pool.end();
             return rows;
         } catch (err) {
+            console.log(err);
             throw err;
         }
 
@@ -97,6 +112,25 @@ export class MysqlConnection extends AbstractConnection {
     async getQueryBuilded(queryData: any, dataModel: any, user: string) {
         this.queryBuilder = new MySqlBuilderService(queryData, dataModel, user);
         return this.queryBuilder.builder();
+    }
+
+    BuildSqlQuery(queryData: any, dataModel: any, user: string){
+        this.queryBuilder = new MySqlBuilderService(queryData, dataModel, user);
+        return this.queryBuilder.sqlBuilder(queryData, queryData.filters);
+    }
+
+    private async countTable(tableName: string): Promise<any> {
+        const query = `
+        SELECT count(*) as count from ${tableName} 
+        `;
+        return new Promise(async (resolve, reject) => {
+            try {
+                const count = await this.pool.query(query);
+                resolve(count);
+            } catch (err) {
+                reject(err);
+            }
+        })
     }
 
     private async setTable(tableName: string): Promise<any> {
@@ -133,19 +167,20 @@ export class MysqlConnection extends AbstractConnection {
         });
     }
 
-    private setColumns(c) {
+    private setColumns(c, tableCount?:number) {
         let column = c;
         column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
         column.description = { default: this.normalizeName(column.column_name), localized: [] };
         column.column_type = this.normalizeType(column.column_type) || column.column_type;
 
         column.column_type === 'numeric'
-            ? column.aggregation_type =  AggregationTypes.getValues() 
+            ? column.aggregation_type = AggregationTypes.getValues()
             : column.aggregation_type = [{ value: 'none', display_name: 'no' }];
 
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.tableCount = tableCount || 0;
 
         return column;
     }
@@ -157,6 +192,7 @@ export class MysqlConnection extends AbstractConnection {
             .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
             .join(' ');
     }
+
 
     private normalizeType(type: string) {
         switch (type) {
@@ -173,12 +209,20 @@ export class MysqlConnection extends AbstractConnection {
             case 'double': return 'numeric';
             case 'float16': return 'numeric';
             case 'real': return 'numeric';
+            case 'bigint' : return 'numeric'
             case 'timestamp': return 'date';
             case 'time': return 'date';
             case 'datetime': return 'date';
             case 'date': return 'date';
             case 'TIMESTAMPTZ': return 'date';
             case 'bool': return 'boolean';
+            case 'text': return 'varchar';
+            case 'tinytext': return 'varchar';
+            case 'mediumtext': return 'varchar';
+            case 'longtext': return 'varchar';
+            case 'char': return 'varchar';
+            case 'varchar' : return 'varchar';
+            default :  console.log(type); return 'numeric';
         }
     }
 

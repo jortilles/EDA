@@ -1,7 +1,12 @@
+export enum EdaPanelType {
+    BLANK,
+    TITLE
+}
 
 export class EdaPanel {
     public id: string;
     public title: string;
+    public type: EdaPanelType;
     public w: number;
     public h: number;
     public dragAndDrop: boolean = true;

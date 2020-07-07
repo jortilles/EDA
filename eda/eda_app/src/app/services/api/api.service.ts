@@ -1,21 +1,21 @@
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {catchError, map} from 'rxjs/internal/operators';
-import {throwError} from 'rxjs';
-import {URL_SERVICES} from '../../config/config';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { catchError, map } from 'rxjs/internal/operators';
+import { throwError } from 'rxjs';
+import { URL_SERVICES } from '../../config/config';
 import * as _ from 'lodash';
 
 @Injectable()
 export class ApiService {
     public API = URL_SERVICES;
 
-    constructor( protected http: HttpClient ) { }
+    constructor(protected http: HttpClient) { }
 
 
     public handleError(error: any) {
         console.warn(error);
 
-        const result: {[k: string]: any} = {};
+        const result: { [k: string]: any } = {};
         result.status = error.status;
 
         switch (error.status) {
@@ -38,15 +38,11 @@ export class ApiService {
                 break;
             default:
                 if (error.statusText === 'Unknow Error') {
-                    result.text = ' - Error del servidor, avisar a JortillesDEV';
+                    result.text = ' - Error del servidor';
                 }
                 break;
         }
         return throwError(result);
-    }
-
-    public getBodyEmpty() {
-        return {};
     }
 
     private getHeaders() {
@@ -59,7 +55,7 @@ export class ApiService {
         const token = localStorage.getItem('token');
         let params: HttpParams = new HttpParams();
 
-        if ( token ) {
+        if (token) {
             params = params.set('token', token);
         }
 
@@ -67,8 +63,8 @@ export class ApiService {
     }
 
     public get(route: any, skipToken?: boolean) {
-
         let options;
+
         if (!skipToken) {
             options = {
                 headers: this.getHeaders(),
@@ -78,10 +74,11 @@ export class ApiService {
             options = {
                 headers: this.getHeaders()
             };
-    }
+        }
 
         return this.http
-            .get(this.API + route, options).pipe(
+            .get(this.API + route, options)
+            .pipe(
                 map(response => response || {}),
                 catchError(this.handleError)
             );
@@ -90,7 +87,8 @@ export class ApiService {
     public getParams(route: any, params: any) {
 
         let search = this.getSearchParamToken();
-        _.forEach(params, (value, key) => {
+
+        _.forEach(params, (value: any, key: number) => {
             if (!_.isNil(value)) {
                 if (_.isEqual(typeof value, 'object')) {
                     search = search.append(String(key), value);
@@ -98,7 +96,7 @@ export class ApiService {
                     search = search.append(String(key), value);
                 }
             }
-        });
+        })
 
         const options = {
             headers: this.getHeaders(),
@@ -106,7 +104,8 @@ export class ApiService {
         };
 
         return this.http
-            .get(this.API + route, options).pipe(
+            .get(this.API + route, options)
+            .pipe(
                 map(response => response || {}),
                 catchError(this.handleError)
             );
@@ -119,7 +118,8 @@ export class ApiService {
         };
 
         return this.http
-            .delete(this.API + route, options).pipe(
+            .delete(this.API + route, options)
+            .pipe(
                 map(response => response || {}),
                 catchError(this.handleError)
             );
@@ -127,6 +127,7 @@ export class ApiService {
 
     public post(route: any, body: any, skipToken?: boolean) {
         let options;
+
         if (!skipToken) {
             options = {
                 headers: this.getHeaders(),
@@ -138,9 +139,9 @@ export class ApiService {
             };
         }
         return this.http.post(this.API + route, body, options).pipe(
-                map(response => response || {}),
-                catchError(this.handleError)
-            );
+            map(response => response || {}),
+            catchError(this.handleError)
+        );
     }
 
     public put(route: any, body: any) {
@@ -150,7 +151,8 @@ export class ApiService {
         };
 
         return this.http
-            .put(this.API + route, body, options).pipe(
+            .put(this.API + route, body, options)
+            .pipe(
                 map(response => response || {}),
                 catchError(this.handleError)
             );

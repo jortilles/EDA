@@ -1,0 +1,18 @@
+h1{
+  color : rgb(255, 136, 0)
+}
+/* #alertdialog{
+  text-align: center;
+} */
+.center {
+  margin: 0;
+  position: absolute;
+  top: 15%;
+  /* left: 50%; */
+  /* -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); */
+  text-align: center;
+}
+.right{
+  text-align: left;
+}

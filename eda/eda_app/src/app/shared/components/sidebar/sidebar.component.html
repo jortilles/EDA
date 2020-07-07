@@ -1,22 +1,22 @@
 <ng-container *ngIf="mobileSize && sideBtn && edit_mode">
     <div>
-        <img id="sidebar-btn-toggle" src="assets/images/logos/logo.png" (click)="toggleClassSide()" alt="logo icono" class="dark-logo" />
+        <img id="sidebar-btn-toggle" [src]="logoSidebar" (click)="toggleClassSide()" alt="logo icono" class="dark-logo" />
     </div>
 </ng-container>
 
-<aside id="sidebar" class="left-sidebar" [ngClass]="{'hidden': sidebarService.toggleSideNav }" (window:resize)="getMobileSize($event)">
-
+<aside id="sidebar" class="left-sidebar" [ngClass]="{'hidden': sidebarService.toggleSideNav}" (window:resize)="getMobileSize($event)">
+    
     <ng-container *ngIf="!mobileSize">
         <li class="user-profile text-center" style="list-style: none;">
             <a style="text-decoration: none;" routerLink="/home" aria-expanded="false">
-                <img src="assets/images/logos/logo.png" alt="logo icono" class="dark-logo w-75" />
+                <img [src]="logoSidebar" alt="logo icono" class="dark-logo w-75" />
             </a>
         </li>
     </ng-container>
 
     <ng-container *ngIf="mobileSize && !sideBtn && edit_mode">
         <li class="user-profile text-center" style="list-style: none;">
-            <img src="assets/images/logos/logo.png" (click)="toggleClassSide()" alt="logo icono" class="dark-logo" />
+            <img [src]="logoSidebar" (click)="toggleClassSide()" alt="logo icono" class="dark-logo" />
         </li>
     </ng-container>
 
@@ -40,13 +40,6 @@
                                 <i class="mdi mdi-account"></i> <span i18n="@@sidebarProfile">Perfil</span>
                             </a>
                         </li>
-                        <!--
-                        <li>
-                            <a routerLinkActive="active" routerLink="/account-settings">
-                                <i class="mdi mdi-settings"></i> <span i18n="@@sidebarSettings">Ajustes de Cuenta</span>
-                            </a>
-                        </li>
-                         comentat per JJ... Sorry Pintxo -->
                         <li *ngIf="userService.isAdmin">
                             <a routerLinkActive="active" routerLink="/users-management">
                                 <i class="mdi mdi-settings"></i> <span i18n="@@sidebarUserManagement">Gestión de Usuarios</span>
@@ -107,3 +100,6 @@
     </div>
 
 </aside>
+
+<div *ngIf="mobileSize && !sidebarService.toggleSideNav" class="out-sidebar" (click)="toggleClassSide()">
+</div>

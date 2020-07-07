@@ -8,11 +8,12 @@ app-dashboard {
 }
 
 .main-content {
-    width: 100%!important;
-    flex: 1 0px!important;
-    display: flex!important;
-    flex-direction: column!important;
+    width: 100% !important;
+    flex: 1 0px !important;
+    display: flex !important;
+    flex-direction: column !important;
 }
+
 #copy-link {
     border: solid 1px #8b8a8a;
     border-radius: 3px;
@@ -20,6 +21,7 @@ app-dashboard {
     padding: 2px;
     text-align: center;
 }
+
 #copy-link:hover {
     border: solid 1px #8b8a8a;
     border-radius: 3px;
@@ -87,35 +89,37 @@ app-dashboard {
     border: 1px solid #d5d8cc;
 }
 
-.pi-filter{
-    color:rgb(11, 139, 101);
+.pi-filter {
+    color: rgb(11, 139, 101);
 }
-.edaWarning{
-  /* border: 1px solid orange;
+.edaWarning {
+    /* border: 1px solid orange;
   border-radius: 2px; */
-  color: #000;
-  background-color: inherit;
-  padding: 7px 14px;
-  font-size: 12px;
-  cursor: pointer;
-  display: inline-block;
+    color: #000;
+    background-color: inherit;
+    padding: 7px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-block;
 }
 .gridster-item {
     transition: unset !important;
 }
 
-.edaTitle{
+.edaTitle {
     font-family: sans-serif;
-    line-height : 0.7; 
-    text-align : center; 
+    line-height: 0.7;
+    text-align: center;
     margin-bottom: auto;
     font-weight: 600;
 }
 
-.edaWarning:hover {background: #eee;}
+.edaWarning:hover {
+    background: #eee;
+}
 
-.edaOk{
-     border: 1px solid rgb(35, 95, 50);
+.edaOk {
+    border: 1px solid rgb(35, 95, 50);
     border-radius: 4px;
     color: rgb(35, 95, 50);
     background-color: inherit;
@@ -125,12 +129,12 @@ app-dashboard {
     display: inline-block;
 }
 
-.edaOk:hover{  background: #eee; }
+.edaOk:hover {
+    background: #eee;
+}
 
 .edaFilterFooter {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-
+}

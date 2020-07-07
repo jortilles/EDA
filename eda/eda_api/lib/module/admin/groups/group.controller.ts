@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { IUserRequest, HttpException } from '../../global/model/index';
+import { ObjectId } from 'mongodb';
+import { HttpException } from '../../global/model/index';
 import Group, { IGroup } from './model/group.model';
 import User from '../users/model/user.model';
 import Dashboard from '../../dashboard/model/dashboard.model';
@@ -22,10 +23,10 @@ export class GroupController {
         }
     }
 
-    static async getMineGroups(req: IUserRequest, res: Response, next: NextFunction) {
+    static async getMineGroups(req: Request, res: Response, next: NextFunction) {
         try {
             const groupss = await Group.find({ users: { $in: req.user._id } }).exec();
-            const isAdmin = groupss.filter(g => g.role === 'ADMIN_ROLE').length > 0;
+            const isAdmin = groupss.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
 
             let groups: IGroup[] = [];
 
@@ -63,7 +64,7 @@ export class GroupController {
 
             const group: IGroup = new Group({
                 name: body.name,
-                role: body.role,
+                role: "EDA_USER_ROLE",
                 users: body.users,
                 img: body.img
             });
@@ -100,7 +101,7 @@ export class GroupController {
 
                 group.name = body.name;
                 group.users = body.users;
-                group.role = body.role;
+                group.role = "EDA_USER_ROLE";
 
                 group.save(async (err, groupSaved: IGroup) => {
                     if (err) {
@@ -108,7 +109,7 @@ export class GroupController {
                     }
 
                     // Borrem de tots els usuaris el grup actualitzat
-                    await User.updateMany({}, { $pull: { role: req.params.id } });
+                    await User.updateMany({}, { $pull: { role: { $in: [req.params.id] } } });
                     // Introduim de nou als usuaris seleccionat el grup actualitzat
                     await User.updateMany({ _id: { $in: body.users } }, { $push: { role: req.params.id } }).exec();
 
@@ -123,8 +124,8 @@ export class GroupController {
 
     static async deleteGroup(req: Request, res: Response, next: NextFunction) {
         try {
-            await Dashboard.deleteOne({ group: req.params.id }).exec();
-            await User.updateMany({ role: req.params.id }, { $pull: { 'role': req.params.id } }).exec();
+            await Dashboard.update({}, { $pull: { group: req.params.id } }).exec();
+            await User.update({ role: req.params.id }, { $pull: { role: { $in: [req.params.id] } } }).exec();
 
             Group.findByIdAndDelete(req.params.id, async (err, groupDeleted: IGroup) => {
                 if (err) {

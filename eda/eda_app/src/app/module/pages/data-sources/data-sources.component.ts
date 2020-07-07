@@ -11,12 +11,17 @@ import Swal from 'sweetalert2';
 export class DataSourcesComponent {
     // Page Variables
     public form: FormGroup;
+    public optimize : boolean= true;
+    public sidOpts : any[] = [
+        { name: 'SID', value: 1 },
+        { name: 'SERVICE_NAME', value: 0 }];
+
     public dbTypes: any[] = [
         { name: 'Postgres', value: 'postgres' },
         { name: 'Sql Server', value: 'sqlserver' },
-        /*   { name: 'MongoDB', value: 'mongo' },*/
         { name: 'MySQL', value: 'mysql' },
-        { name: 'Vertica', value: 'vertica' }
+        { name: 'Vertica', value: 'vertica' },
+        { name: 'Oracle', value: 'oracle' }
     ];
 
     constructor(private formBuilder: FormBuilder,
@@ -34,8 +39,10 @@ export class DataSourcesComponent {
             port: [null, Validators.required],
             user: [null, Validators.required],
             password: [null, Validators.required],
-            schema: [null]
+            schema: [ null],
+            sid:[{ name: 'SID', value: 1 }]
         });
+
     }
 
     addDataSource() {
@@ -51,12 +58,14 @@ export class DataSourcesComponent {
                 port: this.form.value.port,
                 user: this.form.value.user,
                 password: this.form.value.password,
-                schema: this.form.value.schema
+                schema: this.form.value.schema,
+                sid: this.form.value.sid.value
             };
 
             this.dataSourceService.testConnection(connection).subscribe(
                 () => {
-                    this.dataSourceService.addDataSource(connection).subscribe(
+                    const optimize = this.optimize ? 1 : 0; // count rows in every table
+                    this.dataSourceService.addDataSource(connection, optimize).subscribe(
                         res => {
                             Swal.fire({
                                 title: `Fuente de datos: ${this.form.value.name}`,
@@ -92,6 +101,12 @@ export class DataSourcesComponent {
                 break;
             case 'mongo':
                 this.form.patchValue({ port: 27017 });
+                break;
+            case 'mysql':
+                this.form.patchValue({ port: 3306 });
+                break;
+            case 'oracle':
+                this.form.patchValue({ port:1521 });
                 break;
             default:
                 this.form.patchValue({ port: null });

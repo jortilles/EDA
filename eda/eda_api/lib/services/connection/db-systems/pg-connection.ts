@@ -6,6 +6,10 @@ import DataSource from '../../../module/datasource/model/datasource.model';
 
 
 export class PgConnection extends AbstractConnection {
+    GetDefaultSchema(): string {
+        return 'public';
+    }
+
     private queryBuilder: PgBuilderService;
     private AggTypes: AggregationTypes;
 
@@ -31,7 +35,7 @@ export class PgConnection extends AbstractConnection {
         }
     }
 
-    async generateDataModel(): Promise<any> {
+    async generateDataModel(optimize:string): Promise<any> {
         try {
             this.pool = await this.getPool();
             const tableNames = [];
@@ -41,8 +45,6 @@ export class PgConnection extends AbstractConnection {
                 ? `NOT IN ('pg_catalog', 'information_schema')`
                 : `=  '${this.config.schema}' `
             ;
-
-
             const query = `
                 SELECT table_name 
                 FROM information_schema.tables 
@@ -62,18 +64,25 @@ export class PgConnection extends AbstractConnection {
                 tableNames.push(result['table_name']);
             }
 
+
             // New client is needed, old client has been closed;
             this.pool = await this.getPool();
             this.pool.connect();
 
             for (let i = 0; i < tableNames.length; i++) {
                 let new_table = await this.setTable(tableNames[i]);
+                let count = 0;
+                if(optimize === '1'){
+                    const dbCount = await this.countTable(tableNames[i], `${this.config.schema || 'public'}`);
+                    count = dbCount.rows[0].count;
+                }
+                new_table.tableCount = count;
                 tables.push(new_table);
             }
 
             for (let i = 0; i < tables.length; i++) {
                 for (let j = 0; j < tables[i].columns.length; j++) {
-                    tables[i].columns[j] = this.setColumns(tables[i].columns[j]);
+                    tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
 
@@ -121,6 +130,27 @@ export class PgConnection extends AbstractConnection {
         return this.queryBuilder.builder();
     }
 
+    BuildSqlQuery(queryData: any, dataModel: any, user: string): string {
+        this.queryBuilder = new PgBuilderService(queryData, dataModel, user);
+        return this.queryBuilder.sqlBuilder(queryData, queryData.filters);
+    }
+
+
+    private async countTable(tableName: string, schema:string): Promise<any> {
+        const query = `
+        SELECT count(*) as count from ${schema}.${tableName}
+        `;
+        console.log(query);
+        return new Promise(async (resolve, reject) => {
+            try {
+                const count = await this.pool.query(query);
+                resolve(count);
+            } catch (err) {
+                reject(err);
+            }
+        })
+    }
+
     private async setTable(tableName: string): Promise<any> {
         const query = `SELECT column_name, udt_name AS column_type FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '${tableName}';`;
 
@@ -150,7 +180,7 @@ export class PgConnection extends AbstractConnection {
         });
     }
 
-    private setColumns(c) {
+    private setColumns(c, tableCount?:number) {
         let column = c;
         column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
         column.description = { default: this.normalizeName(column.column_name), localized: [] };
@@ -161,9 +191,12 @@ export class PgConnection extends AbstractConnection {
             ? column.aggregation_type =   AggregationTypes.getValues() 
             : column.aggregation_type = [{ value: 'none', display_name: 'no' }];
 
+        column.computed_column == 'no'   // las posibilidades son no, computed_numeric, computed_string
+
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.tableCount = tableCount || 0;
 
         return column;
     }
@@ -236,6 +269,7 @@ export class PgConnection extends AbstractConnection {
                                         target_column: sourceColumn.source_column,
                                         visible: true
                                     });
+
                                 }
                             }
                         }

@@ -40,6 +40,8 @@ export class EditColumnPanel {
     visible: boolean;
     column_type: string;
     parent: string;
+    SQLexpression: any;
+    computed_column:string;
 }
 
 export class EditModelPanel {

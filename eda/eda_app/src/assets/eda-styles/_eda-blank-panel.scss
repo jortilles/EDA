@@ -1,0 +1,11 @@
+
+
+body .preview-chart-box {
+    height: 600px;
+}
+
+@media (max-width: 1366px) {
+    body .preview-chart-box {
+        height: 400px;
+    }
+}

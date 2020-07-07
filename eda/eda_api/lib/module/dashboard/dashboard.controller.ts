@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { IUserRequest, HttpException } from '../global/model/index';
+import { HttpException } from '../global/model/index';
 import ManagerConnectionService from '../../services/connection/manager-connection.service';
 import Dashboard, { IDashboard } from './model/dashboard.model';
 import DataSource from '../datasource/model/datasource.model';
@@ -9,11 +9,11 @@ import formatDate from '../../services/date-format/date-format.service';
 
 export class DashboardController {
 
-    static async getDashboards(req: IUserRequest, res: Response, next: NextFunction) {
+    static async getDashboards(req: Request, res: Response, next: NextFunction) {
         try {
             let admin, privates, group, publics, shared = [];
             const groups = await Group.find({ users: { $in: req.user._id } }).exec();
-            const isAdmin = groups.filter(g => g.role === 'ADMIN_ROLE').length > 0;
+            const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
 
             if (isAdmin) {
                 admin = await DashboardController.getAllDashboardToAdmin();
@@ -35,7 +35,7 @@ export class DashboardController {
 
     }
 
-    static async getPrivateDashboards(req: IUserRequest) {
+    static async getPrivateDashboards(req: Request) {
         try {
             const dashboards = await Dashboard.find({ 'user': req.user._id }, 'config.title config.visible').exec();
             const privates = [];
@@ -50,12 +50,16 @@ export class DashboardController {
         }
     }
 
-    static async getGroupsDashboards(req: IUserRequest) {
+    static async getGroupsDashboards(req: Request) {
         try {
             const groups = await Group.find({ users: { $in: req.user._id } }).exec();
             const dashboards = await Dashboard.find({ group: { $in: groups.map(g => g._id) } }, 'config.title config.visible group').exec();
-            for (const dashboard of dashboards) {
-                dashboard.group = groups.find(g => JSON.stringify(g._id) === JSON.stringify(dashboard.group));
+
+            for (let i = 0, n = dashboards.length; i < n; i += 1) {
+                const dashboard = dashboards[i];
+                for (const group of dashboard[i].group) {
+                    dashboard.group = groups.filter(g => JSON.stringify(g._id) === JSON.stringify(group));
+                }
             }
 
             return dashboards;
@@ -112,7 +116,7 @@ export class DashboardController {
                         privates.push(dashboard);
                         break;
                     case 'group':
-                        dashboard.group = await Group.findById({ _id: dashboard.group }).exec();
+                        dashboard.group = await Group.find({ _id: dashboard.group }).exec();
                         groups.push(dashboard);
                         break;
                     case 'shared':
@@ -169,7 +173,7 @@ export class DashboardController {
         }
     }
 
-    static async create(req: IUserRequest, res: Response, next: NextFunction) {
+    static async create(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body;
 
@@ -248,7 +252,7 @@ export class DashboardController {
         }
     }
 
-    static async execQuery(req: IUserRequest, res: Response, next: NextFunction) {
+    static async execQuery(req: Request, res: Response, next: NextFunction) {
         try {
             const connection = await ManagerConnectionService.getConnection(req.body.model_id);
             const dataModel = await connection.getDataSource(req.body.model_id);
@@ -273,7 +277,41 @@ export class DashboardController {
             console.log('\x1b[32m%s\x1b[0m', `${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
             return res.status(200).json(output);
         } catch (err) {
+            console.log(err);
             next(new HttpException(500, 'Error quering database'));
         }
+    }
+
+    static async execSqlQuery(req: Request, res: Response, next: NextFunction){
+        try{
+            const connection = await ManagerConnectionService.getConnection(req.body.model_id);
+            const dataModel = await connection.getDataSource(req.body.model_id);
+            const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+            const query = await connection.BuildSqlQuery(req.body.query, dataModelObject, req.user._id);
+            console.log(query);
+
+            connection.pool =  await connection.getPool();
+            const getResults = await connection.execQuery(query);
+            const results = [];
+            let labels : Array<string>;
+            if(getResults.length > 0){      
+                labels = Object.keys(getResults[0]).map(i => i);
+            }else{
+                labels = ['NoData'];
+            }
+            // Normalize data
+            for (let i = 0, n = getResults.length; i < n; i++) {
+                const r = getResults[i];
+                const output = Object.keys(r).map(i => r[i]);
+                results.push(output);
+            }
+            const output = [labels, results];
+            return res.status(200).json(output);
+
+        } catch (err) {
+            console.log(err)
+            next(new HttpException(500, 'Error quering database'));
+        }
+        
     }
 }

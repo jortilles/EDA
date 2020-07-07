@@ -9,7 +9,7 @@ const errorModel = require('../module/global/model/error.model');
 
 export const PassConnection = async function (req: Request, res: Response, next: NextFunction) {
     const user = req.body.user.user_id;
-    const roles = req.body.user.user_roles;
+    const roles = req.body.user.EDA_USER_ROLEs;
 
 
     if ( !_.isNil(user) ) {

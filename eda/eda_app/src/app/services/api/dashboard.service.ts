@@ -1,9 +1,10 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Output, EventEmitter} from '@angular/core';
 import {Observable, BehaviorSubject} from 'rxjs';
 import {ApiService} from './api.service';
 
 @Injectable()
 export class DashboardService extends ApiService {
+
     private route = '/dashboard/';
     private routeDataManager = '/database-manager';
 
@@ -32,6 +33,10 @@ export class DashboardService extends ApiService {
 
     executeQuery(body): Observable<any> {
         return this.post( `${this.route}query`,  body );
+    }
+
+    executeSqlQuery(body): Observable<any> {
+        return this.post( `${this.route}sql-query`,  body );
     }
 
 }

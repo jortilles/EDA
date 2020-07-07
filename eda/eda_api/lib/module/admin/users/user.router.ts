@@ -5,8 +5,6 @@ import { UserController } from './user.controller';
 const router = express.Router();
 
 // Login routes
-router.post('', UserController.create);
-
 router.post('/login', UserController.login);
 
 // User Routes // Role Guard
@@ -17,6 +15,8 @@ router.get('/profile-img/:img', authGuard, UserController.findProfileImg);
 router.get('/refresh-token', authGuard, UserController.refreshToken);
 
 router.get('/is-admin/:id', authGuard, UserController.getIsAdmin);
+
+router.post('', authGuard, UserController.create);
 
 // Role Guard
 router.get('/:id', authGuard, roleGuard, UserController.getUser);

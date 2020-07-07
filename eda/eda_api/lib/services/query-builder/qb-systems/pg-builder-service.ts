@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 
 export class PgBuilderService extends QueryBuilderService {
-
+ 
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[]) {
 
@@ -113,46 +113,54 @@ export class PgBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
-      if (el.aggregation_type !== 'none') {
-        if (el.aggregation_type === 'count_distinct') {
-          columns.push(`trunc( count( distinct "${el.table_id}"."${el.column_name}")::numeric, 2)::float as "${el.display_name}"`);
-        } else {
-          columns.push(`trunc(${el.aggregation_type}("${el.table_id}"."${el.column_name}")::numeric, 2)::float as "${el.display_name}"`);
-        }
+      // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor.
+      if (el.computed_column === 'computed_numeric') {
+        columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  ,2) as "${el.display_name}"`);
       } else {
-        if (el.column_type === 'numeric') {
-          columns.push(`trunc("${el.table_id}"."${el.column_name}"::numeric, 2)::float as "${el.display_name}"`);
-        } else if (el.column_type === 'date') {
-          if (el.format) {
-            if (_.isEqual(el.format, 'year')) {
-              columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY') as "${el.display_name}"`);
-            } else if (_.isEqual(el.format, 'month')) {
-              columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM') as "${el.display_name}"`);
-            } else if (_.isEqual(el.format, 'day')) {
-              columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
-            } else if(_.isEqual(el.format, 'No')){
+
+        if (el.aggregation_type !== 'none') {
+          if (el.aggregation_type === 'count_distinct') {
+            columns.push(`ROUND( count( distinct "${el.table_id}"."${el.column_name}")::numeric, 2)::float as "${el.display_name}"`);
+          } else {
+            columns.push(`ROUND(${el.aggregation_type}("${el.table_id}"."${el.column_name}")::numeric, 2)::float as "${el.display_name}"`);
+          }
+
+
+        } else {
+          if (el.column_type === 'numeric') {
+            columns.push(`ROUND("${el.table_id}"."${el.column_name}"::numeric, 2)::float as "${el.display_name}"`);
+          } else if (el.column_type === 'date') {
+            if (el.format) {
+              if (_.isEqual(el.format, 'year')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY') as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'month')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM') as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'day')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'No')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+              }
+            } else {
               columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
             }
           } else {
-            columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+            columns.push(`"${el.table_id}"."${el.column_name}" as "${el.display_name}"`);
           }
-        } else {
-          columns.push(`"${el.table_id}"."${el.column_name}" as "${el.display_name}"`);
-        }
-
-        // GROUP BY
-        if (el.format) {
-          if (_.isEqual(el.format, 'year')) {
-            grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY')`);
-          } else if (_.isEqual(el.format, 'month')) {
-            grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM')`);
-          } else if (_.isEqual(el.format, 'day')) {
-            grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD')`);
-          }else if(_.isEqual(el.format, 'No')){
+          // GROUP BY
+          if (el.format) {
+            if (_.isEqual(el.format, 'year')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY')`);
+            } else if (_.isEqual(el.format, 'month')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM')`);
+            } else if (_.isEqual(el.format, 'day')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD')`);
+            } else if (_.isEqual(el.format, 'No')) {
+              grouping.push(`"${el.table_id}"."${el.column_name}"`);
+            }
+          } else {
             grouping.push(`"${el.table_id}"."${el.column_name}"`);
           }
-        } else {
-          grouping.push(`"${el.table_id}"."${el.column_name}"`);
+
         }
       }
     });
@@ -196,11 +204,70 @@ export class PgBuilderService extends QueryBuilderService {
       filter.forEach(value => {
         const tail = columnType === 'date'
           ? `to_date('${value}','YYYY-MM-DD')`
-          : columnType === 'numeric' ? value : `'${value.replace(/'/g, "''")}'`;
+          : columnType === 'numeric' ? value : `'${String(value).replace(/'/g, "''")}'`;
         str = str + tail + ','
       });
       return str.substring(0, str.length - 1);
     }
   }
 
+  buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[], schema?:string) {
+    if (schema) {
+      origin = `${schema}.${origin}`;
+    }
+    let joinString = `( SELECT ${origin}.* from ${origin} `;
+    joinString += joinStrings.join(' ') + ' where ';
+    permissions.forEach(permission => {
+      joinString += ` ${this.filterToString(permission)} and `
+    });
+    return `${joinString.slice(0, joinString.lastIndexOf(' and '))} )`;
+  }
+
+
+  sqlQuery(query: string, filters: any[], filterMarks: string[]): string {
+    //Get cols present in filters
+    const colsInFilters = [];
+
+    filters.forEach((filter, i) => {
+      let col = filter.type === 'in' ?
+        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('in')).replace(/"/g, '') :
+        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('between')).replace(/"/g, '');
+      colsInFilters.push({ col: col, index: i });
+    });
+
+    filterMarks.forEach((mark, i) => {
+
+      let subs = mark.split('').slice(filterMarks[0].indexOf('{') + 1, mark.indexOf('}') - mark.indexOf('$')).join('');
+      let col = subs.slice(subs.indexOf('.') + 1);
+      let arr = [];
+
+      if (!colsInFilters.map(f => f.col.toUpperCase().trim()).includes(col.toUpperCase().trim())) {
+
+        arr.push(`${subs}::varchar like '%'`);
+
+      } else {
+        const index = colsInFilters.filter(f => f.col.toUpperCase().trim() === col.toUpperCase().trim()).map(f => f.index)[0];
+        arr = filters[index].string.split(' ');
+        arr[0] = subs;
+      }
+      query = query.replace(mark, arr.join(' '));
+    });
+
+    return query;
+  }
+
+  parseSchema(tables: string[], schema: string) {
+    const output = [];
+    console.log({schema:schema})
+    const reg = new RegExp(/[".\[\]]/, "g");
+    tables.forEach(table => {
+      table = table.replace(schema, '')
+      table = table.replace(reg, '')
+      output.push(table);
+
+    });
+    return output;
+  }
 }
+
+

@@ -1,0 +1,33 @@
+<eda-dialog [inject]="dialog">
+
+  <h4 i18n="@@tituloGrupoPublicos" class="visibility-segment">
+    Nueva columna calculada
+  </h4>
+
+  <form [formGroup]="form" class="form-horizontal form-material">
+
+    <div style="margin: 10px">
+      <h6 i18n="@@inputNombre">Nombre</h6>
+      <p><input pInputText type="text" size="50" formControlName="colName" id="eda_col_nombre"></p>
+    </div>
+
+    <div style="margin: 10px">
+      <h6 i18n="@@inputNombre">Descripción</h6>
+      <p><input pInputText type="text" size="50" formControlName="description" id="eda_descripcion"></p>
+    </div>
+
+    <!-- <div style="margin: 10px">
+      <h6 i18n="@@inputNombre">Expresión SQL</h6>
+      <p><textarea pInputTextarea type="text" formControlName="SQLexpression" rows="5" cols="100"></textarea></p>
+    </div> -->
+
+    <p-footer class="footer">
+      <button type="button" pButton (click)="saveColumn()" class="ui-button" i18n-label="@@guardarBtn"  icon="fa fa-check" label="Confirmar">
+      </button>
+      <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn"
+        label="Cerrar"></button>
+    </p-footer>
+  </form>
+
+
+</eda-dialog>

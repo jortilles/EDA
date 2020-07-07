@@ -84,7 +84,7 @@
                             </span> -->
     
                             <div class="d-flex justify-content-between align-items-end">
-                                <span style="text-align: left;">{{group.name}}</span>
+                                <span style="text-align: left;">{{getGroupsNamesByDashboard(dashboard.group)}}</span>
     
                                 <span (click)="deleteDashboard(dashboard)" class="pointer">
                                     <i class="fa fa-trash" style="font-size: 16px"></i>
@@ -143,4 +143,4 @@
 
 </div>
 
-<app-add-dashboard *ngIf="dashController" [controller]="dashController"></app-add-dashboard>
+<app-create-dashboard *ngIf="dashController" [controller]="dashController"></app-create-dashboard>

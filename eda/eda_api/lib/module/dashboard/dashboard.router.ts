@@ -12,6 +12,8 @@ router.post('', authGuard, DashboardController.create);
 
 router.post('/query', authGuard, DashboardController.execQuery);
 
+router.post('/sql-query', authGuard, DashboardController.execSqlQuery);
+
 router.put('/:id', authGuard, DashboardController.update);
 
 router.delete('/:id', authGuard, DashboardController.delete);

@@ -21,7 +21,7 @@
             </tr>
 
             <tr *ngFor="let serie of inject.series">
-                <th *ngFor="let label of  serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan"
+                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan"
                     (click)="inject.onHeaderClick(label)" style="text-align:center">
                     {{label.title}}
                     <p-sortIcon *ngIf="label.sortable" ></p-sortIcon>
@@ -78,6 +78,9 @@
                             <!-- ngSwitch CONTXET MENU -->
                             <ng-container *ngSwitchCase="'EdaColumnContextMenu'">
                                 <i class="fa fa-cog btn pl-1" (click)="inject._showContextMenu(rowData)"></i>
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'EdaColumnFunction'">
+                                <i class="fa fa-trash btn pl-1" (click)="col.click(rowData)"></i>
                             </ng-container>
                         </ng-container>
                     </td>

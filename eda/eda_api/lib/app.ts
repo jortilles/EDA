@@ -1,8 +1,9 @@
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import * as cors from 'cors';
-import * as fileUpload from 'express-fileupload';
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import fileUpload from 'express-fileupload';
 import { NextFunction, Request, Response } from 'express';
+import { callInterceptor } from './services/call-interceptor';
 import errorMiddleware from './middleware/error.middleware';
 
 import Router from './router';
@@ -19,6 +20,7 @@ class App {
         this.app = express();
         this.initApplication();
         this.mongoSetup();
+        this.app.use(callInterceptor);
         this.app.use(Router);
         this.app.use(errorMiddleware);
     }

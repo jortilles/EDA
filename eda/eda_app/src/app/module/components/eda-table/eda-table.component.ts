@@ -1,4 +1,4 @@
-import { Component, ViewChild, Input } from '@angular/core';
+import { Component, ViewChild, Input} from '@angular/core';
 import { Table } from 'primeng/table';
 import { FilterUtils } from 'primeng/api';
 import { EdaTable } from './eda-table';
@@ -22,6 +22,7 @@ export class EdaTableComponent {
     constructor() { 
         registerLocaleData( es );
      }
+
 
     _tableFilter(table: Table, value: any, col: any) {
         if (_.isNil(FilterUtils['between'])) {

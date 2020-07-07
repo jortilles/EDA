@@ -33,10 +33,10 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
 
         this.form = this.fb.group({
             name: [null, Validators.required],
-            email: [null, [Validators.required, Validators.email]],
-            password: [null, Validators.required],
-            rpassword: [null],
-            role: [[]]
+            email: [null, [Validators.required]],
+            password: [null, Validators.nullValidator],
+            rpassword: [null, Validators.nullValidator],
+            role: [[], Validators.nullValidator]
         });
     }
 
@@ -51,7 +51,7 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
         if (this.controller.params.id) {
             this.dialog.setTitle(`USUARIO - ${_.toUpper(this.controller.params.name)}`);
             this.btnLabel = 'GUARDAR';
-            this.form.controls['password'].disable();
+            this.form.controls['password'].disable({ onlySelf: true })
             this.loadUser();
         }
     }
@@ -95,6 +95,8 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
 
     saveUser() {
         if (this.form.invalid) {
+            console.log(this.form);
+            console.log(this.form.valid);
             this.alertService.addError(`Formulario incorrecto. Revise los campos obligatorios.`);
         } else {
             const form = this.form.value;

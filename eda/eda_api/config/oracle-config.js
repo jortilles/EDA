@@ -1,0 +1,1 @@
+module.exports.EDA_ORACLE_CLIENT = 'D:\\Proyectos\\EDA\\oracle_client\\instantclient_19_6';

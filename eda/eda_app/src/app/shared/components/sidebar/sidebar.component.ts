@@ -2,26 +2,29 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from '@eda/models/model.index';
 import { SidebarService, UserService, AlertService } from '@eda/services/service.index';
+import { LogoSidebar } from '@eda/configs/index';
 
 
 @Component({
     selector: 'app-sidebar',
-    templateUrl: './sidebar.component.html',
-    styles: ['']
+    templateUrl: './sidebar.component.html'
 })
 export class SidebarComponent implements OnInit {
-    public user: User;
-    public isAdmin: boolean;
-    public dataSourceMenu: any[] = [];
-    public edit_mode: boolean = true;
-    public mobileSize: boolean = false;
-    public sideBtn: boolean = false;
+    user: User;
+    isAdmin: boolean;
+    dataSourceMenu: any[] = [];
+    edit_mode: boolean = true;
+    mobileSize: boolean = false;
+    sideBtn: boolean = false;
+    logoSidebar: string;
 
-    constructor(public router: Router,
+    constructor(
+        public router: Router,
         public userService: UserService,
         public sidebarService: SidebarService,
-        private alertService: AlertService) {
-
+        private alertService: AlertService
+    ) {
+        this.logoSidebar = LogoSidebar;
 
         this.sidebarService.getToggleSideNav().subscribe((value) => {
             this.sideBtn = value;
@@ -31,7 +34,7 @@ export class SidebarComponent implements OnInit {
         this.getDataSourcesNames();
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.user = this.userService.user;
         this.setEditMode()
         // Ens subscribim a l'observable currentDatasources que ha de tenir el valor actual dels noms dels datasources.
@@ -41,8 +44,7 @@ export class SidebarComponent implements OnInit {
         );
     }
 
-    getMobileSize(event?) {
-
+    getMobileSize(event?): void {
         if (!event) {
             if (window.innerWidth <= 767) {
                 this.mobileSize = true;
@@ -65,27 +67,25 @@ export class SidebarComponent implements OnInit {
         }
     }
 
-    toggleClassSide() {
+    toggleClassSide(): void {
         this.sidebarService.setHideSideNav();
     }
 
-    setEditMode() {
+    setEditMode(): void {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
         this.edit_mode = userName !== 'edaanonim';
     }
 
-
-    logout() {
+    logout(): void {
         this.userService.logout();
     }
 
-    getDataSourcesNames() {
+    getDataSourcesNames(): void {
         this.sidebarService.getDataSourceNames();
     }
 
-
-    goToDataSource(datasource) {
+    goToDataSource(datasource): void {
         if (datasource) {
             this.router.navigate(['/data-source/', datasource._id]);
         } else {

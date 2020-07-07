@@ -1,0 +1,17 @@
+<eda-dialog [inject]="dialog">
+  <div id=alertdialog class="center">
+    <h1>¡Cuidado!</h1>
+    <h3>La consulta que estás a punto de realizar es potencialmente pesada y puede tardar mas de lo normal en
+      ejecutarse.
+    </h3>
+    <h3>Puedes añadir filtros o agregaciones para reducir el número de registros</h3>
+    <h3>¿Deseas continuar?</h3>
+    <button type="submit" pButton (click)="close(true)" icon="fa fa-check" class="ui-button ml-2"
+      i18n-label="@@guardarBtn" label="Confirmar">
+    </button>
+
+    <button type="button" pButton (click)="close(false)" icon="fa fa-times" class="ui-button-danger ml-2"
+      i18n-label="@@cancelarBtn" label="Cancelar">
+    </button>
+  </div>
+</eda-dialog>

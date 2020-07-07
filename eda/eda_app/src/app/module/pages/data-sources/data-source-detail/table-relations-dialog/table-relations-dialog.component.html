@@ -5,29 +5,29 @@
         <div class="ui-g-12 ui-lg-4">
             <p-dropdown [options]="sourceCols" formControlName="sourceCol" filter="true"
                 optionLabel="display_name.default" i18n-placeholder="@@placeholderSourceColumns"
-                placeholder="Columna origen" (onChange)="enableTargetTables()">
+                placeholder="Columna origen" (onChange)="enableTargetTables()" id="eda_add_relation_sourceCols">
             </p-dropdown>
         </div>
         <div class="ui-g-12 ui-lg-4">
             <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true"
                 (onChange)="getColumnsByTable()" optionLabel="label" i18n-placeholder="@@placeholderTargetTables"
-                placeholder="tabla destino">
+                placeholder="tabla destino" id="eda_add_relation_targetTable" >
             </p-dropdown>
         </div>
         <div class="ui-g-12 ui-lg-4">
             <p-dropdown [options]="targetCols" formControlName="targetCol" filter="true"
-                i18n-placeholder="@@placeholderTargetColumns" placeholder="Columna destino">
+                i18n-placeholder="@@placeholderTargetColumns" placeholder="Columna destino " id="eda_add_relation_targetCol" >
             </p-dropdown>
         </div>
 
         <p-footer class="footer">
             <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
 
-                <button type="button" pButton (click)="saveRelation()" class="ui-button" i18n-label="@@guardarBtn"  icon="fa fa-check" label="Confirmar">
+                <button type="button" pButton (click)="saveRelation()" class="ui-button" i18n-label="@@guardarBtn"  icon="fa fa-check" label="Confirmar" id="eda_add_relation_confirm">
                 </button>
 
                 <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2"
-                    i18n-label="@@cerrarBtn" label="Cerrar">
+                    i18n-label="@@cerrarBtn" label="Cerrar" id="eda_add_relation_close" >
                 </button>
 
             </div>

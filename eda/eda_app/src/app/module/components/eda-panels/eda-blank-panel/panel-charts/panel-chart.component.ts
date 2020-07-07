@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { EdaKpiComponent } from './../../../eda-kpi/eda-kpi.component';
-import { EdaTableComponent } from './../../../eda-table/eda-table.component';
+import { TableConfig } from './chart-configuration-models/table-config';
+import { Component, OnInit, Input, SimpleChanges, OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver, OnDestroy, Output, EventEmitter, Self, ElementRef } from '@angular/core';
+import { EdaKpiComponent } from '../../../eda-kpi/eda-kpi.component';
+import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
 import { ChartUtilsService } from '@eda/services/service.index';
 
@@ -12,6 +13,7 @@ import { EdaColumnText } from '@eda/components/eda-table/eda-columns/eda-column-
 import { EdaTable } from '@eda/components/eda-table/eda-table';
 
 import * as _ from 'lodash';
+import { KpiConfig } from './chart-configuration-models/kpi-config';
 
 @Component({
     selector: 'panel-chart',
@@ -23,7 +25,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.destroyComponent();
     }
 
-    @Input() config: PanelChart;
+    @Input() props: PanelChart;
     @Output() configUpdated: EventEmitter<any> = new EventEmitter<any>(null);
 
     @ViewChild('chartComponent', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
@@ -35,13 +37,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public NO_DATA: boolean;
 
     constructor(public resolver: ComponentFactoryResolver,
-                private chartUtils: ChartUtilsService) { }
+        private chartUtils: ChartUtilsService,
+        @Self() private ownRef: ElementRef) { }
 
     ngOnInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
         this.NO_DATA = false
-        if (this.config.data && this.config.data.values.length !== 0) {
+        if (this.props.data && this.props.data.values.length !== 0) {
             this.NO_DATA = false;
             this.changeChartType();
 
@@ -51,11 +54,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
+    getDimensions() {
+        return { width: this.ownRef.nativeElement.offsetWidth, height: this.ownRef.nativeElement.offsetHeight }
+    }
+
     /**
      * changes chart Type
      */
     public changeChartType() {
-        const type = this.config.chartType;
+        const type = this.props.chartType;
         if (['table', 'crosstable'].includes(type)) {
             this.renderEdaTable(type);
         }
@@ -85,31 +92,34 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type 
      */
     private renderEdaChart(type: string) {
- 
-        /**
-         * handle barline name: For some stupid reason chart.js has same name for two different things --> bar, and mixed bar-line
-         */
-        if(type === 'barline'){
-            type = 'bar';
-            this.config.chartType = 'bar';
-        }
-        //console.log(this.config);
-        const dataDescription = this.chartUtils.describeData(this.config.query, this.config.data.labels);
-        const dataTypes = this.config.query.map(column => column.column_type);
-        const chartData = this.chartUtils.transformDataQuery(this.config.chartType, this.config.data.values, dataTypes, dataDescription, this.config.isBarline);
 
-        const manySeries = chartData[1].length>10?true:false;
-        const config = this.chartUtils.initChartOptions(this.config.chartType, dataDescription.numericColumns[0].name, dataDescription.otherColumns , manySeries );
+        const isbarline = this.props.edaChart === 'barline';
+        const isstacked  = this.props.edaChart === 'stackedbar';
+
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const dataTypes = this.props.query.map(column => column.column_type);
+
+        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.data.values,
+            dataTypes, dataDescription, isbarline);
+
+        const manySeries = chartData[1].length > 10 ? true : false;
+        const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
+            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions());
+
         let chartConfig: any = {};
-        chartConfig.chartType = this.config.chartType;
+        chartConfig.chartType = this.props.chartType;
+        chartConfig.edaChart = this.props.edaChart;
         chartConfig.chartLabels = chartData[0];
+
         if (type === 'doughnut' || type === 'polarArea') {
             chartConfig.chartData = chartData[1];
         } else {
             chartConfig.chartDataset = chartData[1];
         }
+
         chartConfig.chartOptions = config.chartOptions;
-        chartConfig.chartColors = this.chartUtils.recoverChartColors(this.config.chartType, this.config.layout);
+        chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
+       
         this.createEdaChartComponent(chartConfig);
     }
 
@@ -118,8 +128,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
     private renderEdaKpi() {
         let chartConfig: any = {};
-        chartConfig.value = this.config.data.values[0][0];
-        chartConfig.header = this.config.query[0].display_name.default;
+        chartConfig.value = this.props.data.values[0][0];
+        chartConfig.header = this.props.query[0].display_name.default;
+        const config = this.props.config;
+        if(config ){
+            chartConfig.sufix = (<KpiConfig>config.getConfig()).sufix ;
+        }else{
+            chartConfig.sufix = '';
+        }
+       
         this.createEdaKpiComponent(chartConfig);
 
     }
@@ -141,26 +158,29 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
       * Creates a table component
       * @param inject chart configuration
       */
-    private createEdatableComponent(type) {
+    private createEdatableComponent(type:string) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaTableComponent);
         this.componentRef = this.entry.createComponent(factory);
-        this.componentRef.instance.inject = this.initializeTable(type, this.config.layout);
-        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.config.data.labels, this.config.data.values);
-        const layout = this.config.layout;
-        if (layout && layout.tableConfig) {
-            this.componentRef.instance.inject.rows = layout.tableConfig.visibleRows;
-            this.setTableProperties(layout);
+        this.componentRef.instance.inject = this.initializeTable(type, this.props.config.getConfig());
+        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.props.data.labels, this.props.data.values);
+        const config  = this.props.config.getConfig();
+        if (config) {
+            this.componentRef.instance.inject.rows = (<TableConfig>config).visibleRows;
+            this.setTableProperties((<TableConfig>config));
         }
+        this.componentRef.instance.inject.onNotify.subscribe(data => {
+            (<TableConfig>config).visibleRows = data;
+        });
         this.currentConfig = this.componentRef.instance.inject;
     }
 
-    private setTableProperties(layout) {
-        this.componentRef.instance.inject.withColTotals = layout.tableConfig.withColTotals;
-        this.componentRef.instance.inject.withColSubTotals = layout.tableConfig.withColSubTotals;
-        this.componentRef.instance.inject.withRowTotals = layout.tableConfig.withRowTotals;
-        this.componentRef.instance.inject.resultAsPecentage = layout.tableConfig.resultAsPecentage;
-        this.componentRef.instance.inject.checkTotals(null, layout.tableConfig.visibleRows);
+    private setTableProperties(config:TableConfig) {
+        this.componentRef.instance.inject.withColTotals = config.withColTotals;
+        this.componentRef.instance.inject.withColSubTotals = config.withColSubTotals;
+        this.componentRef.instance.inject.withRowTotals = config.withRowTotals;
+        this.componentRef.instance.inject.resultAsPecentage = config.resultAsPecentage;
+        this.componentRef.instance.inject.checkTotals(null, config.visibleRows);
     }
 
     /**
@@ -168,10 +188,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param inject 
      */
     private createEdaKpiComponent(inject: any) {
+
         this.entry.clear();
+        
         const factory = this.resolver.resolveComponentFactory(EdaKpiComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
+
+        this.componentRef.instance.onNotify.subscribe(data => {
+           const kpiConfig = new KpiConfig(data.sufix);
+            (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
+        })
     }
 
     /**
@@ -190,17 +217,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
     private initializeTable(type: string, configs?: any): EdaTable {
         const tableColumns = [];
-        for (let i = 0, n = this.config.query.length; i < n; i += 1) {
+        console.log("WARNING! Unique names");
+        for (let i = 0, n = this.props.query.length; i < n; i += 1) {
 
-            const r: Column = this.config.query[i];
+            const label = this.props.data.labels[i];
+            const r: Column = this.props.query[i];
+
             if (_.isEqual(r.column_type, 'date')) {
-                tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: r.column_name }));
+                tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label}));
             } else if (_.isEqual(r.column_type, 'numeric')) {
-                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: r.column_name }))
+                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label}))
             } else if (_.isEqual(r.column_type, 'varchar')) {
-                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: r.column_name }));
+                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label }));
             } else if (_.isEqual(r.column_type, 'text')) {
-                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: r.column_name }));
+                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label }));
             }
         }
         if (type === 'table') {

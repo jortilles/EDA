@@ -415,6 +415,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     /* Close functions */
     closeDialog() {
+
         this.filter.switch = false;
         this.filterSelected = undefined;
         this.filterValue = {};

@@ -1,4 +1,5 @@
 export abstract class AbstractConnection {
+    
     config: any;
     pool: any
 
@@ -20,7 +21,7 @@ export abstract class AbstractConnection {
 
     abstract async tryConnection(): Promise<void>;
 
-    abstract async generateDataModel(): Promise<any>;
+    abstract async generateDataModel(optimize:string): Promise<any>;
 
     abstract async execQuery(query: string): Promise<any>;
 
@@ -29,6 +30,9 @@ export abstract class AbstractConnection {
     abstract async getQueryBuilded(queryData: any, dataModel: any, user: string): Promise<any>;
 
     abstract async getPool():Promise<any>;
+
+    abstract BuildSqlQuery(queryData: any, dataModel: any, user: string): string;
+    abstract GetDefaultSchema():string;
 
 }
 

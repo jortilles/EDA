@@ -71,6 +71,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filter.selecteds.push(   
             this.columnUtils.addFilter(this.filterValue, table, column, type)
         );
+        
 
         this.carregarFilters();
 
@@ -174,6 +175,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     closeDialog() {
+
         this.filter.switch = false;
         this.filterSelected = undefined;
         this.filterValue = {};

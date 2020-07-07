@@ -5,9 +5,13 @@ import * as _ from 'lodash';
 export class SQLserviceBuilderService extends QueryBuilderService {
 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], schema:string) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], schema: string) {
 
-    const SCHEMA = `${schema}`
+    let SCHEMA = `${schema}`;
+
+    if (SCHEMA === 'null' ||  SCHEMA==='' ) {
+      SCHEMA = 'dbo';
+    }
 
     let myQuery = `SELECT ${columns.join(', ')} \nFROM "${SCHEMA}"."${origin}"`;
 
@@ -77,7 +81,7 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], schema:string) {
+  public getJoins(joinTree: any[], dest: any[], schema: string) {
 
     let joins = [];
     let joined = [];
@@ -115,46 +119,52 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
-      if (el.aggregation_type !== 'none') {
-        if (el.aggregation_type === 'count_distinct') {
-          columns.push(`CAST(count( distinct "${el.table_id}"."${el.column_name}") AS DECIMAL(32, 2))as "${el.display_name}"`);
-        } else {
-          columns.push(`CAST(${el.aggregation_type}("${el.table_id}"."${el.column_name}") AS DECIMAL(32, 2)) as "${el.display_name}"`);
-        }
+
+      // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor.
+      if (el.computed_column === 'computed_numeric') {
+        columns.push(` CAST( ${el.SQLexpression}  AS DECIMAL(32, 2)) as "${el.display_name}"`);
       } else {
-        if (el.column_type === 'numeric') {
-          columns.push(`CAST("${el.table_id}"."${el.column_name}" AS DECIMAL(32, 2)) "${el.display_name}"`);
-        } else if (el.column_type === 'date') {
-          if (el.format) {
-            if (_.isEqual(el.format, 'year')) {
-              columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' ) as "${el.display_name}"`);
-            } else if (_.isEqual(el.format, 'month')) {
-              columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' ) as "${el.display_name}"`);
-            } else if (_.isEqual(el.format, 'day')) {
-              columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
-            } else if(_.isEqual(el.format, 'No')){
+        if (el.aggregation_type !== 'none') {
+          if (el.aggregation_type === 'count_distinct') {
+            columns.push(`CAST(count( distinct "${el.table_id}"."${el.column_name}") AS DECIMAL(32, 2))as "${el.display_name}"`);
+          } else {
+            columns.push(`CAST(${el.aggregation_type}("${el.table_id}"."${el.column_name}") AS DECIMAL(32, 2)) as "${el.display_name}"`);
+          }
+        } else {
+          if (el.column_type === 'numeric') {
+            columns.push(`CAST("${el.table_id}"."${el.column_name}" AS DECIMAL(32, 2)) "${el.display_name}"`);
+          } else if (el.column_type === 'date') {
+            if (el.format) {
+              if (_.isEqual(el.format, 'year')) {
+                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' ) as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'month')) {
+                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' ) as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'day')) {
+                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'No')) {
+                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+              }
+            } else {
               columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
             }
           } else {
-            columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+            columns.push(`"${el.table_id}"."${el.column_name}" as "${el.display_name}"`);
           }
-        } else {
-          columns.push(`"${el.table_id}"."${el.column_name}" as "${el.display_name}"`);
-        }
 
-        // GROUP BY
-        if (el.format) {
-          if (_.isEqual(el.format, 'year')) {
-            grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' )`);
-          } else if (_.isEqual(el.format, 'month')) {
-            grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' )`);
-          } else if (_.isEqual(el.format, 'day')) {
-            grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' )`);
-          }else if(_.isEqual(el.format, 'No')){
+          // GROUP BY
+          if (el.format) {
+            if (_.isEqual(el.format, 'year')) {
+              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' )`);
+            } else if (_.isEqual(el.format, 'month')) {
+              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' )`);
+            } else if (_.isEqual(el.format, 'day')) {
+              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' )`);
+            } else if (_.isEqual(el.format, 'No')) {
+              grouping.push(`"${el.table_id}"."${el.column_name}"`);
+            }
+          } else {
             grouping.push(`"${el.table_id}"."${el.column_name}"`);
           }
-        } else {
-          grouping.push(`"${el.table_id}"."${el.column_name}"`);
         }
       }
     });
@@ -204,5 +214,72 @@ export class SQLserviceBuilderService extends QueryBuilderService {
       return str.substring(0, str.length - 1);
     }
   }
+
+  /**
+   * Builds permissions for sql queries
+   * @param origin 
+   * @param joinStrings 
+   * @param permissions 
+   */
+
+  buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[], schema?: string) {
+
+    if (schema) {
+      origin = `${schema}.${origin}`;
+    }
+    let joinString = `( SELECT ${origin}.* from ${origin} `;
+    joinString += joinStrings.join(' ') + ' where ';
+    permissions.forEach(permission => {
+      joinString += ` ${this.filterToString(permission)} and `
+    });
+    return `${joinString.slice(0, joinString.lastIndexOf(' and '))} )`;
+  }
+
+
+  sqlQuery(query: string, filters: any[], filterMarks: string[]): string {
+    //Get cols present in filters
+    const colsInFilters = [];
+
+    filters.forEach((filter, i) => {
+      let col = filter.type === 'in' ?
+        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('in')).replace(/"/g, '') :
+        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('between')).replace(/"/g, '');
+      colsInFilters.push({ col: col, index: i });
+    });
+
+    filterMarks.forEach((mark, i) => {
+
+      let subs = mark.split('').slice(filterMarks[0].indexOf('{') + 1, mark.indexOf('}') - mark.indexOf('$')).join('');
+      let col = subs.slice(subs.indexOf('.') + 1);
+      let arr = [];
+
+      if (!colsInFilters.map(f => f.col.toUpperCase().trim()).includes(col.toUpperCase().trim())) {
+
+        arr.push(` CAST(${subs} AS varchar) like '%'`);
+
+      } else {
+        const index = colsInFilters.filter(f => f.col.toUpperCase().trim() === col.toUpperCase().trim()).map(f => f.index)[0];
+        arr = filters[index].string.split(' ');
+        arr[0] = subs;
+      }
+      query = query.replace(mark, arr.join(' '));
+    });
+
+    return query;
+  }
+
+  parseSchema(tables: string[], schema: string) {
+    const output = [];
+    const reg = new RegExp(/[".\[\]]/, "g");
+    tables.forEach(table => {
+      table = table.replace(schema, '')
+      table = table.replace(reg, '')
+      output.push(table);
+
+    });
+    //console.log(output);
+    return output;
+  }
+
 
 }

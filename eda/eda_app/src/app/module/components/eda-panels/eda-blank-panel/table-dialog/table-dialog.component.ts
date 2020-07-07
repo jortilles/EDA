@@ -1,13 +1,12 @@
-import { ChartType } from 'chart.js';
-
-import { Component, ViewChild, OnDestroy } from '@angular/core';
+import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
+import { Component, ViewChild } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog';
 import { EdaDialogAbstract } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-abstract';
-import { MenubarModule } from 'primeng/menubar';
 import { MenuItem } from 'primeng/api';
 import * as _ from 'lodash';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
+import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 
 
 @Component({
@@ -45,25 +44,19 @@ export class TableDialogComponent extends EdaDialogAbstract {
 
   }
   onShow(): void {
+  
     this.panelChartConfig = this.controller.params.panelChart;
-    if (this.panelChartConfig.layout && this.panelChartConfig.layout.tableConfig) {
-      this.panelChartConfig.layout.tableConfig.visibleRows = 5;
-      this.row_totals = this.panelChartConfig.layout.tableConfig.withRowTotals;
-      this.col_totals = this.panelChartConfig.layout.tableConfig.withColTotals;
-      this.col_subtotals = this.panelChartConfig.layout.tableConfig.withColSubTotals;
-      this.resultAsPecentage = this.panelChartConfig.layout.tableConfig.resultAsPecentage;
-      this.onlyPercentages = this.panelChartConfig.layout.tableConfig.onlyPercentages;
+    if (this.panelChartConfig && this.panelChartConfig.config) {
+      const config = (<TableConfig>this.panelChartConfig.config.getConfig());
+      this.row_totals = config.withRowTotals;
+      this.col_totals = config.withColTotals;
+      this.col_subtotals = config.withColSubTotals;
+      this.resultAsPecentage = config.resultAsPecentage;
+      this.onlyPercentages = config.onlyPercentages;
     } else {
-      this.panelChartConfig.layout = {
-        tableConfig: {
-          withColTotals: false,
-          withColSubTotals: false,
-          withRowTotals: false,
-          visibleRows: 5,
-          resultAsPecentage: false,
-          onlyPercentages: false
-        }
-      }
+      this.panelChartConfig.config = new ChartConfig(
+        new TableConfig(false, false, 5, false, false, false)
+      )
     }
     this.setItems();
 
@@ -135,20 +128,11 @@ export class TableDialogComponent extends EdaDialogAbstract {
     return this.controller.close(event, response);
   }
   saveChartConfig() {
-    const rows = this.controller.params.panelChart.layout &&
-      this.controller.params.panelChart.layout.tableConfig ?
-      this.controller.params.panelChart.layout.tableConfig.visibleRows : 10
+    const config = (<TableConfig>this.panelChartConfig.config.getConfig());
+    const rows = config.visibleRows;
 
-    const properties =
-    {
-      withColTotals: this.col_totals,
-      withColSubTotals: this.col_subtotals,
-      withRowTotals: this.row_totals,
-      visibleRows: rows,
-      resultAsPecentage: this.resultAsPecentage,
-      onlyPercentages: this.onlyPercentages
-
-    }
+    const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows, 
+      this.col_subtotals, this.col_totals, this.row_totals)
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }

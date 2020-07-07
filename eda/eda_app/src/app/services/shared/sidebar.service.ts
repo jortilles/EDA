@@ -1,7 +1,7 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { ApiService } from '../api/api.service';
 import { HttpClient } from '@angular/common/http';
+import { ApiService } from '../api/api.service';
 
 @Injectable()
 export class SidebarService extends ApiService {
@@ -26,7 +26,6 @@ export class SidebarService extends ApiService {
             }, err => console.log(err));
     }
 
-
     getDataSources(): Observable<any> {
         return this.get(this.globalDSRoute);
     }
@@ -43,6 +42,5 @@ export class SidebarService extends ApiService {
     getToggleSideNav(): Observable<boolean> {
         return this.hideSideNavSubj.asObservable();
     }
-
 
 }

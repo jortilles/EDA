@@ -2,12 +2,13 @@ import { EdaTable, EdaColumnText, EdaColumnContextMenu } from '@eda/components/c
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { FormGroup } from '@angular/forms';
-import { SelectItem } from 'primeng/api';
-import { AlertService, DataSourceService } from '@eda/services/service.index';
+import { SelectItem, TreeNode } from 'primeng/api';
+import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
 import { EditTablePanel, EditColumnPanel, EditModelPanel } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
-import * as _ from 'lodash';
 import { aggTypes } from 'app/config/aggretation-types';
+import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'app-data-source-detail',
@@ -17,6 +18,7 @@ import { aggTypes } from 'app/config/aggretation-types';
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public form: FormGroup;
     public table: EdaTable;
+    public relationsTable: EdaTable;
     public navigationSubscription: any;
     // Properties
     public tablePanel: EditTablePanel;
@@ -25,6 +27,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public typePanel: string;
     public relationController: EdaDialogController;
     public permissionsController: EdaDialogController;
+    public newColController: EdaDialogController;
 
     // Types
     public columnTypes: SelectItem[] = [
@@ -52,8 +55,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     constructor(public dataModelService: DataSourceService,
         private alertService: AlertService,
+        private queryBuilderService: QueryBuilderService,
+        private spinnerService: SpinnerService,
         private router: Router) {
         //
+        const _me = this; 
+        
         this.navigationSubscription = this.router.events.subscribe(
             (res: any) => {
                 if (res instanceof NavigationEnd) {
@@ -65,7 +72,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.alertService.addError(err);
             }
         );
-
         this.table = new EdaTable({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
@@ -73,7 +79,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                         label: 'ELIMINAR', command: () => {
                             this.modelPanel.metadata.model_granted_roles =
                                 this.modelPanel.metadata.model_granted_roles.filter(r => r.users[0] != this.table.getContextMenuRow()._id[0])
-                            console.log(this.modelPanel.metadata.model_granted_roles);
                             this.updateColumn();
                             this.table._hideContexMenu();
                         }
@@ -86,6 +91,24 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 new EdaColumnText({ field: 'value', header: 'VALOR' }),
             ]
         });
+
+        this.relationsTable = new EdaTable({
+            contextMenu: new EdaContextMenu({
+                contextMenuItems: [
+                    new EdaContextMenuItem({
+                        label: 'ELIMINAR', command: () => {
+                            this.deleteRelation(this.relationsTable.getContextMenuRow()._id);
+                            this.relationsTable._hideContexMenu();
+                        }
+                    })
+                ]
+            }),
+            cols: [
+                new EdaColumnFunction( {click: (relation) =>  this.deleteRelation(relation._id)}),
+                new EdaColumnText({ field: 'origin', header: 'Origen' }),
+                new EdaColumnText({ field: 'dest', header: 'Destino' })
+            ]
+        })
 
     }
 
@@ -105,6 +128,19 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             tablePanel => {
                 this.tablePanel = tablePanel;
                 this.tmpRelations = tablePanel.relations.filter(r => r.visible === true);
+                this.relationsTable.value = []
+                tablePanel.relations.filter(r => r.visible === true).forEach(relation => {
+                    const row = {
+                        origin: relation.source_column,
+                        dest: `${relation.target_table}.${relation.target_column}`,
+                        _id: relation
+                    };
+                    if (!this.relationsTable.value.map(value => value.dest).includes(row.dest)) {
+                        this.relationsTable.value.push(row);
+                    }
+                });
+                //Update to contain only actual values
+                this.relationsTable.value = this.relationsTable.value.filter(table => this.tmpRelations.includes(table._id))
                 this.selectedTableType = tablePanel.table_type;
             }, err => {
                 this.alertService.addError(err);
@@ -166,7 +202,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     updateColumn() {
         if (this.columnPanel.technical_name) {
-
             this.dataModelService.changeColumnPanel(this.columnPanel);
         }
     }
@@ -204,6 +239,36 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     deleteRelation(relation) {
         this.dataModelService.deleteRelation(relation);
     }
+    deleteCalculatedCol(columnPanel: EditColumnPanel) {
+        this.dataModelService.deleteCalculatedCol(columnPanel);
+        this.typePanel = 'tabla';
+        this.update();
+    }
+
+    checkCalculatedColumn(columnPanel: EditColumnPanel) {
+        this.spinnerService.on();
+        const table = this.dataModelService.getTable(columnPanel);
+        const column = table.columns.filter(col => col.column_name === columnPanel.technical_name)[0];
+
+        const queryParams: QueryParams = {
+            table: table.table_name,
+            dataSource: this.dataModelService.model_id,
+        };
+        const query = this.queryBuilderService.simpleQuery(column, queryParams);
+        this.dataModelService.executeQuery(query).subscribe(
+            res => { this.alertService.addSuccess("Consulta correcta"); this.spinnerService.off() },
+            err => { this.alertService.addError("Consulta incorrecta"); this.spinnerService.off() }
+        );
+    }
+    checkConection() {
+        this.spinnerService.on();
+        let connection = this.modelPanel.connection;
+        let id = this.dataModelService.model_id;
+        this.dataModelService.testStoredConnection(connection, id).subscribe(
+            res => { this.alertService.addSuccess("Conexión establecida"); this.spinnerService.off() },
+            err => { this.alertService.addError("Datos de conexión incorrectos"); this.spinnerService.off() }
+        );
+    }
 
     openTableRelationDialog() {
         this.relationController = new EdaDialogController({
@@ -217,6 +282,25 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.relationController = undefined;
             }
         });
+    }
+
+    openNewColDialog() {
+        this.newColController = new EdaDialogController({
+            params: { table: this.tablePanel },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addCalculatedColumn(response);
+                    this.update();
+                    this.typePanel = 'columna';
+                    const node: TreeNode = this.dataModelService.getTreeColumn(this.tablePanel.name,
+                        this.tablePanel.columns[this.tablePanel.columns.length - 1]);
+                    this.dataModelService.editColumn(node);
+                    this.dataModelService.expandNode(node);
+                }
+
+                this.newColController = undefined;
+            }
+        })
     }
 
     openPermissionsRelationDialog() {

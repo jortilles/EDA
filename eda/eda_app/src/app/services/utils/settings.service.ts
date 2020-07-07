@@ -1,12 +1,13 @@
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { Tema, TemaUrl  } from '@eda/configs/index';
 
 @Injectable()
 export class SettingsService {
 
     settings: Settings = {
-        temaUrl: 'assets/css/colors/default-dark.css',
-        tema: 'default-dark'
+        temaUrl: TemaUrl,
+        tema: Tema
     };
 
     constructor(@Inject(DOCUMENT) private _document, ) {

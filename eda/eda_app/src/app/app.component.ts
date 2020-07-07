@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { AlertService, UserService, SpinnerService } from './services/service.index';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
 
 @Component({
@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
     constructor( private userService: UserService,
                  private spinnerService: SpinnerService,
                  private router: Router,
+                 private route : ActivatedRoute,
                  public alertService: AlertService,
                  public messageService: MessageService ) { }
 

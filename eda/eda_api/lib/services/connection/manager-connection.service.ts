@@ -1,3 +1,4 @@
+import { OracleConnection } from './db-systems/oracle-connection';
 import { VerticaConnection } from './db-systems/vertica-connection';
 import { MysqlConnection } from './db-systems/mysql-connection';
 import { PgConnection } from './db-systems/pg-connection';
@@ -11,7 +12,8 @@ export const
     MY_CONNECTION = 'mysql',
     PG_CONNECTION = 'postgres',
     VE_CONNECTION = 'vertica',
-    SQLS_CONNECTION = 'sqlserver';
+    SQLS_CONNECTION = 'sqlserver',
+    ORACLE_CONNECTION = 'oracle';
 
 
 
@@ -33,6 +35,8 @@ export class ManagerConnectionService {
                 return new VerticaConnection(config);
             case SQLS_CONNECTION:
                 return new SQLserverConnection(config);
+            case ORACLE_CONNECTION:
+                return new OracleConnection(config);
             default:
                 return null;
         }
@@ -50,6 +54,9 @@ export class ManagerConnectionService {
                 return new VerticaConnection(config);
             case SQLS_CONNECTION:
                 return new SQLserverConnection(config);
+            case ORACLE_CONNECTION:
+                return new OracleConnection(config);
+
             default:
                 return null;
         }

@@ -36,14 +36,14 @@
 
                 <div class="ui-g-4">
                     <p-dropdown [options]="targetTables" [(ngModel)]="targetTable" filter="true" optionLabel="label"
-                        [style]="{'width': '100%'}" i18n-placeholder="@@placeholderTables" placeholder="Tablas"
+                        [style]="{'width': '100%'}" i18n-placeholder="@@placeholderTables" placeholder="Entidades"
                         (onChange)="getColumnsByTable()" (onChange)=resetSelectedValues()>
                     </p-dropdown>
                 </div>
 
                 <div class="ui-g-4">
                     <p-dropdown [options]="targetCols" [(ngModel)]="targetCol" filter="true" optionLabel="label"
-                        [style]="{'width': '100%'}" i18n-placeholder="@@placeholderColumns" placeholder="Columnas"
+                        [style]="{'width': '100%'}" i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
                         (onChange)="loadGlobalFiltersData()" (onChange)=resetSelectedValues()>
                     </p-dropdown>
                 </div>
@@ -59,7 +59,7 @@
                         selectionMode="range" [readonlyInput]="true" (onClose)="handleDates()"
                         placeholder='Selecciona un rango'>
                         <p-footer class="edaFilterFooter">
-                            <button class="btn success edaOk" (click)="handleDates();$event.stopPropagation()">Confirmar </button>
+                            <button class="btn success edaOk" (click)="handleDates();$event.stopPropagation()" id="eda_dashboard_filter_dialog_confirmar">Confirmar </button>
                         </p-footer>
 
                     </p-calendar>

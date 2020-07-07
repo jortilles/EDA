@@ -1,0 +1,17 @@
+<div class="panel-heading d-flex justify-content-center align-items-center text-center h-100">
+
+    <h3 *ngIf="!titleClick" class="edaTitle mb-0 pointer w-100" (click)="setTitle()"> {{ panel.title }} </h3>
+
+    <div *ngIf="!!titleClick" class="ui-inputgroup w-100">
+        <input type="text" class="w-100" pInputText (focusout)="setTitle()" (keydown.enter)="setTitle()"
+            [(ngModel)]="panel.title" autofocusOnShow>
+    </div>
+
+
+    <div *ngIf="display.editMode" id="edit">
+        <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
+    </div>
+
+</div>
+
+<eda-context-menu [inject]="contextMenu"></eda-context-menu>

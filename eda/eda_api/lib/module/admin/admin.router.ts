@@ -1,5 +1,5 @@
 
-import * as express from 'express';
+import express from 'express';
 import UserRouter from './users/user.router';
 import GroupsRouter from './groups/groups.router';
 

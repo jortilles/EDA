@@ -24,45 +24,47 @@ export class HomeComponent implements OnInit {
     public isAdmin: boolean;
     public toLitle: boolean = false;
 
-    constructor(private dashboardService: DashboardService,
-                private sidebarService: SidebarService,
-                private router: Router,
-                private alertService: AlertService) {
+    constructor(
+        private dashboardService: DashboardService,
+        private sidebarService: SidebarService,
+        private router: Router,
+        private alertService: AlertService
+    ) {
         this.sidebarService.getDataSourceNames();
 
         if (window.innerWidth < 1000) {
             this.toLitle = true;
         }
 
-
     }
 
-    ngOnInit() {
+    public ngOnInit() {
         this.init();
         this.ifAnonymousGetOut();
     }
 
-    init() {
+    private init() {
         this.initDatasources();
         this.initDashboards();
     }
 
-    ifAnonymousGetOut(){
+    private ifAnonymousGetOut(): void {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
+
          if ( userName === 'edaanonim') {
             this.router.navigate(['/login']);
         }
     }
 
-    initDatasources() {
+    private initDatasources(): void {
         this.sidebarService.currentDatasources.subscribe(
             data =>  this.dss = data,
             err => this.alertService.addError(err)
         );
     }
 
-    initDashboards() {
+    private initDashboards(): void {
         this.dashboardService.getDashboards().subscribe(
             res => {
                 this.dashboards.privats = res.dashboards;
@@ -77,7 +79,7 @@ export class HomeComponent implements OnInit {
         );
     }
 
-    initDialog() {
+    public initDialog(): void {
         this.dashController = new EdaDialogController({
             params: {dataSources: this.dss},
             close: (event, response) => {
@@ -90,10 +92,10 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    deleteDashboard(dashboard) {
+    public deleteDashboard(dashboard): void {
         Swal.fire({
             title: '¿Estas seguro?',
-            text: `Estas a punto de borrar el informe ${dashboard.config.title}`,
+            text: `Estás a punto de borrar el informe ${dashboard.config.title}`,
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -113,12 +115,16 @@ export class HomeComponent implements OnInit {
 
     }
 
-    goToDashboard(dashboard) {
+    public goToDashboard(dashboard): void {
         if (dashboard) {
             this.router.navigate(['/dashboard', dashboard._id]);
         } else {
             this.alertService.addError('Ha ocurrido un error');
         }
+    }
+
+    public getGroupsNamesByDashboard(group: any[]): string {
+        return group.map((elem: any) => elem.name).join(' , ');
     }
 
 }

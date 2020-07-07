@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import { Column } from '@eda/models/model.index';
 import { EdaColumnNumber } from './eda-columns/eda-column-number';
 import { EdaColumnPercentage } from './eda-columns/eda-column-percentage';
+import { Output, EventEmitter } from '@angular/core';
 
 interface PivotTableSerieParams {
     mainCol: any,
@@ -21,6 +22,9 @@ interface PivotTableSerieParams {
 }
 
 export class EdaTable {
+
+    @Output() onNotify: EventEmitter<any> = new EventEmitter();
+
     private _value: any[] = [];
 
     public cols: EdaColumn[] = [];
@@ -53,13 +57,11 @@ export class EdaTable {
     public percentageColumns: Array<any> = [];
 
     public autolayout: boolean = true;
+    
 
     public constructor(init: Partial<EdaTable>) {
         Object.assign(this, init);
-        if (init['tableConfig']) {
-            this.initRows = init["tableConfig"].visibleRows || 10;
-            this.onlyPercentages = init["tableConfig"].onlyPercentages;
-        }
+        this.initRows = init['visibleRows'] || 10;
     }
 
     get value() {
@@ -90,11 +92,12 @@ export class EdaTable {
     public onPage(event: { first, rows }): void {
         this.rows = event.rows;
         this.initRows = event.rows;
+        this.onNotify.emit(this.rows)
         this.checkTotals(event);
     }
 
 
-    onSort() {
+    public onSort() {
         this.checkTotals(null);
     }
 
@@ -298,12 +301,14 @@ export class EdaTable {
     }
 
     coltotals() {
+        
         this.withColTotals = true;
         this.totalsRow = [];
+
         let row = this.buildTotalRow();
         const values = this._value;
-        //const keys = Object.keys(values[0]);
         const keys = this.cols.map(col => col.field);
+
         for (let i = 0; i < values.length; i++) {
             for (let j = 0; j < keys.length; j++) {
                 if (i < values.length) {
@@ -473,6 +478,7 @@ export class EdaTable {
             }
         });
         serie.sortState = !serie.sortState
+        this.checkTotals(null);
     };
 
     PivotTable() {

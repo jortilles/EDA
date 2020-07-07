@@ -6,6 +6,10 @@ const Vertica = require('vertica');
 
 
 export class VerticaConnection extends AbstractConnection {
+    GetDefaultSchema(): string {
+        return 'public';
+    }
+
     private queryBuilder: PgBuilderService;
 
     async getPool() {
@@ -30,19 +34,20 @@ export class VerticaConnection extends AbstractConnection {
             this.itsConnected();
             return this.pool;
         } catch (err) {
+            console.log(err)
             throw err;
         }
     }
 
-    async generateDataModel(): Promise<any> {
+    async generateDataModel(optimize:string): Promise<any> {
         try {
             this.pool = await this.getPool();
             let tableNames = [];
             let tables = [];
             const query = `
-              SELECT table_name FROM tables WHERE is_system_table = false and table_schema = '${this.config.schema}'
+              SELECT table_name FROM tables WHERE is_system_table = false and table_schema = '${this.config.schema || 'public'}'
               UNION ALL
-              SELECT table_name FROM v_catalog.views WHERE is_system_view = false and table_schema = '${this.config.schema}'`
+              SELECT table_name FROM v_catalog.views WHERE is_system_view = false and table_schema = '${this.config.schema || 'public'}'`
                 ;
 
             const getResults = await this.execQuery(query);
@@ -53,12 +58,19 @@ export class VerticaConnection extends AbstractConnection {
 
             for (let i = 0; i < tableNames.length; i++) {
                 let new_table = await this.setTable(tableNames[i]);
+
+                let count = 0;
+                if(optimize === '1'){
+                    const dbCount = await this.countTable(tableNames[i], `${this.config.schema || 'public'}`);
+                    count = dbCount[0].count;
+                }
+                new_table.tableCount = count;
                 tables.push(new_table);
             }
 
             for (let i = 0; i < tables.length; i++) {
                 for (let j = 0; j < tables[i].columns.length; j++) {
-                    tables[i].columns[j] = this.setColumns(tables[i].columns[j]);
+                    tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
             return await this.commonColumns(tables);
@@ -98,12 +110,33 @@ export class VerticaConnection extends AbstractConnection {
         this.queryBuilder = new PgBuilderService(queryData, dataModel, user);
         return this.queryBuilder.builder();
     }
+    
+    BuildSqlQuery(queryData: any, dataModel: any, user: string): string {
+        this.queryBuilder = new PgBuilderService(queryData, dataModel, user);
+        return this.queryBuilder.sqlBuilder(queryData, queryData.filters);
+    }
+
+
+    private async countTable(tableName: string, schema: string): Promise<any> {
+        const query = `
+        SELECT count(*) as count from ${schema}.${tableName}
+        `;
+        return new Promise(async (resolve, reject) => {
+            this.pool.query(query, (err, resultset) => {
+                if (err) {
+                    return resolve({count:0});
+                }
+                let rows = this.mapToJSON(resultset);
+                resolve(rows);
+            });
+        })
+    }
 
     private async setTable(tableName: string): Promise<any> {
         const query = `
-        select column_name, data_type from v_catalog.columns WHERE table_name = '${tableName}' and table_schema = '${this.config.schema}'
+        select column_name, data_type from v_catalog.columns WHERE table_name = '${tableName}' and table_schema = '${this.config.schema || 'public'}'
         UNION
-        SELECT column_name, data_type from view_columns WHERE table_name = '${tableName}' and table_schema = '${this.config.schema}'
+        SELECT column_name, data_type from view_columns WHERE table_name = '${tableName}' and table_schema = '${this.config.schema || 'public'}'
     `;
 
         try {
@@ -130,7 +163,7 @@ export class VerticaConnection extends AbstractConnection {
         }
     }
 
-    private setColumns(c) {
+    private setColumns(c, tableCount:number) {
         let column = c;
 
         column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
@@ -144,6 +177,7 @@ export class VerticaConnection extends AbstractConnection {
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.tableCount = tableCount;
         return column;
     }
 

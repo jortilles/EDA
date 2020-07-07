@@ -16,6 +16,7 @@ export abstract class EdaColumn {
     rowspan: number = 4;
     rowTotal : boolean = false;
     visible : boolean = true;
+    click : (row:any) => void  = () => {};
 
     cellStyle: (value: any, row: any) => any = () => {};
     joinArray: (value: any, row: any) => any = () => {};

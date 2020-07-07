@@ -32,8 +32,7 @@
                         "scripts": [
                             "node_modules/chart.js/dist/Chart.bundle.js",
                             "node_modules/quill/dist/quill.js"
-                        ],
-                        "es5BrowserSupport": true
+                        ]
                     },
                     "configurations": {
                         "production": {

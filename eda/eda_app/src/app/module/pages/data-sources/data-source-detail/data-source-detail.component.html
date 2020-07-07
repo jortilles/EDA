@@ -29,48 +29,18 @@
             </p-selectButton>
         </div>
 
-        <p-virtualScroller [value]="tmpRelations" scrollHeight="200px" [itemSize]="50">
-            <p-header i18n="@@virtualScrollerRelaciones">
-                Relaciones
-            </p-header>
-            <ng-template let-relation pTemplate="item" let-i="index">
+        <div style="margin: 10px">
+            <h6>Relaciones</h6>
+            <eda-table [inject]="relationsTable"></eda-table>
+            <button  class="btn-sm btn-secondary" i18n-title="@@addRelation"
+                title="Añadir relación" (click)="openTableRelationDialog()"> Añadir relación
+            </button>
+        </div>
 
-                <div *ngIf="relation.visible" class="ui-g " style="font-size: 12px">
-
-                    <div class="ui-g-3 ui-md-3">
-                        <div class="ui-g">
-                            <div class="ui-g-10 ui-sm-6">
-                                {{relation?.source_column}}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="ui-g-1 ui-md-1">
-                        <i class="fa fa-long-arrow-right"></i>
-                    </div>
-
-                    <div class="ui-g-5 ui-md-5">
-                        <div class="ui-g">
-                            <div class="ui-g-10 ui-sm-6">
-                                {{relation?.target_table}}.{{relation?.target_column}}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="ui-g-1 ui-md-1">
-                        <button pButton class="ui-button-rounded ui-button-secondary"
-                            (click)="deleteRelation(relation)" icon="fa fa-remove"></button>
-                    </div>
-
-                </div>
-
-            </ng-template>
-
-        </p-virtualScroller>
-
-        <button pButton icon="fa fa-plus-circle" class="ui-button" i18n-title="@@addRelation"
-            title="Añadir relación" (click)="openTableRelationDialog()">
-        </button>
+        
+        <div style="margin: 10px">
+            <button class="btn-sm btn-secondary" (click)="openNewColDialog()">Añadir columna calculada</button>
+        </div>
 
     </p-panel>
 
@@ -101,18 +71,23 @@
             <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" (keyup)="update()"></p>
         </div>
 
-        <div style="margin: 10px">
+        <div *ngIf="columnPanel.computed_column !== 'no'" style="margin: 10px">
+            <h6>Expresión SQL</h6>
+            <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" (keyup)="update()" rows="5"
+                    cols="100"></textarea></p>
+        </div>
+
+        <div *ngIf="columnPanel.computed_column === 'no'" style="margin: 10px">
             <h6 i18n="@@inputTipoColumna">
                 Tipo de columna
             </h6>
             <p>
-                <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType"
-                    (onChange)=updateColumnType()>
+                <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" (onChange)=updateColumnType()>
                 </p-selectButton>
             </p>
         </div>
 
-        <div style="margin: 10px">
+        <div *ngIf="columnPanel.computed_column === 'no'" style="margin: 10px">
             <h6 i18n="@@agregacionH6">
                 Agregación
             </h6>
@@ -124,21 +99,30 @@
 
         </div>
 
-        <div style="margin: 10px">
+        <div *ngIf="columnPanel.computed_column === 'no'" style="margin: 10px">
             <h6 i18n="@@rolesPermisos">Roles y permisos de fila</h6>
             <eda-table [inject]="table"></eda-table>
         </div>
 
-        <button pButton (click)="openPermissionsRelationDialog()" icon="fa fa-plus-circle" class=" ui-button"
-            i18n-title="@@addPermissions" title="Añadir permiso" style="margin-left: 11px">
+        <button *ngIf="columnPanel.computed_column === 'no'" class="btn-sm btn-secondary" (click)="openPermissionsRelationDialog()"
+           i18n-title="@@addPermissions" title="Añadir permiso"
+            style="margin-left: 11px"> Añadir permiso
         </button>
 
-        <div style="margin: 10px">
+        <div *ngIf="columnPanel.computed_column === 'no'" style="margin: 10px">
             <h6 i18n="@@esconderColumna">Esconder columna</h6>
             <p>
                 <p-inputSwitch (onChange)="toggle_column(columnPanel.visible)" [(ngModel)]="!columnPanel.visible">
                 </p-inputSwitch>
             </p>
+        </div>
+
+
+        <div>
+            <button *ngIf="columnPanel.SQLexpression" type="button" pButton (click)="checkCalculatedColumn(columnPanel)"
+                class="ui-button-success ml-2" label="Comprobar expresión"></button>
+            <button *ngIf="columnPanel.computed_column !== 'no'" type="button" pButton
+                (click)="deleteCalculatedCol(columnPanel)" class="ui-button-danger ml-2" label="Borrar"></button>
         </div>
 
     </p-panel>
@@ -148,6 +132,7 @@
 <app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
 <app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController">
 </app-column-permission-dialog>
+<app-calculated-column-dialog *ngIf="newColController" [controller]="newColController"></app-calculated-column-dialog>
 
 
 <div *ngIf="typePanel==='root' && modelPanel.metadata" class="tp-container">
@@ -193,6 +178,13 @@
         </div>
 
         <div style="margin: 10px">
+            <h6 i18n="@@inputNombreDB">
+                Esquema
+            </h6>
+            <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.schema" (keyup)="update()">
+        </div>
+
+        <div style="margin: 10px">
             <h6 i18n="@@inputNombreUsuario">
                 Usuario
             </h6>
@@ -203,7 +195,12 @@
             <h6 i18n="password@@inputPassword">
                 Password
             </h6>
-            <input pPassword type="password" [(ngModel)]="modelPanel.connection.password" (keyup)="update()" autocomplete="new-password">
+            <input pPassword type="password" [(ngModel)]="modelPanel.connection.password" (keyup)="update()"
+                autocomplete="new-password">
+        </div>
+        <div>
+            <button type="button" pButton (click)="checkConection()" class="ui-button-success ml-2"
+                label="Comprobar conexión"></button>
         </div>
 
     </p-panel>

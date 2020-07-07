@@ -14,13 +14,14 @@ export interface Query {
     query: {
         fields: Column[]
         filters: any[],
-        simple: boolean
+        simple: boolean,
+        modeSQL: boolean,
+        SQLexpression : string
     };
     output: {
         labels: any[],
         data: any[],
-        styles: any[],
-        configs?: any
+        config: any[]
     };
 }
 

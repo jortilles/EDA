@@ -3,28 +3,32 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA  } from '@angular/core';
 import {AngularFittextModule} from 'angular-fittext';
 
 // Module
-import { GlobalModule } from '../global/global.module';
+import { CoreModule } from '../../core/core.module';
 import { SharedModule } from '../../shared/shared.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { EdaBlankPanelComponent } from './eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { PanelChartComponent} from './eda-panels/eda-blank-panel/panel-charts/panel-chart.component'
+
 
 // Component
 import {
     EdaChartComponent,
     EdaTableComponent,
     EdaDashboardPanelComponent,
+    EdaTitlePanelComponent,
     EdaKpiComponent,
     ColumnDialogComponent,
     FilterDialogComponent,
     ChartDialogComponent,
-    TableDialogComponent
+    TableDialogComponent,
+    AlertDialogComponent
+
  } from './component.index';
 
 
 @NgModule({
     imports: [
-        GlobalModule,
+        CoreModule,
         SharedModule,
         DragDropModule,
         AngularFittextModule
@@ -32,6 +36,7 @@ import {
     declarations: [
         EdaBlankPanelComponent,
         EdaDashboardPanelComponent,
+        EdaTitlePanelComponent,
         EdaTableComponent,
         EdaChartComponent,
         EdaKpiComponent,
@@ -39,11 +44,13 @@ import {
         FilterDialogComponent,
         ChartDialogComponent,
         TableDialogComponent,
-        PanelChartComponent
+        PanelChartComponent,
+        AlertDialogComponent
     ],
     exports: [
         EdaBlankPanelComponent,
         EdaDashboardPanelComponent,
+        EdaTitlePanelComponent,
         EdaTableComponent,
         EdaChartComponent,
         EdaKpiComponent,

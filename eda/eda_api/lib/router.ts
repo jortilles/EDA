@@ -1,4 +1,4 @@
-import * as express from 'express';
+import express from 'express';
 import AdminRouter from './module/admin/admin.router';
 import DashboardRouter from './module/dashboard/dashboard.router';
 import DataSourceRouter from './module/datasource/datasource.router';

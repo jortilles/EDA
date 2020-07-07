@@ -4,3 +4,4 @@
 @import url(./components/eda-table.css);
 @import url(./components/navbar-style.css);
 @import url(./components/sidebar-style.css);
+@import url(./_eda-blank-panel.scss);

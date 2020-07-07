@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 
 // Rutas
-import { APP_ROUTES } from './app.routes';
+import { CORE_ROUTES } from './core/pages/core-pages.routes';
 
 // Modules
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { GlobalModule } from './module/global/global.module';
-import { InitModule } from './module/global/init.module';
+import { CoreModule } from './core/core.module';
+import { CorePagesModule } from './core/pages/core-pages.module';
 import { SharedModule } from './shared/shared.module';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -24,11 +24,11 @@ import { ServicesModule } from './services/services.module';
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
-        GlobalModule,
-        InitModule,
+        CoreModule,
+        CorePagesModule,
         SharedModule,
         ServicesModule,
-        APP_ROUTES,
+        CORE_ROUTES,
         HttpClientModule
     ],
     providers: [],

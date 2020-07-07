@@ -19,7 +19,7 @@
 
 
 body, html {
-    height: 100%;
+    height: 100%!important;
 }
 
 body {
@@ -30,6 +30,10 @@ body {
     overflow-x: hidden;
     color: #67757c;
     font-weight: 300;
+}
+
+body.swal2-height-auto {
+    height: auto;
 }
 
 /*******************
@@ -131,10 +135,10 @@ body .ui-tree {
     position: absolute;
     background: #fff;
     border: 1px solid transparent;
-    top: 5px;
-    bottom: 5px;
-    left: 5px;
-    right: 5px;
+    top: 2px;
+    bottom: 2px;
+    left: 2px;
+    right: 2px;
     -webkit-transition: background 3s;
     transition: background 3s;
     border-radius: 3px;

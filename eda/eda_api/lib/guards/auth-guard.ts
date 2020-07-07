@@ -1,5 +1,5 @@
-import { Response, NextFunction } from 'express';
-import { IUserRequest, HttpException } from '../module/global/model/index';
+import { Request, Response, NextFunction } from 'express';
+import { HttpException } from '../module/global/model/index';
 
 import _ = require('lodash');
 const SEED = require('../../config/seed').SEED;
@@ -8,8 +8,8 @@ const jwt = require ('jsonwebtoken');
 
 
 
-export const authGuard = async function (req: IUserRequest, res: Response, next: NextFunction) {
-    let token = req.query.token;
+export const authGuard = async function (req: Request, res: Response, next: NextFunction) {
+    let token = req.qs.token;
     // return next(new HttpException(401, 'Invalid Token'));
     if ( !_.isNil(token) ) {
         jwt.verify(token, SEED, (err, decoded) => {
@@ -25,7 +25,7 @@ export const authGuard = async function (req: IUserRequest, res: Response, next:
                 url = url.replace('/' + v, '/:' + k);
             });
 
-            // console.log('\x1b[34m=====\x1b[0m Route Guard -- url: [' + url + '] method: [' + req.method + '] userAuth: [ USER_ROLE ] \x1b[34m=====\x1b[0m');
+            // console.log('\x1b[34m=====\x1b[0m Route Guard -- url: [' + url + '] method: [' + req.method + '] userAuth: [ EDA_USER_ROLE ] \x1b[34m=====\x1b[0m');
 
             next();
         });

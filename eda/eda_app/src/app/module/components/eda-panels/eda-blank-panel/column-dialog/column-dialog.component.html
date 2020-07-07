@@ -104,11 +104,11 @@
 
                         <ng-container *ngIf="filter.switch">
 
-                            <span class="ui-float-label mt-1">
+                            <span class="ui-float-label mt-1 edaColumnDialogFilter">
 
                                 <p-multiSelect id="float-input" [options]="dropDownFields"
                                     [(ngModel)]="filterValue.value1" [virtualScroll]="true" [itemSize]="34"
-                                    [filter]="false" defaultLabel="Selecciona..." [style]="{width: '100%'}"
+                                    [filter]="true" defaultLabel="Selecciona..." [style]="{width: '100%'}"
                                     (onChange)="handleValidForm({value1: filterValue.value1})"
                                     [selectionLimit]="limitSelectionFields">
                                 </p-multiSelect>
@@ -133,7 +133,8 @@
 
                             <div class="form-group mb-0">
 
-                                <label i18n="@@fechaInicioLabel" class="fck-label" style="top: 9.20em!important;" for="datepicker">
+                                <label i18n="@@fechaInicioLabel" class="fck-label" style="top: 9.20em!important;"
+                                    for="datepicker">
                                     Fecha inicio
                                 </label>
 
@@ -148,7 +149,8 @@
 
                             <div class="form-group mb-0">
 
-                                <label i18n="@@fechaFinalLabel" class="fck-label" style="top: 9.20em!important;" for="datepicker">
+                                <label i18n="@@fechaFinalLabel" class="fck-label" style="top: 9.20em!important;"
+                                    for="datepicker">
                                     Fecha final
                                 </label>
 
@@ -203,7 +205,8 @@
 
                             <div class="form-group mb-0">
 
-                                <label i18n="@@valor1Label" class="fck-label" style="top: 9.20em!important;" for="datepicker">
+                                <label i18n="@@valor1Label" class="fck-label" style="top: 9.20em!important;"
+                                    for="datepicker">
                                     Valor 1
                                 </label>
 
@@ -222,7 +225,8 @@
 
                             <div class="form-group mb-0">
 
-                                <label i18n="@@valor2Label" class="fck-label" style="top: 9.20em!important;" for="datepicker">
+                                <label i18n="@@valor2Label" class="fck-label" style="top: 9.20em!important;"
+                                    for="datepicker">
                                     Valor 2
                                 </label>
 
@@ -245,7 +249,7 @@
 
                     <div class="ui-g-12">
 
-                        <div class="ui-g-2">
+                        <div class="ui-g-1">
 
                             <label i18n="@@optionsLabel" for="filter_options">
                                 Opciones
@@ -263,13 +267,10 @@
 
                         </div>
 
-                        <div class="ui-g-3 ui-g-offset-7">
+                        <div class="ui-g-3" style="margin-left: 25px; padding: 25px;">
 
-                            <div class="d-flex justify-content-center mt-2">
-
-                                <p-button (onClick)="addFilter()" [disabled]="display.filterButton" i18n-label="@@addFilterBtn" label="Añadir filtro"></p-button>
-
-                            </div>
+                            <p-button (onClick)="addFilter()" [disabled]="display.filterButton"
+                                i18n-label="@@addFilterBtn" label="Añadir filtro"></p-button>
 
                         </div>
 
@@ -294,7 +295,7 @@
                     <hr>
 
                     <div class="aggregation-list">
-                        
+
                         <div class="aggregation-box" *ngFor="let format of formatDates" (click)="addFormatDate(format)"
                             [ngClass]="format.selected === true ? 'aggregation-active' : ''">
 
@@ -359,7 +360,8 @@
     <p-footer class="footer">
 
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-            <button type="button" pButton (click)="closeDialog()" class="ui-button ml-2" i18n-label="@@guardarButton"  icon="fa fa-check" label="Confirmar"></button>
+            <button type="button" pButton (click)="closeDialog()" class="ui-button ml-2" i18n-label="@@guardarButton"
+                icon="fa fa-check" label="Confirmar" id="eda_column_dialog_confirmar"></button>
         </div>
 
     </p-footer>

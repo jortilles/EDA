@@ -14,6 +14,39 @@ eda-blank-panel :root {
 }
 
 
+.input-icons i { 
+    position: absolute; 
+}
+  
+.input-icons { 
+    /* width: 100%; 
+    margin-bottom: 10px;  */
+    padding: 2px;
+    background: white;
+    border:0px;
+    overflow-y: auto !important;
+    display: block;
+    margin-top: 16px;
+} 
+  
+.icon { 
+    padding: 10px; 
+    color: green; 
+    min-width: 50px; 
+    text-align: center; 
+} 
+  
+.input-field { 
+    border:solid 1px silver;
+    border-radius: 4px;
+    width: 100%; 
+    padding: 7px; 
+    text-align: center; 
+} 
+  
+h2 { 
+    color: green; 
+} 
 #infoFiltres{
     margin-top:40px;
 }
@@ -31,6 +64,7 @@ eda-blank-panel :root {
     position: relative;
     width: 100%;
     top: 0;
+    cursor: move;
 }
 
 .panel-heading .panel-title {
@@ -48,6 +82,60 @@ eda-blank-panel :root {
     right: 0;
     min-height: 0;
 }
+#help-menu{
+    margin-top: 1em;
+}
+#query-area{
+    margin-top:1em;
+}
+#help-icon{
+    margin-left: 2px;
+    margin-bottom: 0em;
+}
+#help-text{
+    max-height: 60vh;
+    overflow:auto;
+}
+body .ui-accordion .ui-accordion-content {
+    max-height: 50vh !important;
+    overflow:auto !important;
+}
+#help-text  p{
+    font-size: small;
+    margin:10px;
+}
+#help-text li{
+    font-size: small;
+    margin:10px;
+}
+
+#help-text h4{
+    margin-bottom: 7px;
+    margin-top: 7px;
+    color: black;
+}
+body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active:hover a {
+    border: 1px solid #1a667e !important;
+    background-color: #1a667e !important;
+    color: #fff;
+}
+
+body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a {
+    background-color: #1a667e;
+    border: 1px solid #1a667e;
+    color: #fff;
+}
+body .ui-accordion .ui-accordion-header a {
+    padding: 0.571em 1em;
+    border: 1px solid #c8c8c8;
+    border-radius: 5px;
+    color: #333;
+    background-color: #fff;
+    color: #1a667e;
+    font-weight: 700;
+    transition: background-color 0.2s;
+}
+
 
 .content {
     overflow: auto!important;
@@ -56,6 +144,11 @@ eda-blank-panel :root {
 .orange-alert{
     color: #eeac57!important;
 }
+
+.grey-alert{
+    color: hsl(0, 0%, 47%)!important;
+}
+
 .texto-rallado-alert{
     text-decoration:line-through;
 }
@@ -70,13 +163,13 @@ eda-blank-panel :root {
 
 .column-list {
     padding: 2px;
-    height: 54vh;
-    min-height: 100%;
-    background: white;
+    max-height: 55vh;
+    background: #fff;
     border-radius: 4px;
     overflow-y: auto !important;
     display: block;
-    margin-top: 16px;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 .select-list {
@@ -357,6 +450,35 @@ eda-blank-panel h4 {
     overflow-x: hidden;
 }
 
-.ui-dropdown-items-wrapper{
- max-height: 300px !important;
+.edaChartSelector .ui-dropdown-panel .ui-dropdown-items-wrapper {
+    overflow: auto; 
+    max-height: 350px !important;
 }
+
+.edaColumnDialogFilter .ui-multiselect-header .ui-multiselect-filter-container {
+
+    width: 95% !important;
+
+}
+.edaTooManyData{
+    margin-left: 5px;
+}
+.sqlInput{
+    border: solid 1px;
+    border-radius: 5px;
+    border-color: #5f9ea0;
+    max-width: 100%;
+}
+
+
+body .ui-inputswitch .ui-inputswitch-slider  {
+    /* transition: background-color 0.2s; */
+    border-radius: 30px;
+    background: var(--main--button-color) !important;
+    background-color: var(--main--button-color) !important;
+}
+
+body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider  {
+    background-color: var(--main--button-color);
+}
+

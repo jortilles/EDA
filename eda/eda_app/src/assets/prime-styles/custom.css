@@ -438,6 +438,14 @@ body .ui-dropdown {
     -webkit-transition: border-color 0.2s;
     transition: border-color 0.2s;
 }
+body .ui-dropdown {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+    min-width: 11em;
+  }
+  
 body .ui-dropdown:not(.ui-state-disabled):hover {
     border-color: var(--main-border-color);
 }

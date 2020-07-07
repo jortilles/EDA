@@ -1,3 +1,5 @@
+import { ChartJsConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-js-config';
+import { ChartConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-config';
 import { Column } from './../../shared/models/dashboard-models/column.model';
 import { Injectable } from '@angular/core';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
@@ -5,8 +7,10 @@ import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component
 export interface EdaChartType {
     label: string;
     value: string;
+    subValue:string;
     icon: string;
     ngIf: boolean;
+    tooManyData: boolean;
 }
 
 export interface FilterType {
@@ -31,15 +35,16 @@ export interface FormatDates {
 export class ChartUtilsService {
 
     public chartTypes: EdaChartType[] = [
-        { label: 'Tabla de Datos', value: 'table', icon: 'pi pi-exclamation-triangle', ngIf: true },
-        { label: 'Tabla Cruzada', value: 'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true },
-        { label: 'KPI', value: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true },
-        { label: 'Gráfico de Pastel', value: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true },
-        { label: 'Gráfico de Área Polar', value: 'polarArea', icon: 'pi pi-exclamation-triangle', ngIf: true },
-        { label: 'Gráfico de Barras', value: 'bar', icon: 'pi pi-exclamation-triangle', ngIf: true },
-        { label: 'Gráfico de Barras Horizontales', value: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true },
-        { label: 'Gráfico de Lineas', value: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true },
-        { label: 'Mixto: Barras y lineas', value: 'barline', icon: 'pi pi-exclamation-triangle', ngIf: true }
+        { label: 'Tabla de Datos', value: 'table', subValue:'table', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true},
+        { label: 'Tabla Cruzada', value: 'crosstable', subValue:'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
+        { label: 'KPI', value: 'kpi', subValue:'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
+        { label: 'Gráfico de Pastel', value: 'doughnut', subValue:'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
+        { label: 'Gráfico de Área Polar', value: 'polarArea', subValue:'polarArea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
+        { label: 'Gráfico de Barras', value: 'bar', subValue:'bar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
+        { label: 'Gráfico de Barras Apiladas', value: 'bar', subValue:'stackedbar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
+        { label: 'Gráfico de Barras Horizontales', value: 'horizontalBar', subValue:'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
+        { label: 'Gráfico de Lineas', value: 'line', subValue:'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
+        { label: 'Mixto: Barras y lineas', value: 'bar', subValue:'barline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true }
     ];
 
     public filterTypes: FilterType[] = [
@@ -148,6 +153,18 @@ export class ChartUtilsService {
         }
     }
 
+    public uniqueLabels(labels:Array<string>){
+        const uniqueLabels = [];
+        for(let i = 0; i < labels.length; i++){
+            if(uniqueLabels.includes(labels[i])){
+                uniqueLabels.push(`${labels[i]}_${i}`);
+            }else{
+                uniqueLabels.push(labels[i])
+            }
+        }
+        return uniqueLabels;
+    }
+
     public transformDataQueryForTable(labels: any[], values: any[]) {
         const output = [];
         // Load the Table for a preview
@@ -168,7 +185,7 @@ export class ChartUtilsService {
      * @return [] notAllowed chart types
      */
     public getNotAllowedCharts(dataDescription: any): any[] {
-        let notAllowed = ['table', 'crosstable', 'kpi', 'doughnut', 'polarArea', 'line', 'bar', 'horizontalBar', 'barline'];
+        let notAllowed = ['table', 'crosstable', 'kpi', 'doughnut', 'polarArea', 'line', 'bar', 'horizontalBar', 'barline', 'stackedbar'];
         //table (at least one column)
         if (dataDescription.totalColumns > 0) notAllowed.splice(notAllowed.indexOf('table'), 1);
 
@@ -187,16 +204,56 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('bar'), 1);
             notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
             notAllowed.splice(notAllowed.indexOf('line'), 1);
+            notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
         }
         if (dataDescription.numericColumns.length > 1 && dataDescription.otherColumns.length < 2) {
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
+            const idx = notAllowed.indexOf('stackedbar');
+            if(idx >=0){
+                notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
+            }
+            
         }
         // Crosstable (At least three columns, one numeric)
         if (dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 0 &&
             dataDescription.totalColumns - dataDescription.numericColumns.length > 1) {
             notAllowed.splice(notAllowed.indexOf('crosstable'), 1);
         }
+        return notAllowed;
+    }
 
+
+    /**
+     * Check the resultset size for every chart and return the ones you can not have because you have too many data
+     * @param dataSize  
+     * @return [] notAllowed chart types
+     */
+    public getTooManyDataForCharts(dataSize: number): any[] {
+        let notAllowed = ['table', 'crosstable', 'kpi', 'doughnut', 'polarArea', 'line', 'bar', 'horizontalBar', 'barline'];
+        
+        //table (at least one column)
+         notAllowed.splice(notAllowed.indexOf('table'), 1);
+         // Crosstable (At least three columns, one numeric)
+        notAllowed.splice(notAllowed.indexOf('crosstable'), 1);
+
+        // KPI (only one numeric column)
+        if ( dataSize === 1) {
+            notAllowed.splice(notAllowed.indexOf('kpi'), 1);
+        }
+        // Pie && Polar (Only one numeric column and one char/date column)
+        if (dataSize < 50 ) {
+            notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
+            notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
+        }
+        // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
+        if ( dataSize < 2000) {
+            notAllowed.splice(notAllowed.indexOf('bar'), 1);
+            notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
+            notAllowed.splice(notAllowed.indexOf('line'), 1);
+            notAllowed.splice(notAllowed.indexOf('barline'), 1);
+        }
+        
+     
         return notAllowed;
     }
 
@@ -205,38 +262,48 @@ export class ChartUtilsService {
      * @param currentChartype 
      * @param layout 
      */
-    public recoverChartColors(currentChartype: string, layout: any) {
-        if (layout && layout.chartType === currentChartype) {
+    public recoverChartColors(currentChartype: string, layout: ChartConfig) {
+        const config = layout.getConfig();
+        if (config && (<ChartJsConfig>config).chartType === currentChartype) {
             return this.mergeColors(layout)
         } else {
-            switch (currentChartype) {
-                case 'doughnut': return EdaChartComponent.generatePiecolors();
-                case 'polarArea': return EdaChartComponent.generatePiecolors();
-                case 'bar': return EdaChartComponent.generateChartColors();
-                case 'line': return EdaChartComponent.generateChartColors();
-                case 'horizontalBar': return EdaChartComponent.generateChartColors();
-            }
+           return this.generateColors(currentChartype);
         }
     }
 
-    public mergeColors(layout) {
-        if (layout.chartType === 'doughnut' || layout.chartType === 'polarArea') {
-            let colors = EdaChartComponent.generatePiecolors();
-            layout.styles[0].backgroundColor.forEach((element, i) => {
-                colors[0].backgroundColor[i] = element;
-            });
-            layout.styles[0].backgroundColor = colors[0].backgroundColor;
-            // return layout.styles;
-        } else if (['line', 'bar', 'horizontalBar'].includes(layout.chartType)) {
-            // return layout.styles;
+    public generateColors(type : string){
+        switch (type) {
+            case 'doughnut': return EdaChartComponent.generatePiecolors();
+            case 'polarArea': return EdaChartComponent.generatePiecolors();
+            case 'bar': return EdaChartComponent.generateChartColors();
+            case 'line': return EdaChartComponent.generateChartColors();
+            case 'horizontalBar': return EdaChartComponent.generateChartColors();
         }
+    }
 
-        return layout.styles;
+    public mergeColors(layout: ChartConfig) {
+
+        const  config = layout.getConfig();
+
+        if((<ChartJsConfig>config).colors === null){
+            return this.generateColors((<ChartJsConfig>config).chartType);
+        }
+        if ((<ChartJsConfig>config).chartType === 'doughnut' || (<ChartJsConfig>config).chartType === 'polarArea') {
+            let edaColors = EdaChartComponent.generatePiecolors();
+            (<ChartJsConfig>config).colors[0]['backgroundColor'].forEach((element, i) => {
+                edaColors[0].backgroundColor[i] = element;
+            });
+            (<ChartJsConfig>config).colors[0]['backgroundColor'] = edaColors[0].backgroundColor;
+   
+        } 
+        return (<ChartJsConfig>config).colors;
     }
 
     public describeData(currentQuery: any, labels: any) {
+
         let names = this.pretifyLabels(currentQuery, labels);
         let out = { numericColumns: [], otherColumns: [], totalColumns: 0 }
+        
         currentQuery.forEach((col, i) => {
             if (col.column_type === 'numeric') {
                 out.numericColumns.push({ name: names[i], index: i });
@@ -262,10 +329,9 @@ export class ChartUtilsService {
         return names
     }
 
-    public initChartOptions(type: string, numericColumn: string, labelColum: any[], manySeries: boolean): { chartOptions: any, chartPlugins: any } {
-
-        //console.log(manySeries);
-
+    public initChartOptions(type: string, numericColumn: string, 
+        labelColum: any[], manySeries: boolean, stacked  : boolean, size:any): { chartOptions: any, chartPlugins: any } {
+            
         const options = {
             chartOptions: {},
             chartPlugins: {}
@@ -298,6 +364,9 @@ export class ChartUtilsService {
             }
         };
 
+        const maxTicksLimit = size.width < 200 ? 5 : size.width < 400 ? 15 : 40;
+        const maxTicksLimitHorizontal = size.height < 200 ? 5 : size.height < 400 ? 15 : 40;
+        
         switch (type) {
             case 'doughnut':
             case 'polarArea':
@@ -359,17 +428,20 @@ export class ChartUtilsService {
                     },
                     scales: {
                         xAxes: [{
+                            stacked : stacked || false,
                             gridLines: { display: false },
                             ticks: {
                                 callback: (value) => {
                                     if (value)
                                         return value.length > 30 ? (value.substr(0, 17) + '...') : value;
                                 },
-                                fontSize: edaFontSize, fontStyle: edafontStyle
+                                fontSize: edaFontSize, fontStyle: edafontStyle,
+                                maxTicksLimit : maxTicksLimit,
+                                autoSkip: true,
                             }
                         }],
                         yAxes: [{
-                            // stacked: true
+                            stacked : stacked || false,
                             gridLines: {
                                 drawBorder: false,
                             },
@@ -377,6 +449,7 @@ export class ChartUtilsService {
                             ticks: {
                                 autoSkip: true,
                                 maxTicksLimit: 5,
+                                beginAtZero: true,
                                 callback: (value) => {
                                     if (value)
                                         return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE');
@@ -430,11 +503,11 @@ export class ChartUtilsService {
                                 autoSkip: true,
                                 maxTicksLimit: 4,
                                 fontSize: edaFontSize,
-                                fontStyle: edafontStyle
+                                fontStyle: edafontStyle,
+                                beginAtZero: true
                             }
                         }],
                         yAxes: [{
-                            // stacked: true
                             gridLines: { display: false },
                             ticks: {
                                 callback: (value) => {
@@ -443,7 +516,9 @@ export class ChartUtilsService {
                                 },
 
                                 fontSize: edaFontSize,
-                                min: 0
+                                beginAtZero: true,
+                                maxTicksLimit : maxTicksLimitHorizontal,
+                                autoSkip: true
                             }
                         }]
                     },
@@ -488,9 +563,10 @@ export class ChartUtilsService {
                                         return value.length > 30 ? (value.substr(0, 17) + '...') : value;
                                 },
                                 autoSkip: true,
-                                maxTicksLimit: 30,
+                                maxTicksLimit : maxTicksLimit,
                                 fontSize: edaFontSize,
-                                fontStyle: edafontStyle
+                                fontStyle: edafontStyle,
+                                beginAtZero: true
                             }
                         }],
                         yAxes: [
@@ -506,7 +582,8 @@ export class ChartUtilsService {
                                     autoSkip: true,
                                     maxTicksLimit: 6,
                                     fontSize: edaFontSize,
-                                    fontStyle: edafontStyle
+                                    fontStyle: edafontStyle,
+                                    beginAtZero: true
                                 },
                                 stacked: false
                             }

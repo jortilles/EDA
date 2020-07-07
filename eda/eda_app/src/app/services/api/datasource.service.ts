@@ -12,8 +12,8 @@ import { aggTypes } from '../../config/aggretation-types';
 
 @Injectable()
 export class DataSourceService extends ApiService implements OnDestroy {
-    
- public void_tablePanel: EditTablePanel = {
+
+    public void_tablePanel: EditTablePanel = {
         type: '',
         name: '',
         technical_name: '',
@@ -69,10 +69,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     private globalDSRoute = '/datasource';
 
-	constructor(protected http: HttpClient,
-    			private alertService: AlertService ) {
-			super(http);
-  }
+    constructor(protected http: HttpClient,
+        private alertService: AlertService) {
+        super(http);
+    }
 
     ngOnDestroy(): void {
         this.cleanAll();
@@ -84,6 +84,19 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._modelConnection.next([]);
         this._typePanel.next('');
         this._treeData.next([]);
+    }
+
+    expandNode(node){
+        this._treeData.getValue()[0].children.forEach( n => {
+            if(node.parent.label === n.label){
+                const child = n.children.filter(c => c.label === node.label)[0];
+                console.log(child);
+                this._treeData.getValue()[0].expanded = true;
+                n.expanded = true;
+                child.expanded = true;
+            }  
+        } );
+        //this._treeData.next( this._treeData.getValue())
     }
 
 
@@ -121,6 +134,11 @@ export class DataSourceService extends ApiService implements OnDestroy {
                     currTable.children.push(currCol);
                 });
             });
+        // order by name....
+        tables.sort((a, b) => {
+            return (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0)
+        });
+
         root.children = tables;
         return [root];
     }
@@ -156,6 +174,15 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this._databaseModel.getValue();
     }
 
+    getTreeColumn(tableLabel: string, col: any, ) {
+        const tree = this._treeData.getValue();
+        const node: TreeNode = tree[0].children
+            .filter(child => child.label === tableLabel)[0]
+            .children.filter(child => child.label === col.column_name)[0];
+        node.parent = tree[0].children.filter(child => child.label === tableLabel)[0];
+        return node;
+    }
+
     editModel(node: TreeNode) {
         const modelPanel = new EditModelPanel();
         modelPanel.type = node.data;        // 'root'
@@ -185,11 +212,15 @@ export class DataSourceService extends ApiService implements OnDestroy {
     editColumn(node: TreeNode): void {
         const columnPanel = new EditColumnPanel();
         const column: any = this.getColumnByName(node.parent.label, node.label);
+
         columnPanel.type = node.data;
         columnPanel.name = node.label;
         columnPanel.column_type = column.column_type === 'varchar' ? 'text' : column.column_type;
         columnPanel.technical_name = column.column_name;
         columnPanel.description = column.description.default;
+
+        columnPanel.SQLexpression = column.SQLexpression;
+        columnPanel.computed_column = column.computed_column ? column.computed_column : 'no';
 
         columnPanel.aggregation_type = column.aggregation_type.map((a: { value: any; }) => a.value);
         columnPanel.column_granted_roles = column.column_granted_roles;
@@ -303,9 +334,9 @@ export class DataSourceService extends ApiService implements OnDestroy {
     getRelationIndex(relation: Relation, tableIndex: string | number) {
         return this._databaseModel.getValue()[tableIndex].relations
             .findIndex((r: { source_table: any; source_column: any; target_table: any; target_column: any; }) => {
-            return r.source_table === relation.source_table && r.source_column === relation.source_column
-                && r.target_table === relation.target_table && r.target_column === relation.target_column;
-        });
+                return r.source_table === relation.source_table && r.source_column === relation.source_column
+                    && r.target_table === relation.target_table && r.target_column === relation.target_column;
+            });
     }
 
     updateDataModel(panel: any) {
@@ -330,9 +361,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_model[tableIndex].columns[columnindex].display_name.default = panel.name;
             tmp_model[tableIndex].columns[columnindex].column_type = panel.column_type;
             tmp_model[tableIndex].columns[columnindex].description.default = panel.description;
-            
+            tmp_model[tableIndex].columns[columnindex].SQLexpression = panel.SQLexpression;
+
             tmp_model[tableIndex].columns[columnindex].aggregation_type = panel.aggregation_type.map((a: any) => {
-                let display_name = aggTypes.filter( tmp=>tmp.value === a );
+                let display_name = aggTypes.filter(tmp => tmp.value === a);
                 return { value: a, 'display_name': display_name[0] ? display_name[0].label : 'No' };
             });
 
@@ -348,6 +380,32 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name, panel.parent));
     }
 
+    addCalculatedColumn(dialogRes: any) {
+
+        const tableIndex = this._databaseModel.getValue().findIndex((table: any) => table.table_name === dialogRes.table_name);
+        const tmp_model = this._databaseModel.getValue();
+
+        tmp_model[tableIndex].columns.push(dialogRes.column);
+        this._databaseModel.next(tmp_model);
+        this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
+
+    }
+
+    deleteCalculatedCol(columnPanel: EditColumnPanel) {
+
+        const tmp_model = this._databaseModel.getValue();
+        const tableIndex = this._databaseModel.getValue().findIndex((table: any) => table.display_name.default === columnPanel.parent);
+        tmp_model[tableIndex].columns = tmp_model[tableIndex].columns.filter(col => col.column_name !== columnPanel.technical_name);
+        this._databaseModel.next(tmp_model);
+        this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name, columnPanel.parent));
+
+    }
+
+    getTable(columnPanel: EditColumnPanel) {
+        const model = this._databaseModel.getValue();
+        const tableIndex = this._databaseModel.getValue().findIndex((table: any) => table.display_name.default === columnPanel.parent);
+        return model[tableIndex];
+    }
     sendModel() {
         const body = {
             ds: {
@@ -362,10 +420,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
         );
     }
 
-    
+
     async getModelById(id) {
         return this.get(`${this.globalDSRoute}/${id}`).subscribe(
-            async (data: any) => {   
+            async (data: any) => {
                 // data is a string
                 this.model_id = id;
 
@@ -392,8 +450,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.getParams(`${this.globalDSRoute}/check-connection`, connection);
     }
 
-    addDataSource(connection): Observable<any> {
-        return this.post(`${this.globalDSRoute}`, connection);
+    testStoredConnection(connection, id): Observable<any> {
+        return this.getParams(`${this.globalDSRoute}/check-connection/${id}`, connection);
+    }
+
+    addDataSource(connection, optimize): Observable<any> {
+        return this.post(`${this.globalDSRoute}/add-data-source/${optimize}`, connection);
     }
 
     executeQuery(body): Observable<any> {

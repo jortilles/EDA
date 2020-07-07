@@ -8,6 +8,10 @@ const SQLservice = require('mssql')
 
 
 export class SQLserverConnection extends AbstractConnection {
+    
+    GetDefaultSchema(): string {
+        return 'dbo';
+    }
 
     private queryBuilder: SQLserviceBuilderService;
     async getPool(): Promise<any> {
@@ -19,7 +23,7 @@ export class SQLserverConnection extends AbstractConnection {
             database: this.config.database,
             options: {
                 enableArithAbort: true,
-                encrypt: true
+                encrypt: false // antes estava a true. Robson reportó que en docker no funcionava bien.
             }
         }
 
@@ -45,27 +49,30 @@ export class SQLserverConnection extends AbstractConnection {
             this.itsConnected();
             return this.pool;
         } catch (err) {
+            console.log(err)
             throw err;
         }
     }
 
-    async generateDataModel(): Promise<any> {
+    async generateDataModel(optimize:string): Promise<any> {
         try {
             this.pool = await this.getPool();
             let tableNames = [];
             let tables = [];
             let where: string = '';
+            let schema = this.config.schema;
 
-            console.log(this.config);
+            //console.log(this.config);
     
-            if (this.config.schema) {
-                where = ` AND TABLE_SCHEMA = '${this.config.schema}'`;
+            if (!schema) {
+                schema = 'dbo';
             }
-
+            where = ` AND TABLE_SCHEMA = '${schema}'`;
             const query = `
-                SELECT TABLE_NAME from INFORMATION_SCHEMA.tables WHERE table_type = 'BASE TABLE' ${where}
+                SELECT TABLE_NAME from INFORMATION_SCHEMA.tables WHERE table_type = 'BASE TABLE' ${where}  
                 UNION ALL
-                SELECT TABLE_NAME from INFORMATION_SCHEMA.VIEWS v WHERE 1=1 ${where}
+                SELECT TABLE_NAME from INFORMATION_SCHEMA.VIEWS v WHERE 1=1 ${where} 
+                ORDER BY TABLE_NAME
             `;
 
             console.log(query);
@@ -78,12 +85,18 @@ export class SQLserverConnection extends AbstractConnection {
 
             for (let i = 0; i < tableNames.length; i++) {
                 let new_table = await this.setTable(tableNames[i]);
+                let count = 0;
+                if(optimize === '1'){
+                    const dbCount = await this.countTable(tableNames[i], `${this.config.schema || 'dbo'}`);
+                    count = dbCount.recordset[0].count;
+                }
+                new_table.tableCount = count;
                 tables.push(new_table);
             }
 
             for (let i = 0; i < tables.length; i++) {
                 for (let j = 0; j < tables[i].columns.length; j++) {
-                    tables[i].columns[j] = this.setColumns(tables[i].columns[j]);
+                    tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
             return await this.commonColumns(tables);
@@ -128,6 +141,28 @@ export class SQLserverConnection extends AbstractConnection {
         return this.queryBuilder.builder();
     }
 
+    BuildSqlQuery(queryData: any, dataModel: any, user: string): string {
+        this.queryBuilder = new SQLserviceBuilderService(queryData, dataModel, user);
+        return this.queryBuilder.sqlBuilder(queryData, queryData.filters);
+    }
+
+
+    private async countTable(tableName: string, schema:string): Promise<any> {
+        const query = `SELECT count(*) as count from ${schema}.${tableName}`;
+        console.log(query);
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                const count = await this.pool.query(query);
+                resolve(count);
+            } catch (err) {
+                console.log(err)
+                resolve({recordset:[0]})
+                //reject(err);
+            }
+        })
+    }
+
     private async setTable(tableName: string): Promise<any> {
         const where = [];
 
@@ -142,7 +177,7 @@ export class SQLserverConnection extends AbstractConnection {
             FROM INFORMATION_SCHEMA.COLUMNS
             WHERE ${where.join(' AND ')}  
         `;
-        console.log(query);
+        //console.log(query);
         try {
             const columns = await this.execQuery(query);
             const newTable = {
@@ -167,7 +202,7 @@ export class SQLserverConnection extends AbstractConnection {
         }
     }
 
-    private setColumns(c) {
+    private setColumns(c, tableCount?:number) {
         let column = c;
 
         column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
@@ -181,6 +216,7 @@ export class SQLserverConnection extends AbstractConnection {
         column.column_granted_roles = [];
         column.row_granted_roles = [];
         column.visible = true;
+        column.tableCount = tableCount;
         return column;
     }
 
@@ -191,12 +227,14 @@ export class SQLserverConnection extends AbstractConnection {
             case 'smallint': return 'numeric';
             case 'mediumint': return 'numeric';
             case 'bigInt': return 'numeric';
+            case 'bigint': return 'numeric';
             case 'integer': return 'numeric';
             case 'decimal': return 'numeric';
             case 'dec': return 'numeric';
             case 'double': return 'numeric';
             case 'varbinary': return 'numeric';
-            case 'bit': return 'numeric'
+            case 'bit': return 'numeric';
+            case 'float': return 'numeric';
             case 'timestamp': return 'date';
             case 'time': return 'date';
             case 'datetime': return 'date';
@@ -204,6 +242,8 @@ export class SQLserverConnection extends AbstractConnection {
             case 'bool': return 'boolean';
             case 'char': return 'varchar';
             case 'text': return 'varchar';
+            case 'nvarchar': return 'varchar';
+            case 'nchar': return 'varchar';
             default: 'varchar';
         }
     }
