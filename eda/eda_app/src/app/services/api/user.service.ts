@@ -67,7 +67,7 @@ export class UserService extends ApiService {
     deleteUser(id: string): Observable<any> {
         return this.delete(`${this.route}/${id}`)
             .pipe(map(() => {
-                    Swal.fire('Usuario borrado', 'El usuario a sido eliminado correctamente', 'success');
+                    Swal.fire($localize`:@@DeletedUser:Usuario borrado`, $localize`:@@UserDeletedOk:El usuario a sido eliminado correctamente`, 'success');
                     return true;
                 })
             );
@@ -166,7 +166,7 @@ export class UserService extends ApiService {
             .then((res: any) => {
                 if (from === 'user') {
                     this.user.img = res.user.img;
-                    Swal.fire('Imagen Actualizada', this.user.name, 'success');
+                    Swal.fire($localize`:@@picUpdated:Imagen Actualizada`, this.user.name, 'success');
                     this.savingStorage(id, this.token, this.user);
                 } else if (from === 'group') {
 

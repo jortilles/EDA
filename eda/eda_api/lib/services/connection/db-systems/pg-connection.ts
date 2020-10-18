@@ -6,6 +6,7 @@ import DataSource from '../../../module/datasource/model/datasource.model';
 
 
 export class PgConnection extends AbstractConnection {
+   
     GetDefaultSchema(): string {
         return 'public';
     }
@@ -278,5 +279,15 @@ export class PgConnection extends AbstractConnection {
             }
         }
         return data_model;
+    }
+
+    createTable(queryData: any): string {
+        this.queryBuilder = new PgBuilderService(queryData, {ds:{model:{tables:[]}}}, null);
+        return this.queryBuilder.createTable(queryData);
+    }
+
+    generateInserts(queryData:any):string {
+        this.queryBuilder = new PgBuilderService(queryData, {ds:{model:{tables:[]}}}, null);
+        return this.queryBuilder.generateInserts(queryData);
     }
 }

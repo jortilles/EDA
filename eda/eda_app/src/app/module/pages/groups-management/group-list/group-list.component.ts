@@ -22,25 +22,25 @@ export class GroupListComponent implements OnInit {
             alertService: this.alertService,
             search: true,
             contextMenu: new EdaContextMenu({
-                header: 'OPCIONES DE LA FILA',
+                header: $localize`:@@rowOptions:OPCIONES DE LA FILA`,
                 contextMenuItems: [
                     new EdaContextMenuItem({
-                        label: 'EDITAR',
+                        label: $localize`:@@EDITCAP:EDITAR`,
                         command: () => this.fitxa = new EdaDialogController({
                             params: {id: this.table.getContextMenuRow()._id, name: this.table.getContextMenuRow().name},
                             close: (event, response) => this.onCloseFitxa(event, response)
                         })
                     }),
                     new EdaContextMenuItem({
-                        label: 'ELIMINAR',
+                        label: $localize`:@@deleteCAP:ELIMINAR`,
                         command: () => this.deleteGroup(this.table.getContextMenuRow())
                     })
                 ]
             }),
             cols: [
                 new EdaColumnContextMenu(),
-                new EdaColumnText({field: 'name', header: 'NOMBRE'}),
-                new EdaColumnText({field: 'role', header: 'ROLE'})
+                new EdaColumnText({field: 'name', header: $localize`:@@usersName:NOMBRE`}),
+                new EdaColumnText({field: 'role', header: $localize`:@@usersRole:ROLE`})
             ],
             autolayout:false
         });
@@ -64,14 +64,14 @@ export class GroupListComponent implements OnInit {
     deleteGroup(group) {
         this.table._hideContexMenu();
         Swal.fire({
-            title: 'ELIMINAR GRUPO',
-            text: `¿Eliminaras todos los elementos relacionados con este grupo, desea continuar?`,
+            title: $localize`:@@DeleteGroup:ELIMINAR GRUPO`,
+            text: $localize`:@@DeleteGroupText:Eliminarás todos los elementos relacionados con este grupo, ¿Deseas continuar?`,
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Si, Eliminalo!',
-            cancelButtonText: 'Cancelar'
+            confirmButtonText: $localize`:@@DeleteGroupButton:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
         }).then(borrado => {
             if ( borrado.value ) {
                 this.groupService.deleteGroup(group._id).subscribe(

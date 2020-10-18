@@ -1,6 +1,6 @@
 import { Component, ViewChild, Input} from '@angular/core';
 import { Table } from 'primeng/table';
-import { FilterUtils } from 'primeng/api';
+import { FilterUtils } from 'primeng/utils';
 import { EdaTable } from './eda-table';
 import { registerLocaleData } from '@angular/common';
 import es from '@angular/common/locales/es';

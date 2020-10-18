@@ -1,0 +1,3 @@
+.calendar-container ::ng-deep p-calendar .ui-datepicker {
+  width: auto !important;
+}

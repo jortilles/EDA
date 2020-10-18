@@ -1,9 +1,10 @@
+import { DateUtils } from './../../../services/utils/date-utils.service';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
 import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Dashboard, EdaPanel, EdaTitlePanel, EdaPanelType } from '@eda/models/model.index';
-import { EdaDialogController, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { Dashboard, EdaPanel, EdaTitlePanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
+import { EdaDialogController, EdaDialogCloseEvent, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
 import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupService, IGroup, SpinnerService } from '@eda/services/service.index';
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { SelectItem } from 'primeng/api';
@@ -12,6 +13,7 @@ import domtoimage from 'dom-to-image';
 import Swal from 'sweetalert2';
 import * as jspdf from 'jspdf';
 import * as _ from 'lodash';
+import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
 
 @Component({
     selector: 'app-dashboard',
@@ -19,16 +21,18 @@ import * as _ from 'lodash';
     styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
-    @HostListener('window:resize', ['$event'])
+    //@HostListener('window:resize', ['$event'])
 
     // Gridster ViewChild
     @ViewChild(GridsterComponent, { static: false }) gridster: GridsterComponent;
     @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
     private edaPanelsSubscription: Subscription;
 
+    @ViewChildren(EdaDatePickerComponent) datePickers: QueryList<EdaDatePickerComponent>;
+    private datePickersSubscription: Subscription;
     // Dashboard Page Variables
     public id: string;
-    public title: string = 'Cargando informe...';
+    public title: string = $localize`:@@loading:Cargando informe...`;
     public form: FormGroup;
     public titleClick: boolean;
     public dataSource: any;
@@ -55,8 +59,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         minWidth: 6,
         minHeight: 1
     };
-    public rangeDates: {} = {};
-    public tmpRangedates: Date[];
 
     // Display Variables
     public display_v = {
@@ -69,10 +71,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         notSaved: false
     };
 
+    //Date filter ranges Dropdown
+    public datePickerConfigs: {} = {};
+
     public sharedURL: string;
 
     // Global filters vars
-    public filtersList: Array<{ table, column, panelList, data, selectedItems, id, isGlobal, applyToAll }> = [];
+    public filtersList: Array<any> = [];
+
+    public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
 
     constructor(
         private dashboardService: DashboardService,
@@ -83,7 +90,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         private fileUtiles: FileUtiles,
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        private dateUtilsService: DateUtils
     ) {
         this.initializeResponsiveSizes();
         this.initializeGridsterOptions();
@@ -225,7 +233,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.filtersList = !_.isNil(config.filters) ? config.filters : []; // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
-
                     me.form.controls['visible'].setValue(config.visible);
 
                     if (config.visible === 'group') {
@@ -234,7 +241,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
                     if (!res.dashboard.config.panel) { // Si el dashboard no te cap panel es crea un automatic
                         me.panels.push(
-                            new EdaPanel({ id: me.fileUtiles.generateUUID(), title: 'Nuevo', type: EdaPanelType.BLANK, w: 20, h: 10, dragAndDrop: true, resizable: true })
+                            new EdaPanel({ id: me.fileUtiles.generateUUID(), title: $localize`:@@newPanelTitle:Nuevo`, type: EdaPanelType.BLANK, w: 20, h: 10, dragAndDrop: true, resizable: true })
                         );
 
                         // Check url for filters in params
@@ -249,7 +256,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     } else {
                         // Si te panels els carrega
                         me.panels = config.panel;
-
                         // Check url for filters in params
                         this.getUrlParams();
                         this.fillFiltersData();
@@ -258,6 +264,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             id: me.id, title: me.title, visible: config.visible, panel: config.panel, user: res.dashboard.user,
                             datasSource: me.dataSource, filters: config.filters, applytoAllFilter: me.applyToAllfilter
                         });
+                        /**To update panel filters with filters current data */
+                        me.updateFilterDatesInPanels();
                     }
 
                     if (this.toLitle) {
@@ -288,6 +296,25 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
+    private updateFilterDatesInPanels(): void {
+        this.filtersList.filter(f => f.selectedRange).forEach(filter => {
+            let range = this.dateUtilsService.getRange(filter.selectedRange);
+            let stringRange = this.dateUtilsService.rangeToString(range);
+            filter.selectedItems = stringRange;
+            this.panels.filter(panel => panel.content ).forEach(panel => {
+                const panelFilters = [...panel.content.query.query.filters];
+                panel.content.query.query.filters = [];
+                panelFilters.forEach(pFilter => {
+                    if (pFilter.filter_id === filter.id) {
+                        panel.content.query.query.filters.push(this.formatFilter(filter));
+                    }else{
+                        panel.content.query.query.filters.push(pFilter);
+                    }
+                });
+            });
+        });
+    }
+
     private getUrlParams(): void {
         this.route.queryParams.subscribe(params => {
             this.findGlobalFilterByUrlParams(params);
@@ -304,6 +331,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private setPanelSizes(panel) {
+
         if (this.toLitle) {
             if (this.panels.length > 0) {
                 const lastPanel = this.panels[this.panels.length - 1];
@@ -325,6 +353,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.panels.push(panel);
+    }
+
+    public reloadPanelsWithTimeOut() {
+        setTimeout(() => this.reloadPanels(), 250);
     }
 
     public reloadPanels(): void {
@@ -445,31 +477,27 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public addGlobalFilter(): void {
         // Check if any panel isn't configurated
         let voidPanel = false;
-
         this.edaPanels.forEach(panel => {
             if (panel.currentQuery.length === 0) {
                 voidPanel = true;
             }
-        })
-
+        });
         if (voidPanel) {
             this.display_v.rightSidebar = false;
             Swal.fire({
-                title: 'Solo puedes añadir filtros cuando todos los paneles estan configurados',
-                text: `Puedes borrar los paneles en blanco o configurarlos`,
+                title: $localize`:@@AddFiltersWarningTittle:Solo puedes añadir filtros cuando todos los paneles están configurados`,
+                text: $localize`:@@AddFiltersWarningText:Puedes borrar los paneles en blanco o configurarlos`,
                 type: 'warning',
                 showCancelButton: false,
                 confirmButtonColor: '#3085d6',
-                confirmButtonText: 'Entendido'
+                confirmButtonText: $localize`:@@AddFiltersWarningButton:Entendido`
             });
         } else {
             const params = {
                 panels: this.panels,
                 dataSource: this.dataSource
             };
-
             this.display_v.rightSidebar = false;
-
             this.filterController = new EdaDialogController({
                 params,
                 close: (event, response) => {
@@ -481,7 +509,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         } else {
                             this.loadGlobalFiltersData(response);
                         }
-
                         // If default values are selected filter is applied
                         if (response.filterList.selectedItems.length > 0) {
                             this.applyGlobalFilter(response.filterList);
@@ -491,8 +518,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             this.applyToAllfilter = { present: true, refferenceTable: response.targetTable, id: response.filterList.id };
                             this.updateApplyToAllFilterInPanels();
                         }
-
-
                         //not saved alert message
                         this.dashboardService._notSaved.next(true);
                     }
@@ -548,13 +573,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             filter.selectedItems = _.split(urlParams[param], '|');
 
                             filter.panelList
-                            .map(id => this.panels.find(p => p.id === id))
-                            .forEach((panel) => {
-                                const panelFilter = panel.content.query.query.filters;
-                                const newFilter = this.formatFilter(filter);
-                                panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === newFilter.filter_column), 1);
-                                panelFilter.push(newFilter);
-                            });
+                                .map(id => this.panels.find(p => p.id === id))
+                                .forEach((panel) => {
+                                    const panelFilter = panel.content.query.query.filters;
+                                    const newFilter = this.formatFilter(filter);
+                                    panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === newFilter.filter_column), 1);
+                                    panelFilter.push(newFilter);
+                                });
                         }
                     }
                 }
@@ -581,19 +606,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     /** Apply filter to panels when filter's selected value changes */
     public applyGlobalFilter(filter): void {
         const newFilter = this.formatFilter(filter);
-
         filter.panelList
             .map(id => this.edaPanels.toArray().find(p => p.panel.id === id))
             .forEach((panel) => {
                 panel.setGlobalFilter(newFilter);
             });
 
-        this.reloadPanels();
+        // this.reloadPanels();
     }
 
-    public removeGlobalFilter(filter): void {
+    public removeGlobalFilter(filter: any): void {
         // Remove 'applytoall' filter if it's the same fitler
-        if (filter.id === this.applyToAllfilter.id) {
+        if (this.applyToAllfilter && filter.id === this.applyToAllfilter.id) {
             this.applyToAllfilter = { present: false, refferenceTable: null, id: null };
             this.updateApplyToAllFilterInPanels();
         }
@@ -616,7 +640,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             filter.data = null;
             filtersCleaned.push(filter);
         }
-
         return filtersCleaned;
     }
 
@@ -634,47 +657,57 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
+    /**
+     * Set datePicker's configuration
+     * @param filter 
+     */
     private loadDatesFromFilter(filter) {
+        this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
+        const config = this.datePickerConfigs[filter.id];
+        config.dateRange = [];
+        config.range = filter.selectedRange;
+        config.filter = filter;
         if (filter.selectedItems.length > 0) {
-            let firstDate = filter.selectedItems[0];
-            let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
-            this.rangeDates[filter.id] = []
-            this.rangeDates[filter.id].push(new Date(firstDate.replace(/-/g, '/')))
-            this.rangeDates[filter.id].push(new Date(lastDate.replace(/-/g, '/')))
+            if (!filter.selectedRange) {
+                let firstDate = filter.selectedItems[0];
+                let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+                config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
+                config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+            }
         }
     }
 
-    public handleDates(filter): void {
-        if (this.rangeDates) {
+    /**
+     * Process data from date picker and apply filter
+     * @param event dates and range(week, month, year, all) if any
+     * @param filter 
+     */
+    public processPickerEvent(event: any, filter: any): void {
+        if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-
-            if (this.rangeDates[filter.id] && !this.rangeDates[filter.id][1]) {
-                this.rangeDates[filter.id][1] = this.rangeDates[filter.id][0]
+            if (!event.dates[1]) {
+                event.dates[1] = event.dates[0];
             }
 
-            let stringRange = [this.rangeDates[filter.id][0], this.rangeDates[filter.id][1]]
+            let stringRange = [event.dates[0], event.dates[1]]
                 .map(date => {
                     let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
                     return `${ye}-${mo}-${da}`
                 });
 
             filter.selectedItems = stringRange;
-
+            filter.selectedRange = event.range;
             this.loadDatesFromFilter(filter)
             this.applyGlobalFilter(filter);
         }
 
     }
 
-    public deleteDates(filter): void {
-        this.rangeDates[filter.id] = [new Date('1984-08-01'), new Date('2090-01-01')];
-    }
-
     // Sidebar functions
     public onAddWidget(): void {
         let panel = new EdaPanel({
             id: this.fileUtiles.generateUUID(),
-            title: 'Nuevo',
+            title: $localize`:@@newPanelTitle2:Nuevo`,
             type: EdaPanelType.BLANK,
             w: 20,
             h: 10,
@@ -696,8 +729,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             dragAndDrop: true,
             fontsize: '22px',
             color: '#000000'
-        })
-
+        });
         this.setPanelSizes(panel);
     }
 
@@ -743,7 +775,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public saveDashboard(): void {
         if (this.form.invalid) {
             this.display_v.rightSidebar = false;
-            this.alertService.addError(`Recuerde rellenar los campos obligatorios`);
+            this.alertService.addError($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
         } else {
             const body = {
                 config: {
@@ -764,7 +796,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.dashboardService.updateDashboard(this.id, body).subscribe(
                 () => {
                     this.display_v.rightSidebar = false;
-                    this.alertService.addSuccess(`Informe guardado correctamente`);
+                    this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
                 },
                 err => {
                     this.display_v.rightSidebar = false;

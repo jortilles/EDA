@@ -1,0 +1,32 @@
+/* .map-container {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 60px;
+} */
+
+.map-frame {
+  /*border: 1px solid darkslategrey;*/
+  height: 100%;
+}
+
+.map {
+  height: 100%;
+  background-color: rgb(255, 255, 255);
+}
+
+.custom {
+  color: orange;
+  background-color: red;
+}
+
+.legend .leaflet-control {
+  background-color: rgba(255, 255, 255, 0.904);
+  border-radius: 2%;
+}
+
+
+
+

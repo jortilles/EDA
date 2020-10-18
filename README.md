@@ -43,10 +43,6 @@ Sanish version:
 docker run -p 80:80 jortilles/eda:latest
 ```
 
-English version:
-```
-docker run -p 80:80 jortilles/eda:latest-en
-```
 
 Once the process if finish, just go to **http://localhost**
 

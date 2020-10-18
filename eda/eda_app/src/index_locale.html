@@ -1,0 +1,17 @@
+<html>
+<head>
+<meta http-equiv="refresh" content="0; url=/es" />
+</head>
+<body>
+<script type="text/javascript">
+	var userLang = navigator.language || navigator.userLanguage; 
+	if(userLang === 'es-ES'){
+		window.location.href = '/es';
+	}else if(userLang === 'ca-ES'){
+		window.location.href = '/ca';
+	}else{
+		window.location.href = '/en';
+	}
+</script>
+</body>
+</html>

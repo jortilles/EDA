@@ -22,10 +22,14 @@ import { DataSourceDetailComponent } from './data-sources/data-source-detail/dat
 import { CreateDashboardComponent } from './home/create-dashboard/create-dashboard.component';
 import { TableRelationsDialogComponent } from './data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component';
 import { ColumnPermissionDialogComponent } from './data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component';
+import { MapDialogComponent } from './data-sources/data-source-detail/mapsDialog/maps-dialog.component'
+import { ViewDialogComponent } from './data-sources/data-source-detail/viewDialog/view-dialog.component'
+import {AddCsvComponent} from './data-sources/data-source-list/addCSV/add-csv.component'
 
 // Routes
 import { PAGES_ROUTES } from './pages.routes';
 import { CalculatedColumnDialogComponent } from './data-sources/data-source-detail/calculatedColumn-dialog/calculated-column-dialog.component';
+import { UploadFileComponent } from './data-sources/data-source-detail/upload-file/upload-file.component';
 
 @NgModule({
     imports: [
@@ -51,7 +55,11 @@ import { CalculatedColumnDialogComponent } from './data-sources/data-source-deta
         GroupDetailComponent,
         DashboardFilterDialogComponent,
         ColumnPermissionDialogComponent,
-        CalculatedColumnDialogComponent
+        CalculatedColumnDialogComponent,
+        MapDialogComponent,
+        UploadFileComponent,
+        ViewDialogComponent,
+        AddCsvComponent
     ]
 })
 export class PagesModule { }

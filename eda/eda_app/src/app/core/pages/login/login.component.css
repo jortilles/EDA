@@ -1,14 +1,17 @@
 
 .bg-full {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-x: center;
+    background-position-y: center;
+}
+.align{
+    margin-top: 60px;
     flex-direction: column;
     box-sizing: border-box;
     display: flex;
     place-content: center;
     align-items: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position-x: center;
-    background-position-y: center;
 }
 
 .login-card {
@@ -44,4 +47,12 @@
     align-items: center;
     padding: 1.5rem;
     text-align: center;
+}
+
+.language{
+    cursor: default;
+    font-size: small;
+}
+.language:hover{
+    color: blue;
 }

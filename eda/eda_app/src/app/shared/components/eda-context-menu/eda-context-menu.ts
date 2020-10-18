@@ -1,11 +1,12 @@
-import {Dialog} from 'primeng/dialog';
-import {EdaContextMenuItem} from '@eda/shared/components/eda-context-menu/eda-context-menu-item';
+import { Dialog } from 'primeng/dialog';
+import { EdaContextMenuItem } from '@eda/shared/components/eda-context-menu/eda-context-menu-item';
 import * as _ from 'lodash';
 
 export class EdaContextMenu {
     public dialog: Dialog;
     public header: string;
     public display: boolean = false;
+    public style: any = { position: 'absolute' };
     public left: number;
     public top: number;
     public contextMenuItems: EdaContextMenuItem[];
@@ -20,6 +21,11 @@ export class EdaContextMenu {
         if (event) {
             this.left = _.subtract(event.x, 326);
             this.top = event.y;
+
+            const position = { left: _.subtract(event.x, 326)+'px', top: event.y+'px' };
+
+            Object.assign(this.style, position)
+            this.dialog.style = this.style
         }
     }
 

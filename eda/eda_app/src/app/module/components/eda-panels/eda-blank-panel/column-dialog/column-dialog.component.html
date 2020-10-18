@@ -1,6 +1,6 @@
 <eda-dialog [inject]="dialog">
 
-    <div class="ui-g-12 mb-0 pb-0">
+    <div class="ui-g-12 mb-0 pb-0" style=" max-height: 60vh">
 
         <div class="ui-g-2">
 
@@ -14,7 +14,7 @@
                     (click)="addAggregation(aggregation)"
                     [ngClass]="aggregation.selected === true ? 'aggregation-active' : ''">
 
-                    <span>{{aggregation.display_name}}</span>
+                    <span>{{getAggName(aggregation.value)}}</span>
 
                 </div>
             </div>
@@ -75,7 +75,7 @@
 
                             <div class="form-group">
 
-                                <label i18n="@@fechaLabel" class="fck-label" for="datepicker">
+                                <label i18n="@@fechaLabel" class="dd-float-label" for="datepicker">
                                     Fecha
                                 </label>
 
@@ -133,7 +133,7 @@
 
                             <div class="form-group mb-0">
 
-                                <label i18n="@@fechaInicioLabel" class="fck-label" style="top: 9.20em!important;"
+                                <label i18n="@@fechaInicioLabel" class="dd-float-label" style="top: 9.20em!important;"
                                     for="datepicker">
                                     Fecha inicio
                                 </label>
@@ -149,7 +149,7 @@
 
                             <div class="form-group mb-0">
 
-                                <label i18n="@@fechaFinalLabel" class="fck-label" style="top: 9.20em!important;"
+                                <label i18n="@@fechaFinalLabel" class="dd-float-label" style="top: 9.20em!important;"
                                     for="datepicker">
                                     Fecha final
                                 </label>
@@ -205,7 +205,7 @@
 
                             <div class="form-group mb-0">
 
-                                <label i18n="@@valor1Label" class="fck-label" style="top: 9.20em!important;"
+                                <label i18n="@@valor1Label" class="dd-float-label" style="top: 9.20em!important;"
                                     for="datepicker">
                                     Valor 1
                                 </label>
@@ -225,7 +225,7 @@
 
                             <div class="form-group mb-0">
 
-                                <label i18n="@@valor2Label" class="fck-label" style="top: 9.20em!important;"
+                                <label i18n="@@valor2Label" class="dd-float-label" style="top: 9.20em!important;"
                                     for="datepicker">
                                     Valor 2
                                 </label>
@@ -281,78 +281,89 @@
             </div>
 
         </div>
+        <div>
 
-        <div class="ui-g-2">
 
-            <ng-container *ngIf="selectedColumn">
+            <div class="ui-g-2">
 
-                <ng-container *ngIf="selectedColumn.column_type === 'date'">
+                <ng-container *ngIf="selectedColumn">
 
-                    <h4 i18n="@@dateFormatH4">
-                        Formato
-                    </h4>
+                    <ng-container *ngIf="selectedColumn.column_type === 'date'">
 
-                    <hr>
+                        <h4 i18n="@@dateFormatH4">
+                            Formato
+                        </h4>
 
-                    <div class="aggregation-list">
+                        <hr>
 
-                        <div class="aggregation-box" *ngFor="let format of formatDates" (click)="addFormatDate(format)"
-                            [ngClass]="format.selected === true ? 'aggregation-active' : ''">
+                        <div class="aggregation-list">
 
-                            <span>{{format.display_name | uppercase}}</span>
+                            <div class="aggregation-box" *ngFor="let format of formatDates"
+                                (click)="addFormatDate(format)"
+                                [ngClass]="format.selected === true ? 'aggregation-active' : ''">
+
+                                <span>{{format.display_name | uppercase}}</span>
+
+                            </div>
 
                         </div>
 
-                    </div>
+                    </ng-container>
 
                 </ng-container>
 
-            </ng-container>
-
-        </div>
-
-        <div *ngIf="filter.forDisplay.length !== 0" class="ui-g-8 ui-g-offset-4">
-
-            <div class="ui-g-12 foot-card">
-
-                <p-scrollPanel [style]="{width: '100%', height: '120px'}" styleClass="custombar1">
-
-                    <ng-container *ngFor="let filtre of filter.forDisplay">
-                        <p *ngIf="filtre.filter_elements.length === 0" class="d-flex align-items-center">
-                            <b class="mr-2" style="margin: 2px;">
-                                * {{ selectedColumn.display_name.default }} is
-                                {{ filtre.filter_type }}
-                            </b>
-
-                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                        </p>
-
-                        <p *ngIf="filtre.filter_elements.length === 1" class="d-flex align-items-center">
-                            <b class="mr-2" style="margin: 2px;">
-                                * {{ selectedColumn.display_name.default }}
-                                {{ filtre.filter_type }}
-                                "{{ filtre.filter_elements[0].value1 }}"
-                            </b>
-
-                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                        </p>
-
-                        <p *ngIf="filtre.filter_elements.length === 2" class="d-flex align-items-center">
-                            <b class="mr-2" style="margin: 2px;">
-                                * {{ selectedColumn.display_name.default }}
-                                {{ filtre.filter_type }}
-                                "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
-                            </b>
-
-                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                        </p>
-
-                    </ng-container>
-
-                </p-scrollPanel>
-
             </div>
 
+            <div  class="ui-g-9 ">
+                <h4 i18n="@@FiltersH4">
+                    Filtros
+                </h4>
+                <hr>
+
+                <div *ngIf="filter.forDisplay.length !== 0" class="ui-g-12 foot-card">
+
+                    <p-scrollPanel [style]="{width: '100%', height: '120px'}" styleClass="custombar1">
+
+                        <ng-container *ngFor="let filtre of filter.forDisplay">
+                            <p *ngIf="filtre.filter_elements.length === 0" class="d-flex align-items-center">
+                                <b class="mr-2" style="margin: 2px;">
+                                    * {{ selectedColumn.display_name.default }} is
+                                    {{ filtre.filter_type }}
+                                </b>
+
+                                <i class="ui-dropdown-clear-icon pi pi-times pointer"
+                                    (click)="removeFilter(filtre)"></i>
+                            </p>
+
+                            <p *ngIf="filtre.filter_elements.length === 1" class="d-flex align-items-center">
+                                <b class="mr-2" style="margin: 2px;">
+                                    * {{ selectedColumn.display_name.default }}
+                                    {{ filtre.filter_type }}
+                                    "{{ filtre.filter_elements[0].value1 }}"
+                                </b>
+
+                                <i class="ui-dropdown-clear-icon pi pi-times pointer"
+                                    (click)="removeFilter(filtre)"></i>
+                            </p>
+
+                            <p *ngIf="filtre.filter_elements.length === 2" class="d-flex align-items-center">
+                                <b class="mr-2" style="margin: 2px;">
+                                    * {{ selectedColumn.display_name.default }}
+                                    {{ filtre.filter_type }}
+                                    "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
+                                </b>
+
+                                <i class="ui-dropdown-clear-icon pi pi-times pointer"
+                                    (click)="removeFilter(filtre)"></i>
+                            </p>
+
+                        </ng-container>
+
+                    </p-scrollPanel>
+
+                </div>
+
+            </div>
         </div>
 
     </div>

@@ -67,9 +67,10 @@ export class DataSourcesComponent {
                     const optimize = this.optimize ? 1 : 0; // count rows in every table
                     this.dataSourceService.addDataSource(connection, optimize).subscribe(
                         res => {
+                            let title = $localize`:@@DatadourceTitle:Fuente de datos: `
                             Swal.fire({
-                                title: `Fuente de datos: ${this.form.value.name}`,
-                                text: 'Creada correctamente',
+                                title: `${title} ${this.form.value.name}`,
+                                text: $localize`:@@DatasourceText:Creada correctamente`,
                                 type: 'success'
                             });
                             this.reloadDataSources();
@@ -122,7 +123,7 @@ export class DataSourcesComponent {
         if (datasource) {
             this.router.navigate(['/data-source/', datasource._id]);
         } else {
-            this.alertService.addError('Ha ocurrido un error');
+            this.alertService.addError($localize`:@@ErrorMessage:Ha ocurrido un error`);
         }
     }
 }

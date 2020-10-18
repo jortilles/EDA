@@ -1,11 +1,13 @@
 <ng-container *ngIf="mobileSize && sideBtn && edit_mode">
     <div>
-        <img id="sidebar-btn-toggle" [src]="logoSidebar" (click)="toggleClassSide()" alt="logo icono" class="dark-logo" />
+        <img id="sidebar-btn-toggle" [src]="logoSidebar" (click)="toggleClassSide()" alt="logo icono"
+            class="dark-logo" />
     </div>
 </ng-container>
 
-<aside id="sidebar" class="left-sidebar" [ngClass]="{'hidden': sidebarService.toggleSideNav}" (window:resize)="getMobileSize($event)">
-    
+<aside id="sidebar" class="left-sidebar" [ngClass]="{'hidden': sidebarService.toggleSideNav}"
+    (window:resize)="getMobileSize($event)">
+
     <ng-container *ngIf="!mobileSize">
         <li class="user-profile text-center" style="list-style: none;">
             <a style="text-decoration: none;" routerLink="/home" aria-expanded="false">
@@ -42,10 +44,12 @@
                         </li>
                         <li *ngIf="userService.isAdmin">
                             <a routerLinkActive="active" routerLink="/users-management">
-                                <i class="mdi mdi-settings"></i> <span i18n="@@sidebarUserManagement">Gestión de Usuarios</span>
+                                <i class="mdi mdi-settings"></i> <span i18n="@@sidebarUserManagement">Gestión de
+                                    Usuarios</span>
                             </a>
                             <a routerLinkActive="active" routerLink="/groups-management">
-                                <i class="mdi mdi-settings"></i> <span i18n="@@sidebarGroupManagement">Gestión de Grupos</span>
+                                <i class="mdi mdi-settings"></i> <span i18n="@@sidebarGroupManagement">Gestión de
+                                    Grupos</span>
                             </a>
                         </li>
                         <li>
@@ -89,6 +93,29 @@
                                     </a>
                                 </li>
                             </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-devider"></li>
+                <li >
+                    <a class="has-arrow waves-effect waves-dark">
+                        <i class="pi pi-globe"></i>
+                    </a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li>
+                            <a href="/en/#/home">
+                                <span>English</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/es/#/home">
+                                <span>Español</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/ca/#/home">
+                                <span>Català</span>
+                            </a>
                         </li>
                     </ul>
                 </li>

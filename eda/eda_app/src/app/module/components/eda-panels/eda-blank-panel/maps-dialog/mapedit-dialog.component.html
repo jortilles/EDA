@@ -1,0 +1,51 @@
+<eda-dialog [inject]="dialog">
+
+  <div class="ui-g-8">
+    <div class="ui-g-8">
+      <div class="eda-chart-panel">
+        <div style="height: 70%">
+          <panel-chart #PanelChartComponent [props]="panelChartConfig">
+          </panel-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ui-g-4">
+
+
+    <h6 i18n="@@colorsChartH6" class="custom-border-b1">
+      Colores
+    </h6>
+
+    <div class="chart-color-selection">
+      <div class="mb-1">
+        <input type="text" [(ngModel)]="color" pInputText style="width: 40%" (keyup)="handleInputColor()"/>
+        <p-colorPicker [(ngModel)]="color"  appendTo="body" (onChange)="handleInputColor()"></p-colorPicker >
+        <!-- <input type="text" pInputText class="eda-color-pick" (input)="handleInputColor()" minlength="7"> -->
+      </div>
+      
+    </div>
+
+    <h6 i18n="@@LogarithmicScaleH6" class="custom-border-b1">
+      ¿Escala logaritmica?
+    </h6>
+    <div class="mb-1">
+      <p-inputSwitch  [(ngModel)]="logarithmicScale" (onChange)="renderMap()">
+      </p-inputSwitch>
+    </div>
+  
+
+  </div>
+
+  <p-footer class="footer">
+    <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
+      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check" class="ui-button ml-2"
+        i18n-label="@@guardarButton" label="Confirmar" id="eda_chart_dialog_confirmar">
+      </button>
+      <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="ui-button-danger ml-2"
+        i18n-label="@@cancelarButton" label="Cancelar">
+      </button>
+    </div>
+  </p-footer>
+</eda-dialog>

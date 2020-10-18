@@ -1,22 +1,46 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-    InputTextModule, MenuModule, MenubarModule, TieredMenuModule,
-    SidebarModule, ButtonModule, RadioButtonModule, SlideMenuModule,
-    DropdownModule, MultiSelectModule, ProgressBarModule, ConfirmDialogModule,
-    DialogModule, ConfirmationService, OverlayPanelModule, DragDropModule, CardModule,
-    PanelModule, TabViewModule, ColorPickerModule, ProgressSpinnerModule, ContextMenuModule,
-    InputSwitchModule, ScrollPanelModule, CalendarModule, TreeModule, SelectButtonModule, CheckboxModule,
-    ListboxModule, MessagesModule, PickListModule, PanelMenuModule, KeyFilterModule
-} from 'primeng/primeng';
-
-
+import { ColorPickerModule } from 'primeng/colorpicker';
+import { TabViewModule } from 'primeng/tabview';
+import { PanelModule } from 'primeng/panel';
+import { DragDropModule } from 'primeng/dragdrop';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ConfirmationService } from 'primeng/api'
+import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
+import { SlideMenuModule } from 'primeng/slidemenu';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { SidebarModule } from 'primeng/sidebar';
+import { MenuModule } from 'primeng/menu';
+import { MenubarModule } from 'primeng/menubar';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { PickListModule } from 'primeng/picklist';
+import { ContextMenuModule } from 'primeng/contextmenu';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { ButtonModule } from 'primeng/button';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CardModule } from 'primeng/card';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { CalendarModule } from 'primeng/calendar';
+import { CheckboxModule } from 'primeng/checkbox';
+import { KeyFilterModule } from 'primeng/keyfilter';
+import { PanelMenuModule } from 'primeng/panelmenu';
+import { MessagesModule } from 'primeng/messages';
+import { ListboxModule } from 'primeng/listbox';
+import { TreeModule } from 'primeng/tree';
+import { TieredMenuModule } from 'primeng/tieredmenu';
 import { VirtualScrollerModule } from 'primeng/virtualscroller';
 import { ToastModule } from 'primeng/toast';
 import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
-import {AccordionModule} from 'primeng/accordion';
-import {TooltipModule} from 'primeng/tooltip';
+import { AccordionModule } from 'primeng/accordion';
+import { TooltipModule } from 'primeng/tooltip';
+import {OrderListModule} from 'primeng/orderlist';
+import {InputNumberModule} from 'primeng/inputnumber';
 
 @NgModule({
     providers: [ConfirmationService],
@@ -59,7 +83,9 @@ import {TooltipModule} from 'primeng/tooltip';
         PanelMenuModule,
         KeyFilterModule,
         AccordionModule,
-        TooltipModule
+        TooltipModule,
+        OrderListModule,
+        InputNumberModule
     ]
 })
 export class PrimengModule { }

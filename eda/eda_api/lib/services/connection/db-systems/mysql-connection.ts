@@ -276,4 +276,11 @@ export class MysqlConnection extends AbstractConnection {
         }
         return data_model;
     }
+
+    createTable(queryData: any): string {
+        throw new Error('Method not implemented.');
+    }
+    generateInserts(queryData:any):string {
+        throw new Error('Method not implemented.');
+    }
 }

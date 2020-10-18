@@ -1,0 +1,86 @@
+<eda-dialog [inject]="dialog">
+  <div style="overflow: auto; overflow-y: auto;">
+    <div class="ui-g-8 ui-md-8">
+      <form [formGroup]="form" class="form-horizontal form-material">
+
+        <h5 i18n="@@inputMapTables">Propiedades del mapa</h5>
+        <hr>
+        <div style="margin-bottom: 10px" class="ui-g-4 ui-md-4">
+          <h6 i18n="@@inputMapURL">1) Subir archivo GeoJson</h6>
+          <app-uploadFile #fileUploader (onFileSaved)="fileLoaded()"></app-uploadFile>
+        </div>
+
+        <div style="margin-bottom: 10px" class="ui-g-8 ui-md-8">
+          <h6 i18n="@@inputMapField">2) Campo a usar para vincular el modelo con el mapa</h6>
+          <p-dropdown [options]="fields" formControlName="selectedField" placeholder="Selecciona un campo"
+            optionLabel="campo" [showClear]="true" optionLabel="label"></p-dropdown>
+
+          <div style="margin-top: 10px">
+            <h6 i18n="@@inputMapName">3) Nombre del mapa</h6>
+            <p><input pInputText type="text" formControlName="mapName" size="50" id="map_name"></p>
+          </div>
+
+        </div>
+        <div style="margin-bottom: 10px" class="ui-g-12 ui-md-12">
+          <span>
+            <h6 i18n="@@inputx">4) Centro del mapa (Latitud, Longitud)</h6>
+            <p i18n="@@inputxDescription">Si desconoces las coordenadas del centro las calcularemos automáticamente</p>
+          </span>
+          <p><input pInputText type="text" formControlName="x" size="23" style="margin-right: 2px">
+            <input pInputText type="text" formControlName="y" size="23"></p>
+        </div>
+        <div class="ui-g-4 ui-md-4">
+          <h5 i18n="@@avaliableMaps">Mapas disponibles</h5>
+          <hr>
+          <div>
+          <ul>
+            <li *ngFor="let item of serverMaps">
+              <i class="fa fa-close" style="color: #c0555e;" (click)="deleteMap(item)"></i>&nbsp;&nbsp; {{item.name}}
+            </li>
+          </ul>
+        </div>
+        </div>
+      </form>
+    </div>
+    <div class="ui-g-4 ui-md-4">
+
+      <h5 i18n="@@inputMapColumnsText">Vincular columnas al mapa</h5>
+      <hr>
+
+      <div style="margin-bottom: 10px">
+        <h6 i18n="@@inputMapTables">Tablas</h6>
+        <p-dropdown [options]="tables" [(ngModel)]="selectedTable" placeholder="Selecciona una tabla"
+          optionLabel="Tabla" [showClear]="true" (onChange)="getColumns()" optionLabel="label"></p-dropdown>
+      </div>
+
+      <div style="margin-bottom: 10px">
+        <h6 i18n="@@inputMapColumns">Columnas</h6>
+        <p-dropdown [options]="columns" [(ngModel)]="selectedColumn" placeholder="Selecciona una columna"
+          optionLabel="Columna" [showClear]="true" (onChange)="pushItem()" optionLabel="label"></p-dropdown>
+      </div>
+
+      <ul>
+        <div id="box_wrapper">
+          <li *ngFor="let item of linkedColumns">
+            <i class="fa fa-close" style="color: #c0555e;" (click)="deleteLink(item)"></i>&nbsp;&nbsp; {{item.table}}
+            :
+            {{item.col.column_name}}
+          </li>
+        </div>
+      </ul>
+    </div>
+
+  </div>
+
+  <p-footer class="footer">
+
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+      <button type="button" pButton (click)="saveMap()" class="ui-button" icon="fa fa-check" i18n-label="@@guardarBtn"
+        label="Confirmar" id="eda_column_permission_confirmar"></button>
+      <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn"
+        label="Cerrar"></button>
+    </div>
+
+  </p-footer>
+
+</eda-dialog>

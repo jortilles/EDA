@@ -1,0 +1,4 @@
+.eda-context body .ui-dialog .ui-dialog-titlebar {
+    padding: 0 !important;
+    background-color: #fff !important;
+}

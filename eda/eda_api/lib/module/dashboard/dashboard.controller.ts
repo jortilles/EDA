@@ -294,7 +294,7 @@ export class DashboardController {
             const getResults = await connection.execQuery(query);
             const results = [];
             let labels : Array<string>;
-            if(getResults.length > 0){      
+            if(getResults.length > 0){     
                 labels = Object.keys(getResults[0]).map(i => i);
             }else{
                 labels = ['NoData'];
@@ -305,6 +305,7 @@ export class DashboardController {
                 const output = Object.keys(r).map(i => r[i]);
                 results.push(output);
             }
+            console.log(labels);
             const output = [labels, results];
             return res.status(200).json(output);
 
@@ -314,4 +315,37 @@ export class DashboardController {
         }
         
     }
+
+    static async execView(req: Request, res: Response, next: NextFunction){
+        try{
+            const connection = await ManagerConnectionService.getConnection(req.body.model_id);
+            const query = req.body.query
+            console.log(query);
+
+            connection.pool =  await connection.getPool();
+            const getResults = await connection.execQuery(query);
+            const results = [];
+            let labels : Array<string>;
+            if(getResults.length > 0){     
+                labels = Object.keys(getResults[0]).map(i => i);
+            }else{
+                labels = ['NoData'];
+            }
+            // Normalize data
+            for (let i = 0, n = getResults.length; i < n; i++) {
+                const r = getResults[i];
+                const output = Object.keys(r).map(i => r[i]);
+                results.push(output);
+            }
+            console.log(labels);
+            const output = [labels, results];
+            return res.status(200).json(output);
+
+        } catch (err) {
+            console.log(err)
+            next(new HttpException(500, 'Error quering database'));
+        }
+        
+    }
+
 }

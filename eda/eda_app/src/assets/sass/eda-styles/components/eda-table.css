@@ -1,0 +1,46 @@
+.eda-table {
+    width: 100%;
+    height: 100%;
+    padding-bottom: 2%;
+}
+
+body .eda-table tr {
+    height: 1.6em!important;
+}
+
+body .eda-table .header-title th {
+    background-color: var(--main-color-table-header);
+}
+
+body .eda-table .header-filter th {
+    background-color: #fff!important;
+}
+
+body .eda-table .ui-table-caption .ui-inputtext {
+    background: 50% 100%/0 2px no-repeat,50% 100%/100% 1px no-repeat;
+    background-image: linear-gradient(to bottom,#008d7e,#008d7e),linear-gradient(to bottom,#bdbdbd,#bdbdbd)!important;
+    transition: background-size .3s cubic-bezier(.64,.09,.08,1);
+    padding: 2px;
+    border-width: 0;
+    font-size: 1em;
+}
+
+body .eda-table .ui-table-thead tr th {
+    padding: .25em .5em!important;
+}
+
+body .eda-table .ui-table-tbody tr td {
+    padding-top: 1px!important;
+    padding-bottom: 1px!important;
+    /* border: 1px !important; */
+
+}
+
+body .eda-table .ui-multiselect {
+    border: 0!important;
+    border-bottom: 1px solid rgba(167, 167, 167, 0.51)!important;
+}
+
+body .eda-table .ui-multiselect .ui-multiselect-label {
+    padding: 0!important;
+}

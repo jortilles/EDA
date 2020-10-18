@@ -38,5 +38,8 @@ export class DashboardService extends ApiService {
     executeSqlQuery(body): Observable<any> {
         return this.post( `${this.route}sql-query`,  body );
     }
+    executeView(body) : Observable<any>{
+        return this.post(`${this.route}view-query`, body);
+    }
 
 }

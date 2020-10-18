@@ -1,4 +1,16 @@
-<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<p-toast>
+    <ng-template let-message pTemplate="message">
+        <div class="ui-g-12">
+            <div class="ui-g-2">
+                <!-- <i class="pi pi-exclamation-triangle" style="font-size: 2em"></i> -->
+            </div>
+            <div class="ui-g-10">
+                <h3 style="margin: 0; padding-top: inherit;">{{message.summary}}</h3>
+            </div>
+        </div>
+        <p [innerHTML]="message.detail" style="padding-left:0.75em;"></p>
+    </ng-template>
+</p-toast>
 
 <div [ngClass]="{'lock-on': displaySpinner, 'lock-off': !displaySpinner}"></div>
 <p-progressSpinner strokeWidth="5" *ngIf="displaySpinner" class="spinner-load"></p-progressSpinner>

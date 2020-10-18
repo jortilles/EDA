@@ -1,0 +1,22 @@
+<div class="ui-g-12 ui-md-12">
+
+  <input type="file" #file style="display: none" (change)="onFilesAdded()" multiple />
+  <div>
+    <div>
+      <button pButton type="button" icon="pi pi-upload" [disabled]="uploading || uploadSuccessful"
+        (click)="addFile()"></button>
+      <button type="button" icon="pi pi-save" pButton [disabled]="!canBeClosed" (click)="uploadFile()"></button>
+      <ul>
+        <div class="ui-g-6 ui-md-6" id="wrapper">
+          <li *ngFor="let item of files">
+            &nbsp;&nbsp; {{item.name}}
+          </li>
+        </div>
+      </ul>
+      <div class="ui-g-12 ui-md-12" style="padding: 5px;">
+        <p-progressBar *ngIf="progressBar" mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
+      </div>
+    </div>
+  </div>
+
+</div>

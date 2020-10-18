@@ -1,0 +1,81 @@
+import { DateUtils } from './../../../services/utils/date-utils.service';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { SelectItem } from 'primeng/api';
+import { EdaDatePickerConfig } from './datePickerConfig';
+import { locales} from './date-locales';
+
+
+
+@Component({
+  selector: 'eda-date-picker',
+  templateUrl: './eda-date-picker.component.html',
+  styleUrls: ['./eda-date-picker.component.css']
+})
+
+export class EdaDatePickerComponent implements OnChanges {
+
+  @Input() inject: EdaDatePickerConfig;
+  @Input() autoRemove: boolean = false;
+  @Output()
+  public onDatesChanges = new EventEmitter<any>();
+  @Output()
+  public onRemove = new EventEmitter<void>();
+
+  public active: boolean = false;
+  public locale: {};
+
+  public ranges: Array<SelectItem> =
+    [
+      { label: $localize`:@@DatePickerAll:Todas`, value: 'all' },
+      { label: $localize`:@@DatePickerYesterday:Ayer`, value: 'yesterday' },
+      { label: $localize`:@@DatePickerWeek:Ésta semana`, value: 'weekStart' },
+      { label: $localize`:@@DatePickerMonth:Éste mes`, value: 'monthStart' },
+      { label: $localize`:@@DatePickerYear:Éste año`, value: 'yearStart' },
+      { label: $localize`:@@DatePickerLast7:Últimos 7 días`, value: 'last7' },
+      { label: $localize`:@@DatePickerLast15:Últimos 15 días`, value: 'last15' },
+    ];
+  public selectedRange: SelectItem;
+  public rangePlaceholder: string = $localize`:@@DateSelectRange:Selecciona un rango`;
+  public rangeDates: any;
+
+  constructor( 
+    private dateUtilsService : DateUtils) {
+    const url = window.location.href;
+    let lan_ca = new RegExp('\/ca\/', 'i');
+    let lan_es = new RegExp('\/es\/', 'i');
+    this.locale = lan_ca.test(url) ? locales.ca : lan_es.test(url) ? locales.es : locales.en;
+  
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(this.inject){
+      if (!this.selectedRange  && this.inject.range) {
+        this.selectedRange = this.ranges.filter(r => r.value === this.inject.range)[0].value;
+        this.getRange();
+      } else if (this.inject.dateRange.length > 0) {
+        this.rangeDates = this.inject.dateRange;
+      }
+    }
+  }
+
+  public emitChanges(): void {
+    this.onDatesChanges.emit({ dates: this.rangeDates, range: this.selectedRange });
+    this.active = false;
+  }
+  public remove() {
+    this.onRemove.emit();
+  }
+  public activate() {
+    this.active = true;
+  }
+
+  public clearRange() {
+    this.selectedRange = null;
+  }
+  public getRange() {
+    
+    const value = <any>this.selectedRange;
+    this.rangeDates = this.dateUtilsService.getRange(value);
+    
+  }
+}

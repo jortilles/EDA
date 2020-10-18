@@ -106,10 +106,10 @@
 
         <ng-template pTemplate="summary">
             <div class="ui-helper-clearfix">
-                <span *ngIf="table.filteredValue != undefined"
-                    class="items-length float-right">{{ table.filteredValue.length }} registres</span>
-                <span *ngIf="!table.filteredValue && table.value.length"
-                    class="items-length float-right">{{ table.value.length }} registres</span>
+                <span i18n="@@registers1" *ngIf="table.filteredValue != undefined"
+                    class="items-length float-right">{{ table.filteredValue.length }} registros</span>
+                <span i18n="@@registers2" *ngIf="!table.filteredValue && table.value.length"
+                    class="items-length float-right">{{ table.value.length }} registros</span>
             </div>
         </ng-template>
     </p-table>

@@ -7,6 +7,7 @@ export class PanelChart {
   public chartType : string;
   public config : ChartConfig;
   public edaChart : string;
+  public maps : Array<string>;
 
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);

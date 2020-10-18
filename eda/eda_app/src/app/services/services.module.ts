@@ -19,7 +19,11 @@ import {
     QueryBuilderService,
     ChartUtilsService,
     GroupService,
-    ColumnUtilsService
+    ColumnUtilsService,
+    MapUtilsService,
+    UploadFileService,
+    DateUtils,
+    AddTableService
 } from './service.index';
 
 
@@ -45,7 +49,11 @@ import {
         GroupService,
         GlobalFiltersService,
         QueryBuilderService,
-        ColumnUtilsService
+        ColumnUtilsService,
+        MapUtilsService,
+        UploadFileService,
+        DateUtils,
+        AddTableService
     ]
 })
 export class ServicesModule { }

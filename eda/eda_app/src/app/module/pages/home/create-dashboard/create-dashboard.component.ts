@@ -52,9 +52,9 @@ export class CreateDashboardComponent extends EdaDialogAbstract {
         });
 
         this.visibleTypes = [
-            { label: 'Común', value: 'public', icon: 'fa fa-fw fa-globe' },
-            { label: 'Grupo', value: 'group', icon: 'fa fa-fw fa-users' },
-            { label: 'Privado', value: 'private', icon: 'fa fa-fw fa-lock' },
+            { label: $localize`:@@commonPanel:Común`, value: 'public', icon: 'fa fa-fw fa-globe' },
+            { label: $localize`:@@groupPanel:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
+            { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
         ];
 
         this.form.controls['visible'].setValue(this.visibleTypes[2].value);

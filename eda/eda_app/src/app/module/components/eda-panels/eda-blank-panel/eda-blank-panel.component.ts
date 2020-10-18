@@ -1,4 +1,3 @@
-
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
 import { MAX_TABLE_ROWS_FOR_ALERT } from '../../../../config/config';
@@ -34,6 +33,8 @@ export class EdaBlankPanelComponent implements OnInit {
     @ViewChild('pdialog', { static: false }) pdialog: EdaPageDialogComponent;
     @ViewChild('edaChart', { static: false }) edaChart: EdaChartComponent;
     @ViewChild(PanelChartComponent, { static: false }) panelChart: PanelChartComponent;
+    @ViewChild('panelChartComponentPreview', { static: false }) panelChartPreview: PanelChartComponent;
+
 
     @Input() panel: EdaPanel;
     @Input() inject: InjectEdaPanel;
@@ -44,7 +45,10 @@ export class EdaBlankPanelComponent implements OnInit {
     public chartController: EdaDialogController;
     public tableController: EdaDialogController;
     public alertController: EdaDialogController;
+    public mapController: EdaDialogController;
+    public kpiController : EdaDialogController;
     public contextMenu: EdaContextMenu;
+    public lodash: any = _;
 
     public inputs: any = {};
 
@@ -72,10 +76,14 @@ export class EdaBlankPanelComponent implements OnInit {
         notSaved: false
     };
 
-    public index: number ;
+    public index: number;
     public description: string;
     public chartForm: FormGroup;
     public userSelectedTable: string;
+
+    /**Edit queries */
+    public editQuery : string = $localize`:@@EditQuery:EDITAR CONSULTA`;
+    public editSQLQuery : string = $localize`:@@EditSQLQuery:EDITAR CONSULTA SQL`;
 
     /** Query Variables */
     public tables: any[] = [];
@@ -86,6 +94,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public ordenationTypes: OrdenationType[];
     public currentQuery: any[] = [];
     public currentSQLQuery: string;
+    public queryLimit : number;
 
     public modeSQL: boolean;
     public sqlOriginTables: {}[];
@@ -110,6 +119,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /**panel chart component configuration */
     public panelChartConfig: PanelChart = new PanelChart();
+
+    public limitRowsInfo : string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
 
     constructor(
         private dashboardService: DashboardService,
@@ -154,8 +165,6 @@ export class EdaBlankPanelComponent implements OnInit {
         );
     }
 
-
-
     setEditMode() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
@@ -175,12 +184,22 @@ export class EdaBlankPanelComponent implements OnInit {
             header: 'OPCIONES DEL PANEL',
             contextMenuItems: [
                 new EdaContextMenuItem({
-                    label: 'Editar consulta',
+                    label: $localize`:@@panelOptions1:Editar consulta`,
                     icon: 'fa fa-cog',
                     command: () => {
                         if (this.panel.content) {
+
                             this.panelDeepCopy = _.cloneDeep(this.panel.content, true);
                             this.display_v.disablePreview = false;
+
+                            const content = this.panel.content;
+                            /**Reload map to render tiles, needs timeOut for whatever reason :/  */
+                            if (content.chart === 'coordinatesMap' || content.chart === 'geoJsonMap') {
+                                setTimeout(() => {
+                                    const config = this.recoverConfig(content.chart, content.query.output.config);
+                                    this.changeChartType(content.chart, content.edaChart, config);
+                                }, 1)
+                            }
                         } else {
                             this.display_v.disablePreview = true;
                         }
@@ -193,7 +212,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     }
                 }),
                 new EdaContextMenuItem({
-                    label: 'Editar opciones del gráfico',
+                    label: $localize`:@@panelOptions2:Editar opciones del gráfico`,
                     icon: 'mdi mdi-wrench',
                     command: () => {
                         if (Object.entries(this.graficos).length !== 0 && this.chartData.length !== 0) {
@@ -209,17 +228,38 @@ export class EdaBlankPanelComponent implements OnInit {
                                     params: { panelId: _.get(this.panel, 'id'), panelChart: this.panelChartConfig },
                                     close: (event, response) => this.onCloseTableProperties(event, response)
                                 });
+                            } else if (this.graficos.chartType === 'geoJsonMap') {
+                                this.contextMenu.hideContextMenu();
+                                this.mapController = new EdaDialogController({
+                                    params: {
+                                        panelID: _.get(this.panel, 'id'),
+                                        panelChart: this.panelChartConfig,
+                                        color : this.panelChart.componentRef.instance.color,
+                                        logarithmicScale : this.panelChart.componentRef.instance.logarithmicScale
+                                    },
+                                    close: (event, response) => { this.onCloseMapProperties(event, response) }
+                                })
+                            } else if (this.graficos.chartType === 'kpi'){
+                                this.contextMenu.hideContextMenu();
+                                this.kpiController = new EdaDialogController({
+                                    params : {
+                                        panelID: _.get(this.panel, 'id'),
+                                        panelChart: this.panelChartConfig,
+                                        alertLimits: this.panelChart.componentRef.instance.alertLimits
+                                    },
+                                    close: (event, response) => { this.onCloseKpiProperties(event, response) }
+                                })
                             }
                         }
                     }
                 }),
                 new EdaContextMenuItem({
-                    label: 'Exportar a Excel',
+                    label: $localize`:@@panelOptions3:Exportar a Excel`,
                     icon: 'mdi mdi-file',
                     command: () => this.readyToExport('excel')
                 }),
                 new EdaContextMenuItem({
-                    label: 'Eliminar panel',
+                    label: $localize`:@@panelOptions4:Eliminar panel`,
                     icon: 'fa fa-trash',
                     command: () => {
                         this.contextMenu.hideContextMenu();
@@ -242,8 +282,8 @@ export class EdaBlankPanelComponent implements OnInit {
             findColumn: new EdaInputText({
                 name: 'find_column',
                 divClass: 'input-icons',
-                inputClass: 'input-field', 
-                icon: 'fa fa-search icon', 
+                inputClass: 'input-field',
+                icon: 'fa fa-search icon',
                 onKeyUp: (event) => this.onColumnInputKey(event)
             })
         };
@@ -261,7 +301,8 @@ export class EdaBlankPanelComponent implements OnInit {
             panel: this.panel.id,
             dashboard: this.inject.dashboard_id,
             filters: this.mergeFilters(this.selectedFilters, this.globalFilters),
-            config: config.getConfig()
+            config: config.getConfig(),
+            queryLimit : this.queryLimit
         };
 
         return this.queryBuilder.normalQuery(this.currentQuery, params);
@@ -278,7 +319,6 @@ export class EdaBlankPanelComponent implements OnInit {
             filters: this.mergeFilters(this.selectedFilters, this.globalFilters),
             config: config.getConfig()
         };
-        
         return this.queryBuilder.normalQuery(this.currentQuery, params, true, this.currentSQLQuery);
     }
 
@@ -301,8 +341,16 @@ export class EdaBlankPanelComponent implements OnInit {
             }
         } else {
             config = this.panelChart.componentRef && this.panelChart.props.chartType === 'kpi' ?
-                { sufix: this.panelChart.componentRef.instance.inject.sufix } :
-                { colors: this.graficos.chartColors, chartType: this.panelChart.props.chartType };
+                { sufix: this.panelChart.componentRef.instance.inject.sufix,
+                 alertLimits : this.panelChart.componentRef.instance.inject.alertLimits} :
+                ['geoJsonMap', 'coordinatesMap'].includes(this.panelChart.props.chartType) ?
+                    {
+                        coordinates: this.panelChart.componentRef.instance.inject.coordinates,
+                        zoom: this.panelChart.componentRef.instance.inject.zoom,
+                        color: this.panelChart.componentRef.instance.inject.color,
+                        logarithmicScale : this.panelChart.componentRef.instance.inject.logarithmicScale
+                    } :
+                    { colors: this.graficos.chartColors, chartType: this.panelChart.props.chartType };
         }
         return new ChartConfig(config);
     }
@@ -383,7 +431,7 @@ export class EdaBlankPanelComponent implements OnInit {
     async loadChartsData(panelContent: any) {
         if (this.panel.content) {
             this.display_v.minispinner = true;
-            
+
             try {
                 const response = await this.switchAndRun(panelContent.query);
                 this.chartLabels = this.chartUtils.uniqueLabels(response[0]);
@@ -407,7 +455,9 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.loadColumns(this.tables.find(t => t.table_name === element.table_id));
                 this.moveItem(this.columns.find(c => c.column_name === element.column_name));
             });
+
         }
+        this.queryLimit = panelContent.query.query.queryLimit;
         this.handleFilters(panelContent.query.query);
         this.handleFilterColumns(panelContent.query.query.filters, panelContent.query.query.fields);
         this.handleCurrentQuery();
@@ -427,10 +477,16 @@ export class EdaBlankPanelComponent implements OnInit {
         if (['table', 'crosstable'].includes(type)) {
             return new ChartConfig(config);
         }
-        if (['bar', 'line', 'pie', 'doughnut', 'barline', 'horizontalBar'].includes(type)) {
+        else if (['bar', 'line', 'pie', 'doughnut', 'barline', 'horizontalBar'].includes(type)) {
             return new ChartConfig(config);
         }
-        if (type === 'kpi') {
+        else if (type === 'kpi') {
+            return new ChartConfig(config);
+        }
+        else if (type === 'geoJsonMap') {
+            return new ChartConfig(config);
+        }
+        else if (type === 'coordinatesMap') {
             return new ChartConfig(config);
         }
     }
@@ -449,7 +505,11 @@ export class EdaBlankPanelComponent implements OnInit {
             const edaChart = this.panelChart.props.edaChart;
 
             this.panel.content = { query, chart, edaChart };
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
+
+            /**map's id is generated random and can't be rendered again */
+            if (!['coordinatesMap', 'geoJsonMap'].includes(chart)) {
+                this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
+            }
         } else {
             this.display_v.saved_panel = false;
         }
@@ -474,22 +534,15 @@ export class EdaBlankPanelComponent implements OnInit {
         /**No check in sql mode */
         if (this.modeSQL) {
             this.runQuery(false);
-            return
+            return;
         }
 
         const totalTableCount = this.currentQuery.reduce((a, b) => {
             return a + parseInt(b.tableCount);
         }, 0);
 
-        //console.log(this.currentQuery);      
-        const aggregations = this.currentQuery.filter( col => col.aggregation_type.filter(agg => (agg.value != 'none' && agg.selected === true)  ).length > 0).length;
-        
 
-
-        //console.log(totalTableCount);
-        //console.log(MAX_TABLE_ROWS_FOR_ALERT);
-        //console.log(this.selectedFilters.length);
-        //console.log(aggregations);
+        const aggregations = this.currentQuery.filter(col => col.aggregation_type.filter(agg => (agg.value != 'none' && agg.selected === true)).length > 0).length;
 
         if (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT && (this.selectedFilters.length + aggregations <= 0)) {
             this.alertController = new EdaDialogController({
@@ -561,6 +614,7 @@ export class EdaBlankPanelComponent implements OnInit {
             const response = await this.dashboardService.executeQuery(query).toPromise();
             return response;
         } else {
+            console.log(query);
             const response = await this.dashboardService.executeSqlQuery(query).toPromise();
             const numFields = response[0].length;
             const types = new Array(numFields);
@@ -621,10 +675,9 @@ export class EdaBlankPanelComponent implements OnInit {
         const content = this.panel.content;
         const output = this.panel.content.query.output;
         this.verifyData();
-        this.changeChartType(content.chart, content.edaChart, output.styles);
-        this.chartForm.patchValue({
-            chart: this.chartUtils.chartTypes.find(o => o.subValue === content.edaChart)
-        });
+        const config = output.styles ? new ChartConfig(output.styles) : new ChartConfig(output.config);
+        this.changeChartType(content.chart, content.edaChart, config);
+        this.chartForm.patchValue({ chart: this.chartUtils.chartTypes.find(o => o.subValue === content.edaChart) });
     }
 
     /**
@@ -642,7 +695,8 @@ export class EdaBlankPanelComponent implements OnInit {
             data: { labels: chartLabels, values: chartData },
             chartType: type,
             config: chartConfig,
-            edaChart: subType
+            edaChart: subType,
+            maps: this.inject.dataSource.model.maps
         });
 
     }
@@ -654,12 +708,10 @@ export class EdaBlankPanelComponent implements OnInit {
     private setVoidChartConfig(type: string) {
         if (['table', 'crosstable'].includes(type)) {
             return new TableConfig(false, false, 10, false, false, false);
-        }
-        if (['bar', 'line', 'piechart', 'doughnut'].includes(type)) {
+        } else if (['bar', 'line', 'piechart', 'doughnut'].includes(type)) {
             return new ChartJsConfig(null, type);
-        }
-        else {
-            return new KpiConfig('');
+        } else {
+            return new KpiConfig('', []);
         }
     }
 
@@ -685,7 +737,7 @@ export class EdaBlankPanelComponent implements OnInit {
             const dataDescription = this.chartUtils.describeData(this.currentQuery, this.chartLabels);
 
             if (dataDescription.totalColumns === 0 || _.isEmpty(this.chartData)) {
-                this.alertService.addWarning('No se pudo obtener ningún registro');
+                //this.alertService.addWarning($localize`:@@NoRecords:No se pudo obtener ningún registro`);
             } else {
                 notAllowedCharts = this.chartUtils.getNotAllowedCharts(dataDescription);
                 tooManyDataForCharts = this.chartUtils.getTooManyDataForCharts(this.chartData.length);
@@ -741,6 +793,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
+
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             this.panelChart.destroyComponent();
             const _config = config || new ChartConfig(this.setVoidChartConfig(type));
@@ -1132,6 +1185,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
     private ableBtnSave = () => this.display_v.btnSave = false;
 
+    onTopChange(){
+        this.display_v.btnSave = true;
+    }
+
     private readyToExport(fileType: string): void {
         if (!this.panel.content) {
             return this.alertService.addError(`No tienes contenido para exportar`);
@@ -1167,7 +1224,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.currentSQLQuery = this.panelDeepCopy.query.query.SQLexpression;
             this.modeSQL = this.panelDeepCopy.query.query.modeSQL;
         }
-        
+
         this.loadChartsData(this.panelDeepCopy);
         this.userSelectedTable = undefined;
         this.tableToShow = this.tables;
@@ -1201,8 +1258,9 @@ export class EdaBlankPanelComponent implements OnInit {
             if (properties) {
 
                 this.panel.content.query.output.config = properties;
-                const config = new ChartConfig(properties)
+                const config = new ChartConfig(properties);
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+
             }
             //not saved alert message
             this.dashboardService._notSaved.next(true);
@@ -1210,6 +1268,29 @@ export class EdaBlankPanelComponent implements OnInit {
         this.tableController = undefined;
     }
 
+    private onCloseMapProperties(event, response :{color: string, logarithmicScale:boolean}): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            this.panel.content.query.output.config.color = response.color;
+            this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            // this.panelChart.componentRef.instance.inject.color = response.color;
+            // this.panelChart.componentRef.instance.inject.logarithmicScale = response.logarithmicScale;
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService._notSaved.next(true);
+        }
+        this.mapController = undefined;
+    }
+
+    private onCloseKpiProperties(event, response):void{
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            this.panel.content.query.output.config.alertLimits = response.alerts;
+            this.panel.content.query.output.config.sufix = response.sufix;
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService._notSaved.next(true);
+        }
+        this.kpiController = undefined;
+    }
     public handleTabChange(event: any): void {
         this.index = event.index;
     }
@@ -1226,8 +1307,8 @@ export class EdaBlankPanelComponent implements OnInit {
         this.description = event.description.default;
     }
 
-    public changeQueryMode() : void{   
-        this.display_v.btnSave = true; 
+    public changeQueryMode(): void {
+        this.display_v.btnSave = true;
         this.currentSQLQuery = '';
         this.currentQuery = [];
     }
@@ -1239,38 +1320,56 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public getOptionDescription(value: string): string {
-        let description = 'Los datos seleccionados no permiten utilizar este gráfico.';
-
+        let description = $localize`:@@chartInfo1:Los datos seleccionados no permiten utilizar este gráfico.`;
+        let str:string; let str2:string;
         switch (value) {
             case 'kpi':
-                description += '\n Un KPI necesita un único número';
+                str = $localize`:@@chartInfo2:Un KPI necesita un único número`;
+                description += `\n${str}`;
                 break;
-            case 'barline':
-                description += '\n Un grafico combinado necesita una categoría y dos séries numéricas';
+            case 'barline': 
+                str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una série numéricas`;
+                description += `\n${str}`;
                 break;
             case 'stackedbar':
-                description += '\n Un grafico combinado necesita una categoría y dos séries numéricas';
+                str = $localize`:@@chartInfo4:\n Un gráfico combinado necesita una categoría y dos séries numéricas`;
+                description += `\n${str}`;
                 break;
             case 'line':
-                description += '\n Un grafico de línea necesita una o más categorías y una série numérica';
+                str = $localize`:@@chartInfo5:Un gráfico de línea necesita una o más categorías y una série numérica`;
+                description += `\n${str}`;
                 break;
             case 'horizontalBar':
-                description += '\n Un grafico de barras necesita una o más categorías y una série numérica';
+                str =  $localize`:@@chartInfo6:Un gráfico de barras necesita una o más categorías y una série numérica`;
+                description += `\n${str}`;
                 break;
             case 'bar':
-                description += '\n Un grafico de barras necesita una o más categorías y una série numérica';
+                str = $localize`:@@chartInfo7:Un gráfico de barras necesita una o más categorías y una série numérica`;
+                description += `\n${str}`;
                 break;
             case 'polarArea':
-                description += '\n Un grafico polar necesita una categoría y una série numérica';
+                str = $localize`:@@chartInfo8:Un gráfico polar necesita una categoría y una série numérica`;
+                description += `\n${str}`;
                 break;
             case 'doughnut':
-                description += '\n Un grafico de pastel necesita una categoría y una série numérica';
+                str = $localize`:@@chartInfo9:Un gráfico de pastel necesita una categoría y una série numérica`;
+                description += `\n${str}`;
                 break;
             case 'crosstable':
-                description = 'Los datos seleccionados no permiten utilizar esta visualización. \n Una tabla cruzada necesita dos o más categorías y una série numérica';
+                str = $localize`:@@chartInfo10:Una tabla cruzada necesita dos o más categorías y una série numérica`;
+                description += `\n${str}`;
+                break;
+            case 'coordinatesMap':
+                str = $localize`:@@chartInfo11:Es necesario que los dos primeros campos sean de tipo coordenada.`;
+                str2 = $localize`:@@chartInfo111:Puedes añarir un campo de tipo métrica y uno de tipo etiqueta en este orden o cualquiera de los dos por separado.`;
+                description += `\n${str}\n${str2}`;
+                break;
+            case 'geoJsonMap':
+                str = $localize`:@@chartInfo12:Es necesario un campo vinculado a un archivo GeoJson y un campo de tipo numérico.`;
+                description += `\n${str}`;
                 break;
             default:
-                description = 'Los datos seleccionados no permiten utilizar este gráfico';
+                description = $localize`:@@chartInfo13:Los datos seleccionados no permiten utilizar este gráfico.`;
                 break;
         }
 
@@ -1308,6 +1407,12 @@ export class EdaBlankPanelComponent implements OnInit {
             case 'doughnut':
                 description = 'pie_chart';
                 break
+            case 'coordinatesMap':
+                description = 'add_location';
+                break;
+            case 'geoJsonMap':
+                description = 'map'
+                break;
         }
 
         return description;
@@ -1327,6 +1432,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public getTooManyDataDescription(): string {
-        return 'Hay demasiados valores para este gráfico. Agrega o filtra los datos para poder visualizarlos mejor';
+        let str = $localize`:@@tooManyValuestext:Hay demasiados valores para este gráfico. Agrega o filtra los datos para poder visualizarlos mejor.`
+        return str;
     }
 }

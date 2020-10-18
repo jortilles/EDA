@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
-    styleUrls: ['../../../../assets/eda-styles/components/home.component.css']
+    styleUrls: ['../../../../assets/sass/eda-styles/components/home.component.css']
 })
 export class HomeComponent implements OnInit {
     public dashController: EdaDialogController;
@@ -93,20 +93,21 @@ export class HomeComponent implements OnInit {
     }
 
     public deleteDashboard(dashboard): void {
+        let text = $localize`:@@deleteDashboardWarning: Estás a punto de borrar el informe: `;
         Swal.fire({
-            title: '¿Estas seguro?',
-            text: `Estás a punto de borrar el informe ${dashboard.config.title}`,
+            title: $localize`:@@sure:¿Estas seguro?`,
+            text: `${text} ${dashboard.config.title}`,
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Si, Eliminalo!',
-            cancelButtonText: 'Cancelar'
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
         }).then(borrado => {
             if ( borrado.value ) {
                 this.dashboardService.deleteDashboard(dashboard._id).subscribe(
                     () => {
-                        Swal.fire('Eliminado!', 'Informe eliminado correctamente.', 'success');
+                        Swal.fire($localize`:@@Deleted:¡Eliminado!`, $localize`:@@DashboardDeletedInfo:Informe eliminado correctamente.`, 'success');
                         this.initDashboards();
                     }, err => this.alertService.addError(err)
                 );
@@ -119,7 +120,7 @@ export class HomeComponent implements OnInit {
         if (dashboard) {
             this.router.navigate(['/dashboard', dashboard._id]);
         } else {
-            this.alertService.addError('Ha ocurrido un error');
+            this.alertService.addError($localize`:@@ErrorMessage:Ha ocurrido un error`);
         }
     }
 

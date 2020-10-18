@@ -24,10 +24,10 @@ export class UsersLlistaComponent implements OnInit {
         this.table = new EdaTable({
             alertService: this.alertService,
             contextMenu: new EdaContextMenu({
-                header: 'OPCIONES DE LA FILA',
+                header: $localize`:@@rowOptions:OPCIONES DE LA FILA`,
                 contextMenuItems: [
                     new EdaContextMenuItem({
-                        label: 'EDITAR',
+                        label: $localize`:@@EDITCAP:EDITAR`,
                         command: () => this.userFitxa = new EdaDialogController({
                             params: {id: this.table.getContextMenuRow()._id, name: this.table.getContextMenuRow().name},
                             close: (event, response) => this.onCloseFitxa(event, response)
@@ -38,9 +38,9 @@ export class UsersLlistaComponent implements OnInit {
             }),
             cols: [
                 new EdaColumnContextMenu(),
-                new EdaColumnText({field: 'email', header: 'EMAIL'}),
-                new EdaColumnText({field: 'role',  header: 'GRUPOS'}),
-                new EdaColumnText({field: 'auth',  header: 'AUTH'})
+                new EdaColumnText({field: 'email', header: $localize`:@@groups1:EMAIL`}),
+                new EdaColumnText({field: 'role',  header: $localize`:@@groups2:GRUPOS`}),
+                new EdaColumnText({field: 'auth',  header: $localize`:@@groups3:AUTH`})
             ],
             autolayout:false
         });
@@ -75,18 +75,18 @@ export class UsersLlistaComponent implements OnInit {
     deleteUser(user: User) {
         this.table._hideContexMenu();
         if (user._id === this.userService.user._id) {
-            Swal.fire('No se puede borrar el usuario', 'No se puede borrar a si mismo', 'error');
+            Swal.fire($localize`:@@cantDeleteUser:No se puede borrar el usuario`, $localize`:@@cantSelfDelete:No se puede borrar a si mismo`, 'error');
             return;
         }
-
+        let title = $localize`:@@DeleteUserMessage:Estas a punto de borrar el usuario `
         Swal.fire({
             title: '¿Estas seguro?',
-            text: `Estas a punto de borrar el usuario ${user.name}`,
+            text: `${title} ${user.name}`,
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Si, borralo!'
+            confirmButtonText: $localize`:@@DeleteUser:Si, ¡Bórralo!`
         }).then(borrado => {
             if (borrado.value === true) {
                 this.userService.deleteUser(user._id).subscribe(

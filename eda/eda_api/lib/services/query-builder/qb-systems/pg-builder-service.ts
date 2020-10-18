@@ -5,14 +5,15 @@ import * as _ from 'lodash';
 export class PgBuilderService extends QueryBuilderService {
  
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[]) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables:Array<any>, limit:number) {
 
-    let myQuery = `SELECT ${columns.join(', ')} \nFROM ${origin}`;
+    let o = tables.filter(table => table.name === origin).map(table => {return table.query? table.query : table.name})[0];
+    let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
     const filters = this.queryTODO.filters;
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest);
+    const joinString = this.getJoins(joinTree, dest, tables);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -43,7 +44,7 @@ export class PgBuilderService extends QueryBuilderService {
     if (order_columns_string.length > 0) {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
-
+    if(limit) myQuery += `\nlimit ${limit}`;
     return myQuery;
   }
 
@@ -60,9 +61,18 @@ export class PgBuilderService extends QueryBuilderService {
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
           if (nullValueIndex != - 1) {
             if (f.filter_elements[0].value1.length === 1) {
-              filtersString += `\nand "${f.filter_table}"."${f.filter_column}"  is null `;
+              /* puedo haber escogido un nulo en la igualdad */
+              if( f.filter_type == '='   ){
+                  filtersString += `\nand \`${f.filter_table}\`.\`${f.filter_column}\`  is null `;
+              }else{
+                filtersString += `\nand \`${f.filter_table}\`.\`${f.filter_column}\`  is not null `;
+              }
             } else {
-              filtersString += `\nand (${this.filterToString(f)} or "${f.filter_table}"."${f.filter_column}"  is null) `;
+                if( f.filter_type == '='   ){
+                  filtersString += `\nand (${this.filterToString(f)} or \`${f.filter_table}\`.\`${f.filter_column}\`  is null) `;
+                 }else{
+                  filtersString += `\nand (${this.filterToString(f)} or \`${f.filter_table}\`.\`${f.filter_column}\`  is not null) `;
+                }             
             }
           } else {
             filtersString += '\nand ' + this.filterToString(f);
@@ -75,7 +85,7 @@ export class PgBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[]) {
+  public getJoins(joinTree: any[], dest: any[], tables:Array<any>) {
 
     let joins = [];
     let joined = [];
@@ -98,7 +108,9 @@ export class PgBuilderService extends QueryBuilderService {
 
           let joinColumns = this.findJoinColumns(e[j], e[i]);
           joined.push(e[j]);
-          joinString.push(`inner join "${e[j]}" on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+          /**T can be a table or a custom view, if custom view has a query  */
+          let t = tables.filter(table => table.name === e[j]).map(table => {return table.query? table.query : table.name})[0];
+          joinString.push(`inner join "${t}" on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
         }
       }
     });

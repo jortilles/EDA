@@ -55,18 +55,18 @@ export class RegisterComponent implements OnInit {
 
     registrarUser() {
         if (this.form.invalid) {
-            this.alertService.addError(`Formulario incorrecto. Revise los campos obligatorios.`);
+            this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
         } else if (this.form.value.terminos === false) {
-            Swal.fire({ title: 'Importante', text: 'Debe de aceptar las condiciones', type: 'warning' });
+            Swal.fire({ title: $localize`:@@ImportantMessage:Importante`, text: $localize`:@@AcceptConditions:Debe de aceptar las condiciones`, type: 'warning' });
         } else {
             const user = new User(this.form.value.name, this.form.value.email, this.form.value.password);
 
             this.userService.createUser(user).subscribe(
                 res => {
                     this.router.navigate(['/login']);
-                    Swal.fire('Usuario creado', res.email, 'success');
+                    Swal.fire($localize`:@@UserCreated:Usuario creado`, res.email, 'success');
                 }, err => {
-                    Swal.fire('Error al registrarse', err.text, 'error');
+                    Swal.fire($localize`:@@RegisterError:Error al registrarse`, err.text, 'error');
                 }
             );
         }

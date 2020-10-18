@@ -1,6 +1,6 @@
 <eda-dialog [inject]="dialog">
 
-  <h4 i18n="@@tituloGrupoPublicos" class="visibility-segment">
+  <h4 i18n="@@columnaCalculada" class="visibility-segment">
     Nueva columna calculada
   </h4>
 
@@ -12,14 +12,9 @@
     </div>
 
     <div style="margin: 10px">
-      <h6 i18n="@@inputNombre">Descripción</h6>
+      <h6 i18n="@@inputDescripcion">Descripción</h6>
       <p><input pInputText type="text" size="50" formControlName="description" id="eda_descripcion"></p>
     </div>
-
-    <!-- <div style="margin: 10px">
-      <h6 i18n="@@inputNombre">Expresión SQL</h6>
-      <p><textarea pInputTextarea type="text" formControlName="SQLexpression" rows="5" cols="100"></textarea></p>
-    </div> -->
 
     <p-footer class="footer">
       <button type="button" pButton (click)="saveColumn()" class="ui-button" i18n-label="@@guardarBtn"  icon="fa fa-check" label="Confirmar">

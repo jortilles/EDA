@@ -10,7 +10,7 @@ import {Dialog} from 'primeng/dialog';
 
 export class EdaContextMenuComponent implements AfterViewInit {
     @Input() inject: EdaContextMenu;
-    @ViewChild('dialog', {static: false}) dialog: Dialog;
+    @ViewChild('dialog') dialog: Dialog;
 
     constructor() {
     }

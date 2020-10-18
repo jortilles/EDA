@@ -10,6 +10,7 @@ export interface QueryParams {
     panel?: string;
     filters?: any[];
     config?: any;
+    queryLimit? : number;
 }
 
 @Injectable()
@@ -56,7 +57,8 @@ export class QueryBuilderService extends ApiService {
                 filters: [],
                 simple: true,
                 modeSQL : false,
-                SQLexpression : null
+                SQLexpression : null,
+                queryLimit : null
             },
             output: {
                 labels,
@@ -107,7 +109,8 @@ export class QueryBuilderService extends ApiService {
                 filters: params.filters,
                 simple: false,
                 modeSQL : modeSQL,
-                SQLexpression : SQLexpression
+                SQLexpression : SQLexpression,
+                queryLimit : params.queryLimit
             },
             output: {
                 labels,

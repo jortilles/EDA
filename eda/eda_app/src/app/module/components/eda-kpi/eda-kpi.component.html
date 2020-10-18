@@ -1,8 +1,11 @@
 <div class="text-center w-100 h-100">
 
     <div>
-        <div class="pointer pl-5 pr-5" title="Añadir unidades"  >
-            <div style="font-weight: bold; display: inline; white-space: nowrap; " (click)="setSufix()"  fittext minFontSize="18" maxFontSize="70"  activateOnResize="true"  > {{inject.value | number:'':'es'}} {{inject.sufix}} </div>
+        <div class="pointer pl-5 pr-5" title="Añadir unidades">
+            <div [ngStyle]="getStyle()" (click)="setSufix()" fittext
+                minFontSize="18" maxFontSize="70" activateOnResize="true">
+                {{inject.value | number:'':'es'}} {{inject.sufix}}
+            </div>
             <div *ngIf="!!sufixClick" class="ui-inputgroup w-100">
                 <input type="text" class="w-100" pInputText (focusout)="setSufix()" (keydown.enter)="setSufix()"
                     name=unidades [(ngModel)]="inject.sufix" autofocusOnShow>
@@ -11,6 +14,3 @@
     </div>
 
 </div>
-
-
-

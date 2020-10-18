@@ -10,8 +10,8 @@ import { EdaInputText } from './eda-input-text';
 
 export class EdaInputComponent implements AfterViewInit, DoCheck {
     @Input() inject: EdaInput;
-    @ViewChild('in', {static: false}) in: NgModel;
-    @ViewChild('reference', {static: false}) elementRef: ElementRef;
+    @ViewChild('in') in: NgModel;
+    @ViewChild('reference') elementRef: ElementRef;
 
     ngAfterViewInit() {
         this.inject._model = this.in;

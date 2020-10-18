@@ -11,6 +11,7 @@ import Router from './router';
 const path = require('path');
 const database = require('../config/database.config');
 const mongoose = require('mongoose');
+const compression = require('compression');
 
 class App {
     public app: express.Application;
@@ -20,6 +21,7 @@ class App {
         this.app = express();
         this.initApplication();
         this.mongoSetup();
+        this.app.use(compression());
         this.app.use(callInterceptor);
         this.app.use(Router);
         this.app.use(errorMiddleware);

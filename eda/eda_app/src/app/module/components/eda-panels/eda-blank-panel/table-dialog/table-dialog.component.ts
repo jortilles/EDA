@@ -12,7 +12,7 @@ import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-co
 @Component({
   selector: 'app-table-dialog',
   templateUrl: './table-dialog.component.html',
-  styleUrls: ['../../../../../../assets/eda-styles/components/table-dialog.component.css']
+  styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css']
 })
 
 export class TableDialogComponent extends EdaDialogAbstract {
@@ -65,21 +65,22 @@ export class TableDialogComponent extends EdaDialogAbstract {
 
   private rowTotals() {
     this.myPanelChartComponent.currentConfig.withRowTotals = !this.myPanelChartComponent.currentConfig.withRowTotals;
-    this.myPanelChartComponent.componentRef._component.inject.checkTotals(null);
+    this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.row_totals = this.myPanelChartComponent.currentConfig.withRowTotals;
     this.setItems();
   }
   private colSubTotals() {
+    console.log(this.myPanelChartComponent.componentRef.instance);
     if (this.onlyPercentages) return;
     this.myPanelChartComponent.currentConfig.withColSubTotals = !this.myPanelChartComponent.currentConfig.withColSubTotals;
-    this.myPanelChartComponent.componentRef._component.inject.checkTotals(null);
+    this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.col_subtotals = this.myPanelChartComponent.currentConfig.withColSubTotals;
     this.setItems();
   }
   private colTotals() {
     if (this.onlyPercentages) return;
     this.myPanelChartComponent.currentConfig.withColTotals = !this.myPanelChartComponent.currentConfig.withColTotals;
-    this.myPanelChartComponent.componentRef._component.inject.checkTotals(null);
+    this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.col_totals = this.myPanelChartComponent.currentConfig.withColTotals;
     this.setItems();
   }
@@ -98,7 +99,7 @@ export class TableDialogComponent extends EdaDialogAbstract {
     }
 
 
-    this.myPanelChartComponent.componentRef._component.inject.checkTotals(null);
+    this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.resultAsPecentage = this.myPanelChartComponent.currentConfig.resultAsPecentage;
     this.onlyPercentages = this.myPanelChartComponent.currentConfig.onlyPercentages;
     this.setItems();
@@ -117,7 +118,7 @@ export class TableDialogComponent extends EdaDialogAbstract {
     this.col_totals = this.myPanelChartComponent.currentConfig.withColTotals;
 
 
-    this.myPanelChartComponent.componentRef._component.inject.checkTotals(null);
+    this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.resultAsPecentage = this.myPanelChartComponent.currentConfig.resultAsPecentage;
     this.onlyPercentages = this.myPanelChartComponent.currentConfig.onlyPercentages;
     this.setItems();

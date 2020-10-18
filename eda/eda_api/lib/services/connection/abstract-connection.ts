@@ -19,6 +19,10 @@ export abstract class AbstractConnection {
         }
     }
 
+    abstract createTable(queryData:any):string;
+
+    abstract generateInserts(queryData:any):string;
+
     abstract async tryConnection(): Promise<void>;
 
     abstract async generateDataModel(optimize:string): Promise<any>;
@@ -32,6 +36,7 @@ export abstract class AbstractConnection {
     abstract async getPool():Promise<any>;
 
     abstract BuildSqlQuery(queryData: any, dataModel: any, user: string): string;
+
     abstract GetDefaultSchema():string;
 
 }

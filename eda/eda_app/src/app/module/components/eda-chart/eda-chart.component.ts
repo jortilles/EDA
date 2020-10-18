@@ -10,7 +10,7 @@ import { ChartsColors } from '@eda/configs/index';
 })
 
 export class EdaChartComponent implements OnInit {
-    @ViewChild('edaChart', { static: false }) edaChart: BaseChartDirective;
+    @ViewChild('edaChart') edaChart: BaseChartDirective;
     @Input() inject: EdaChart;
 
     public update: boolean;

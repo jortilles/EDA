@@ -28,18 +28,18 @@
 					</div>
 					<div class="ui-g-12">
 						<input pInputText formControlName="password" class="w-100" type="password"
-							placeholder="Contraseña" autocomplete="new-password" required />
+						i18n-placeholder placeholder="Contraseña" autocomplete="new-password" required />
 					</div>
 					<div class="ui-g-12">
 						<input pInputText formControlName="password2" class="w-100" type="password"
-							placeholder="Confirma contraseña" required />
+						i18n-placeholder	placeholder="Confirma contraseña" required />
 					</div>
 				</div>
 				<div class="form-group ui-g">
 					<div class="ui-g-12">
 						<div class="checkbox checkbox-primary pt-0">
 							<input id="checkbox-signup" type="checkbox" formControlName="terminos" />
-							<label for="checkbox-signup"> Estoy de acuerdo con los <a
+							<label i18n="@@terms1" for="checkbox-signup"> Estoy de acuerdo con los <a
 									(click)="conditionsDialog()">términos</a></label>
 						</div>
 					</div>
@@ -51,7 +51,7 @@
 				</div>
 				<div class="form-group mb-0">
 					<div class="ui-g-12 text-center">
-						<p>
+						<p i18n="@@haveAccount">
 							¿Tienes una cuenta? <a [routerLink]="['/login']" class="text-info ml-2">
 								<b>Ingresa ahora</b></a>
 						</p>

@@ -7,7 +7,7 @@ import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component
 export interface EdaChartType {
     label: string;
     value: string;
-    subValue:string;
+    subValue: string;
     icon: string;
     ngIf: boolean;
     tooManyData: boolean;
@@ -35,30 +35,32 @@ export interface FormatDates {
 export class ChartUtilsService {
 
     public chartTypes: EdaChartType[] = [
-        { label: 'Tabla de Datos', value: 'table', subValue:'table', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true},
-        { label: 'Tabla Cruzada', value: 'crosstable', subValue:'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
-        { label: 'KPI', value: 'kpi', subValue:'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
-        { label: 'Gráfico de Pastel', value: 'doughnut', subValue:'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
-        { label: 'Gráfico de Área Polar', value: 'polarArea', subValue:'polarArea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
-        { label: 'Gráfico de Barras', value: 'bar', subValue:'bar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
-        { label: 'Gráfico de Barras Apiladas', value: 'bar', subValue:'stackedbar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
-        { label: 'Gráfico de Barras Horizontales', value: 'horizontalBar', subValue:'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
-        { label: 'Gráfico de Lineas', value: 'line', subValue:'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true },
-        { label: 'Mixto: Barras y lineas', value: 'bar', subValue:'barline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData:true }
+        { label: $localize`:@@chartTypes1:Tabla de Datos`, value: 'table', subValue: 'table', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes2:Tabla Cruzada`, value: 'crosstable', subValue: 'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: 'KPI', value: 'kpi', subValue: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes3:Gráfico de Pastel`, value: 'doughnut', subValue: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes4:Gráfico de Área Polar`, value: 'polarArea', subValue: 'polarArea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes5:Gráfico de Barras`, value: 'bar', subValue: 'bar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes6:Gráfico de Barras Apiladas`, value: 'bar', subValue: 'stackedbar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes7:Gráfico de Barras Horizontales`, value: 'horizontalBar', subValue: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes8:Gráfico de Lineas`, value: 'line', subValue: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes9:Mixto: Barras y lineas`, value: 'bar', subValue: 'barline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
+        { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false }
     ];
 
     public filterTypes: FilterType[] = [
-        { label: 'IGUAL A (=)', value: '=', typeof: ['numeric', 'date', 'varchar'] },
-        { label: 'NO IGUAL A (!=)', value: '!=', typeof: ['numeric', 'date', 'varchar'] },
-        { label: 'MAYOR A (>)', value: '>', typeof: ['numeric', 'date'] },
-        { label: 'MENOR A (<)', value: '<', typeof: ['numeric', 'date'] },
-        { label: 'MAYOR o IGUAL A (>=)', value: '>=', typeof: ['numeric', 'date'] },
-        { label: 'MENOR o IGUAL A (<=)', value: '<=', typeof: ['numeric', 'date'] },
-        { label: 'ENTRE (between)', value: 'between', typeof: ['numeric', 'date'] },
-        { label: 'DENTRO DE (in)', value: 'in', typeof: ['numeric', 'date', 'varchar'] },
-        { label: 'FUERA DE (not in)', value: 'not_in', typeof: ['numeric', 'date', 'varchar'] },
-        { label: 'PARECIDO A (like)', value: 'like', typeof: ['varchar'] },
-        { label: 'VALORES NO NULOS (not null)', value: 'not_null', typeof: ['numeric', 'date', 'varchar'] }
+        { label: $localize`:@@filters1:IGUAL A (=)`, value: '=', typeof: ['numeric', 'date', 'varchar'] },
+        { label: $localize`:@@filters2:NO IGUAL A (!=)`, value: '!=', typeof: ['numeric', 'date', 'varchar'] },
+        { label: $localize`:@@filters3:MAYOR A (>)`, value: '>', typeof: ['numeric', 'date'] },
+        { label: $localize`:@@filters4:MENOR A (<)`, value: '<', typeof: ['numeric', 'date'] },
+        { label: $localize`:@@filters5:MAYOR o IGUAL A (>=)`, value: '>=', typeof: ['numeric', 'date'] },
+        { label: $localize`:@@filters6:MENOR o IGUAL A (<=)`, value: '<=', typeof: ['numeric', 'date'] },
+        { label: $localize`:@@filters7:ENTRE (between)`, value: 'between', typeof: ['numeric', 'date'] },
+        { label: $localize`:@@filters8:DENTRO DE (in)`, value: 'in', typeof: ['numeric', 'date', 'varchar'] },
+        { label: $localize`:@@filters9:FUERA DE (not in)`, value: 'not_in', typeof: ['numeric', 'date', 'varchar'] },
+        { label: $localize`:@@filters10:PARECIDO A (like)`, value: 'like', typeof: ['varchar'] },
+        { label: $localize`:@@filters11:VALORES NO NULOS (not null)`, value: 'not_null', typeof: ['numeric', 'date', 'varchar'] }
     ];
 
     public ordenationTypes: OrdenationType[] = [
@@ -68,10 +70,10 @@ export class ChartUtilsService {
     ];
 
     public formatDates: FormatDates[] = [
-        { display_name: 'AÑO', value: 'year', selected: false },
-        { display_name: 'MES', value: 'month', selected: false },
-        { display_name: 'DIA', value: 'day', selected: false },
-        { display_name: 'NO', value: 'No', selected: false }
+        { display_name: $localize`:@@dates1:AÑO`, value: 'year', selected: false },
+        { display_name: $localize`:@@dates2:MES`, value: 'month', selected: false },
+        { display_name: $localize`:@@dates3:DIA`, value: 'day', selected: false },
+        { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
 
     public transformDataQuery(type: string, values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean) {
@@ -153,12 +155,12 @@ export class ChartUtilsService {
         }
     }
 
-    public uniqueLabels(labels:Array<string>){
+    public uniqueLabels(labels: Array<string>) {
         const uniqueLabels = [];
-        for(let i = 0; i < labels.length; i++){
-            if(uniqueLabels.includes(labels[i])){
+        for (let i = 0; i < labels.length; i++) {
+            if (uniqueLabels.includes(labels[i])) {
                 uniqueLabels.push(`${labels[i]}_${i}`);
-            }else{
+            } else {
                 uniqueLabels.push(labels[i])
             }
         }
@@ -185,7 +187,12 @@ export class ChartUtilsService {
      * @return [] notAllowed chart types
      */
     public getNotAllowedCharts(dataDescription: any): any[] {
-        let notAllowed = ['table', 'crosstable', 'kpi', 'doughnut', 'polarArea', 'line', 'bar', 'horizontalBar', 'barline', 'stackedbar'];
+        let notAllowed =
+            [
+                'table', 'crosstable', 'kpi', 'geoJsonMap', 'coordinatesMap',
+                'doughnut', 'polarArea', 'line', 'bar',
+                'horizontalBar', 'barline', 'stackedbar'
+            ];
         //table (at least one column)
         if (dataDescription.totalColumns > 0) notAllowed.splice(notAllowed.indexOf('table'), 1);
 
@@ -209,15 +216,27 @@ export class ChartUtilsService {
         if (dataDescription.numericColumns.length > 1 && dataDescription.otherColumns.length < 2) {
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
             const idx = notAllowed.indexOf('stackedbar');
-            if(idx >=0){
+            if (idx >= 0) {
                 notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
             }
-            
+
         }
         // Crosstable (At least three columns, one numeric)
         if (dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 0 &&
             dataDescription.totalColumns - dataDescription.numericColumns.length > 1) {
             notAllowed.splice(notAllowed.indexOf('crosstable'), 1);
+        }
+
+        //Coordinates map Map (two coordinates and two aditional fields at max)
+        if (dataDescription.coordinateColumns === 2 && dataDescription.totalColumns < 5) {
+            notAllowed.splice(notAllowed.indexOf('coordinatesMap'), 1);
+        }
+
+        //GeoJson Map ()
+        if (dataDescription.numericColumns.length === 1
+            && dataDescription.query.filter(elem => elem.linkedMap).length > 0
+            && dataDescription.totalColumns === 2) {
+            notAllowed.splice(notAllowed.indexOf('geoJsonMap'), 1);
         }
         return notAllowed;
     }
@@ -229,31 +248,40 @@ export class ChartUtilsService {
      * @return [] notAllowed chart types
      */
     public getTooManyDataForCharts(dataSize: number): any[] {
-        let notAllowed = ['table', 'crosstable', 'kpi', 'doughnut', 'polarArea', 'line', 'bar', 'horizontalBar', 'barline'];
-        
+        let notAllowed =
+            ['table', 'crosstable', 'kpi', 'doughnut', 'polarArea', 'line', 'bar',
+                'horizontalBar', 'barline', 'geoJsonMap', 'coordinateMap'];
+
         //table (at least one column)
-         notAllowed.splice(notAllowed.indexOf('table'), 1);
-         // Crosstable (At least three columns, one numeric)
+        notAllowed.splice(notAllowed.indexOf('table'), 1);
+        // Crosstable (At least three columns, one numeric)
         notAllowed.splice(notAllowed.indexOf('crosstable'), 1);
 
+        notAllowed.splice(notAllowed.indexOf('geoJsonMap'), 1);
+        // Crosstable (At least three columns, one numeric)
+        notAllowed.splice(notAllowed.indexOf('coordinateMap'), 1);
+
         // KPI (only one numeric column)
-        if ( dataSize === 1) {
+        if (dataSize === 1) {
             notAllowed.splice(notAllowed.indexOf('kpi'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
-        if (dataSize < 50 ) {
+        if (dataSize < 50) {
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
         }
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
-        if ( dataSize < 2000) {
+        if (dataSize < 2500) {
             notAllowed.splice(notAllowed.indexOf('bar'), 1);
             notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
+        }
+        // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
+        if (dataSize < 5000) {
             notAllowed.splice(notAllowed.indexOf('line'), 1);
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
         }
-        
-     
+
+
         return notAllowed;
     }
 
@@ -267,11 +295,11 @@ export class ChartUtilsService {
         if (config && (<ChartJsConfig>config).chartType === currentChartype) {
             return this.mergeColors(layout)
         } else {
-           return this.generateColors(currentChartype);
+            return this.generateColors(currentChartype);
         }
     }
 
-    public generateColors(type : string){
+    public generateColors(type: string) {
         switch (type) {
             case 'doughnut': return EdaChartComponent.generatePiecolors();
             case 'polarArea': return EdaChartComponent.generatePiecolors();
@@ -283,9 +311,9 @@ export class ChartUtilsService {
 
     public mergeColors(layout: ChartConfig) {
 
-        const  config = layout.getConfig();
+        const config = layout.getConfig();
 
-        if((<ChartJsConfig>config).colors === null){
+        if ((<ChartJsConfig>config).colors === null) {
             return this.generateColors((<ChartJsConfig>config).chartType);
         }
         if ((<ChartJsConfig>config).chartType === 'doughnut' || (<ChartJsConfig>config).chartType === 'polarArea') {
@@ -294,25 +322,26 @@ export class ChartUtilsService {
                 edaColors[0].backgroundColor[i] = element;
             });
             (<ChartJsConfig>config).colors[0]['backgroundColor'] = edaColors[0].backgroundColor;
-   
-        } 
+
+        }
         return (<ChartJsConfig>config).colors;
     }
 
     public describeData(currentQuery: any, labels: any) {
 
         let names = this.pretifyLabels(currentQuery, labels);
-        let out = { numericColumns: [], otherColumns: [], totalColumns: 0 }
-        
+        let out = { numericColumns: [], coordinateColumns: 0, otherColumns: [], totalColumns: 0, query: currentQuery }
+
         currentQuery.forEach((col, i) => {
             if (col.column_type === 'numeric') {
                 out.numericColumns.push({ name: names[i], index: i });
+            } else if (col.column_type === 'coordinate' && [0, 1].includes(i)) {
+                out.coordinateColumns += 1;
             } else {
                 out.otherColumns.push({ name: names[i], index: i });
             }
             out.totalColumns += 1;
         });
-
         return out;
     }
 
@@ -329,9 +358,9 @@ export class ChartUtilsService {
         return names
     }
 
-    public initChartOptions(type: string, numericColumn: string, 
-        labelColum: any[], manySeries: boolean, stacked  : boolean, size:any): { chartOptions: any, chartPlugins: any } {
-            
+    public initChartOptions(type: string, numericColumn: string,
+        labelColum: any[], manySeries: boolean, stacked: boolean, size: any): { chartOptions: any, chartPlugins: any } {
+
         const options = {
             chartOptions: {},
             chartPlugins: {}
@@ -366,7 +395,7 @@ export class ChartUtilsService {
 
         const maxTicksLimit = size.width < 200 ? 5 : size.width < 400 ? 15 : 40;
         const maxTicksLimitHorizontal = size.height < 200 ? 5 : size.height < 400 ? 15 : 40;
-        
+
         switch (type) {
             case 'doughnut':
             case 'polarArea':
@@ -428,7 +457,7 @@ export class ChartUtilsService {
                     },
                     scales: {
                         xAxes: [{
-                            stacked : stacked || false,
+                            stacked: stacked || false,
                             gridLines: { display: false },
                             ticks: {
                                 callback: (value) => {
@@ -436,12 +465,12 @@ export class ChartUtilsService {
                                         return value.length > 30 ? (value.substr(0, 17) + '...') : value;
                                 },
                                 fontSize: edaFontSize, fontStyle: edafontStyle,
-                                maxTicksLimit : maxTicksLimit,
+                                maxTicksLimit: maxTicksLimit,
                                 autoSkip: true,
                             }
                         }],
                         yAxes: [{
-                            stacked : stacked || false,
+                            stacked: stacked || false,
                             gridLines: {
                                 drawBorder: false,
                             },
@@ -517,7 +546,7 @@ export class ChartUtilsService {
 
                                 fontSize: edaFontSize,
                                 beginAtZero: true,
-                                maxTicksLimit : maxTicksLimitHorizontal,
+                                maxTicksLimit: maxTicksLimitHorizontal,
                                 autoSkip: true
                             }
                         }]
@@ -563,7 +592,7 @@ export class ChartUtilsService {
                                         return value.length > 30 ? (value.substr(0, 17) + '...') : value;
                                 },
                                 autoSkip: true,
-                                maxTicksLimit : maxTicksLimit,
+                                maxTicksLimit: maxTicksLimit,
                                 fontSize: edaFontSize,
                                 fontStyle: edafontStyle,
                                 beginAtZero: true

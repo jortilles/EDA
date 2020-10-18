@@ -46,7 +46,8 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
     }
 
     onShow(): void {
-        this.dialog.title = `Añadir relación a la tabla ${this.controller.params.table.name}`;
+        const title = $localize`:@@addRelationTo:Añadir relación a la tabla`;
+        this.dialog.title = `${title} ${this.controller.params.table.name}`;
         this.sourceCols = this.controller.params.table.columns;
         this.targetTables = this.dataModelService.getModel().map(t => {
             const item: SelectItem = { label: t.table_name, value: t };

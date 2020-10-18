@@ -4,6 +4,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { AlertService, DataSourceService } from '@eda/services/service.index';
 import Swal from 'sweetalert2';
+import * as _ from 'lodash';
 
 
 @Component({
@@ -15,9 +16,9 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public treeData: any[] = [];
     public selectedFile: TreeNode;
     public id: string;
-    navigationSubscription: any;
+    public navigationSubscription: any;
 
-    constructor(public DataModelService: DataSourceService,
+    constructor(public dataModelService: DataSourceService,
                 private alertService: AlertService,
                 private route: ActivatedRoute,
                 private spinnerService: SpinnerService,
@@ -35,12 +36,12 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.getDataSourceId();
-        this.DataModelService.currentTreeData.subscribe(
+        this.dataModelService.currentTreeData.subscribe(
             (data) => this.treeData = data,
             (err) => this.alertService.addError(err)
         );
 
-        this.DataModelService.getModelById(this.id);
+        this.dataModelService.getModelById(this.id);        
     }
 
     ngOnDestroy(): void {
@@ -59,20 +60,20 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
 
     deleteDatasource() {
         Swal.fire({
-            title: '¿Estas seguro?',
-            text: `Estas a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
+            title: $localize`:@@Sure:¿Estas seguro?`,
+            text: $localize`:@@SureInfo:Estas a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Si, Eliminalo!'
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
         }).then(borrado => {
             if (borrado.value) {
                 this.spinnerService.on();
-                this.DataModelService.deleteModel(this.id).subscribe(
+                this.dataModelService.deleteModel(this.id).subscribe(
                     () => {
-                        Swal.fire('Eliminado!', 'Modelo eliminado correctamente.', 'success');
-                        this.DataModelService.cleanAll();
+                        Swal.fire($localize`:@@Deleted:¡Eliminado!`, $localize`:@@DeleteSuccess:Modelo eliminado correctamente.`, 'success');
+                        this.dataModelService.cleanAll();
                         this.router.navigate(['/home']);
                         this.spinnerService.off();
                     }, err => {
@@ -85,8 +86,8 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     }
 
     nodeSelect(event: { node: any; }) {
-        event.node.data === 'tabla' ? this.DataModelService.editTable(event.node) :
-            event.node.data === 'columna' ? this.DataModelService.editColumn(event.node) : this.DataModelService.editModel(event.node);
+        event.node.data === 'tabla' ? this.dataModelService.editTable(event.node) :
+            event.node.data === 'columna' ? this.dataModelService.editColumn(event.node) : this.dataModelService.editModel(event.node);
     }
 
     nodeUnselect(event: any) {
@@ -94,16 +95,16 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     }
 
     refreshModel() {
-        this.DataModelService.cleanAll();
+        this.dataModelService.cleanAll();
         this.ngOnInit();
     }
 
     reLoadModelFromDb(){
         this.spinnerService.on();
-        this.DataModelService.realoadModelFromDb(this.id).subscribe(
+        this.dataModelService.realoadModelFromDb(this.id).subscribe(
             () => {
                 this.refreshModel(); 
-                this.alertService.addSuccess('Modelo actualizado correctamente');
+                this.alertService.addSuccess($localize`:@@UpdateModelSucess:Modelo actualizado correctamente`);
                 this.spinnerService.off()},
             err => {
                 this.alertService.addError(err);
