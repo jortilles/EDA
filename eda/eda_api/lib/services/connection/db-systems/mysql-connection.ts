@@ -246,6 +246,10 @@ export class MysqlConnection extends AbstractConnection {
                             if ((sourceColumn.source_column.toLowerCase().includes("_id") ||
                                 sourceColumn.source_column.toLowerCase().includes("id_") ||
                                 sourceColumn.source_column.toLowerCase().includes("number") ||
+                                sourceColumn.source_column.toLowerCase().startsWith("sk") ||
+                                sourceColumn.source_column.toLowerCase().startsWith("tk") ||
+                                sourceColumn.source_column.toLowerCase().endsWith("sk") ||
+                                sourceColumn.source_column.toLowerCase().endsWith("tk") ||
                                 sourceColumn.source_column.toLowerCase().includes("code"))
                                 && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
 
