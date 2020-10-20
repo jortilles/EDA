@@ -38,7 +38,6 @@ export const URL_SERVICES = '/localhost:8666'; #by default api port is 8666
 
 The easiest way to run and try eda is using docker option.
 
-Sanish version:
 ```
 docker run -p 80:80 jortilles/eda:latest
 ```
