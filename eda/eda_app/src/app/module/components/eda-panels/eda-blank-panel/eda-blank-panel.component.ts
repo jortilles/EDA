@@ -1,3 +1,5 @@
+import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
+import { MapConfig } from './panel-charts/chart-configuration-models/map-config';
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
 import { MAX_TABLE_ROWS_FOR_ALERT } from '../../../../config/config';
@@ -12,8 +14,7 @@ import {
     FilterType, QueryBuilderService, OrdenationType
 } from '@eda/services/service.index';
 import {
-    EdaPageDialogComponent, EdaDialogController, EdaContextMenu,
-    EdaContextMenuItem, EdaDialogCloseEvent
+    EdaPageDialogComponent, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent
 } from '@eda/shared/components/shared-components.index';
 import { EdaChartComponent } from '@eda/components/component.index';
 import { PanelChart } from './panel-charts/panel-chart';
@@ -21,6 +22,9 @@ import * as _ from 'lodash';
 import { ChartConfig } from './panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from './panel-charts/chart-configuration-models/chart-js-config';
 import { EdaInputText } from '@eda/shared/components/eda-input/eda-input-text';
+import { SankeyConfig } from './panel-charts/chart-configuration-models/sankey-config';
+
+import { PanelOptions } from './panel-utils/panel-menu-options'
 
 
 @Component({
@@ -46,7 +50,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public tableController: EdaDialogController;
     public alertController: EdaDialogController;
     public mapController: EdaDialogController;
-    public kpiController : EdaDialogController;
+    public kpiController: EdaDialogController;
+    public sankeyController: EdaDialogController;
+    public linkDashboardController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
 
@@ -72,7 +78,6 @@ export class EdaBlankPanelComponent implements OnInit {
         chart: '', // Change between chart or table
         disablePreview: true,
         disableQueryInfo: true,
-        edit_mode: true,
         notSaved: false
     };
 
@@ -82,8 +87,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public userSelectedTable: string;
 
     /**Edit queries */
-    public editQuery : string = $localize`:@@EditQuery:EDITAR CONSULTA`;
-    public editSQLQuery : string = $localize`:@@EditSQLQuery:EDITAR CONSULTA SQL`;
+    public editQuery: string = $localize`:@@EditQuery:EDITAR CONSULTA`;
+    public editSQLQuery: string = $localize`:@@EditSQLQuery:EDITAR CONSULTA SQL`;
 
     /** Query Variables */
     public tables: any[] = [];
@@ -94,7 +99,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public ordenationTypes: OrdenationType[];
     public currentQuery: any[] = [];
     public currentSQLQuery: string;
-    public queryLimit : number;
+    public queryLimit: number;
 
     public modeSQL: boolean;
     public sqlOriginTables: {}[];
@@ -120,10 +125,12 @@ export class EdaBlankPanelComponent implements OnInit {
     /**panel chart component configuration */
     public panelChartConfig: PanelChart = new PanelChart();
 
-    public limitRowsInfo : string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
+    public limitRowsInfo: string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
+    public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera consultar`;
+    public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
 
     constructor(
-        private dashboardService: DashboardService,
+        public dashboardService: DashboardService,
         private chartUtils: ChartUtilsService,
         private queryBuilder: QueryBuilderService,
         private fileUtiles: FileUtiles,
@@ -133,7 +140,9 @@ export class EdaBlankPanelComponent implements OnInit {
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
+
     }
+
 
 
     ngOnInit(): void {
@@ -157,21 +166,25 @@ export class EdaBlankPanelComponent implements OnInit {
             this.loadChartsData(this.panel.content);
         }
 
-        this.setEditMode();
-
         this.dashboardService.notSaved.subscribe(
             (data) => this.display_v.notSaved = data,
             (err) => this.alertService.addError(err)
         );
+
+        this.contextMenu = new EdaContextMenu({
+            header: 'OPCIONES DEL PANEL',
+            contextMenuItems: PanelOptions.generateMenu(this)
+        });
     }
 
-    setEditMode() {
+    getEditMode() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
-        this.display_v.edit_mode = userName !== 'edaanonim';
+        return userName !== 'edaanonim';
     }
 
     private initializeBlankPanelUtils(): void {
+
         this.chartForm = this.formBuilder.group({ chart: [null, Validators.required] });
 
         this.chartTypes = this.chartUtils.chartTypes; // Loading all disponibles chart type from a chartUtilService
@@ -179,95 +192,6 @@ export class EdaBlankPanelComponent implements OnInit {
         this.filterTypes = this.chartUtils.filterTypes;
 
         this.ordenationTypes = this.chartUtils.ordenationTypes;
-
-        this.contextMenu = new EdaContextMenu({
-            header: 'OPCIONES DEL PANEL',
-            contextMenuItems: [
-                new EdaContextMenuItem({
-                    label: $localize`:@@panelOptions1:Editar consulta`,
-                    icon: 'fa fa-cog',
-                    command: () => {
-                        if (this.panel.content) {
-
-                            this.panelDeepCopy = _.cloneDeep(this.panel.content, true);
-                            this.display_v.disablePreview = false;
-
-                            const content = this.panel.content;
-                            /**Reload map to render tiles, needs timeOut for whatever reason :/  */
-                            if (content.chart === 'coordinatesMap' || content.chart === 'geoJsonMap') {
-                                setTimeout(() => {
-                                    const config = this.recoverConfig(content.chart, content.query.output.config);
-                                    this.changeChartType(content.chart, content.edaChart, config);
-                                }, 1)
-                            }
-                        } else {
-                            this.display_v.disablePreview = true;
-                        }
-                        if (Object.entries(this.graficos).length !== 0) {
-                            this.colorsDeepCopy = _.cloneDeep(this.graficos);
-                        }
-                        this.contextMenu.hideContextMenu();
-                        this.openEditarConsulta();
-                        this.index = 0;
-                    }
-                }),
-                new EdaContextMenuItem({
-                    label: $localize`:@@panelOptions2:Editar opciones del gráfico`,
-                    icon: 'mdi mdi-wrench',
-                    command: () => {
-                        if (Object.entries(this.graficos).length !== 0 && this.chartData.length !== 0) {
-                            if (['line', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline'].includes(this.graficos.chartType)) {
-                                this.contextMenu.hideContextMenu();
-                                this.chartController = new EdaDialogController({
-                                    params: { panelId: _.get(this.panel, 'id'), chart: this.graficos },
-                                    close: (event, response) => this.onCloseChartProperties(event, response)
-                                });
-                            } else if (['table', 'crosstable'].includes(this.graficos.chartType)) {
-                                this.contextMenu.hideContextMenu();
-                                this.tableController = new EdaDialogController({
-                                    params: { panelId: _.get(this.panel, 'id'), panelChart: this.panelChartConfig },
-                                    close: (event, response) => this.onCloseTableProperties(event, response)
-                                });
-                            } else if (this.graficos.chartType === 'geoJsonMap') {
-                                this.contextMenu.hideContextMenu();
-                                this.mapController = new EdaDialogController({
-                                    params: {
-                                        panelID: _.get(this.panel, 'id'),
-                                        panelChart: this.panelChartConfig,
-                                        color : this.panelChart.componentRef.instance.color,
-                                        logarithmicScale : this.panelChart.componentRef.instance.logarithmicScale
-                                    },
-                                    close: (event, response) => { this.onCloseMapProperties(event, response) }
-                                })
-                            } else if (this.graficos.chartType === 'kpi'){
-                                this.contextMenu.hideContextMenu();
-                                this.kpiController = new EdaDialogController({
-                                    params : {
-                                        panelID: _.get(this.panel, 'id'),
-                                        panelChart: this.panelChartConfig,
-                                        alertLimits: this.panelChart.componentRef.instance.alertLimits
-                                    },
-                                    close: (event, response) => { this.onCloseKpiProperties(event, response) }
-                                })
-                            }
-                        }
-                    }
-                }),
-                new EdaContextMenuItem({
-                    label: $localize`:@@panelOptions3:Exportar a Excel`,
-                    icon: 'mdi mdi-file',
-                    command: () => this.readyToExport('excel')
-                }),
-                new EdaContextMenuItem({
-                    label: $localize`:@@panelOptions4:Eliminar panel`,
-                    icon: 'fa fa-trash',
-                    command: () => {
-                        this.contextMenu.hideContextMenu();
-                        this.removePanel();
-                    }
-                })
-            ]
-        });
     }
 
     private initializeInputs(): void {
@@ -302,7 +226,7 @@ export class EdaBlankPanelComponent implements OnInit {
             dashboard: this.inject.dashboard_id,
             filters: this.mergeFilters(this.selectedFilters, this.globalFilters),
             config: config.getConfig(),
-            queryLimit : this.queryLimit
+            queryLimit: this.queryLimit
         };
 
         return this.queryBuilder.normalQuery(this.currentQuery, params);
@@ -341,16 +265,23 @@ export class EdaBlankPanelComponent implements OnInit {
             }
         } else {
             config = this.panelChart.componentRef && this.panelChart.props.chartType === 'kpi' ?
-                { sufix: this.panelChart.componentRef.instance.inject.sufix,
-                 alertLimits : this.panelChart.componentRef.instance.inject.alertLimits} :
+                {
+                    sufix: this.panelChart.componentRef.instance.inject.sufix,
+                    alertLimits: this.panelChart.componentRef.instance.inject.alertLimits
+                } :
                 ['geoJsonMap', 'coordinatesMap'].includes(this.panelChart.props.chartType) ?
                     {
                         coordinates: this.panelChart.componentRef.instance.inject.coordinates,
                         zoom: this.panelChart.componentRef.instance.inject.zoom,
                         color: this.panelChart.componentRef.instance.inject.color,
-                        logarithmicScale : this.panelChart.componentRef.instance.inject.logarithmicScale
+                        logarithmicScale: this.panelChart.componentRef.instance.inject.logarithmicScale,
+                        legendPosition: this.panelChart.componentRef.instance.inject.legendPosition
                     } :
-                    { colors: this.graficos.chartColors, chartType: this.panelChart.props.chartType };
+                    this.panelChart.props.chartType === 'parallelSets' ?
+                        {
+                            colors: this.panelChart.componentRef.instance.colors
+                        } :
+                        { colors: this.graficos.chartColors, chartType: this.panelChart.props.chartType };
         }
         return new ChartConfig(config);
     }
@@ -473,7 +404,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.minispinner = false;
     }
 
-    private recoverConfig(type: string, config: TableConfig | KpiConfig | ChartJsConfig) {
+    private recoverConfig(type: string, config: TableConfig | KpiConfig | ChartJsConfig | MapConfig | SankeyConfig) {
         if (['table', 'crosstable'].includes(type)) {
             return new ChartConfig(config);
         }
@@ -487,6 +418,9 @@ export class EdaBlankPanelComponent implements OnInit {
             return new ChartConfig(config);
         }
         else if (type === 'coordinatesMap') {
+            return new ChartConfig(config);
+        }
+        else if (type === 'parallelSets') {
             return new ChartConfig(config);
         }
     }
@@ -506,10 +440,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
             this.panel.content = { query, chart, edaChart };
 
-            /**map's id is generated random and can't be rendered again */
+            /**maps ids are generated random and can't be rendered again */
             if (!['coordinatesMap', 'geoJsonMap'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
+
         } else {
             this.display_v.saved_panel = false;
         }
@@ -614,7 +549,6 @@ export class EdaBlankPanelComponent implements OnInit {
             const response = await this.dashboardService.executeQuery(query).toPromise();
             return response;
         } else {
-            console.log(query);
             const response = await this.dashboardService.executeSqlQuery(query).toPromise();
             const numFields = response[0].length;
             const types = new Array(numFields);
@@ -696,9 +630,18 @@ export class EdaBlankPanelComponent implements OnInit {
             chartType: type,
             config: chartConfig,
             edaChart: subType,
-            maps: this.inject.dataSource.model.maps
+            maps: this.inject.dataSource.model.maps,
+            size: { x: this.panel.w, y: this.panel.h },
+            linkedDashboardProps: this.panel.linkedDashboardProps
+
         });
 
+        // if(this.contextMenu && this.contextMenu.dialog){
+        //     this.contextMenu = new EdaContextMenu({
+        //         header: 'OPCIONES DEL PANEL',
+        //         contextMenuItems: PanelOptions.generateMenu(this)
+        //     });
+        // }
     }
 
     /**
@@ -707,10 +650,20 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     private setVoidChartConfig(type: string) {
         if (['table', 'crosstable'].includes(type)) {
+
             return new TableConfig(false, false, 10, false, false, false);
-        } else if (['bar', 'line', 'piechart', 'doughnut'].includes(type)) {
+
+        }
+        else if (['bar', 'line', 'piechart', 'doughnut'].includes(type)) {
+
             return new ChartJsConfig(null, type);
-        } else {
+
+        } else if (type === 'parallelSets') {
+
+            return new SankeyConfig([]);
+
+        }
+        else {
             return new KpiConfig('', []);
         }
     }
@@ -788,6 +741,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
+
         this.graficos = {};
         let allow = _.find(this.chartTypes, c => c.value === type);
         this.display_v.chart = type;
@@ -1185,11 +1139,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     private ableBtnSave = () => this.display_v.btnSave = false;
 
-    onTopChange(){
+    onTopChange() {
         this.display_v.btnSave = true;
     }
 
-    private readyToExport(fileType: string): void {
+    public readyToExport(fileType: string): void {
         if (!this.panel.content) {
             return this.alertService.addError(`No tienes contenido para exportar`);
         }
@@ -1203,7 +1157,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.contextMenu.hideContextMenu();
     }
 
-    private openEditarConsulta(): void {
+    public openEditarConsulta(): void {
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         this.verifyData();
@@ -1238,7 +1192,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param event 
      * @param properties properties to set
      */
-    private onCloseChartProperties(event, properties): void {
+    public onCloseChartProperties(event, properties): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
                 this.graficos = {};
@@ -1253,7 +1207,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.chartController = undefined;
     }
 
-    private onCloseTableProperties(event, properties: TableConfig): void {
+    public onCloseTableProperties(event, properties: TableConfig): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
 
@@ -1268,35 +1222,91 @@ export class EdaBlankPanelComponent implements OnInit {
         this.tableController = undefined;
     }
 
-    private onCloseMapProperties(event, response :{color: string, logarithmicScale:boolean}): void {
+    public onCloseMapProperties(event, response: { color: string, logarithmicScale: boolean, legendPosition: string }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config.color = response.color;
             this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
+            this.panel.content.query.output.config.legendPosition = response.legendPosition;
             const config = new ChartConfig(this.panel.content.query.output.config);
-            // this.panelChart.componentRef.instance.inject.color = response.color;
-            // this.panelChart.componentRef.instance.inject.logarithmicScale = response.logarithmicScale;
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
         }
         this.mapController = undefined;
     }
 
-    private onCloseKpiProperties(event, response):void{
+    public onCloseSankeyProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+            this.panel.content.query.output.config.colors = response.colors;
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService._notSaved.next(true);
+
+        }
+        this.sankeyController = undefined;
+    }
+
+    public onCloseLinkDashboardProperties(event, response: LinkedDashboardProps): void {
+
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+            this.panel.linkedDashboard = true;
+            this.panel.linkedDashboardProps = response;
+            this.renderChart(
+                this.currentQuery, this.chartLabels, this.chartData,
+                this.graficos.chartType, this.graficos.edaChart, this.setConfig()
+            );
+            this.dashboardService._notSaved.next(true);
+        }
+
+        this.linkDashboardController = undefined;
+    }
+
+    public onCloseKpiProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
             this.panel.content.query.output.config.alertLimits = response.alerts;
             this.panel.content.query.output.config.sufix = response.sufix;
+
             const config = new ChartConfig(this.panel.content.query.output.config);
+
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
         }
         this.kpiController = undefined;
     }
+
     public handleTabChange(event: any): void {
         this.index = event.index;
+        if (this.index === 1) {
+            const content = this.panel.content;
+            /**Reload  to render, needs timeOut for whatever reason :/  */
+            if ((content.chart === 'coordinatesMap' || content.chart === 'geoJsonMap' || content.chart === 'parallelSets')
+            ) {
+
+                setTimeout(() => {
+                    const config = this.recoverConfig(content.chart, content.query.output.config);
+
+                    this.changeChartType(content.chart, content.edaChart, config);
+                })
+            }
+        }
     }
 
     public onResize(event) {
         this.display_v.responsive = event.currentTarget.innerWidth <= 1440;
+    }
+
+    public onGridsterResize(event: any) {
+        const content = this.panel.content;
+        /**Resize d3 charts  */
+        if (content &&
+            content.chart === 'parallelSets') {
+            setTimeout(() => {
+                const config = this.recoverConfig(content.chart, content.query.output.config);
+                this.changeChartType(content.chart, content.edaChart, config);
+            }, 1)
+        }
     }
 
     public removePanel(): void {
@@ -1321,13 +1331,13 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public getOptionDescription(value: string): string {
         let description = $localize`:@@chartInfo1:Los datos seleccionados no permiten utilizar este gráfico.`;
-        let str:string; let str2:string;
+        let str: string; let str2: string;
         switch (value) {
             case 'kpi':
                 str = $localize`:@@chartInfo2:Un KPI necesita un único número`;
                 description += `\n${str}`;
                 break;
-            case 'barline': 
+            case 'barline':
                 str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una série numéricas`;
                 description += `\n${str}`;
                 break;
@@ -1340,7 +1350,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 description += `\n${str}`;
                 break;
             case 'horizontalBar':
-                str =  $localize`:@@chartInfo6:Un gráfico de barras necesita una o más categorías y una série numérica`;
+                str = $localize`:@@chartInfo6:Un gráfico de barras necesita una o más categorías y una série numérica`;
                 description += `\n${str}`;
                 break;
             case 'bar':
@@ -1413,6 +1423,9 @@ export class EdaBlankPanelComponent implements OnInit {
             case 'geoJsonMap':
                 description = 'map'
                 break;
+            case 'parallelSets':
+                description = 'tune'
+                break;
         }
 
         return description;
@@ -1434,5 +1447,11 @@ export class EdaBlankPanelComponent implements OnInit {
     public getTooManyDataDescription(): string {
         let str = $localize`:@@tooManyValuestext:Hay demasiados valores para este gráfico. Agrega o filtra los datos para poder visualizarlos mejor.`
         return str;
+    }
+
+    public getChartType() {
+        if (this.panel.content) {
+            return this.panel.content.chart;
+        } else return null;
     }
 }

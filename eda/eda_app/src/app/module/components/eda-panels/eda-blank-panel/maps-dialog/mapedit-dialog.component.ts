@@ -20,6 +20,8 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
   public color:string = '';
   public logarithmicScale :boolean = false;
 
+  public legendPosition : string;
+
   constructor() {
 
     super();
@@ -32,7 +34,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
   }
 
   saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {color:this.color, logarithmicScale :  this.logarithmicScale});
+    this.onClose(EdaDialogCloseEvent.UPDATE, {color:this.color, logarithmicScale :  this.logarithmicScale, legendPosition : this.legendPosition});
   }
 
   handleInputColor() {
@@ -46,12 +48,17 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     leafletMap.changeScale(this.logarithmicScale);
   }
+  changeLegend(){
+    const leafletMap = this.myPanelChartComponent.componentRef.instance;
+    leafletMap.changeLegend(this.legendPosition);
+  }
 
   closeChartConfig() {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
   onShow(): void {
+    this.legendPosition = this.controller.params.legendPosition;
     this.color= this.controller.params.color;
     this.logarithmicScale = this.controller.params.logarithmicScale;
     this.panelChartConfig = this.controller.params.panelChart;

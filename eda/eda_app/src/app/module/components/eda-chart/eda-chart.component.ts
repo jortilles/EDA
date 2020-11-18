@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { EdaChart } from './eda-chart';
 import { BaseChartDirective, Color } from 'ng2-charts';
 import { ChartsColors } from '@eda/configs/index';
@@ -72,20 +72,19 @@ export class EdaChartComponent implements OnInit {
         if (e.active.length > 0) {
             const chart = e.active[0]._chart;
             const activePoints = chart.getElementAtEvent(e.event);
+
             if (activePoints.length > 0) {
                 // get the internal index of slice in pie chart
                 const clickedElementIndex = activePoints[0]._index;
-                const label = chart.data.labels[clickedElementIndex];
-                // get value by index
-                const value = chart.data.datasets[0].data[clickedElementIndex];
-                // get color by index
-                let background;
-                if (this.inject.chartType === 'doughnut' || this.inject.chartType === 'polarArea') {
-                    background = chart.data.datasets[0].backgroundColor[clickedElementIndex];
-                } else {
-                    background = chart.data.datasets[0].backgroundColor;
+
+                let value: string;
+                value = chart.data.labels[clickedElementIndex];
+
+                if (this.inject.linkedDashboardProps) {
+                    const props = this.inject.linkedDashboardProps;
+                    const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+                    window.open(url, "_blank");
                 }
-                // console.log(clickedElementIndex, label, value, background);
             }
         }
     }

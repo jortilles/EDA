@@ -2791,14 +2791,52 @@
      <source>Funcionalidades</source>
       <target>Functionalities</target>
     </trans-unit>
+
       <trans-unit id="addFile">
      <source>Subir archivo</source>
       <target>Add file </target>
     </trans-unit>
+    
      <trans-unit id="FiltersH4">
      <source>Filtros</source>
       <target>Filters </target>
     </trans-unit> 
+
+      <trans-unit id="dragFields">
+     <source>Arrastra aquí los atributos que quiera consultar</source>
+      <target>Drag fields here </target>
+    </trans-unit> 
+
+      <trans-unit id="dragFilters">
+     <source>Arrastra aquí los atributos sobre los que quiera filtrar</source>
+      <target>Drag filters here </target>
+    </trans-unit> 
+
+      <trans-unit id="LegendPosition">
+     <source>Posición de la leyenda</source>
+      <target>Legend position</target>
+    </trans-unit>
+
+     <trans-unit id="LinkDashboardDbFilter">
+     <source> Informe a vincular </source>
+      <target>Dashbaord to link</target>
+    </trans-unit> 
+
+     <trans-unit id="LinkDashboardSelectedDashboard">
+     <source> Campo del informe </source>
+      <target>Dashboard field</target>
+    </trans-unit> 
+
+     <trans-unit id="DashboardLink">
+     <source> Vincular con un informe </source>
+      <target> Link to dashboard </target>
+    </trans-unit> 
+
+      <trans-unit id="panelOptions5">
+     <source> Vincular con otro informe </source>
+      <target>Link to another dashboard</target>
+    </trans-unit> 
+
     </body>
   </file>
 </xliff>

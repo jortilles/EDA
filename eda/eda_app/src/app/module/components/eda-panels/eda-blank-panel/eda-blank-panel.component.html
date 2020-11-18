@@ -5,7 +5,7 @@
         </h6>
     </div>
 
-    <div *ngIf="display_v.edit_mode" id="edit"  [ngClass]="{'edit-blink': lodash.isEmpty(panel.content) }"  >   
+    <div  id="edit"  [ngClass]="{'edit-blink': lodash.isEmpty(panel.content) }"  >   
         <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
     </div>
 </div>
@@ -91,6 +91,8 @@
                         <div class="select-list" cdkDropList cdkDropListOrientation="horizontal"
                             #selectList="cdkDropList" [cdkDropListData]="currentQuery"
                             [cdkDropListConnectedTo]="[columnsList]" (cdkDropListDropped)="drop($event)">
+                            
+                            <p *ngIf="currentQuery.length < 1" class="fieldsInfo">{{draggFields}}</p>
 
                             <div class="select-box col-3 col-md-2 p-1" *ngFor="let item of currentQuery"
                                 (click)="openColumnDialog(item)" (mouseover)="showDescription(item)"
@@ -114,6 +116,9 @@
                         <div class="filter-list" cdkDropList cdkDropListOrientation="horizontal"
                             #filterList="cdkDropList" [cdkDropListData]="filtredColumns"
                             [cdkDropListConnectedTo]="[columnsList]" (cdkDropListDropped)="drop($event)">
+
+                            <p *ngIf="filtredColumns.length < 1" class="fieldsInfo">{{draggFilters}}</p>
+
                             <div class="select-box col-3 col-md-2 p-1" *ngFor="let item of filtredColumns"
                                 (click)="openColumnDialog(item, true)" (mouseover)="showDescription(item)"
                                 (mouseout)="description = ''" cdkDrag>
@@ -307,12 +312,12 @@
 
 
 
-            <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA"
+            <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA" 
                 [disabled]="display_v.disablePreview || currentQuery.length === 0">
                 <div class="ui-g p-0 h-100">
                     <div class="ui-g-8 p-1 preview-chart-box">
-                        <panel-chart #PanelChartComponent [props]="panelChartConfig"
-                            style="height: 100%; width: 100%; display:block"></panel-chart>
+                        <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
+                        style="height: 100%; width: 100%; display:block"></panel-chart>
                     </div>
 
                     <div class="ui-g-3 ui-g-offset-1 p-1 edaChartSelector">
@@ -404,4 +409,8 @@
 
 <app-alert-dialog *ngIf="alertController" [controller]="alertController"></app-alert-dialog>
 
+<app-sankey-dialog *ngIf="sankeyController" [controller]="sankeyController"></app-sankey-dialog>
+
+<link-dashboards-dialog *ngIf="linkDashboardController" [controller]="linkDashboardController"></link-dashboards-dialog>
+ 
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>

@@ -1,3 +1,4 @@
+import { LinkedDashboardProps } from './../eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 
 export class EdaMap{
 
@@ -6,9 +7,11 @@ export class EdaMap{
   zoom : number;
   data : any;
   color:string;
+  legendPosition:string;
   logarithmicScale : boolean;
   labels : Array<string>;
   maps : Array<Object>;
   query: Array<any>;
+  linkedDashboard : LinkedDashboardProps;
 
 }

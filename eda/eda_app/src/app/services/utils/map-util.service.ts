@@ -1,9 +1,11 @@
+import { LinkedDashboardProps } from './../../module/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
 import { Observable } from 'rxjs';
 import { ApiService } from '../api/api.service';
 import { shareReplay } from 'rxjs/operators';
+import { LatLngExpression } from 'leaflet';
 
 @Injectable({ providedIn: 'root' })
 
@@ -15,25 +17,26 @@ export class MapUtilsService extends ApiService {
         super(http);
     }
     initShapes(mapID: string): void {
-        if(!this.mapsObservables$[mapID]){
+        if (!this.mapsObservables$[mapID]) {
             this.mapsObservables$[mapID] = this.get(`${this.route}/${mapID}`).pipe(
                 shareReplay(1)
             );
         }
     }
-    getShapes(mapID: string) : Observable<any> {
+    getShapes(mapID: string): Observable<any> {
         return this.mapsObservables$[mapID];
     }
 
-    makeMarkers = (map: L.Map, data: Array<any>, labels: Array<any>): void => {
+    makeMarkers = (map: L.Map, data: Array<any>, labels: Array<any>, linkedDashboardProps : LinkedDashboardProps): void => {
 
         const maxValue = Math.max(...data.map(x => x[3]), 0);
+
         for (const d of data) {
             const radius = typeof d[3] === 'number' ? MapUtilsService.scaledRadius(d[3], maxValue) : 20;
             const color = this.getColor(radius);
 
-            const lat = d[0] // / 1000000 / 2;
-            const lon = d[1] // / 10000;
+            const lat = parseFloat(d[0]);// / 1000000 / 2;
+            const lon = parseFloat(d[1]); // / 10000;
             const properties = {
                 weight: 1,
                 radius: radius,
@@ -41,18 +44,29 @@ export class MapUtilsService extends ApiService {
                 fillColor: color,
                 fillOpacity: 0.8
             }
-            const circle = L.circleMarker([lon, lat], properties);
-            circle.bindPopup(this.makePopup(d, labels), { 'className': 'custom', autoPan:false  });
-            circle.on('mouseover', function (e) {
-                this.openPopup();
-            });
-            circle.on('mouseout', function (e) {
-                this.closePopup();
-            });
+            if (lat && lon) {
+                const circle = L.circleMarker([lon, lat] as LatLngExpression, properties);
+                circle.bindPopup(this.makePopup(d, labels), { 'className': 'custom', autoPan: false });
+                circle.on('mouseover', function (e) {
+                    this.openPopup();
+                });
+                circle.on('mouseout', function (e) {
+                    this.closePopup();
+                });
+                circle.on('click', ()=> { this.linkDashboard(d[2], linkedDashboardProps)})
+                circle.addTo(map);
+            }
 
-            circle.addTo(map);
         }
 
+    }
+
+    private linkDashboard = (value, linkedDashboard:LinkedDashboardProps) => {
+        if (linkedDashboard) {
+            const props = linkedDashboard;
+            const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+            window.open(url, "_blank");
+          }
     }
 
     private makePopup = (data: any, labels: Array<string>): string => {

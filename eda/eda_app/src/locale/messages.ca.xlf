@@ -2804,10 +2804,48 @@
      <source>Subir archivo</source>
       <target>Pujar arxiu </target>
     </trans-unit> 
+    
       <trans-unit id="FiltersH4">
      <source>Filtros</source>
       <target>Filtres </target>
     </trans-unit> 
+    
+      <trans-unit id="dragFields">
+     <source>Arrastra aquí los atributos que quiera consultar</source>
+      <target>Arrossega aqui els atributs que vols consultar </target>
+    </trans-unit> 
+
+      <trans-unit id="draggFilters">
+     <source>Arrastra aquí los atributos sobre los que quiera filtrar</source>
+      <target>Arrossega aquí els atributs sobre els que vols filtrar </target>
+    </trans-unit> 
+
+     <trans-unit id="LegendPosition">
+     <source>Posición de la leyenda</source>
+      <target>Posició de la llegenda </target>
+    </trans-unit> 
+
+    <trans-unit id="LinkDashboardDbFilter">
+     <source> Informe a vincular </source>
+      <target>Informe a vincular</target>
+    </trans-unit> 
+
+     <trans-unit id="LinkDashboardSelectedDashboard">
+     <source> Campo del informe </source>
+      <target>Camp de l'informe</target>
+    </trans-unit> 
+
+     <trans-unit id="DashboardLink">
+     <source> Vincular con un informe </source>
+      <target>Vincular amb un informe</target>
+    </trans-unit> 
+
+    <trans-unit id="panelOptions5">
+     <source> Vincular con otro informe </source>
+      <target>Vincular amb un altre informe</target>
+    </trans-unit> 
+
+
 
 
     </body>

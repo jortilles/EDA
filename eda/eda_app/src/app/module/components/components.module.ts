@@ -25,7 +25,10 @@ import {
     EdaMapComponent,
     EdaGeoJsonMapComponent,
     MapEditDialogComponent,
-    KpiEditDialogComponent
+    KpiEditDialogComponent,
+    EdaD3Component,
+    SankeyDialog,
+    LinkDashboardsComponent
 
  } from './component.index';
 
@@ -53,7 +56,10 @@ import {
         EdaMapComponent,
         EdaGeoJsonMapComponent,
         MapEditDialogComponent,
-        KpiEditDialogComponent
+        KpiEditDialogComponent,
+        EdaD3Component,
+        SankeyDialog,
+        LinkDashboardsComponent
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -64,9 +70,11 @@ import {
         EdaKpiComponent,
         PanelChartComponent,
         EdaMapComponent,
-        EdaGeoJsonMapComponent
+        EdaGeoJsonMapComponent,
+        EdaD3Component,
+        LinkDashboardsComponent
     ],
-    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent],
+    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent, EdaD3Component],
     schemas: [CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ComponentsModule { }

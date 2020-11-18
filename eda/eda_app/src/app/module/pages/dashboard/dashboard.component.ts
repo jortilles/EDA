@@ -713,7 +713,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             h: 10,
             resizable: true,
             dragAndDrop: true
-        })
+        });
 
         this.setPanelSizes(panel);
     }
@@ -868,6 +868,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Podem agafar els events del panel
     public itemChange($event: any, panel): void {
         this.gridItemEvent = $event;
+        this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0].onGridsterResize($event);
     }
 
 }

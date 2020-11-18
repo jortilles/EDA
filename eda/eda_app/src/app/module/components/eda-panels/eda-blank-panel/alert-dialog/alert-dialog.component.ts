@@ -25,7 +25,6 @@ export class AlertDialogComponent extends EdaDialogAbstract {
     this.onClose(EdaDialogCloseEvent.NONE, execute);
   }
   onShow(): void {
-    console.log('onShow');
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);

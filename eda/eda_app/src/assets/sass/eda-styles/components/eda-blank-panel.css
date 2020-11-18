@@ -498,3 +498,7 @@ body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider  {
     background-color: var(--main--button-color);
 }
 
+.fieldsInfo{
+    padding:0.5rem
+}
+

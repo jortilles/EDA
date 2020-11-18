@@ -43,4 +43,20 @@ export class EdaTableComponent {
         return _.find(this.inject.cols, 'filter') && this.inject.value && this.inject.value.length > 0;
     }
 
+    handleClick(item:any, colname:string){
+
+        if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
+
+            const props = this.inject.linkedDashboardProps;
+            const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
+            
+            window.open(url, "_blank");
+
+        }
+    }
+
+    getTooltip(col){
+        return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
+    }
+
 }

@@ -49,9 +49,7 @@ export class LoginComponent implements OnInit {
         this.route.queryParamMap.subscribe(params => this.urlParams = JSON.parse(JSON.stringify(params)).params.params);
 
         // this.urlParams = this.route.snapshot.queryParams['params'];
-        console.log(navigator.language)
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
-        console.log(this.returnUrl, this.urlParams);
 
         this.email = localStorage.getItem('email') || '';
 

@@ -50,7 +50,7 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
       });
 
       tiles.addTo(this.map);
-      this.mapUtilsService.makeMarkers(this.map, this.inject.data, this.inject.labels);
+      this.mapUtilsService.makeMarkers(this.map, this.inject.data, this.inject.labels, this.inject.linkedDashboard);
       this.map.on('moveend', (event) => {
         let c = this.map.getCenter();
         this.inject.coordinates = [c.lat, c.lng];

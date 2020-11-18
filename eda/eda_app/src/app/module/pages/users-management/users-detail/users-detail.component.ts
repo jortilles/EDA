@@ -96,8 +96,6 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
 
     saveUser() {
         if (this.form.invalid) {
-            console.log(this.form);
-            console.log(this.form.valid);
             this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
         } else {
             const form = this.form.value;

@@ -4,6 +4,9 @@ import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes }  from  '../../../module/global/model/aggregation-types';
 import DataSource from '../../../module/datasource/model/datasource.model';
 
+var types = require('pg').types;
+types.setTypeParser(1700, 'text', parseFloat);
+
 
 export class PgConnection extends AbstractConnection {
    

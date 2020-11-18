@@ -134,7 +134,6 @@ export class AddCsvComponent extends EdaDialogAbstract {
     types.forEach((type, i) => {
       if(nulls[i]) types[i] = 'text';
     });
-    console.log(types, nulls);
     return types;
   }
 
@@ -157,8 +156,6 @@ export class AddCsvComponent extends EdaDialogAbstract {
 
     const BATCH_SIZE = 1000;
     const batches = Math.ceil(this.csvRecords.length / BATCH_SIZE);
-
-    console.log(batches);
 
     try {
       await this.createTableService.createTable(createBody).toPromise();

@@ -4,12 +4,28 @@ import { Component, AfterViewInit } from '@angular/core';
 import { MapUtilsService } from '@eda/services/service.index';
 import { EdaMap } from './eda-map';
 import { LatLngExpression } from 'leaflet';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 const L = require('./topoJsonExtention')
 @Component({
   selector: 'eda-geomap',
   templateUrl: './eda-geojson-map.component.html',
-  styleUrls: ['./eda-map.component.css']
+  styleUrls: ['./eda-map.component.css'],
+  animations: [
+    trigger(
+      'inOutAnimation',
+      [
+        transition(
+          ':leave',
+          [
+            style({ height: 500, opacity: 1 }),
+            animate('1s ease-in',
+              style({ height: 0, opacity: 0 }))
+          ]
+        )
+      ]
+    )
+  ]
 })
 export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
@@ -27,16 +43,16 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   public color: string = '#006400';
   public logarithmicScale: boolean;
   public BASE_COLOR: string = '#006400';
-  public loading : boolean;
+  public loading: boolean;
+  public legendPosition: string;
 
   constructor(
     private mapUtilsService: MapUtilsService
   ) {
-    this.customOptions = { 'className': 'custom', offset: [-20, -20], autoPan:false };
-    this.legend = new L.Control({ position: "bottomleft" });
+    this.customOptions = { 'className': 'custom', offset: [-20, -20], autoPan: false };
   }
   ngOnInit(): void {
-    this.loading  = true;
+    this.loading = true;
     this.labelIdx = this.inject.query.findIndex(e => e.column_type === 'varchar' || e.column_type === 'text');
     this.dataIndex = this.inject.query.findIndex(e => e.column_type === 'numeric');
     if (this.inject.query) {
@@ -45,6 +61,8 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     }
     this.color = this.inject.color ? this.inject.color : this.BASE_COLOR;
     this.logarithmicScale = this.inject.logarithmicScale ? this.inject.logarithmicScale : false;
+    this.legendPosition = this.inject.legendPosition ? this.inject.legendPosition : 'bottomright';
+    this.legend = new L.Control({ position: this.legendPosition });
   }
 
   ngAfterViewInit(): void {
@@ -69,6 +87,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
         this.inject.labels, this.labelIdx), this.customOptions);
       layer.on('mouseover', function () { layer.openPopup(); });
       layer.on('mouseout', function () { layer.closePopup(); });
+      layer.on("click", () => this.openLinkedDashboard(layer.feature.properties.name))
     });
     if (this.map) {
       this.geoJson.addTo(this.map);
@@ -76,11 +95,11 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.geoJson.on('add', this.onloadLayer());
   }
 
-  private onloadLayer = ()=> {
-    setTimeout(()=> {
+  private onloadLayer = () => {
+    setTimeout(() => {
       this.loading = false;
     }, 0);
-    
+
   }
 
   private initMap = (): void => {
@@ -234,6 +253,23 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.setGroups();
     this.initShapesLayer();
     this.initLegend(this.groups, this.inject.labels[this.dataIndex], this.color);
+  }
+
+  public changeLegend = (legendPosition: string) => {
+    // this.map.removeLayer(this.geoJson);
+    this.map.removeControl(this.legend);
+    // this.setGroups();
+    //this.initShapesLayer();
+    this.legend = new L.Control({ position: legendPosition });
+    this.initLegend(this.groups, this.inject.labels[this.dataIndex], this.color);
+  }
+
+  public openLinkedDashboard(value: string) {
+    if (this.inject.linkedDashboard) {
+      const props = this.inject.linkedDashboard;
+      const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+      window.open(url, "_blank");
+    }
   }
 
   /**

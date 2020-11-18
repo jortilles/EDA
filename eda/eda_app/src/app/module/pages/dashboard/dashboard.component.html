@@ -120,21 +120,21 @@
 <!-- Right sidebar -->
 <!-- ============================================================== -->
 <p-sidebar [(visible)]="display_v.rightSidebar" position="right" [baseZIndex]="10000">
-    <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddWidget()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddWidget()">
         <div>
             <i class="fa fa-columns"></i>
             <span i18n="@@opcionPanel" class="ml-2">NUEVO PANEL</span>
         </div>
     </div>
 
-    <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddTitle()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddTitle()">
         <div>
             <i class="fa fa-columns"></i>
             <span i18n="@@opcionTitulo" class="ml-2">NUEVO TEXTO</span>
         </div>
     </div>
 
-    <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="addGlobalFilter()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="addGlobalFilter()">
         <div>
             <i class="fa fa-filter"></i>
             <span i18n="@@opcionFiltro" class="ml-2">NUEVO FILTRO</span>
@@ -150,7 +150,7 @@
         </div>
     </div>
 
-    <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveDashboard()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveDashboard()">
         <div>
             <i class="fa fa-save"></i>
             <span i18n="@@opcionGuardar" class="ml-2">GUARDAR INFORME</span>
@@ -173,7 +173,7 @@
 
     <hr>
 
-    <div>
+    <div *ngIf="display_v.edit_mode">
         <form [formGroup]="form">
             <div style="margin: 8px; display: flex;">
                 <p-selectButton [options]="visibleTypes" formControlName="visible"
@@ -197,7 +197,7 @@
     </div>
 </p-sidebar>
 
-<div *ngIf="display_v.edit_mode">
+<div >
     <span i18n="@@notSavedChanges" class="div-cambios " *ngIf="display_v.notSaved"> Hay cambios sin guardar... </span>
 
     <button (click)="display_v.rightSidebar = true"

@@ -1,6 +1,6 @@
 <div class="panel-heading d-flex justify-content-center align-items-center text-center h-100">
 
-    <h3 *ngIf="!titleClick" class="edaTitle mb-0 pointer w-100" (click)="setTitle()"> {{ panel.title }} </h3>
+    <div *ngIf="!titleClick" class="edaTitle mb-0 pointer w-100" (click)="setTitle()"> {{ panel.title }} </div>
 
     <div *ngIf="!!titleClick" class="ui-inputgroup w-100">
         <input type="text" class="w-100" pInputText (focusout)="setTitle()" (keydown.enter)="setTitle()"

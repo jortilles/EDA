@@ -67,10 +67,10 @@ export class HomeComponent implements OnInit {
     private initDashboards(): void {
         this.dashboardService.getDashboards().subscribe(
             res => {
-                this.dashboards.privats = res.dashboards;
-                this.dashboards.publics = res.publics;
-                this.dashboards.grups = res.group;
-                this.dashboards.shared = res.shared;
+                this.dashboards.privats = res.dashboards.sort((a, b) => (a.config.title >b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
+                this.dashboards.publics = res.publics.sort((a, b) => (a.config.title >b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
+                this.dashboards.grups = res.group.sort((a, b) => (a.config.title >b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
+                this.dashboards.shared = res.shared.sort((a, b) => (a.config.title >b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
                 this.groups = _.map(_.uniqBy(res.group, 'group._id'), 'group');
 
                 this.isAdmin = res.isAdmin;

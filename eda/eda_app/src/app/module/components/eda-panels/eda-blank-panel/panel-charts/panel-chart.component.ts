@@ -1,8 +1,9 @@
+import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import {
     Component, OnInit, Input, SimpleChanges,
     OnChanges, ViewChild, ViewContainerRef, ComponentFactoryResolver,
-    OnDestroy, Output, EventEmitter, Self, ElementRef
+    OnDestroy, Output, EventEmitter, Self, ElementRef, NgZone
 } from '@angular/core';
 import { EdaKpiComponent } from '../../../eda-kpi/eda-kpi.component';
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
@@ -21,6 +22,7 @@ import { EdaGeoJsonMapComponent } from '@eda/components/eda-map/eda-geoJsonMap.c
 
 import * as _ from 'lodash';
 import { EdaMap } from '@eda/components/eda-map/eda-map';
+import { EdaD3 } from '@eda/components/eda-d3/eda-d3';
 
 
 
@@ -47,9 +49,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     constructor(public resolver: ComponentFactoryResolver,
         private chartUtils: ChartUtilsService,
-        @Self() private ownRef: ElementRef) { }
+        @Self() private ownRef: ElementRef,
+        private zone: NgZone) { }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {
+        
+     }
 
     ngOnChanges(changes: SimpleChanges): void {
         this.NO_DATA = false
@@ -84,6 +89,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (['geoJsonMap', 'coordinatesMap'].includes(type)) {
             this.renderMap(type);
         }
+        if (type === 'parallelSets'){
+            this.renderParallelSets();
+        }
     }
 
     /**
@@ -116,7 +124,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const manySeries = chartData[1].length > 10 ? true : false;
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
-            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions());
+            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps);
 
         let chartConfig: any = {};
         chartConfig.chartType = this.props.chartType;
@@ -131,6 +139,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         chartConfig.chartOptions = config.chartOptions;
         chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
+
+        chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
 
         this.createEdaChartComponent(chartConfig);
     }
@@ -167,6 +177,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             (<TableConfig>config).visibleRows = data;
         });
         this.currentConfig = this.componentRef.instance.inject;
+        this.componentRef.instance.inject.linkedDashboardProps = this.props.linkedDashboardProps;
     }
 
     private setTableProperties(config: TableConfig) {
@@ -225,6 +236,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.zoom = this.props.config['config']['zoom'] ? this.props.config['config']['zoom'] : null;
         inject.color = this.props.config['config']['color'] ? this.props.config['config']['color'] : '#006400';
         inject.logarithmicScale = this.props.config['config']['logarithmicScale'] ? this.props.config['config']['logarithmicScale'] : false;
+        inject.legendPosition = this.props.config['config']['legendPosition'] ? this.props.config['config']['legendPosition'] : 'bottomleft';
+        inject.linkedDashboard = this.props.linkedDashboardProps;
         if (type === 'coordinatesMap') {
             this.createMapComponent(inject)
         } else {
@@ -244,6 +257,29 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaGeoJsonMapComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
+    }
+
+    private renderParallelSets(){
+        
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        
+        let inject : EdaD3 = new EdaD3;
+        inject.size = this.props.size;
+        inject.id = this.randomID();
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.colors = this.props.config.getConfig()['colors'];
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createParallelSetsComponent(inject);
+    }
+
+    private createParallelSetsComponent(inject:any){
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaD3Component);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+        
     }
 
     private randomID() {

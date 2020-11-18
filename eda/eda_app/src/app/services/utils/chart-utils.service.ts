@@ -1,3 +1,4 @@
+import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 import { ChartJsConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-js-config';
 import { ChartConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-config';
 import { Column } from './../../shared/models/dashboard-models/column.model';
@@ -46,7 +47,8 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes8:Gráfico de Lineas`, value: 'line', subValue: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes9:Mixto: Barras y lineas`, value: 'bar', subValue: 'barline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
-        { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false }
+        { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
+        { label: $localize`:@@chartTypes12:parallelSets`, value: 'parallelSets', subValue: 'parallelSets', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false }
     ];
 
     public filterTypes: FilterType[] = [
@@ -191,7 +193,7 @@ export class ChartUtilsService {
             [
                 'table', 'crosstable', 'kpi', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'bar',
-                'horizontalBar', 'barline', 'stackedbar'
+                'horizontalBar', 'barline', 'stackedbar', 'parallelSets'
             ];
         //table (at least one column)
         if (dataDescription.totalColumns > 0) notAllowed.splice(notAllowed.indexOf('table'), 1);
@@ -232,11 +234,16 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('coordinatesMap'), 1);
         }
 
-        //GeoJson Map ()
+        //GeoJson Map 
         if (dataDescription.numericColumns.length === 1
             && dataDescription.query.filter(elem => elem.linkedMap).length > 0
             && dataDescription.totalColumns === 2) {
             notAllowed.splice(notAllowed.indexOf('geoJsonMap'), 1);
+        }
+
+        //parallelSets
+        if(dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length > 1){
+            notAllowed.splice(notAllowed.indexOf('parallelSets'), 1);
         }
         return notAllowed;
     }
@@ -359,7 +366,10 @@ export class ChartUtilsService {
     }
 
     public initChartOptions(type: string, numericColumn: string,
-        labelColum: any[], manySeries: boolean, stacked: boolean, size: any): { chartOptions: any, chartPlugins: any } {
+        labelColum: any[], manySeries: boolean, stacked: boolean, size: any, linkedDashboard:LinkedDashboardProps): { chartOptions: any, chartPlugins: any } {
+
+        const t = $localize`:@@linkedTo:linked to`;
+        const linked = linkedDashboard ?  `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
 
         const options = {
             chartOptions: {},
@@ -426,6 +436,7 @@ export class ChartUtilsService {
                                 }
 
                             },
+                            footer : () => { return linked },
                             afterLabel: (t, d) => { }
                         }
                     },
@@ -452,7 +463,8 @@ export class ChartUtilsService {
                                     return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE')} `;
                             },
                             afterLabel: (t, d) => {
-                            }
+                            },
+                            footer : () => { return linked },
                         }
                     },
                     scales: {
@@ -512,8 +524,7 @@ export class ChartUtilsService {
                                 if (data && tooltipItem)
                                     return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.xLabel).toLocaleString('de-DE')} `;
                             },
-                            afterLabel: (t, d) => {
-                            }
+                            footer : () => { return linked },
                         }
 
                     },
@@ -579,8 +590,7 @@ export class ChartUtilsService {
                                 if (data && tooltipItem)
                                     return ` ${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE')}  `;
                             },
-                            afterLabel: (tooltipItem, data) => {
-                            }
+                            footer : () => { return linked },
                         }
                     },
                     scales: {
