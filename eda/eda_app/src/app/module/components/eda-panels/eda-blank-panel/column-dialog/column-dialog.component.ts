@@ -75,9 +75,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.carregarValidacions();
         
         for (let i = 0, n = this.filter.types.length; i < n; i += 1) {
-            if (this.selectedColumn.column_type === 'varchar') {
+            if (this.selectedColumn.column_type === 'text') {
                 this.filter.types[i].typeof.map(type => {
-                    if (type === 'varchar') {
+                    if (type === 'text') {
                         allowed.push(this.filter.types[i]);
                     }
                 });

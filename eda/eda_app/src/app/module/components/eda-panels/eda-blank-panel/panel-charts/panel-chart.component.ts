@@ -315,7 +315,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             } else if (_.isEqual(r.column_type, 'numeric')) {
                 // No em surt aixoooo
                 tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label }))
-            } else if (_.isEqual(r.column_type, 'varchar')) {
+            } else if (_.isEqual(r.column_type, 'text')) {
                 // No em surt aixoooo
                 tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label }));
             } else if (_.isEqual(r.column_type, 'text')) {

@@ -75,7 +75,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
     let type = 'numeric';
     for (let i = 0; i < data.length; i++) {
       if (data[i][column_index] !== null && !parseFloat(data[i][column_index])) {
-        type = 'varchar';
+        type = 'text';
         break;
       }
     }

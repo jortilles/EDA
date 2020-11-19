@@ -68,7 +68,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
     if (this.controller.params.charttype !== 'table' && !this.controller.params.modeSQL) {
 
-      let column = this.controller.params.query.filter(col => col.column_type === 'varchar')
+      let column = this.controller.params.query.filter(col => col.column_type === 'text')
         .map(col => { return { col: col.column_name, table: col.table_id, colname: col.display_name.default } })[0];
       this.column = column.colname;
       this.initDashboards(column);
@@ -77,7 +77,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
     else if (this.controller.params.charttype === 'table' && !this.controller.params.modeSQL) {
 
-      this.columns = this.controller.params.query.filter(col => col.column_type === 'varchar')
+      this.columns = this.controller.params.query.filter(col => col.column_type === 'text')
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
         });
@@ -85,7 +85,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
     }
 
     else if (this.controller.params.modeSQL) {
-      this.columns = this.controller.params.query.filter(col => col.column_type === 'varchar')
+      this.columns = this.controller.params.query.filter(col => col.column_type === 'text')
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
         });

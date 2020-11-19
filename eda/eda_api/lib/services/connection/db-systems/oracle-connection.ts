@@ -257,20 +257,7 @@ export class OracleConnection extends AbstractConnection {
             .join(' ');
     }
 
-    private normalizeType(type: string) {
-        switch (type) {
-            case 'NUMBER': return 'numeric';
-            case 'FLOAT': return 'numeric';
-            case 'LONG': return 'NUMBER';
-            case 'BOOLEAN': return 'number';
-            case 'VARCHAR2': return 'varchar';
-            case 'DATE': return 'date';
-            case 'TIMESTAMP': return 'date';
-            // case 'char': return 'varchar';
-            // case 'char': return 'varchar';
-        }
-
-    }
+ 
 
     private async commonColumns(dm) {
         let data_model = dm;

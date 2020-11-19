@@ -213,24 +213,7 @@ export class PgConnection extends AbstractConnection {
             .join(' ');
     }
 
-    private normalizeType(type: string) {
-        switch (type) {
-            case 'int4': return 'numeric';
-            case 'int8': return 'numeric';
-            case 'smallint': return 'numeric';
-            case 'serial': return 'numeric';
-            case 'decimal': return 'numeric';
-            case 'float8': return 'numeric';
-            case 'float16': return 'numeric';
-            case 'real': return 'numeric';
-            case 'timestamp': return 'date';
-            case 'time': return 'date';
-            case 'TIMESTAMPTZ': return 'date';
-            case 'bool': return 'boolean';
-            case 'text': return 'varchar';
-            case 'char': return 'varchar';
-        }
-    }
+
 
     private async commonColumns(dm) {
         let data_model = dm;

@@ -1,4 +1,4 @@
-import { Component, Input, AfterViewInit, ElementRef, ViewChild, AfterContentChecked, AfterViewChecked } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
@@ -116,7 +116,7 @@ export class EdaD3Component implements AfterViewInit {
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
-          const url = `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${data.names[0]}`
+          const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${data.names[0]}`
           window.open(url, "_blank");
         }
       })

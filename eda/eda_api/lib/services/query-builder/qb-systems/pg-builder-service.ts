@@ -206,7 +206,7 @@ export class PgBuilderService extends QueryBuilderService {
     });
     if (!Array.isArray(filter)) {
       switch (columnType) {
-        case 'varchar': return `'${filter}'`;
+        case 'text': return `'${filter}'`;
         //case 'text': return `'${filter}'`;
         case 'numeric': return filter;
         case 'date': return `to_date('${filter}','YYYY-MM-DD')`

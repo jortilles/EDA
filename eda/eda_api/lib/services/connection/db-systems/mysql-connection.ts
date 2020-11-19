@@ -194,37 +194,6 @@ export class MysqlConnection extends AbstractConnection {
     }
 
 
-    private normalizeType(type: string) {
-        switch (type) {
-            case 'int': return 'numeric';
-            case 'smallint': return 'numeric';
-            case 'mediumint': return 'numeric';
-            case 'bigInt': return 'numeric';
-            case 'integer': return 'numeric';
-            case 'serial': return 'numeric';
-            case 'decimal': return 'numeric';
-            case 'dec': return 'numeric';
-            case 'float': return 'numeric';
-            case 'double precission': return 'numeric';
-            case 'double': return 'numeric';
-            case 'float16': return 'numeric';
-            case 'real': return 'numeric';
-            case 'bigint' : return 'numeric'
-            case 'timestamp': return 'date';
-            case 'time': return 'date';
-            case 'datetime': return 'date';
-            case 'date': return 'date';
-            case 'TIMESTAMPTZ': return 'date';
-            case 'bool': return 'boolean';
-            case 'text': return 'varchar';
-            case 'tinytext': return 'varchar';
-            case 'mediumtext': return 'varchar';
-            case 'longtext': return 'varchar';
-            case 'char': return 'varchar';
-            case 'varchar' : return 'varchar';
-            default :  console.log(type); return 'numeric';
-        }
-    }
 
     private async commonColumns(dm) {
         let data_model = dm;

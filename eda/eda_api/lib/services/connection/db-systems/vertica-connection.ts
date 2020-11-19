@@ -189,25 +189,6 @@ export class VerticaConnection extends AbstractConnection {
             .join(' ');
     }
 
-    private normalizeType(type: string) {
-        let cleanType = type.replace(/ *\([^)]*\) */g, '');
-        switch (cleanType) {
-            case 'int': return 'numeric';
-            case 'integer': return 'numeric';
-            case 'smallint': return 'numeric';
-            case 'serial': return 'numeric';
-            case 'decimal': return 'numeric';
-            case 'float': return 'numeric';
-            case 'real': return 'numeric';
-            case 'timestamp': return 'date';
-            case 'time': return 'date';
-            case 'TIMESTAMP': return 'date';
-            case 'bool': return 'boolean';
-            case 'text': return 'varchar';
-            case 'char': return 'varchar';
-            default: return cleanType;
-        }
-    }
 
     private mapToJSON = (dbResult) => {
         const fieldNames = dbResult.fields.map(field => field.name) // List of all field names

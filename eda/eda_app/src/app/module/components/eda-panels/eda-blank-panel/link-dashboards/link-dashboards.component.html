@@ -60,8 +60,8 @@
     </div>
 
     <div class="ui-g-6">
-      <h6 class="ui-g-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
-        Informe a vincular
+      <h6 class="ui-g-12" i18n="@@LinkDashboardDbFilter" class="custom-border-b1">
+        Campo del informe 
       </h6>
       <div class="ui-g-12">
         <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard" placeholder="Dashboard" (onChange)="filterFilters()"></p-dropdown>
@@ -69,8 +69,8 @@
     </div>
 
     <div class="ui-g-6">
-      <h6 class="ui-g-12" i18n="@@LinkDashboardDbFilter" class="custom-border-b1">
-        Campo del informe 
+      <h6 class="ui-g-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
+        Informe a vincular
       </h6>
       <div class="ui-g-12">
         <p-dropdown [options]="filters" [(ngModel)]="selectedFilter" optionLabel="colname" placeholder="Column" (onChange)="handleTargetColumn()"></p-dropdown>

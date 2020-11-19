@@ -53,7 +53,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   }
   ngOnInit(): void {
     this.loading = true;
-    this.labelIdx = this.inject.query.findIndex(e => e.column_type === 'varchar' || e.column_type === 'text');
+    this.labelIdx = this.inject.query.findIndex(e => e.column_type === 'text' || e.column_type === 'text');
     this.dataIndex = this.inject.query.findIndex(e => e.column_type === 'numeric');
     if (this.inject.query) {
       this.serverMap = this.inject.maps.filter(map => map['mapID'] === this.inject.query[this.labelIdx].linkedMap)[0];

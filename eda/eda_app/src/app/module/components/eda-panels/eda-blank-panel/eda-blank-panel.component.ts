@@ -560,7 +560,7 @@ export class EdaBlankPanelComponent implements OnInit {
                         if (typeof field === 'number') {
                             types[i] = 'numeric';
                         } else if (typeof field === 'string') {
-                            types[i] = 'varchar';
+                            types[i] = 'text';
                         }
                     }
                 });

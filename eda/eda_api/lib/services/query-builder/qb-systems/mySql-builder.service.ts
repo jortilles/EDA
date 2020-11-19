@@ -215,7 +215,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     if (!Array.isArray(filter)) {
       switch (columnType) {
-        case 'varchar': return `'${filter}'`;
+        case 'text': return `'${filter}'`;
         //case 'text': return `'${filter}'`;
         case 'numeric': return filter;
         case 'date': return `STR_TO_DATE('${filter}','%Y-%m-%d')`

@@ -21,7 +21,7 @@
                 PUBLICOS
             </h4>
     
-            <div *ngFor="let dashboard of dashboards.shared" class="ui-g-12 ui-md-12 mb-2">
+            <div *ngFor="let dashboard of dashboards.shared" class="ui-g-12 ui-md-12 mb-2" style="padding: 0px;">
     
                 <eda-dashboard-panel>
                     <div class="d-flex justify-content-between align-items-end">
@@ -45,7 +45,7 @@
                 COMUNES
             </h4>
     
-            <div *ngFor="let dashboard of dashboards.publics" class="ui-g-12 ui-md-12 mb-2">
+            <div *ngFor="let dashboard of dashboards.publics" class="ui-g-12 ui-md-12 mb-2" style="padding: 0px;">
     
                 <eda-dashboard-panel>
                     <div class="d-flex justify-content-between align-items-end">
@@ -69,7 +69,7 @@
                 MIS GRUPOS
             </h4>
     
-            <div *ngFor="let group of groups" class="ui-g-12">
+            <div *ngFor="let group of groups" class="ui-g-12" style="padding: 0px;">
                 <!-- <h6>{{group.name}}:</h6> -->
     
                 <div *ngFor="let dashboard of dashboards.grups | ids:'group':group" class="ui-g-12 ui-md-12 mb-2" style="padding: 0px;">
@@ -102,7 +102,7 @@
                 PRIVADOS
             </h4>
     
-            <div *ngFor="let dashboard of dashboards.privats" class="ui-g-12 ui-md-12 mb-2">
+            <div *ngFor="let dashboard of dashboards.privats" class="ui-g-12 ui-md-12 mb-2" style="padding: 0px;">
     
                 <ng-container *ngIf="!isAdmin">
                     <eda-dashboard-panel>

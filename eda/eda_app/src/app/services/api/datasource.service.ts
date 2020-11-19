@@ -221,7 +221,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
         columnPanel.type = node.data;
         columnPanel.name = node.label;
-        columnPanel.column_type = column.column_type === 'varchar' ? 'text' : column.column_type;
+        columnPanel.column_type = column.column_type === 'text' ? 'text' : column.column_type;
         columnPanel.technical_name = column.column_name;
         columnPanel.description = column.description.default;
 

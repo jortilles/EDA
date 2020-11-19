@@ -140,7 +140,7 @@ export const PanelOptions = {
 
     menu.push(PanelOptions.editChart(panelComponent));
 
-    if(editmode && !["parallelSets", "crosstable", "kpi"].includes(type) ) menu.push(PanelOptions.linkPanel(panelComponent));
+    if(editmode && ![ "crosstable", "kpi"].includes(type) ) menu.push(PanelOptions.linkPanel(panelComponent));
     
     menu.push(PanelOptions.exportExcel(panelComponent));
 

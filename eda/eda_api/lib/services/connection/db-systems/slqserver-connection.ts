@@ -220,34 +220,6 @@ export class SQLserverConnection extends AbstractConnection {
         return column;
     }
 
-    private normalizeType(type: string) {
-        switch (type) {
-            case 'int': return 'numeric';
-            case 'tinyint': return 'numeric';
-            case 'smallint': return 'numeric';
-            case 'mediumint': return 'numeric';
-            case 'bigInt': return 'numeric';
-            case 'bigint': return 'numeric';
-            case 'integer': return 'numeric';
-            case 'decimal': return 'numeric';
-            case 'dec': return 'numeric';
-            case 'double': return 'numeric';
-            case 'varbinary': return 'numeric';
-            case 'bit': return 'numeric';
-            case 'float': return 'numeric';
-            case 'timestamp': return 'date';
-            case 'time': return 'date';
-            case 'datetime': return 'date';
-            case 'date': return 'date';
-            case 'bool': return 'boolean';
-            case 'char': return 'varchar';
-            case 'text': return 'varchar';
-            case 'nvarchar': return 'varchar';
-            case 'nchar': return 'varchar';
-            default: 'varchar';
-        }
-    }
-
 
     private normalizeName(name: string) {
         let out = name.split('_').join(' ');

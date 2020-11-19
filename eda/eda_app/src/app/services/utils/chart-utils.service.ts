@@ -52,17 +52,17 @@ export class ChartUtilsService {
     ];
 
     public filterTypes: FilterType[] = [
-        { label: $localize`:@@filters1:IGUAL A (=)`, value: '=', typeof: ['numeric', 'date', 'varchar'] },
-        { label: $localize`:@@filters2:NO IGUAL A (!=)`, value: '!=', typeof: ['numeric', 'date', 'varchar'] },
+        { label: $localize`:@@filters1:IGUAL A (=)`, value: '=', typeof: ['numeric', 'date', 'text'] },
+        { label: $localize`:@@filters2:NO IGUAL A (!=)`, value: '!=', typeof: ['numeric', 'date', 'text'] },
         { label: $localize`:@@filters3:MAYOR A (>)`, value: '>', typeof: ['numeric', 'date'] },
         { label: $localize`:@@filters4:MENOR A (<)`, value: '<', typeof: ['numeric', 'date'] },
         { label: $localize`:@@filters5:MAYOR o IGUAL A (>=)`, value: '>=', typeof: ['numeric', 'date'] },
         { label: $localize`:@@filters6:MENOR o IGUAL A (<=)`, value: '<=', typeof: ['numeric', 'date'] },
         { label: $localize`:@@filters7:ENTRE (between)`, value: 'between', typeof: ['numeric', 'date'] },
-        { label: $localize`:@@filters8:DENTRO DE (in)`, value: 'in', typeof: ['numeric', 'date', 'varchar'] },
-        { label: $localize`:@@filters9:FUERA DE (not in)`, value: 'not_in', typeof: ['numeric', 'date', 'varchar'] },
-        { label: $localize`:@@filters10:PARECIDO A (like)`, value: 'like', typeof: ['varchar'] },
-        { label: $localize`:@@filters11:VALORES NO NULOS (not null)`, value: 'not_null', typeof: ['numeric', 'date', 'varchar'] }
+        { label: $localize`:@@filters8:DENTRO DE (in)`, value: 'in', typeof: ['numeric', 'date', 'text'] },
+        { label: $localize`:@@filters9:FUERA DE (not in)`, value: 'not_in', typeof: ['numeric', 'date', 'text'] },
+        { label: $localize`:@@filters10:PARECIDO A (like)`, value: 'like', typeof: ['text'] },
+        { label: $localize`:@@filters11:VALORES NO NULOS (not null)`, value: 'not_null', typeof: ['numeric', 'date', 'text'] }
     ];
 
     public ordenationTypes: OrdenationType[] = [
