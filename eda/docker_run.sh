@@ -3,6 +3,11 @@
 if [ -d /eda/mongo/data ] 
 then 
 	echo "instalacion hecha... continuamos" 
+	mongod --dbpath /eda/mongo/data  --fork --logpath /eda/mongo/log
+	service apache2 start
+	cd /eda/eda_api
+	echo "restarting " >>/eda/eda_api/api.log
+	npm run start:forever >/eda/eda_api/api.log 2>&1  
 else
 
 	mkdir -p /eda/mongo/data
