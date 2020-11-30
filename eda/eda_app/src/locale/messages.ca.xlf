@@ -564,7 +564,7 @@
       </trans-unit>
        <trans-unit id="dangerQueryText3" datatype="html">
         <source>¿Deseas continuar?</source>
-        <target>Do you want to continue?</target>
+        <target>Vols continuar?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component.html</context>
           <context context-type="linenumber">8</context>
@@ -765,7 +765,7 @@
                                         Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c )
                                     </source>
         <target>
-                                        Has d'utilitzar alies per totes les taules de laconsulta ( select a,b from tabla t where c )
+                                        Has d'utilitzar alies per totes les taules de la consulta ( select a,b from taula t where c )
                                     </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -842,7 +842,7 @@
       </trans-unit>
       <trans-unit id="indicaciones11" datatype="html">
         <source> Tenemos un filtro en el informe para el campo &apos;city&apos; de la tabla CUSTOMERS</source>
-         <target> Tenim un filtre a l'informe pe el camp &apos;city&apos; de la taula CUSTOMERS</target>
+         <target> Tenim un filtre a l'informe per el camp &apos;city&apos; de la taula CUSTOMERS</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
           <context context-type="linenumber">248</context>
@@ -2845,7 +2845,52 @@
       <target>Vincular amb un altre informe</target>
     </trans-unit> 
 
+    <trans-unit id="NoTag">
+     <source> Sin Etiqueta  </source>
+      <target>Sense Etiqueta </target>
+    </trans-unit> 
 
+
+     <trans-unit id="addTag">
+     <source>AÑADIR ETIQUETA</source>
+      <target>AFEGIR ETIQUETA </target>
+    </trans-unit> 
+
+     <trans-unit id="AllTags">
+     <source> Todos  </source>
+      <target>Tots </target>
+    </trans-unit> 
+
+    <trans-unit id="linkedTo">
+     <source> Vinculado con  </source>
+      <target>Vinculat amb   </target>
+    </trans-unit> 
+
+
+    <trans-unit id="newTag">
+     <source> Nueva etiqueta  </source>
+      <target> Nova etiqueta  </target>
+    </trans-unit> 
+
+     <trans-unit id="DataModelHeader">
+     <source> Configurar nuevo orígen de datos  </source>
+      <target> Configurar nou origen de dades  </target>
+    </trans-unit> 
+
+     <trans-unit id="OptimizeQuery">
+     <source> Optimizar consultas  </source>
+      <target> Optimitzar consultes  </target>
+    </trans-unit> 
+
+     <trans-unit id="inputBigQueryKeys">
+     <source> Subir archivo de claves (json) *  </source>
+      <target> Pujar arxiu de claus (json) *   </target>
+    </trans-unit> 
+
+    <trans-unit id="DatasourceText">
+     <source> Creada correctamente  </source>
+      <target> Creada correctament  </target>
+    </trans-unit> 
 
 
     </body>

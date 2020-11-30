@@ -18,11 +18,23 @@ export class HomeComponent implements OnInit {
         publics: [],
         privats: [],
         grups: [],
-        shared:[]
+        shared: []
     };
+    public visibleDashboards = {
+        publics: [],
+        privats: [],
+        grups: [],
+        shared: []
+    }
+    public selectedTag : any;
+
     public groups: IGroup[] = [];
     public isAdmin: boolean;
     public toLitle: boolean = false;
+    public tags: Array<any> = [];
+
+    public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
+    public AllTags = $localize`:@@AllTags:Todos`;
 
     constructor(
         private dashboardService: DashboardService,
@@ -52,14 +64,14 @@ export class HomeComponent implements OnInit {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
 
-         if ( userName === 'edaanonim') {
+        if (userName === 'edaanonim') {
             this.router.navigate(['/login']);
         }
     }
 
     private initDatasources(): void {
         this.sidebarService.currentDatasources.subscribe(
-            data =>  this.dss = data,
+            data => this.dss = data,
             err => this.alertService.addError(err)
         );
     }
@@ -67,13 +79,23 @@ export class HomeComponent implements OnInit {
     private initDashboards(): void {
         this.dashboardService.getDashboards().subscribe(
             res => {
-                this.dashboards.privats = res.dashboards.sort((a, b) => (a.config.title >b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
-                this.dashboards.publics = res.publics.sort((a, b) => (a.config.title >b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
-                this.dashboards.grups = res.group.sort((a, b) => (a.config.title >b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
-                this.dashboards.shared = res.shared.sort((a, b) => (a.config.title >b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
+                this.dashboards.privats = res.dashboards.sort((a, b) => (a.config.title > b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
+                this.dashboards.publics = res.publics.sort((a, b) => (a.config.title > b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
+                this.dashboards.grups = res.group.sort((a, b) => (a.config.title > b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
+                this.dashboards.shared = res.shared.sort((a, b) => (a.config.title > b.config.title) ? 1 : ((b.config.title > a.config.title) ? -1 : 0));
                 this.groups = _.map(_.uniqBy(res.group, 'group._id'), 'group');
 
                 this.isAdmin = res.isAdmin;
+
+                /**Get unique tags */
+                this.tags = Array.from(new Set([].concat.apply([], [...this.dashboards.privats, this.dashboards.publics, this.dashboards.grups, this.dashboards.shared])
+                    .map(db => db.config.tag))).sort();
+                this.tags = this.tags.map(tag => {return {value:tag, label:tag}})
+                this.tags.unshift({label:this.noTagLabel, value:0});
+                this.tags.push({label:this.AllTags, value:1});
+                this.tags = this.tags.filter(tag => tag.value !== null);
+                localStorage.setItem('tags', JSON.stringify(this.tags));
+                this.filterDashboards({label:this.AllTags, value:1});
             },
             err => this.alertService.addError(err)
         );
@@ -81,9 +103,9 @@ export class HomeComponent implements OnInit {
 
     public initDialog(): void {
         this.dashController = new EdaDialogController({
-            params: {dataSources: this.dss},
+            params: { dataSources: this.dss },
             close: (event, response) => {
-                if ( !_.isEqual(event, EdaDialogCloseEvent.NONE) ) {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
                     this.initDashboards();
                     this.goToDashboard(response);
                 }
@@ -104,7 +126,7 @@ export class HomeComponent implements OnInit {
             confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
             cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
         }).then(borrado => {
-            if ( borrado.value ) {
+            if (borrado.value) {
                 this.dashboardService.deleteDashboard(dashboard._id).subscribe(
                     () => {
                         Swal.fire($localize`:@@Deleted:¡Eliminado!`, $localize`:@@DashboardDeletedInfo:Informe eliminado correctamente.`, 'success');
@@ -126,6 +148,18 @@ export class HomeComponent implements OnInit {
 
     public getGroupsNamesByDashboard(group: any[]): string {
         return group.map((elem: any) => elem.name).join(' , ');
+    }
+
+    public filterDashboards(tag: any) {
+        this.selectedTag = tag.value;
+        if (tag.value === 0) tag.value = null;
+        if (tag.value === 1) this.visibleDashboards =  _.cloneDeep(this.dashboards);
+        else {
+            this.visibleDashboards.publics = this.dashboards.publics.filter(db => db.config.tag === tag.value);
+            this.visibleDashboards.shared = this.dashboards.shared.filter(db => db.config.tag === tag.value);
+            this.visibleDashboards.grups = this.dashboards.grups.filter(db => db.config.tag === tag.value);
+            this.visibleDashboards.privats = this.dashboards.privats.filter(db => db.config.tag === tag.value);
+        }
     }
 
 }

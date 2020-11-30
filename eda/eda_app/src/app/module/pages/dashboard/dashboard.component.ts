@@ -59,6 +59,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         minWidth: 6,
         minHeight: 1
     };
+    public tag : any;;
+    public tags: Array<any>;
+    public selectedtag :any;
+    public addTag:boolean = false;
+
 
     // Display Variables
     public display_v = {
@@ -80,6 +85,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public filtersList: Array<any> = [];
 
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
+    public addTagString : string = $localize`:@@addTag:AÑADIR ETIQUETA`;
+    public newTag = $localize`:@@newTag:Nueva etiqueta`;
 
     constructor(
         private dashboardService: DashboardService,
@@ -96,6 +103,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.initializeResponsiveSizes();
         this.initializeGridsterOptions();
         this.initializeForm();
+        this.tags = JSON.parse(localStorage.getItem('tags')).filter(tag => tag.value !== 1);
+        this.tags.push({value:2, label:this.newTag});
     }
 
     // ng cycle lives
@@ -155,12 +164,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private initializeGridsterOptions(): void {
+
         this.gridsterOptions = {
             lanes: this.lanes,
             direction: 'vertical',
             floating: false,
-            dragAndDrop: true,
-            resizable: true,
+            dragAndDrop: window.innerWidth > 1000,
+            resizable: window.innerWidth > 1000,
             resizeHandles: {
                 s: true,
                 e: true,
@@ -234,6 +244,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
                     me.form.controls['visible'].setValue(config.visible);
+                    me.tag = config.tag;
+                    me.selectedtag = me.tags.filter(tag => tag.value === me.tag)[0];
+
 
                     if (config.visible === 'group') {
                         this.setDashboardGrups(res);
@@ -363,7 +376,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.edaPanels.forEach(panel => {
             if (panel.currentQuery.length !== 0) {
                 panel.display_v.chart = '';
-                panel.runQuery(true);
+                panel.runQueryFromDashboard(true);
             }
         });
     }
@@ -785,6 +798,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     filters: this.cleanFiltersData(),
                     applyToAllfilter: this.applyToAllfilter,
                     visible: this.form.controls['visible'].value,
+                    tag : this.tag && this.tag.label ? this.tag.label : this.tag
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
             };
@@ -869,6 +883,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public itemChange($event: any, panel): void {
         this.gridItemEvent = $event;
         this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0].onGridsterResize($event);
+    }
+
+    public selectTag(){
+        this.addTag = this.selectedtag.label === this.newTag;
+        this.tag = this.selectedtag;
+        if(this.tag.value === 0) this.tag.label = null;
     }
 
 }

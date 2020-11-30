@@ -48,6 +48,7 @@ export abstract class AbstractConnection {
             case 'INT4': return 'numeric';
             case 'INT8': return 'numeric';
             case 'INT': return 'numeric';
+            case 'INT64': return 'numeric';
             case 'INTEGER': return 'numeric';
             case 'TINYINT': return 'numeric';
             case 'SMALLINT': return 'numeric';
@@ -62,6 +63,7 @@ export abstract class AbstractConnection {
             case 'FLOAT': return 'numeric';
             case 'FLOAT8': return 'numeric';
             case 'FLOAT16': return 'numeric';
+            case 'FLOAT64' : return 'numeric';
             case 'REAL': return 'numeric';
             case 'LONG': return 'numeric';
             case 'DATE': return 'date';

@@ -16,7 +16,8 @@ import { GroupListComponent } from './groups-management/group-list/group-list.co
 import { GroupDetailComponent } from './groups-management/group-detail/group-detail.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DashboardFilterDialogComponent } from './dashboard/filter-dialog/dashboard-filter-dialog.component';
-import { DataSourcesComponent } from './data-sources/data-sources.component';
+import { DataSourcesComponent } from './data-sources/datasource-configuration/data-sources.component';
+import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.component'
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 import { DataSourceDetailComponent } from './data-sources/data-source-detail/data-source-detail.component';
 import { CreateDashboardComponent } from './home/create-dashboard/create-dashboard.component';
@@ -59,7 +60,8 @@ import { UploadFileComponent } from './data-sources/data-source-detail/upload-fi
         MapDialogComponent,
         UploadFileComponent,
         ViewDialogComponent,
-        AddCsvComponent
+        AddCsvComponent,
+        DsConfigWrapperComponent
     ]
 })
 export class PagesModule { }

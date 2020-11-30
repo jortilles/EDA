@@ -1,0 +1,6 @@
+.main{
+  padding: 5rem;
+  margin: 5rem;
+  display: flex; 
+  justify-content: center;
+}

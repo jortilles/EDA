@@ -41,6 +41,7 @@ import { AccordionModule } from 'primeng/accordion';
 import { TooltipModule } from 'primeng/tooltip';
 import {OrderListModule} from 'primeng/orderlist';
 import {InputNumberModule} from 'primeng/inputnumber';
+import {ToolbarModule} from 'primeng/toolbar';
 
 @NgModule({
     providers: [ConfirmationService],
@@ -85,7 +86,8 @@ import {InputNumberModule} from 'primeng/inputnumber';
         AccordionModule,
         TooltipModule,
         OrderListModule,
-        InputNumberModule
+        InputNumberModule,
+        ToolbarModule
     ]
 })
 export class PrimengModule { }

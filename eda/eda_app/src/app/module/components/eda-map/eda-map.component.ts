@@ -42,7 +42,9 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
       this.map = L.map(this.inject.div_name, {
         //center: [41.38879, 2.15899],
         center: this.getCenter(this.inject.data),
-        zoom: this.inject.zoom ? this.inject.zoom : 12
+        zoom: this.inject.zoom ? this.inject.zoom : 12,
+        dragging: !L.Browser.mobile,
+        tap: !L.Browser.mobile
       });
       const tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
         maxZoom: 19,

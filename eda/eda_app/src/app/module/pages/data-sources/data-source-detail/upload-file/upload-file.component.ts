@@ -1,4 +1,4 @@
-import { ViewChild, Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { ViewChild, Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { UploadFileService } from '@eda/services/utils/upload-file.service';
 
 
@@ -12,6 +12,7 @@ export class UploadFileComponent implements OnInit {
 
   @ViewChild('file', { static: false }) file: { nativeElement: { files: { [key: string]: File; }; value: string; click: () => void; }; };
   @Output() onFileSaved = new EventEmitter<string>();
+  @Input() route : string;
 
   public files: Set<File> = new Set();
 
@@ -53,7 +54,7 @@ export class UploadFileComponent implements OnInit {
 
   async uploadFile() {
     this.progressBar = true;
-    this.uploadService.upload(this.loadedfile).subscribe(
+    this.uploadService.upload(this.loadedfile, this.route).subscribe(
       data => {
       this.currentFile = data;
       this.onFileSaved.emit('foo');

@@ -58,8 +58,6 @@
 
                 </ng-container>
 
-
-
             </ngx-gridster-item>
         </ng-container>
 
@@ -147,6 +145,15 @@
         <div>
             <i class="fa fa-ban"></i>
             <span i18n="@@opcionInforme" class="ml-2">RECARGAR INFORME</span>
+        </div>
+    </div>
+
+    <div class="right-sidebar-blocks-options block-options-bg pointer mt-1">
+        <div>
+            <i class="fa fa-folder-open"></i>
+            <span  class="ml-2"> {{addTagString}} </span>
+            <p-dropdown [options]="tags" [(ngModel)]="selectedtag" optionLabel="label" (onChange)="selectTag()" [placeholder]="newTag" ></p-dropdown>
+            <input style="max-width: 70%; margin-top: 0.2rem;" *ngIf="addTag" type="text" pInputText [(ngModel)]="tag.label"> 
         </div>
     </div>
 

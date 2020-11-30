@@ -106,7 +106,9 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {
         center: this.getCenter(this.inject.data),
-        zoom: this.inject.zoom ? this.inject.zoom : 12
+        zoom: this.inject.zoom ? this.inject.zoom : 12,
+        dragging: !L.Browser.mobile,
+        tap: !L.Browser.mobile
       });
       const tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
         maxZoom: 19,

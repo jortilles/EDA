@@ -2,7 +2,7 @@
 
     <p-panel i18n-header="@@editModelHeaders" header="Editar {{tablePanel.type ? tablePanel.name : ''}}">
         <p-header style="font-size: 18px;">
-           
+
         </p-header>
         <div style="margin: 10px">
             <h6 i18n="@@inputNombre">Nombre</h6>
@@ -46,7 +46,8 @@
         </div>
 
         <div *ngIf="selectedTableType !=='view'" style="margin: 10px">
-            <button i18n="@@addCalculatedCol" class="btn-sm btn-secondary functions-button" (click)="openNewColDialog()">Añadir columna
+            <button i18n="@@addCalculatedCol" class="btn-sm btn-secondary functions-button"
+                (click)="openNewColDialog()">Añadir columna
                 calculada</button>
         </div>
 
@@ -65,7 +66,7 @@
     <p-panel i18n-header="@@editModelHeaders" header="Editar {{columnPanel.type ?  columnPanel.name : ''}}">
 
         <p-header style="font-size: 18px;">
-           
+
         </p-header>
 
         <div style="margin: 10px">
@@ -149,7 +150,8 @@
 </div>
 
 <app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
-<app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController"></app-column-permission-dialog>
+<app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController">
+</app-column-permission-dialog>
 <app-calculated-column-dialog *ngIf="newColController" [controller]="newColController"></app-calculated-column-dialog>
 <app-map-dialog *ngIf="mapController" [controller]="mapController"></app-map-dialog>
 <app-view-dialog *ngIf="viewController" [controller]="viewController"></app-view-dialog>
@@ -158,11 +160,11 @@
 
 <div *ngIf="typePanel==='root' && modelPanel.metadata" class="tp-container">
 
-    <p-panel  i18n-header="@@editModelHeaders">
+    <p-panel i18n-header="@@editModelHeaders">
         <p-header style="font-size: 18px;">
             <span>Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}</span>
         </p-header>
-        <div >
+        <div>
             <h5 i18n="@@metadata">
                 Metadata
             </h5>
@@ -187,68 +189,70 @@
                 </p-dropdown>
             </div>
 
-            <div style="margin: 10px">
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'" style="margin: 10px">
                 <h6 i18n="@@inputHost">
                     Host
                 </h6>
                 <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
             </div>
 
-            <div style="margin: 10px">
+            <div  style="margin: 10px">
                 <h6 i18n="@@inputNombreDB">
                     Base de datos
                 </h6>
                 <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.database" (keyup)="update()">
             </div>
 
-            <div style="margin: 10px">
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'" style="margin: 10px">
                 <h6 i18n="@@inputPuerto">
                     Puerto
                 </h6>
                 <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.port" (keyup)="update()">
             </div>
 
-            <div style="margin: 10px">
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'" style="margin: 10px">
                 <h6 i18n="@@inputNombreEsquemaModel">
                     Esquema
                 </h6>
                 <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.schema" (keyup)="update()">
             </div>
 
-            <div style="margin: 10px">
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'" style="margin: 10px">
                 <h6 i18n="@@inputNombreUsuario">
                     Usuario
                 </h6>
                 <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.user" (keyup)="update()">
             </div>
 
-            <div style="margin: 10px">
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'" style="margin: 10px">
                 <h6 i18n="password@@inputPassword">
                     Password
                 </h6>
                 <input pPassword type="password" [(ngModel)]="modelPanel.connection.password" (keyup)="update()"
                     autocomplete="new-password">
             </div>
-            <div>
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'">
                 <button type="button" pButton (click)="checkConection()" class="ui-button-success ml-2"
                     i18n-label='@@checkConnection' label="Comprobar conexión"></button>
             </div>
         </div>
-        <div >
+        <div style="margin-bottom: 1rem;">
             <h5 style="margin:10px"> {{functionalities}} </h5>
             <!-- <h5 i18n="@@MapsDatamodel" style="margin:10px">
                 Mapas
             </h5> -->
             <span style="margin: 10px">
-                <button class="btn-sm btn-secondary functions-button" (click)="openNewMapDialog()" i18n='@@addMap'> Mapas</button>
+                <button class="btn-sm btn-secondary functions-button" (click)="openNewMapDialog()" i18n='@@addMap'>
+                    Mapas</button>
             </span>
-        
-       
+
+
             <!-- <h5 i18n="@@ViewsDatamodel" style="margin:10px">
                 Vistas
             </h5> -->
             <span style="margin: 10px">
-                <button class="btn-sm btn-secondary functions-button" (click)="openNewViewDialog()" i18n='@@addView'> Añadir
+                <button class="btn-sm btn-secondary functions-button" (click)="openNewViewDialog()" i18n='@@addView'>
+                    Añadir
                     vista</button>
             </span>
 

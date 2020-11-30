@@ -23,14 +23,15 @@ export abstract class QueryBuilderService {
     }
 
     abstract getFilters(filters);
-    abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema?: String);
+    abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema?: string, database?:string);
     abstract getSeparedColumns(origin: string, dest: string[]);
     abstract filterToString(filterObject: any);
     abstract processFilter(filter: any, columnType: string);
-    abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, Schema?: String);
+    abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], 
+        grouping: any[], tables: Array<any>, limit: number, Schema?: string, database?:string);
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
-    abstract parseSchema(tables: string[], schema?: string);
+    abstract parseSchema(tables: string[], schema?: string, database?:string);
 
     public builder() {
         const graph = this.buildGraph();
@@ -74,7 +75,7 @@ export abstract class QueryBuilderService {
             let tables = this.dataModel.ds.model.tables
                 .map(table => { return { name: table.table_name, query: table.query } });
             this.query = this.normalQuery(columns, origin, dest, joinTree, grouping, tables,
-                this.queryTODO.queryLimit, this.dataModel.ds.connection.schema);
+                this.queryTODO.queryLimit, this.dataModel.ds.connection.schema, this.dataModel.ds.connection.database);
 
             // if(this.queryTODO.queryLimit) this.query += `\nlimit ${this.queryTODO.queryLimit}`;
             return this.query;
@@ -147,6 +148,7 @@ export abstract class QueryBuilderService {
     }
 
     public simpleQuery(columns: string[], origin: string) {
+
         const schema = this.dataModel.ds.connection.schema;
         if (schema) {
             origin = `${schema}.${origin}`;
@@ -156,6 +158,7 @@ export abstract class QueryBuilderService {
 
 
     public getPermissions(userID, modelPermissions, modelTables, originTable) {
+
         const filters = [];
         const permissions = this.getUserPermissions(userID, modelPermissions);
         const relatedTables = this.checkRelatedTables(modelTables, originTable);
@@ -177,6 +180,7 @@ export abstract class QueryBuilderService {
                 }
             });
         }
+
         return filters;
     }
 
@@ -252,6 +256,7 @@ export abstract class QueryBuilderService {
         const schema = this.dataModel.ds.connection.schema;
         const tablesInQuery = this.parseTablesInQuery(userQuery.SQLexpression);
         let query = userQuery.SQLexpression;
+
         let tablesNoSchema = this.parseSchema(tablesInQuery, schema);
 
         tablesNoSchema.forEach((table, i) => {
@@ -300,17 +305,13 @@ export abstract class QueryBuilderService {
 
             const joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
             const permissionJoins = this.getJoins(joinTree, dest, SCHEMA);
-
-            //console.log({permissionJoins: permissionJoins})
             let joinsubstitute = '';
-
-            //console.log(origin,  joinTree);
 
             joinsubstitute = this.buildPermissionJoin(origin, permissionJoins, permissions, SCHEMA);
 
             //console.log({origin:origin});
-            let whitespaces = `[\n\r\s]+`
-            let reg = new RegExp(`${tableWithSchema}` + whitespaces, "g");
+            let whitespaces = `[\n\r\s]*`
+            let reg = new RegExp(`${tableWithSchema}` + whitespaces , "g");
             let out = sqlquery.replace(reg, joinsubstitute);
             return out;
         } else {

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import {
-  HttpClient, HttpRequest, HttpEventType, HttpResponse
+  HttpClient
 } from '@angular/common/http';
 
 import { Router } from '@angular/router';
 import { ApiService } from '../api/api.service';
 import { GlobalService } from '../api/global.service';
 import { AlertService } from '../alerts/alert.service';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { URL_SERVICES } from '@eda/configs/config';
 
 
@@ -25,8 +25,8 @@ export class UploadFileService extends ApiService {
   
   progress: Observable<number> 
 
-  upload(file:File){
-    return this.post(this.route, file);
+  upload(file:File, route?:string){
+    return this.post(route || this.route, file);
   }
 }
 

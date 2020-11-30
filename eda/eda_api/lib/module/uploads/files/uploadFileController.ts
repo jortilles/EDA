@@ -1,7 +1,10 @@
+import { createCipheriv } from 'crypto';
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../global/model/index';
 import GeoJsonFeature, { IgeoJsonFeature } from './feature.model';
 import GeoJsonFile, { IGeoJsonFile } from './files.model';
+
+var fs = require('fs');
 
 //Convert GeoJson to TopoJson
 const geostitch = require('d3-geo-projection').geoStitch
@@ -49,6 +52,20 @@ export class UploadFileController {
     } catch (e) {
       return next(new HttpException(404, 'Feature not found'));
     }
+  }
+  static uploadBigQueryCredentials = async ( req: Request, res: Response, next: NextFunction ) => {
+
+    try{
+      
+      fs.writeFile(`lib/files/${req.body.project_id}.json`,  JSON.stringify(req.body), 'utf8', ()=>{
+        return res.status(200).json({ ok: true, file:req.body });
+      });
+      
+
+    }catch(err){
+      return next(new HttpException(404, 'Error saving keys'));
+    }
+    
   }
   
 }

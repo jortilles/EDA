@@ -46,7 +46,7 @@
                         <eda-input [inject]="inputs.findTable"></eda-input>
 
                         <div class="column-list">
-                            <div class="our-table-box" *ngFor="let table of tableToShow" (click)="loadColumns(table)"
+                            <div class="our-table-box" *ngFor="let table of tablesToShow" (click)="loadColumns(table)"
                                 [className]="table.table_name === userSelectedTable ? 'selected-table-class' : 'our-table-box'"
                                 (mouseover)="showDescription(table)" (mouseout)="description = ''">
 

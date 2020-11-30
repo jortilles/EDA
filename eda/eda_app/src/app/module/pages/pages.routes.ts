@@ -6,7 +6,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { UsersLlistaComponent } from './users-management/users-list/users-list.component';
-import { DataSourcesComponent } from './data-sources/data-sources.component';
+import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.component'
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 
 // Guard
@@ -20,7 +20,7 @@ const pagesRoutes: Routes = [
     { path: 'dashboard/:id', component: DashboardComponent, canActivate: [VerifyTokenGuard] },
     { path: 'account-settings', component: AccountSettingsComponent, canActivate: [VerifyTokenGuard] },
     { path: 'profile', component: ProfileComponent, canActivate: [VerifyTokenGuard] },
-    { path: 'data-source', component: DataSourcesComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'data-source', component: DsConfigWrapperComponent, canActivate: [VerifyTokenGuard] },
     { path: 'data-source/:id', component: DataSourceListComponent, canActivate: [VerifyTokenGuard], runGuardsAndResolvers: 'paramsChange' },
 
     { path: 'groups-management', component: GroupListComponent, canActivate: [VerifyTokenGuard] },

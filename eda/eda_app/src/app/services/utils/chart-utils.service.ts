@@ -368,7 +368,7 @@ export class ChartUtilsService {
     public initChartOptions(type: string, numericColumn: string,
         labelColum: any[], manySeries: boolean, stacked: boolean, size: any, linkedDashboard:LinkedDashboardProps): { chartOptions: any, chartPlugins: any } {
 
-        const t = $localize`:@@linkedTo:linked to`;
+        const t = $localize`:@@linkedTo:Vinculado con`;
         const linked = linkedDashboard ?  `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
 
         const options = {

@@ -59,7 +59,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'Sql Server', value: 'sqlserver' },
         { label: 'MySQL', value: 'mysql' },
         { label: 'Vertica', value: 'vertica' },
-        { label: 'Oracle', value: 'oracle' }
+        { label: 'Oracle', value: 'oracle' },
+        { label: 'BigQuery', value: 'bigquery' }
     ];
     public selectedTipoBD: SelectItem;
 

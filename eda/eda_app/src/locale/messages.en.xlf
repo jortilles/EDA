@@ -2837,6 +2837,51 @@
       <target>Link to another dashboard</target>
     </trans-unit> 
 
+    <trans-unit id="NoTag">
+     <source> Sin Etiqueta  </source>
+      <target>No Tag </target>
+    </trans-unit> 
+
+     <trans-unit id="newTag">
+     <source> Nueva etiqueta   </source>
+      <target>New tag </target>
+    </trans-unit> 
+
+     <trans-unit id="addTag">
+     <source>AÑADIR ETIQUETA</source>
+      <target>ADD TAG </target>
+    </trans-unit> 
+
+     <trans-unit id="AllTags">
+     <source> Todos  </source>
+      <target>All  </target>
+    </trans-unit> 
+
+     <trans-unit id="linkedTo">
+     <source> Vinculado con  </source>
+      <target>Linked to   </target>
+    </trans-unit> 
+
+      <trans-unit id="DataModelHeader">
+     <source> Configurar nuevo orígen de datos  </source>
+      <target> New datasource  </target>
+    </trans-unit> 
+
+     <trans-unit id="OptimizeQuery">
+     <source> Optimizar consultas  </source>
+      <target> Optimize queries  </target>
+    </trans-unit> 
+
+     <trans-unit id="inputBigQueryKeys">
+     <source> Subir archivo de claves (json) *  </source>
+      <target> Upload keys (json) *   </target>
+    </trans-unit> 
+
+    <trans-unit id="DatasourceText">
+     <source> Creada correctamente  </source>
+      <target> Correctly created  </target>
+    </trans-unit> 
+
     </body>
   </file>
 </xliff>

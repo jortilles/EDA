@@ -2,18 +2,29 @@ import { QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
 
 
-export class OracleBuilderService extends QueryBuilderService {
+export class BigQueryBuilderService extends QueryBuilderService {
+ 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables:Array<any>, limit:number, schema: string) {
 
-    let o = tables.filter(table => table.name === origin)
-      .map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
-    let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
+    console.log(columns, grouping);
+
+    let o = tables.filter(table => table.name === origin).map(table => {return table.query? table.query : table.name})[0];
+    let myQuery = '';
+
+    /**If origin is a view => (select foo from etc.) */
+    const reg = new RegExp(/\([^()]+\)/g, "g");
+    if(o.match(reg)){
+      myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
+    }else{
+      myQuery = `SELECT ${columns.join(', ')} \nFROM ${schema}.${o}`;
+    }
+    
 
     const filters = this.queryTODO.filters;
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables);
+    const joinString = this.getJoins(joinTree, dest, tables, schema);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -32,7 +43,7 @@ export class OracleBuilderService extends QueryBuilderService {
       let out;
 
       if (col.ordenation_type !== 'No' && col.ordenation_type !== undefined) {
-        out = `"${col.display_name}" ${col.ordenation_type}`
+        out = `\`${col.display_name}\` ${col.ordenation_type}`
       } else {
         out = false;
       }
@@ -44,8 +55,7 @@ export class OracleBuilderService extends QueryBuilderService {
     if (order_columns_string.length > 0) {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
-
-    if (limit) myQuery = `SELECT * FROM (${myQuery})\n WHERE ROWNUM <= ${limit}`;
+    if(limit) myQuery += `\nlimit ${limit}`;
     return myQuery;
   }
 
@@ -63,17 +73,17 @@ export class OracleBuilderService extends QueryBuilderService {
           if (nullValueIndex != - 1) {
             if (f.filter_elements[0].value1.length === 1) {
               /* puedo haber escogido un nulo en la igualdad */
-              if (f.filter_type == '=') {
-                filtersString += `\nand \`${f.filter_table}\`.\`${f.filter_column}\`  is null `;
-              } else {
+              if( f.filter_type == '='   ){
+                  filtersString += `\nand \`${f.filter_table}\`.\`${f.filter_column}\`  is null `;
+              }else{
                 filtersString += `\nand \`${f.filter_table}\`.\`${f.filter_column}\`  is not null `;
               }
             } else {
-              if (f.filter_type == '=') {
-                filtersString += `\nand (${this.filterToString(f)} or \`${f.filter_table}\`.\`${f.filter_column}\`  is null) `;
-              } else {
-                filtersString += `\nand (${this.filterToString(f)} or \`${f.filter_table}\`.\`${f.filter_column}\`  is not null) `;
-              }
+                if( f.filter_type == '='   ){
+                  filtersString += `\nand (${this.filterToString(f)} or \`${f.filter_table}\`.\`${f.filter_column}\`  is null) `;
+                 }else{
+                  filtersString += `\nand (${this.filterToString(f)} or \`${f.filter_table}\`.\`${f.filter_column}\`  is not null) `;
+                }             
             }
           } else {
             filtersString += '\nand ' + this.filterToString(f);
@@ -86,7 +96,7 @@ export class OracleBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>) {
+  public getJoins(joinTree: any[], dest: any[], tables:Array<any>, schema:string) {
 
     let joins = [];
     let joined = [];
@@ -109,9 +119,9 @@ export class OracleBuilderService extends QueryBuilderService {
 
           let joinColumns = this.findJoinColumns(e[j], e[i]);
           joined.push(e[j]);
-          let t = tables.filter(table => table.name === e[j])
-            .map(table => { return table.query ? this.cleanViewString(table.query) : `"${table.name}"` })[0];
-          joinString.push(`inner join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+          /**T can be a table or a custom view, if custom view has a query  */
+          let t = tables.filter(table => table.name === e[j]).map(table => {return table.query? table.query : table.name})[0];
+          joinString.push(`inner join ${schema}.${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
         }
       }
     });
@@ -126,53 +136,57 @@ export class OracleBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
+      el.display_name = el.display_name.replace(/ /g, "_")
+
       // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor.
       if (el.computed_column === 'computed_numeric') {
-        columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  ,2) as "${el.display_name}"`);
+        columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  ,2) as \`${el.display_name}\``);
       } else {
 
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`ROUND( count( distinct "${el.table_id}"."${el.column_name}"), 2) as "${el.display_name}"`);
+            columns.push(`ROUND( count( distinct \`${el.table_id}\`.\`${el.column_name}\`), 2) as \`${el.display_name}\``);
           } else {
-            columns.push(`ROUND(${el.aggregation_type}("${el.table_id}"."${el.column_name}"), 2) as "${el.display_name}"`);
+            columns.push(`ROUND(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`), 2) as \`${el.display_name}\``);
           }
 
 
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`ROUND("${el.table_id}"."${el.column_name}", 2) as "${el.display_name}"`);
+            columns.push(`ROUND(\`${el.table_id}\`.\`${el.column_name}\`, 2) as \`${el.display_name}\``);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY') as "${el.display_name}"`);
+                columns.push(`FORMAT_DATETIME('%Y',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
               } else if (_.isEqual(el.format, 'month')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM') as "${el.display_name}"`);
+                columns.push(`FORMAT_DATETIME('%Y-%m', \`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
               } else if (_.isEqual(el.format, 'day')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+                columns.push(`FORMAT_DATETIME( '%Y-%m-%d',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
               } else if (_.isEqual(el.format, 'No')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+                columns.push(`FORMAT_DATETIME('%Y-%m-%d', \`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
               }
             } else {
-              columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+              columns.push(`FORMAT_DATETIME( '%Y-%m-%d', \`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
             }
           } else {
-            columns.push(`"${el.table_id}"."${el.column_name}" as "${el.display_name}"`);
+            columns.push(`\`${el.table_id}\`.\`${el.column_name}\` as \`${el.display_name}\``);
           }
           // GROUP BY
-          if (el.format) {
-            if (_.isEqual(el.format, 'year')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY')`);
-            } else if (_.isEqual(el.format, 'month')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM')`);
-            } else if (_.isEqual(el.format, 'day')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD')`);
-            } else if (_.isEqual(el.format, 'No')) {
-              grouping.push(`"${el.table_id}"."${el.column_name}"`);
-            }
-          } else {
-            grouping.push(`"${el.table_id}"."${el.column_name}"`);
-          }
+          grouping.push(`\`${el.display_name}\``);
+          // if (el.format) {
+          //   if (_.isEqual(el.format, 'year')) {
+          //     grouping.push(`FORMAT_DATETIME('%Y', \`${el.table_id}\`.\`${el.column_name}\`)`);
+          //   } else if (_.isEqual(el.format, 'month')) {
+          //     grouping.push(`FORMAT_DATETIME('%Y-%m' , \`${el.table_id}\`.\`${el.column_name}\`)`);
+          //   } else if (_.isEqual(el.format, 'day')) {
+          //     grouping.push(`FORMAT_DATETIME( '%Y-%m-%d', \`${el.table_id}\`.\`${el.column_name}\`)`);
+          //   } else if (_.isEqual(el.format, 'No')) {
+          //     grouping.push(`\`${el.table_id}\`.\`${el.column_name}\``);
+          //   }
+          // } else {
+          //   //grouping.push(`\`${el.table_id}\`.\`${el.column_name}\``);
+          //   grouping.push(`\`${el.display_name}\``);
+          // }
 
         }
       }
@@ -186,17 +200,17 @@ export class OracleBuilderService extends QueryBuilderService {
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
         if (filterObject.filter_type === 'like') {
-          return `"${filterObject.filter_table}"."${filterObject.filter_column}"  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+          return `\`${filterObject.filter_table}\`.\`${filterObject.filter_column}\`  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
         }
-        return `"${filterObject.filter_table}"."${filterObject.filter_column}"  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+        return `\`${filterObject.filter_table}\`.\`${filterObject.filter_column}\`  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
-        return `"${filterObject.filter_table}"."${filterObject.filter_column}"  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+        return `\`${filterObject.filter_table}\`.\`${filterObject.filter_column}\`  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
-        return `"${filterObject.filter_table}"."${filterObject.filter_column}"  ${filterObject.filter_type} 
+        return `\`${filterObject.filter_table}\`.\`${filterObject.filter_column}\`  ${filterObject.filter_type} 
                         ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilter(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
-        return `"${filterObject.filter_table}"."${filterObject.filter_column}" is not null`;
+        return `\`${filterObject.filter_table}\`.\`${filterObject.filter_column}\` is not null`;
     }
   }
 
@@ -210,26 +224,26 @@ export class OracleBuilderService extends QueryBuilderService {
         case 'text': return `'${filter}'`;
         //case 'text': return `'${filter}'`;
         case 'numeric': return filter;
-        case 'date': return `to_date('${filter}','YYYY-MM-DD')`
+        case 'date': return  `PARSE_DATE( '%Y-%m-%d','${filter}')`
       }
     } else {
       let str = '';
       filter.forEach(value => {
         const tail = columnType === 'date'
-          ? `to_date('${value}','YYYY-MM-DD')`
-          : columnType === 'numeric' ? value : `'${String(value).replace(/'/g, "''")}'`;
+          ? `PARSE_DATE( '%Y-%m-%d','${value}')`
+          : columnType === 'numeric' ? value : `'${String(value).replace(/'/g, "\\'")}'`;
         str = str + tail + ','
       });
       return str.substring(0, str.length - 1);
     }
   }
 
-  buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[], schema?: string) {
-
+  buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[], schema?:string) {
+    let table = origin;
     if (schema) {
-      origin = `${schema}.${origin}`;
+      table = `${schema}.${origin}`;
     }
-    let joinString = `( SELECT ${origin}.* from ${origin} `;
+    let joinString = `( SELECT ${origin}.* from ${table} `;
     joinString += joinStrings.join(' ') + ' where ';
     permissions.forEach(permission => {
       joinString += ` ${this.filterToString(permission)} and `
@@ -244,8 +258,8 @@ export class OracleBuilderService extends QueryBuilderService {
 
     filters.forEach((filter, i) => {
       let col = filter.type === 'in' ?
-        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf(' in ')).replace(/"/g, '') :
-        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('between')).replace(/"/g, '');
+        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf(' in ')).replace(/\`/g, '') :
+        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('between')).replace(/\`/g, '');
       colsInFilters.push({ col: col, index: i });
     });
 
@@ -257,7 +271,7 @@ export class OracleBuilderService extends QueryBuilderService {
 
       if (!colsInFilters.map(f => f.col.toUpperCase().trim()).includes(col.toUpperCase().trim())) {
 
-        arr.push(`TO_CHAR(${subs}) like '%'`);
+        arr.push(` ${subs} like '%'`);
 
       } else {
         const index = colsInFilters.filter(f => f.col.toUpperCase().trim() === col.toUpperCase().trim()).map(f => f.index)[0];
@@ -272,21 +286,14 @@ export class OracleBuilderService extends QueryBuilderService {
 
   parseSchema(tables: string[], schema: string) {
     const output = [];
-    console.log({ schema: schema })
-    const reg = new RegExp(/[".\[\]]/, "g");
+    const reg = new RegExp(/[\`.\[\]]/, "g");
     tables.forEach(table => {
-      table = table.replace(schema, '')
-      table = table.replace(reg, '')
+      table = table.replace(schema, '');
+      table = table.replace(reg, '');
       output.push(table);
 
     });
     return output;
-  }
-
-  private cleanViewString(query: string) {
-    const index = query.lastIndexOf('as');
-    query = query.slice(0, index) + `"${query.slice(index + 3)}"`;
-    return query;
   }
 }
 

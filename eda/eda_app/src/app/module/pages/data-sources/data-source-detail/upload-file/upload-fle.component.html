@@ -7,7 +7,7 @@
         (click)="addFile()"></button>
       <button type="button" icon="pi pi-save" pButton [disabled]="!canBeClosed" (click)="uploadFile()"></button>
       <ul>
-        <div class="ui-g-6 ui-md-6" id="wrapper">
+        <div class="ui-g-4 ui-md-4" id="wrapper">
           <li *ngFor="let item of files">
             &nbsp;&nbsp; {{item.name}}
           </li>

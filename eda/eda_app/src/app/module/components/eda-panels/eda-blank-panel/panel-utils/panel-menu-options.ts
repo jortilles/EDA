@@ -1,5 +1,3 @@
-import { DashboardService } from '@eda/services/service.index';
-import { LinkDashboardsComponent } from './../link-dashboards/link-dashboards.component';
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import * as _ from 'lodash';
 
@@ -117,7 +115,7 @@ export const PanelOptions = {
     return new EdaContextMenuItem({
       label: $localize`:@@panelOptions3:Exportar a Excel`,
       icon: 'mdi mdi-file',
-      command: () => panelComponent.readyToExport('excel')
+      command: () => PanelOptions.readyToExport(panelComponent, 'excel')
     });
   },
   deletePanel: (panelComponent: EdaBlankPanelComponent) => {
@@ -130,6 +128,20 @@ export const PanelOptions = {
       }
     });
   },
+
+  readyToExport : (panelComponent: EdaBlankPanelComponent, fileType: string): void => {
+    if (!panelComponent.panel.content) {
+        return panelComponent.alertService.addError(`No tienes contenido para exportar`);
+    }
+    const cols = panelComponent.chartUtils.transformDataQueryForTable(panelComponent.chartLabels, panelComponent.chartData);
+    const headers = panelComponent.currentQuery.map(o => o.display_name.default);
+
+    if (_.isEqual(fileType, 'excel')) {
+      panelComponent.fileUtiles.exportToExcel(headers, cols, panelComponent.panel.title);
+    }
+
+    panelComponent.contextMenu.hideContextMenu();
+},
   generateMenu : (panelComponent : EdaBlankPanelComponent ) => {
 
     const menu = [];

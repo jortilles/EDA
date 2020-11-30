@@ -249,7 +249,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     filters.forEach((filter, i) => {
       let col = filter.type === 'in' ?
-        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('in')).replace(/`/g, '') :
+        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf(' in ')).replace(/`/g, '') :
         filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('between')).replace(/`/g, '');
       colsInFilters.push({ col: col, index: i });
     });
