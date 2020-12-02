@@ -31,7 +31,7 @@ import { ServicesModule } from './services/services.module';
         CORE_ROUTES,
         HttpClientModule
     ],
-    providers: [],
+    providers: [ ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

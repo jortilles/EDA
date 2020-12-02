@@ -3,16 +3,17 @@ import * as _ from 'lodash';
 
 
 export class OracleBuilderService extends QueryBuilderService {
- 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[]) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number) {
 
-    let myQuery = `SELECT ${columns.join(', ')} \nFROM ${origin}`;
+    let o = tables.filter(table => table.name === origin)
+      .map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
+    let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
     const filters = this.queryTODO.filters;
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest);
+    const joinString = this.getJoins(joinTree, dest, tables);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -44,6 +45,7 @@ export class OracleBuilderService extends QueryBuilderService {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
 
+    if (limit) myQuery = `SELECT * FROM (${myQuery})\n WHERE ROWNUM <= ${limit}`;
     return myQuery;
   }
 
@@ -60,9 +62,18 @@ export class OracleBuilderService extends QueryBuilderService {
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
           if (nullValueIndex != - 1) {
             if (f.filter_elements[0].value1.length === 1) {
-              filtersString += `\nand "${f.filter_table}"."${f.filter_column}"  is null `;
+              /* puedo haber escogido un nulo en la igualdad */
+              if (f.filter_type == '=') {
+                filtersString += `\nand \`${f.filter_table}\`.\`${f.filter_column}\`  is null `;
+              } else {
+                filtersString += `\nand \`${f.filter_table}\`.\`${f.filter_column}\`  is not null `;
+              }
             } else {
-              filtersString += `\nand (${this.filterToString(f)} or "${f.filter_table}"."${f.filter_column}"  is null) `;
+              if (f.filter_type == '=') {
+                filtersString += `\nand (${this.filterToString(f)} or \`${f.filter_table}\`.\`${f.filter_column}\`  is null) `;
+              } else {
+                filtersString += `\nand (${this.filterToString(f)} or \`${f.filter_table}\`.\`${f.filter_column}\`  is not null) `;
+              }
             }
           } else {
             filtersString += '\nand ' + this.filterToString(f);
@@ -75,7 +86,7 @@ export class OracleBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[]) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>) {
 
     let joins = [];
     let joined = [];
@@ -98,7 +109,9 @@ export class OracleBuilderService extends QueryBuilderService {
 
           let joinColumns = this.findJoinColumns(e[j], e[i]);
           joined.push(e[j]);
-          joinString.push(`inner join "${e[j]}" on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+          let t = tables.filter(table => table.name === e[j])
+            .map(table => { return table.query ? this.cleanViewString(table.query) : `"${table.name}"` })[0];
+          joinString.push(`inner join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
         }
       }
     });
@@ -194,7 +207,7 @@ export class OracleBuilderService extends QueryBuilderService {
     });
     if (!Array.isArray(filter)) {
       switch (columnType) {
-        case 'varchar': return `'${filter}'`;
+        case 'text': return `'${filter}'`;
         //case 'text': return `'${filter}'`;
         case 'numeric': return filter;
         case 'date': return `to_date('${filter}','YYYY-MM-DD')`
@@ -211,7 +224,7 @@ export class OracleBuilderService extends QueryBuilderService {
     }
   }
 
-  buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[], schema?:string) {
+  buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[], schema?: string) {
 
     if (schema) {
       origin = `${schema}.${origin}`;
@@ -231,7 +244,7 @@ export class OracleBuilderService extends QueryBuilderService {
 
     filters.forEach((filter, i) => {
       let col = filter.type === 'in' ?
-        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('in')).replace(/"/g, '') :
+        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf(' in ')).replace(/"/g, '') :
         filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('between')).replace(/"/g, '');
       colsInFilters.push({ col: col, index: i });
     });
@@ -259,7 +272,7 @@ export class OracleBuilderService extends QueryBuilderService {
 
   parseSchema(tables: string[], schema: string) {
     const output = [];
-    console.log({schema:schema})
+    console.log({ schema: schema })
     const reg = new RegExp(/[".\[\]]/, "g");
     tables.forEach(table => {
       table = table.replace(schema, '')
@@ -268,6 +281,12 @@ export class OracleBuilderService extends QueryBuilderService {
 
     });
     return output;
+  }
+
+  private cleanViewString(query: string) {
+    const index = query.lastIndexOf('as');
+    query = query.slice(0, index) + `"${query.slice(index + 3)}"`;
+    return query;
   }
 }
 

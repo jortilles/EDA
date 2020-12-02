@@ -12,6 +12,9 @@ export * from './eda-context-menu/eda-context-menu.component';
 export * from './eda-context-menu/eda-context-menu';
 export * from './eda-context-menu/eda-context-menu-item';
 
+//eda date picker
+export * from './eda-date-picker/eda-date-picker.component'
+
 // Inputs
 export * from './eda-input/eda-input.component';
 

@@ -23,14 +23,15 @@ export abstract class QueryBuilderService {
     }
 
     abstract getFilters(filters);
-    abstract getJoins(joinTree: any[], dest: any[], schema?: String);
+    abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema?: string, database?:string);
     abstract getSeparedColumns(origin: string, dest: string[]);
     abstract filterToString(filterObject: any);
     abstract processFilter(filter: any, columnType: string);
-    abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], Schema?: String);
+    abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], 
+        grouping: any[], tables: Array<any>, limit: number, Schema?: string, database?:string);
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
-    abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?:string);
-    abstract parseSchema(tables:string[], schema?:string);
+    abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
+    abstract parseSchema(tables: string[], schema?: string, database?:string);
 
     public builder() {
         const graph = this.buildGraph();
@@ -71,7 +72,12 @@ export abstract class QueryBuilderService {
             this.query = this.simpleQuery(columns, origin);
             return this.query;
         } else {
-            this.query = this.normalQuery(columns, origin, dest, joinTree, grouping, this.dataModel.ds.connection.schema);
+            let tables = this.dataModel.ds.model.tables
+                .map(table => { return { name: table.table_name, query: table.query } });
+            this.query = this.normalQuery(columns, origin, dest, joinTree, grouping, tables,
+                this.queryTODO.queryLimit, this.dataModel.ds.connection.schema, this.dataModel.ds.connection.database);
+
+            // if(this.queryTODO.queryLimit) this.query += `\nlimit ${this.queryTODO.queryLimit}`;
             return this.query;
         }
     }
@@ -142,8 +148,9 @@ export abstract class QueryBuilderService {
     }
 
     public simpleQuery(columns: string[], origin: string) {
+
         const schema = this.dataModel.ds.connection.schema;
-        if(schema){
+        if (schema) {
             origin = `${schema}.${origin}`;
         }
         return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin} `;
@@ -151,6 +158,7 @@ export abstract class QueryBuilderService {
 
 
     public getPermissions(userID, modelPermissions, modelTables, originTable) {
+
         const filters = [];
         const permissions = this.getUserPermissions(userID, modelPermissions);
         const relatedTables = this.checkRelatedTables(modelTables, originTable);
@@ -172,6 +180,7 @@ export abstract class QueryBuilderService {
                 }
             });
         }
+
         return filters;
     }
 
@@ -244,13 +253,14 @@ export abstract class QueryBuilderService {
     public sqlBuilder(userQuery: any, filters: any[]): string {
 
         const graph = this.buildGraph();
-        const schema = this.dataModel.ds.connection.schema ;
+        const schema = this.dataModel.ds.connection.schema;
         const tablesInQuery = this.parseTablesInQuery(userQuery.SQLexpression);
         let query = userQuery.SQLexpression;
+
         let tablesNoSchema = this.parseSchema(tablesInQuery, schema);
 
         tablesNoSchema.forEach((table, i) => {
-            query = this.sqlReplacePermissions(query, table, graph, tablesInQuery[i] );
+            query = this.sqlReplacePermissions(query, table, graph, tablesInQuery[i]);
         });
 
         //Isolate filters from query
@@ -279,12 +289,12 @@ export abstract class QueryBuilderService {
         return this.sqlQuery(query, formatedFilters, filterMarks);
     }
 
-    sqlReplacePermissions = (sqlquery:string, table:string, graph : any, tableWithSchema:string )=>{
-        const SCHEMA = this.dataModel.ds.connection.schema ;
+    sqlReplacePermissions = (sqlquery: string, table: string, graph: any, tableWithSchema: string) => {
+        const SCHEMA = this.dataModel.ds.connection.schema;
         const origin = table;
         const dest = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
-        const permissions =  this.getPermissions(this.user, modelPermissions, this.tables, origin);
+        const permissions = this.getPermissions(this.user, modelPermissions, this.tables, origin);
 
         if (permissions.length > 0) {
             permissions.forEach(permission => {
@@ -295,20 +305,16 @@ export abstract class QueryBuilderService {
 
             const joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
             const permissionJoins = this.getJoins(joinTree, dest, SCHEMA);
-
-            //console.log({permissionJoins: permissionJoins})
             let joinsubstitute = '';
-
-            //console.log(origin,  joinTree);
 
             joinsubstitute = this.buildPermissionJoin(origin, permissionJoins, permissions, SCHEMA);
 
             //console.log({origin:origin});
-            let whitespaces = `[\n\r\s]+`
-            let reg = new RegExp(`${tableWithSchema}`+ whitespaces, "g");
+            let whitespaces = `[\n\r\s]*`
+            let reg = new RegExp(`${tableWithSchema}` + whitespaces , "g");
             let out = sqlquery.replace(reg, joinsubstitute);
             return out;
-        }else{
+        } else {
             return sqlquery;
         }
     }
@@ -356,11 +362,51 @@ export abstract class QueryBuilderService {
                 operand = 'JOIN';
             }
         }
-        console.log({parsedTables: tables.filter(this.onlyUnique)});
+        console.log({ parsedTables: tables.filter(this.onlyUnique) });
         return tables.filter(this.onlyUnique);
     }
-    onlyUnique = (value, index, self) => { 
+    onlyUnique = (value, index, self) => {
         return self.indexOf(value) === index;
+    }
+
+    public createTable(queryData: any) {
+        let create = `CREATE TABLE ${queryData.tableName} (\n`;
+        queryData.columns.forEach(col => {
+            create += `"${this.abc_123(col.field)}" ${col.type},\n`;
+        });
+        create  = create.slice(0, -2);
+        create += '\n);'
+        return create;
+    }
+
+    public abc_123(str : string):string{
+        return str.replace(/[^\w\s]/gi, '').replace(/ /gi, '_');
+    }
+
+    public generateInserts(queryData:any){
+        let insert = `INSERT INTO ${queryData.tableName} VALUES\n`;
+        queryData.data.forEach((register) => {
+            let row = '('
+            Object.values(register).forEach((value:any, i) => {
+                const type = queryData.columns[i].type;
+                if(type === 'text'){
+                    row += `'${value.replace(/'/g, "''")}',`;
+                }else if(type === 'timestamp'){
+                    let date = value ? `TO_TIMESTAMP('${value}', '${queryData.columns[i].format}'),` : `${null},`
+                    row += `${date}`;
+                }else{
+                    value = queryData.columns[i].separator === ',' ? parseFloat(value.replace(".", "").replace(",", ".")) 
+                            :   parseFloat(value.replace(",", "")) ;
+                    value = value ? value : null;
+                    row += `${value},`;
+                }
+            });
+            row = row.slice(0, -1); 
+            row += ')';
+            insert += `${row},`        
+        });
+        insert = insert.slice(0, -1);   
+        return insert;
     }
 
 }

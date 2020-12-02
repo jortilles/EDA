@@ -4,8 +4,12 @@ import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes }  from  '../../../module/global/model/aggregation-types';
 import DataSource from '../../../module/datasource/model/datasource.model';
 
+var types = require('pg').types;
+types.setTypeParser(1700, 'text', parseFloat);
+
 
 export class PgConnection extends AbstractConnection {
+   
     GetDefaultSchema(): string {
         return 'public';
     }
@@ -209,24 +213,7 @@ export class PgConnection extends AbstractConnection {
             .join(' ');
     }
 
-    private normalizeType(type: string) {
-        switch (type) {
-            case 'int4': return 'numeric';
-            case 'int8': return 'numeric';
-            case 'smallint': return 'numeric';
-            case 'serial': return 'numeric';
-            case 'decimal': return 'numeric';
-            case 'float8': return 'numeric';
-            case 'float16': return 'numeric';
-            case 'real': return 'numeric';
-            case 'timestamp': return 'date';
-            case 'time': return 'date';
-            case 'TIMESTAMPTZ': return 'date';
-            case 'bool': return 'boolean';
-            case 'text': return 'varchar';
-            case 'char': return 'varchar';
-        }
-    }
+
 
     private async commonColumns(dm) {
         let data_model = dm;
@@ -248,6 +235,10 @@ export class PgConnection extends AbstractConnection {
                             if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
                                 sourceColumn.source_column.toLowerCase().includes('id_') ||
                                 sourceColumn.source_column.toLowerCase().includes('number') ||
+                                sourceColumn.source_column.toLowerCase().startsWith("sk") ||
+                                sourceColumn.source_column.toLowerCase().startsWith("tk") ||
+                                sourceColumn.source_column.toLowerCase().endsWith("sk") ||
+                                sourceColumn.source_column.toLowerCase().endsWith("tk") ||
                                 sourceColumn.source_column.toLowerCase().includes('code'))
                                 && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
 
@@ -278,5 +269,15 @@ export class PgConnection extends AbstractConnection {
             }
         }
         return data_model;
+    }
+
+    createTable(queryData: any): string {
+        this.queryBuilder = new PgBuilderService(queryData, {ds:{model:{tables:[]}}}, null);
+        return this.queryBuilder.createTable(queryData);
+    }
+
+    generateInserts(queryData:any):string {
+        this.queryBuilder = new PgBuilderService(queryData, {ds:{model:{tables:[]}}}, null);
+        return this.queryBuilder.generateInserts(queryData);
     }
 }

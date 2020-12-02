@@ -6,7 +6,9 @@ import { OracleBuilderService } from '../../query-builder/qb-systems/oracle-buil
 import oracledb from 'oracledb';
 
 
-
+/**
+ * WARNING !! La resposta de oracledb dóna problemes de format (objecte, array) ?? 
+ */
 
 
 export class OracleConnection extends AbstractConnection {
@@ -90,15 +92,13 @@ export class OracleConnection extends AbstractConnection {
             `;
 
             const getResults = await this.execQuery(query);
-
             for (let i = 0, n = getResults.length; i < n; i++) {
                 const result = getResults[i];
-                tableNames.push(result[0]);
+                tableNames.push(result.OBJECT_NAME);
             }
             // New pool is needed, old client has been closed;
             this.pool = await this.getPool();
             for (let i = 0; i < tableNames.length; i++) {
-
                 let new_table = await this.setTable(tableNames[i]);
                 let count = 0;
                 if (optimize === '1') {
@@ -130,9 +130,17 @@ export class OracleConnection extends AbstractConnection {
             client = await this.getPool();
             
             await client.execute(`alter session set current_schema = ${this.config.schema} `)
-            const result = await client.execute(query);
-
-            return result.rows;
+            const result  = await client.execute(query);
+            const labels = result.metaData.map(x => x.name);
+            const parsedResults = [];
+            result.rows.forEach(row => {
+                const r = {};
+                for(let j = 0; j < labels.length; j++){
+                    r[labels[j]] = row[j];
+                }
+                parsedResults.push(r);
+            })
+            return parsedResults;
 
         } catch (err) {
             console.log(err);
@@ -249,20 +257,7 @@ export class OracleConnection extends AbstractConnection {
             .join(' ');
     }
 
-    private normalizeType(type: string) {
-        switch (type) {
-            case 'NUMBER': return 'numeric';
-            case 'FLOAT': return 'numeric';
-            case 'LONG': return 'NUMBER';
-            case 'BOOLEAN': return 'number';
-            case 'VARCHAR2': return 'varchar';
-            case 'DATE': return 'date';
-            case 'TIMESTAMP': return 'date';
-            // case 'char': return 'varchar';
-            // case 'char': return 'varchar';
-        }
-
-    }
+ 
 
     private async commonColumns(dm) {
         let data_model = dm;
@@ -284,6 +279,10 @@ export class OracleConnection extends AbstractConnection {
                             if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
                                 sourceColumn.source_column.toLowerCase().includes('id_') ||
                                 sourceColumn.source_column.toLowerCase().includes('number') ||
+                                sourceColumn.source_column.toLowerCase().startsWith("sk") ||
+                                sourceColumn.source_column.toLowerCase().startsWith("tk") ||
+                                sourceColumn.source_column.toLowerCase().endsWith("sk") ||
+                                sourceColumn.source_column.toLowerCase().endsWith("tk") ||
                                 sourceColumn.source_column.toLowerCase().includes('code'))
                                 && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
 
@@ -314,5 +313,12 @@ export class OracleConnection extends AbstractConnection {
             }
         }
         return data_model;
+    }
+
+    createTable(queryData: any): string {
+        throw new Error('Method not implemented.');
+    }
+    generateInserts(queryData:any):string {
+        throw new Error('Method not implemented.');
     }
 }

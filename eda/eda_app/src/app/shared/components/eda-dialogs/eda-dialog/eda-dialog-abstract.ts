@@ -1,7 +1,8 @@
-import { Input } from '@angular/core';
+import { Input, Directive } from '@angular/core';
 import { EdaDialogCloseEvent } from './eda-dialog';
 import { EdaDialogController } from './eda-dialog-controller';
 import * as _ from 'lodash';
+@Directive()
 export abstract class EdaDialogAbstract {
   visible = false;
 

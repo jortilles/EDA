@@ -4,6 +4,17 @@
     "newProjectRoot": "projects",
     "projects": {
         "app-eda": {
+            "i18n": {
+                "sourceLocale": "es",
+                "locales": {
+                    "en": {
+                        "translation": "src/locale/messages.en.xlf"
+                    },
+                    "ca": {
+                        "translation": "src/locale/messages.ca.xlf"
+                    }
+                }
+            },
             "root": "",
             "sourceRoot": "src",
             "projectType": "application",
@@ -13,6 +24,8 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
+                        "aot": true,
+                        "localize": true,
                         "outputPath": "dist/app-eda",
                         "index": "src/index.html",
                         "main": "src/main.ts",
@@ -25,9 +38,10 @@
                         "styles": [
                             "node_modules/font-awesome/css/font-awesome.css",
                             "node_modules/primeng/resources/primeng.min.css",
-                            "node_modules/primeicons/primeicons.css",
-                            "src/assets/prime-styles/custom.css",
-                            "src/assets/css/style.css"
+                            "src/assets/sass/prime-styles/custom.css",
+                            "src/assets/sass/css/style.css",
+                            "node_modules/leaflet/dist/leaflet.css",
+                            "node_modules/primeicons/primeicons.css"
                         ],
                         "scripts": [
                             "node_modules/chart.js/dist/Chart.bundle.js",
@@ -35,11 +49,23 @@
                         ]
                     },
                     "configurations": {
+                        "en": {
+                            "localize": [
+                                "en"
+                            ]
+                        },
+                        "ca": {
+                            "localize": [
+                                "ca"
+                            ]
+                        },
                         "production": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
@@ -49,19 +75,17 @@
                             "extractLicenses": true,
                             "vendorChunk": false,
                             "buildOptimizer": true,
-                            "budgets": [{
-                                "type": "initial",
-                                "maximumWarning": "2mb",
-                                "maximumError": "5mb"
-                            }]
-                        },
-                        "ca": {
-                            "aot": true,
-                            "outputPath": "dist/app-eda-ca/",
-                            "i18nFile": "src/locale/messages.ca.xlf",
-                            "i18nFormat": "xlf",
-                            "i18nLocale": "ca",
-                            "i18nMissingTranslation": "error"
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "2mb",
+                                    "maximumError": "5mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb"
+                                }
+                            ]
                         }
                     }
                 },
@@ -73,6 +97,9 @@
                     "configurations": {
                         "production": {
                             "browserTarget": "app-eda:build:production"
+                        },
+                        "es": {
+                            "browserTarget": "app-eda:build:en"
                         },
                         "ca": {
                             "browserTarget": "app-eda:build:ca"

@@ -20,7 +20,7 @@ export const coreRoutes: Routes = [
         path: '',
         component: PagesComponent,
         canActivate: [LoginGuardGuard],
-        loadChildren: './module/pages/pages.module#PagesModule'
+        loadChildren: () => import('../../module/pages/pages.module').then(m => m.PagesModule)
     },
     { path: '**', component: PageNotFoundComponent},
 ];

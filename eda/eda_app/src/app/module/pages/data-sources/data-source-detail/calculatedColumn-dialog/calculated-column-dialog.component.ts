@@ -7,7 +7,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 @Component({
   selector: 'app-calculated-column-dialog',
   templateUrl: './calculated-column-dialog.component.html',
-  styleUrls: ['../../../../../../assets/eda-styles/components/dialog-component.css']
+  styleUrls: ['../../../../../../assets/sass/eda-styles/components/dialog-component.css']
 })
 
 export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
@@ -26,15 +26,16 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: ''
     });
+    this.dialog.style = { width: '50%', height: '40%', top: '50px', left: '90px' };
 
     this.form = this.formBuilder.group({
       colName: [null, Validators.required],
-      // SQLexpression: [null, Validators.required],
       description: [null, Validators.required]
     });
   }
   onShow(): void {
-    this.dialog.title = `Añadir columna calculada a la tabla ${this.controller.params.table.name}`;
+    const title = $localize`:@@addCalculatedColTitle:Añadir columna calculada a la tabla `
+    this.dialog.title = `${title} ${this.controller.params.table.name}`;
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
@@ -46,7 +47,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
 
   saveColumn() {
     if (this.form.invalid) {
-      return this.alertService.addError('Recuerde llenar los campos obligatorios');
+      return this.alertService.addError($localize`:@@MandatoryFields:Recuerde llenar los campos obligatorios`);
     } else {
 
       const column: any = {

@@ -1,3 +1,4 @@
+import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 import { Observable } from 'rxjs';
 import { EdaColumn } from './eda-columns/eda-column';
 import { EdaColumnText } from './eda-columns/eda-column-text';
@@ -19,6 +20,7 @@ interface PivotTableSerieParams {
     pivotCols: Array<Column>,
     oldRows: Array<any>,
     newCols: Array<any>
+    
 }
 
 export class EdaTable {
@@ -35,6 +37,7 @@ export class EdaTable {
     public alertService: AlertService;
     public filteredValue: any[] | undefined;
     public headerGroup: EdaTableHeaderGroup[] = [];
+    linkedDashboardProps : LinkedDashboardProps;
 
     //Input switch
     public oldvalue: any[] = [];

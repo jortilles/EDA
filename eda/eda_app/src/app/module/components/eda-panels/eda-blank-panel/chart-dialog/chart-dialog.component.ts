@@ -39,7 +39,7 @@ export class ChartDialogComponent extends EdaDialogAbstract {
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: 'PROPIEDADES DEL GRAFICO'
+            title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
         });
 
         this.drops.pointStyles = [

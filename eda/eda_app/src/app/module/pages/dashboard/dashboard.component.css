@@ -80,12 +80,12 @@ app-dashboard {
 
 .block-options-bg {
     color: var(--header-font-color);
-    background: var(--header-bg-color);
+    background: #414344;/*var(--header-bg-color);*/
 }
 
 .block-options-bg:hover {
-    color: var(--main-font-color);
-    background: var(--main-button-color);
+    color: #d5d8cc;/* var(--main-font-color);*/
+    background: #414344; /*var(--main-button-color);*/
     border: 1px solid #d5d8cc;
 }
 
@@ -95,8 +95,9 @@ app-dashboard {
 .edaWarning {
     /* border: 1px solid orange;
   border-radius: 2px; */
+    margin: 2px;
     color: #000;
-    background-color: inherit;
+    background-color: #eee;
     padding: 7px 14px;
     font-size: 12px;
     cursor: pointer;
@@ -115,7 +116,8 @@ app-dashboard {
 }
 
 .edaWarning:hover {
-    background: #eee;
+    background:  rgb(11, 139, 101);
+    color:white;
 }
 
 .edaOk {
@@ -138,3 +140,35 @@ app-dashboard {
     align-items: center;
     justify-content: center;
 }
+
+.filter-button{
+    border: 1px solid #6f99a7;
+    color: #005d88;
+    background-color: #fff;
+    padding: 3px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 14px;
+    opacity: 0.6;
+    transition: 0.2s;
+    /*width: 5%;*/
+}
+.filter-button:hover{
+    opacity: 1
+}
+
+.filter-button:focus{
+    opacity: 1;
+    border-color:rgb(1, 27, 0);
+}
+.filter-name{
+    margin:1px;
+    font-size:small;
+}
+.fiter-icon{
+    font-size: 14px;
+    color:#004961;
+}
+
+

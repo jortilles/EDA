@@ -17,6 +17,7 @@ export interface Query {
         simple: boolean,
         modeSQL: boolean,
         SQLexpression : string
+        queryLimit : number
     };
     output: {
         labels: any[],

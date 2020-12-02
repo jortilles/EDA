@@ -220,34 +220,6 @@ export class SQLserverConnection extends AbstractConnection {
         return column;
     }
 
-    private normalizeType(type: string) {
-        switch (type) {
-            case 'int': return 'numeric';
-            case 'tinyint': return 'numeric';
-            case 'smallint': return 'numeric';
-            case 'mediumint': return 'numeric';
-            case 'bigInt': return 'numeric';
-            case 'bigint': return 'numeric';
-            case 'integer': return 'numeric';
-            case 'decimal': return 'numeric';
-            case 'dec': return 'numeric';
-            case 'double': return 'numeric';
-            case 'varbinary': return 'numeric';
-            case 'bit': return 'numeric';
-            case 'float': return 'numeric';
-            case 'timestamp': return 'date';
-            case 'time': return 'date';
-            case 'datetime': return 'date';
-            case 'date': return 'date';
-            case 'bool': return 'boolean';
-            case 'char': return 'varchar';
-            case 'text': return 'varchar';
-            case 'nvarchar': return 'varchar';
-            case 'nchar': return 'varchar';
-            default: 'varchar';
-        }
-    }
-
 
     private normalizeName(name: string) {
         let out = name.split('_').join(' ');
@@ -278,6 +250,10 @@ export class SQLserverConnection extends AbstractConnection {
                             if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
                                 sourceColumn.source_column.toLowerCase().includes('id_') ||
                                 sourceColumn.source_column.toLowerCase().includes('number') ||
+                                sourceColumn.source_column.toLowerCase().startsWith("sk") ||
+                                sourceColumn.source_column.toLowerCase().startsWith("tk") ||
+                                sourceColumn.source_column.toLowerCase().endsWith("sk") ||
+                                sourceColumn.source_column.toLowerCase().endsWith("tk") ||
                                 sourceColumn.source_column.toLowerCase().includes('code'))
                                 && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
 
@@ -308,5 +284,10 @@ export class SQLserverConnection extends AbstractConnection {
         }
         return data_model;
     }
-
+    createTable(queryData: any): string {
+        throw new Error('Method not implemented.');
+    }
+    generateInserts(queryData:any):string {
+        throw new Error('Method not implemented.');
+    }
 }

@@ -14,7 +14,7 @@
         </div>
         <div *ngIf="!controller.params.id" class="ui-g-6 ui-sm-12">
             <label i18n="@@inputSeguridad">Seguridad *</label>
-            <input pInputText formControlName="rpassword" class="w-100" type="password" i18n-placeholder="@@inputRepitePassword" placeholder="Repite la contraseña" autocomplete="new-password" required />
+            <input pInputText formControlName="rpassword" class="w-100" type="password" i18n-placeholder="@@inputRepitePassword" i18n-placeholder="@@newPassPlaceholderUsers" placeholder="Repite la contraseña" autocomplete="new-password" required />
         </div>
         <div *ngIf="controller.params.id" class="ui-g-6 ui-sm-12">
         </div>

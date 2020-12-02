@@ -1,7 +1,9 @@
 <div *ngIf=" typePanel==='tabla' && tablePanel.technical_name" class="tp-container">
 
-    <p-panel header="Editar {{tablePanel.type ? tablePanel.type + ' ' + tablePanel.name : ''}}">
+    <p-panel i18n-header="@@editModelHeaders" header="Editar {{tablePanel.type ? tablePanel.name : ''}}">
+        <p-header style="font-size: 18px;">
 
+        </p-header>
         <div style="margin: 10px">
             <h6 i18n="@@inputNombre">Nombre</h6>
             <p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.name" (keyup)="update()"></p>
@@ -17,6 +19,12 @@
             <p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.description" (keyup)="update()"></p>
         </div>
 
+        <div *ngIf="tablePanel.query" style="margin: 10px">
+            <h6 i18n="@@inputQueryView"> Vista </h6>
+            <p>{{tablePanel.query}}</p>
+        </div>
+
+
         <div style="margin: 10px">
             <h6 i18n="@@inputEsconderTabla">Esconder tabla</h6>
             <p-inputSwitch (onChange)="toggle_table(tablePanel.visible)" [(ngModel)]="!tablePanel.visible">
@@ -30,16 +38,23 @@
         </div>
 
         <div style="margin: 10px">
-            <h6>Relaciones</h6>
+            <h6 i18n="@@listRelations">Relaciones</h6>
             <eda-table [inject]="relationsTable"></eda-table>
-            <button  class="btn-sm btn-secondary" i18n-title="@@addRelation"
+            <button i18n="@@addRelationButton" class="btn-sm btn-secondary functions-button" i18n-title="@@addRelation"
                 title="Añadir relación" (click)="openTableRelationDialog()"> Añadir relación
             </button>
         </div>
 
-        
-        <div style="margin: 10px">
-            <button class="btn-sm btn-secondary" (click)="openNewColDialog()">Añadir columna calculada</button>
+        <div *ngIf="selectedTableType !=='view'" style="margin: 10px">
+            <button i18n="@@addCalculatedCol" class="btn-sm btn-secondary functions-button"
+                (click)="openNewColDialog()">Añadir columna
+                calculada</button>
+        </div>
+
+        <div style="margin: 10px" *ngIf="tablePanel.query">
+            <h6 i18n="@@inputBorrarVista">Borrar vista</h6>
+            <button pButton type="button" icon="pi pi-trash" class="ui-button-danger"
+                (click)="deleteView(tablePanel.technical_name)"></button>
         </div>
 
     </p-panel>
@@ -48,7 +63,11 @@
 
 <div *ngIf="typePanel==='columna' && columnPanel.technical_name" class="tp-container">
 
-    <p-panel header="Editar {{columnPanel.type ? columnPanel.type + ' ' + columnPanel.name : ''}}">
+    <p-panel i18n-header="@@editModelHeaders" header="Editar {{columnPanel.type ?  columnPanel.name : ''}}">
+
+        <p-header style="font-size: 18px;">
+
+        </p-header>
 
         <div style="margin: 10px">
             <h6 i18n="@@inputNombre">
@@ -72,7 +91,7 @@
         </div>
 
         <div *ngIf="columnPanel.computed_column !== 'no'" style="margin: 10px">
-            <h6>Expresión SQL</h6>
+            <h6 i18n="@@sqlExp">Expresión SQL</h6>
             <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" (keyup)="update()" rows="5"
                     cols="100"></textarea></p>
         </div>
@@ -104,9 +123,9 @@
             <eda-table [inject]="table"></eda-table>
         </div>
 
-        <button *ngIf="columnPanel.computed_column === 'no'" class="btn-sm btn-secondary" (click)="openPermissionsRelationDialog()"
-           i18n-title="@@addPermissions" title="Añadir permiso"
-            style="margin-left: 11px"> Añadir permiso
+        <button *ngIf="columnPanel.computed_column === 'no'" class="btn-sm btn-secondary functions-button"
+            (click)="openPermissionsRelationDialog()" i18n-title="@@addPermissions" title="Añadir permiso"
+            style="margin-left: 11px" i18n="@@addPermission"> Añadir permiso
         </button>
 
         <div *ngIf="columnPanel.computed_column === 'no'" style="margin: 10px">
@@ -122,7 +141,8 @@
             <button *ngIf="columnPanel.SQLexpression" type="button" pButton (click)="checkCalculatedColumn(columnPanel)"
                 class="ui-button-success ml-2" label="Comprobar expresión"></button>
             <button *ngIf="columnPanel.computed_column !== 'no'" type="button" pButton
-                (click)="deleteCalculatedCol(columnPanel)" class="ui-button-danger ml-2" label="Borrar"></button>
+                (click)="deleteCalculatedCol(columnPanel)" class="ui-button-danger ml-2" i18n-label="@@borrar"
+                label="Borrar"></button>
         </div>
 
     </p-panel>
@@ -133,74 +153,116 @@
 <app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController">
 </app-column-permission-dialog>
 <app-calculated-column-dialog *ngIf="newColController" [controller]="newColController"></app-calculated-column-dialog>
+<app-map-dialog *ngIf="mapController" [controller]="mapController"></app-map-dialog>
+<app-view-dialog *ngIf="viewController" [controller]="viewController"></app-view-dialog>
+<app-add-csv-dialog *ngIf="csvPanelController" [controller]="csvPanelController"></app-add-csv-dialog>
 
 
 <div *ngIf="typePanel==='root' && modelPanel.metadata" class="tp-container">
 
-    <p-panel header="Editar {{modelPanel.type ? 'Modelo' + ' ' + modelPanel.metadata.model_name : ''}}">
-
-        <h5 i18n="@@metadata">
-            Metadata
-        </h5>
-
-        <div style="margin: 10px">
-            <h6 i18n="@@inputNombre">
-                Nombre
-            </h6>
-            <input pInputText type="text" size="50" [(ngModel)]="modelPanel.metadata.model_name" (keyup)="update()">
-        </div>
-
-        <h5 i18n="@@conexionH5">
-            Conexión
-        </h5>
-        <div style="margin: 10px">
-            <h6 i18n="@@inputTipo">
-                Tipo
-            </h6>
-            <p-dropdown [options]="tiposBD" [(ngModel)]="selectedTipoBD"
-                i18n-placeholder="placeholder|Dropdown tipos@@placeholderDropdown" i18n-placeholder="@@inputTipo"
-                placeholder="Tipo" optionLabel="label" (onChange)="setDbType()">
-            </p-dropdown>
-        </div>
-
-        <div style="margin: 10px">
-            <h6 i18n="@@inputHost">
-                Host
-            </h6>
-            <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
-        </div>
-
-        <div style="margin: 10px">
-            <h6 i18n="@@inputNombreDB">
-                Base de datos
-            </h6>
-            <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.database" (keyup)="update()">
-        </div>
-
-        <div style="margin: 10px">
-            <h6 i18n="@@inputNombreDB">
-                Esquema
-            </h6>
-            <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.schema" (keyup)="update()">
-        </div>
-
-        <div style="margin: 10px">
-            <h6 i18n="@@inputNombreUsuario">
-                Usuario
-            </h6>
-            <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.user" (keyup)="update()">
-        </div>
-
-        <div style="margin: 10px">
-            <h6 i18n="password@@inputPassword">
-                Password
-            </h6>
-            <input pPassword type="password" [(ngModel)]="modelPanel.connection.password" (keyup)="update()"
-                autocomplete="new-password">
-        </div>
+    <p-panel i18n-header="@@editModelHeaders">
+        <p-header style="font-size: 18px;">
+            <span>Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}</span>
+        </p-header>
         <div>
-            <button type="button" pButton (click)="checkConection()" class="ui-button-success ml-2"
-                label="Comprobar conexión"></button>
+            <h5 i18n="@@metadata">
+                Metadata
+            </h5>
+
+            <div style="margin: 10px">
+                <h6 i18n="@@inputNombre">
+                    Nombre
+                </h6>
+                <input pInputText type="text" size="50" [(ngModel)]="modelPanel.metadata.model_name" (keyup)="update()">
+            </div>
+
+            <h5 i18n="@@conexionH5">
+                Conexión
+            </h5>
+            <div style="margin: 10px">
+                <h6 i18n="@@inputTipoDatamodel">
+                    Tipo
+                </h6>
+                <p-dropdown [options]="tiposBD" [(ngModel)]="selectedTipoBD"
+                    i18n-placeholder="placeholder|Dropdown tipos@@placeholderDropdown" i18n-placeholder="@@inputTipo"
+                    placeholder="Tipo" optionLabel="label" (onChange)="setDbType()">
+                </p-dropdown>
+            </div>
+
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'" style="margin: 10px">
+                <h6 i18n="@@inputHost">
+                    Host
+                </h6>
+                <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
+            </div>
+
+            <div  style="margin: 10px">
+                <h6 i18n="@@inputNombreDB">
+                    Base de datos
+                </h6>
+                <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.database" (keyup)="update()">
+            </div>
+
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'" style="margin: 10px">
+                <h6 i18n="@@inputPuerto">
+                    Puerto
+                </h6>
+                <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.port" (keyup)="update()">
+            </div>
+
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'" style="margin: 10px">
+                <h6 i18n="@@inputNombreEsquemaModel">
+                    Esquema
+                </h6>
+                <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.schema" (keyup)="update()">
+            </div>
+
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'" style="margin: 10px">
+                <h6 i18n="@@inputNombreUsuario">
+                    Usuario
+                </h6>
+                <input pInputText type="text" size="50" [(ngModel)]="modelPanel.connection.user" (keyup)="update()">
+            </div>
+
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'" style="margin: 10px">
+                <h6 i18n="password@@inputPassword">
+                    Password
+                </h6>
+                <input pPassword type="password" [(ngModel)]="modelPanel.connection.password" (keyup)="update()"
+                    autocomplete="new-password">
+            </div>
+            <div *ngIf="selectedTipoBD.value !== 'bigquery'">
+                <button type="button" pButton (click)="checkConection()" class="ui-button-success ml-2"
+                    i18n-label='@@checkConnection' label="Comprobar conexión"></button>
+            </div>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <h5 style="margin:10px"> {{functionalities}} </h5>
+            <!-- <h5 i18n="@@MapsDatamodel" style="margin:10px">
+                Mapas
+            </h5> -->
+            <span style="margin: 10px">
+                <button class="btn-sm btn-secondary functions-button" (click)="openNewMapDialog()" i18n='@@addMap'>
+                    Mapas</button>
+            </span>
+
+
+            <!-- <h5 i18n="@@ViewsDatamodel" style="margin:10px">
+                Vistas
+            </h5> -->
+            <span style="margin: 10px">
+                <button class="btn-sm btn-secondary functions-button" (click)="openNewViewDialog()" i18n='@@addView'>
+                    Añadir
+                    vista</button>
+            </span>
+
+            <!-- <h5 i18n="@@CSVDatamodel" style="margin:10px">
+                Crear tabla desde csv
+            </h5> -->
+            <span *ngIf="selectedTipoBD.value==='postgres'" style="margin: 10px">
+                <button class="btn-sm btn-secondary functions-button" (click)="openCSVDialog()" i18n='@@addCSV'> Añadir
+                    tabla desde csv</button>
+            </span>
         </div>
 
     </p-panel>

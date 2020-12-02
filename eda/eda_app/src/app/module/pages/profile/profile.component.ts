@@ -27,7 +27,7 @@ export class ProfileComponent implements OnInit {
         }
 
         if(this.checkNewPasswords(this.newPassword, this.newPasswordCheck)){
-            return this.alertService.addWarning(`Las contraseñas no coinciden`);
+            return this.alertService.addWarning($localize`:@@PasswordsNotEqual:Las contraseñas no coinciden`);
         }else{
             this.user.password = this.newPassword;
             this.userService.updateUser(this.user).subscribe(
@@ -44,7 +44,7 @@ export class ProfileComponent implements OnInit {
         }
 
         if ( file.type.indexOf('image') < 0 ) {
-            this.alertService.addError('El archivo seleccionado no es una imagen');
+            this.alertService.addError($localize`:@@fileNotPicture:El archivo seleccionado no es una imagen`);
             this.imageUpload = null;
             return;
         }

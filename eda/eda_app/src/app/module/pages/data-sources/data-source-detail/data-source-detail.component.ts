@@ -1,5 +1,5 @@
 import { EdaTable, EdaColumnText, EdaColumnContextMenu } from '@eda/components/component.index';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { SelectItem, TreeNode } from 'primeng/api';
@@ -13,9 +13,11 @@ import * as _ from 'lodash';
 @Component({
     selector: 'app-data-source-detail',
     templateUrl: './data-source-detail.component.html',
-    styleUrls: []
+    styleUrls: ['../data-source-list/data-source-list.component.css']
 })
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
+    @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
+
     public form: FormGroup;
     public table: EdaTable;
     public relationsTable: EdaTable;
@@ -28,15 +30,20 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public relationController: EdaDialogController;
     public permissionsController: EdaDialogController;
     public newColController: EdaDialogController;
+    public mapController : EdaDialogController;
+    public viewController : EdaDialogController;
+    public csvPanelController : EdaDialogController;
+    public functionalities : string = $localize`:@@functionalities:Funcionalidades`
 
-    // Types
+    // Types canvi tonto
     public columnTypes: SelectItem[] = [
         { label: 'text', value: 'text' },
         { label: 'numeric', value: 'numeric' },
-        { label: 'date', value: 'date' }
+        { label: 'date', value: 'date' },
+        { label: 'coordinate', value: 'coordinate' }
     ];
     public selectedcolumnType: any;
-    public tableTypes: SelectItem[] = [{ label: 'dimension', value: 'dimension' }, { label: 'fact', value: 'fact' }];
+    public tableTypes: SelectItem[] = [{ label: 'Dimension', value: 'dimension' }, { label: 'Fact', value: 'fact' }, { label: 'View', value: 'view' }];
     public selectedTableType: string;
 
     // Aggregation Types
@@ -47,7 +54,14 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public tmpRelations: any = [];
 
     // DB types[]
-    public tiposBD: SelectItem[] = [{ label: 'postgres', value: 'postgres' }, { label: 'mySQL', value: 'mySQL' }];
+    public tiposBD: SelectItem[] = [
+        { label: 'Postgres', value: 'postgres' },
+        { label: 'Sql Server', value: 'sqlserver' },
+        { label: 'MySQL', value: 'mysql' },
+        { label: 'Vertica', value: 'vertica' },
+        { label: 'Oracle', value: 'oracle' },
+        { label: 'BigQuery', value: 'bigquery' }
+    ];
     public selectedTipoBD: SelectItem;
 
     // Permisisons table
@@ -87,8 +101,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }),
             cols: [
                 new EdaColumnContextMenu(),
-                new EdaColumnText({ field: 'user', header: 'USUARIO' }),
-                new EdaColumnText({ field: 'value', header: 'VALOR' }),
+                new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
+                new EdaColumnText({ field: 'value', header: $localize`:@@valueTable:VALOR` }),
             ]
         });
 
@@ -105,8 +119,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }),
             cols: [
                 new EdaColumnFunction( {click: (relation) =>  this.deleteRelation(relation._id)}),
-                new EdaColumnText({ field: 'origin', header: 'Origen' }),
-                new EdaColumnText({ field: 'dest', header: 'Destino' })
+                new EdaColumnText({ field: 'origin', header: $localize`:@@originRel:Origen` }),
+                new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` })
             ]
         })
 
@@ -175,7 +189,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.dataModelService.currentModelPanel.subscribe(
             modelPanel => {
                 this.modelPanel = modelPanel;
-                this.selectedTipoBD = { label: modelPanel.connection.type, value: modelPanel.connection.type };
+                this.selectedTipoBD = this.tiposBD.filter(type => type.value === modelPanel.connection.type)[0];
             }, err => this.alertService.addError(err)
         );
     }
@@ -244,6 +258,11 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.typePanel = 'tabla';
         this.update();
     }
+    deleteView(tableName : string){
+        this.dataModelService.deleteView(tableName);
+        this.typePanel = 'root';
+        this.update();
+    }
 
     checkCalculatedColumn(columnPanel: EditColumnPanel) {
         this.spinnerService.on();
@@ -256,8 +275,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         };
         const query = this.queryBuilderService.simpleQuery(column, queryParams);
         this.dataModelService.executeQuery(query).subscribe(
-            res => { this.alertService.addSuccess("Consulta correcta"); this.spinnerService.off() },
-            err => { this.alertService.addError("Consulta incorrecta"); this.spinnerService.off() }
+            res => { this.alertService.addSuccess($localize`:@@CorrectQuery:Consulta correcta`); this.spinnerService.off() },
+            err => { this.alertService.addError($localize`:@@IncorrectQuery:Consulta incorrecta`); this.spinnerService.off() }
         );
     }
     checkConection() {
@@ -265,8 +284,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         let connection = this.modelPanel.connection;
         let id = this.dataModelService.model_id;
         this.dataModelService.testStoredConnection(connection, id).subscribe(
-            res => { this.alertService.addSuccess("Conexión establecida"); this.spinnerService.off() },
-            err => { this.alertService.addError("Datos de conexión incorrectos"); this.spinnerService.off() }
+            res => { this.alertService.addSuccess($localize`:@@EstablishedConnections:Conexión establecida`); this.spinnerService.off() },
+            err => { this.alertService.addError($localize`:@@IncorrectConnectionData:Datos de conexión incorrectos`); this.spinnerService.off() }
         );
     }
 
@@ -299,6 +318,45 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 }
 
                 this.newColController = undefined;
+            }
+        })
+    }
+    openNewViewDialog(){
+        this.viewController = new EdaDialogController({
+            params : {user:localStorage.getItem('user'), model_id:this.dataModelService.model_id},
+            close: (event, response) => {
+                if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
+                    this.dataModelService.addView(response);
+                   
+                }
+                this.viewController = undefined;
+            }
+        })
+    }
+
+    openNewMapDialog(){
+        this.mapController = new EdaDialogController({
+            params : {},
+            close: (event, response) => {
+                if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
+                    if(response.newMap){
+                        this.dataModelService.addLinkedToMapColumns(response.linkedColumns, response.mapID);
+                    }
+                   this.dataModelService.updateMaps(response.serverMaps);
+                }
+                this.mapController = undefined;
+            }
+        })
+    }
+
+    openCSVDialog(){
+        this.csvPanelController = new EdaDialogController({
+            params : {model_id : this.dataModelService.model_id},
+            close: (event, response) => {
+                if(response){
+                   this.onTableCreated.emit();
+                }
+                this.csvPanelController = undefined;
             }
         })
     }

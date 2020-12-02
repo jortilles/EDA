@@ -52,9 +52,9 @@ export class CreateDashboardComponent extends EdaDialogAbstract {
         });
 
         this.visibleTypes = [
-            { label: 'Común', value: 'public', icon: 'fa fa-fw fa-globe' },
-            { label: 'Grupo', value: 'group', icon: 'fa fa-fw fa-users' },
-            { label: 'Privado', value: 'private', icon: 'fa fa-fw fa-lock' },
+            { label: $localize`:@@commonPanel:Común`, value: 'public', icon: 'fa fa-fw fa-globe' },
+            { label: $localize`:@@groupPanel:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
+            { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
         ];
 
         this.form.controls['visible'].setValue(this.visibleTypes[2].value);
@@ -99,7 +99,7 @@ export class CreateDashboardComponent extends EdaDialogAbstract {
         } else {
             const ds = { _id: this.form.value.ds._id };
             const body = {
-                config: { title: this.form.value.name, visible: this.form.value.visible, ds },
+                config: { title: this.form.value.name, visible: this.form.value.visible, ds, tag: null},
                 group: this.form.value.group
                     ? _.map(this.form.value.group, '_id')
                     : undefined

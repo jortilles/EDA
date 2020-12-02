@@ -8,13 +8,15 @@ export class MySqlBuilderService extends QueryBuilderService {
     return tables;
   }
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[]): any {
-    let myQuery = `SELECT ${columns.join(', ')} \nFROM ${origin}`;
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables:Array<any>, limit:number): any {
+
+    let o = tables.filter(table => table.name === origin).map(table => {return table.query? table.query : table.name})[0];
+    let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
     const filters = this.queryTODO.filters;
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest);
+    const joinString = this.getJoins(joinTree, dest, tables);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -48,6 +50,8 @@ export class MySqlBuilderService extends QueryBuilderService {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
 
+    if(limit) myQuery += `\nlimit ${limit}`;
+
     return myQuery;
   };
 
@@ -61,12 +65,22 @@ export class MySqlBuilderService extends QueryBuilderService {
         if (f.filter_type === 'not_null') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
+          /* Control de nulos... se genera la consutla de forma diferente */
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
           if (nullValueIndex != - 1) {
             if (f.filter_elements[0].value1.length === 1) {
-              filtersString += `\nand \`${f.filter_table}\`.\`${f.filter_column}\`  is null `;
+              /* puedo haber escogido un nulo en la igualdad */
+              if( f.filter_type == '='   ){
+                  filtersString += `\nand \`${f.filter_table}\`.\`${f.filter_column}\`  is null `;
+              }else{
+                filtersString += `\nand \`${f.filter_table}\`.\`${f.filter_column}\`  is not null `;
+              }
             } else {
-              filtersString += `\nand (${this.filterToString(f)} or \`${f.filter_table}\`.\`${f.filter_column}\`  is null) `;
+                if( f.filter_type == '='   ){
+                  filtersString += `\nand (${this.filterToString(f)} or \`${f.filter_table}\`.\`${f.filter_column}\`  is null) `;
+                 }else{
+                  filtersString += `\nand (${this.filterToString(f)} or \`${f.filter_table}\`.\`${f.filter_column}\`  is not null) `;
+                }             
             }
           } else {
             filtersString += '\nand ' + this.filterToString(f);
@@ -80,7 +94,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[]): any {
+  public getJoins(joinTree: any[], dest: any[], tables:Array<any>): any {
 
     let joins = [];
     let joined = [];
@@ -103,7 +117,8 @@ export class MySqlBuilderService extends QueryBuilderService {
 
           let joinColumns = this.findJoinColumns(e[j], e[i]);
           joined.push(e[j]);
-          joinString.push(`inner join \`${e[j]}\` on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
+          let t = tables.filter(table => table.name === e[j]).map(table => {return table.query? table.query : `\`${table.name}\``})[0];
+          joinString.push(`inner join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
         }
       }
     });
@@ -200,7 +215,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     if (!Array.isArray(filter)) {
       switch (columnType) {
-        case 'varchar': return `'${filter}'`;
+        case 'text': return `'${filter}'`;
         //case 'text': return `'${filter}'`;
         case 'numeric': return filter;
         case 'date': return `STR_TO_DATE('${filter}','%Y-%m-%d')`
@@ -234,7 +249,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     filters.forEach((filter, i) => {
       let col = filter.type === 'in' ?
-        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('in')).replace(/`/g, '') :
+        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf(' in ')).replace(/`/g, '') :
         filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('between')).replace(/`/g, '');
       colsInFilters.push({ col: col, index: i });
     });

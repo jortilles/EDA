@@ -1,8 +1,9 @@
 export const  aggTypes  = [
-    { label: 'Suma', value: 'sum' },
-    { label: 'Media', value: 'avg' },
-    { label: 'Máximo', value: 'max' },
-    { label: 'Mínimo', value: 'min' },
-    { label: 'Cuenta Valores', value: 'count' },
-    { label: 'Valores Distintos', value: 'count_distinct' }
+    { label: $localize`:@@aggTsum:Suma`, value: 'sum' },
+    { label: $localize`:@@aggTmean:Media`, value: 'avg' },
+    { label: $localize`:@@aggTmax:Máximo`, value: 'max' },
+    { label: $localize`:@@aggTmin:Mínimo`, value: 'min' },
+    { label: $localize`:@@aggTcount:Cuenta Valores`, value: 'count' },
+    { label: $localize`:@@aggTcountD:Valores Distintos`, value: 'count_distinct' },
+    { label: 'No', value: 'none' }
 ];

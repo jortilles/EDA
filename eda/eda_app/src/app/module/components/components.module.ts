@@ -21,7 +21,14 @@ import {
     FilterDialogComponent,
     ChartDialogComponent,
     TableDialogComponent,
-    AlertDialogComponent
+    AlertDialogComponent,
+    EdaMapComponent,
+    EdaGeoJsonMapComponent,
+    MapEditDialogComponent,
+    KpiEditDialogComponent,
+    EdaD3Component,
+    SankeyDialog,
+    LinkDashboardsComponent
 
  } from './component.index';
 
@@ -45,7 +52,14 @@ import {
         ChartDialogComponent,
         TableDialogComponent,
         PanelChartComponent,
-        AlertDialogComponent
+        AlertDialogComponent,
+        EdaMapComponent,
+        EdaGeoJsonMapComponent,
+        MapEditDialogComponent,
+        KpiEditDialogComponent,
+        EdaD3Component,
+        SankeyDialog,
+        LinkDashboardsComponent
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -54,9 +68,13 @@ import {
         EdaTableComponent,
         EdaChartComponent,
         EdaKpiComponent,
-        PanelChartComponent
+        PanelChartComponent,
+        EdaMapComponent,
+        EdaGeoJsonMapComponent,
+        EdaD3Component,
+        LinkDashboardsComponent
     ],
-    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent],
+    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent, EdaD3Component],
     schemas: [CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ComponentsModule { }

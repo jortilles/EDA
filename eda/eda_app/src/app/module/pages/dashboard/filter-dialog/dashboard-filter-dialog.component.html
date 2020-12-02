@@ -1,16 +1,16 @@
 <eda-dialog [inject]="dialog">
 
-    <div class="ui-g">
+    <div class="ui-g-12">
+        <div class="ui-g-6">
+            <h5 i18n="@@aplyToAllPanelsH5">
+                ¿Aplica a todos los paneles?
+            </h5>
 
-        <h5 i18n="@@aplyToAllPanelsH5">
-            ¿Aplica a todos los paneles?
-        </h5>
-        <br>
 
-        <p-inputSwitch [disabled]="applyToAllCheck()" [(ngModel)]="switchChecked" class="ui-g-12"> </p-inputSwitch>
-
-        <div *ngIf="!switchChecked" class="ui-g-12">
-            <hr>
+            <p-inputSwitch [disabled]="applyToAllCheck()" [(ngModel)]="switchChecked" > </p-inputSwitch>
+        </div>
+        <div *ngIf="!switchChecked" class="ui-g-6">
+            
             <h5 i18n="@@panelsToAplyH5">
                 Paneles para los que aplica el filtro:
             </h5>
@@ -55,14 +55,9 @@
                         [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
                         [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto">
                     </p-multiSelect>
-                    <p-calendar #myCalendar *ngIf="targetCol && targetCol.value.column_type === 'date'" [(ngModel)]="rangeDates"
-                        selectionMode="range" [readonlyInput]="true" (onClose)="handleDates()"
-                        placeholder='Selecciona un rango'>
-                        <p-footer class="edaFilterFooter">
-                            <button class="btn success edaOk" (click)="handleDates();$event.stopPropagation()" id="eda_dashboard_filter_dialog_confirmar">Confirmar </button>
-                        </p-footer>
-
-                    </p-calendar>
+                    <eda-date-picker #myCalendar *ngIf="targetCol && targetCol.value.column_type === 'date'"
+                        (onDatesChanges)="processPickerEvent($event)">
+                    </eda-date-picker>
                 </div>
 
             </div>
@@ -75,7 +70,7 @@
     <p-footer class="footer">
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
             <button type="submit" pButton (click)="saveGlobalFilter()" i18n-label="@@guardarBtn" label="Confirmar"
-                icon="fa fa-check" class="ui-button ml-2"></button>
+                icon="fa fa-check" class="ui-button ml-2" [disabled]="confirmDisabled()"></button>
             <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2"
                 i18n-label="@@cancelarBtn" label="Cancelar"></button>
         </div>

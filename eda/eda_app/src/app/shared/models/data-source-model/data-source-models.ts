@@ -22,6 +22,7 @@ export class EditTablePanel {
     name: string;
     technical_name: string;
     description: string;
+    query:string;
     relations: Array<Relation>;
     table_type: string;
     table_granted_roles: string;
@@ -47,7 +48,7 @@ export class EditColumnPanel {
 export class EditModelPanel {
   type: string;
   connection: {
-    type: string, host: string, database: string, user: string, password: string
+    type: string, host: string, database: string, user: string, password: string, schema:string, port:number
   };
   metadata: {
     model_name: string, model_granted_roles: any;

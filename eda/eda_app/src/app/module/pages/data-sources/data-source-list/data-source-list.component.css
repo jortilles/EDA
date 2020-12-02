@@ -20,3 +20,38 @@
     color: rgba(173, 147, 147, 0.712);
     font-size: 14px;
 }
+
+.functions-button{
+    color: #fff;
+    background-color: #048096;
+    border: 0;
+    transition: .4s;
+    cursor: pointer;
+}
+
+.functions-button:hover{
+    color: #fff;
+    background-color: #046677;
+    border: 0;
+}
+
+.header-button{
+    margin: 1px;
+    color: #046677;
+    background-color: #efefef;
+    border: 2px solid #cfcbd8;
+    font-size: 14px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+/* .header-button:hover{
+    margin: 1px;
+    color: #046677;
+    background-color: #efefef;
+    border: 2px solid #cfcbd8;
+    font-size: 14px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    border-radius: 50%;
+} */

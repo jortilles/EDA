@@ -24,15 +24,15 @@
                 <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan"
                     (click)="inject.onHeaderClick(label)" style="text-align:center">
                     {{label.title}}
-                    <p-sortIcon *ngIf="label.sortable" ></p-sortIcon>
+                    <p-sortIcon *ngIf="label.sortable"></p-sortIcon>
                 </th>
             </tr>
 
 
             <tr *ngIf="!inject.pivot" class="header-title">
                 <ng-container *ngFor="let col of inject.cols">
-                    <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass" [width]="col.width"
-                        [attr.rowspan]="col.rowspan">
+                    <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass"
+                        [width]="col.width" [attr.rowspan]="col.rowspan">
                         {{col.header}}
                         <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
                     </th>
@@ -57,12 +57,19 @@
         <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
                 <ng-container *ngFor="let col of inject.cols">
-                    <td *ngIf="col.visible===true" [class]="col.styleClass" 
-                    [width]="col.width">
+                    <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width"
+                        (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer;">
                         <ng-container [ngSwitch]="col.type">
                             <!-- ngSwitch TEXT -->
                             <ng-container *ngSwitchCase="'EdaColumnText'">
-                                {{ lodash.get(rowData, col.field) }}
+                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getTooltip(col)">
+                                    {{ lodash.get(rowData, col.field) }}
+                                </div>
+
+                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field">
+                                    {{ lodash.get(rowData, col.field) }}
+                                </div>
+
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
                             <ng-container *ngSwitchCase="'EdaColumnNumber'">
@@ -70,11 +77,18 @@
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
                             <ng-container *ngSwitchCase="'EdaColumnDate'">
-                                {{ lodash.get(rowData, col.field) }}
+                                <!-- {{ lodash.get(rowData, col.field) }} -->
+                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getTooltip(col)">
+                                    {{ lodash.get(rowData, col.field) }}
+                                </div>
+
+                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field">
+                                    {{ lodash.get(rowData, col.field) }}
+                                </div>
                             </ng-container>
                             <ng-container *ngSwitchCase="'EdaColumnPercentage'">
                                 {{ lodash.get(rowData, col.field) }}
-                            </ng-container>                           
+                            </ng-container>
                             <!-- ngSwitch CONTXET MENU -->
                             <ng-container *ngSwitchCase="'EdaColumnContextMenu'">
                                 <i class="fa fa-cog btn pl-1" (click)="inject._showContextMenu(rowData)"></i>
@@ -87,7 +101,7 @@
                 </ng-container>
             </tr>
         </ng-template>
-        
+
         <ng-template pTemplate="footer" id="totalsFooter">
             <tr *ngIf="inject.withColSubTotals">
                 <td *ngFor="let column of  inject.partialTotalsRow" [style.text-align]=column.style
@@ -106,10 +120,10 @@
 
         <ng-template pTemplate="summary">
             <div class="ui-helper-clearfix">
-                <span *ngIf="table.filteredValue != undefined"
-                    class="items-length float-right">{{ table.filteredValue.length }} registres</span>
-                <span *ngIf="!table.filteredValue && table.value.length"
-                    class="items-length float-right">{{ table.value.length }} registres</span>
+                <span i18n="@@registers1" *ngIf="table.filteredValue != undefined"
+                    class="items-length float-right">{{ table.filteredValue.length }} registros</span>
+                <span i18n="@@registers2" *ngIf="!table.filteredValue && table.value.length"
+                    class="items-length float-right">{{ table.value.length }} registros</span>
             </div>
         </ng-template>
     </p-table>

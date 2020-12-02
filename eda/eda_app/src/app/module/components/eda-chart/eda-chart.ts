@@ -1,3 +1,4 @@
+import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 import { ChartType, ChartDataSets, ChartOptions } from 'chart.js';
 
 export class EdaChart {
@@ -9,7 +10,7 @@ export class EdaChart {
     public chartLegend: boolean = false;
     public chartOptions: ChartOptions;
     public chartPlugins: any[] = [];
-    public isBarline : boolean =  false;
+    linkedDashboardProps : LinkedDashboardProps;
 
     constructor() { }
 }

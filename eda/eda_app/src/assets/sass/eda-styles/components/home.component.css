@@ -1,0 +1,66 @@
+.visibility-segment{
+  border-bottom: solid 1px #80808061;
+  margin: 5px;
+}
+
+.custom-button{
+  color: #fff;
+  background-color: #045c96;
+  border: 1px solid #fff;
+  border-radius: 20px;
+  transition: .4s;
+  cursor: pointer;
+}
+
+.custom-button:hover{
+  color: #045c96 !important;
+  background-color: #fff !important;
+  border: 1px solid #045c96 !important;
+}
+.custom-button:active{
+  color: #045c96 !important;
+  background-color: #fff !important;
+  border: 1px solid #045c96 !important;
+}
+.custom-button:focus{
+  color: #045c96 !important;
+  background-color: #fff !important;
+  border: 1px solid #045c96 !important;
+}
+
+
+.tag{
+  /* display:block; */
+  padding: 1rem;
+  padding-top: 0.2rem; 
+  padding-bottom: 0.2rem;
+  font-size: 14px; 
+  cursor: pointer;
+  transition: 0.4s;
+}
+
+.tag-label{
+  font-size: 14px; 
+  font-weight: bold;
+  padding: 1rem;
+  padding-top: 0.2rem; 
+  padding-bottom: 0.2rem;
+}
+
+
+.active, .tag:hover{
+  /* display:block; */
+  padding: 1rem;
+  padding-top: 0.2rem; 
+  padding-bottom: 0.2rem;
+  font-size: 14px; 
+  cursor: pointer;
+  font-weight: bold;
+  color:white;
+  background-color: rgb(36, 112, 156);
+}
+
+/* .tag:hover{
+  color:white;
+  background-color: rgb(134, 178, 204);
+} */

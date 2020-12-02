@@ -5,6 +5,7 @@ import { User } from '@eda/models/model.index';
 import { UserService } from '@eda/services/service.index';
 import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/index';
 import Swal from 'sweetalert2';
+import * as _ from 'lodash';
 
 declare function init_plugins();
 
@@ -14,27 +15,41 @@ declare function init_plugins();
     styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-    email: string;
-    remember: boolean;
-    returnUrl: string;
-    logo: string;
-    subLogo: string;
-    backgroundImage: string
+    public email: string;
+    public remember: boolean;
+    public returnUrl: string;
+    public urlParams: any;
+    public logo: string;
+    public subLogo: string;
+    public backgroundImage: string
+    public languages: Array<any>;
+    public selectedLanguage: string;
 
     constructor(
         private userService: UserService,
         private router: Router,
         private route: ActivatedRoute
     ) {
-
         this.logo = LogoImage;
         this.subLogo = SubLogoImage;
         this.backgroundImage = BackgroundImage;
+        this.selectedLanguage = 'CAT';
+
+        this.languages =
+            [
+                { name: 'Català', code: 'CAT' },
+                { name: 'Español', code: 'ES' },
+                { name: 'English', code: 'EN' }
+            ]
     }
 
     ngOnInit(): void {
-        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
         init_plugins();
+
+        this.route.queryParamMap.subscribe(params => this.urlParams = JSON.parse(JSON.stringify(params)).params.params);
+
+        // this.urlParams = this.route.snapshot.queryParams['params'];
+        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
 
         this.email = localStorage.getItem('email') || '';
 
@@ -44,16 +59,46 @@ export class LoginComponent implements OnInit {
 
     }
 
-    login(form: NgForm) {
+    public login(form: NgForm) {
         if (form.invalid) {
             return;
         } else {
             const user = new User(null, form.value.email, form.value.password);
-            // window.location.href = '#/'
+
             this.userService.login(user, form.value.remember).subscribe(
-                () => this.router.navigate([this.returnUrl]),
+                () => {
+
+                    if (this.urlParams) {
+
+                        const params = this.urlParams.split('&')
+
+                        let newParams: any = {};
+
+                        for (const param of Object.keys(params)) {
+                            if (params[param].split('=')[1].split('%7C')[1]) {
+                                let paramSplit = params[param].split('=')[1].split('%7C');
+                                newParams[params[param].split('=')[0]] = paramSplit.join('|');
+                            } else {
+                                newParams[params[param].split('=')[0]] = params[param].split('=')[1];
+                            }
+                        }
+
+                        this.router.navigate([this.returnUrl], { queryParams: newParams });
+                    } else {
+                        this.router.navigate([this.returnUrl]);
+                    }
+
+                },
                 err => Swal.fire('Error al iniciar sesión', err.text, 'error')
             );
+        }
+    }
+
+    public redirectLocale(lan:string){
+        switch(lan){
+            case 'EN' : window.location.href = '/en/#/home'; break;
+            case 'CAT' : window.location.href = '/ca/#/home'; break;
+            case 'ES' : window.location.href = '/es/#/home'; break;
         }
     }
 }

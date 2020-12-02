@@ -1,0 +1,93 @@
+<eda-dialog [inject]="dialog">
+
+  <p-progressBar *ngIf="activateProgressBar" mode="indeterminate" [style]="{'height': '0.3rem'}"></p-progressBar>
+
+  <!-- CASE chart + edaquery -->
+
+  <div *ngIf="controller.params.charttype !== 'table' && !controller.params.modeSQL">
+    <div class="ui-g-6">
+      <h6 class="ui-g-12" i18n="@@csvField" class="custom-border-b1">
+        Campo
+      </h6>
+      <div class="ui-g-12">
+        <h6>{{column}}</h6>
+      </div>
+    </div>
+
+    <div class="ui-g-6">
+      <h6 class="ui-g-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
+        Informe a vincular
+      </h6>
+      <div class="ui-g-12">
+        <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard"></p-dropdown>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CASE table + edaquery -->
+
+  <div *ngIf="controller.params.charttype === 'table' && !controller.params.modeSQL">
+    <div class="ui-g-6">
+      <h6 class="ui-g-12" i18n="@@csvField" class="custom-border-b1">
+        Campo
+      </h6>
+      <div class="ui-g-12">
+        <p-dropdown [options]="columns" placeholder="Column" [(ngModel)]="selectedColumn" (onChange)="initDashboards(selectedColumn)" optionLabel="colname"></p-dropdown>
+      </div>
+    </div>
+
+    <div class="ui-g-6">
+      <h6 class="ui-g-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
+        Informe a vincular
+      </h6>
+      <div class="ui-g-12">
+        <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard"></p-dropdown>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CASE chart + sqlquery -->
+  <div *ngIf="controller.params.modeSQL">
+    <div class="ui-g-12">
+      <h6 class="ui-g-12" i18n="@@csvField" class="custom-border-b1">
+        Campo
+      </h6>
+      <div class="ui-g-12">
+        <p-dropdown [options]="columns" placeholder="Column" [(ngModel)]="selectedColumn" (onChange)="initDashboards(selectedColumn)" optionLabel="colname"></p-dropdown>
+      </div>
+    </div>
+
+    <div class="ui-g-6">
+      <h6 class="ui-g-12" i18n="@@LinkDashboardDbFilter" class="custom-border-b1">
+        Campo del informe 
+      </h6>
+      <div class="ui-g-12">
+        <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard" placeholder="Dashboard" (onChange)="filterFilters()"></p-dropdown>
+      </div>
+    </div>
+
+    <div class="ui-g-6">
+      <h6 class="ui-g-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
+        Informe a vincular
+      </h6>
+      <div class="ui-g-12">
+        <p-dropdown [options]="filters" [(ngModel)]="selectedFilter" optionLabel="colname" placeholder="Column" (onChange)="handleTargetColumn()"></p-dropdown>
+      </div>
+    </div>
+
+  </div>
+
+
+  <p-footer class="footer">
+    <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
+      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check" class="ui-button ml-2"
+        i18n-label="@@guardarButton" label="Confirmar" id="eda_chart_dialog_confirmar" [disabled]="!selectedDashboard">
+      </button>
+      <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="ui-button-danger ml-2"
+        i18n-label="@@cancelarButton" label="Cancelar">
+      </button>
+    </div>
+  </p-footer>
+</eda-dialog>

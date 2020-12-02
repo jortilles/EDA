@@ -5,20 +5,24 @@ import * as _ from 'lodash';
 export class SQLserviceBuilderService extends QueryBuilderService {
 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], schema: string) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, schema: string) {
 
     let SCHEMA = `${schema}`;
 
-    if (SCHEMA === 'null' ||  SCHEMA==='' ) {
+    if (SCHEMA === 'null' || SCHEMA === '') {
       SCHEMA = 'dbo';
     }
 
-    let myQuery = `SELECT ${columns.join(', ')} \nFROM "${SCHEMA}"."${origin}"`;
+    let limitString = limit ? `TOP ${limit} ` : '';
+
+    let o = tables.filter(table => table.name === origin)
+      .map(table => { return table.query ? `${table.query}` : `"${SCHEMA}"."${table.name}"` })[0];
+    let myQuery = `SELECT ${limitString} ${columns.join(', ')} \nFROM ${o}`;
 
     const filters = this.queryTODO.filters;
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, SCHEMA);
+    const joinString = this.getJoins(joinTree, dest, tables, SCHEMA);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -49,7 +53,6 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     if (order_columns_string.length > 0) {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
-
     return myQuery;
   }
 
@@ -81,7 +84,7 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], schema: string) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema: string) {
 
     let joins = [];
     let joined = [];
@@ -104,7 +107,8 @@ export class SQLserviceBuilderService extends QueryBuilderService {
 
           let joinColumns = this.findJoinColumns(e[j], e[i]);
           joined.push(e[j]);
-          joinString.push(`inner join "${schema}"."${e[j]}" on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+          let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? `${table.query}` : `"${schema}"."${table.name}"` })[0];
+          joinString.push(`inner join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
         }
       }
     });
@@ -198,16 +202,16 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     });
     if (!Array.isArray(filter)) {
       switch (columnType) {
-        case 'varchar': return `'${filter}'`;
+        case 'text': return `'${filter}'`;
         //case 'text': return `'${filter}'`;
         case 'numeric': return filter;
-        case 'date': return `to_date('${filter}','YYYY-MM-DD')`
+        case 'date': return `CAST('${filter}' as date)`
       }
     } else {
       let str = '';
       filter.forEach(value => {
         const tail = columnType === 'date'
-          ? `to_date('${value}','YYYY-MM-DD')`
+          ? `CAST('${value}' as date)`
           : columnType === 'numeric' ? value : `'${value.replace(/'/g, "''")}'`;
         str = str + tail + ','
       });
@@ -242,7 +246,7 @@ export class SQLserviceBuilderService extends QueryBuilderService {
 
     filters.forEach((filter, i) => {
       let col = filter.type === 'in' ?
-        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('in')).replace(/"/g, '') :
+        filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf(' in ')).replace(/"/g, '') :
         filter.string.slice(filter.string.indexOf('.') + 1, filter.string.indexOf('between')).replace(/"/g, '');
       colsInFilters.push({ col: col, index: i });
     });

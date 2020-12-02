@@ -1,0 +1,61 @@
+
+
+body .preview-chart-box {
+    height: 600px;
+}
+
+@media (max-width: 1366px) {
+    body .preview-chart-box {
+        height: 400px;
+    }
+}
+
+
+
+
+@-webkit-keyframes yellow-fade {
+    from {
+      background: #d3d2d2;
+      color:white;
+    }
+    to {
+      background:#ffffff;
+      color:#67757c;
+    }
+  }
+  @-moz-keyframes yellow-fade {
+    from {
+        background:#d3d2d2;
+        color:white;
+      }
+      to {
+        background:#ffffff;
+        color:#67757c;
+      }
+  }
+  @keyframes yellow-fade {
+    from {
+        background:#d3d2d2;
+        color:white;
+      }
+      to {
+        background:#ffffff;
+        color:#67757c;
+      }
+  }
+
+  .edit-blink {
+    -webkit-animation: yellow-fade 1s ease-in-out 0s;
+    -moz-animation: yellow-fade 1s ease-in-out 0s;
+    -o-animation: yellow-fade 1s ease-in-out 0s;
+    animation: yellow-fade 1s ease-in-out 0s;
+    border-radius: 5%;
+  }
+
+  #edit:hover{
+    background: #eeeeee;
+    border-radius: 5%;
+    transition: .3s;
+  }
+
+  

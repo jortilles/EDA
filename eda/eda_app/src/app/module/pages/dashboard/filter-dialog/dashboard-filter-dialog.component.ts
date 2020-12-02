@@ -6,8 +6,8 @@ import {
     FileUtiles,
     QueryBuilderService
 } from '@eda/services/service.index';
-import {  EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/components/shared-components.index';
-import {  Calendar } from 'primeng/components/calendar/calendar';
+import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
+
 
 @Component({
     selector: 'dashboard-filter-dialog',
@@ -17,8 +17,9 @@ import {  Calendar } from 'primeng/components/calendar/calendar';
 
 export class DashboardFilterDialogComponent extends EdaDialogAbstract {
 
-    @ViewChild('myCalendar',  {static: false}) datePicker: Calendar;
     
+    @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
+
     public dialog: EdaDialog;
     public dashboard: any;
 
@@ -35,28 +36,29 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public applyToAll: boolean = true;
     public switchChecked: boolean = false;
 
-    public rangeDates : Date[];
+    public rangeDates: Date[];
+    public selectedRange : string = null;
 
     // Global filters vars
-    public filtersList: Array<{ table, column, panelList, data, selectedItems, id, isGlobal, applyToAll }> = [];
+    public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll }> = [];
 
     constructor(private globalFiltersService: GlobalFiltersService,
-                private dashboardService: DashboardService,
-                private queryBuilderService: QueryBuilderService,
-                private fileUtils: FileUtiles,
-                private alertService: AlertService) {
+        private dashboardService: DashboardService,
+        private queryBuilderService: QueryBuilderService,
+        private fileUtils: FileUtiles,
+        private alertService: AlertService) {
         super();
 
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: 'FILTROS DEL DASHBOARD'
+            title: $localize`:@@DashboardFilters:FILTROS DEL INFORME`
         });
     }
 
     onShow() {
         this.dashboard = this.controller.params;
-        this.selectPanelToFilter(this.dashboard.panels[0]);
+        this.selectPanelToFilter(this.dashboard.panels.filter(p => p.content)[0]);
     }
 
 
@@ -91,11 +93,11 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
 
         const fMap = this.globalFiltersService.relatedTables(tables, this.dashboard.dataSource.model.tables);
         fMap.forEach((value: any, key: string) => {
-            if(!notVisibleTables.includes(key)){
+            if (!notVisibleTables.includes(key)) {
                 this.targetTables.push({ label: value.display_name.default, value: key });
             }
         });
-   
+
         this.targetTables = this.targetTables.slice();
     }
 
@@ -115,7 +117,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.targetCols = [];
         const table = this.dashboard.dataSource.model.tables.filter(t => t.display_name.default === this.targetTable.label);
 
-        table[0].columns.forEach(col => {
+        table[0].columns.filter(col => col.visible === true).forEach(col => {
             this.targetCols.push({ label: col.display_name.default, value: col });
         });
 
@@ -124,12 +126,12 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
 
     saveGlobalFilter() {
         if (this.panelstoFilter.length === 0 || !this.targetTable || !this.targetCol) {
-            return this.alertService.addWarning(`Recuerde rellenar los campos obligatorios`);
+            return this.alertService.addWarning($localize`:@@MandatoryFields:Recuerde rellenar los campos obligatorios`);
         }
 
         this.filtersList.push({
             table: this.targetTable, column: this.targetCol,
-            panelList: this.panelstoFilter.map(p => p.id), data: null, selectedItems: this.selectedValues, id: this.fileUtils.generateUUID(),
+            panelList: this.panelstoFilter.map(p => p.id), data: null, selectedItems: this.selectedValues, selectedRange:this.selectedRange, id: this.fileUtils.generateUUID(),
             isGlobal: true, applyToAll: !this.applyToAll
         });
 
@@ -157,22 +159,29 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         );
     }
 
-    handleDates() {
-        if(this.rangeDates){
-
-            this.datePicker.overlayVisible = false;
-            const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' })
-            if (!this.rangeDates[1]) {
-                this.rangeDates[1] = this.rangeDates[0];
+    processPickerEvent(event){
+        if (event.dates) {
+            const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            if ( !event.dates[1]) {
+                event.dates[1] = event.dates[0];
             }
-            let stringRange = [this.rangeDates[0], this.rangeDates[1]]
+
+            let stringRange = [event.dates[0], event.dates[1]]
                 .map(date => {
                     let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
                     return `${ye}-${mo}-${da}`
-                })
-            this.selectedValues = stringRange
-        }
+                });
 
+            this.selectedValues = stringRange;
+            this.selectedRange = event.range;
+        }
+    }
+
+    confirmDisabled(){
+        if(this.datePicker){
+            return this.targetCol && this.targetCol.value.column_type === 'date' && this.datePicker.active;
+        }
+       else return false;
     }
 
     applyToAllCheck() {

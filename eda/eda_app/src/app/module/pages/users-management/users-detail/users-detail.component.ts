@@ -28,7 +28,7 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: 'CREAR NUEVO USUARIO'
+            title: $localize`:@@newUserTitle:CREAR NUEVO USUARIO`
         });
 
         this.form = this.fb.group({
@@ -49,8 +49,9 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
         await this.loadGroups();
 
         if (this.controller.params.id) {
-            this.dialog.setTitle(`USUARIO - ${_.toUpper(this.controller.params.name)}`);
-            this.btnLabel = 'GUARDAR';
+            let title = $localize`:@@userDetailHeader: USUARIO`
+            this.dialog.setTitle(`${title} - ${_.toUpper(this.controller.params.name)}`);
+            this.btnLabel = $localize`:@@userDetailSaveButton:GUARDAR`;
             this.form.controls['password'].disable({ onlySelf: true })
             this.loadUser();
         }
@@ -95,9 +96,7 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
 
     saveUser() {
         if (this.form.invalid) {
-            console.log(this.form);
-            console.log(this.form.valid);
-            this.alertService.addError(`Formulario incorrecto. Revise los campos obligatorios.`);
+            this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
         } else {
             const form = this.form.value;
             this.user.name = form.name;
@@ -115,22 +114,22 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
                     this.userService.manageUpdateUsers(this.user).subscribe(
                         (res) => {
                             this.onClose(EdaDialogCloseEvent.UPDATE);
-                            Swal.fire('Usuario actualizado', res.email, 'success');
+                            Swal.fire($localize`:@@UpdatedUser:Usuario actualizado`, res.email, 'success');
                         },
                         err => this.alertService.addError(err)
                     );
                 }
             } else {
                 if (!this.isMatch('password', 'rpassword')) {
-                    return this.alertService.addWarning(`Las contraseñas no coinciden`);
+                    return this.alertService.addWarning($localize`:@@PasswordsNotEqual:Las contraseñas no coinciden`);
                 }
                 this.user.password = form.password;
                 this.userService.createUser(this.user).subscribe(
                     res => {
                         this.onClose(EdaDialogCloseEvent.NEW);
-                        Swal.fire('Usuario creado', res.email, 'success');
+                        Swal.fire($localize`:@@CreatedUser:Usuario creado`, res.email, 'success');
                     }, err => {
-                        Swal.fire('Error al registrarse', err.text, 'error');
+                        Swal.fire($localize`:@@RegisterError:Error al registrarse`, err.text, 'error');
                     }
                 );
             }

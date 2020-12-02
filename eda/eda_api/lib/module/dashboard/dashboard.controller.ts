@@ -37,7 +37,7 @@ export class DashboardController {
 
     static async getPrivateDashboards(req: Request) {
         try {
-            const dashboards = await Dashboard.find({ 'user': req.user._id }, 'config.title config.visible').exec();
+            const dashboards = await Dashboard.find({ 'user': req.user._id }, 'config.title config.visible config.tag').exec();
             const privates = [];
             for (const dashboard of dashboards) {
                 if (dashboard.config.visible === 'private') {
@@ -53,7 +53,7 @@ export class DashboardController {
     static async getGroupsDashboards(req: Request) {
         try {
             const groups = await Group.find({ users: { $in: req.user._id } }).exec();
-            const dashboards = await Dashboard.find({ group: { $in: groups.map(g => g._id) } }, 'config.title config.visible group').exec();
+            const dashboards = await Dashboard.find({ group: { $in: groups.map(g => g._id) } }, 'config.title config.visible group config.tag').exec();
 
             for (let i = 0, n = dashboards.length; i < n; i += 1) {
                 const dashboard = dashboards[i];
@@ -70,7 +70,7 @@ export class DashboardController {
 
     static async getPublicsDashboards() {
         try {
-            const dashboards = await Dashboard.find({}, 'config.title config.visible').exec();
+            const dashboards = await Dashboard.find({}, 'config.title config.visible config.tag').exec();
             const publics = [];
             for (const dashboard of dashboards) {
                 if (dashboard.config.visible === 'public') {
@@ -85,7 +85,7 @@ export class DashboardController {
 
     static async getSharedDashboards() {
         try {
-            const dashboards = await Dashboard.find({}, 'config.title config.visible').exec();
+            const dashboards = await Dashboard.find({}, 'config.title config.visible config.tag').exec();
             const shared = [];
             for (const dashboard of dashboards) {
                 if (dashboard.config.visible === 'shared') {
@@ -100,7 +100,7 @@ export class DashboardController {
 
     static async getAllDashboardToAdmin() {
         try {
-            const dashboards = await Dashboard.find({}, 'user config.title config.visible group').exec();
+            const dashboards = await Dashboard.find({}, 'user config.title config.visible group config.tag').exec();
             const publics = [];
             const privates = [];
             const groups = [];
@@ -254,6 +254,7 @@ export class DashboardController {
 
     static async execQuery(req: Request, res: Response, next: NextFunction) {
         try {
+
             const connection = await ManagerConnectionService.getConnection(req.body.model_id);
             const dataModel = await connection.getDataSource(req.body.model_id);
             const dataModelObject = JSON.parse(JSON.stringify(dataModel));
@@ -294,7 +295,7 @@ export class DashboardController {
             const getResults = await connection.execQuery(query);
             const results = [];
             let labels : Array<string>;
-            if(getResults.length > 0){      
+            if(getResults.length > 0){     
                 labels = Object.keys(getResults[0]).map(i => i);
             }else{
                 labels = ['NoData'];
@@ -305,6 +306,7 @@ export class DashboardController {
                 const output = Object.keys(r).map(i => r[i]);
                 results.push(output);
             }
+            console.log(labels);
             const output = [labels, results];
             return res.status(200).json(output);
 
@@ -314,4 +316,37 @@ export class DashboardController {
         }
         
     }
+
+    static async execView(req: Request, res: Response, next: NextFunction){
+        try{
+            const connection = await ManagerConnectionService.getConnection(req.body.model_id);
+            const query = req.body.query
+            console.log(query);
+
+            connection.pool =  await connection.getPool();
+            const getResults = await connection.execQuery(query);
+            const results = [];
+            let labels : Array<string>;
+            if(getResults.length > 0){     
+                labels = Object.keys(getResults[0]).map(i => i);
+            }else{
+                labels = ['NoData'];
+            }
+            // Normalize data
+            for (let i = 0, n = getResults.length; i < n; i++) {
+                const r = getResults[i];
+                const output = Object.keys(r).map(i => r[i]);
+                results.push(output);
+            }
+            console.log(labels);
+            const output = [labels, results];
+            return res.status(200).json(output);
+
+        } catch (err) {
+            console.log(err)
+            next(new HttpException(500, 'Error quering database'));
+        }
+        
+    }
+
 }

@@ -7,24 +7,22 @@ import {Dialog} from 'primeng/dialog';
     templateUrl: './eda-dialog.component.html',
 })
 export class EdaDialogComponent implements AfterViewInit {
-    display = true;
+    display = false;
     height: number = null;
     width: number = null;
 
     @Input() inject: EdaDialog;
-    @ViewChild('dialog', {static: false}) dialog: Dialog;
+    @ViewChild('dialog') dialog: Dialog;
 
     constructor(private ngZone: NgZone) { }
 
     ngAfterViewInit() {
         this.inject.dialog = this.dialog;
-
-        // window.setTimeout(() => { this.dialog.center(); });
-
+        window.setTimeout(() => { this.display = true});
         this.ngZone.runOutsideAngular(() => {
             setTimeout(() => {
                 this.dialog.center();
-            }, 100);
+            }, 0);
         });
     }
 

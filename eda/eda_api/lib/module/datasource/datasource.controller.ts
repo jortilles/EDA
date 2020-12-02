@@ -1,3 +1,4 @@
+import { BigQueryConnection } from './../../services/connection/db-systems/bigquery-connection';
 import { NextFunction, Request, Response } from 'express';
 import DataSource, { IDataSource } from './model/datasource.model';
 import Dashboard from '../dashboard/model/dashboard.model';
@@ -5,6 +6,7 @@ import { HttpException } from '../global/model/index';
 import ManagerConnectionService from '../../services/connection/manager-connection.service';
 import ConnectionModel from './model/connection.model';
 import { EnCrypterService } from '../../services/encrypter/encrypter.service';
+import BigQueryConfig from './model/BigQueryConfig.model';
 
 export class DataSourceController {
 
@@ -145,13 +147,18 @@ export class DataSourceController {
     }
 
     static async CheckConnection(req: Request, res: Response, next: NextFunction) {
-        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle'].includes(req.qs.type)) {
+
+        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery'].includes(req.qs.type)) {
+
             next(new HttpException(404, 'Only postgres, MySQL, oracle, SqlServer and Vertica are accepted'));
+
         } else {
+
             try {
-                const cn = new ConnectionModel(req.qs.user, req.qs.host, req.qs.database,
+                const cn = req.qs.type !== 'bigquery' ? new ConnectionModel(req.qs.user, req.qs.host, req.qs.database,
                     req.qs.password, req.qs.port, req.qs.type,
-                    req.qs.schema, req.qs.sid);
+                    req.qs.schema, req.qs.sid)
+                    : new BigQueryConfig(req.qs.type, req.qs.database, req.qs.project_id);
 
                 const manager = await ManagerConnectionService.testConnection(cn);
                 await manager.tryConnection();
@@ -161,7 +168,7 @@ export class DataSourceController {
                 next(new HttpException(500, `Can't connect to database`));
             }
 
-        }
+        } 
     }
 
     static async CheckStoredConnection(req: Request, res: Response, next: NextFunction) {
@@ -186,6 +193,63 @@ export class DataSourceController {
     }
 
     static async GenerateDataModel(req: Request, res: Response, next: NextFunction) {
+        
+        if (req.body.type === 'bigquery') {
+
+            return DataSourceController.GenerateDataModelBigQuery(req, res, next);
+        } else {
+            return DataSourceController.GenerateDataModelSql(req, res, next);
+        }
+    }
+
+    static async GenerateDataModelBigQuery( req: Request, res: Response, next: NextFunction ){
+        try{
+
+            const cn = new BigQueryConfig(req.body.type, req.body.database, req.body.project_id);
+            const manager = await ManagerConnectionService.testConnection(cn);
+            const tables = await manager.generateDataModel(req.params.optimize);
+
+            const datasource: IDataSource = new DataSource({
+                ds: {
+                    connection: {
+                        type: req.body.type,
+                        host: null,
+                        port: null,
+                        database: req.body.database,
+                        schema: req.body.database || manager.GetDefaultSchema(),
+                        project_id : req.body.project_id,
+                        searchPath: req.body.project_id || manager.GetDefaultSchema(),
+                        user: null,
+                        password: null,
+                        sid: null
+                    },
+                    metadata: {
+                        model_name: req.body.name,
+                        model_id: '',
+                        model_granted_roles: [],
+                        optimized: req.params.optimize === '1'
+                    },
+                    model: {
+                        tables: tables
+                    }
+                }
+            });
+
+            datasource.save((err, data_source) => {
+                if (err) {
+                    return next(new HttpException(500, `Error saving the datasource`));
+                }
+
+                return res.status(201).json({ ok: true, data_source_id: data_source._id });
+            });
+          
+
+        }catch(err){
+            next(err);
+        }
+    }
+
+    static async GenerateDataModelSql(req: Request, res: Response, next: NextFunction) {
         try {
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database,
                 req.body.password, req.body.port, req.body.type, req.body.schema, req.body.sid);
@@ -266,7 +330,7 @@ export class DataSourceController {
                         searchPath: req.body.schema || manager.GetDefaultSchema(),
                         user: req.body.user,
                         password: passwd,
-                        sid : req.body.sid
+                        sid: req.body.sid
                     },
                     metadata: {
                         model_name: req.body.name,
@@ -350,13 +414,14 @@ export class DataSourceController {
                 let column = [];
                 uTable.columns.forEach(uColumn => {
                     column = rTable.columns.filter(c => c.column_name === uColumn.column_name);
-                    if (!column.length && uColumn.computed_column === 'no') {
+                    if (!column.length) console.log(uColumn, column)
+                    if (!column.length && !uColumn.computed_column) {
                         uTable.columns = uTable.columns.filter(c => c.column_name !== uColumn.column_name);
                     } else if (column.length) {
                         uColumn.tableCount = column[0].tableCount;
                     }
                 });
-            } else {
+            } else if (uTable.table_type !== 'view') {
                 toDelete.push(uTable.table_name);
             }
         });

@@ -12,6 +12,8 @@ import {
 import { Column, Query } from '@eda/models/model.index';
 import * as _ from 'lodash';
 
+import { aggTypes } from 'app/config/aggretation-types';
+
 @Component({
     selector: 'app-column-dialog',
     templateUrl: './column-dialog.component.html',
@@ -67,14 +69,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.selectedColumn = this.controller.params.selectedColumn;
         const allowed = [];
         const title = this.selectedColumn.display_name.default;
-        this.dialog.title = `Columna ${title} de la tabla ${this.controller.params.table}`;
+        const col = $localize`:@@col:Columna`, from = $localize`:@@table:de la tabla`;
+        this.dialog.title = `${col} ${title} ${from} ${this.controller.params.table}`;
 
         this.carregarValidacions();
         
         for (let i = 0, n = this.filter.types.length; i < n; i += 1) {
-            if (this.selectedColumn.column_type === 'varchar') {
+            if (this.selectedColumn.column_type === 'text') {
                 this.filter.types[i].typeof.map(type => {
-                    if (type === 'varchar') {
+                    if (type === 'text') {
                         allowed.push(this.filter.types[i]);
                     }
                 });
@@ -411,6 +414,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 err => this.alertService.addError(err)
             );
         }
+    }
+
+    getAggName(value:string){
+        return aggTypes.filter(agg => agg.value === value)[0].label;
     }
 
     /* Close functions */

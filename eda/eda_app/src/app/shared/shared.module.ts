@@ -14,7 +14,8 @@ import {
     NavbarComponent,
     SidebarComponent,
     EdaContextMenuComponent,
-    EdaInputComponent
+    EdaInputComponent,
+    EdaDatePickerComponent
 } from './components/shared-components.index';
 
 @NgModule({
@@ -26,7 +27,8 @@ import {
         EdaDialogComponent,
         EdaContextMenuComponent,
         EdaInputComponent,
-        FocusOnShowDirective
+        FocusOnShowDirective,
+        EdaDatePickerComponent
     ],
     imports: [
         CoreModule,
@@ -41,7 +43,8 @@ import {
         EdaDialogComponent,
         EdaContextMenuComponent,
         EdaInputComponent,
-        FocusOnShowDirective
+        FocusOnShowDirective,
+        EdaDatePickerComponent
     ]
 })
 export class SharedModule {}

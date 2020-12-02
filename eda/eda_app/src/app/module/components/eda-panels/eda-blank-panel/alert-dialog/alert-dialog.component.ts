@@ -17,7 +17,7 @@ export class AlertDialogComponent extends EdaDialogAbstract {
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: '',
-      style :  {width: '50%', height: '40%', top: '120px', left: '205px'}
+      style :  {width: '55%', height: '45%', top: '120px', left: '205px'}
     });
   }
 
@@ -25,7 +25,6 @@ export class AlertDialogComponent extends EdaDialogAbstract {
     this.onClose(EdaDialogCloseEvent.NONE, execute);
   }
   onShow(): void {
-    console.log('onShow');
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
