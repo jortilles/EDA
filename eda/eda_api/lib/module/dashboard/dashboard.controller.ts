@@ -162,8 +162,10 @@ export class DashboardController {
                         return next(new HttpException(400, 'Datasouce not found with id'));
                     }
 
+        
+
                     const toJson = JSON.parse(JSON.stringify(datasource));
-                    const ds = { _id: datasource._id, model: toJson.ds.model };
+                    const ds = { _id: datasource._id, model: toJson.ds.model, name:toJson.ds.metadata.model_name };
 
                     return res.status(200).json({ ok: true, dashboard, datasource: ds });
                 });

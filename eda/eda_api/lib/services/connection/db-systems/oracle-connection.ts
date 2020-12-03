@@ -33,7 +33,7 @@ export class OracleConnection extends AbstractConnection {
         try {
             const connectString = parseInt(this.config.sid) === 1 ? 
                 `(DESCRIPTION =
-                    (ADDRESS = (PROTOCOL = TCP)(HOST = ${this.config.host})(PORT = 1521))
+                    (ADDRESS = (PROTOCOL = TCP)(HOST = ${this.config.host})(PORT = ${this.config.port}))
                     (CONNECT_DATA =
                         (SERVER = DEDICATED)
                         (SID = ${this.config.database})

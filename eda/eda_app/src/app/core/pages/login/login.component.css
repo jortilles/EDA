@@ -50,7 +50,7 @@
 }
 
 .language{
-    cursor: default;
+    cursor: pointer;
     font-size: small;
 }
 .language:hover{

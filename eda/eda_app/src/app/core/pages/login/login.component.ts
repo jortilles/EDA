@@ -95,10 +95,16 @@ export class LoginComponent implements OnInit {
     }
 
     public redirectLocale(lan:string){
+        let baseUrl = window.location.href.split('#')[0];
+        if( baseUrl.substr(-4) ==  '/es/'  || 
+            baseUrl.substr(-4) ==  '/ca/'  ||  
+            baseUrl.substr(-4) ==  '/en/'   ){
+                baseUrl  = baseUrl.substr(0, baseUrl.length -3)
+            }
         switch(lan){
-            case 'EN' : window.location.href = '/en/#/home'; break;
-            case 'CAT' : window.location.href = '/ca/#/home'; break;
-            case 'ES' : window.location.href = '/es/#/home'; break;
+            case 'EN'  : window.location.href = baseUrl + 'en/#/'; break;
+            case 'CAT' : window.location.href = baseUrl + 'ca/#/'; break;
+            case 'ES'  : window.location.href = baseUrl + 'es/#/'; break;
         }
     }
 }
