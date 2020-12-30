@@ -2,23 +2,16 @@
 
 Enterprise Data Analytics by  [Jortilles](http://eda.jortilles.com)! The easiest analytics tool.
 
-## Installation
 
-Clone this repository and then build the API and APP.
-
-```bash
-cd eda_api
-npm install
-```
+## Get EDA
 
 ```bash
-cd eda_app
-npm install
-```
+git clone github.com/jortilles/EDA.git```
+
 
 ## Configuration
 
-* eda_api/config/database.config.js #to set the mongodb database
+* EDA/eda/eda_api/config/database.config.js #to set the mongodb database. You need a local mongodb server and a database for EDA. 
 
 ```
 module.exports = {
@@ -27,12 +20,28 @@ module.exports = {
 
 ```
 
-* eda_app/src/app/config/config.ts #to set the backend url
+* EDA/eda/eda_app/src/app/config/config.ts #to set the backend url
 
 ```
 export const URL_SERVICES = '/localhost:8666'; #by default api port is 8666
 
 ```
+
+## Installation
+
+Once cloned this repository and configured just build the API and the APP.
+
+```bash
+cd EDA/eda/eda_api
+npm install
+npm start
+```
+
+```bash
+cd EDA/eda/eda_app
+npm install
+npm start
+
 
 ## Demo
 
