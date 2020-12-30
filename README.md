@@ -6,8 +6,8 @@ Enterprise Data Analytics by  [Jortilles](http://eda.jortilles.com)! The easiest
 ## Get EDA
 
 ```bash
-git clone github.com/jortilles/EDA.git```
-
+git clone github.com/jortilles/EDA.git
+```
 
 ## Configuration
 
