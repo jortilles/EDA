@@ -17,10 +17,13 @@
     </div>
 
     <p-footer class="footer">
-      <button type="button" pButton (click)="saveColumn()" class="ui-button" i18n-label="@@guardarBtn"  icon="fa fa-check" label="Confirmar">
-      </button>
-      <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn"
-        label="Cerrar"></button>
+      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+        <button type="button" pButton (click)="saveColumn()" class="ui-button" i18n-label="@@guardarBtn"
+          icon="fa fa-check" label="Confirmar">
+        </button>
+        <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn"
+          label="Cerrar"></button>
+      </div>
     </p-footer>
   </form>
 

@@ -29,6 +29,7 @@ export class TableDialogComponent extends EdaDialogAbstract {
   public col_subtotals;
   public resultAsPecentage;
   public onlyPercentages;
+  public trend;
 
   constructor() {
     super();
@@ -53,9 +54,10 @@ export class TableDialogComponent extends EdaDialogAbstract {
       this.col_subtotals = config.withColSubTotals;
       this.resultAsPecentage = config.resultAsPecentage;
       this.onlyPercentages = config.onlyPercentages;
+      this.trend = config.withTrend;
     } else {
       this.panelChartConfig.config = new ChartConfig(
-        new TableConfig(false, false, 5, false, false, false)
+        new TableConfig(false, false, 5, false, false, false, false)
       )
     }
     this.setItems();
@@ -64,13 +66,23 @@ export class TableDialogComponent extends EdaDialogAbstract {
 
 
   private rowTotals() {
+    this.myPanelChartComponent.currentConfig.withTrend = false;
     this.myPanelChartComponent.currentConfig.withRowTotals = !this.myPanelChartComponent.currentConfig.withRowTotals;
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.row_totals = this.myPanelChartComponent.currentConfig.withRowTotals;
     this.setItems();
   }
+
+  private rowTrend(){
+    this.myPanelChartComponent.currentConfig.withRowTotals = false;
+    this.myPanelChartComponent.currentConfig.withTrend = !this.myPanelChartComponent.currentConfig.withTrend;
+    this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
+    this.trend = this.myPanelChartComponent.currentConfig.withTrend;
+    this.setItems();
+  }
+
   private colSubTotals() {
-    console.log(this.myPanelChartComponent.componentRef.instance);
+  
     if (this.onlyPercentages) return;
     this.myPanelChartComponent.currentConfig.withColSubTotals = !this.myPanelChartComponent.currentConfig.withColSubTotals;
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
@@ -133,7 +145,7 @@ export class TableDialogComponent extends EdaDialogAbstract {
     const rows = config.visibleRows;
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows, 
-      this.col_subtotals, this.col_totals, this.row_totals)
+      this.col_subtotals, this.col_totals, this.row_totals, this.trend);
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }
@@ -186,7 +198,13 @@ export class TableDialogComponent extends EdaDialogAbstract {
           items: [
             {
               label: this.row_totals === true ? "Quitar totales de fila" : "Totales de fila",
+              disabled : this.trend,
               command: () => this.rowTotals()
+            },
+            {
+              label: this.trend === true ? "Quitar Tendencia" : "Tendencia",
+              disabled : this.row_totals,
+              command: () => this.rowTrend()
             },
             {
               label: this.col_totals === true ? "Quitar totales de columna" : "Totales de columna",

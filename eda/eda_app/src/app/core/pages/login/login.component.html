@@ -19,7 +19,7 @@
                     <form ngNativeValidate #f="ngForm" (ngSubmit)="login( f )">
                         <div class="form-group">
                             <label i18n="@@direccionMail" for="email">Dirección Email</label>
-                            <input pInputText [ngModel]="email" name="email" class="form-control" type="text"
+                            <input id='login_mail' pInputText [ngModel]="email" name="email" class="form-control" type="text"
                                 i18n-placeholder="@@placeholderInputUsuario" placeholder="Usuario"
                                 autocomplete="username" aria-describedby="emailHelp" required />
 
@@ -51,7 +51,7 @@
                         <a href="https://eda.jortilles.com/" style="font-size: 12px;" target="_blank">
                             Copyright © 2020 by Jortilles
                         </a>
-                         <img src="https://eda.jortilles.com/eda_pxl.png" /> 
+                        <img src="https://eda.jortilles.com/eda_pxl.png" />
                     </div>
                 </div>
             </div>

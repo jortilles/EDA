@@ -5,6 +5,7 @@ export class LinkedDashboardProps{
   dashboardID   : string;
   table         : string;
   col           : string;
+  index         : number;
 
   constructor (
     sourceCol     : string,
@@ -12,7 +13,8 @@ export class LinkedDashboardProps{
     dashboardName : string,
     dashboardID   : string,
     col           : string,
-    table         : string
+    table         : string,
+    index         : number,
     )
     {
     this.sourceCol      = sourceCol;
@@ -21,5 +23,6 @@ export class LinkedDashboardProps{
     this.dashboardID    = dashboardID;
     this.col            = col;
     this.table          = table;
+    this.index          = index;
   }
 }

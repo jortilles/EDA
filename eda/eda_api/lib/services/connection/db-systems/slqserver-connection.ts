@@ -61,21 +61,17 @@ export class SQLserverConnection extends AbstractConnection {
             let tables = [];
             let where: string = '';
             let schema = this.config.schema;
-
-            //console.log(this.config);
     
             if (!schema) {
                 schema = 'dbo';
             }
             where = ` AND TABLE_SCHEMA = '${schema}'`;
             const query = `
-                SELECT TABLE_NAME from INFORMATION_SCHEMA.tables WHERE table_type = 'BASE TABLE' ${where}  
+                SELECT TABLE_NAME from INFORMATION_SCHEMA.TABLES WHERE TABLE_tYPE = 'BASE TABLE' ${where}  
                 UNION ALL
                 SELECT TABLE_NAME from INFORMATION_SCHEMA.VIEWS v WHERE 1=1 ${where} 
                 ORDER BY TABLE_NAME
             `;
-
-            console.log(query);
 
             const getResults = await this.execQuery(query);
             getResults.forEach(r => {
@@ -149,7 +145,6 @@ export class SQLserverConnection extends AbstractConnection {
 
     private async countTable(tableName: string, schema:string): Promise<any> {
         const query = `SELECT count(*) as count from ${schema}.${tableName}`;
-        console.log(query);
 
         return new Promise(async (resolve, reject) => {
             try {

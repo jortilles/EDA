@@ -104,6 +104,8 @@ export class EdaD3Component implements AfterViewInit {
       .attr("height", d => d.y1 - d.y0)
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
+      // .on('mouseover', this.showLinks)
+      // .on('mouseout', this.hideLinks)
       .append("title")
       .text(d => `${d.name}\n${d.value.toLocaleString()}`)
 
@@ -116,10 +118,19 @@ export class EdaD3Component implements AfterViewInit {
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
-          const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${data.names[0]}`
+          const value = this.inject.data.values.filter(row => {
+            let allIn = true;
+            data.names.forEach(name => {
+              if (!row.includes(name)) allIn = false;
+            });
+            return allIn;
+          })[0][this.inject.linkedDashboard.index];
+          const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
         }
       })
+      .on('mouseover', this.showLinks)
+      .on('mouseout', this.hideLinks)
       .attr("stroke", d => color(d.names[0]))
       .attr("stroke-width", d => d.width)
       .style("mix-blend-mode", "multiply")
@@ -128,6 +139,7 @@ export class EdaD3Component implements AfterViewInit {
         const link = this.inject.linkedDashboard ? `\nlinked to ${this.inject.linkedDashboard.dashboardName}` : ''
         return `${d.names.join(" → ")}\n${this.data.labels[this.metricIndex]} : ${d.value.toLocaleString()}${link}`;
       })
+
 
     svg.append("g")
       .style("font", "14px Questrial")
@@ -188,6 +200,35 @@ export class EdaD3Component implements AfterViewInit {
     }
 
     return { _nodes: nodes, _links: links };
+  }
+
+  showLinks(d:MouseEvent, data:any) {
+
+    const allNamesInArray = (source:Array<string>, target:Array<string>) => {
+
+      const biggerOne   = source.length >= target.length ? source : target;
+      const smallestOne = source.length < target.length ? source : target; 
+      let allIn = true;
+
+      smallestOne.forEach(name => {
+        if(!biggerOne.includes(name)) allIn = false;
+      });
+
+      return allIn;
+    }
+
+     d3.selectAll('path').style(
+      'opacity',
+     ( p:any) => {
+       return (p && allNamesInArray(data.names, p.names)) ? '1' : '0.3'
+      }
+    )
+    
+  }
+  
+  hideLinks() {
+    d3.selectAll('rect').style('opacity', '1');
+    d3.selectAll('path').style('opacity', '1');
   }
 
 }

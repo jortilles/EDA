@@ -8,6 +8,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { UsersLlistaComponent } from './users-management/users-list/users-list.component';
 import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.component'
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
+import { ModelSettingsComponent } from './model-settings/model-settings.component';
+
 
 // Guard
 import { VerifyTokenGuard } from '../../services/guards/verify-token.guard';
@@ -25,6 +27,7 @@ const pagesRoutes: Routes = [
 
     { path: 'groups-management', component: GroupListComponent, canActivate: [VerifyTokenGuard] },
     { path: 'users-management', component: UsersLlistaComponent, canActivate: [VerifyTokenGuard]},
+    { path: 'models-management', component: ModelSettingsComponent, canActivate:[VerifyTokenGuard]},
     { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

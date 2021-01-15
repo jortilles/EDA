@@ -1,6 +1,6 @@
 <eda-dialog [inject]="dialog">
   <div style="overflow: auto; overflow-y: auto; max-height: 56vh;">
-    <div class="ui-g-2 box">
+    <div class="ui-g-2 ui-sm-12 box">
       <div style="margin-bottom: 10px" class="ui-g-12">
           <span class="ui-float-label">
             <input id="float-input" type="text" pInputText [(ngModel)]="tableName"> 
@@ -14,7 +14,7 @@
         </span>
       </div>
 
-      <div style="margin-bottom: 10px" class="ui-g-12">
+      <div style="margin-bottom: 10px" class="ui-g-12 ">
         <h6 i18n="@@addFile">Subir archivo</h6>
         <input type="file" #file style="display: none" (change)="onFilesAdded()" />
         <button pButton (click)="loadFile()" icon="fa fa-upload" iconPos="center" >
@@ -22,7 +22,7 @@
       </div>
 
     </div>
-    <div class="ui-g-9 box">
+    <div class="ui-g-9 ui-sm-12  box">
       <p-table [value]="csvColumns" styleClass="p-datatable-sm">
         <ng-template pTemplate="header">
           <tr>

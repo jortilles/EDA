@@ -4,7 +4,7 @@
 
   <!-- CASE chart + edaquery -->
 
-  <div *ngIf="controller.params.charttype !== 'table' && !controller.params.modeSQL">
+  <div *ngIf="controller.params.charttype !== 'table' && controller.params.charttype !== 'parallelSets'  && !controller.params.modeSQL">
     <div class="ui-g-6">
       <h6 class="ui-g-12" i18n="@@csvField" class="custom-border-b1">
         Campo
@@ -25,9 +25,11 @@
     </div>
   </div>
 
+  
+
   <!-- CASE table + edaquery -->
 
-  <div *ngIf="controller.params.charttype === 'table' && !controller.params.modeSQL">
+  <div *ngIf="(controller.params.charttype === 'table' || controller.params.charttype === 'parallelSets') && !controller.params.modeSQL">
     <div class="ui-g-6">
       <h6 class="ui-g-12" i18n="@@csvField" class="custom-border-b1">
         Campo

@@ -99,7 +99,7 @@ export class CreateDashboardComponent extends EdaDialogAbstract {
         } else {
             const ds = { _id: this.form.value.ds._id };
             const body = {
-                config: { title: this.form.value.name, visible: this.form.value.visible, ds, tag: null},
+                config: { title: this.form.value.name, visible: this.form.value.visible, ds, tag: null, refreshTime:null},
                 group: this.form.value.group
                     ? _.map(this.form.value.group, '_id')
                     : undefined

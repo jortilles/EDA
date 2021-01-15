@@ -91,7 +91,7 @@
 }
 
 .sidebar-nav ul li a {
-  color: #687384;
+  color: #95a2b4 !important;
   padding: 8px 35px 8px 15px;
   display: block;
   font-size: 14px;
@@ -101,12 +101,29 @@
 
 .sidebar-nav ul li a.active i,
 .sidebar-nav ul li a:hover i {
-  color: #398bf7;
+  color: #93cee2 !important;
 }
+
+.sidebar-nav ul li a.active,
+.sidebar-nav ul li a:hover {
+  color: #93cee2 !important;
+}
+
+.sidebar-nav ul li,
+.sidebar-nav ul li {
+  color: #95a2b4 !important;
+}
+
+.sidebar-nav ul li.active,
+.sidebar-nav ul li:hover {
+  color: #93cee2 !important;
+}
+
+
 
 .sidebar-nav ul li a.active {
   font-weight: 500;
-  color: #263238;
+  color: white;
 }
 
 .sidebar-nav ul li ul {
@@ -115,6 +132,7 @@
 
 .sidebar-nav ul li ul li a {
   padding: 7px 35px 7px 15px;
+  
 }
 
 .sidebar-nav ul li ul ul {
@@ -160,12 +178,12 @@
 }
 
 .sidebar-nav > ul > li.active > a {
-  color: #398bf7;
+  color: white;
   font-weight: 500;
 }
 
 .sidebar-nav > ul > li.active > a i {
-  color: #398bf7;
+  color: white;
 }
 
 .sidebar-nav .waves-effect {
@@ -227,7 +245,10 @@
     width: 220px;
     padding-bottom: 10px;
     z-index: 1001;
-    background: #edf0f5;
+    background: #242a33;
+    /* box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.1), 0 1px 1px 0 rgba(0, 0, 0, 0.1), 0 2px 1px -1px rgba(0, 0, 0, 0.1); */
+    box-shadow: 0 8px 6px -6px rgba(0, 0, 0, 0.1);
+    border-bottom-right-radius: 5px;
     display: none;
     padding-left: 1px;
   }
@@ -294,7 +315,10 @@
 
   .mini-sidebar-2 .sidebar-nav #sidebarnav > li:hover > a {
     width: 290px;
-    background: #edf0f5;
+    background: #242a33;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+    box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.1), 0 1px 1px 0 rgba(0, 0, 0, 0.178), 0 2px 1px -1px rgba(0, 0, 0, 0.1); 
   }
 
   .mini-sidebar-2 .sidebar-nav #sidebarnav > li:hover > a .hide-menu {

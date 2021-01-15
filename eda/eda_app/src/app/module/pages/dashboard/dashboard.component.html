@@ -15,7 +15,7 @@
     <div class="ui-g-12" style="padding:4px;">
         <button class="filter-button" *ngIf="filtersList.length  > 0"
             (click)="reloadPanelsWithTimeOut()">
-            <i class="pi pi-filter fiter-icon"></i> {{filtrar}}
+            <i id="applyFilterButton" class="pi pi-filter fiter-icon"></i> {{filtrar}}
         </button>
         <span *ngFor="let filter of filtersList">
             <span class="filter-name"  >
@@ -117,10 +117,20 @@
 <!-- ============================================================== -->
 <!-- Right sidebar -->
 <!-- ============================================================== -->
-<p-sidebar [(visible)]="display_v.rightSidebar" position="right" [baseZIndex]="10000">
+<p-sidebar [(visible)]="display_v.rightSidebar" position="right" [baseZIndex]="10000" blockScroll="true">
+
+    <div>
+
+        <div class="right-sidebar-blocks-title  mt-1">
+           <span class="ml-2">{{datasourceName}}</span>
+        </div>
+
+    </div>
+    <hr>
+
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddWidget()">
         <div>
-            <i class="fa fa-columns"></i>
+            <i id="newPanel" class="fa fa-columns"></i>
             <span i18n="@@opcionPanel" class="ml-2">NUEVO PANEL</span>
         </div>
     </div>
@@ -134,7 +144,7 @@
 
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="addGlobalFilter()">
         <div>
-            <i class="fa fa-filter"></i>
+            <i id="newFilter" class="fa fa-filter"></i>
             <span i18n="@@opcionFiltro" class="ml-2">NUEVO FILTRO</span>
         </div>
     </div>
@@ -148,7 +158,7 @@
         </div>
     </div>
 
-    <div class="right-sidebar-blocks-options block-options-bg pointer mt-1">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
         <div>
             <i class="fa fa-folder-open"></i>
             <span  class="ml-2"> {{addTagString}} </span>
@@ -157,9 +167,16 @@
         </div>
     </div>
 
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
+        <div>
+            <span class="ml-2">LIVE DASHBOARD</span>
+            <input style="max-width: 70%; margin-top: 0.2rem;" [placeholder]="Seconds_to_refresh"  type="number" pInputText [(ngModel)]="refreshTime" > 
+        </div>
+    </div>
+
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveDashboard()">
         <div>
-            <i class="fa fa-save"></i>
+            <i id="saveDashboard" class="fa fa-save"></i>
             <span i18n="@@opcionGuardar" class="ml-2">GUARDAR INFORME</span>
         </div>
     </div>
@@ -209,6 +226,6 @@
 
     <button (click)="display_v.rightSidebar = true"
         class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
-        <i class="fa fa-cog text-white"></i>
+        <i id="gearButton" class="fa fa-cog text-white"></i>
     </button>
 </div>

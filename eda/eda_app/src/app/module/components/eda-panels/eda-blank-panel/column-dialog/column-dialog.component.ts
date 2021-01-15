@@ -103,6 +103,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     carregarValidacions() {
+        
         this.carregarFilters();
         this.handleAggregationType(this.selectedColumn);
         this.handleOrdTypes(this.selectedColumn);
@@ -321,6 +322,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     handleOrdTypes(column: Column) {
+
         let addOrd: Column;
 
         if (this.controller.params.panel.content) {
@@ -332,8 +334,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                     o.value !== column.ordenation_type ? o.selected = false : o.selected = true;
                 });
 
-                addOrd = this.controller.params.currentQuery.find(c => column.column_name === c.column_name && column.table_id === c.table_id);
-                addOrd.ordenation_type = column.ordenation_type;
+                this.controller.params.currentQuery.find(c => column.column_name === c.column_name && column.table_id === c.table_id).ordenation_type = column.ordenation_type ;
+                //addOrd.ordenation_type = column.ordenation_type;
                 return;
             }
 
@@ -353,6 +355,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             }
 
         } else if (!column.ordenation_type) {
+
             this.ordenationTypes = [
                 { display_name: 'Asc', value: 'Asc', selected: false },
                 { display_name: 'Desc', value: 'Desc', selected: false },

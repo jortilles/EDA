@@ -42,6 +42,14 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     // Global filters vars
     public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll }> = [];
 
+    //strings
+    public header1 : string = $localize`:@@aplyToAllPanelsH5:¿Aplica a todos los paneles?`;
+    public header2 : string = $localize`:@@panelsToAplyH5:Paneles para los que aplica el filtro`;
+    public header3 : string = $localize`:@@filterForH5: Filtrar por`;
+    public greendot :string = $localize`:@@greendot:Paneles filtrados`;
+    public reddot :string =$localize`:@@reddot:Paneles no relacionados`;
+    public unselecteddot :string = $localize`:@@unselecteddot:Paneles no filtrados`;
+
     constructor(private globalFiltersService: GlobalFiltersService,
         private dashboardService: DashboardService,
         private queryBuilderService: QueryBuilderService,
@@ -52,8 +60,10 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@DashboardFilters:FILTROS DEL INFORME`
+            title: $localize`:@@DashboardFilters:FILTROS DEL INFORME`,
         });
+        this.dialog.style= {width: '70%', height: '85vh', top: '18vh', left: '12rem'};
+    
     }
 
     onShow() {
@@ -99,6 +109,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         });
 
         this.targetTables = this.targetTables.slice();
+        this.targetTables.sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0);
     }
 
     addPanelToFilter(panel) {
@@ -122,6 +133,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         });
 
         this.targetCols = this.targetCols.slice();
+        this.targetCols.sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0);
     }
 
     saveGlobalFilter() {

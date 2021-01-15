@@ -14,13 +14,13 @@ export const ChartsConfigUtils = {
     let config: any = null;
 
     if (ebp.panelChart.componentRef && ['table', 'crosstable'].includes(ebp.panelChart.props.chartType)) {
-
       tableRows = ebp.panelChart.componentRef.instance.inject.rows;
       config =
       {
         withColTotals: ebp.panelChart.componentRef.instance.inject.withColTotals,
         withColSubTotals: ebp.panelChart.componentRef.instance.inject.withColSubTotals,
         withRowTotals: ebp.panelChart.componentRef.instance.inject.withRowTotals,
+        withTrend: ebp.panelChart.componentRef.instance.inject.withTrend,
         resultAsPecentage: ebp.panelChart.componentRef.instance.inject.resultAsPecentage,
         onlyPercentages: ebp.panelChart.componentRef.instance.inject.onlyPercentages,
         visibleRows: tableRows
@@ -63,7 +63,7 @@ export const ChartsConfigUtils = {
   setVoidChartConfig: (type: string) => {
     if (['table', 'crosstable'].includes(type)) {
 
-      return new TableConfig(false, false, 10, false, false, false);
+      return new TableConfig(false, false, 10, false, false, false, false);
 
     }
     else if (['bar', 'line', 'piechart', 'doughnut'].includes(type)) {

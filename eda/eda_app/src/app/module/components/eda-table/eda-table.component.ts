@@ -1,4 +1,4 @@
-import { Component, ViewChild, Input} from '@angular/core';
+import { Component, ViewChild, Input } from '@angular/core';
 import { Table } from 'primeng/table';
 import { FilterUtils } from 'primeng/utils';
 import { EdaTable } from './eda-table';
@@ -12,16 +12,39 @@ import * as _ from 'lodash';
     templateUrl: './eda-table.component.html',
     styleUrls: ['./eda-table.component.css']
 })
-export class EdaTableComponent {
-    @ViewChild('table', {static: false}) table: Table;
-
+export class EdaTableComponent  {
+    @ViewChild('table', { static: false }) table: Table;
     @Input() inject: EdaTable;
+
+    data : any;
+    chartOptions:any;
 
     public lodash: any = _;
 
-    constructor() { 
-        registerLocaleData( es );
-     }
+    constructor() {
+        registerLocaleData(es);
+        this.chartOptions = {
+            showLines: true,
+            spanGaps: true,
+            responsive: true,
+            maintainAspectRatio: true,
+            legend: {
+                display: false
+             },
+             scales: {
+                xAxes: [{
+                  display: false
+                }],
+                yAxes: [{
+                  display: false
+                }],
+              },
+            elements: {
+                point: { radius: 0, hitRadius: 1, hoverRadius: 1, hoverBorderWidth: 1, pointStyle: 'circle' },
+                line: { borderWidth: 1.5, fill: false, tension: 0.3 }
+            }
+        };
+    }
 
 
     _tableFilter(table: Table, value: any, col: any) {
@@ -43,19 +66,19 @@ export class EdaTableComponent {
         return _.find(this.inject.cols, 'filter') && this.inject.value && this.inject.value.length > 0;
     }
 
-    handleClick(item:any, colname:string){
+    handleClick(item: any, colname: string) {
 
         if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
 
             const props = this.inject.linkedDashboardProps;
-            const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
-            
+            const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
+
             window.open(url, "_blank");
 
         }
     }
 
-    getTooltip(col){
+    getTooltip(col) {
         return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
     }
 

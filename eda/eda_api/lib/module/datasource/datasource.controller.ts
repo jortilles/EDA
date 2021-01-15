@@ -414,7 +414,7 @@ export class DataSourceController {
                 let column = [];
                 uTable.columns.forEach(uColumn => {
                     column = rTable.columns.filter(c => c.column_name === uColumn.column_name);
-                    if (!column.length) console.log(uColumn, column)
+    
                     if (!column.length && !uColumn.computed_column) {
                         uTable.columns = uTable.columns.filter(c => c.column_name !== uColumn.column_name);
                     } else if (column.length) {

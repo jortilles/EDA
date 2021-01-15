@@ -45,6 +45,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   public BASE_COLOR: string = '#006400';
   public loading: boolean;
   public legendPosition: string;
+  public boundaries : Array<any> = [];
 
   constructor(
     private mapUtilsService: MapUtilsService
@@ -83,6 +84,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       onEachFeature: this.onEachFeature
     });
     this.geoJson.eachLayer((layer) => {
+      this.boundaries.push(layer._bounds)
       layer.bindPopup(this.mapUtilsService.makeGeoJsonPopup(layer.feature.properties[field], this.inject.data,
         this.inject.labels, this.labelIdx), this.customOptions);
       layer.on('mouseover', function () { layer.openPopup(); });
@@ -91,6 +93,8 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     });
     if (this.map) {
       this.geoJson.addTo(this.map);
+      if(this.inject.zoom) this.map.zoom = this.inject.zoom
+      else this.map.fitBounds(this.boundaries);
     }
     this.geoJson.on('add', this.onloadLayer());
   }
@@ -106,7 +110,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {
         center: this.getCenter(this.inject.data),
-        zoom: this.inject.zoom ? this.inject.zoom : 12,
+        zoom: this.inject.zoom ? this.inject.zoom : 0,
         dragging: !L.Browser.mobile,
         tap: !L.Browser.mobile
       });
@@ -182,14 +186,13 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   private style = (feature, color) => {
     const field = this.serverMap['field'];
     let fillColor = this.getColor(this.groups, this.bindDataToProperties(feature.properties[field]), color);
-    switch (feature.properties[field]) {
-      default: return {
+    return {
         weight: 1,
         opacity: 1,
         color: '#FFFFFF',
         fillOpacity: 0.5,
-        fillColor: fillColor//'#6DB65B'
-      }
+        fillColor: fillColor //'#6DB65B'
+      
     }
   }
 
@@ -210,7 +213,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
    * @param value 
    */
   private getColor = (groups: Array<number>, value: number, color: string) => {
-    if (!value) return '#ffffff';
+    if (!value) return '#eef0f3';
     let group = [value, ...groups].sort((a, b) => a - b).indexOf(value);
     let shade = group === 0 ? 80 : group === 1 ? 40 : group === 2 ? 0 : group = 3 ? -40 : -80;
     return this.colorShade(color, shade);

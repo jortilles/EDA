@@ -2,7 +2,7 @@ import { EdaTable, EdaColumnText, EdaColumnContextMenu } from '@eda/components/c
 import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { FormGroup } from '@angular/forms';
-import { SelectItem, TreeNode } from 'primeng/api';
+import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
 import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
 import { EditTablePanel, EditColumnPanel, EditModelPanel } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
@@ -33,7 +33,18 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public mapController : EdaDialogController;
     public viewController : EdaDialogController;
     public csvPanelController : EdaDialogController;
-    public functionalities : string = $localize`:@@functionalities:Funcionalidades`
+    public   items: MenuItem[];
+    // public hideAllTablesBool : boolean = false;
+    // public hideAllRelationsBool : boolean = false;
+
+
+
+    /**Strings */
+    public functionalities : string = $localize`:@@functionalities:Extender el modelo`;
+    public utilities : string = $localize`:@@utilities:Utilidades`;
+    public hideTablesString : string = $localize`:@@hideTables:Ocultar todas las tablas`;
+    public hideColumnsString : string = $localize`:@@hideColumns:Ocultar todas las columnas`; 
+    public hideAllRelationsString : string = $localize`:@@hideAllRelations: Ocultar todas las relaciones`;
 
     // Types canvi tonto
     public columnTypes: SelectItem[] = [
@@ -128,6 +139,37 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.carregarPanels();
+        this.items = [{
+            label: 'Options',
+            items: [{
+                label: 'Update',
+                icon: 'pi pi-refresh',
+                command: () => {
+                    //this.update();
+                }
+            },
+            {
+                label: 'Delete',
+                icon: 'pi pi-times',
+                command: () => {
+                   // this.delete();
+                }
+            }
+            ]},
+            {
+                label: 'Navigate',
+                items: [{
+                    label: 'Angular Website',
+                    icon: 'pi pi-external-link',
+                    url: 'http://angular.io'
+                },
+                {
+                    label: 'Router',
+                    icon: 'pi pi-upload',
+                    routerLink: '/fileupload'
+                }
+            ]}
+        ];
     }
 
     ngOnDestroy(): void {
@@ -246,7 +288,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     setDbType() {
-        this.modelPanel.connection.type = this.selectedTipoBD.label;
+   
+        this.modelPanel.connection.type = this.selectedTipoBD.value;
         this.update();
     }
 
@@ -373,6 +416,18 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.permissionsController = undefined;
             }
         });
+    }
+
+    hideAllTables(){
+        this.dataModelService.hideAllTables();
+    }
+
+    hideAllColumns(tablePanel:any){
+        this.dataModelService.hideAllColumns(tablePanel);
+    }
+
+    hideAllRelations(){
+        this.dataModelService.hideAllRelations();
     }
 }
 

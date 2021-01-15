@@ -69,18 +69,69 @@ app-dashboard {
     bottom: 13px;
 }
 .ui-button-selected {
-    background-color: #1b667e;
+    color: #20914b;
+    border: 1px solid #20914b;
+    background-color: white;
 }
 .ui-button-unselected {
-    background-color: #85b5c5;
+ 
+    color: #adc8d1;
+    border: 1px solid #adc8d1;
+    background-color: white;
 }
 .ui-button-unvaliable {
-    background-color: #c01120;
+  
+    color: #bd1913;
+    border: 1px solid #bd1913;
+    background-color: white;
+}
+
+.dotgreen {
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    vertical-align:middle;
+    display: inline-block;
+    background-color:#20914b;
+}
+.dotred {
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    vertical-align:middle;
+    display: inline-block;
+    background-color:#bd1913;
+}
+.dotunselected {
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    vertical-align:middle;
+    display: inline-block;
+    background-color:#adc8d1;
+}
+
+.ui-button-selected:enabled:hover {
+    color: #20914b;
+    background-color: white;
+    box-shadow: 0 0 0 1px #20914b;
+}
+.ui-button-unselected:enabled:hover  {
+    color: #adc8d1;
+    background-color: white;
+    box-shadow: 0 0 0 1px #adc8d1;
+}
+.ui-button-unvaliable:enabled:hover  {
+    color: #bd1913;
+    background-color: white;
+    box-shadow: 0 0 0 1px #bd1913;
+    
 }
 
 .block-options-bg {
     color: var(--header-font-color);
     background: #414344;/*var(--header-bg-color);*/
+    border: 1px solid #414344 ;
 }
 
 .block-options-bg:hover {
@@ -113,6 +164,11 @@ app-dashboard {
     text-align: center;
     margin-bottom: auto;
     font-weight: 600;
+}
+
+.tab-view{
+    overflow-y: auto;
+    max-height: 90vh;
 }
 
 .edaWarning:hover {
@@ -170,5 +226,4 @@ app-dashboard {
     font-size: 14px;
     color:#004961;
 }
-
 

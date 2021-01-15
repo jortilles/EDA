@@ -1,3 +1,4 @@
+import { DataSource } from './../../../shared/models/data-source-model/datasource.model';
 import { DateUtils } from './../../../services/utils/date-utils.service';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
 import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
@@ -43,6 +44,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public grups: IGroup[] = [];
     public toLitle: boolean = false;
     public toMedium: boolean = false;
+    public datasourceName: string;
 
     // Grid Global Variables
     public inject: any;
@@ -56,13 +58,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public itemOptions = {
         maxWidth: 40,
         maxHeight: 200,
-        minWidth: 6,
+        minWidth: 3,
         minHeight: 1
     };
-    public tag : any;;
+    public tag: any;;
     public tags: Array<any>;
-    public selectedtag :any;
-    public addTag:boolean = false;
+    public selectedtag: any;
+    public addTag: boolean = false;
 
 
     // Display Variables
@@ -83,10 +85,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Global filters vars
     public filtersList: Array<any> = [];
+    public refreshTime: number = null;
+    public stopRefresh: boolean = false;
 
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
-    public addTagString : string = $localize`:@@addTag:AÑADIR ETIQUETA`;
+    public addTagString: string = $localize`:@@addTag:AÑADIR ETIQUETA`;
     public newTag = $localize`:@@newTag:Nueva etiqueta`;
+    public Seconds_to_refresh = $localize`:@@seconds_to_refresh:Intervalo de recarga`;
 
     constructor(
         private dashboardService: DashboardService,
@@ -103,8 +108,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.initializeResponsiveSizes();
         this.initializeGridsterOptions();
         this.initializeForm();
-        this.tags = JSON.parse(localStorage.getItem('tags')).filter(tag => tag.value !== 1);
-        this.tags.push({value:2, label:this.newTag});
+        let tags = JSON.parse(localStorage.getItem('tags'));
+        if (tags) {
+            this.tags = tags.filter(tag => tag.value !== 1);
+        } else {
+            this.tags = [];
+        }
+        this.tags.push({ value: 2, label: this.newTag });
     }
 
     // ng cycle lives
@@ -120,10 +130,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         )
         //JJ: Inicialitzo a false...
         this.display_v.notSaved = false;
+
     }
 
     /* Set applyToAllFilters for new panel when it's created */
     public ngAfterViewInit(): void {
+      
         this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
             const globalFilters = this.filtersList.filter(filter => filter.isGlobal === true);
             const unsetPanels = this.edaPanels.filter(panel => panel.panel.content === undefined);
@@ -139,6 +151,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public ngOnDestroy() {
+
+        this.stopRefresh = true;
         if (this.edaPanelsSubscription) {
             this.edaPanelsSubscription.unsubscribe();
         }
@@ -242,10 +256,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
                     me.filtersList = !_.isNil(config.filters) ? config.filters : []; // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
+                    me.datasourceName = res.datasource.name;
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
                     me.form.controls['visible'].setValue(config.visible);
                     me.tag = config.tag;
                     me.selectedtag = me.tags.filter(tag => tag.value === me.tag)[0];
+                    me.refreshTime = config.refreshTime;
+                    if(me.refreshTime){
+                        this.stopRefresh = false;
+                        this.startCountdown(me.refreshTime);
+                    }
 
 
                     if (config.visible === 'group') {
@@ -314,13 +334,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             let range = this.dateUtilsService.getRange(filter.selectedRange);
             let stringRange = this.dateUtilsService.rangeToString(range);
             filter.selectedItems = stringRange;
-            this.panels.filter(panel => panel.content ).forEach(panel => {
+            this.panels.filter(panel => panel.content).forEach(panel => {
                 const panelFilters = [...panel.content.query.query.filters];
                 panel.content.query.query.filters = [];
                 panelFilters.forEach(pFilter => {
                     if (pFilter.filter_id === filter.id) {
                         panel.content.query.query.filters.push(this.formatFilter(filter));
-                    }else{
+                    } else {
                         panel.content.query.query.filters.push(pFilter);
                     }
                 });
@@ -786,6 +806,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public saveDashboard(): void {
+
+        this.triggerTimer();
+
         if (this.form.invalid) {
             this.display_v.rightSidebar = false;
             this.alertService.addError($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
@@ -798,7 +821,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     filters: this.cleanFiltersData(),
                     applyToAllfilter: this.applyToAllfilter,
                     visible: this.form.controls['visible'].value,
-                    tag : this.tag && this.tag.label ? this.tag.label : this.tag
+                    tag: this.tag && this.tag.label ? this.tag.label : null,
+                    refreshTime:(this.refreshTime > 5 ) ? this.refreshTime : this.refreshTime ? 5 : null
+
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
             };
@@ -882,13 +907,50 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Podem agafar els events del panel
     public itemChange($event: any, panel): void {
         this.gridItemEvent = $event;
-        this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0].onGridsterResize($event);
+        let found = this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0];
+        if (found && found.columns.length > 0 && (['parallelSets', 'kpi'].includes(panel.content.chart))) found.savePanel(); // found.onGridsterResize($event);
     }
 
-    public selectTag(){
+    public selectTag() {
         this.addTag = this.selectedtag.label === this.newTag;
         this.tag = this.selectedtag;
-        if(this.tag.value === 0) this.tag.label = null;
+        if (this.tag.value === 0) this.tag.label = null;
+    }
+
+    public startCountdown(seconds: number) {
+    
+        if (!this.stopRefresh) {
+            let counter = seconds;
+            const interval = setInterval(() => {
+
+                counter--;
+                if (counter < 0 && !this.stopRefresh) {
+                    clearInterval(interval);
+                    this.onResetWidgets();
+                    this.startCountdown(seconds);
+                }else if(this.stopRefresh){
+                    clearInterval(interval);
+                    return;
+                }
+            }, 1000);
+        }else return;
+    }
+
+    triggerTimer(){
+
+        this.stopRefresh = !this.stopRefresh;
+
+        //Give time to stop counter if any
+        setTimeout(() => {
+            if(!this.refreshTime) this.stopRefresh = true;
+            else if(this.refreshTime) this.stopRefresh = false;
+    
+            if(this.refreshTime && this.refreshTime < 5) this.refreshTime = 5;
+    
+            this.startCountdown(this.refreshTime);
+
+        }, 2000)
+
     }
 
 }

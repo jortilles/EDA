@@ -19,8 +19,8 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
   public panelChartConfig: PanelChart = new PanelChart();
 
   public value: number;
-  public operand: string;
-  public color: string;
+  public operand: string ;
+  public color: string = '#ff0000';
   public alerts: Array<any> = [];
   public alertInfo : string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`
 

@@ -33,6 +33,9 @@ export { ChartDialogComponent } from './eda-panels/eda-blank-panel/chart-dialog/
 export { TableDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/table-dialog.component'
 export { EdaDashboardPanelComponent } from './eda-panels/eda-dashboard-panel/eda-dashboard-panel.component';
 export { EdaTitlePanelComponent } from './eda-panels/eda-title-panel/eda-title-panel.component';
+export {SafeHtmlPipe} from './eda-panels/eda-title-panel/htmlSanitizer.pipe'
+export {SafeUrlPipe} from './eda-panels/eda-title-panel/urlSanitizer.pipe'
+export { TitleDialogComponent } from './eda-panels/eda-title-panel/edit-title/quill-editor.component'
 export { AlertDialogComponent } from './eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component';
 export { MapEditDialogComponent } from './eda-panels/eda-blank-panel/maps-dialog/mapedit-dialog.component';
 export { KpiEditDialogComponent } from './eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component';

@@ -1583,10 +1583,10 @@
       </trans-unit>
       <trans-unit id="panelsToAplyH5" datatype="html">
         <source>
-                Paneles para los que aplica el filtro:
+                Paneles para los que aplica el filtro
             </source>
       <target>
-                Panells per als que aplica el filtre:
+                Panells per als que aplica el filtre
             </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
@@ -1595,11 +1595,11 @@
       </trans-unit>
       <trans-unit id="filterForH5" datatype="html">
         <source>
-                Filtrar por:
+                Filtrar por
             </source>
 
         <target>
-                Filtrat per:
+                Filtrat per
             </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
@@ -1635,32 +1635,32 @@
         </context-group>
       </trans-unit>
       <trans-unit id="inputMapURL" datatype="html">
-        <source>1) Subir archivo GeoJson</source>
-         <target>1) Pujar arxiu GeoJson</target>
+        <source>Subir archivo GeoJson</source>
+         <target>Pujar arxiu GeoJson</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
       </trans-unit>
       <trans-unit id="inputMapField" datatype="html">
-        <source>2) Campo a usar para vincular el modelo con el mapa</source>
-        <target>2) Camp per vincular el model amb el mapa</target>
+        <source>Campo a usar para vincular el modelo con el mapa</source>
+        <target>Camp per vincular el model amb el mapa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
       </trans-unit>
       <trans-unit id="inputMapName" datatype="html">
-        <source>3) Nombre del mapa</source>
-        <target>3) Nom del mapa</target>
+        <source>Nombre del mapa</source>
+        <target>Nom del mapa</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
           <context context-type="linenumber">19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="inputx" datatype="html">
-        <source>4) Centro del mapa (Latitud, Longitud)</source>
-        <target>4) Centre del mapa (Latitud, Longitud)</target>
+        <source>Centro del mapa (Latitud, Longitud)</source>
+        <target>Centre del mapa (Latitud, Longitud)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
           <context context-type="linenumber">26</context>
@@ -2601,6 +2601,18 @@
      <source> Últimos 15 días </source>
       <target>Últims 15 dies </target>
     </trans-unit>
+    <trans-unit id="DatePickerLast30">
+     <source> Últimos 30 días </source>
+      <target>Últims 30 dies </target>
+    </trans-unit>
+    <trans-unit id="DatePickerLast60">
+     <source> Últimos 60 días </source>
+      <target>Últims 60 dies </target>
+    </trans-unit>
+    <trans-unit id="DatePickerLast120">
+     <source> Últimos 120 días </source>
+      <target>Últims 120 dies </target>
+    </trans-unit>
     <trans-unit id="DateSelectRange">
      <source>Selecciona un rango</source>
       <target>Selecciona un rang</target>
@@ -2796,8 +2808,25 @@
     </trans-unit>
 
      <trans-unit id="functionalities">
-     <source>Funcionalidades</source>
-      <target>Funcionalitats</target>
+     <source>Extender el model</source>
+      <target>Extendre el model</target>
+    </trans-unit>
+    <trans-unit id="utilities">
+     <source>Utilidades</source>
+      <target>Utilitats</target>
+    </trans-unit>
+
+      <trans-unit id="hideTables">
+     <source>Ocultar todas las tablas</source>
+      <target>Ocultar totes les taules</target>
+    </trans-unit>
+      <trans-unit id="hideColumns">
+     <source>Ocultar todas las columnas</source>
+      <target>Ocultar totes les columnes</target>
+    </trans-unit>
+      <trans-unit id="hideAllRelations">
+     <source>Ocultar todas las relaciones</source>
+      <target>Ocultar totes les relacions</target>
     </trans-unit>
 
      <trans-unit id="addFile">
@@ -2890,6 +2919,100 @@
     <trans-unit id="DatasourceText">
      <source> Creada correctamente  </source>
       <target> Creada correctament  </target>
+    </trans-unit> 
+
+    <trans-unit id="panelOptions0">
+     <source> OPCIONES DEL PANEL  </source>
+      <target> OPCIONS DEL PANELL  </target>
+    </trans-unit> 
+
+    <trans-unit id="greendot">
+     <source> Paneles filtrados  </source>
+      <target> Panells filtrats </target>
+    </trans-unit> 
+
+     <trans-unit id="reddot">
+     <source> Paneles no relacionados  </source>
+      <target> Panells no relacionats </target>
+    </trans-unit> 
+
+     <trans-unit id="unselecteddot">
+     <source> Paneles no filtrados  </source>
+      <target> Panells no filtrats </target>
+    </trans-unit> 
+    
+
+    <trans-unit id="seconds_to_refresh">
+     <source> Intervalo de recarga </source>
+      <target> Interval de recàrrega </target>
+    </trans-unit> 
+
+
+
+    <trans-unit id="sidebarModelsManagement">
+     <source> Gestión de modelos </source>
+      <target> Gestió de models </target>
+    </trans-unit> 
+
+    
+    <trans-unit id="Models_ms">
+     <source> Modelos </source>
+      <target> Models </target>
+    </trans-unit> 
+
+    <trans-unit id="Dashboards_ms">
+     <source> Informes </source>
+      <target> Informes </target>
+    </trans-unit> 
+
+    <trans-unit id="ExportModel">
+     <source> Exportar Modelo </source>
+      <target> Exportar Model </target>
+    </trans-unit> 
+
+    <trans-unit id="ExportDashboard">
+     <source> Exportar Informe </source>
+      <target> Exportar informe </target>
+    </trans-unit> 
+
+     <trans-unit id="importModel">
+     <source> Importar Modelo </source>
+      <target> Importar Model </target>
+    </trans-unit>
+
+    <trans-unit id="importDashboard">
+     <source> Importar Informe </source>
+      <target> Importar Informe </target>
+    </trans-unit> 
+
+      <trans-unit id="import">
+     <source> Importar </source>
+      <target> Importar </target>
+    </trans-unit> 
+
+    <trans-unit id="DBInconsistencies">
+     <source> Se han encontrado inconsistencias en el informe, los siguientes elementos no existen en el modelo: </source>
+      <target> S'han trobat inconsistències en l'informe, els següents elements no existeixen al model:  </target>
+    </trans-unit> 
+
+    <trans-unit id="modelInconsistenciesS">
+     <source> Se han encontrado inconsistencias en los siguientes informes:  </source>
+      <target> S'han trobat inconsistències als següents informes:  </target>
+    </trans-unit> 
+
+    <trans-unit id="ModelSaved">
+     <source> Modelo guardado correctamente </source>
+      <target> Model guardat correctament </target>
+    </trans-unit> 
+
+     <trans-unit id="downloadModel">
+     <source> Descargar modelo </source>
+      <target> Descarregar model </target>
+    </trans-unit> 
+
+     <trans-unit id="downloadDashboard">
+     <source> Descargar Informe </source>
+      <target> Descarregar informe </target>
     </trans-unit> 
 
 

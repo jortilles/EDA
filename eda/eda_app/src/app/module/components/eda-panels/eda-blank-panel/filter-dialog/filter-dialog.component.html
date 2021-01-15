@@ -1,6 +1,6 @@
 <eda-dialog [inject]="dialog">
 
-    <div class="ui-g-12">
+    <div class="ui-g-12" style=" max-height: 90%; min-height: 80%;" > <!-- overflow-y: auto; -->
 
         <!-- <p-panel class="ui-g-12 pt-0" header="Filtrar"> -->
         <h4 i18n="@@filtrarH4">
@@ -71,7 +71,7 @@
                                 [selectionLimit]="limitSelectionFields" [filter]="true">
                             </p-multiSelect>
 
-                            <label i18n="@@valorFiltrarLabel" for="float-input">
+                            <label *ngIf="filterValue.value1" i18n="@@valorFiltrarLabel" for="float-input">
                                 Valor a filtrar
                             </label>
 

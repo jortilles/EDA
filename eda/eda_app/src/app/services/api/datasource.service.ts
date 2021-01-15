@@ -356,6 +356,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_model[tableIndex].table_type = panel.table_type;
             tmp_model[tableIndex].table_granted_roles = panel.table_granted_roles;
             tmp_model[tableIndex].visible = panel.visible;
+            tmp_model[tableIndex].query = panel.query;
 
             this._databaseModel.next(tmp_model);
 
@@ -441,6 +442,35 @@ export class DataSourceService extends ApiService implements OnDestroy {
        this._databaseModel.next(tmp_model);
     }
 
+    hideAllTables(){
+        let tmp_model = this.getModel();
+        tmp_model.forEach(table => table.visible = false);
+        this._databaseModel.next(tmp_model);
+      
+    }
+
+    
+    hideAllColumns(tablePanel:any){
+        let tmp_model = this.getModel();
+        tmp_model.forEach(table => {
+
+            if(table.table_name === tablePanel.technical_name){
+                table.columns.forEach(col => col.visible = false);
+            }
+        });
+        this._databaseModel.next(tmp_model);
+      
+    }
+
+    hideAllRelations(){
+        let tmp_model = this.getModel();
+        tmp_model.forEach(table => {
+            table.relations.forEach(relation => {
+                relation.visible = false;
+            })
+        })
+    }
+
     deleteCalculatedCol(columnPanel: EditColumnPanel) {
 
         const tmp_model = this._databaseModel.getValue();
@@ -452,7 +482,6 @@ export class DataSourceService extends ApiService implements OnDestroy {
     }
     deleteView(tableName : string){
         const tmp_model = this._databaseModel.getValue().filter((table: any) => table.table_name !== tableName);
-        console.log(tmp_model);
         this._databaseModel.next(tmp_model);
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
     }
@@ -521,4 +550,6 @@ export class DataSourceService extends ApiService implements OnDestroy {
     getViewResults(body): Observable<any>{
         return this.post(`${this.globalDSRoute}/get-view-results`, body);
     }
+
+
 }

@@ -42,6 +42,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import {OrderListModule} from 'primeng/orderlist';
 import {InputNumberModule} from 'primeng/inputnumber';
 import {ToolbarModule} from 'primeng/toolbar';
+import {EditorModule} from 'primeng/editor';
+import {ToggleButtonModule} from 'primeng/togglebutton';
 
 @NgModule({
     providers: [ConfirmationService],
@@ -87,7 +89,9 @@ import {ToolbarModule} from 'primeng/toolbar';
         TooltipModule,
         OrderListModule,
         InputNumberModule,
-        ToolbarModule
+        ToolbarModule,
+        EditorModule,
+        ToggleButtonModule
     ]
 })
 export class PrimengModule { }

@@ -46,7 +46,7 @@ export class MysqlConnection extends AbstractConnection {
             const schema = this.config.database;
             let tables = [];
             const query = `
-                SELECT * FROM information_schema.tables WHERE table_type = 'base table' and TABLE_SCHEMA = '${schema}';
+            SELECT *  FROM information_schema.tables   WHERE table_type in ( 'BASE TABLE', 'VIEW', 'base table', 'view')  and TABLE_SCHEMA = '${schema}';
             `;
 
             const getResults = await this.execQuery(query);
@@ -82,8 +82,6 @@ export class MysqlConnection extends AbstractConnection {
 
     async execQuery(query: string): Promise<any> {
         try {
-            console.log(query)
-            // this.pool = createConnection(this.config);
             this.pool.query = util.promisify(this.pool.query);
             const rows = await this.pool.query(query);
             this.pool.end();

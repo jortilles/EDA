@@ -27,11 +27,10 @@
 </div>
 
 <!-- Page Dialog -->
-<eda-page-dialog #pdialog [inject]="{display: this.display_v.page_dialog, title: panel.title}"
-    style="overflow: auto; overflow-y: auto;">
-    <div (window:resize)="onResize($event)">
+<eda-page-dialog #pdialog [inject]="{display: this.display_v.page_dialog, title: panel.title}"  >
+    <div (window:resize)="onResize($event)"  >
 
-        <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)" class="ui-g-11 preview-tabview">
+        <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)" class="ui-g-11 ">
 
             <p-tabPanel i18n-header="@@vistaSeleccionador" header="{{!modeSQL ? editQuery : editSQLQuery}}">
 
@@ -131,7 +130,7 @@
                             </div>
 
                         </div>
-                        <div>
+                        <div >
                             <div class="ui-g-12 ui-md-12 infoFiltres">
                                 <span  i18n="@@topQueryH4">
                                     Mostrar Top: &nbsp;
@@ -145,8 +144,8 @@
                                 
                             </div>
 
-                            <div class="ui-g-12 ui-md-12 info-query" *ngIf="currentQuery.length !== 0">
-                                <h4 i18n="@@consultaH4">
+                            <div class="ui-g-12 ui-md-12" *ngIf="currentQuery.length !== 0" class="info-query" >
+                                <h4 i18n="@@consultaH4" >
                                     Mi consulta
                                 </h4>
                                 <hr>
@@ -197,10 +196,10 @@
                 </div>
 
                 <div *ngIf="modeSQL">
-                    <div id="query-area" class="ui-g-7">
+                    <div  class="ui-g-7">
                         <h6 i18n="@@sqlExpresionH6">Expresión SQL</h6>
                         <hr>
-                        <textarea class="sqlInput" rows="10" cols="100" pInputTextarea autoResize="autoResize"
+                        <textarea id="query-area" class="sqlInput" rows="10" cols="100" pInputTextarea autoResize="autoResize"
                             [(ngModel)]="currentSQLQuery"></textarea>
                         <div class="ui-g-6">
                             <h6 i18n="@@originTable">Tabla origen</h6>
@@ -322,7 +321,7 @@
 
                     <div class="ui-g-3 ui-g-offset-1 p-1 edaChartSelector">
                         <form [formGroup]="chartForm">
-                            <p-dropdown [style]="{'width':'100%'}" [options]="chartTypes" formControlName="chart"
+                            <p-dropdown id="chartSelector" [style]="{'width':'100%'}" [options]="chartTypes" formControlName="chart"
                                 (onChange)="changeChartType(chartForm.value.chart.value, 
                                             chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))"
                                 optionLabel="label" [autoDisplayFirst]="false">
@@ -369,14 +368,14 @@
         <div class="ui-g-1">
             <div i18n="@@edaMode" *ngIf="!modeSQL">Modo EDA</div>
             <div i18n="@@sqlMode" *ngIf="modeSQL">Modo SQL</div>
-            <p-inputSwitch class="ui-g-1 sql-switch" (onChange)="changeQueryMode()" [(ngModel)]="modeSQL"
+            <p-inputSwitch id="switchQueryMode" class="ui-g-1 sql-switch" (onChange)="changeQueryMode()" [(ngModel)]="modeSQL"
                 pTooltip="Al cambiar de modo perderás la configuración de la consulta actual" tooltipPosition="left">
             </p-inputSwitch>
         </div>
 
     </div>
 
-    <p-footer class="footer">
+    <p-footer class="footer" appendTo="body">
         <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
             <button type="button" pButton (click)="runManualQuery()" icon="fa fa-flask" class="ui-button-success ml-2"
                 [disabled]="(currentQuery.length === 0 && index === 0 && !modeSQL) || (modeSQL && !sqlOriginTable)"

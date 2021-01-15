@@ -13,19 +13,13 @@ export abstract class QueryBuilderService {
         this.dataModel = dataModel;
         this.user = user;
         this.tables = dataModel.ds.model.tables;
-        //No fa falta treure les relacions ocultes per que es guarden al array no_relations
-        /*this.tables.forEach(t => {
-            t.relations = t.relations.filter(r => r.visible !== false)
-            //console.log( t );
-            });
-            */
 
     }
 
-    abstract getFilters(filters);
+    abstract getFilters(filters, type:string);
     abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema?: string, database?:string);
     abstract getSeparedColumns(origin: string, dest: string[]);
-    abstract filterToString(filterObject: any);
+    abstract filterToString(filterObject: any, type:string);
     abstract processFilter(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], 
         grouping: any[], tables: Array<any>, limit: number, Schema?: string, database?:string);
@@ -238,9 +232,9 @@ export abstract class QueryBuilderService {
     }
 
 
-    public findColumnType(table: string, column: string) {
+    public findColumn(table: string, column: string) {
         const tmpTable = this.tables.find(t => t.table_name === table);
-        return tmpTable.columns.find(c => c.column_name === column).column_type;
+        return tmpTable.columns.find(c => c.column_name === column);
     }
 
     public setFilterType(filter: string) {
@@ -283,7 +277,7 @@ export abstract class QueryBuilderService {
         //Get sql formated filters ad types
         const formatedFilters: any[] = [];
         filters.forEach(filter => {
-            formatedFilters.push({ string: this.filterToString(filter), type: filter.filter_type });
+            formatedFilters.push({ string: this.filterToString(filter, 'where'), type: filter.filter_type });
         });
 
         return this.sqlQuery(query, formatedFilters, filterMarks);
@@ -309,7 +303,6 @@ export abstract class QueryBuilderService {
 
             joinsubstitute = this.buildPermissionJoin(origin, permissionJoins, permissions, SCHEMA);
 
-            //console.log({origin:origin});
             let whitespaces = `[\n\r\s]*`
             let reg = new RegExp(`${tableWithSchema}` + whitespaces , "g");
             let out = sqlquery.replace(reg, joinsubstitute);
@@ -362,7 +355,7 @@ export abstract class QueryBuilderService {
                 operand = 'JOIN';
             }
         }
-        console.log({ parsedTables: tables.filter(this.onlyUnique) });
+
         return tables.filter(this.onlyUnique);
     }
     onlyUnique = (value, index, self) => {

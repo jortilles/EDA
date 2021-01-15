@@ -90,7 +90,7 @@ export class EdaChartComponent implements OnInit {
     }
 
     chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
-        //console.log(event, active);
+        
     }
 
     updateChartOptions(options: any) {

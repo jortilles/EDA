@@ -14,6 +14,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
   public dialog: EdaDialog;
   public form: FormGroup;
   public table: any;
+  public ok : boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -63,6 +64,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
       });
       this.table = this.buildTable(columns);
       this.alertService.addSuccess($localize`:@@viewOk: Vista generada correctamente`);
+      this.ok = true;
       this.spinnerService.off();
     } catch (err) {
       this.alertService.addError(err);

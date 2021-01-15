@@ -1582,9 +1582,9 @@
       </trans-unit>
       <trans-unit id="panelsToAplyH5" datatype="html">
         <source>
-                Paneles para los que aplica el filtro:
+                Paneles para los que aplica el filtro
             </source>
-      <target> Panels for which the filter applies:
+      <target> Panels for which the filter applies
             </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
@@ -1593,11 +1593,11 @@
       </trans-unit>
       <trans-unit id="filterForH5" datatype="html">
         <source>
-                Filtrar por:
+                Filtrar por
             </source>
 
         <target>
-                Filter by:
+                Filter by
             </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
@@ -1633,32 +1633,32 @@
         </context-group>
       </trans-unit>
       <trans-unit id="inputMapURL" datatype="html">
-        <source>1) Subir archivo GeoJson</source>
-         <target>1) Upload GeoJson file</target>
+        <source> Subir archivo GeoJson</source>
+         <target>Upload GeoJson file</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
       </trans-unit>
       <trans-unit id="inputMapField" datatype="html">
-        <source>2) Campo a usar para vincular el modelo con el mapa</source>
-        <target>2) Field to link datamodel to the map</target>
+        <source>Campo a usar para vincular el modelo con el mapa</source>
+        <target>Field to link datamodel to the map</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
           <context context-type="linenumber">14</context>
         </context-group>
       </trans-unit>
       <trans-unit id="inputMapName" datatype="html">
-        <source>3) Nombre del mapa</source>
-        <target>3) Map name</target>
+        <source>Nombre del mapa</source>
+        <target>Map name</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
           <context context-type="linenumber">19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="inputx" datatype="html">
-        <source>4) Centro del mapa (Latitud, Longitud)</source>
-        <target>4) Map center (Latitude, Longitude)</target>
+        <source> Centro del mapa (Latitud, Longitud)</source>
+        <target> Map center (Latitude, Longitude)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
           <context context-type="linenumber">26</context>
@@ -2592,6 +2592,18 @@
      <source> Últimos 15 días </source>
       <target>Last 15 days </target>
     </trans-unit>
+    <trans-unit id="DatePickerLast30">
+     <source> Últimos 30 días </source>
+      <target>Last 30 days </target>
+    </trans-unit>
+    <trans-unit id="DatePickerLast60">
+     <source> Últimos 60 días </source>
+      <target>Last 60 days </target>
+    </trans-unit>
+    <trans-unit id="DatePickerLast120">
+     <source> Últimos 120 días </source>
+      <target>Last 120 days </target>
+    </trans-unit>
     <trans-unit id="DateSelectRange">
      <source>Selecciona un rango</source>
       <target>Select range</target>
@@ -2788,8 +2800,26 @@
     </trans-unit>
 
     <trans-unit id="functionalities">
-     <source>Funcionalidades</source>
-      <target>Functionalities</target>
+     <source>Extender el model</source>
+      <target>Extend model</target>
+    </trans-unit>
+
+    <trans-unit id="utilities">
+     <source>Utilidades</source>
+      <target>Utilities</target>
+    </trans-unit>
+
+       <trans-unit id="hideTables">
+     <source>Ocultar todas las tablas</source>
+      <target>Hide all tables</target>
+    </trans-unit>
+      <trans-unit id="hideColumns">
+     <source>Ocultar todas las columnas</source>
+      <target>Hide all columns</target>
+    </trans-unit>
+      <trans-unit id="hideAllRelations">
+     <source>Ocultar todas las relaciones</source>
+      <target>Hide all relations</target>
     </trans-unit>
 
       <trans-unit id="addFile">
@@ -2880,6 +2910,97 @@
     <trans-unit id="DatasourceText">
      <source> Creada correctamente  </source>
       <target> Correctly created  </target>
+    </trans-unit> 
+
+       <trans-unit id="panelOptions0">
+     <source> OPCIONES DEL PANEL  </source>
+      <target> PANEL OPTIONS </target>
+    </trans-unit>
+
+     <trans-unit id="greendot">
+     <source> Paneles filtrados  </source>
+      <target> Filtered panels </target>
+    </trans-unit> 
+
+     <trans-unit id="reddot">
+     <source> Paneles no relacionados  </source>
+      <target> Non related panels </target>
+    </trans-unit> 
+
+     <trans-unit id="unselecteddot">
+     <source> Paneles no filtrados  </source>
+      <target> Non filtered panels </target>
+    </trans-unit> 
+
+    <trans-unit id="seconds_to_refresh">
+     <source> Intervalo de recarga </source>
+      <target>Refresh interval </target>
+    </trans-unit> 
+
+      <trans-unit id="sidebarModelsManagement">
+     <source> Gestión de modelos </source>
+      <target> Model management </target>
+    </trans-unit> 
+
+    
+    <trans-unit id="Models_ms">
+     <source> Modelos </source>
+      <target> Models </target>
+    </trans-unit> 
+
+    <trans-unit id="Dashboards_ms">
+     <source> Informes </source>
+      <target> Dashboards </target>
+    </trans-unit> 
+
+    <trans-unit id="ExportModel">
+     <source> Exportar Modelo </source>
+      <target> Export Model </target>
+    </trans-unit> 
+
+    <trans-unit id="ExportDashboard">
+     <source> Exportar Informe </source>
+      <target> Export Dashboards </target>
+    </trans-unit> 
+
+     <trans-unit id="importModel">
+     <source> Importar Modelo </source>
+      <target> Import Model </target>
+    </trans-unit>
+
+    <trans-unit id="importDashboard">
+     <source> Importar Informe </source>
+      <target> Import Dashboards </target>
+    </trans-unit> 
+
+      <trans-unit id="import">
+     <source> Importar </source>
+      <target> Import </target>
+    </trans-unit> 
+
+    <trans-unit id="DBInconsistencies">
+     <source> Se han encontrado inconsistencias en el informe, los siguientes elementos no existen en el modelo: </source>
+      <target> Inconsistencies found in current dashboard, the following items do not exist in the model:   </target>
+    </trans-unit> 
+
+    <trans-unit id="modelInconsistenciesS">
+     <source> Se han encontrado inconsistencias en los siguientes informes:  </source>
+      <target> Inconsistencies found in current dashboards:  </target>
+    </trans-unit> 
+
+    <trans-unit id="ModelSaved">
+     <source> Modelo guardado correctamente </source>
+      <target> Model guardat correctament </target>
+    </trans-unit> 
+
+     <trans-unit id="downloadModel">
+     <source> Descargar modelo </source>
+      <target> Download model </target>
+    </trans-unit> 
+
+     <trans-unit id="downloadDashboard">
+     <source> Descargar Informe </source>
+      <target> Download Dashboard </target>
     </trans-unit> 
 
     </body>

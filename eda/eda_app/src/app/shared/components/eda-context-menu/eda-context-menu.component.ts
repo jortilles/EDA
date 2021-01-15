@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input, ViewChild, ViewEncapsulation} from '@an
 import {EdaContextMenu} from '@eda/shared/components/eda-context-menu/eda-context-menu';
 import {Dialog} from 'primeng/dialog';
 
+
 @Component({
     selector: 'eda-context-menu',
     templateUrl: './eda-context-menu.component.html',

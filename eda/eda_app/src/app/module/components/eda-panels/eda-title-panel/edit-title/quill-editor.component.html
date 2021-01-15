@@ -1,0 +1,64 @@
+<eda-dialog [inject]="dialog">
+  <div class="ui-g-2"></div>
+  <div class="ui-g-8">
+
+    <p-editor [(ngModel)]="title" [style]="{'height':'100%'}">
+
+      <p-header>
+        <span class="ql-formats">
+          <!-- <select class="ql-font"></select> -->
+          <select class="ql-size"></select>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-bold"></button>
+          <button class="ql-italic"></button>
+          <button class="ql-underline"></button>
+          <button class="ql-strike"></button>
+        </span>
+        <span class="ql-formats">
+          <select class="ql-color"></select>
+          <select class="ql-background"></select>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-script" value="sub"></button>
+          <button class="ql-script" value="super"></button>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-header" value="1"></button>
+          <button class="ql-header" value="2"></button>
+          <!-- <button class="ql-blockquote"></button> -->
+          <!-- <button class="ql-code-block"></button> -->
+        </span>
+        <span class="ql-formats">
+          <button class="ql-list" value="ordered"></button>
+          <button class="ql-list" value="bullet"></button>
+          <!-- <button class="ql-indent" value="-1"></button>
+        <button class="ql-indent" value="+1"></button> -->
+        </span>
+        <!-- <span class="ql-formats">
+        <button class="ql-direction" value="rtl"></button>
+        <select class="ql-align"></select>
+      </span> -->
+        <span class="ql-formats">
+          <button class="ql-link"></button>
+          <button class="ql-image"></button>
+          <button class="ql-video"></button>
+          <!-- <button class="ql-formula"></button> -->
+        </span>
+        <span class="ql-formats">
+          <button class="ql-clean"></button>
+        </span>
+      </p-header>
+    </p-editor>
+  </div>
+  <p-footer class="footer">
+    <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
+      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check" class="ui-button ml-2"
+        i18n-label="@@guardarButton" label="Confirmar" id="eda_chart_dialog_confirmar">
+      </button>
+      <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="ui-button-danger ml-2"
+        i18n-label="@@cancelarButton" label="Cancelar">
+      </button>
+    </div>
+  </p-footer>
+</eda-dialog>

@@ -10,6 +10,7 @@ import { Column } from '@eda/models/model.index';
 import { EdaColumnNumber } from './eda-columns/eda-column-number';
 import { EdaColumnPercentage } from './eda-columns/eda-column-percentage';
 import { Output, EventEmitter } from '@angular/core';
+import { EdaColumnChart } from './eda-columns/eda-column-chart';
 
 interface PivotTableSerieParams {
     mainCol: any,
@@ -20,7 +21,7 @@ interface PivotTableSerieParams {
     pivotCols: Array<Column>,
     oldRows: Array<any>,
     newCols: Array<any>
-    
+
 }
 
 export class EdaTable {
@@ -37,7 +38,7 @@ export class EdaTable {
     public alertService: AlertService;
     public filteredValue: any[] | undefined;
     public headerGroup: EdaTableHeaderGroup[] = [];
-    linkedDashboardProps : LinkedDashboardProps;
+    linkedDashboardProps: LinkedDashboardProps;
 
     //Input switch
     public oldvalue: any[] = [];
@@ -54,13 +55,14 @@ export class EdaTable {
     public totalsRow: Array<any> = [];
     public withColTotals: boolean = false;
     public withRowTotals: boolean = false;
+    public withTrend: boolean = false;
     public withColSubTotals: boolean = false;
     public resultAsPecentage: boolean = false;
     public onlyPercentages: boolean = false;
     public percentageColumns: Array<any> = [];
 
     public autolayout: boolean = true;
-    
+
 
     public constructor(init: Partial<EdaTable>) {
         Object.assign(this, init);
@@ -114,7 +116,7 @@ export class EdaTable {
                     this.value = response;
                     this.loading = false;
 
-                    resolve();
+                    resolve(null);
                 },
                 err => {
                     this.loading = false;
@@ -177,8 +179,15 @@ export class EdaTable {
         if (this.withRowTotals) {
             this.rowTotals();
         } else {
-            if (this.series) {
+            if (this.series && !this.withTrend) {
                 this.deleteRowTotals();
+            }
+        }
+        if (this.withTrend) {
+            this.rowTrend();
+        } else {
+            if (this.series && !this.withRowTotals) {
+                this.deleteTrend();
             }
         }
         if (this.resultAsPecentage === true) {
@@ -197,23 +206,34 @@ export class EdaTable {
     }
 
     deleteRowTotals() {
+
         const numSeries = this.series.length;
         const withTotalcols = this.cols.filter(col => col.rowTotal === true).length > 0;
         const series = [];
-        this.series.forEach(serie => {
-            if (!series.includes(serie.title)) {
-                series.push(serie);
-            }
-        })
+
         if (withTotalcols) {
             this.cols = this.cols.filter(col => col.rowTotal !== true);
-            this.series[numSeries - 2].labels = this.series[numSeries - 2].labels.filter(label => label.title !== "Totales");
+            this.series[numSeries - 2].labels = this.series[numSeries - 2].labels.filter(label => label.isTotal !== true);
 
             //percentage columns has no label 
             const lastLayerLabels = this.cols.filter(col => col.type !== "EdaColumnPercentage").length - 1;
             this.series[numSeries - 1].labels = this.series[numSeries - 1].labels.slice(0, lastLayerLabels);
 
         }
+    }
+
+    deleteTrend() {
+        const numSeries = this.series.length;
+        const series = [];
+
+        this.cols = this.cols.filter(col => col.rowTotal !== true);
+        this.series[numSeries - 2].labels = this.series[numSeries - 2].labels.filter(label => label.isTotal !== true);
+
+        //percentage columns has no label 
+        const lastLayerLabels = this.cols.filter(col => col.type !== "EdaColumnPercentage").length - 1;
+        this.series[numSeries - 1].labels = this.series[numSeries - 1].labels.slice(0, lastLayerLabels);
+
+
     }
 
     rowTotals() {
@@ -234,7 +254,6 @@ export class EdaTable {
             } else {
                 pretyNames = [this.series[0].labels[this.series[0].labels.length - 1].title];
             }
-
 
             //add total header
             if (!colNames.includes(valuesKeys[0])) {
@@ -274,6 +293,75 @@ export class EdaTable {
         }
     }
 
+    rowTrend() {
+        if (this.pivot === true) {
+            const colNames = this.cols.map(col => col.field);
+
+            //get unique names for same metric in each sub-set -> columns : A-income, B-income, A-amount, B-amount -> returns:  [income, amount]
+            const numericCols = this.cols.filter(col => col.type === "EdaColumnNumber").map(c => c.field);
+            const keys = Object.keys(this._value[0])
+                .filter(key => numericCols.includes(key))
+                .map(key => key.slice(key.lastIndexOf('~') + 1));
+            const valuesKeys = Array.from(new Set(keys));
+
+            //get names for new columns from series array
+            let pretyNames;
+            if (this.series[0].labels.length > 2) {
+                pretyNames = Array.from(new Set(this.series[this.series.length - 1].labels.map(serie => serie.title)))
+            } else {
+                pretyNames = [this.series[0].labels[this.series[0].labels.length - 1].title];
+            }
+
+            //add total header
+            if (!colNames.includes(valuesKeys[0])) {
+                this.series[this.series.length - 2].labels.push({ title: `Tendencia`, rowspan: 1, colspan: valuesKeys.length, isTotal: true });
+            }
+
+            //add cols and headers
+            valuesKeys.forEach((valueKey, i) => {
+                if (!colNames.includes(valueKey)) {
+                    const col = new EdaColumnChart({ header: valueKey, field: valueKey });
+                    col.styleClass = 'trend-col';
+                    col.rowTotal = true;
+                    col.width = 100;
+                    this.cols.push(col);
+
+                    this.series[this.series.length - 1].labels.push({ title: pretyNames[i], rowspan: 2, colspan: 1, sortable: true, column: valueKey });
+                }
+            });
+
+            //put values in each row
+            this._value.forEach(row => {
+                let totals = {};
+                valuesKeys.forEach(key => {
+                    totals[key] = [];
+                    row[key] = [];
+                });
+                numericCols.forEach(key => {
+                    valuesKeys.forEach(valueKey => {
+                        if (key.includes(valueKey)) {
+                            totals[valueKey].push(row[key]); 
+                        }
+                    });
+                });
+                Object.entries(totals).forEach((pair: any) => {
+
+                    let data = {
+                        labels: new Array(pair[1].length).fill(0),
+                        datasets: [
+                            {
+                                data: pair[1],
+                                fill: false,
+                                borderColor: '#4bc0c0'
+                            }
+                        ]
+                    }
+                    row[pair[0]] = data;
+                });
+            });
+        }
+    }
+
     colSubTotals(page) {
         this.partialTotalsRow = [];
         const offset = page * this.initRows - this.initRows;
@@ -304,7 +392,7 @@ export class EdaTable {
     }
 
     coltotals() {
-        
+
         this.withColTotals = true;
         this.totalsRow = [];
 
@@ -413,7 +501,7 @@ export class EdaTable {
                 let percentage = row[key] / value * 100;
                 if (isNaN(percentage)) {
                     row[newField] = ' ~ ';
-                }else{
+                } else {
                     row[newField] = percentage.toFixed(2) + '%';
                 }
             });

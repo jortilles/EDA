@@ -19,7 +19,21 @@ export class SQLserviceBuilderService extends QueryBuilderService {
       .map(table => { return table.query ? `${table.query}` : `"${SCHEMA}"."${table.name}"` })[0];
     let myQuery = `SELECT ${limitString} ${columns.join(', ')} \nFROM ${o}`;
 
-    const filters = this.queryTODO.filters;
+    //to WHERE CLAUSE
+    const filters = this.queryTODO.filters.filter(f => {
+
+      const column = this.findColumn(f.filter_table, f.filter_column);
+      return column.computed_column != 'computed_numeric';
+
+    });
+
+    //TO HAVING CLAUSE 
+    const havingFilters = this.queryTODO.filters.filter(f => {
+
+      const column = this.findColumn(f.filter_table, f.filter_column);
+      return column.computed_column == "computed_numeric";
+
+    });
 
     // JOINS
     const joinString = this.getJoins(joinTree, dest, tables, SCHEMA);
@@ -29,12 +43,15 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     });
 
     // WHERE
-    myQuery += this.getFilters(filters);
+    myQuery += this.getFilters(filters, 'where');
 
     // GroupBy
     if (grouping.length > 0) {
       myQuery += '\ngroup by ' + grouping.join(', ');
     }
+
+     //HAVING 
+     myQuery += this.getFilters(havingFilters, 'having');
 
     // OrderBy
     const orderColumns = this.queryTODO.fields.map(col => {
@@ -56,26 +73,38 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     return myQuery;
   }
 
-  public getFilters(filters) {
+  public getFilters(filters:any, type:any) {
     if (this.permissions.length > 0) {
       this.permissions.forEach(permission => { filters.push(permission); });
     }
     if (filters.length) {
-      let filtersString = '\nwhere 1 = 1 ';
+      
+      let filtersString = `\n${type} 1 = 1 `;
+
       filters.forEach(f => {
+
+        const column = this.findColumn(f.filter_table, f.filter_column);
+        const colname = type == 'where' ? `"${f.filter_table}"."${f.filter_column}"` : `CAST( ${column.SQLexpression} as DECIMAL(32, 2)) `;
+
         if (f.filter_type === 'not_null') {
-          filtersString += '\nand ' + this.filterToString(f);
+        
+          filtersString += '\nand ' + this.filterToString(f, type);
+        
         } else {
+
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
+
           if (nullValueIndex != - 1) {
+
             if (f.filter_elements[0].value1.length === 1) {
-              filtersString += `\nand "${f.filter_table}"."${f.filter_column}"  is null `;
+              filtersString += `\nand ${colname}  is null `;
             } else {
-              filtersString += `\nand (${this.filterToString(f)} or "${f.filter_table}"."${f.filter_column}"  is null) `;
+              filtersString += `\nand (${this.filterToString(f, type)} or ${colname}  is null) `;
             }
           } else {
-            filtersString += '\nand ' + this.filterToString(f);
+            filtersString += '\nand ' + this.filterToString(f, type);
           }
+
         }
       });
       return filtersString;
@@ -175,23 +204,33 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     return [columns, grouping];
   }
 
-  public filterToString(filterObject: any) {
-    let colType = this.findColumnType(filterObject.filter_table, filterObject.filter_column);
+
+  /**
+   * @param filterObject 
+   * @param type 
+   * @returns filter to string. If type === having we are in a computed_column case, and colname = sql.expression wich defines column. 
+   */
+  public filterToString(filterObject: any, type:string) {
+    
+    const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
+    const colname = type == 'where' ? `"${filterObject.filter_table}"."${filterObject.filter_column}"` : `CAST( ${column.SQLexpression}  as DECIMAL(32, 2))`;
+    let colType = column.column_type;
+
     switch (this.setFilterType(filterObject.filter_type)) {
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
         if (filterObject.filter_type === 'like') {
-          return `"${filterObject.filter_table}"."${filterObject.filter_column}"  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+          return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
         }
-        return `"${filterObject.filter_table}"."${filterObject.filter_column}"  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+        return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
-        return `"${filterObject.filter_table}"."${filterObject.filter_column}"  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+        return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
-        return `"${filterObject.filter_table}"."${filterObject.filter_column}"  ${filterObject.filter_type} 
+        return `${colname}  ${filterObject.filter_type} 
                         ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilter(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
-        return `"${filterObject.filter_table}"."${filterObject.filter_column}" is not null`;
+        return `${colname} is not null`;
     }
   }
 
@@ -234,7 +273,7 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     let joinString = `( SELECT ${origin}.* from ${origin} `;
     joinString += joinStrings.join(' ') + ' where ';
     permissions.forEach(permission => {
-      joinString += ` ${this.filterToString(permission)} and `
+      joinString += ` ${this.filterToString(permission, 'where')} and `
     });
     return `${joinString.slice(0, joinString.lastIndexOf(' and '))} )`;
   }
@@ -281,7 +320,6 @@ export class SQLserviceBuilderService extends QueryBuilderService {
       output.push(table);
 
     });
-    //console.log(output);
     return output;
   }
 

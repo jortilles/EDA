@@ -37,7 +37,7 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: ''
     });
-    this.dialog.style= {width: '90%', height: '80%', top: '93px', left: '205px'};
+    this.dialog.style= {width: '85%', height: '85%', top: '93px', left: '205px'};
 
     this.form = this.formBuilder.group({
       mapURL: [null],

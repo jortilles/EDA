@@ -91,6 +91,7 @@ export const PanelInteractionUtils = {
     * @param column 
     */
   handleAggregationType: (ebp: EdaBlankPanelComponent, column: Column): void => {
+  
     const voidPanel = ebp.panel.content === undefined;
     const tmpAggTypes = [];
     const colName = column.column_name;
@@ -135,21 +136,12 @@ export const PanelInteractionUtils = {
   * @param column 
   */
   handleOrdTypes: (ebp: EdaBlankPanelComponent, column: Column): void => {
+
     let addOrd: Column;
     const voidPanel = ebp.panel.content === undefined;
     if (!voidPanel) {
       const queryFromServer = ebp.panel.content.query.query.fields;
-      const colInCurrentQuery = ebp.currentQuery.find(c => c.column_name === column.column_name).ordenation_type;
 
-      if (colInCurrentQuery) {
-        ebp.ordenationTypes.forEach(o => {
-          o.value !== column.ordenation_type ? o.selected = false : o.selected = true;
-        });
-
-        addOrd = ebp.currentQuery.find(c => column.column_name === c.column_name && column.table_id === c.table_id);
-        addOrd.ordenation_type = column.ordenation_type;
-        return;
-      }
       if (!column.ordenation_type) {
         column.ordenation_type = 'No';
       }
@@ -167,6 +159,7 @@ export const PanelInteractionUtils = {
       }
 
     } else if (!column.ordenation_type) {
+
       ebp.ordenationTypes = [
         { display_name: 'ASC', value: 'Asc', selected: false },
         { display_name: 'DESC', value: 'Desc', selected: false },
@@ -196,7 +189,7 @@ export const PanelInteractionUtils = {
     // Busca index en l'array de columnes
     const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id });
     ebp.columns.splice(match, 1);  // Elimina aquella columna de l'array
-    ebp.currentQuery.push(c);      // Col·loca la nova columna a l'array Select
+    ebp.currentQuery.push(_.cloneDeep(c));      // Col·loca la nova columna a l'array Select
     PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida
     PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions
     PanelInteractionUtils.handleOrdTypes(ebp, c);         // Comprovacio ordenacio

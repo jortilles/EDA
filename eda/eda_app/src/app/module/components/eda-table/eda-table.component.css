@@ -5,6 +5,13 @@
   font-weight: normal;
 }
 
+.trend-col{
+  background-color: #f2f8f634 !important; 
+  color: #004d4b !important;
+  text-align: center;
+  font-weight: normal;
+}
+
 .sub-total-row {
   background-color: #e9ba614d!important; 
   color: #00302f !important;

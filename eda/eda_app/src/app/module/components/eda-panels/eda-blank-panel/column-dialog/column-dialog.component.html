@@ -113,7 +113,7 @@
                                     [selectionLimit]="limitSelectionFields">
                                 </p-multiSelect>
 
-                                <label i18n="@@valorFiltrarLabel" for="float-input">
+                                <label *ngIf="filterValue.value1" i18n="@@valorFiltrarLabel" for="float-input">
                                     Valor a filtrar
                                 </label>
 

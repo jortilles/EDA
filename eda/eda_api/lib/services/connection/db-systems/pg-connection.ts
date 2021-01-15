@@ -59,8 +59,6 @@ export class PgConnection extends AbstractConnection {
                 WHERE table_schema ${whereTableSchema}
             `;
 
-            console.log(query);
-
             const getResults = await this.execQuery(query);
             
             for (let i = 0, n = getResults.length; i < n; i++) {
@@ -144,7 +142,6 @@ export class PgConnection extends AbstractConnection {
         const query = `
         SELECT count(*) as count from ${schema}.${tableName}
         `;
-        console.log(query);
         return new Promise(async (resolve, reject) => {
             try {
                 const count = await this.pool.query(query);

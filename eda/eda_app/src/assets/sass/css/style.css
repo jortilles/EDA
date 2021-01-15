@@ -169,6 +169,18 @@ body .ui-tree {
     background-color: #a8bfbd;
 }
 
+.right-sidebar-blocks-title {
+    display: block;
+    padding: 11px 11px;
+    margin: 2px;
+    border: 0;
+    border-radius: 7px;
+    color: #fff;
+    font-size: 14px;
+    color: var(--header-font-color);
+    background: #414344;
+}
+
 .right-sidebar-footer {
     position: fixed;
     bottom: 50px;
@@ -281,6 +293,7 @@ body .ui-tree {
 .ui-sidebar {
     padding: 0%!important;
     border: 0px!important;
+    overflow-y: auto;
 }
 
 .ui-sidebar-right {

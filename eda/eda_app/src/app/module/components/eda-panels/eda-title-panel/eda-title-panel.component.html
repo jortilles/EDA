@@ -1,17 +1,23 @@
-<div class="panel-heading d-flex justify-content-center align-items-center text-center h-100">
+<div class="panel-heading d-flex justify-content-between">
 
-    <div *ngIf="!titleClick" class="edaTitle mb-0 pointer w-100" (click)="setTitle()"> {{ panel.title }} </div>
-
-    <div *ngIf="!!titleClick" class="ui-inputgroup w-100">
-        <input type="text" class="w-100" pInputText (focusout)="setTitle()" (keydown.enter)="setTitle()"
-            [(ngModel)]="panel.title" autofocusOnShow>
+    <div class="panel-heading d-flex justify-content-center text-center h-75" style="margin-top: 0.5rem;">
+        <div *ngIf="!titleClick" class="mb-0 pointer w-75" (click)="setTitle()" [innerHTML]="panel.title | sanitizeHtml">
+             </div>
+    
+        <div *ngIf="!!titleClick" class="ui-inputgroup w-75">
+            <input type="text" class="w-100" pInputText (focusout)="setTitle()" (keydown.enter)="setTitle()"
+                [(ngModel)]="panel.title" autofocusOnShow>
+        </div>
     </div>
 
-
-    <div *ngIf="display.editMode" id="edit">
+    <div *ngIf="display.editMode" id="edit" style="text-align: right; max-height: 2rem; ">
         <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
     </div>
 
 </div>
 
+
+
+
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>
+<app-title-dialog *ngIf="editTittleController" [controller]="editTittleController"> </app-title-dialog>

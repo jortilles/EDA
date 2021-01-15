@@ -19,6 +19,9 @@ export class DateUtils {
             case 'yearStart': return this.setYearStart();
             case 'last7': return this.setLast7();
             case 'last15': return this.setLast15();
+            case 'last30': return this.setLast30();
+            case 'last60': return this.setLast60();
+            case 'last120': return this.setLast120();
         }
     }
 
@@ -61,6 +64,24 @@ export class DateUtils {
     public setLast15(): Array<Date> {
         const today = new Date();
         const last15 = new Date(today.getTime() - (14 * 24 * 60 * 60 * 1000));
+        return [last15, today];
+    }
+
+    public setLast30(): Array<Date> {
+        const today = new Date();
+        const last15 = new Date(today.getTime() - (29 * 24 * 60 * 60 * 1000));
+        return [last15, today];
+    }
+
+    public setLast60(): Array<Date> {
+        const today = new Date();
+        const last15 = new Date(today.getTime() - (59 * 24 * 60 * 60 * 1000));
+        return [last15, today];
+    }
+
+    public setLast120(): Array<Date> {
+        const today = new Date();
+        const last15 = new Date(today.getTime() - (119 * 24 * 60 * 60 * 1000));
         return [last15, today];
     }
 

@@ -5,17 +5,6 @@
 	-webkit-box-shadow: none;
 	box-shadow: none; 
 }
-.topbar {
-  background: #2a3e52; }
-  .topbar .navbar-header {
-    background: #ffffff; }
-  .topbar .top-navbar .navbar-header .navbar-brand .light-logo {
-    display: none;
-    color: rgba(255, 255, 255, 0.8); }
-  .topbar .navbar-light .navbar-nav .nav-item > a.nav-link {
-    color: #ffffff !important; }
-    .topbar .navbar-light .navbar-nav .nav-item > a.nav-link:hover, .topbar .navbar-light .navbar-nav .nav-item > a.nav-link:focus {
-      color: rgba(255, 255, 255, 0.8) !important; }
 
 /*******************
 /*General Elements

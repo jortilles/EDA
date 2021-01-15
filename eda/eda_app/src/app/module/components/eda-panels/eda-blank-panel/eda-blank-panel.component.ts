@@ -175,7 +175,7 @@ export class EdaBlankPanelComponent implements OnInit {
         );
 
         this.contextMenu = new EdaContextMenu({
-            header: 'OPCIONES DEL PANEL',
+            header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
     }
@@ -230,9 +230,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public setTablesData = () => {
         const tables = TableUtils.getTablesData(this.inject.dataSource.model.tables, this.inject.applyToAllfilter);
-        this.tables = tables.allTables;
-        this.tablesToShow = tables.tablesToShow;
-        this.sqlOriginTables = tables.sqlOriginTables;
+        this.tables = _.cloneDeep(tables.allTables);
+        this.tablesToShow = _.cloneDeep(tables.tablesToShow);
+        this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
     }
 
     /**
@@ -267,7 +267,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param panelContent panel content to build configuration .
      */
     buildGlobalconfiguration(panelContent: any) {
-        
+
         if (!panelContent.query.query.modeSQL) {
 
             panelContent.query.query.fields.forEach(element => {
@@ -297,6 +297,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
+
+
     }
 
 
@@ -359,6 +361,7 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     private renderChart(query: any, chartLabels: any[], chartData: any[], type: string, subType: string, config: ChartConfig) {
         const chartConfig = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
+
         this.panelChartConfig = new PanelChart({
             query: query,
             data: { labels: chartLabels, values: chartData },
@@ -396,6 +399,7 @@ export class EdaBlankPanelComponent implements OnInit {
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             this.panelChart.destroyComponent();
             const _config = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
+
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
     }
@@ -432,7 +436,7 @@ export class EdaBlankPanelComponent implements OnInit {
             }
         }
     }
-        
+
     /**
      * Move column with drag and drop
      * @param event 
@@ -459,7 +463,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public openColumnDialog(column: Column, isFilter?: boolean): void {
         this.disableBtnSave();
         const p = {
-            selectedColumn: column,
+            selectedColumn: _.cloneDeep(column),
             currentQuery: this.currentQuery,
             inject: this.inject,
             panel: this.panel,
@@ -551,7 +555,8 @@ export class EdaBlankPanelComponent implements OnInit {
         this.columns = [];
         this.currentQuery = [];
         if (this.panelDeepCopy.query) {
-            this.panelDeepCopy.query.query.filters = this.mergeFilters(this.panelDeepCopy.query.query.filters, this.globalFilters)
+
+            this.panelDeepCopy.query.query.filters = this.mergeFilters(this.panelDeepCopy.query.query.filters, this.globalFilters);
             this.filtredColumns = [];
             //Reassing sqlQuery -if exists
             this.currentSQLQuery = this.panelDeepCopy.query.query.SQLexpression;
@@ -589,7 +594,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseTableProperties(event, properties: TableConfig): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
-
                 this.panel.content.query.output.config = properties;
                 const config = new ChartConfig(properties);
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
@@ -676,17 +680,18 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.responsive = event.currentTarget.innerWidth <= 1440;
     }
 
-    public onGridsterResize(event: any) {
-        const content = this.panel.content;
-        /**Resize d3 charts  */
-        if (content &&
-            content.chart === 'parallelSets') {
-            setTimeout(() => {
-                const config = ChartsConfigUtils.recoverConfig(content.chart, content.query.output.config);
-                this.changeChartType(content.chart, content.edaChart, config);
-            }, 1)
-        }
-    }
+    // public onGridsterResize(event: any) {
+    //     const content = this.panel.content;
+    //     /**Resize d3 charts  */
+    //     if (content &&
+    //         content.chart === 'parallelSets') {
+    //         setTimeout(() => {
+    //             const config = ChartsConfigUtils.recoverConfig(content.chart, content.query.output.config);
+    //             PanelInteractionUtils.verifyData(this);
+    //             this.changeChartType(content.chart, content.edaChart, config);
+    //         }, 1)
+    //     }
+    // }
 
     /** Run query From dashboard component */
     public runQueryFromDashboard = (globalFilters: boolean) => QueryUtils.runQuery(this, globalFilters);

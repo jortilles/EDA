@@ -184,6 +184,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.withColTotals = config.withColTotals;
         this.componentRef.instance.inject.withColSubTotals = config.withColSubTotals;
         this.componentRef.instance.inject.withRowTotals = config.withRowTotals;
+        this.componentRef.instance.withTrend = config.withTrend;
         this.componentRef.instance.inject.resultAsPecentage = config.resultAsPecentage;
         this.componentRef.instance.inject.checkTotals(null, config.visibleRows);
     }
@@ -304,7 +305,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
     private initializeTable(type: string, configs?: any): EdaTable {
         const tableColumns = [];
-        console.log("WARNING! Unique names");
+        //console.log("WARNING! Unique names");
         for (let i = 0, n = this.props.query.length; i < n; i += 1) {
             // No em surt aixoooo
             const label = this.props.data.labels[i];

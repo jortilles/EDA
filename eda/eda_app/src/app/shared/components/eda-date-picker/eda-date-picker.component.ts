@@ -33,7 +33,11 @@ export class EdaDatePickerComponent implements OnChanges {
       { label: $localize`:@@DatePickerYear:Éste año`, value: 'yearStart' },
       { label: $localize`:@@DatePickerLast7:Últimos 7 días`, value: 'last7' },
       { label: $localize`:@@DatePickerLast15:Últimos 15 días`, value: 'last15' },
+      { label: $localize`:@@DatePickerLast30:Últimos 30 días`, value: 'last30' },
+      { label: $localize`:@@DatePickerLast60:Últimos 60 días`, value: 'last60' },
+      { label: $localize`:@@DatePickerLast120:Últimos 120 días`, value: 'last120' }
     ];
+
   public selectedRange: SelectItem;
   public rangePlaceholder: string = $localize`:@@DateSelectRange:Selecciona un rango`;
   public rangeDates: any;

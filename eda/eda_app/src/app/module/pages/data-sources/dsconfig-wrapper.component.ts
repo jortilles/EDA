@@ -55,7 +55,7 @@ export class DsConfigWrapperComponent implements OnInit {
       password: [null],
       schema: [null],
       sid: [{ name: 'SID', value: 1 }],
-      optimize: [null]
+      optimize: [true]
     });
 
   }

@@ -37,6 +37,7 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
             title: ''
         });
+        this.dialog.style = { width: '40%', height: '35%', top: '50px', left: '100px' };
 
         this.form = this.formBuilder.group({
             sourceCol: [null, Validators.required],

@@ -28,9 +28,12 @@ import {
     KpiEditDialogComponent,
     EdaD3Component,
     SankeyDialog,
-    LinkDashboardsComponent
+    LinkDashboardsComponent,
+    TitleDialogComponent
 
  } from './component.index';
+import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
+import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
 
 
 @NgModule({
@@ -44,6 +47,8 @@ import {
         EdaBlankPanelComponent,
         EdaDashboardPanelComponent,
         EdaTitlePanelComponent,
+        SafeUrlPipe,
+        SafeHtmlPipe,
         EdaTableComponent,
         EdaChartComponent,
         EdaKpiComponent,
@@ -59,12 +64,15 @@ import {
         KpiEditDialogComponent,
         EdaD3Component,
         SankeyDialog,
-        LinkDashboardsComponent
+        LinkDashboardsComponent,
+        TitleDialogComponent
     ],
     exports: [
         EdaBlankPanelComponent,
         EdaDashboardPanelComponent,
         EdaTitlePanelComponent,
+        SafeUrlPipe,
+        SafeHtmlPipe,
         EdaTableComponent,
         EdaChartComponent,
         EdaKpiComponent,
@@ -72,7 +80,8 @@ import {
         EdaMapComponent,
         EdaGeoJsonMapComponent,
         EdaD3Component,
-        LinkDashboardsComponent
+        LinkDashboardsComponent,
+        TitleDialogComponent
     ],
     entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent, EdaD3Component],
     schemas: [CUSTOM_ELEMENTS_SCHEMA ]

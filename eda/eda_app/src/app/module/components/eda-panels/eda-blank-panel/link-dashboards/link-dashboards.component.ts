@@ -51,10 +51,14 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
   saveChartConfig() {
 
     const dashboard_name = this.dasboards.filter(d => d['value'] === this.selectedDashboard)[0].label;
+    //Get index -> only non numeric
+    const colIndex = this.controller.params.query
+    .map((col:any, i:number) => {return {i:i, name:col.column_name}})
+    .filter(col => col.name === this.sourceColumn)[0].i;
 
     this.onClose(
       EdaDialogCloseEvent.UPDATE,
-      new LinkedDashboardProps(this.sourceColumn, this.sourceTable, dashboard_name, <any>this.selectedDashboard, this.targetColumn, this.targetTable)
+      new LinkedDashboardProps(this.sourceColumn, this.sourceTable, dashboard_name, <any>this.selectedDashboard, this.targetColumn, this.targetTable, colIndex)
     );
   }
 
@@ -64,9 +68,16 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
   onShow(): void {
 
-    // console.log(this.controller.params);
+    if (this.controller.params.charttype === 'parallelSets' && !this.controller.params.modeSQL) {
 
-    if (this.controller.params.charttype !== 'table' && !this.controller.params.modeSQL) {
+      this.columns = this.controller.params.query.filter(col => col.column_type === 'text')
+        .map(col => {
+          return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
+        });
+
+    }
+
+    else if (this.controller.params.charttype !== 'table' && !this.controller.params.modeSQL) {
 
       let column = this.controller.params.query.filter(col => col.column_type === 'text')
         .map(col => { return { col: col.column_name, table: col.table_id, colname: col.display_name.default } })[0];
@@ -111,7 +122,6 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
   public async initDashboards(column: any): Promise<any> {
 
-    // console.log(column);
     this.dasboards = [];
     this.filters = [];
     this.activateProgressBar = true;
@@ -173,8 +183,6 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
         }
 
       }
-
-      console.log(this.filters);
 
       this.filters = filters;
 

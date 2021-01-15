@@ -5,34 +5,34 @@
       <div style="margin: 10px">
         <h6 i18n="@@inputNombre">Nombre</h6>
 
-        <input pInputText type="text" size="50" formControlName="viewName" id="eda_col_nombre">
+        <input id="viewName" pInputText type="text" size="50" formControlName="viewName" >
       </div>
 
       <div style="margin: 10px">
         <h6 i18n="@@inputDescripcion">Descripción</h6>
-        <input pInputText type="text" size="50" formControlName="description" id="eda_descripcion">
+        <input id="viewDescription" pInputText type="text" size="50" formControlName="description" >
       </div>
 
       <div style="margin: 10px">
         <h6 i18n="@@inputNombreTecnico">Nombre técnico</h6>
-        <input pInputText type="text" size="50" formControlName="technical_name" id="eda_descripcion">
+        <input id="viewTechName" pInputText type="text" size="50" formControlName="technical_name" >
       </div>
 
       <div style="margin: 10px">
         <h6 i18n="@@sqlExp">Expresión SQL</h6>
-        <textarea pInputTextarea type="text" formControlName="SQLexpression" rows="12" cols="100"></textarea>
+        <textarea id="viewSQL" pInputTextarea type="text" formControlName="SQLexpression" rows="12" cols="100"></textarea>
       </div>
 
       <div style="margin: 10px">
-        <button type="button" pButton (click)="checkView()" class="ui-button-success ml-2" i18n-label="@@generateView"
+        <button id="viewGenerate" type="button" pButton (click)="checkView()" class="ui-button-success ml-2" i18n-label="@@generateView"
           label="Generar vista"></button>
       </div>
     </div>
     <p-footer class="footer">
 
       <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-        <button type="button" pButton (click)="saveView()" class="ui-button" icon="fa fa-check"
-          i18n-label="@@guardarBtn" label="Confirmar" id="eda_column_permission_confirmar"></button>
+        <button  type="button" pButton (click)="saveView()" class="ui-button" icon="fa fa-check"
+          i18n-label="@@guardarBtn" label="Confirmar" id="eda_column_permission_confirmar" [disabled]="!ok"></button>
         <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn"
           label="Cerrar"></button>
       </div>
