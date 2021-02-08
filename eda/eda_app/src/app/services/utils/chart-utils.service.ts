@@ -39,6 +39,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes1:Tabla de Datos`, value: 'table', subValue: 'table', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes2:Tabla Cruzada`, value: 'crosstable', subValue: 'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: 'KPI', value: 'kpi', subValue: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes15:Velocímetro`, value: 'knob', subValue: 'knob', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes3:Gráfico de Pastel`, value: 'doughnut', subValue: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes4:Gráfico de Área Polar`, value: 'polarArea', subValue: 'polarArea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes5:Gráfico de Barras`, value: 'bar', subValue: 'bar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -46,9 +47,12 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes7:Gráfico de Barras Horizontales`, value: 'horizontalBar', subValue: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes8:Gráfico de Lineas`, value: 'line', subValue: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes9:Mixto: Barras y lineas`, value: 'bar', subValue: 'barline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes12:parallelSets`, value: 'parallelSets', subValue: 'parallelSets', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
+        { label: $localize`:@@chartTypes13:treeMap`, value: 'treeMap', subValue: 'treeMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
+        { label: $localize`:@@chartTypes14:scatterPlot`, value: 'scatterPlot', subValue: 'scatterPlot', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
-        { label: $localize`:@@chartTypes12:parallelSets`, value: 'parallelSets', subValue: 'parallelSets', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false }
+       
     ];
 
     public filterTypes: FilterType[] = [
@@ -193,7 +197,7 @@ export class ChartUtilsService {
             [
                 'table', 'crosstable', 'kpi', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'bar',
-                'horizontalBar', 'barline', 'stackedbar', 'parallelSets'
+                'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob'
             ];
         //table (at least one column)
         if (dataDescription.totalColumns > 0) notAllowed.splice(notAllowed.indexOf('table'), 1);
@@ -244,6 +248,23 @@ export class ChartUtilsService {
         //parallelSets
         if(dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length > 1){
             notAllowed.splice(notAllowed.indexOf('parallelSets'), 1);
+        }
+
+        //treeMap
+        if(dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length > 0){
+            notAllowed.splice(notAllowed.indexOf('treeMap'), 1);
+        }
+
+        //scatterPlot
+        if(dataDescription.numericColumns.length >= 2 && dataDescription.numericColumns.length <= 3 
+            && dataDescription.otherColumns.length < 3  && dataDescription.otherColumns.length > 0){
+            notAllowed.splice(notAllowed.indexOf('scatterPlot'), 1);
+        }
+
+         //knob
+         if(dataDescription.numericColumns.length <= 2  && dataDescription.numericColumns.length > 0 
+            && dataDescription.otherColumns.length === 0){
+            notAllowed.splice(notAllowed.indexOf('knob'), 1);
         }
         return notAllowed;
     }

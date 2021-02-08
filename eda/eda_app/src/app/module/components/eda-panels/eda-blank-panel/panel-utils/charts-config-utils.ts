@@ -1,10 +1,14 @@
+import { KnobConfig } from './../panel-charts/chart-configuration-models/knob-config';
+import { TreeMapConfig } from './../panel-charts/chart-configuration-models/treeMap-config';
 import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from '../panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from '../panel-charts/chart-configuration-models/kpi-config';
 import { MapConfig } from '../panel-charts/chart-configuration-models/map-config';
 import { SankeyConfig } from '../panel-charts/chart-configuration-models/sankey-config';
+
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
+import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
 
 export const ChartsConfigUtils = {
 
@@ -23,7 +27,9 @@ export const ChartsConfigUtils = {
         withTrend: ebp.panelChart.componentRef.instance.inject.withTrend,
         resultAsPecentage: ebp.panelChart.componentRef.instance.inject.resultAsPecentage,
         onlyPercentages: ebp.panelChart.componentRef.instance.inject.onlyPercentages,
-        visibleRows: tableRows
+        visibleRows: tableRows,
+        sortedSerie: ebp.panelChart.componentRef.instance.inject.sortedSerie,
+        sortedColumn: ebp.panelChart.componentRef.instance.inject.sortedColumn
       }
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpi') {
@@ -44,13 +50,24 @@ export const ChartsConfigUtils = {
         legendPosition: ebp.panelChart.componentRef.instance.inject.legendPosition
       }
     }
-    else if (ebp.panelChart.props.chartType === 'parallelSets') {
+    else if (["parallelSets", "treeMap", "scatterPlot"].includes(ebp.panelChart.props.chartType)) {
+
       config =
       {
-        colors: ebp.panelChart.componentRef.instance.colors
+        colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : []
       }
-    } else
+    }
+
+    else if (ebp.panelChart.props.chartType === 'knob') {
+      config = {
+        color: ebp.panelChart.componentRef.instance.color,
+        limits: ebp.panelChart.componentRef.instance.limits
+      };
+    }
+
+    else
       config = { colors: ebp.graficos.chartColors, chartType: ebp.panelChart.props.chartType };
+  
 
     return new ChartConfig(config);
 
@@ -61,9 +78,10 @@ export const ChartsConfigUtils = {
   * @param type chart type
   */
   setVoidChartConfig: (type: string) => {
+
     if (['table', 'crosstable'].includes(type)) {
 
-      return new TableConfig(false, false, 10, false, false, false, false);
+      return new TableConfig(false, false, 10, false, false, false, false, null, null);
 
     }
     else if (['bar', 'line', 'piechart', 'doughnut'].includes(type)) {
@@ -74,13 +92,24 @@ export const ChartsConfigUtils = {
 
       return new SankeyConfig([]);
 
+    } else if (type === 'treeMap') {
+
+      return new TreeMapConfig([]);
+
+    } else if (type === 'scatterPlot') {
+      return new ScatterConfig([]);
+    }
+    else if (type === 'knob') {
+
+      return new KnobConfig(null, null);
     }
     else {
       return new KpiConfig('', []);
     }
   },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | ChartJsConfig | MapConfig | SankeyConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig) => {
+
     if (['table', 'crosstable'].includes(type)) {
       return new ChartConfig(config);
     }
@@ -98,7 +127,20 @@ export const ChartsConfigUtils = {
     }
     else if (type === 'parallelSets') {
       return new ChartConfig(config);
+
+    } 
+    else if (type === 'treeMap') {
+      return new ChartConfig(config);
+
+    } 
+    else if (type === 'scatterPlot') {
+      return new ChartConfig(config);
+
     }
+    else if(type === 'knob'){
+      return new ChartConfig(config);
+    }
+
   }
 
 }

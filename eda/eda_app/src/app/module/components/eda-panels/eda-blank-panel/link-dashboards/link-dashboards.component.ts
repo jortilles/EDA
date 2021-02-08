@@ -68,12 +68,26 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
   onShow(): void {
 
-    if (this.controller.params.charttype === 'parallelSets' && !this.controller.params.modeSQL) {
+    if ((this.controller.params.charttype === 'parallelSets' ) && !this.controller.params.modeSQL) {
+
+      console.log(this.controller.params.query);
+      this.columns = this.controller.params.query.filter(col => col.column_type === 'text')
+        .map(col => {
+          return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
+        });
+        console.log(this.columns);
+
+    }
+
+    if ((this.controller.params.charttype === 'treeMap' ) && !this.controller.params.modeSQL) {
 
       this.columns = this.controller.params.query.filter(col => col.column_type === 'text')
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
         });
+        
+      if (this.columns.length > 1) this.column = this.columns[1].colname;
+      else this.column = this.columns[0].colname;
 
     }
 

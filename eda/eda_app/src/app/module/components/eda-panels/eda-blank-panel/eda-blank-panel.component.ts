@@ -1,3 +1,4 @@
+import { GroupService } from './../../../../services/api/group.service';
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
@@ -29,6 +30,7 @@ import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
 
 
+
 @Component({
     selector: 'eda-blank-panel',
     templateUrl: './eda-blank-panel.component.html',
@@ -40,6 +42,8 @@ export class EdaBlankPanelComponent implements OnInit {
     @ViewChild('edaChart', { static: false }) edaChart: EdaChartComponent;
     @ViewChild(PanelChartComponent, { static: false }) panelChart: PanelChartComponent;
     @ViewChild('panelChartComponentPreview', { static: false }) panelChartPreview: PanelChartComponent;
+    @ViewChild('op', { static: false }) op: any;
+
 
 
     @Input() panel: EdaPanel;
@@ -54,9 +58,13 @@ export class EdaBlankPanelComponent implements OnInit {
     public mapController: EdaDialogController;
     public kpiController: EdaDialogController;
     public sankeyController: EdaDialogController;
+    public treeMapController: EdaDialogController;
     public linkDashboardController: EdaDialogController;
+    public scatterPlotController: EdaDialogController;
+    public knobController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
+
 
     public inputs: any = {};
 
@@ -80,7 +88,8 @@ export class EdaBlankPanelComponent implements OnInit {
         chart: '', // Change between chart or table
         disablePreview: true,
         disableQueryInfo: true,
-        notSaved: false
+        notSaved: false,
+        minispinnerSQL : false
     };
 
     public index: number;
@@ -95,6 +104,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public limitRowsInfo: string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
     public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera consultar`;
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
+    public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
+    public ptooltipViewQuery : string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
 
     /** Query Variables */
     public tables: any[] = [];
@@ -104,7 +115,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public filtredColumns: Column[] = [];
     public ordenationTypes: OrdenationType[];
     public currentQuery: any[] = [];
-    public currentSQLQuery: string;
+    public currentSQLQuery: string = '';
     public queryLimit: number;
 
     public modeSQL: boolean;
@@ -127,6 +138,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public panelDeepCopy: any = {};
     public colorsDeepCopy: any = {};
 
+    public queryFromServer: string = '';
+
 
     /**panel chart component configuration */
     public panelChartConfig: PanelChart = new PanelChart();
@@ -138,7 +151,8 @@ export class EdaBlankPanelComponent implements OnInit {
         public dashboardService: DashboardService,
         public chartUtils: ChartUtilsService,
         public alertService: AlertService,
-        public spinnerService: SpinnerService
+        public spinnerService: SpinnerService,
+        public groupService: GroupService
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
@@ -183,7 +197,7 @@ export class EdaBlankPanelComponent implements OnInit {
     getEditMode() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
-        return userName !== 'edaanonim';
+        return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 
     private initializeBlankPanelUtils(): void {
@@ -317,8 +331,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
             this.panel.content = { query, chart, edaChart };
 
-            /**maps ids are generated random and can't be rendered again */
-            if (!['coordinatesMap', 'geoJsonMap'].includes(chart)) {
+            /**This is to repaint on panel redimension */
+            if (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob'].includes(chart)) {
+
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
 
@@ -360,6 +375,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param layout chart layout.
      */
     private renderChart(query: any, chartLabels: any[], chartData: any[], type: string, subType: string, config: ChartConfig) {
+
         const chartConfig = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
         this.panelChartConfig = new PanelChart({
@@ -398,6 +414,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             this.panelChart.destroyComponent();
+
             const _config = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
@@ -629,6 +646,41 @@ export class EdaBlankPanelComponent implements OnInit {
         this.sankeyController = undefined;
     }
 
+    public onCloseTreeMapProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+            this.panel.content.query.output.config.colors = response.colors;
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService._notSaved.next(true);
+
+        }
+        this.treeMapController = undefined;
+    }
+
+    public onCloseScatterProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+            this.panel.content.query.output.config.colors = response.colors;
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService._notSaved.next(true);
+
+        }
+        this.scatterPlotController = undefined;
+    }
+    public onCloseKnobProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+            this.panel.content.query.output.config = response;
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService._notSaved.next(true);
+
+        }
+        this.knobController = undefined;
+    }
+
     public onCloseLinkDashboardProperties(event, response: LinkedDashboardProps): void {
 
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
@@ -664,7 +716,14 @@ export class EdaBlankPanelComponent implements OnInit {
         if (this.index === 1) {
             const content = this.panel.content;
             /**Reload  to render, needs timeOut for whatever reason :/  */
-            if ((content.chart === 'coordinatesMap' || content.chart === 'geoJsonMap' || content.chart === 'parallelSets')
+            if (content &&
+                (
+                    content.chart === 'coordinatesMap'
+                    || content.chart === 'geoJsonMap'
+                    || content.chart === 'parallelSets'
+                    || content.chart === 'treeMap'
+                    || content.chart === 'scatterPlot'
+                    || content.chart === 'knob')
             ) {
 
                 setTimeout(() => {
@@ -739,9 +798,40 @@ export class EdaBlankPanelComponent implements OnInit {
         this.description = event.description.default;
     }
 
-    public changeQueryMode(): void {
-        this.display_v.btnSave = true;
+    public async getQuery($event) {
+
+        this.display_v.minispinnerSQL = true;
+        this.queryFromServer = null;
+
+        this.op.toggle($event);
+
+        const query = QueryUtils.initEdaQuery(this);
+        let serverQuery = await QueryUtils.getQueryFromServer(this, query);
+
+        let length = serverQuery.length;
+
+        for (let i = 0; i < length; i++) {
+            if (serverQuery[i] === '\n') {
+                serverQuery = serverQuery.slice(0, i) + " " + serverQuery.slice(i);
+                length++;
+                i++;
+            }
+        }
+        this.display_v.minispinnerSQL = false;
+        this.queryFromServer = serverQuery;
+    }
+
+    public migrateQuery(){
+        this.currentSQLQuery = this.queryFromServer;
+        this.queryFromServer = '';
+        this.currentQuery = [];
+        this.modeSQL = true;
+    }
+
+    public async changeQueryMode(): Promise<void> {
+
         this.currentSQLQuery = '';
         this.currentQuery = [];
+        this.display_v.btnSave = true;
     }
 }

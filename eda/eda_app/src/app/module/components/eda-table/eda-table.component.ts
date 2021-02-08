@@ -82,4 +82,5 @@ export class EdaTableComponent  {
         return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
     }
 
+
 }

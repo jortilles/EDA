@@ -2824,7 +2824,8 @@ body .ui-overlaypanel {
     background-color: #ffffff;
     color: #333333;
     padding: 0;
-    border: 1px solid #c8c8c8;
+    border-radius: 5px !important;
+    /* border: 1px solid #c8c8c8; */
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
     border-radius: 0;
@@ -2854,14 +2855,14 @@ body .ui-overlaypanel .ui-overlaypanel-close:hover {
 body .ui-overlaypanel .ui-overlaypanel-close .ui-overlaypanel-close-icon {
     line-height: inherit;
 }
-body .ui-overlaypanel:after {
+/* body .ui-overlaypanel:after {
     border-color: rgba(255, 255, 255, 0);
     border-bottom-color: #ffffff;
 }
 body .ui-overlaypanel:before {
     border-color: rgba(200, 200, 200, 0);
     border-bottom-color: #c8c8c8;
-}
+} */
 body .ui-overlaypanel.ui-overlaypanel-flipped:after {
     border-top-color: #ffffff;
 }
@@ -3623,4 +3624,61 @@ body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
     border-color: white;
     background-color: var(--main-button-border-color);
     color: #ffffff;
+}
+
+
+body .d3tooltip {
+    position: absolute;
+    text-align: center;
+    /* width: 6rem;
+    height: 3rem; */
+    padding: 8px;
+    font: 12px Questrial;
+    color: #fbfbfb;
+    background: #010913ea;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+body .d3tooltip > h6{
+    color: white;
+    font-weight: bold;
+
+}
+
+
+.d3tooltip:after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -10px;
+    border-width: 7px;
+    border-style: solid;
+    border-color: #041429cf transparent transparent transparent;
+ }
+ 
+ body .header-button{
+    margin: 2px;
+    margin-bottom: 5px;
+    color: #046677;
+    background-color: #f3f7f7;
+    border : 0;
+    font-size: 16px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 3px 0 rgba(119, 119, 119, 0.2), 0 1px 1px 0 rgba(105, 105, 105, 0.14), 0 2px 1px -1px rgba(104, 104, 104, 0.12);
+    border-radius: 50%;
+    transition: 0.3s;
+    height: 2.2rem;
+   
+}
+
+body .header-button:hover, .header-button.active{
+
+    color: #08252b !important;
+    background-color: #c4c4c4b4 !important;
+    box-shadow: 0 1px 3px 0 rgba(119, 119, 119, 0.2), 0 1px 1px 0 rgba(105, 105, 105, 0.14), 0 2px 1px -1px rgba(104, 104, 104, 0.12);
+    
 }

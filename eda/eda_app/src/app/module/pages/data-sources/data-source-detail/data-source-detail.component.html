@@ -21,10 +21,10 @@
 
         <div *ngIf="tablePanel.query" style="margin: 10px">
             <h6 i18n="@@inputQueryView"> Vista </h6>
-            <!-- <p>
-            <textarea pInputText type="text" size="50" [(ngModel)]="tablePanel.query" ></p> -->
-            <textarea id="viewSQL" pInputTextarea type="text" [(ngModel)]="tablePanel.query" rows="12" cols="100"
-                (keyup)="update()"></textarea>
+            <p>{{tablePanel.query}}</p>
+          
+            <!-- <textarea id="viewSQL" pInputTextarea type="text" [(ngModel)]="tablePanel.query" rows="12" cols="100"
+                (keyup)="update()"></textarea> -->
         </div>
 
 
@@ -100,9 +100,9 @@
         </div>
 
         <div *ngIf="columnPanel.computed_column !== 'no'" style="margin: 10px">
-            <h6 i18n="@@sqlExp">Expresión SQL</h6>
+            <h6 i18n="@@sqlExpColumn">Expresión SQL (Debe incluir la agregación)</h6>
             <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" (keyup)="update()" rows="5"
-                    cols="100"></textarea></p>
+                    cols="100" placeholder="sum(a*b)"> </textarea></p>
         </div>
 
         <div *ngIf="columnPanel.computed_column === 'no'" style="margin: 10px">

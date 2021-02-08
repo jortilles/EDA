@@ -1,3 +1,7 @@
+import { Knob } from './eda-knob/primengKnob/knob';
+import { ScatterPlotDialog } from './eda-panels/eda-blank-panel/scatterPlotDialog/scatterPlot-dialog.component';
+import { TreeMapDialog } from './eda-panels/eda-blank-panel/treeMapDialog/treeMap-dialog.component';
+import { EdaTreeMap } from './eda-treemap/eda-treemap.component';
 import { SankeyDialog } from './eda-panels/eda-blank-panel/sankey-dialog/sankey-dialog.component';
 import { EdaD3Component } from './eda-d3/eda-d3.component';
 
@@ -39,5 +43,12 @@ export { TitleDialogComponent } from './eda-panels/eda-title-panel/edit-title/qu
 export { AlertDialogComponent } from './eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component';
 export { MapEditDialogComponent } from './eda-panels/eda-blank-panel/maps-dialog/mapedit-dialog.component';
 export { KpiEditDialogComponent } from './eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component';
-export { SankeyDialog } from './eda-panels/eda-blank-panel/sankey-dialog/sankey-dialog.component'
+export { SankeyDialog } from './eda-panels/eda-blank-panel/sankey-dialog/sankey-dialog.component';
+export { TreeMapDialog } from './eda-panels/eda-blank-panel/treeMapDialog/treeMap-dialog.component';
+export { ScatterPlotDialog } from './eda-panels/eda-blank-panel/scatterPlotDialog/scatterPlot-dialog.component';
+export { EdaScatter } from './eda-scatter/eda-scatter.component';
 export { LinkDashboardsComponent } from './eda-panels/eda-blank-panel/link-dashboards/link-dashboards.component';
+export { EdaTreeMap} from './eda-treemap/eda-treemap.component';
+export { EdaKnobComponent } from './eda-knob/eda-knob.component';
+export { KnobDialogComponent } from './eda-panels/eda-blank-panel/knob-dialog/knob-dialog.component';
+export {Knob} from './eda-knob/primengKnob/knob';

@@ -1875,6 +1875,11 @@
       <target>Layer Map</target>
     </trans-unit>
 
+    <trans-unit id="chartTypes15">
+      <source>Velocímetro</source>
+      <target>Gauge</target>
+    </trans-unit>
+
      <trans-unit id="filters1">
       <source>IGUAL A (=)</source>
       <target> EQUAL TO (=)</target>
@@ -2133,6 +2138,17 @@
         </context-group>
       </trans-unit>
 
+      <trans-unit id="sqlExpColumn" datatype="html">
+        <source>Expresión SQL (Debe incluir la agregación)</source>
+        <target>SQL expression (Must include aggregation)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">103</context>
+        </context-group>
+      </trans-unit>
+
+
+
            <trans-unit id="aggTsum">
      <source>Suma</source>
       <target>Sum</target>
@@ -2328,6 +2344,11 @@
       <target>Incorrect query</target>
     </trans-unit>
 
+   <trans-unit id="IncorrectQueryAgg">
+     <source>Debes incluir la agregación (sum, max, min, etc)</source>
+      <target>You must include the aggregation (sum, max, min, etc)</target>
+    </trans-unit>
+
      <trans-unit id="EstablishedConnections">
      <source>Conexión establecida </source>
       <target>Connection established</target>
@@ -2339,12 +2360,12 @@
     </trans-unit>
 
      <trans-unit id="Sure">
-     <source>¿Estas seguro?</source>
+     <source>¿Estás seguro?</source>
       <target>Are you sure?</target>
     </trans-unit>
 
      <trans-unit id="SureInfo">
-     <source>Estas a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible</source>
+     <source>Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible</source>
       <target>You are about to delete the data model and all associated dashboards, this is irreversible.</target>
     </trans-unit>
 
@@ -2504,7 +2525,7 @@
     </trans-unit>
 
     <trans-unit id="DeleteUserMessage">
-     <source>Estas a punto de borrar el usuario </source>
+     <source>Estás a punto de borrar el usuario </source>
       <target>You are gonna delete user  </target>
     </trans-unit>
 
@@ -2833,12 +2854,12 @@
     </trans-unit> 
 
       <trans-unit id="dragFields">
-     <source>Arrastra aquí los atributos que quiera consultar</source>
+     <source>Arrastre aquí los atributos que quiera consultar</source>
       <target>Drag fields here </target>
     </trans-unit> 
 
       <trans-unit id="dragFilters">
-     <source>Arrastra aquí los atributos sobre los que quiera filtrar</source>
+     <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
       <target>Drag filters here </target>
     </trans-unit> 
 
@@ -3001,6 +3022,75 @@
      <trans-unit id="downloadDashboard">
      <source> Descargar Informe </source>
       <target> Download Dashboard </target>
+    </trans-unit> 
+
+      <trans-unit id="NotSavedWarning">
+     <source> Hay cambios sin guardar. ¿Seguro que quieres salir? </source>
+      <target>  There are unsaved changes, do you want to continue anyway? </target>
+    </trans-unit> 
+
+   <trans-unit id="csvSep">
+     <source> Separador Decimal </source>
+      <target>  Decimal separator</target>
+    </trans-unit> 
+
+        <trans-unit id="viewOk">
+     <source> Vista generada correctamente</source>
+      <target>  View generated correctly</target>
+    </trans-unit> 
+
+      <trans-unit id="limitRowsInfo">
+     <source> Establece un Top n para la consulta</source>
+      <target>  Define Top n for query</target>
+    </trans-unit> 
+
+     <trans-unit id="Limits">
+     <source> Límites</source>
+      <target>  Boundaries</target>
+    </trans-unit> 
+
+      <trans-unit id="usersPermissions">
+     <source> Permisos de usuario</source>
+      <target>  User permissions </target>
+    </trans-unit> 
+
+     <trans-unit id="groupsPersmissions">
+     <source> Permisos de grupo</source>
+      <target>  Group permissions</target>
+    </trans-unit> 
+
+    <trans-unit id="users">
+     <source> Usuarios</source>
+      <target>  Users</target>
+    </trans-unit> 
+    <trans-unit id="groups">
+     <source> Grupos</source>
+      <target>  Groups</target>
+    </trans-unit> 
+
+       <trans-unit id="groupTable">
+     <source>GRUPO</source>
+      <target>GROUP</target>
+    </trans-unit> 
+
+    <trans-unit id="yourQuerySQL">
+     <source>Mi consulta SQL</source>
+      <target>My SQL query</target>
+    </trans-unit> 
+
+  <trans-unit id="openSqlMode">
+     <source>Abrir en modo SQL</source>
+      <target>Open in SQL mode</target>
+    </trans-unit> 
+
+   <trans-unit id="sqlTooltip">
+     <source>Al cambiar de modo perderás la configuración de la consulta actual</source>
+      <target>Changing mode will override current query configuration</target>
+    </trans-unit> 
+
+     <trans-unit id="ptooltipViewQuery">
+     <source>Ver consulta SQL</source>
+      <target>View SQL query</target>
     </trans-unit> 
 
     </body>

@@ -1,0 +1,33 @@
+@keyframes dash-frame {
+  100% {
+      stroke-dashoffset: 0;
+  }
+}
+.p-knob-range {
+  fill: none;
+  transition: stroke .1s ease-in;
+}
+.p-knob-value {
+  animation-name: dash-frame;
+  animation-fill-mode: forwards;
+  fill: none;
+}
+.p-knob-text {
+  font-size: 0.7rem;
+  text-align: center;
+  font-weight: bold;
+}
+.p-knob-text-small {
+  font-size: 0.5rem;
+  text-align: center;
+  font-weight: bold;
+}
+.p-knob-text-large {
+  font-size: 0.9rem;
+  text-align: center;
+  font-weight: bold;
+}
+.p-knob-infotext {
+  font-size: 0.5rem;
+  text-align: center;
+}

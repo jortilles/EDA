@@ -506,3 +506,14 @@ body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider  {
     padding:0.5rem
 }
 
+.span-title{
+
+ line-height: 22px;
+ font-size: 18px;
+ color: #455a64;
+ font-family: sans-serif;
+ font-weight: 400;
+ box-sizing: border-box;
+
+}
+

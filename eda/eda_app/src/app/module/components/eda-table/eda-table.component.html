@@ -1,7 +1,8 @@
 <div class="eda-table">
-    <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="inject.rows"
-        [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body" (onPage)="inject.onPage($event)"
-        (onSort)="inject.onSort()" [autoLayout]="inject.autolayout" >
+    <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="inject.rows" 
+        [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body" (onPage)="inject.onPage($event)" (onSort)="inject.onSort($event)" 
+        [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null" [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null"
+        [autoLayout]="inject.autolayout" >
 
         <!-- Search -->
         <ng-template pTemplate="caption" *ngIf="inject.search">
@@ -31,8 +32,8 @@
 
             <tr *ngIf="!inject.pivot" class="header-title">
                 <ng-container *ngFor="let col of inject.cols">
-                    <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass"
-                        [width]="col.width" [attr.rowspan]="col.rowspan">
+                    <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field"  [class]="col.styleClass"
+                        [width]="col.width" [attr.rowspan]="col.rowspan" >
                         {{col.header}}
                         <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
                     </th>
@@ -57,7 +58,7 @@
         <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
                 <ng-container *ngFor="let col of inject.cols">
-                    <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width"
+                    <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width" 
                         (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer;">
                         <ng-container [ngSwitch]="col.type">
                             <!-- ngSwitch TEXT -->

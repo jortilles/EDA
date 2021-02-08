@@ -27,6 +27,8 @@ interface PivotTableSerieParams {
 export class EdaTable {
 
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
+    @Output() onSortPivotEvent: EventEmitter<any> = new EventEmitter();
+    @Output() onSortColEvent: EventEmitter<any> = new EventEmitter();
 
     private _value: any[] = [];
 
@@ -62,11 +64,14 @@ export class EdaTable {
     public percentageColumns: Array<any> = [];
 
     public autolayout: boolean = true;
+    public sortedSerie: any = null;
+    public sortedColumn : any = {field:null, order:null};
 
 
     public constructor(init: Partial<EdaTable>) {
         Object.assign(this, init);
         this.initRows = init['visibleRows'] || 10;
+        if(!this.sortedColumn) this.sortedColumn  = {field:null, order:null}
     }
 
     get value() {
@@ -88,6 +93,9 @@ export class EdaTable {
         if (this.pivot) {
             this.PivotTable();
         }
+        if (this.sortedSerie) {
+            this.loadSort();
+        }
     }
 
     public clear() {
@@ -101,10 +109,6 @@ export class EdaTable {
         this.checkTotals(event);
     }
 
-
-    public onSort() {
-        this.checkTotals(null);
-    }
 
     public load(funct: Observable<any>) {
         this.clear();
@@ -340,7 +344,7 @@ export class EdaTable {
                 numericCols.forEach(key => {
                     valuesKeys.forEach(valueKey => {
                         if (key.includes(valueKey)) {
-                            totals[valueKey].push(row[key]); 
+                            totals[valueKey].push(row[key]);
                         }
                     });
                 });
@@ -561,16 +565,57 @@ export class EdaTable {
 
     }
     onHeaderClick(serie) {
-        this._value = this._value.sort((a, b) => {
-            if (serie.sortState === true) {
-                return a[serie.column] - b[serie.column];
-            } else {
-                return b[serie.column] - a[serie.column];
-            }
-        });
-        serie.sortState = !serie.sortState
+        serie.sortState = !serie.sortState;
+        this.sort(serie);
+        this.sortedSerie = serie;
+        this.onSortPivotEvent.emit(this.sortedSerie);
         this.checkTotals(null);
     };
+
+    loadSort() {
+        this.checkTotals(null);
+        const serie = this.sortedSerie;
+        this.sort(serie);
+    }
+
+   
+    public onSort($event) {
+     
+        this.sortedColumn = $event;
+        this.onSortColEvent.emit($event);
+        this.checkTotals(null);
+    }
+
+    sort(serie){
+        if (typeof this._value[0][serie.column] === 'string') {
+
+            this._value = this._value.sort((a, b) => {
+                if (serie.sortState === true) {
+                    if (a[serie.column] < b[serie.column])
+                        return -1;
+                        if (a[serie.column] > b[serie.column])
+                        return 1;
+                    return 0;
+                } else {
+                    if (a[serie.column] > b[serie.column])
+                    return -1;
+                    if (a[serie.column] < b[serie.column])
+                    return 1;
+                return 0;
+                }
+            });
+
+        }
+        else {
+            this._value = this._value.sort((a, b) => {
+                if (serie.sortState === true) {
+                    return a[serie.column] - b[serie.column];
+                } else {
+                    return b[serie.column] - a[serie.column];
+                }
+            });
+        }
+    }
 
     PivotTable() {
         const colsInfo = this.getColsInfo();
@@ -808,7 +853,8 @@ export class EdaTable {
         //Main header props (incuding first label headers row)
         let mainColHeader = {
             title: colsInfo.textLabels[0],
-            rowspan: numRows, colspan: 1, sortable: false
+            column: labels.mainLabel,
+            rowspan: numRows, colspan: 1, sortable: true
         }
         series.push({ labels: [mainColHeader] });
 

@@ -5,7 +5,7 @@
         </h6>
     </div>
 
-    <div  id="edit"  [ngClass]="{'edit-blink': lodash.isEmpty(panel.content) }"  >   
+    <div id="edit" [ngClass]="{'edit-blink': lodash.isEmpty(panel.content) }">
         <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
     </div>
 </div>
@@ -27,8 +27,8 @@
 </div>
 
 <!-- Page Dialog -->
-<eda-page-dialog #pdialog [inject]="{display: this.display_v.page_dialog, title: panel.title}"  >
-    <div (window:resize)="onResize($event)"  >
+<eda-page-dialog #pdialog [inject]="{display: this.display_v.page_dialog, title: panel.title}">
+    <div (window:resize)="onResize($event)">
 
         <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)" class="ui-g-11 ">
 
@@ -90,7 +90,7 @@
                         <div class="select-list" cdkDropList cdkDropListOrientation="horizontal"
                             #selectList="cdkDropList" [cdkDropListData]="currentQuery"
                             [cdkDropListConnectedTo]="[columnsList]" (cdkDropListDropped)="drop($event)">
-                            
+
                             <p *ngIf="currentQuery.length < 1" class="fieldsInfo">{{draggFields}}</p>
 
                             <div class="select-box col-3 col-md-2 p-1" *ngFor="let item of currentQuery"
@@ -130,9 +130,9 @@
                             </div>
 
                         </div>
-                        <div >
+                        <div class="ui-g">
                             <div class="ui-g-12 ui-md-12 infoFiltres">
-                                <span  i18n="@@topQueryH4">
+                                <span i18n="@@topQueryH4">
                                     Mostrar Top: &nbsp;
                                     <p-inputNumber [(ngModel)]="queryLimit" (onInput)="onTopChange()"></p-inputNumber>
                                 </span>
@@ -141,14 +141,47 @@
                                     [title]="limitRowsInfo"></i>
                                 </span> -->
                                 <!-- <hr> -->
-                                
+
                             </div>
 
-                            <div class="ui-g-12 ui-md-12" *ngIf="currentQuery.length !== 0" class="info-query" >
-                                <h4 i18n="@@consultaH4" >
-                                    Mi consulta
-                                </h4>
+                            <div class="ui-g-12 ui-md-12" *ngIf="currentQuery.length !== 0" class="info-query">
+                                <div #myQuery>
+                                    <span i18n="@@consultaH4" class="span-title">
+                                        Mi consulta
+                                    </span>
+
+                                    <span>
+                                        <i class="pi pi-info-circle" style="cursor: pointer; margin-top: -5px;"
+                                            (click)="getQuery($event)" [pTooltip]="ptooltipViewQuery"></i>
+                                    </span>
+                                </div>
+
                                 <hr>
+
+                                <!-- QUERY FROM SERVER -->
+                                <p-overlayPanel #op [appendTo]="'body'">
+                                    <ng-template pTemplate>
+                                        <div>
+                                            <h6 i18n="@@yourQuerySQL">Mi consulta SQL</h6>
+                                            <div *ngIf="display_v.minispinnerSQL" style="text-align: center; margin: solid 1px grey;">
+
+                                                <p-progressSpinner *ngIf="display_v.minispinnerSQL" [style]="{width: '4vw', height: '4vh'}" strokeWidth="5"
+                                                class="" fill="#EEEEEE" animationDuration=".5s"></p-progressSpinner>
+
+                                            </div>
+                                    
+                                            <textarea *ngIf="!display_v.minispinnerSQL" id="query-area" class="sqlInput" rows="10" cols="100"
+                                                pInputTextarea autoResize="autoResize"
+                                                [(ngModel)]="queryFromServer"></textarea>
+                                        </div>
+                                        <button type="button" pButton icon="fa fa-database" (click)="migrateQuery()"
+                                            class="ui-button-success ml-2" i18n-label="@@openSqlMode"
+                                            label="Abrir en modo SQL" [pTooltip]="ptooltipSQLmode">
+                                        </button>
+                                    </ng-template>
+                                </p-overlayPanel>
+
+
 
                                 <div class="ui-g-12 ui-md-6 pl-2">
                                     <h6 i18n="@@resumenAtrH6">
@@ -196,11 +229,11 @@
                 </div>
 
                 <div *ngIf="modeSQL">
-                    <div  class="ui-g-7">
+                    <div class="ui-g-7">
                         <h6 i18n="@@sqlExpresionH6">Expresión SQL</h6>
                         <hr>
-                        <textarea id="query-area" class="sqlInput" rows="10" cols="100" pInputTextarea autoResize="autoResize"
-                            [(ngModel)]="currentSQLQuery"></textarea>
+                        <textarea id="query-area" class="sqlInput" rows="10" cols="100" pInputTextarea
+                            autoResize="autoResize" [(ngModel)]="currentSQLQuery"></textarea>
                         <div class="ui-g-6">
                             <h6 i18n="@@originTable">Tabla origen</h6>
                             <hr>
@@ -248,7 +281,8 @@
                                         consulta y haz los joins necesarios,
                                         junto con el filtro en el formato
                                         <span style="color:rgb(0, 62, 119); font-weight: bold">
-                                            {{' ${alias_tabla.columna_filtrada} '}} </span></li>
+                                            {{' ${alias_tabla.columna_filtrada} '}} </span>
+                                    </li>
                                     <li i18n="@@indicaciones8">Si la tabla por la que filtramos no está en la consulta,
                                         recuerda que debes
                                         añadir las cláusulas JOIN necesarias
@@ -311,20 +345,21 @@
 
 
 
-            <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA" 
+            <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA"
                 [disabled]="display_v.disablePreview || currentQuery.length === 0">
                 <div class="ui-g p-0 h-100">
                     <div class="ui-g-8 p-1 preview-chart-box">
                         <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
-                        style="height: 100%; width: 100%; display:block"></panel-chart>
+                            style="height: 100%; width: 100%; display:block"></panel-chart>
                     </div>
 
                     <div class="ui-g-3 ui-g-offset-1 p-1 edaChartSelector">
                         <form [formGroup]="chartForm">
-                            <p-dropdown id="chartSelector" [style]="{'width':'100%'}" [options]="chartTypes" formControlName="chart"
+                            <p-dropdown id="chartSelector" [style]="{'width':'100%'}" [options]="chartTypes"
+                                formControlName="chart"
                                 (onChange)="changeChartType(chartForm.value.chart.value, 
-                                            chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))"
-                                optionLabel="label" [autoDisplayFirst]="false">
+                                            chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))" optionLabel="label"
+                                [autoDisplayFirst]="false">
                                 <ng-template let-item pTemplate="selectedItem">
                                     <i *ngIf="!!item.value.ngIf" class="{{item.value.icon}}"
                                         style="color: #eeac57!important;vertical-align:middle;"></i>
@@ -368,8 +403,8 @@
         <div class="ui-g-1">
             <div i18n="@@edaMode" *ngIf="!modeSQL">Modo EDA</div>
             <div i18n="@@sqlMode" *ngIf="modeSQL">Modo SQL</div>
-            <p-inputSwitch id="switchQueryMode" class="ui-g-1 sql-switch" (onChange)="changeQueryMode()" [(ngModel)]="modeSQL"
-                pTooltip="Al cambiar de modo perderás la configuración de la consulta actual" tooltipPosition="left">
+            <p-inputSwitch id="switchQueryMode" class="ui-g-1 sql-switch" (onChange)="changeQueryMode()" #switchMode
+                [(ngModel)]="modeSQL" [pTooltip]="ptooltipSQLmode" tooltipPosition="left">
             </p-inputSwitch>
         </div>
 
@@ -410,6 +445,12 @@
 
 <app-sankey-dialog *ngIf="sankeyController" [controller]="sankeyController"></app-sankey-dialog>
 
+<app-treeMap-dialog *ngIf="treeMapController" [controller]="treeMapController"></app-treeMap-dialog>
+
+<app-scatterPlot-dialog *ngIf="scatterPlotController" [controller]="scatterPlotController"></app-scatterPlot-dialog>
+
 <link-dashboards-dialog *ngIf="linkDashboardController" [controller]="linkDashboardController"></link-dashboards-dialog>
- 
+
+<knob-dialog *ngIf="knobController" [controller]="knobController"> </knob-dialog>
+
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>

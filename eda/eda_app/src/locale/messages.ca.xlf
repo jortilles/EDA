@@ -788,7 +788,7 @@
                                     </source>
                    <target> Per fer-ho només has d'afegir: 
                                         <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/> AND
-                                            <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/>
+                                            <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}"/>
                                         <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> a la cláusula &apos;WHERE&apos; de la consulta on vols injectar el filtre
                                     </target>
         <context-group purpose="location">
@@ -804,7 +804,7 @@
                                             <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/> <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
       <target> Si no has afegit cap clàusula WHERE, afegeix-la a la consulta i fes els JOIN necessaris, juntament amb el el filtre en el format
                                         <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
-                                            <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/> <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+                                            <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}"/> <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
           <context context-type="linenumber">229</context>
@@ -1882,6 +1882,10 @@
       <source>Mapa de Capas</source>
       <target>Mapa de Capes</target>
     </trans-unit>
+    <trans-unit id="chartTypes15">
+      <source>Velocímetro</source>
+      <target>Velocímetre</target>
+    </trans-unit>
 
      <trans-unit id="filters1">
       <source>IGUAL A (=)</source>
@@ -2107,7 +2111,7 @@
 
        <trans-unit id="AñadirPermiso" datatype="html">
         <source>Añadir permiso</source>
-        <target>Afegir permmís</target>
+        <target>Afegir permís</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component.html</context>
           <context context-type="linenumber">3</context>
@@ -2140,6 +2144,17 @@
           <context context-type="linenumber">74</context>
         </context-group>
       </trans-unit>
+
+      <trans-unit id="sqlExpColumn" datatype="html">
+        <source>Expresión SQL (Debe incluir la agregación)</source>
+        <target>Expressió SQL (Ha d'incloure l'agregació)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">103</context>
+        </context-group>
+      </trans-unit>
+
+
 
        <trans-unit id="aggTsum">
      <source>Suma</source>
@@ -2336,6 +2351,11 @@
       <target>Consulta incorrecta</target>
     </trans-unit>
 
+   <trans-unit id="IncorrectQueryAgg">
+     <source>Debes incluir la agregación (sum, max, min, etc)</source>
+      <target>Has d'incloure l'agregació (sum, max, min, etc)</target>
+    </trans-unit>
+
      <trans-unit id="EstablishedConnections">
      <source>Conexión establecida </source>
       <target>Connexió establerta</target>
@@ -2347,12 +2367,12 @@
     </trans-unit>
 
      <trans-unit id="Sure">
-     <source>¿Estas seguro?</source>
+     <source>¿Estás seguro?</source>
       <target>N'estàs segur?</target>
     </trans-unit>
 
      <trans-unit id="SureInfo">
-     <source>Estas a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible</source>
+     <source>Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible</source>
       <target>Estàs a punt d'esborrar el model de dades i tots els informes associats, el canvi és irreversible</target>
     </trans-unit>
 
@@ -2513,7 +2533,7 @@
     </trans-unit>
 
     <trans-unit id="DeleteUserMessage">
-     <source>Estas a punto de borrar el usuario </source>
+     <source>Estás a punto de borrar el usuario </source>
       <target>Ets a punt d'esborrar l'usuari </target>
     </trans-unit>
 
@@ -2840,12 +2860,12 @@
     </trans-unit> 
     
       <trans-unit id="dragFields">
-     <source>Arrastra aquí los atributos que quiera consultar</source>
+     <source>Arrastre aquí los atributos que quiera consultar</source>
       <target>Arrossega aqui els atributs que vols consultar </target>
     </trans-unit> 
 
       <trans-unit id="draggFilters">
-     <source>Arrastra aquí los atributos sobre los que quiera filtrar</source>
+     <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
       <target>Arrossega aquí els atributs sobre els que vols filtrar </target>
     </trans-unit> 
 
@@ -2950,8 +2970,8 @@
 
 
     <trans-unit id="sidebarModelsManagement">
-     <source> Gestión de modelos </source>
-      <target> Gestió de models </target>
+     <source>Gestión de modelos </source>
+      <target>Gestió de models </target>
     </trans-unit> 
 
     
@@ -3014,6 +3034,78 @@
      <source> Descargar Informe </source>
       <target> Descarregar informe </target>
     </trans-unit> 
+
+        <trans-unit id="NotSavedWarning">
+     <source> Hay cambios sin guardar. ¿Seguro que quieres salir? </source>
+      <target> Hi ha canvis sense guardar, segur que vols sortir? </target>
+    </trans-unit> 
+
+     <trans-unit id="csvSep">
+     <source> Separador Decimal </source>
+      <target>  Decimal separator</target>
+    </trans-unit> 
+
+     <trans-unit id="viewOk">
+     <source> Vista generada correctamente</source>
+      <target>  Vista generada correctament</target>
+    </trans-unit> 
+
+   <trans-unit id="limitRowsInfo">
+     <source> Establece un Top n para la consulta</source>
+      <target>  Estableix un Top n per la consulta</target>
+    </trans-unit> 
+
+    <trans-unit id="Limits">
+     <source> Límites</source>
+      <target>  Limits</target>
+    </trans-unit> 
+
+  
+  
+    <trans-unit id="usersPermissions">
+     <source> Permisos de usuario</source>
+      <target>  Permisos d'usuari</target>
+    </trans-unit> 
+
+     <trans-unit id="groupsPersmissions">
+     <source> Permisos de grupo</source>
+      <target>  Permisos de grup</target>
+    </trans-unit> 
+
+    <trans-unit id="users">
+     <source> Usuarios</source>
+      <target>  Usuaris</target>
+    </trans-unit> 
+    <trans-unit id="groups">
+     <source> Grupos</source>
+      <target>  Grups</target>
+    </trans-unit> 
+       <trans-unit id="groupTable">
+     <source>GRUPO</source>
+      <target>GRUP</target>
+    </trans-unit> 
+
+   <trans-unit id="yourQuerySQL">
+     <source>Mi consulta SQL</source>
+      <target>La meva consulta SQL</target>
+    </trans-unit> 
+
+   <trans-unit id="openSqlMode">
+     <source>Abrir en modo SQL</source>
+      <target>Obrir en mode SQL</target>
+    </trans-unit> 
+  
+   <trans-unit id="sqlTooltip">
+     <source>Al cambiar de modo perderás la configuración de la consulta actual</source>
+      <target>Al canviar de mode perdràs la configuració de la consulta actual</target>
+    </trans-unit> 
+
+
+   <trans-unit id="ptooltipViewQuery">
+     <source>Ver consulta SQL</source>
+      <target>Veure consulta SQL</target>
+    </trans-unit> 
+
 
 
     </body>

@@ -57,8 +57,8 @@ export class EditModelPanel {
 
 export class Relation {
     source_table: string;
-    source_column: string;
+    source_column: Array<any>;
     target_table: string;
-    target_column: string;
+    target_column: Array<any>;
     visible: boolean;
 }

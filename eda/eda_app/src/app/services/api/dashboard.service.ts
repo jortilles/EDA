@@ -42,4 +42,8 @@ export class DashboardService extends ApiService {
         return this.post(`${this.route}view-query`, body);
     }
 
+    getBuildedQuery(body) : Observable<any>{
+        return this.post(`${this.route}getQuey`, body);
+    }
+
 }

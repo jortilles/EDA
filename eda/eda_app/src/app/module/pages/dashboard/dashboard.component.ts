@@ -45,9 +45,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public toLitle: boolean = false;
     public toMedium: boolean = false;
     public datasourceName: string;
+    public group: string = '';
 
     // Grid Global Variables
-    public inject: any;
+    public inject: InjectEdaPanel;
     public panels: EdaPanel[] = [];
     public panelsCopy: EdaPanel[] = [];
     public screen: number;
@@ -75,6 +76,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         groups: false,
         shared: false, //if shared copy url is displayed
         edit_mode: true, //editable dashboard
+        anonimous_mode: false,
         notSaved: false
     };
 
@@ -122,7 +124,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dashboard = new Dashboard({});
 
         this.initializeDashboard();
-        this.setEditMode();
 
         this.dashboardService.notSaved.subscribe(
             (data) => this.display_v.notSaved = data,
@@ -135,7 +136,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     /* Set applyToAllFilters for new panel when it's created */
     public ngAfterViewInit(): void {
-      
+
         this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
             const globalFilters = this.filtersList.filter(filter => filter.isGlobal === true);
             const unsetPanels = this.edaPanels.filter(panel => panel.panel.content === undefined);
@@ -231,6 +232,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (this.grups.length === 0) {
                     this.visibleTypes.splice(1, 1);
                 }
+
+                this.setEditMode();
             },
             (err) => this.alertService.addError(err)
         );
@@ -262,7 +265,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.tag = config.tag;
                     me.selectedtag = me.tags.filter(tag => tag.value === me.tag)[0];
                     me.refreshTime = config.refreshTime;
-                    if(me.refreshTime){
+                    if (me.refreshTime) {
                         this.stopRefresh = false;
                         this.startCountdown(me.refreshTime);
                     }
@@ -356,10 +359,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Dashboard Panels
     private initializePanels(): void {
+
+        const user = localStorage.getItem('user');
+        const userID = JSON.parse(user)._id;
+
         this.inject = {
             dataSource: this.dataSource,
             dashboard_id: this.dashboard.id,
-            applyToAllfilter: this.applyToAllfilter
+            applyToAllfilter: this.applyToAllfilter,
+            isObserver: this.grups.filter(group => group.name === 'RO' && group.users.includes(userID)).length !== 0
         }
     }
 
@@ -402,10 +410,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Dashboard control
-    public setEditMode() {
+    public async setEditMode() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
-        this.display_v.edit_mode = userName !== 'edaanonim';
+        const userID = JSON.parse(user)._id;
+        this.display_v.edit_mode = (userName !== 'edaanonim') && !(this.grups.filter(group => group.name === 'RO' && group.users.includes(userID)).length !== 0)
+        this.display_v.anonimous_mode = (userName !== 'edaanonim');
     }
 
     private setDashboardGrups(res: any): void {
@@ -427,7 +437,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private checkVisibility(dashboard) {
-        if (!this.display_v.edit_mode && dashboard.config.visible !== 'shared') {
+        if (!this.display_v.anonimous_mode && dashboard.config.visible !== 'shared') {
             this.router.navigate(['/login']);
         }
 
@@ -518,9 +528,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         if (voidPanel) {
             this.display_v.rightSidebar = false;
             Swal.fire({
+                icon: 'success',
+                showConfirmButton: true,
                 title: $localize`:@@AddFiltersWarningTittle:Solo puedes añadir filtros cuando todos los paneles están configurados`,
                 text: $localize`:@@AddFiltersWarningText:Puedes borrar los paneles en blanco o configurarlos`,
-                type: 'warning',
                 showCancelButton: false,
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: $localize`:@@AddFiltersWarningButton:Entendido`
@@ -628,7 +639,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             filter_table: filter.table.value,
             filter_column: filter.column.value.column_name,
             filter_type: isDate ? 'between' : 'in',
-            filter_elements: isDate ? [{ value1: [filter.selectedItems[0]] }, { value2: [filter.selectedItems[1]] }] : [{ value1: filter.selectedItems }],
+            filter_elements: isDate ?
+                [
+                    { value1: filter.selectedItems[0] ? [filter.selectedItems[0]] : [] },
+                    { value2: filter.selectedItems[1] ? [filter.selectedItems[1]] : [] }
+                ]
+                : [{ value1: filter.selectedItems }],
             isGlobal: true,
             applyToAll: filter.applyToAll
         }
@@ -660,7 +676,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.edaPanels.forEach(panel => {
             panel.globalFilters = panel.globalFilters.filter(f => f.filter_id !== filter.id);
         });
-
+        //not saved alert message
+        this.dashboardService._notSaved.next(true);
         this.reloadPanels();
     }
 
@@ -822,7 +839,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     applyToAllfilter: this.applyToAllfilter,
                     visible: this.form.controls['visible'].value,
                     tag: this.tag && this.tag.label ? this.tag.label : null,
-                    refreshTime:(this.refreshTime > 5 ) ? this.refreshTime : this.refreshTime ? 5 : null
+                    refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null
 
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
@@ -908,7 +925,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public itemChange($event: any, panel): void {
         this.gridItemEvent = $event;
         let found = this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0];
-        if (found && found.columns.length > 0 && (['parallelSets', 'kpi'].includes(panel.content.chart))) found.savePanel(); // found.onGridsterResize($event);
+        if (found && !found.panelChart.NO_DATA && (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob'].includes(panel.content.chart))) found.savePanel(); // found.onGridsterResize($event);
     }
 
     public selectTag() {
@@ -918,7 +935,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public startCountdown(seconds: number) {
-    
+
         if (!this.stopRefresh) {
             let counter = seconds;
             const interval = setInterval(() => {
@@ -928,25 +945,25 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     clearInterval(interval);
                     this.onResetWidgets();
                     this.startCountdown(seconds);
-                }else if(this.stopRefresh){
+                } else if (this.stopRefresh) {
                     clearInterval(interval);
                     return;
                 }
             }, 1000);
-        }else return;
+        } else return;
     }
 
-    triggerTimer(){
+    triggerTimer() {
 
         this.stopRefresh = !this.stopRefresh;
 
         //Give time to stop counter if any
         setTimeout(() => {
-            if(!this.refreshTime) this.stopRefresh = true;
-            else if(this.refreshTime) this.stopRefresh = false;
-    
-            if(this.refreshTime && this.refreshTime < 5) this.refreshTime = 5;
-    
+            if (!this.refreshTime) this.stopRefresh = true;
+            else if (this.refreshTime) this.stopRefresh = false;
+
+            if (this.refreshTime && this.refreshTime < 5) this.refreshTime = 5;
+
             this.startCountdown(this.refreshTime);
 
         }, 2000)

@@ -21,9 +21,9 @@ export class DataSourceService extends ApiService implements OnDestroy {
         query : '',
         relations: [{
             source_table: '',
-            source_column: '',
+            source_column: [],
             target_table: '',
-            target_column: '',
+            target_column: [],
             visible: false
         }],
         table_type: '',
@@ -290,8 +290,8 @@ export class DataSourceService extends ApiService implements OnDestroy {
         // Update tablePanel
         const tmp_panel = this._tablePanel.getValue();
         const tmp_relationIndex = tmp_panel.relations.findIndex((r: { source_table: any; source_column: any; target_table: any; target_column: any; }) => {
-            return r.source_table === rel.source_table && r.source_column === rel.source_column
-                && r.target_table === rel.target_table && r.target_column === rel.target_column;
+            return r.source_table === rel.source_table && JSON.stringify(r.source_column) === JSON.stringify(rel.source_column)
+                && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
         });
         if (tmp_relationIndex >= 0) {
             tmp_panel.relations[tmp_relationIndex].visible = true;
@@ -337,11 +337,11 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._modelMetadata.next(tmpMetadata);
     }
 
-    getRelationIndex(relation: Relation, tableIndex: string | number) {
+    getRelationIndex(rel: Relation, tableIndex: string | number) {
         return this._databaseModel.getValue()[tableIndex].relations
             .findIndex((r: { source_table: any; source_column: any; target_table: any; target_column: any; }) => {
-                return r.source_table === relation.source_table && r.source_column === relation.source_column
-                    && r.target_table === relation.target_table && r.target_column === relation.target_column;
+                return r.source_table === rel.source_table && JSON.stringify(r.source_column) === JSON.stringify(rel.source_column)
+                && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
             });
     }
 
@@ -399,6 +399,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
     }
 
     addView(table:any){
+        console.log(table)
         const tmp_model = this._databaseModel.getValue();
         tmp_model.push(table);
         this._databaseModel.next(tmp_model);
@@ -492,11 +493,16 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return model[tableIndex];
     }
     sendModel() {
+
+        const connection = this._modelConnection.getValue();
+        const metadata = this._modelMetadata.getValue();
+        const model = { tables: this._databaseModel.getValue(), maps:this._maps.getValue()};
+
         const body = {
             ds: {
-                connection: this._modelConnection.getValue(),
-                metadata: this._modelMetadata.getValue(),
-                model: { tables: this._databaseModel.getValue(), maps:this._maps.getValue() }
+                connection: connection,
+                metadata: metadata,
+                model: model
             }
         };
         this.updateModelInServer(this.model_id, body).subscribe(

@@ -1,4 +1,3 @@
-import { BigQueryConnection } from './../../services/connection/db-systems/bigquery-connection';
 import { NextFunction, Request, Response } from 'express';
 import DataSource, { IDataSource } from './model/datasource.model';
 import Dashboard from '../dashboard/model/dashboard.model';
@@ -35,7 +34,8 @@ export class DataSourceController {
     }
 
     static async GetDataSourcesNames(req: Request, res: Response, next: NextFunction) {
-        DataSource.find({}, '_id ds.metadata.model_name', (err, ds) => {
+
+        DataSource.find({}, '_id ds.metadata.model_name ds.security', (err, ds) => {
             if (!ds) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
@@ -46,7 +46,10 @@ export class DataSourceController {
 
             for (let i = 0, n = names.length; i < n; i += 1) {
                 const e = names[i];
-                output.push({ _id: e._id, model_name: e.ds.metadata.model_name })
+
+                output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+
+
             }
 
             return res.status(200).json({ ok: true, ds: output });
@@ -70,7 +73,64 @@ export class DataSourceController {
         }
     }
 
+    static async GetDataSourcesNamesForDashboard(req: Request, res: Response, next: NextFunction) {
+
+
+        DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles', (err, ds) => {
+            if (!ds) {
+                return next(new HttpException(500, 'Error loading DataSources'));
+            }
+
+            const names = JSON.parse(JSON.stringify(ds));
+
+            const output = [];
+
+            for (let i = 0, n = names.length; i < n; i += 1) {
+                const e = names[i];
+
+                if (e.ds.metadata.model_granted_roles.length > 0) {
+
+                    const userID = req.user._id;
+                    const users = [];
+                    const roles = [];
+                    //Get users with permission
+                    e.ds.metadata.model_granted_roles.forEach(permission => {
+                        //console.log(permission, req.user.role)
+                        switch(permission.type){
+                            case 'users':
+                                permission.users.forEach(user => {
+                                    if (!users.includes(user)) users.push(user);
+                                });
+                            break;
+                            case 'groups':
+                                req.user.role.forEach(role => {
+                                    if(permission.groups.includes(role)){
+                                        if (!roles.includes(role)) roles.push(role);
+                                    }
+                                });
+                        }
+                    });
+
+                    if (users.includes(userID) || roles.length > 0) {
+                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                    }
+
+                }
+                else {
+
+                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+
+                }
+            }
+
+            return res.status(200).json({ ok: true, ds: output });
+        });
+    }
+
+
+
     static async UpdateDataSource(req: Request, res: Response, next: NextFunction) {
+
         try {
             // Validation request
             const body = req.body;
@@ -168,7 +228,7 @@ export class DataSourceController {
                 next(new HttpException(500, `Can't connect to database`));
             }
 
-        } 
+        }
     }
 
     static async CheckStoredConnection(req: Request, res: Response, next: NextFunction) {
@@ -193,7 +253,7 @@ export class DataSourceController {
     }
 
     static async GenerateDataModel(req: Request, res: Response, next: NextFunction) {
-        
+
         if (req.body.type === 'bigquery') {
 
             return DataSourceController.GenerateDataModelBigQuery(req, res, next);
@@ -202,8 +262,8 @@ export class DataSourceController {
         }
     }
 
-    static async GenerateDataModelBigQuery( req: Request, res: Response, next: NextFunction ){
-        try{
+    static async GenerateDataModelBigQuery(req: Request, res: Response, next: NextFunction) {
+        try {
 
             const cn = new BigQueryConfig(req.body.type, req.body.database, req.body.project_id);
             const manager = await ManagerConnectionService.testConnection(cn);
@@ -217,7 +277,7 @@ export class DataSourceController {
                         port: null,
                         database: req.body.database,
                         schema: req.body.database || manager.GetDefaultSchema(),
-                        project_id : req.body.project_id,
+                        project_id: req.body.project_id,
                         searchPath: req.body.project_id || manager.GetDefaultSchema(),
                         user: null,
                         password: null,
@@ -242,9 +302,9 @@ export class DataSourceController {
 
                 return res.status(201).json({ ok: true, data_source_id: data_source._id });
             });
-          
 
-        }catch(err){
+
+        } catch (err) {
             next(err);
         }
     }
@@ -308,6 +368,7 @@ export class DataSourceController {
     }
 
     static async RefreshDataModel(req: Request, res: Response, next: NextFunction) {
+        console.log('RefreshDataModel datamodel');
         try {
 
             const actualDS = await DataSourceController.getMongoDataSource(req.params.id);
@@ -353,6 +414,8 @@ export class DataSourceController {
 
             const out = DataSourceController.FindAndUpdateDataModel(datasource.ds.model.tables, storedDataModel.ds.model.tables);
             datasource.ds.model.tables = DataSourceController.FindAndDeleteDataModel(datasource.ds.model.tables, out);
+
+            console.log(datasource.ds.model.tables);
 
 
             DataSource.findById(req.params.id, (err, dataSource: IDataSource) => {
@@ -414,7 +477,7 @@ export class DataSourceController {
                 let column = [];
                 uTable.columns.forEach(uColumn => {
                     column = rTable.columns.filter(c => c.column_name === uColumn.column_name);
-    
+
                     if (!column.length && !uColumn.computed_column) {
                         uTable.columns = uTable.columns.filter(c => c.column_name !== uColumn.column_name);
                     } else if (column.length) {

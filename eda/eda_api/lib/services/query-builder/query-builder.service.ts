@@ -6,26 +6,29 @@ export abstract class QueryBuilderService {
     public tables: any[];
     public queryTODO: any;
     public user: string;
+    public groups: Array<string> = [];
     public permissions: any[];
 
-    constructor(queryTODO: any, dataModel: any, user: string) {
+    constructor(queryTODO: any, dataModel: any, user: any) {
+
         this.queryTODO = queryTODO;
         this.dataModel = dataModel;
-        this.user = user;
+        this.user = user._id;
+        this.groups = user.role;
         this.tables = dataModel.ds.model.tables;
 
     }
 
-    abstract getFilters(filters, type:string);
-    abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema?: string, database?:string);
+    abstract getFilters(filters, type: string);
+    abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema?: string, database?: string);
     abstract getSeparedColumns(origin: string, dest: string[]);
-    abstract filterToString(filterObject: any, type:string);
+    abstract filterToString(filterObject: any, type: string);
     abstract processFilter(filter: any, columnType: string);
-    abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], 
-        grouping: any[], tables: Array<any>, limit: number, Schema?: string, database?:string);
+    abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
+        grouping: any[], tables: Array<any>, limit: number, Schema?: string, database?: string);
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
-    abstract parseSchema(tables: string[], schema?: string, database?:string);
+    abstract parseSchema(tables: string[], schema?: string, database?: string);
 
     public builder() {
         const graph = this.buildGraph();
@@ -44,7 +47,7 @@ export abstract class QueryBuilderService {
         });
 
         /** Check dels permisos de columna, si hi ha permisos es posen als filtres */
-        this.permissions = this.getPermissions(this.user, modelPermissions, this.tables, origin);
+        this.permissions = this.getPermissions(modelPermissions, this.tables, origin);
 
         if (this.permissions.length > 0) {
             this.permissions.forEach(permission => {
@@ -151,10 +154,10 @@ export abstract class QueryBuilderService {
     }
 
 
-    public getPermissions(userID, modelPermissions, modelTables, originTable) {
+    public getPermissions(modelPermissions, modelTables, originTable) {
 
         const filters = [];
-        const permissions = this.getUserPermissions(userID, modelPermissions);
+        const permissions = this.getUserPermissions(modelPermissions);
         const relatedTables = this.checkRelatedTables(modelTables, originTable);
 
         let found = -1;
@@ -178,12 +181,24 @@ export abstract class QueryBuilderService {
         return filters;
     }
 
-    public getUserPermissions(userID: string, modelPermissions: any[]) {
+    public getUserPermissions(modelPermissions: any[]) {
+
         const permissions = [];
         modelPermissions.forEach(permission => {
-            if (permission.users[0] === userID) {
-                permissions.push(permission);
+            switch (permission.type) {
+                case 'users':
+                    if (permission.users.includes(this.user) && !permission.global) {
+                        permissions.push(permission);
+                    }
+                    break;
+                case 'groups':
+                    this.groups.forEach(group => {
+                        if(permission.groups.includes(group) && !permission.global){
+                            permissions.push(permission)
+                        }
+                    })
             }
+
         });
         return permissions;
     }
@@ -225,9 +240,9 @@ export abstract class QueryBuilderService {
 
         const table = this.tables.find(x => x.table_name === tableA);
         // No needed to filter visible relations because they are stored in a different array: no_relations
-        const source_column = table.relations.find(x => x.target_table === tableB).source_column;
-        const target_column = table.relations.find(x => x.target_table === tableB).target_column;
-        return [target_column, source_column];
+        const source_columns = table.relations.find(x => x.target_table === tableB).source_column;
+        const target_columns = table.relations.find(x => x.target_table === tableB).target_column;
+        return [target_columns, source_columns];
 
     }
 
@@ -253,9 +268,22 @@ export abstract class QueryBuilderService {
 
         let tablesNoSchema = this.parseSchema(tablesInQuery, schema);
 
+
+        /**Mark tables to avoid undesired replaces */
         tablesNoSchema.forEach((table, i) => {
-            query = this.sqlReplacePermissions(query, table, graph, tablesInQuery[i]);
+            let whitespaces = `[\n\r\s]*`
+            let reg = new RegExp(`${tablesInQuery[i]}` + whitespaces, "g");
+            query = query.replace(reg, `┘┘${tablesInQuery[i]}┘┘`);
+
         });
+
+        tablesNoSchema.forEach((table, i) => {
+            query = this.sqlReplacePermissions(query, table, graph, `┘┘${tablesInQuery[i]}┘┘`);
+        });
+
+        let reg = new RegExp(`┘┘`, "g");
+        query = query.replace(reg, ``); 
+
 
         //Isolate filters from query
         const filterMarks = [];
@@ -284,11 +312,15 @@ export abstract class QueryBuilderService {
     }
 
     sqlReplacePermissions = (sqlquery: string, table: string, graph: any, tableWithSchema: string) => {
+
         const SCHEMA = this.dataModel.ds.connection.schema;
         const origin = table;
         const dest = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
-        const permissions = this.getPermissions(this.user, modelPermissions, this.tables, origin);
+        const permissions = this.getPermissions(modelPermissions, this.tables, origin);
+
+        let tables = this.dataModel.ds.model.tables
+        .map(table => { return { name: table.table_name, query: table.query } });
 
         if (permissions.length > 0) {
             permissions.forEach(permission => {
@@ -298,15 +330,17 @@ export abstract class QueryBuilderService {
             });
 
             const joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
-            const permissionJoins = this.getJoins(joinTree, dest, SCHEMA);
-            let joinsubstitute = '';
+            const permissionJoins = this.getJoins(joinTree, dest, tables, SCHEMA);
 
+            let joinsubstitute = '';
             joinsubstitute = this.buildPermissionJoin(origin, permissionJoins, permissions, SCHEMA);
 
             let whitespaces = `[\n\r\s]*`
-            let reg = new RegExp(`${tableWithSchema}` + whitespaces , "g");
+            let reg = new RegExp(`${tableWithSchema}` + whitespaces, "g");
+
             let out = sqlquery.replace(reg, joinsubstitute);
             return out;
+
         } else {
             return sqlquery;
         }
@@ -367,38 +401,38 @@ export abstract class QueryBuilderService {
         queryData.columns.forEach(col => {
             create += `"${this.abc_123(col.field)}" ${col.type},\n`;
         });
-        create  = create.slice(0, -2);
+        create = create.slice(0, -2);
         create += '\n);'
         return create;
     }
 
-    public abc_123(str : string):string{
+    public abc_123(str: string): string {
         return str.replace(/[^\w\s]/gi, '').replace(/ /gi, '_');
     }
 
-    public generateInserts(queryData:any){
+    public generateInserts(queryData: any) {
         let insert = `INSERT INTO ${queryData.tableName} VALUES\n`;
         queryData.data.forEach((register) => {
             let row = '('
-            Object.values(register).forEach((value:any, i) => {
+            Object.values(register).forEach((value: any, i) => {
                 const type = queryData.columns[i].type;
-                if(type === 'text'){
+                if (type === 'text') {
                     row += `'${value.replace(/'/g, "''")}',`;
-                }else if(type === 'timestamp'){
+                } else if (type === 'timestamp') {
                     let date = value ? `TO_TIMESTAMP('${value}', '${queryData.columns[i].format}'),` : `${null},`
                     row += `${date}`;
-                }else{
-                    value = queryData.columns[i].separator === ',' ? parseFloat(value.replace(".", "").replace(",", ".")) 
-                            :   parseFloat(value.replace(",", "")) ;
+                } else {
+                    value = queryData.columns[i].separator === ',' ? parseFloat(value.replace(".", "").replace(",", "."))
+                        : parseFloat(value.replace(",", ""));
                     value = value ? value : null;
                     row += `${value},`;
                 }
             });
-            row = row.slice(0, -1); 
+            row = row.slice(0, -1);
             row += ')';
-            insert += `${row},`        
+            insert += `${row},`
         });
-        insert = insert.slice(0, -1);   
+        insert = insert.slice(0, -1);
         return insert;
     }
 

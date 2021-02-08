@@ -138,8 +138,8 @@ export class DashboardController {
             const userRoles = (await Group.find({ _id: { $in: userGroups } }).exec()).map(group => group.name);
             const userGroupDashboards = (await Dashboard.find({ group: { $in: userGroups } }, 'config.title config.visible group')
                 .exec())
-                .map(dashboard => dashboard._id).filter(id => id.toString() === req.params.id );
-            
+                .map(dashboard => dashboard._id).filter(id => id.toString() === req.params.id);
+
             Dashboard.findOne({ _id: req.params.id }, (err, dashboard) => {
                 if (err) {
                     return next(new HttpException(500, 'Dashboard not found with this id'));
@@ -148,9 +148,9 @@ export class DashboardController {
                 const visibilityCheck = !['shared', 'public'].includes(dashboard.config.visible);
                 const roleCheck = !userRoles.includes('ADMIN') && (userGroupDashboards.length === 0) && (dashboard.user.toString() !== user);
 
-                if(visibilityCheck && roleCheck){
-    
-                   return next(new HttpException(500, "You don't have permission"));
+                if (visibilityCheck && roleCheck) {
+
+                    return next(new HttpException(500, "You don't have permission"));
                 }
 
                 DataSource.findById({ _id: dashboard.config.ds._id }, (err, datasource) => {
@@ -162,10 +162,10 @@ export class DashboardController {
                         return next(new HttpException(400, 'Datasouce not found with id'));
                     }
 
-        
+
 
                     const toJson = JSON.parse(JSON.stringify(datasource));
-                    const ds = { _id: datasource._id, model: toJson.ds.model, name:toJson.ds.metadata.model_name };
+                    const ds = { _id: datasource._id, model: toJson.ds.model, name: toJson.ds.metadata.model_name };
 
                     return res.status(200).json({ ok: true, dashboard, datasource: ds });
                 });
@@ -223,7 +223,7 @@ export class DashboardController {
                 dashboard.save((err, dashboard) => {
 
                     if (err) {
-                        return next(new HttpException(400, 'Error updating dashboard'));
+                        return next(new HttpException(500, 'Error updating dashboard'));
                     }
 
                     return res.status(200).json({ ok: true, dashboard });
@@ -259,12 +259,22 @@ export class DashboardController {
 
             const connection = await ManagerConnectionService.getConnection(req.body.model_id);
             const dataModel = await connection.getDataSource(req.body.model_id);
-            const dataModelObject = JSON.parse(JSON.stringify(dataModel));
-            const query = await connection.getQueryBuilded(req.body.query, dataModelObject, req.user._id);
 
-            console.log('YOUR QUERY --');
+
+            /**Security check */
+            const allowed = DashboardController.securityCheck(dataModel, req.user);
+            if (!allowed) {
+                return next(new HttpException(500, `Sorry, you are not allowed here, contact your administrator`));
+            }
+
+
+            const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+            const query = await connection.getQueryBuilded(req.body.query, dataModelObject, req.user);
+
+            console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
             console.log(query);
-            connection.pool =  await connection.getPool();
+            console.log('\n-------------------------------------------------------------------------------\n');
+            connection.pool = await connection.getPool();
             const getResults = await connection.execQuery(query);
             const results = [];
 
@@ -277,7 +287,7 @@ export class DashboardController {
 
             const output = [req.body.output.labels, results];
 
-            console.log('\x1b[32m%s\x1b[0m', `${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
+            console.log('\x1b[32m%s\x1b[0m', `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
             return res.status(200).json(output);
         } catch (err) {
             console.log(err);
@@ -285,20 +295,32 @@ export class DashboardController {
         }
     }
 
-    static async execSqlQuery(req: Request, res: Response, next: NextFunction){
-        try{
+
+    static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
+        try {
             const connection = await ManagerConnectionService.getConnection(req.body.model_id);
             const dataModel = await connection.getDataSource(req.body.model_id);
-            const dataModelObject = JSON.parse(JSON.stringify(dataModel));
-            const query = await connection.BuildSqlQuery(req.body.query, dataModelObject, req.user._id);
 
-            connection.pool =  await connection.getPool();
+            /**Security check */
+            const allowed = DashboardController.securityCheck(dataModel, req.user);
+            if (!allowed) {
+                return next(new HttpException(500, `Sorry, you are not allowed here, contact your administrator`));
+            }
+
+            const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+            const query = connection.BuildSqlQuery(req.body.query, dataModelObject, req.user);
+
+            console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
+            console.log(query);
+            console.log('\n-------------------------------------------------------------------------------\n');
+
+            connection.pool = await connection.getPool();
             const getResults = await connection.execQuery(query);
             const results = [];
-            let labels : Array<string>;
-            if(getResults.length > 0){     
+            let labels: Array<string>;
+            if (getResults.length > 0) {
                 labels = Object.keys(getResults[0]).map(i => i);
-            }else{
+            } else {
                 labels = ['NoData'];
             }
             // Normalize data
@@ -307,7 +329,7 @@ export class DashboardController {
                 const output = Object.keys(r).map(i => r[i]);
                 results.push(output);
             }
-            console.log(labels);
+
             const output = [labels, results];
             return res.status(200).json(output);
 
@@ -315,22 +337,80 @@ export class DashboardController {
             console.log(err)
             next(new HttpException(500, 'Error quering database'));
         }
-        
+
     }
 
-    static async execView(req: Request, res: Response, next: NextFunction){
-        try{
+    static securityCheck(dataModel: any, user: any) {
+        if (dataModel.ds.metadata.model_granted_roles.length > 0) {
+
+            const users = [];
+            const roles = [];
+            //Get users with permission
+            dataModel.ds.metadata.model_granted_roles.forEach(permission => {
+                switch (permission.type) {
+                    case 'users':
+                        permission.users.forEach(user => {
+                            if (!users.includes(user)) users.push(user);
+                        });
+                        break;
+                    case 'groups':
+                        user.role.forEach(role => {
+                            if (permission.groups.includes(role)) {
+                                if (!roles.includes(role)) roles.push(role);
+                            }
+                        });
+                }
+
+            });
+
+            if (!users.includes(user._id) && roles.length < 1) {
+                return false;
+            } else {
+                return true;
+            }
+
+        }
+        else return true;
+    }
+
+    /**
+     * Get builded query
+     * @param req 
+     * @param res 
+     * @param next 
+     */
+    static async getQuery(req: Request, res: Response, next: NextFunction) {
+
+        try {
+
+            const connection = await ManagerConnectionService.getConnection(req.body.model_id);
+            const dataModel = await connection.getDataSource(req.body.model_id);
+            const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+            const query = await connection.getQueryBuilded(req.body.query, dataModelObject, req.user);
+            
+
+            return res.status(200).json(query);
+
+        } catch (err) {
+            console.log(err);
+            next(new HttpException(500, 'Error getting query'));
+        }
+
+    }
+
+    static async execView(req: Request, res: Response, next: NextFunction) {
+        try {
             const connection = await ManagerConnectionService.getConnection(req.body.model_id);
             const query = req.body.query
             console.log(query);
 
-            connection.pool =  await connection.getPool();
+            connection.pool = await connection.getPool();
             const getResults = await connection.execQuery(query);
             const results = [];
-            let labels : Array<string>;
-            if(getResults.length > 0){     
+            let labels: Array<string>;
+            if (getResults.length > 0) {
                 labels = Object.keys(getResults[0]).map(i => i);
-            }else{
+            } else {
                 labels = ['NoData'];
             }
             // Normalize data
@@ -339,7 +419,6 @@ export class DashboardController {
                 const output = Object.keys(r).map(i => r[i]);
                 results.push(output);
             }
-            console.log(labels);
             const output = [labels, results];
             return res.status(200).json(output);
 
@@ -347,7 +426,7 @@ export class DashboardController {
             console.log(err)
             next(new HttpException(500, 'Error quering database'));
         }
-        
+
     }
 
 }

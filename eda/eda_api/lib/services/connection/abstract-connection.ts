@@ -23,19 +23,19 @@ export abstract class AbstractConnection {
 
     abstract generateInserts(queryData:any):string;
 
-    abstract async tryConnection(): Promise<void>;
+    abstract  tryConnection(): Promise<void>;
 
-    abstract async generateDataModel(optimize:string): Promise<any>;
+    abstract  generateDataModel(optimize:string): Promise<any>;
 
-    abstract async execQuery(query: string): Promise<any>;
+    abstract  execQuery(query: string): Promise<any>;
 
-    abstract async getDataSource(id: string): Promise<any>;
+    abstract  getDataSource(id: string): Promise<any>;
 
-    abstract async getQueryBuilded(queryData: any, dataModel: any, user: string): Promise<any>;
+    abstract  getQueryBuilded(queryData: any, dataModel: any, user: any): Promise<any>;
 
-    abstract async getPool():Promise<any>;
+    abstract  getPool():Promise<any>;
 
-    abstract BuildSqlQuery(queryData: any, dataModel: any, user: string): string;
+    abstract BuildSqlQuery(queryData: any, dataModel: any, user: any): string;
 
     abstract GetDefaultSchema():string;
 

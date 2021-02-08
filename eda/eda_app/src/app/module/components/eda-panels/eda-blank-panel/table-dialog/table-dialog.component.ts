@@ -30,6 +30,8 @@ export class TableDialogComponent extends EdaDialogAbstract {
   public resultAsPecentage;
   public onlyPercentages;
   public trend;
+  public sortedSerie;
+  public sortedColumn;
 
   constructor() {
     super();
@@ -55,9 +57,11 @@ export class TableDialogComponent extends EdaDialogAbstract {
       this.resultAsPecentage = config.resultAsPecentage;
       this.onlyPercentages = config.onlyPercentages;
       this.trend = config.withTrend;
+      this.sortedSerie = config.sortedSerie;
+      this.sortedColumn = config.sortedColumn;
     } else {
       this.panelChartConfig.config = new ChartConfig(
-        new TableConfig(false, false, 5, false, false, false, false)
+        new TableConfig(false, false, 5, false, false, false, false, null, null)
       )
     }
     this.setItems();
@@ -143,9 +147,11 @@ export class TableDialogComponent extends EdaDialogAbstract {
   saveChartConfig() {
     const config = (<TableConfig>this.panelChartConfig.config.getConfig());
     const rows = config.visibleRows;
+    const sortedSerie = config.sortedSerie;
+    const sortedColumn = config.sortedColumn
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows, 
-      this.col_subtotals, this.col_totals, this.row_totals, this.trend);
+      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn);
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }

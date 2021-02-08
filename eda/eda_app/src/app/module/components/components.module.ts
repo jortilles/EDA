@@ -1,4 +1,3 @@
-
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA  } from '@angular/core';
 import {AngularFittextModule} from 'angular-fittext';
 
@@ -29,7 +28,14 @@ import {
     EdaD3Component,
     SankeyDialog,
     LinkDashboardsComponent,
-    TitleDialogComponent
+    TitleDialogComponent,
+    EdaTreeMap,
+    TreeMapDialog,
+    EdaScatter,
+    ScatterPlotDialog,
+    EdaKnobComponent,
+    Knob,
+    KnobDialogComponent
 
  } from './component.index';
 import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
@@ -64,8 +70,15 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         KpiEditDialogComponent,
         EdaD3Component,
         SankeyDialog,
+        TreeMapDialog,
         LinkDashboardsComponent,
-        TitleDialogComponent
+        TitleDialogComponent,
+        EdaTreeMap,
+        EdaScatter,
+        ScatterPlotDialog,
+        EdaKnobComponent,
+        Knob,
+        KnobDialogComponent
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -81,9 +94,14 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         EdaGeoJsonMapComponent,
         EdaD3Component,
         LinkDashboardsComponent,
-        TitleDialogComponent
+        TitleDialogComponent,
+        EdaTreeMap,
+        EdaScatter,
+        EdaKnobComponent,
+        Knob,
+        KnobDialogComponent
     ],
-    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent, EdaD3Component],
+    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent, EdaD3Component, EdaTreeMap, EdaScatter, EdaKnobComponent, Knob],
     schemas: [CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ComponentsModule { }

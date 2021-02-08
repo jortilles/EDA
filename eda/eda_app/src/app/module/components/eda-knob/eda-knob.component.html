@@ -1,0 +1,9 @@
+
+<div #parentDiv style="text-align: center; ">
+<!-- Esto debería ser opcional
+  <h5 style="margin-left: -20px; margin-bottom: 0px; ">{{inject.dataDescription.numericColumns[0].name}}</h5>
+-->
+  <p-knob  [(ngModel)]="inject.data.values[0][0]" [min]="limits[0]" [max]="limits[1]" [size]="size" [disabled]="true"
+  [valueColor]="color" rangeColor="#E0E0E0" [textClass]="class"></p-knob>
+
+</div>

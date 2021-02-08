@@ -1,3 +1,4 @@
+import { GroupService } from './../../../../../services/api/group.service';
 import { Component } from '@angular/core';
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { DataSourceService, QueryBuilderService, QueryParams, UserService } from '@eda/services/service.index';
@@ -17,13 +18,21 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
 
     /* MultiSelects Vars */
     public users: Array<object>;
-    public selectedUsers: Array<any>;
+    public selectedUsers: Array<any> = [];
 
     public roles: Array<object>;
-    public selectedRoles: Array<any>;
+    public selectedRoles: Array<any> = [];
 
     public values: Array<object>;
-    public selectedValues: Array<any>;
+    public selectedValues: Array<any> = [];
+
+    public all : boolean = false;
+    public type : string; 
+
+    public usersLabel = $localize`:@@usersPermissions:Permisos de usuario`;
+    public groupsLabel = $localize`:@@groupsPersmissions:Permisos de grupo`;
+    public usersDefaultLabel = $localize`:@@users:Usuarios`;
+    public groupsDefaultLabel = $localize`:@@groups:Grupos`;
 
     /* filterProps */
     private table: any;
@@ -32,7 +41,8 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
 
     constructor(private dataSourceService: DataSourceService,
                 private queryBuilderService: QueryBuilderService,
-                private userService: UserService) {
+                private userService: UserService,
+                private groupService: GroupService) {
         super();
 
         this.dialog = new EdaDialog({
@@ -40,6 +50,8 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
             title: ''
         });
+
+        this.dialog.style = { width: '40%', height: '50%', top: '50px', left: '100px' };
     }
 
     onShow() {
@@ -47,8 +59,7 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
     }
 
     load() {
-        this.table = this.dataSourceService.getModel().filter(t => t.table_name === this.controller.params.table.technical_name)[0];
-
+        this.table =  this.controller.params.table;
         this.column = this.table.columns.filter(c => c.column_name === this.controller.params.column.technical_name)[0];
         this.loadDataSource();
         this.loadUsers();
@@ -56,7 +67,7 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
 
     loadDataSource() {
         const queryParams: QueryParams = {
-            table: this.controller.params.table.technical_name,
+            table: this.controller.params.table.table_name,
             dataSource: this.dataSourceService.model_id,
         };
         this.dataSourceService.executeQuery(
@@ -72,17 +83,45 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
             res => this.users = res.map(user => ({label: user.name, value: user})),
             err => console.log(err)
         );
+        this.groupService.getGroups().subscribe(
+            res => this.roles = res.map(group => ({label:group.name, value: group})),
+            err => console.log(err)
+        )
     }
 
     savePermission() {
-        const permissionFilter = {
-            users : this.selectedUsers.map(usr => usr._id),
-            usersName : this.selectedUsers.map(usr => usr.name),
-            value : this.selectedValues,
-            table : this.table.table_name,
-            column : this.column.column_name
-        };
+
+        let permissionFilter = {};
+
+        if(this.type === 'users'){
+            permissionFilter = {
+                users : this.selectedUsers.map(usr => usr._id),
+                usersName : this.selectedUsers.map(usr => usr.name),
+                value : this.all ? '(~)' : this.selectedValues,
+                table : this.table.table_name,
+                column : this.column.column_name,
+                global : this.all ? true : false,
+                type : 'users'
+            };
+        }
+        else if(this.type === 'groups'){
+            permissionFilter = {
+                groups : this.selectedRoles.map(usr => usr._id),
+                groupsName : this.selectedRoles.map(usr => usr.name),
+                value : this.all ? '(~)' : this.selectedValues,
+                table : this.table.table_name,
+                column : this.column.column_name,
+                global : this.all ? true : false,
+                type : 'groups'
+            };
+        }
+     
         this.onClose(EdaDialogCloseEvent.NEW, permissionFilter);
+    }
+
+    resetValues(){
+        if(this.type === 'users') this.selectedRoles = [];
+        else this.selectedUsers = [];
     }
 
     closeDialog() {

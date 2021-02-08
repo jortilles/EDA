@@ -10,6 +10,8 @@ router.get('', authGuard, DataSourceController.GetDataSources);
 
 router.get('/names', authGuard,  DataSourceController.GetDataSourcesNames);
 
+router.get('/namesForDashboard', authGuard,  DataSourceController.GetDataSourcesNamesForDashboard)
+
 router.get('/check-connection', authGuard, roleGuard, DataSourceController.CheckConnection);
 
 router.get('/check-connection/:id', authGuard, roleGuard, DataSourceController.CheckStoredConnection);

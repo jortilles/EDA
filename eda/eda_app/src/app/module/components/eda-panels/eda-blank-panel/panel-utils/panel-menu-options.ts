@@ -87,7 +87,43 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onCloseSankeyProperties(event, response) }
             });
 
+          } else if(panelComponent.graficos.chartType === 'treeMap'){
+
+            panelComponent.contextMenu.hideContextMenu();
+            panelComponent.treeMapController = new EdaDialogController({
+              params: {
+                panelID: _.get(panelComponent.panel, 'id'),
+                panelChart: panelComponent.panelChartConfig
+              },
+              close: (event, response) => { panelComponent.onCloseTreeMapProperties(event, response) }
+            });
+
+          }else if(panelComponent.graficos.chartType === 'scatterPlot'){
+
+            panelComponent.contextMenu.hideContextMenu();
+            panelComponent.scatterPlotController = new EdaDialogController({
+              params: {
+                panelID: _.get(panelComponent.panel, 'id'),
+                panelChart: panelComponent.panelChartConfig
+              },
+              close: (event, response) => { panelComponent.onCloseScatterProperties(event, response) }
+            });
+
           }
+          else if(panelComponent.graficos.chartType === 'knob'){
+
+            panelComponent.contextMenu.hideContextMenu();
+            panelComponent.knobController = new EdaDialogController({
+              params: {
+                panelID: _.get(panelComponent.panel, 'id'),
+                panelChart: panelComponent.panelChartConfig
+              },
+              close: (event, response) => { panelComponent.onCloseKnobProperties(event, response) }
+            });
+
+          }
+
+
         }
       }
     });

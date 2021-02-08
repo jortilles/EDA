@@ -58,7 +58,7 @@ export class AddCsvComponent extends EdaDialogAbstract {
       { label: 'date', value: "timestamp" },
     ];
 
-    this.editFieldsHeaders = [$localize`:@@csvField:Campo`, $localize`:@@csvType:Tipo`, $localize`:@@csvFormat:Formato`, $localize`:@@csvSep:SeparadorDecimal`];
+    this.editFieldsHeaders = [$localize`:@@csvField:Campo`, $localize`:@@csvType:Tipo`, $localize`:@@csvFormat:Formato`, $localize`:@@csvSep:Separador Decimal`];
 
     this.dataFormats = [
       { label: '', value: '' },

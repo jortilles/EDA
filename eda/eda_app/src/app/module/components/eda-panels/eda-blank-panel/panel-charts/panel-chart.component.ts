@@ -1,3 +1,9 @@
+import { EdaKnob } from './../../../eda-knob/edaKnob';
+import { EdaKnobComponent } from './../../../eda-knob/eda-knob.component';
+import { KnobConfig } from './chart-configuration-models/knob-config';
+import { EdaScatter } from './../../../eda-scatter/eda-scatter.component';
+import { EdaTreeMap } from './../../../eda-treemap/eda-treemap.component';
+import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import {
@@ -92,6 +98,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (type === 'parallelSets'){
             this.renderParallelSets();
         }
+        if(type === 'treeMap'){
+            this.renderTreeMap();
+        }
+        if(type === 'scatterPlot'){
+            this.renderScatter();
+        }
+        if(type === 'knob'){
+            this.renderKnob()
+        }
     }
 
     /**
@@ -176,6 +191,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.onNotify.subscribe(data => {
             (<TableConfig>config).visibleRows = data;
         });
+        this.componentRef.instance.inject.onSortPivotEvent.subscribe(data => {
+            (<TableConfig>config).sortedSerie = data;
+        });
+        this.componentRef.instance.inject.onSortColEvent.subscribe(data => {
+            (<TableConfig>config).sortedColumn = data;
+        });
         this.currentConfig = this.componentRef.instance.inject;
         this.componentRef.instance.inject.linkedDashboardProps = this.props.linkedDashboardProps;
     }
@@ -187,6 +208,28 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.withTrend = config.withTrend;
         this.componentRef.instance.inject.resultAsPecentage = config.resultAsPecentage;
         this.componentRef.instance.inject.checkTotals(null, config.visibleRows);
+        this.componentRef.instance.inject.sortedSerie = config.sortedSerie;
+        this.componentRef.instance.inject.sortedColumn = config.sortedColumn;
+
+    }
+
+    /**renderKnob */
+
+    private renderKnob(){
+        let chartConfig : EdaKnob = new EdaKnob();
+        chartConfig.data = this.props.data;
+        chartConfig.dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        chartConfig.color = this.props.config['config']['color'] ? this.props.config['config']['color'] : null;
+        chartConfig.limits = this.props.config['config']['limits'] ? this.props.config['config']['limits'] : null;
+        this.createEdaKnobComponent(chartConfig)
+
+    }
+
+    private createEdaKnobComponent(inject){
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaKnobComponent);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
     }
 
     /**
@@ -278,6 +321,52 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createParallelSetsComponent(inject:any){
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaD3Component);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+        
+    }
+
+    private renderTreeMap(){
+        
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        
+        let inject : TreeMap = new TreeMap;
+        inject.size = this.props.size;
+        inject.id = this.randomID();
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.colors = this.props.config.getConfig()['colors'];
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createTreeMap(inject);
+    }
+
+    private createTreeMap(inject:any){
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaTreeMap);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+        
+    }
+
+    private renderScatter(){
+        
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        
+        let inject : TreeMap = new TreeMap;
+        inject.size = this.props.size;
+        inject.id = this.randomID();
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.colors = this.props.config.getConfig()['colors'];
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createScatter(inject);
+    }
+
+    private createScatter(inject:any){
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaScatter);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
         

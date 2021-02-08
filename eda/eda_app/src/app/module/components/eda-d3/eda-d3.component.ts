@@ -1,9 +1,10 @@
-import { Component, Input, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
 import { ChartsColors } from '@eda/configs/index';
 import { EdaD3 } from './eda-d3';
+import * as dataUtils from '../../../services/utils/transform-data-utils';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { EdaD3 } from './eda-d3';
   styleUrls: ['./eda-d3.component.css']
 })
 
-export class EdaD3Component implements AfterViewInit {
+export class EdaD3Component implements AfterViewInit, OnInit {
 
   @Input() inject: EdaD3;
 
@@ -26,6 +27,10 @@ export class EdaD3Component implements AfterViewInit {
   metricIndex: number;
   width: number;
   heigth: number;
+
+  div = d3.select("body").append('div')
+    .attr('class', 'd3tooltip')
+    .style('opacity', 0);
 
 
   constructor() {
@@ -104,10 +109,8 @@ export class EdaD3Component implements AfterViewInit {
       .attr("height", d => d.y1 - d.y0)
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
-      // .on('mouseover', this.showLinks)
-      // .on('mouseout', this.hideLinks)
-      .append("title")
-      .text(d => `${d.name}\n${d.value.toLocaleString()}`)
+    // .append("title")
+    // .text(d => `${d.name}\n${d.value.toLocaleString()}`)
 
     svg.append("g")
       .attr("fill", "none")
@@ -117,6 +120,7 @@ export class EdaD3Component implements AfterViewInit {
       .attr("d", sankeyLinkHorizontal())
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
+
           const props = this.inject.linkedDashboard;
           const value = this.inject.data.values.filter(row => {
             let allIn = true;
@@ -125,8 +129,10 @@ export class EdaD3Component implements AfterViewInit {
             });
             return allIn;
           })[0][this.inject.linkedDashboard.index];
-          const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+
+          const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
+
         }
       })
       .on('mouseover', this.showLinks)
@@ -134,11 +140,53 @@ export class EdaD3Component implements AfterViewInit {
       .attr("stroke", d => color(d.names[0]))
       .attr("stroke-width", d => d.width)
       .style("mix-blend-mode", "multiply")
-      .append("title")
-      .text(d => {
-        const link = this.inject.linkedDashboard ? `\nlinked to ${this.inject.linkedDashboard.dashboardName}` : ''
-        return `${d.names.join(" → ")}\n${this.data.labels[this.metricIndex]} : ${d.value.toLocaleString()}${link}`;
+      .on('mouseover', (d, data) => {
+
+        this.showLinks(d, data);
+        let metricLabel = this.inject.dataDescription.numericColumns[0].name;
+
+        const firstRow = `${data.names.join(" → ")}`;
+        const secondRow =  `${metricLabel} : ${data.value.toLocaleString()}`;
+        const thirdRow = this.inject.linkedDashboard ? `linked to ${this.inject.linkedDashboard.dashboardName}` : '';
+       
+        const link = this.inject.linkedDashboard ? `<br/> <h6>${thirdRow}</h6>` : '';
+        let text = `${firstRow} <br/> ${secondRow} ${link}`;
+
+        const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length*(14/12)]);
+        const pixelWithRate = 7;
+        const width = maxLength * pixelWithRate;
+        const height = this.inject.linkedDashboard ? '5em' : '4em';
+
+        this.div
+          .style('width', `${width}px`)
+          .style('height', height);
+
+        this.div.transition()
+          .duration(200)
+          .style('opacity', .9);
+        this.div.html(text)
+          .style('left', (d.pageX - 50 - width) + 'px')
+          .style('top', (d.pageY - 80) + 'px')
+          .style('width', width)
+          .style('height', height);
+
       })
+      .on('mouseout', (d) => {
+
+        this.hideLinks();
+
+        this.div.transition()
+          .duration(500)
+          .style('opacity', 0);
+
+      }).on("mousemove", (d, data) => {
+
+        this.div
+          .style("left", (d.pageX - 70) + "px")
+          .style("top", (d.pageY - 80) + "px");
+
+      })
+
 
 
     svg.append("g")
@@ -202,30 +250,30 @@ export class EdaD3Component implements AfterViewInit {
     return { _nodes: nodes, _links: links };
   }
 
-  showLinks(d:MouseEvent, data:any) {
+  showLinks(d: MouseEvent, data: any) {
 
-    const allNamesInArray = (source:Array<string>, target:Array<string>) => {
+    const allNamesInArray = (source: Array<string>, target: Array<string>) => {
 
-      const biggerOne   = source.length >= target.length ? source : target;
-      const smallestOne = source.length < target.length ? source : target; 
+      const biggerOne = source.length >= target.length ? source : target;
+      const smallestOne = source.length < target.length ? source : target;
       let allIn = true;
 
       smallestOne.forEach(name => {
-        if(!biggerOne.includes(name)) allIn = false;
+        if (!biggerOne.includes(name)) allIn = false;
       });
 
       return allIn;
     }
 
-     d3.selectAll('path').style(
+    d3.selectAll('path').style(
       'opacity',
-     ( p:any) => {
-       return (p && allNamesInArray(data.names, p.names)) ? '1' : '0.3'
+      (p: any) => {
+        return (p && allNamesInArray(data.names, p.names)) ? '1' : '0.3'
       }
     )
-    
+
   }
-  
+
   hideLinks() {
     d3.selectAll('rect').style('opacity', '1');
     d3.selectAll('path').style('opacity', '1');

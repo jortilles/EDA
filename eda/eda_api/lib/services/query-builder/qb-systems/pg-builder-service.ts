@@ -7,7 +7,7 @@ export class PgBuilderService extends QueryBuilderService {
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number) {
 
-    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
+    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
     //to WHERE CLAUSE
@@ -42,7 +42,7 @@ export class PgBuilderService extends QueryBuilderService {
     }
 
     //HAVING 
-    myQuery += this.getFilters(havingFilters, 'having');
+    myQuery += this.getHavingFilters(havingFilters, 'having');
 
     // OrderBy
     const orderColumns = this.queryTODO.fields.map(col => {
@@ -65,11 +65,55 @@ export class PgBuilderService extends QueryBuilderService {
     return myQuery;
   }
 
-  public getFilters(filters, type:String) {
+  public getFilters(filters, type: String) {
 
     if (this.permissions.length > 0) {
       this.permissions.forEach(permission => { filters.push(permission); });
     }
+    if (filters.length) {
+
+      let filtersString = `\n${type} 1 = 1 `;
+
+      filters.forEach(f => {
+
+        const column = this.findColumn(f.filter_table, f.filter_column);
+        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  ,2)`;
+
+        if (f.filter_type === 'not_null') {
+
+          filtersString += '\nand ' + this.filterToString(f, type);
+
+        } else {
+
+          let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
+          if (nullValueIndex != - 1) {
+            if (f.filter_elements[0].value1.length === 1) {
+              /* puedo haber escogido un nulo en la igualdad */
+              if (f.filter_type == '=') {
+                filtersString += `\nand ${colname}  is null `;
+              } else {
+                filtersString += `\nand ${colname}  is not null `;
+              }
+            } else {
+              if (f.filter_type == '=') {
+                filtersString += `\nand (${this.filterToString(f, type)} or ${colname}  is null) `;
+              } else {
+                filtersString += `\nand (${this.filterToString(f, type)} or ${colname}  is not null) `;
+              }
+            }
+          } else {
+            filtersString += '\nand ' + this.filterToString(f, type);
+          }
+        }
+      });
+      return filtersString;
+    } else {
+      return '';
+    }
+  }
+
+  public getHavingFilters(filters, type: String) {
+
     if (filters.length) {
 
       let filtersString = `\n${type} 1 = 1 `;
@@ -134,10 +178,29 @@ export class PgBuilderService extends QueryBuilderService {
         if (!joined.includes(e[j])) {
 
           let joinColumns = this.findJoinColumns(e[j], e[i]);
-          joined.push(e[j]);
+
           /**T can be a table or a custom view, if custom view has a query  */
-          let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? table.query : table.name })[0];
-          joinString.push(`inner join "${t}" on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+          let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
+
+          //Version compatibility string//array
+          if (typeof joinColumns[0] === 'string') {
+            joinString.push(`inner join "${t}" on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+          }
+          else {
+
+            let join = `inner join "${t}" on`;
+
+            joinColumns[0].forEach((_, x) => {
+
+              join += ` "${e[j]}"."${joinColumns[1][x]}" = "${e[i]}"."${joinColumns[0][x]}" and`
+
+            });
+
+            join = join.slice(0, join.length - 'and'.length);
+            joinString.push(join);
+
+          }
+          joined.push(e[j]);
         }
       }
     });
@@ -212,8 +275,8 @@ export class PgBuilderService extends QueryBuilderService {
    * @param type 
    * @returns filter to string. If type === having we are in a computed_column case, and colname = sql.expression wich defines column. 
    */
-  public filterToString(filterObject: any, type:any) {
-    
+  public filterToString(filterObject: any, type: any) {
+
     const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
     const colname = type == 'where' ? `"${filterObject.filter_table}"."${filterObject.filter_column}"` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  ,2)`;
     let colType = column.column_type;
@@ -237,6 +300,7 @@ export class PgBuilderService extends QueryBuilderService {
   }
 
   public processFilter(filter: any, columnType: string) {
+ 
     filter = filter.map(elem => {
       if (elem === null || elem === undefined) return 'ihatenulos';
       else return elem;
@@ -269,7 +333,7 @@ export class PgBuilderService extends QueryBuilderService {
     permissions.forEach(permission => {
       joinString += ` ${this.filterToString(permission, 'where')} and `
     });
-    return `${joinString.slice(0, joinString.lastIndexOf(' and '))} )`;
+    return `${joinString.slice(0, joinString.lastIndexOf(' and '))} )  `;
   }
 
 
@@ -315,6 +379,12 @@ export class PgBuilderService extends QueryBuilderService {
 
     });
     return output;
+  }
+
+  private cleanViewString(query: string) {
+    const index = query.lastIndexOf('as');
+    query = query.slice(0, index) + `as "${query.slice(index + 3)}"`;
+    return query;
   }
 }
 

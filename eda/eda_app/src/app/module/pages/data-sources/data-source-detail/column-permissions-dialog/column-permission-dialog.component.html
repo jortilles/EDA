@@ -4,18 +4,46 @@
 
   <div class="ui-g">
 
-    <div class="ui-g-2">
+    <div class="ui-g-12">
+
+      <div style="margin: 1em;">
+        <p-radioButton name="groupname" value="users" [label]="usersLabel" [(ngModel)]="type" (onClick)="resetValues()">
+        </p-radioButton>
+      </div>
+      <div style="margin: 1em;">
+        <p-radioButton name="groupname" value="groups" [label]="groupsLabel" [(ngModel)]="type" (onClick)="resetValues()"></p-radioButton>
+      </div>
+    </div>
+
+    <!-- USERS -->
+
+    <div *ngIf="type==='users'" class="ui-g-12">
       <p-multiSelect [options]="users" [(ngModel)]="selectedUsers" [virtualScroll]="true" itemSize="30"
-        [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }" [panelStyle]="{minWidth:'15em'}"
-        maxSelectedLabels="1" defaultLabel="Usuario">
+        [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }" [panelStyle]="{minWidth:'15em'}"
+        maxSelectedLabels="1" [defaultLabel]="usersDefaultLabel">
       </p-multiSelect>
     </div>
 
-    <div class="ui-g-2">
-      <p-multiSelect [options]="values" [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30"
-        [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }" [panelStyle]="{minWidth:'15em'}"
-        maxSelectedLabels="1" defaultLabel="ID">
+    <!-- GROUPS -->
+    <div *ngIf="type==='groups'" class="ui-g-12">
+      <p-multiSelect [options]="roles" [(ngModel)]="selectedRoles" [virtualScroll]="true" itemSize="30"
+        [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }" [panelStyle]="{minWidth:'15em'}"
+        maxSelectedLabels="1" [defaultLabel]="groupsDefaultLabel">
       </p-multiSelect>
+    </div>
+
+    <div *ngIf="type" class="ui-g-12">
+      <p-multiSelect [options]="values" [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30"
+        [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }" [panelStyle]="{minWidth:'15em'}"
+        maxSelectedLabels="1" defaultLabel="ID" [disabled]="all">
+      </p-multiSelect>
+    </div>
+
+    <!-- COMMON -->
+
+    <div style="margin-left: 1em;" *ngIf="type" class="ui-g-12">
+      <h6 i18n="@@AllTags">Todos</h6>
+      <p-inputSwitch [(ngModel)]="all"></p-inputSwitch>
     </div>
 
   </div>
@@ -23,10 +51,13 @@
   <p-footer class="footer">
 
     <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-      <button type="button" pButton (click)="savePermission()" class="ui-button"  icon="fa fa-check" i18n-label="@@guardarBtn" label="Confirmar" id="eda_column_permission_confirmar"></button>
-      <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn" label="Cerrar"></button>
+      <button type="button" pButton (click)="savePermission()"
+        [disabled]="(selectedUsers.length < 1 && selectedRoles.length < 1) || (selectedValues.length < 1 && !all)" class="ui-button"
+        icon="fa fa-check" i18n-label="@@guardarBtn" label="Confirmar" id="eda_column_permission_confirmar"></button>
+      <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn"
+        label="Cerrar"></button>
     </div>
-    
+
   </p-footer>
 
 </eda-dialog>

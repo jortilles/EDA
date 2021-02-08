@@ -71,7 +71,7 @@ export class DataSourcesComponent {
                             Swal.fire({
                                 title: `${title} ${this.form.value.name}`,
                                 text: $localize`:@@DatasourceText:Creada correctamente`,
-                                type: 'success'
+                                icon: 'success'
                             });
                             this.reloadDataSources();
                             this.spinnerService.off();
