@@ -98,7 +98,7 @@ export class DsConfigWrapperComponent implements OnInit {
             Swal.fire({
               title: `${title} ${this.form.value.name}`,
               text: $localize`:@@DatasourceText:Creada correctamente`,
-              icon: 'success'
+              type: 'success'
             });
             this.reloadDataSources();
             this.spinnerService.off();
@@ -142,7 +142,7 @@ export class DsConfigWrapperComponent implements OnInit {
             Swal.fire({
               title: `${title} ${this.form.value.name}`,
               text: $localize`:@@DatasourceText:Creada correctamente`,
-              icon: 'success'
+              type: 'success'
             });
             this.reloadDataSources();
             this.spinnerService.off();

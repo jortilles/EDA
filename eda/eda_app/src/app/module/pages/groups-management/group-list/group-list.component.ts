@@ -66,7 +66,7 @@ export class GroupListComponent implements OnInit {
         Swal.fire({
             title: $localize`:@@DeleteGroup:ELIMINAR GRUPO`,
             text: $localize`:@@DeleteGroupText:Eliminarás todos los elementos relacionados con este grupo, ¿Deseas continuar?`,
-            icon: 'warning',
+            type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',

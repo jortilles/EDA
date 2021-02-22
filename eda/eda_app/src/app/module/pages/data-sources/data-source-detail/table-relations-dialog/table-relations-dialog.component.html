@@ -3,57 +3,31 @@
     <form [formGroup]="form" class="form-horizontal form-material">
 
         <div class="ui-g-12 ui-lg-4">
-            <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true" optionLabel="label"
-                i18n-placeholder="@@placeholderTargetTables" placeholder="tabla destino"
-                id="eda_add_relation_targetTable">
-            </p-dropdown>
-        </div>
-
-        <div class="ui-g-12 ui-lg-4">
             <p-dropdown [options]="sourceCols" formControlName="sourceCol" filter="true"
                 optionLabel="display_name.default" i18n-placeholder="@@placeholderSourceColumns"
-                placeholder="Columna origen" (onChange)="getColumnsByTable()" id="eda_add_relation_sourceCols">
+                placeholder="Columna origen" (onChange)="enableTargetTables()" id="eda_add_relation_sourceCols">
             </p-dropdown>
         </div>
-
+        <div class="ui-g-12 ui-lg-4">
+            <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true"
+                (onChange)="getColumnsByTable()" optionLabel="label" i18n-placeholder="@@placeholderTargetTables"
+                placeholder="tabla destino" id="eda_add_relation_targetTable" >
+            </p-dropdown>
+        </div>
         <div class="ui-g-12 ui-lg-4">
             <p-dropdown [options]="targetCols" formControlName="targetCol" filter="true"
-                i18n-placeholder="@@placeholderTargetColumns" placeholder="Columna destino "
-                id="eda_add_relation_targetCol">
+                i18n-placeholder="@@placeholderTargetColumns" placeholder="Columna destino " id="eda_add_relation_targetCol" >
             </p-dropdown>
         </div>
-
-        <div class="ui-g-12" style="margin: 1em;">
-            <h6 i18n="@@addRelation"> Añadir relación </h6>
-            <button pButton (click)="addRelation()" class="header-button" icon="fa fa-plus-circle" iconPos="center"
-                i18n-title="@@Refresh" title="Refrescar modelo de datos" 
-                [disabled]="!this.form.controls.targetTable.value  ||
-                !this.form.value.sourceCol || !this.form.value.targetCol ">
-            </button>
-        </div>
-
-        <div class="ui-g-10" style="margin: 1em;">
-            <ul>
-                <div id="box_wrapper">
-                    <li *ngFor="let sourceCol of selectedSourceCols; let i=index">
-                        <i class="fa fa-close" style="color: #c0555e;" (click)="deleteRelation(i)"></i>&nbsp;&nbsp;
-                        {{this.controller.params.table.description}}.{{sourceCol.display_name.default}} ⇴
-                        {{targetTable}}.{{selectedTargetCols[i].display_name.default}}
-                    </li>
-                </div>
-            </ul>
-        </div>
-
 
         <p-footer class="footer">
             <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
 
-                <button type="button" pButton (click)="saveRelation()" class="ui-button" i18n-label="@@guardarBtn"
-                    icon="fa fa-check" label="Confirmar" id="eda_add_relation_confirm" [disabled]="selectedSourceCols.length === 0">
+                <button type="button" pButton (click)="saveRelation()" class="ui-button" i18n-label="@@guardarBtn"  icon="fa fa-check" label="Confirmar" id="eda_add_relation_confirm">
                 </button>
 
                 <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2"
-                    i18n-label="@@cerrarBtn" label="Cerrar" id="eda_add_relation_close">
+                    i18n-label="@@cerrarBtn" label="Cerrar" id="eda_add_relation_close" >
                 </button>
 
             </div>

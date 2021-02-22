@@ -154,12 +154,12 @@ export class BigQueryConnection extends AbstractConnection {
     }
   }
 
-  async getQueryBuilded(queryData: any, dataModel: any, user: any) {
+  async getQueryBuilded(queryData: any, dataModel: any, user: string) {
     this.queryBuilder = new BigQueryBuilderService(queryData, dataModel, user);
     return this.queryBuilder.builder();
   }
 
-  BuildSqlQuery(queryData: any, dataModel: any, user: any): string {
+  BuildSqlQuery(queryData: any, dataModel: any, user: string): string {
     this.queryBuilder = new BigQueryBuilderService(queryData, dataModel, user);
     return this.queryBuilder.sqlBuilder(queryData, queryData.filters);
   }
@@ -235,16 +235,16 @@ export class BigQueryConnection extends AbstractConnection {
                 if (a) {
                   data_model[l].relations.push({
                     source_table: data_model[l].table_name,
-                    source_column: [sourceColumn.source_column],
+                    source_column: sourceColumn.source_column,
                     target_table: data_model[j].table_name,
-                    target_column: [targetColumn.target_column],
+                    target_column: targetColumn.target_column,
                     visible: true
                   });
                   data_model[j].relations.push({
                     source_table: data_model[j].table_name,
-                    source_column: [targetColumn.target_column],
+                    source_column: targetColumn.target_column,
                     target_table: data_model[l].table_name,
-                    target_column: [sourceColumn.source_column],
+                    target_column: sourceColumn.source_column,
                     visible: true
                   });
 

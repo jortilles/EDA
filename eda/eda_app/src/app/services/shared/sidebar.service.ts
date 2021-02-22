@@ -9,9 +9,6 @@ export class SidebarService extends ApiService {
     private _datasources = new BehaviorSubject<any>([]);
     currentDatasources = this._datasources.asObservable();
 
-    private _datasourcesDB = new BehaviorSubject<any>([]);
-    currentDatasourcesDB = this._datasourcesDB.asObservable();
-
     public toggleSideNav: boolean = false;
     public hideSideNavSubj: BehaviorSubject<boolean>;
 
@@ -26,13 +23,6 @@ export class SidebarService extends ApiService {
         this.get(this.globalDSRoute + '/names')
             .subscribe((names: any) => {
                 this._datasources.next(names.ds);
-            }, err => console.log(err));
-    }
-
-    getDataSourceNamesForDashboard(): void {
-        this.get(this.globalDSRoute + '/namesForDashboard')
-            .subscribe((names: any) => {
-                this._datasourcesDB.next(names.ds);
             }, err => console.log(err));
     }
 

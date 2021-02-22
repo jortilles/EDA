@@ -125,7 +125,7 @@ export class UserController {
                 if (!user && !ad) {
                     reject(new HttpException(400, 'Incorrect user'));
                 } else if (!user && ad) {
-                    resolve(null);
+                    resolve();
                 }
 
                 resolve(user)

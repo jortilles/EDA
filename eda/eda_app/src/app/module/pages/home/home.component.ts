@@ -1,4 +1,3 @@
-import { GroupService } from './../../../services/api/group.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertService, DashboardService, SidebarService } from '@eda/services/service.index';
@@ -27,14 +26,12 @@ export class HomeComponent implements OnInit {
         grups: [],
         shared: []
     }
-    public selectedTag: any;
+    public selectedTag : any;
 
     public groups: IGroup[] = [];
     public isAdmin: boolean;
     public toLitle: boolean = false;
     public tags: Array<any> = [];
-    public grups: Array<any> = [];
-    public isObserver: boolean = false;
 
     public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
     public AllTags = $localize`:@@AllTags:Todos`;
@@ -43,11 +40,9 @@ export class HomeComponent implements OnInit {
         private dashboardService: DashboardService,
         private sidebarService: SidebarService,
         private router: Router,
-        private alertService: AlertService,
-        private groupService: GroupService
+        private alertService: AlertService
     ) {
         this.sidebarService.getDataSourceNames();
-        this.sidebarService.getDataSourceNamesForDashboard();
 
         if (window.innerWidth < 1000) {
             this.toLitle = true;
@@ -61,34 +56,21 @@ export class HomeComponent implements OnInit {
     }
 
     private init() {
-    
         this.initDatasources();
         this.initDashboards();
-    }
-
-    private setIsObserver = async () => {
-        this.groupService.getGroupsByUser().subscribe(
-            res => {
-                const user = localStorage.getItem('user');
-                const userID = JSON.parse(user)._id;
-                this.grups = res;
-                this.isObserver = this.grups.filter(group => group.name === 'RO' && group.users.includes(userID)).length !== 0
-            },
-            (err) => this.alertService.addError(err)
-        );
     }
 
     private ifAnonymousGetOut(): void {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
 
-        if (userName === 'edaanonim' || userName === 'RO') {
+        if (userName === 'edaanonim') {
             this.router.navigate(['/login']);
         }
     }
 
     private initDatasources(): void {
-        this.sidebarService.currentDatasourcesDB.subscribe(
+        this.sidebarService.currentDatasources.subscribe(
             data => this.dss = data,
             err => this.alertService.addError(err)
         );
@@ -108,14 +90,12 @@ export class HomeComponent implements OnInit {
                 /**Get unique tags */
                 this.tags = Array.from(new Set([].concat.apply([], [...this.dashboards.privats, this.dashboards.publics, this.dashboards.grups, this.dashboards.shared])
                     .map(db => db.config.tag))).sort();
-                this.tags = this.tags.map(tag => { return { value: tag, label: tag } })
-                this.tags.unshift({ label: this.noTagLabel, value: 0 });
-                this.tags.push({ label: this.AllTags, value: 1 });
+                this.tags = this.tags.map(tag => {return {value:tag, label:tag}})
+                this.tags.unshift({label:this.noTagLabel, value:0});
+                this.tags.push({label:this.AllTags, value:1});
                 this.tags = this.tags.filter(tag => tag.value !== null);
                 localStorage.setItem('tags', JSON.stringify(this.tags));
-                this.filterDashboards({ label: this.AllTags, value: 1 });
-
-                this.setIsObserver();
+                this.filterDashboards({label:this.AllTags, value:1});
             },
             err => this.alertService.addError(err)
         );
@@ -137,9 +117,9 @@ export class HomeComponent implements OnInit {
     public deleteDashboard(dashboard): void {
         let text = $localize`:@@deleteDashboardWarning: Estás a punto de borrar el informe: `;
         Swal.fire({
-            title: $localize`:@@Sure:¿Estás seguro?`,
+            title: $localize`:@@sure:¿Estas seguro?`,
             text: `${text} ${dashboard.config.title}`,
-            icon: 'warning',
+            type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
@@ -173,7 +153,7 @@ export class HomeComponent implements OnInit {
     public filterDashboards(tag: any) {
         this.selectedTag = tag.value;
         if (tag.value === 0) tag.value = null;
-        if (tag.value === 1) this.visibleDashboards = _.cloneDeep(this.dashboards);
+        if (tag.value === 1) this.visibleDashboards =  _.cloneDeep(this.dashboards);
         else {
             this.visibleDashboards.publics = this.dashboards.publics.filter(db => db.config.tag === tag.value);
             this.visibleDashboards.shared = this.dashboards.shared.filter(db => db.config.tag === tag.value);

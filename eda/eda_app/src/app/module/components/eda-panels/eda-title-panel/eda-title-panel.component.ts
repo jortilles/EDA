@@ -1,4 +1,4 @@
-import { DashboardService } from './../../../../services/api/dashboard.service';
+import { style } from '@angular/animations';
 import { Component, OnInit, Input, Output, EventEmitter, ViewEncapsulation } from "@angular/core";
 import { InjectEdaPanel, EdaTitlePanel } from '@eda/models/model.index';
 import { EdaContextMenu, EdaContextMenuItem, EdaDialogCloseEvent, EdaDialogController } from '@eda/shared/components/shared-components.index';
@@ -28,7 +28,7 @@ export class EdaTitlePanelComponent implements OnInit {
     }
     public htmlPipe : SafeHtmlPipe
     public urlPipe : SafeUrlPipe
-    constructor(public sanitized: DomSanitizer, public dashboardService : DashboardService){}
+    constructor(public sanitized: DomSanitizer){}
     
 
     ngOnInit(): void {
@@ -38,7 +38,7 @@ export class EdaTitlePanelComponent implements OnInit {
 
     setTitle(): void {
         this.titleClick = !this.titleClick;
-        this.dashboardService._notSaved.next(true);
+
         if (this.titleClick) {
 
         }
@@ -47,7 +47,7 @@ export class EdaTitlePanelComponent implements OnInit {
     setEditMode(): void {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
-        this.display.editMode = (userName !== 'edaanonim' && !this.inject.isObserver);
+        this.display.editMode = userName !== 'edaanonim';
     }
 
     initContextMenu(): void {
@@ -75,7 +75,6 @@ export class EdaTitlePanelComponent implements OnInit {
                                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
                                     
                                     this.panel.title = response.title;
-                                    this.dashboardService._notSaved.next(true);
                                 }
                                 this.editTittleController = null;
                             }

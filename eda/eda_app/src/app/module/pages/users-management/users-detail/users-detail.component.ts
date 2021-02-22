@@ -49,11 +49,10 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
         await this.loadGroups();
 
         if (this.controller.params.id) {
-
             let title = $localize`:@@userDetailHeader: USUARIO`
             this.dialog.setTitle(`${title} - ${_.toUpper(this.controller.params.name)}`);
             this.btnLabel = $localize`:@@userDetailSaveButton:GUARDAR`;
-            //this.form.controls['password'].disable({ onlySelf: true })
+            this.form.controls['password'].disable({ onlySelf: true })
             this.loadUser();
         }
     }
@@ -62,7 +61,7 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
         this.userService.getUser(this.controller.params.id).subscribe(
             res => {
                 const user = res.user;
-                this.form.patchValue({name: user.name, email: user.email, password: user.password, rpassword:user.password});
+                this.form.patchValue({name: user.name, email: user.email, password: user.password});
                 
                 const rolesNames = [];
                 for (const userRole of user.role) {

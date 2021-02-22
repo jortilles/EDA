@@ -45,7 +45,6 @@ import {ToolbarModule} from 'primeng/toolbar';
 import {EditorModule} from 'primeng/editor';
 import {ToggleButtonModule} from 'primeng/togglebutton';
 
-
 @NgModule({
     providers: [ConfirmationService],
     exports: [

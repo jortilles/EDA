@@ -27,7 +27,7 @@ export class AnonymousLoginComponent implements OnInit {
         const user = new User(null, 'edaanonim@jortilles.com', '_-(··)-_edanonymous_-(··)-_');
         this.userService.login(user, false).subscribe(
           () => this.router.navigate([`/dashboard/${dashboardID}`]),
-           err => Swal.fire('Error al iniciar sesión', err.text, 'error')
+          err => Swal.fire('Error al iniciar sesión', err.text, 'error')
         );
       },
       err => this.alertService.addError(err)

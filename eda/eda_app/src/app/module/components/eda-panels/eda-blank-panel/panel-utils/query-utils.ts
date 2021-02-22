@@ -1,4 +1,3 @@
-import { UserEDAQuery } from './../query-types/user-query';
 import { MAX_TABLE_ROWS_FOR_ALERT } from '@eda/configs/config';
 import { Query } from '@eda/models/model.index';
 import { EdaDialogController } from '@eda/shared/components/shared-components.index';
@@ -80,14 +79,6 @@ export const QueryUtils = {
 
       return response;
     }
-  },
-
-
-  getQueryFromServer:async(ebp:EdaBlankPanelComponent, query:Query) : Promise<string> => {
-
-    const serverquery = await ebp.dashboardService.getBuildedQuery(query).toPromise();
-    return serverquery;
-
   },
 
   /**
@@ -193,7 +184,6 @@ export const QueryUtils = {
    * Builds a query object
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
-
     const config = ChartsConfigUtils.setConfig(ebp);
 
     const params = {

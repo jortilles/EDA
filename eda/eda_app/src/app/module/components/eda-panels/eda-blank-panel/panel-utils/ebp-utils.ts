@@ -97,15 +97,6 @@ export const EbpUtils = {
       case 'parallelSets':
         description = 'tune'
         break;
-      case 'treeMap' :
-        description = 'dashboard'
-        break;
-      case 'scatterPlot' : 
-        description = 'scatter_plot'
-        break;
-      case 'knob' : 
-        description = 'explore'
-        break;
     }
 
     return description;

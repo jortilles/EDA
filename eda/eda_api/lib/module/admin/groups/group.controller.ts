@@ -31,9 +31,9 @@ export class GroupController {
             let groups: IGroup[] = [];
 
             if (isAdmin) {
-                groups = await Group.find({}, 'name role users').exec();
+                groups = await Group.find({}, 'name role').exec();
             } else {
-                groups = await Group.find({ 'users': { $in: req.user._id } }, 'name role users').exec();
+                groups = await Group.find({ 'users': { $in: req.user._id } }, 'name role').exec();
             }
 
             return res.status(200).json(groups);
