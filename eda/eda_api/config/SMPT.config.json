@@ -1,1 +1,1 @@
-{"host":"smtp.gmail.com","port":587,"secure":false,"auth":{"user":"automatic@jortilles.com","pass":"viladrau-2018"},"tls":{"rejectUnauthorized":false}}
+{"host":"smtp.gmail.com","port":587,"secure":false,"auth":{"user":"user@gmail.com","pass":""},"tls":{"rejectUnauthorized":false}}
