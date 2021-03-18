@@ -18,7 +18,7 @@ export * from './eda-table/eda-columns/eda-column-context-menu';
 export * from './eda-table/eda-column-filter/eda-column-filter-multiselect';
 export * from './eda-map/eda-map.component';
 export * from './eda-map/eda-geoJsonMap.component'
-// export * from './eda-d3/eda-d3.component';
+ // export * from './eda-d3/eda-d3.component';
 
 // Eda KPI
 export { EdaKpiComponent } from './eda-kpi/eda-kpi.component';
@@ -34,7 +34,8 @@ export { EdaD3Component } from './eda-d3/eda-d3.component';
 export { ColumnDialogComponent } from './eda-panels/eda-blank-panel/column-dialog/column-dialog.component';
 export { FilterDialogComponent } from './eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component';
 export { ChartDialogComponent } from './eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component';
-export { TableDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/table-dialog.component'
+export { TableDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/table-dialog.component';
+export { TableGradientDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/gradient-dialog/gradient-dialog.component';
 export { EdaDashboardPanelComponent } from './eda-panels/eda-dashboard-panel/eda-dashboard-panel.component';
 export { EdaTitlePanelComponent } from './eda-panels/eda-title-panel/eda-title-panel.component';
 export {SafeHtmlPipe} from './eda-panels/eda-title-panel/htmlSanitizer.pipe'

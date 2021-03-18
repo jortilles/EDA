@@ -1,0 +1,47 @@
+<eda-dialog [inject]="dialog" >
+  <div body>
+    <h6 i18n="@@colorsChartH6" class="custom-border-b1">
+      Colores
+    </h6>
+
+    
+      <div class="mb-1">
+        <p>min</p>
+        <input [disabled]="noStyle" type="text" [(ngModel)]="min" pInputText style="width: 40%" />
+        <p-colorPicker [disabled]="noStyle" [(ngModel)]="min" appendTo="body"></p-colorPicker>
+        <!-- <input type="text" pInputText class="eda-color-pick" (input)="handleInputColor()" minlength="7"> -->
+      </div>
+
+      <div class="mb-1">
+        <p>max</p>
+        <input [disabled]="noStyle" type="text" [(ngModel)]="max" pInputText style="width: 40%" />
+        <p-colorPicker [disabled]="noStyle" [(ngModel)]="max" appendTo="body"></p-colorPicker>
+        <!-- <input type="text" pInputText class="eda-color-pick" (input)="handleInputColor()" minlength="7"> -->
+      </div>
+
+      <div class="mb-1" style="margin-top: 2em;">
+
+        <h6 i18n="@@noStyle">Sin estilo</h6>
+        <p-inputSwitch id="switchQueryMode" class="p-col-1 sql-switch" #switchMode [(ngModel)]="noStyle"
+          tooltipPosition="left">
+        </p-inputSwitch>
+
+      </div>
+
+  </div>
+  <div footer>
+
+
+      <button type="submit" pButton (click)="saveGradientConfig()" icon="fa fa-check"
+        class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
+        id="eda_table_dialog_confirmar">
+      </button>
+
+      <button type="button" (click)="closeDialog()" pButton icon="fa fa-times" class="p-button-raised p-button-danger"
+        i18n-label="@@cancelarButton" label="Cancelar">
+      </button>
+
+
+
+  </div>
+</eda-dialog>

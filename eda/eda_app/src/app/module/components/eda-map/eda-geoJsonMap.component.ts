@@ -1,5 +1,4 @@
-import { SpinnerService } from './../../../services/shared/spinner.service';
-import { OnInit, Input, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
+import { OnInit, Input, AfterViewChecked } from '@angular/core';
 import { Component, AfterViewInit } from '@angular/core';
 import { MapUtilsService } from '@eda/services/service.index';
 import { EdaMap } from './eda-map';
@@ -45,12 +44,12 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   public BASE_COLOR: string = '#006400';
   public loading: boolean;
   public legendPosition: string;
-  public boundaries : Array<any> = [];
+  public boundaries: Array<any> = [];
 
   constructor(
     private mapUtilsService: MapUtilsService
   ) {
-    this.customOptions = { 'className': 'custom', offset: [-20, -20], autoPan: false };
+    this.customOptions = { 'className': 'custom', offset: [-20, -20], autoPan: false , closeButton:false};
   }
   ngOnInit(): void {
     this.loading = true;
@@ -93,7 +92,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     });
     if (this.map) {
       this.geoJson.addTo(this.map);
-      if(this.inject.zoom) this.map.zoom = this.inject.zoom
+      if (this.inject.zoom) this.map.zoom = this.inject.zoom
       else this.map.fitBounds(this.boundaries);
     }
     this.geoJson.on('add', this.onloadLayer());
@@ -187,12 +186,12 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     const field = this.serverMap['field'];
     let fillColor = this.getColor(this.groups, this.bindDataToProperties(feature.properties[field]), color);
     return {
-        weight: 1,
-        opacity: 1,
-        color: '#FFFFFF',
-        fillOpacity: 0.5,
-        fillColor: fillColor //'#6DB65B'
-      
+      weight: 1,
+      opacity: 1,
+      color: '#FFFFFF',
+      fillOpacity: 0.5,
+      fillColor: fillColor //'#6DB65B'
+
     }
   }
 
@@ -272,7 +271,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   public openLinkedDashboard(value: string) {
     if (this.inject.linkedDashboard) {
       const props = this.inject.linkedDashboard;
-      const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+      const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
       window.open(url, "_blank");
     }
   }

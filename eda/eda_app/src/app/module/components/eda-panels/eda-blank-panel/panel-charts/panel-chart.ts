@@ -11,6 +11,7 @@ export class PanelChart {
   public maps : Array<string>;
   public size : {x:number, y:number};
   public  linkedDashboardProps : LinkedDashboardProps;
+  public addTrend: boolean;
 
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);

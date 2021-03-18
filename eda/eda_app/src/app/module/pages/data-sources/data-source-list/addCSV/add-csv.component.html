@@ -1,28 +1,31 @@
 <eda-dialog [inject]="dialog">
-  <div style="overflow: auto; overflow-y: auto; max-height: 56vh;">
-    <div class="ui-g-2 ui-sm-12 box">
-      <div style="margin-bottom: 10px" class="ui-g-12">
-          <span class="ui-float-label">
-            <input id="float-input" type="text" pInputText [(ngModel)]="tableName"> 
-            <label  i18n="@@placeholderTableName" for="float-input">Nombre de la tabla</label>
+  <div body class="p-grid">
+
+    <div class="p-col-12 p-md-2 ">
+      <div style="margin-bottom: 10px" class="p-col-12">
+        <span class="ui-float-label">
+          <input id="float-input" type="text" pInputText [(ngModel)]="tableName">
+          <label i18n="@@placeholderTableName" for="float-input">Nombre de la tabla</label>
         </span>
       </div>
-      <div style="margin-bottom: 10px" class="ui-g-12">
-          <span class="ui-float-label">
-            <input id="float-input" type="text" pInputText [(ngModel)]="delimiter"> 
-            <label  i18n="@@placeholderInputSeparator" for="float-input">Separador</label>
+      <div style="margin-bottom: 10px" class="p-col-12">
+        <span class="ui-float-label">
+          <input id="float-input" type="text" pInputText [(ngModel)]="delimiter">
+          <label i18n="@@placeholderInputSeparator" for="float-input">Separador</label>
         </span>
       </div>
 
-      <div style="margin-bottom: 10px" class="ui-g-12 ">
+      <div style="margin-bottom: 10px" class="p-col-12 ">
         <h6 i18n="@@addFile">Subir archivo</h6>
         <input type="file" #file style="display: none" (change)="onFilesAdded()" />
-        <button pButton (click)="loadFile()" icon="fa fa-upload" iconPos="center" >
-        </button>
+        <button pButton pRipple type="button" icon="fa fa-upload" class="p-button-rounded p-button-outlined"
+          (click)="loadFile()" style="margin:0.2em"></button>
+
       </div>
 
     </div>
-    <div class="ui-g-9 ui-sm-12  box">
+
+    <div class="p-col-12 p-md-10  ">
       <p-table [value]="csvColumns" styleClass="p-datatable-sm">
         <ng-template pTemplate="header">
           <tr>
@@ -39,13 +42,15 @@
                 placeholder="tipo"></p-dropdown>
             </td>
             <td>
-              <p-dropdown *ngIf="row['type'] ==='timestamp'" [options]="dataFormats" [(ngModel)]="row['format']" dropdownIcon="pi pi-angle-down"
-                placeholder="formato" autoWidth="false" [style]="{'width':'50%'}"></p-dropdown>
+              <p-dropdown *ngIf="row['type'] ==='timestamp'" [options]="dataFormats" [(ngModel)]="row['format']"
+                dropdownIcon="pi pi-angle-down" placeholder="formato" autoWidth="false" [style]="{'width':'50%'}">
+              </p-dropdown>
             </td>
 
             <td>
-              <p-dropdown *ngIf="['integer', 'numeric'].includes(row['type'])" [options]="decSeparators" [(ngModel)]="row['separator']" dropdownIcon="pi pi-angle-down"
-                placeholder="separador decimal" autoWidth="false" [style]="{'width':'50%'}"></p-dropdown>
+              <p-dropdown *ngIf="['integer', 'numeric'].includes(row['type'])" [options]="decSeparators"
+                [(ngModel)]="row['separator']" dropdownIcon="pi pi-angle-down" placeholder="separador decimal"
+                autoWidth="false" [style]="{'width':'50%'}"></p-dropdown>
             </td>
           </tr>
         </ng-template>
@@ -54,18 +59,17 @@
 
   </div>
 
-  <p-footer class="footer">
+  <div footer>
 
     <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-      <!-- <button type="button" pButton class="ui-button" icon="fa fa-check" i18n-label="@@guardarBtn" label="Confirmar"
-        id="eda_column_permission_confirmar"></button> -->
+
       <button pButton (click)="generateTable()" icon="fa fa-save" iconPos="left" i18n-title="@@saveCSV"
         title="Generar tabla" label="Generar tabla" style="background-color: #3b9a7a;"
         [disabled]="!tableName || !delimiter || !csvHeaders">
       </button>
-      <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn"
+      <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
         label="Cerrar"></button>
     </div>
 
-  </p-footer>
+  </div>
 </eda-dialog>

@@ -26,7 +26,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
     this.dialog = new EdaDialog({
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: ''
+      title: $localize`:@@ViewDatamodel:Añadir Vista`
     });
     this.dialog.style = { width: '60%', height: '70%', top: '30px', left: '100px' };
 
@@ -38,7 +38,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
     });
   }
   onShow(): void {
-    this.dialog.title = $localize`:@@ViewDatamodel:Añadir Vista`;
+
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
@@ -84,7 +84,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
     const column = {
       column_name: column_name,
       display_name: { default: column_name, localized: [] },
-      description: { default: this.form.value.description, localized: [] },
+      description: { default: this.beautifulNames(column_name), localized: [] },
       column_type: type,
       aggregation_type: [{ value: 'none', display_name: 'no' }],
       column_granted_roles: [],
@@ -97,10 +97,10 @@ export class ViewDialogComponent extends EdaDialogAbstract {
 
   buildTable(columns: Array<any>) {
     const table = {
-      table_name: `${this.form.value.technical_name}`,
+      table_name: `${this.form.value.technical_name.replace(' ', '_')}`,
       display_name: { default: `${this.form.value.viewName}`, localized: [] }, 
       description: { default: `${this.form.value.viewName}`, localized: [] }, 
-      query:`(${this.form.value.SQLexpression}) as ${this.form.value.technical_name}`,
+      query:`(${this.form.value.SQLexpression}) as ${this.form.value.technical_name.replace(' ', '_')}`,
       table_granted_roles: [],
       table_type: 'view',
       columns: columns,
@@ -109,6 +109,10 @@ export class ViewDialogComponent extends EdaDialogAbstract {
       tableCount: 0
     }
     return table;
+  }
+
+  beautifulNames = (name) => {
+    return name.split('_').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ')
   }
 
   saveView() {

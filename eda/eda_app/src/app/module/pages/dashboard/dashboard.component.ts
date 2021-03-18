@@ -126,11 +126,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.initializeDashboard();
 
         this.dashboardService.notSaved.subscribe(
-            (data) => this.display_v.notSaved = data,
+            (data) => {
+                this.display_v.notSaved = data
+            },
             (err) => this.alertService.addError(err)
         )
         //JJ: Inicialitzo a false...
-        this.display_v.notSaved = false;
+        this.dashboardService._notSaved.next(false);
+        // this.display_v.notSaved = false;
 
     }
 
@@ -605,6 +608,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private findGlobalFilterByUrlParams(urlParams: any): void {
+      
         if (Object.keys(urlParams).length > 0) {
             for (let i = 0, n = this.filtersList.length; i < n; i += 1) {
                 const filter = this.filtersList[i];
@@ -623,7 +627,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                                     const newFilter = this.formatFilter(filter);
                                     panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === newFilter.filter_column), 1);
                                     panelFilter.push(newFilter);
+
                                 });
+                            
                         }
                     }
                 }
@@ -633,6 +639,27 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private formatFilter(filter): any {
         const isDate = filter.column.value.column_type === 'date';
+        const year_length = 4;
+        const year_month_length = 7;
+
+        if(isDate && filter.selectedItems[0] && !filter.selectedItems[1]){
+            const year = filter.selectedItems[0];
+            if(filter.selectedItems[0].length === year_length ){
+                filter.selectedItems[0] = `${year}-01-01`;
+                filter.selectedItems[1] = `${year}-12-31`;
+            }
+            else if(filter.selectedItems[0].length === year_month_length){
+                const year_month = filter.selectedItems[0];
+                const year = parseInt(year_month.slice(0,5))
+                const month = parseInt(year_month.slice(5, 7));
+                let days = new Date(year,month, 0).getDate();
+                let daysstr  = days < 10 ? `0${days}` : `${days}`
+                filter.selectedItems[0] = `${year_month}-01`;
+                filter.selectedItems[1] = `${year_month}-${daysstr}`;
+            }else{
+                filter.selectedItems[1] = filter.selectedItems[0]
+            }
+        }
 
         const formatedFilter = {
             filter_id: filter.id,
@@ -830,6 +857,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.display_v.rightSidebar = false;
             this.alertService.addError($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
         } else {
+
             const body = {
                 config: {
                     title: this.title,
@@ -838,8 +866,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     filters: this.cleanFiltersData(),
                     applyToAllfilter: this.applyToAllfilter,
                     visible: this.form.controls['visible'].value,
-                    tag: this.tag && this.tag.label ? this.tag.label : null,
-                    refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null
+                    tag: this.getTag(),
+                    refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
+                    mailingEnabled:  this.getMailingEnabled()
 
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
@@ -863,6 +892,32 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             //not saved alert message
             this.dashboardService._notSaved.next(false);
         }
+    }
+
+    public getMailingEnabled():boolean {
+
+        let mailingenabled = false;
+
+        this.dashboard.panel.forEach(panel => {
+            if (panel.content && panel.content.chart === 'kpi') {
+                panel.content.query.output.config.alertLimits.forEach(alert => {
+                    if (alert.mailing.enabled === true) {
+                        mailingenabled = true
+                    };
+                });
+            }
+        });
+
+        return mailingenabled;
+    }
+
+    public getTag() {
+
+        if (this.tag && this.tag.value === 0) return null;
+        else if (this.tag && this.tag.value) return this.tag.label;
+        else if (this.tag) return this.tag;
+        else return null;
+
     }
 
     public exportAsPDF() {
@@ -925,7 +980,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public itemChange($event: any, panel): void {
         this.gridItemEvent = $event;
         let found = this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0];
-        if (found && !found.panelChart.NO_DATA && (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob'].includes(panel.content.chart))) found.savePanel(); // found.onGridsterResize($event);
+        if (
+            found 
+            && panel.content
+            && !found.panelChart.NO_DATA
+            && (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob'].includes(panel.content.chart))
+            && !$event.isNew) {
+            found.savePanel();
+        }// found.onGridsterResize($event);
     }
 
     public selectTag() {

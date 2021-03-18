@@ -27,6 +27,10 @@ import { MapDialogComponent } from './data-sources/data-source-detail/mapsDialog
 import { ViewDialogComponent } from './data-sources/data-source-detail/viewDialog/view-dialog.component';
 import {AddCsvComponent} from './data-sources/data-source-list/addCSV/add-csv.component';
 import { ModelSettingsComponent } from './model-settings/model-settings.component';
+import {CacheDialogComponent} from './data-sources/data-source-detail/cache-dialog/cache-dialog.component';
+import {SecurityDialogComponent} from './data-sources/data-source-detail/security-dialog/security-dialog.component';
+import {AlertsManagementComponent} from './alerts-management/alerts-management.component';
+import { MailManagementComponent } from './mail-management/mail-management.component';
 
 // Routes
 import { PAGES_ROUTES } from './pages.routes';
@@ -63,7 +67,11 @@ import { UploadFileComponent } from './data-sources/data-source-detail/upload-fi
         ViewDialogComponent,
         AddCsvComponent,
         DsConfigWrapperComponent,
-        ModelSettingsComponent
+        ModelSettingsComponent,
+        CacheDialogComponent,
+        SecurityDialogComponent,
+        AlertsManagementComponent,
+        MailManagementComponent
     ]
 })
 export class PagesModule { }

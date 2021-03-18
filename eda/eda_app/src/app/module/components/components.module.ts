@@ -35,7 +35,8 @@ import {
     ScatterPlotDialog,
     EdaKnobComponent,
     Knob,
-    KnobDialogComponent
+    KnobDialogComponent,
+    TableGradientDialogComponent
 
  } from './component.index';
 import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
@@ -78,7 +79,8 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         ScatterPlotDialog,
         EdaKnobComponent,
         Knob,
-        KnobDialogComponent
+        KnobDialogComponent,
+        TableGradientDialogComponent
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -99,7 +101,8 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         EdaScatter,
         EdaKnobComponent,
         Knob,
-        KnobDialogComponent
+        KnobDialogComponent,
+        TableGradientDialogComponent
     ],
     entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent, EdaD3Component, EdaTreeMap, EdaScatter, EdaKnobComponent, Knob],
     schemas: [CUSTOM_ELEMENTS_SCHEMA ]

@@ -57,7 +57,7 @@ export class RegisterComponent implements OnInit {
         if (this.form.invalid) {
             this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`);
         } else if (this.form.value.terminos === false) {
-            Swal.fire({ title: $localize`:@@ImportantMessage:Importante`, text: $localize`:@@AcceptConditions:Debe de aceptar las condiciones`, type: 'warning' });
+            Swal.fire({ title: $localize`:@@ImportantMessage:Importante`, text: $localize`:@@AcceptConditions:Debe de aceptar las condiciones`, icon: 'warning' });
         } else {
             const user = new User(this.form.value.name, this.form.value.email, this.form.value.password);
 

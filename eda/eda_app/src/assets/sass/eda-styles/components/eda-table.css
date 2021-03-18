@@ -12,9 +12,9 @@ body .eda-table .header-title th {
     background-color: var(--main-color-table-header);
 }
 
-body .eda-table .header-filter th {
+/* body .eda-table .header-filter th {
     background-color: #fff!important;
-}
+} */
 
 body .eda-table .ui-table-caption .ui-inputtext {
     background: 50% 100%/0 2px no-repeat,50% 100%/100% 1px no-repeat;
@@ -44,3 +44,4 @@ body .eda-table .ui-multiselect {
 body .eda-table .ui-multiselect .ui-multiselect-label {
     padding: 0!important;
 }
+

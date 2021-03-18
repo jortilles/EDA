@@ -46,3 +46,11 @@ ul li:hover {
   vertical-align:middle;
   display: inline-block;
 }
+.wrap-alert{
+  display: flex;
+  width: 100%;
+}
+
+.wrap-alert i:last-child {
+  margin-left: auto;
+}

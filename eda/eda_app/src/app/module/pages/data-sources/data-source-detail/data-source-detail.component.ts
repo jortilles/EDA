@@ -33,6 +33,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public mapController: EdaDialogController;
     public viewController: EdaDialogController;
     public csvPanelController: EdaDialogController;
+    public cacheController : EdaDialogController;
+    public securityController : EdaDialogController;
     public items: MenuItem[];
     // public hideAllTablesBool : boolean = false;
     // public hideAllRelationsBool : boolean = false;
@@ -45,6 +47,15 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public hideTablesString: string = $localize`:@@hideTables:Ocultar todas las tablas`;
     public hideColumnsString: string = $localize`:@@hideColumns:Ocultar todas las columnas`;
     public hideAllRelationsString: string = $localize`:@@hideAllRelations: Ocultar todas las relaciones`;
+    public addCacheConfig:string = $localize`:@@addCacheConfig:Configurar Caché`;
+    public viewsecurity:string = $localize`:@@viewsecurity:Ver configuración de seguridad`;
+    public addMap:string = $localize`:@@addMap:Mapas`;
+    public addView:string = $localize`:@@addView:Añadir vista`;
+    public addCSV:string = $localize`:@@addCSV:Añadir tabla desde csv`;
+    public addRelation:string = $localize`:@@addRelationButton:Añadir relación`;
+    public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`; 
+    public addPermission:string = $localize`:@@addPermission:Añadir permiso`;
+
 
     // Types canvi tonto
     public columnTypes: SelectItem[] = [
@@ -434,6 +445,27 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     this.onTableCreated.emit();
                 }
                 this.csvPanelController = undefined;
+            }
+        })
+    }
+
+    openCacheDialog() {
+        this.cacheController = new EdaDialogController({
+            params: { model_id: this.dataModelService.model_id, config:this.modelPanel.metadata.cache_config },
+            close: (event, response) => {
+                if (response) {
+                    this.dataModelService.addCacheConfig(response);
+                }
+                this.cacheController = undefined;
+            }
+        })
+    }
+
+    openSecurityDialog(){
+        this.securityController = new EdaDialogController({
+            params: { model: this.modelPanel },
+            close: (event) => {
+                this.securityController = undefined;
             }
         })
     }

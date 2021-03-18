@@ -44,7 +44,7 @@ export class AddCsvComponent extends EdaDialogAbstract {
     this.dialog = new EdaDialog({
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: ''
+      title: $localize`:@@addTableTitle:Añadir Tabla`
     });
     this.dialog.style = { width: '80%', height: '70%', top: '10px', left: '20px' };
 
@@ -58,7 +58,7 @@ export class AddCsvComponent extends EdaDialogAbstract {
       { label: 'date', value: "timestamp" },
     ];
 
-    this.editFieldsHeaders = [$localize`:@@csvField:Campo`, $localize`:@@csvType:Tipo`, $localize`:@@csvFormat:Formato`, $localize`:@@csvSep:SeparadorDecimal`];
+    this.editFieldsHeaders = [$localize`:@@csvField:Campo`, $localize`:@@csvType:Tipo`, $localize`:@@csvFormat:Formato`, $localize`:@@csvSep:Separador Decimal`];
 
     this.dataFormats = [
       { label: '', value: '' },
@@ -82,7 +82,6 @@ export class AddCsvComponent extends EdaDialogAbstract {
   }
   onShow(): void {
     this.model_id = this.controller.params.model_id;
-    this.dialog.title = $localize`:@@addTableTitle:Añadir Tabla`;
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);

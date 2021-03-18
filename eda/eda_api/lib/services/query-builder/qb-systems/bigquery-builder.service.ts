@@ -3,21 +3,21 @@ import * as _ from 'lodash';
 
 
 export class BigQueryBuilderService extends QueryBuilderService {
- 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables:Array<any>, limit:number, schema: string) {
 
-    let o = tables.filter(table => table.name === origin).map(table => {return table.query? table.query : table.name})[0];
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, schema: string) {
+
+    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = '';
 
     /**If origin is a view => (select foo from etc.) */
     const reg = new RegExp(/\([^()]+\)/g, "g");
-    if(o.match(reg)){
+    if (o.match(reg)) {
       myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
-    }else{
+    } else {
       myQuery = `SELECT ${columns.join(', ')} \nFROM ${schema}.${o}`;
     }
-    
+
 
     //to WHERE CLAUSE
     const filters = this.queryTODO.filters.filter(f => {
@@ -51,7 +51,7 @@ export class BigQueryBuilderService extends QueryBuilderService {
     }
 
     //HAVING 
-    myQuery += this.getFilters(havingFilters, 'having');
+    myQuery += this.getHavingFilters(havingFilters, 'having');
 
     // OrderBy
     const orderColumns = this.queryTODO.fields.map(col => {
@@ -70,11 +70,11 @@ export class BigQueryBuilderService extends QueryBuilderService {
     if (order_columns_string.length > 0) {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
-    if(limit) myQuery += `\nlimit ${limit}`;
+    if (limit) myQuery += `\nlimit ${limit}`;
     return myQuery;
   }
 
-  public getFilters(filters, type:string) {
+  public getFilters(filters, type: string) {
 
     if (this.permissions.length > 0) {
       this.permissions.forEach(permission => { filters.push(permission); });
@@ -95,17 +95,17 @@ export class BigQueryBuilderService extends QueryBuilderService {
           if (nullValueIndex != - 1) {
             if (f.filter_elements[0].value1.length === 1) {
               /* puedo haber escogido un nulo en la igualdad */
-              if( f.filter_type == '='   ){
-                  filtersString += `\nand ${colname}  is null `;
-              }else{
+              if (f.filter_type == '=') {
+                filtersString += `\nand ${colname}  is null `;
+              } else {
                 filtersString += `\nand ${colname}  is not null `;
               }
             } else {
-                if( f.filter_type == '='   ){
-                  filtersString += `\nand (${this.filterToString(f, type)} or ${colname}  is null) `;
-                 }else{
-                  filtersString += `\nand (${this.filterToString(f, type)} or ${colname}  is not null) `;
-                }             
+              if (f.filter_type == '=') {
+                filtersString += `\nand (${this.filterToString(f, type)} or ${colname}  is null) `;
+              } else {
+                filtersString += `\nand (${this.filterToString(f, type)} or ${colname}  is not null) `;
+              }
             }
           } else {
             filtersString += '\nand ' + this.filterToString(f, type);
@@ -118,7 +118,48 @@ export class BigQueryBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables:Array<any>, schema:string) {
+  public getHavingFilters(filters, type: string) {
+
+    if (filters.length) {
+
+      let filtersString = `\n${type} 1 = 1 `;
+
+      filters.forEach(f => {
+
+        const column = this.findColumn(f.filter_table, f.filter_column);
+        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  ,2)`;
+
+        if (f.filter_type === 'not_null') {
+          filtersString += '\nand ' + this.filterToString(f, type);
+        } else {
+          let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
+          if (nullValueIndex != - 1) {
+            if (f.filter_elements[0].value1.length === 1) {
+              /* puedo haber escogido un nulo en la igualdad */
+              if (f.filter_type == '=') {
+                filtersString += `\nand ${colname}  is null `;
+              } else {
+                filtersString += `\nand ${colname}  is not null `;
+              }
+            } else {
+              if (f.filter_type == '=') {
+                filtersString += `\nand (${this.filterToString(f, type)} or ${colname}  is null) `;
+              } else {
+                filtersString += `\nand (${this.filterToString(f, type)} or ${colname}  is not null) `;
+              }
+            }
+          } else {
+            filtersString += '\nand ' + this.filterToString(f, type);
+          }
+        }
+      });
+      return filtersString;
+    } else {
+      return '';
+    }
+  }
+
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema: string) {
 
     let joins = [];
     let joined = [];
@@ -140,10 +181,33 @@ export class BigQueryBuilderService extends QueryBuilderService {
         if (!joined.includes(e[j])) {
 
           let joinColumns = this.findJoinColumns(e[j], e[i]);
-          joined.push(e[j]);
+
           /**T can be a table or a custom view, if custom view has a query  */
-          let t = tables.filter(table => table.name === e[j]).map(table => {return table.query? table.query : table.name})[0];
-          joinString.push(`inner join ${schema}.${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
+          let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? table.query : table.name })[0];
+
+          //Version compatibility string//array
+          if (typeof joinColumns[0] === 'string') {
+
+            joinString.push(`inner join ${schema}.${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
+         
+          }else{
+
+            let join = `inner join ${schema}.${t} on`;
+            
+            joinColumns[0].forEach((_, x) => {
+
+              join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` = \`${e[i]}\`.\`${joinColumns[0][x]}\` and`;
+
+            });
+
+            join = join.slice(0, join.length - 'and'.length);
+            joinString.push(join);
+
+          }
+
+          joined.push(e[j]);
+
+          
         }
       }
     });
@@ -210,8 +274,8 @@ export class BigQueryBuilderService extends QueryBuilderService {
    * @returns filter to string. If type === having we are in a computed_column case, and colname = sql.expression wich defines column. 
    */
 
-  public filterToString(filterObject: any, type:string) {
-    
+  public filterToString(filterObject: any, type: string) {
+
     const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
     const colname = type == 'where' ? `\`${filterObject.filter_table}\`.\`${filterObject.filter_column}\`` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  ,2)`;
     let colType = column.column_type;
@@ -244,7 +308,7 @@ export class BigQueryBuilderService extends QueryBuilderService {
         case 'text': return `'${filter}'`;
         //case 'text': return `'${filter}'`;
         case 'numeric': return filter;
-        case 'date': return  `PARSE_DATE( '%Y-%m-%d','${filter}')`
+        case 'date': return `PARSE_DATE( '%Y-%m-%d','${filter}')`
       }
     } else {
       let str = '';
@@ -258,7 +322,7 @@ export class BigQueryBuilderService extends QueryBuilderService {
     }
   }
 
-  buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[], schema?:string) {
+  buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[], schema?: string) {
     let table = origin;
     if (schema) {
       table = `${schema}.${origin}`;

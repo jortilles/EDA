@@ -159,11 +159,12 @@ app-dashboard {
 }
 
 .edaTitle {
-    font-family: sans-serif;
+    font-family: 'Questrial';
     line-height: 0.7;
     text-align: center;
     margin-bottom: auto;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .tab-view{

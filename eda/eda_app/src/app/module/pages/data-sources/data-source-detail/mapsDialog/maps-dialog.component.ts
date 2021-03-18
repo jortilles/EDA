@@ -1,7 +1,7 @@
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { MapUtilsService, DataSourceService } from '@eda/services/service.index';
+import {  DataSourceService } from '@eda/services/service.index';
 import { SelectItem } from 'primeng/api';
 import { UploadFileComponent } from '../upload-file/upload-file.component';
 
@@ -35,9 +35,9 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
     this.dialog = new EdaDialog({
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: ''
+      title: $localize`:@@MapDatamodel:Mapas`
     });
-    this.dialog.style= {width: '85%', height: '85%', top: '93px', left: '205px'};
+    this.dialog.style= {width: '85%'};
 
     this.form = this.formBuilder.group({
       mapURL: [null],
@@ -124,7 +124,6 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
   onShow(): void {
-    this.dialog.title = $localize`:@@MapDatamodel:Mapas`;
     this.tables = this.dataSourceService.getModel().map(table => ({ label: table.display_name.default, value: table.table_name })).sort();
 
   }

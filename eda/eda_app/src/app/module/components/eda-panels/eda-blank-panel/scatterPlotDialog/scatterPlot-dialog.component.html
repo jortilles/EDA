@@ -1,56 +1,57 @@
 <eda-dialog [inject]="dialog">
 
-  <div class="ui-g-8">
-    <div class="ui-g-8">
-      <div class="eda-chart-panel">
-        <div style="height: 70%">
-          <panel-chart #PanelChartComponent [props]="panelChartConfig">
+  <div body class="p-grid">
+    <div class="p-col-8">
+      <div class="eda-chart-panel" class="eda-chart-panel" style="margin-left: 6em;">
+    
+          <panel-chart #PanelChartComponent [props]="panelChartConfig"  style="height: 70%; width: 70%; display:block;  margin-top:5em">
           </panel-chart>
-        </div>
+
       </div>
     </div>
-  </div>
 
-  
-  <div class="ui-g-4">
 
-    <h6 i18n="@@colorsChartH6" class="custom-border-b1">
+
+    <div class="p-col-4">
+
+      <h6 i18n="@@colorsChartH6" class="custom-border-b1">
         Colores
-    </h6>
+      </h6>
 
-    <div class="chart-color-selection">
+      <div class="chart-color-selection">
 
         <ng-container *ngFor="let label of labels; let i = index">
 
-            <div class="mb-1">
-              
-                <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor(label)" format="hex"
-                    appendTo="body">
-                </p-colorPicker>
+          <div class="mb-1">
 
-                <input type="text" pInputText class="eda-color-pick" [(ngModel)]="colors[i]"
-                    (input)="handleInputColor(label)" minlength="7">
+            <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor(label)" format="hex" appendTo="body">
+            </p-colorPicker>
 
-            </div>
-            
+            <input type="text" pInputText class="eda-color-pick" [(ngModel)]="colors[i]"
+              (input)="handleInputColor(label)" minlength="7">
+
+          </div>
+
         </ng-container>
 
+      </div>
+
     </div>
-
-</div>
-
-  
-
-
-<p-footer class="footer">
-  <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-    <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check" class="ui-button ml-2"
-      i18n-label="@@guardarButton" label="Confirmar" id="eda_chart_dialog_confirmar">
-    </button>
-    <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="ui-button-danger ml-2"
-      i18n-label="@@cancelarButton" label="Cancelar">
-    </button>
   </div>
-</p-footer>
+
+
+
+
+  <div footer>
+    <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
+      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
+        class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
+        id="eda_chart_dialog_confirmar">
+      </button>
+      <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
+        class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
+      </button>
+    </div>
+  </div>
 
 </eda-dialog>

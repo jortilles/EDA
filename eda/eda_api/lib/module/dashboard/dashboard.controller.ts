@@ -6,6 +6,9 @@ import DataSource from '../datasource/model/datasource.model';
 import User from '../admin/users/model/user.model';
 import Group from '../admin/groups/model/group.model';
 import formatDate from '../../services/date-format/date-format.service';
+import { CachedQueryService } from '../../services/cache-service/cached-query.service'
+const cache_config = require('../../../config/cache.config');
+
 
 export class DashboardController {
 
@@ -267,28 +270,46 @@ export class DashboardController {
                 return next(new HttpException(500, `Sorry, you are not allowed here, contact your administrator`));
             }
 
-
             const dataModelObject = JSON.parse(JSON.stringify(dataModel));
             const query = await connection.getQueryBuilded(req.body.query, dataModelObject, req.user);
 
             console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
             console.log(query);
             console.log('\n-------------------------------------------------------------------------------\n');
-            connection.pool = await connection.getPool();
-            const getResults = await connection.execQuery(query);
-            const results = [];
 
-            // Normalize data
-            for (let i = 0, n = getResults.length; i < n; i++) {
-                const r = getResults[i];
-                const output = Object.keys(r).map(i => r[i]);
-                results.push(output);
+            /**cached query */
+            let cacheEnabled = dataModelObject.ds.metadata.cache_config && dataModelObject.ds.metadata.cache_config.enabled;
+            const cachedQuery = cacheEnabled ? await CachedQueryService.checkQuery(req.body.model_id, query) : null;
+
+            if (!cachedQuery) {
+                connection.pool = await connection.getPool();
+                const getResults = await connection.execQuery(query);
+                const results = [];
+
+                // Normalize data
+                for (let i = 0, n = getResults.length; i < n; i++) {
+                    const r = getResults[i];
+                    const output = Object.keys(r).map(i => r[i]);
+                    results.push(output);
+                }
+
+                const output = [req.body.output.labels, results];
+
+                if (output[1].length < cache_config.MAX_STORED_ROWS &&  cacheEnabled) {
+                    CachedQueryService.storeQuery(req.body.model_id, query, output);
+                }
+
+                console.log('\x1b[32m%s\x1b[0m', `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
+                return res.status(200).json(output);
+
+            } else {
+
+                console.log('\x1b[32m%s\x1b[0m', `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
+                return res.status(200).json(cachedQuery.cachedQuery.response);
             }
 
-            const output = [req.body.output.labels, results];
 
-            console.log('\x1b[32m%s\x1b[0m', `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
-            return res.status(200).json(output);
+
         } catch (err) {
             console.log(err);
             next(new HttpException(500, 'Error quering database'));
@@ -298,6 +319,7 @@ export class DashboardController {
 
     static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
         try {
+
             const connection = await ManagerConnectionService.getConnection(req.body.model_id);
             const dataModel = await connection.getDataSource(req.body.model_id);
 
@@ -310,28 +332,48 @@ export class DashboardController {
             const dataModelObject = JSON.parse(JSON.stringify(dataModel));
             const query = connection.BuildSqlQuery(req.body.query, dataModelObject, req.user);
 
+            /**If query is in format select foo from a, b queryBuilder returns null */
+            if(!query){
+               return next(new HttpException(500, 'Queries in format "select x from A, B" are not suported'));
+            }
+
             console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
             console.log(query);
             console.log('\n-------------------------------------------------------------------------------\n');
 
-            connection.pool = await connection.getPool();
-            const getResults = await connection.execQuery(query);
-            const results = [];
-            let labels: Array<string>;
-            if (getResults.length > 0) {
-                labels = Object.keys(getResults[0]).map(i => i);
-            } else {
-                labels = ['NoData'];
-            }
-            // Normalize data
-            for (let i = 0, n = getResults.length; i < n; i++) {
-                const r = getResults[i];
-                const output = Object.keys(r).map(i => r[i]);
-                results.push(output);
-            }
+            /**cached query */
+            let cacheEnabled = dataModelObject.ds.metadata.cache_config && dataModelObject.ds.metadata.cache_config.enabled;
+            const cachedQuery = cacheEnabled ? await CachedQueryService.checkQuery(req.body.model_id, query) : null;
 
-            const output = [labels, results];
-            return res.status(200).json(output);
+            if (!cachedQuery) {
+                connection.pool = await connection.getPool();
+                const getResults = await connection.execQuery(query);
+                const results = [];
+                let labels: Array<string>;
+                if (getResults.length > 0) {
+                    labels = Object.keys(getResults[0]).map(i => i);
+                } else {
+                    labels = ['NoData'];
+                }
+                // Normalize data
+                for (let i = 0, n = getResults.length; i < n; i++) {
+                    const r = getResults[i];
+                    const output = Object.keys(r).map(i => r[i]);
+                    results.push(output);
+                }
+
+                const output = [labels, results];
+                if (output[1].length < cache_config.MAX_STORED_ROWS  && cacheEnabled) {
+                    CachedQueryService.storeQuery(req.body.model_id, query, output);
+                }
+
+                console.log('\x1b[32m%s\x1b[0m', `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
+                return res.status(200).json(output);
+
+            } else {
+                console.log('\x1b[32m%s\x1b[0m', `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
+                return res.status(200).json(cachedQuery.cachedQuery.response);
+            }
 
         } catch (err) {
             console.log(err)
@@ -387,7 +429,7 @@ export class DashboardController {
             const dataModel = await connection.getDataSource(req.body.model_id);
             const dataModelObject = JSON.parse(JSON.stringify(dataModel));
             const query = await connection.getQueryBuilded(req.body.query, dataModelObject, req.user);
-            
+
 
             return res.status(200).json(query);
 

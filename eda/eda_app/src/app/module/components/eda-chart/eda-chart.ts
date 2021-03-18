@@ -11,6 +11,7 @@ export class EdaChart {
     public chartOptions: ChartOptions;
     public chartPlugins: any[] = [];
     linkedDashboardProps : LinkedDashboardProps;
+    addTrend: boolean;
 
     constructor() { }
 }

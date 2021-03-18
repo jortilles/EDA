@@ -3,7 +3,7 @@ import { TreeNode } from 'primeng/api';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { AlertService, DataSourceService } from '@eda/services/service.index';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertOptions } from 'sweetalert2';
 import * as _ from 'lodash';
 
 
@@ -17,6 +17,13 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public selectedFile: TreeNode;
     public id: string;
     public navigationSubscription: any;
+
+    //Strings
+    public refreshSTR = $localize`:@@Refresh:Refrescar modelo de datos`;
+    public saveModelSTR = $localize`:@@saveModel:Guardar modelo de datos`;
+    public updateModelSTR = $localize`:@@updateModel:Actualizar modelo de datos`;
+    public deleteModelSTR = $localize`:@@deleteModel:Borrar modelo de datos`;
+
 
     constructor(public dataModelService: DataSourceService,
                 private alertService: AlertService,
@@ -59,15 +66,18 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     }
 
     deleteDatasource() {
-        Swal.fire({
-            title: $localize`:@@Sure:¿Estas seguro?`,
-            text: $localize`:@@SureInfo:Estas a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
-            type: 'warning',
+
+        const options = 
+        {
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: $localize`:@@SureInfo:Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
+            icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`
-        }).then(borrado => {
+        } as SweetAlertOptions
+        Swal.fire(options).then(borrado => {
             if (borrado.value) {
                 this.spinnerService.on();
                 this.dataModelService.deleteModel(this.id).subscribe(

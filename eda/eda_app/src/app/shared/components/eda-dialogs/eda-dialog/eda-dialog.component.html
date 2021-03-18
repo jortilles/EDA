@@ -1,14 +1,14 @@
 <div class="">
-    <p-dialog #dialog [(visible)]="display" [modal]="true" [header]="inject.title"
-              (onShow)="inject.show()" (onHide)="inject.hide()" [closeOnEscape]="false"
-              [closable]="false"  [dismissableMask]="true"
-              [draggable]="false" [resizable]="false" [style]="inject.style" [contentStyle]="{minHeight: '95%'}"
-              appendTo="body">
+    <p-dialog #dialog [(visible)]="display" [modal]="true" [header]="inject.title" (onShow)="inject.show()"
+        (onHide)="inject.hide()" [closeOnEscape]="false" [closable]="false" [dismissableMask]="true" [draggable]="true"
+        [resizable]="false" [style]="inject.style" [contentStyle]="{minHeight: '95%'}" appendTo="body">
+       
+        <ng-content select="[body]">        
+        </ng-content>
 
-        <div class="ui-g-12" >
-            <ng-content></ng-content>
-        </div>
+        <ng-template pTemplate="footer">
+            <ng-content select="[footer]"></ng-content>
+        </ng-template>
 
     </p-dialog>
 </div>
-

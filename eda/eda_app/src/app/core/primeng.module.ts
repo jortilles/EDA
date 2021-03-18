@@ -5,7 +5,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { PanelModule } from 'primeng/panel';
 import { DragDropModule } from 'primeng/dragdrop';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { ConfirmationService } from 'primeng/api'
+import { ConfirmationService, MessageService } from 'primeng/api'
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { SlideMenuModule } from 'primeng/slidemenu';
@@ -30,6 +30,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { MessagesModule } from 'primeng/messages';
+import {MessageModule} from 'primeng/message';
 import { ListboxModule } from 'primeng/listbox';
 import { TreeModule } from 'primeng/tree';
 import { TieredMenuModule } from 'primeng/tieredmenu';
@@ -45,8 +46,9 @@ import {ToolbarModule} from 'primeng/toolbar';
 import {EditorModule} from 'primeng/editor';
 import {ToggleButtonModule} from 'primeng/togglebutton';
 
+
 @NgModule({
-    providers: [ConfirmationService],
+    providers: [ConfirmationService, MessageService],
     exports: [
         CommonModule,
         InputTextModule,
@@ -91,7 +93,8 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
         InputNumberModule,
         ToolbarModule,
         EditorModule,
-        ToggleButtonModule
+        ToggleButtonModule,
+        MessageModule
     ]
 })
 export class PrimengModule { }

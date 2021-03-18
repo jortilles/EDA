@@ -1,43 +1,46 @@
 <eda-dialog [inject]="dialog">
+  <div body>
 
-  <form [formGroup]="form" class="form-horizontal form-material">
-    <div style="overflow: auto; overflow-y: auto; max-height: 56vh;">
-      <div style="margin: 10px">
-        <h6 i18n="@@inputNombre">Nombre</h6>
+    <form [formGroup]="form" class="form-horizontal form-material">
+      
+        <div style="margin: 10px">
+          <h6 i18n="@@inputNombre">Nombre</h6>
 
-        <input id="viewName" pInputText type="text" size="50" formControlName="viewName" >
-      </div>
+          <input id="viewName" pInputText type="text" size="50" formControlName="viewName">
+        </div>
 
-      <div style="margin: 10px">
-        <h6 i18n="@@inputDescripcion">Descripción</h6>
-        <input id="viewDescription" pInputText type="text" size="50" formControlName="description" >
-      </div>
+        <div style="margin: 10px">
+          <h6 i18n="@@inputDescripcion">Descripción</h6>
+          <input id="viewDescription" pInputText type="text" size="50" formControlName="description">
+        </div>
 
-      <div style="margin: 10px">
-        <h6 i18n="@@inputNombreTecnico">Nombre técnico</h6>
-        <input id="viewTechName" pInputText type="text" size="50" formControlName="technical_name" >
-      </div>
+        <div style="margin: 10px">
+          <h6 i18n="@@inputNombreTecnico">Nombre técnico</h6>
+          <input id="viewTechName" pInputText type="text" size="50" formControlName="technical_name">
+        </div>
 
-      <div style="margin: 10px">
-        <h6 i18n="@@sqlExp">Expresión SQL</h6>
-        <textarea id="viewSQL" pInputTextarea type="text" formControlName="SQLexpression" rows="12" cols="100"></textarea>
-      </div>
+        <div style="margin: 10px">
+          <h6 i18n="@@sqlExp">Expresión SQL</h6>
+          <textarea id="viewSQL" pInputTextarea type="text" formControlName="SQLexpression" rows="12"
+            cols="100"></textarea>
+        </div>
 
-      <div style="margin: 10px">
-        <button id="viewGenerate" type="button" pButton (click)="checkView()" class="ui-button-success ml-2" i18n-label="@@generateView"
-          label="Generar vista"></button>
-      </div>
+        <div style="margin: 10px">
+          <button id="viewGenerate" type="button" pButton (click)="checkView()" class="ui-button-success ml-2"
+            i18n-label="@@generateView" label="Generar vista"></button>
+        </div>
+
+    </form>
+  </div>
+  <div footer>
+
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+      <button type="button" pButton (click)="saveView()" class="ui-button" icon="fa fa-check" i18n-label="@@guardarBtn"
+        label="Confirmar" id="eda_column_permission_confirmar" [disabled]="!ok"></button>
+      <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
+        label="Cerrar"></button>
     </div>
-    <p-footer class="footer">
 
-      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-        <button  type="button" pButton (click)="saveView()" class="ui-button" icon="fa fa-check"
-          i18n-label="@@guardarBtn" label="Confirmar" id="eda_column_permission_confirmar" [disabled]="!ok"></button>
-        <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn"
-          label="Cerrar"></button>
-      </div>
-
-    </p-footer>
-  </form>
+  </div>
 
 </eda-dialog>

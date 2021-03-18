@@ -1,13 +1,13 @@
 <div class="panel-heading d-flex justify-content-between">
 
-    <div class="panel-heading d-flex justify-content-center text-center h-75" style="margin-top: 0.5rem;">
-        <div *ngIf="!titleClick" class="mb-0 pointer w-75" (click)="setTitle()" [innerHTML]="panel.title | sanitizeHtml">
+    <div class="panel-heading d-flex justify-content-center text-center h-75" style="margin-top: 0.2rem;">
+        <div  class="mb-0 pointer w-90" [innerHTML]="panel.title | sanitizeHtml">
              </div>
     
-        <div *ngIf="!!titleClick" class="ui-inputgroup w-75">
+        <!-- <div *ngIf="!!titleClick" class="ui-inputgroup w-75">
             <input type="text" class="w-100" pInputText (focusout)="setTitle()" (keydown.enter)="setTitle()"
                 [(ngModel)]="panel.title" autofocusOnShow>
-        </div>
+        </div> -->
     </div>
 
     <div *ngIf="display.editMode" id="edit" style="text-align: right; max-height: 2rem; ">

@@ -1,19 +1,20 @@
 <eda-dialog [inject]="dialog">
-  <div style="max-height: 75vh; overflow-y: auto;">
+  <div body class="p-grid">
 
-    <div class="ui-g-12 ui-md-4 ui-lg-4 ">
+    <div class="p-col-12 p-xl-4 ">
+
       <p-card>
-        <div class="ui-g">
+        <div class="p-grid">
           <form [formGroup]="form" class="form-horizontal form-material">
 
             <h5 class="headerH5" i18n="@@inputMapTables">Propiedades del mapa</h5>
 
-            <div style="margin-bottom: 0" class="ui-g-12 ui-md-12">
+            <div style="margin-bottom: 0" class="p-col-12 p-md-12">
               <h6 i18n="@@inputMapURL"> Subir archivo GeoJson</h6>
               <app-uploadFile #fileUploader (onFileSaved)="fileLoaded()"></app-uploadFile>
             </div>
 
-            <div style="margin-bottom: 10px" class="ui-g-12 ui-md-12">
+            <div style="margin-bottom: 10px" class="p-col-12 p-md-12">
               <h6 i18n="@@inputMapField"> Campo a usar para vincular el modelo con el mapa</h6>
               <p-dropdown [options]="fields" formControlName="selectedField" placeholder="Selecciona un campo"
                 optionLabel="campo" [showClear]="true" optionLabel="label"></p-dropdown>
@@ -24,28 +25,29 @@
               </div>
 
             </div>
-            <div style="margin-bottom: 10px" class="ui-g-12 ui-md-12">
+            <div style="margin-bottom: 10px" class="p-col-12 ui-md-12">
               <span>
                 <h6 i18n="@@inputx">Centro del mapa (Latitud, Longitud)</h6>
                 <p i18n="@@inputxDescription">Si desconoces las coordenadas del centro las calcularemos automáticamente
                 </p>
               </span>
               <p><input pInputText type="text" formControlName="x" size="23" style="margin-right: 2px">
-                <input pInputText type="text" formControlName="y" size="23"></p>
+                <input pInputText type="text" formControlName="y" size="23">
+              </p>
             </div>
-            
+
           </form>
         </div>
       </p-card>
     </div>
 
-    <div class="ui-g-12 ui-md-4 ui-lg-4 ">
+    <div class="p-col-12 p-xl-4 ">
 
       <p-card>
-        <div class="ui-g">
-          <div class="ui-g-12 ui-md-12">
+        <div class="p-grid">
+          <div class="p-col-12 p-md-12">
             <h5 class="headerH5" i18n="@@inputMapColumnsText">Vincular columnas al mapa</h5>
-        
+
 
             <div style="margin-bottom: 10px">
               <h6 i18n="@@inputMapTables">Tablas</h6>
@@ -73,12 +75,12 @@
         </div>
       </p-card>
     </div>
-    <div class="ui-g-12 ui-md-4 ui-lg-4 ">
+    <div class="p-col-12 p-xl-4 ">
       <p-card>
-        <div class="ui-g">
-          <div class="ui-g-12 ui-md-12">
+        <div class="p-grid">
+          <div class="p-col-12 p-md-12">
             <h5 class="headerH5" i18n="@@avaliableMaps">Mapas disponibles</h5>
-        
+
             <div>
               <ul>
                 <li *ngFor="let item of serverMaps">
@@ -95,15 +97,17 @@
 
   </div>
 
-  <p-footer class="footer">
+  <div footer >
 
     <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
       <button type="button" pButton (click)="saveMap()" class="ui-button" icon="fa fa-check" i18n-label="@@guardarBtn"
         label="Confirmar" id="eda_column_permission_confirmar"></button>
-      <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn"
+      <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
         label="Cerrar"></button>
     </div>
 
-  </p-footer>
+  </div>
+
+
 
 </eda-dialog>

@@ -153,9 +153,10 @@ export class EdaTreeMap implements AfterViewInit {
       }).on("mousemove", (d, data) => {
 
         const linked = this.inject.linkedDashboard ? 0 : 10;
+        const tooltipData = this.getToolTipData(data);
         
         this.div.style("top", (d.pageY - 70 + linked ) + "px")
-          .style("left", (d.pageX - 60) + "px");
+          .style("left", (d.pageX - tooltipData.width/2) + "px");
       });;
 
 

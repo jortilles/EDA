@@ -59,8 +59,9 @@
             <tr>
                 <ng-container *ngFor="let col of inject.cols">
                     <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width" 
-                        (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer;">
-                        <ng-container [ngSwitch]="col.type">
+                        (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer;" 
+                        [ngClass]="getStyle(col, rowData)"  >
+                        <ng-container [ngSwitch]="col.type" >
                             <!-- ngSwitch TEXT -->
                             <ng-container *ngSwitchCase="'EdaColumnText'">
                                 <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getTooltip(col)">
@@ -73,7 +74,7 @@
 
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
-                            <ng-container *ngSwitchCase="'EdaColumnNumber'">
+                            <ng-container *ngSwitchCase="'EdaColumnNumber'" >
                                 {{ lodash.get(rowData, col.field) | number:'':'es' }}
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
@@ -125,10 +126,10 @@
         </ng-template>
 
         <ng-template pTemplate="summary">
-            <div class="ui-helper-clearfix">
-                <span i18n="@@registers1" *ngIf="table.filteredValue != undefined"
+            <div class="ui-helper-clearfix" >
+                <span i18n="@@registers1" *ngIf="table.filteredValue != undefined" style="margin-top: -0.5em;"
                     class="items-length float-right">{{ table.filteredValue.length }} registros</span>
-                <span i18n="@@registers2" *ngIf="!table.filteredValue && table.value.length"
+                <span i18n="@@registers2" *ngIf="!table.filteredValue && table.value.length" style="margin-top: -0.5em;"
                     class="items-length float-right">{{ table.value.length }} registros</span>
             </div>
         </ng-template>

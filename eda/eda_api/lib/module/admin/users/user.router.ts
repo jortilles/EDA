@@ -8,7 +8,8 @@ const router = express.Router();
 router.post('/login', UserController.login);
 
 // User Routes // Role Guard
-router.get('', authGuard, roleGuard, UserController.getUsers);
+// router.get('', authGuard, roleGuard, UserController.getUsers);
+router.get('', authGuard,  UserController.getUsers);
 
 router.get('/profile-img/:img', authGuard, UserController.findProfileImg);
 

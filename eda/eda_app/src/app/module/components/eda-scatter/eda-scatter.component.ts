@@ -22,6 +22,7 @@ export class EdaScatter implements AfterViewInit {
 
   div = d3.select("body").append('div')
     .attr('class', 'd3tooltip')
+    .attr('id', 'scatterDiv')
     .style('opacity', 0);
 
   id: string;
@@ -150,7 +151,7 @@ export class EdaScatter implements AfterViewInit {
           ` ${this.inject.dataDescription.numericColumns[2].name} :  ${data.metricValue.toLocaleString()}`
           : ``;
 
-        let linkedText = `Linked to ${this.inject.linkedDashboard.dashboardName} </h6>`;
+        let linkedText = this.inject.linkedDashboard ? `Linked to ${this.inject.linkedDashboard.dashboardName} </h6>`: '';
 
         const maxLength = dataUtils.maxLengthElement([categoryText.length, serieText.length, metricText.length, linkedText.length]);
         const pixelWithRate = 7;
@@ -180,11 +181,10 @@ export class EdaScatter implements AfterViewInit {
           .duration(500)
           .style('opacity', 0);
       }).on("mousemove", (d, data) => {
+        const sizes = this.div.node().getBoundingClientRect();
         this.div
-          .style("top", (y(data.y) + 5) + "px")
-          .style("left", (x(data.x) + 25) + "px");
-        // .style("top", (d.pageY - 81) + "px")
-        // .style("left", (d.pageX - 53) + "px");
+        .style("top", (d.pageY - sizes.height - 7) + "px")
+        .style("left", (d.pageX - sizes.width/2 ) + "px");
       }).on('click', (mouseevent, data) => {
 
         if (this.inject.linkedDashboard) {

@@ -61,8 +61,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: ''
+            title: $localize`:@@col:Columna`
         });
+        // this.dialog.style= {width: '90%', height: '90%'};
     }
 
     onShow(): void {

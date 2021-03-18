@@ -8,7 +8,8 @@ import { AlertService } from '@eda/services/service.index';
 
 @Component({
     selector: 'app-table-relations-dialog',
-    templateUrl: './table-relations-dialog.component.html'
+    templateUrl: './table-relations-dialog.component.html',
+    styleUrls: ['./table-relations-dialog.component.css']
 })
 
 export class TableRelationsDialogComponent extends EdaDialogAbstract {
@@ -22,6 +23,9 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
     public targetTable: any;
     public targetCol: any;
 
+    public selectedTargetCols : Array<any> = [];
+    public selectedSourceCols : Array<any> = [];
+
     public showTargetTables = false;
 
     public form: FormGroup;
@@ -32,26 +36,27 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
         private alertService: AlertService) {
         super();
 
+
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: ''
+            title: $localize`:@@addRelationTo:Añadir relación a la tabla`
         });
-        this.dialog.style = { width: '40%', height: '35%', top: '50px', left: '100px' };
+        this.dialog.style = { width: '40%', height: '50%', top: '50px', left: '100px' };
 
         this.form = this.formBuilder.group({
             sourceCol: [null, Validators.required],
-            targetTable: [{value: '', disabled: true}, Validators.required],
+            targetTable: [null, Validators.required],
             targetCol: [null, Validators.required]
         }); //, {validators: this.checkOrder('sourceCol', 'targetTable')});
     }
 
     onShow(): void {
-        const title = $localize`:@@addRelationTo:Añadir relación a la tabla`;
+        const title = this.dialog.title;
         this.dialog.title = `${title} ${this.controller.params.table.name}`;
         this.sourceCols = this.controller.params.table.columns;
         this.targetTables = this.dataModelService.getModel().map(t => {
-            const item: SelectItem = { label: t.table_name, value: t };
+            const item: SelectItem = { label: t.display_name.default, value: t };
             return item;
         });
     }
@@ -70,23 +75,40 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
 
             const rel: Relation = {
                 source_table: this.controller.params.table.technical_name,
-                source_column: this.form.value.sourceCol.column_name,
-                target_table: this.form.value.targetTable.label,
-                target_column: this.form.value.targetCol.column_name,
+                source_column: this.selectedSourceCols.map(c => c.column_name),
+                target_table: this.form.controls.targetTable.value.value.table_name,
+                target_column: this.selectedTargetCols.map(c => c.column_name),
                 visible: true
             };
-            this.onClose(EdaDialogCloseEvent.NEW, rel);
+          
+           this.onClose(EdaDialogCloseEvent.NEW, rel);
         }
     }
 
     getColumnsByTable() {
         this.targetCols = [];
-        let tmpTable = this.form.value.targetTable;
+        let tmpTable = this.form.controls.targetTable.value;
         tmpTable.value.columns.filter(c => c.column_type === this.form.value.sourceCol.column_type).forEach(col => {
-            this.targetCols.push({ label: col.column_name, value: col })
+            this.targetCols.push({ label: col.display_name.default, value: col })
         });
 
     }
+
+    addRelation(){
+
+        this.targetTable = this.form.controls.targetTable.value.label;
+        this.form.controls.targetTable.disable();
+
+        this.selectedSourceCols.push(this.form.value.sourceCol);
+        this.selectedTargetCols.push(this.form.value.targetCol);
+
+    }
+
+    deleteRelation(index) {
+        this.selectedSourceCols.splice(index, 1);
+        this.selectedTargetCols.splice(index, 1);
+        if(this.selectedSourceCols.length === 0) this.form.controls.targetTable.enable();
+      }
 
     closeDialog() {
         this.sourceCol = '';

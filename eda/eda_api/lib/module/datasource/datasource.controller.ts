@@ -6,6 +6,8 @@ import ManagerConnectionService from '../../services/connection/manager-connecti
 import ConnectionModel from './model/connection.model';
 import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import BigQueryConfig from './model/BigQueryConfig.model';
+import CachedQuery, { ICachedQuery } from '../../services/cache-service/cached-query.model';
+const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
 
@@ -267,7 +269,10 @@ export class DataSourceController {
 
             const cn = new BigQueryConfig(req.body.type, req.body.database, req.body.project_id);
             const manager = await ManagerConnectionService.testConnection(cn);
-            const tables = await manager.generateDataModel(req.params.optimize);
+            const tables = await manager.generateDataModel(req.body.optimize);
+
+
+            const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG
 
             const datasource: IDataSource = new DataSource({
                 ds: {
@@ -287,7 +292,8 @@ export class DataSourceController {
                         model_name: req.body.name,
                         model_id: '',
                         model_granted_roles: [],
-                        optimized: req.params.optimize === '1'
+                        optimized: req.params.optimize === '1',
+                        cache_config : CC
                     },
                     model: {
                         tables: tables
@@ -310,11 +316,16 @@ export class DataSourceController {
     }
 
     static async GenerateDataModelSql(req: Request, res: Response, next: NextFunction) {
+      
         try {
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database,
                 req.body.password, req.body.port, req.body.type, req.body.schema, req.body.sid);
             const manager = await ManagerConnectionService.testConnection(cn);
-            const tables = await manager.generateDataModel(req.params.optimize);
+            const tables = await manager.generateDataModel(req.body.optimize);
+            const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
+
+            console.log(req.body);
+
             const datasource: IDataSource = new DataSource({
                 ds: {
                     connection: {
@@ -332,7 +343,8 @@ export class DataSourceController {
                         model_name: req.body.name,
                         model_id: '',
                         model_granted_roles: [],
-                        optimized: req.params.optimize === '1'
+                        optimized: req.params.optimize === '1',
+                        cache_config :CC
                     },
                     model: {
                         tables: tables
@@ -368,7 +380,7 @@ export class DataSourceController {
     }
 
     static async RefreshDataModel(req: Request, res: Response, next: NextFunction) {
-        console.log('RefreshDataModel datamodel');
+
         try {
 
             const actualDS = await DataSourceController.getMongoDataSource(req.params.id);
@@ -378,7 +390,7 @@ export class DataSourceController {
                 req.body.port, req.body.type, req.body.schema, req.body.sid);
             const manager = await ManagerConnectionService.testConnection(cn);
             const storedDataModel = JSON.parse(JSON.stringify(actualDS));
-            const tables = await manager.generateDataModel(`${storedDataModel.ds.metadata.optimized ? '1' : '0'}`);
+            const tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized);
 
             const datasource: IDataSource = new DataSource({
                 ds: {
@@ -415,8 +427,6 @@ export class DataSourceController {
             const out = DataSourceController.FindAndUpdateDataModel(datasource.ds.model.tables, storedDataModel.ds.model.tables);
             datasource.ds.model.tables = DataSourceController.FindAndDeleteDataModel(datasource.ds.model.tables, out);
 
-            console.log(datasource.ds.model.tables);
-
 
             DataSource.findById(req.params.id, (err, dataSource: IDataSource) => {
                 if (err) {
@@ -443,6 +453,16 @@ export class DataSourceController {
         } catch (err) {
             next(err);
         }
+    }
+
+    static async removeCacheFromModel(req: Request, res: Response, next: NextFunction){
+        try{
+            const queries = await CachedQuery.deleteMany({ 'cachedQuery.model_id':  req.body.id }).exec();
+            return res.status(200).json({ ok: true});
+        }catch(err){
+            next(err);
+        }
+
     }
 
     static FindAndUpdateDataModel(referenceModel, updatedDataModel) {

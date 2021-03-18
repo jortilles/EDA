@@ -1,12 +1,12 @@
 <eda-dialog [inject]="dialog" >
 
-    <div class="ui-g-12" style="overflow-y: auto; max-height: 70vh;" >
+    <div body >
         <p-card [header]="header1">
             <!-- <p-header i18n="@@aplyToAllPanelsH5">
                 ¿Aplica a todos los paneles?
             </p-header> -->
-            <div class="ui-g">
-                <div class="ui-g-12">
+            <div class="p-grid">
+                <div class="p-col-12">
                     <p-inputSwitch id="applyToAllFiltersButton" [disabled]="applyToAllCheck()"
                         [(ngModel)]="switchChecked">
                     </p-inputSwitch>
@@ -17,15 +17,15 @@
         <div style="margin: 1rem;"></div>
 
         <p-card *ngIf="!switchChecked" [header]="header2">
-            <div class="ui-g">
-                <div class="ui-g-12">
+            <div class="p-grid">
+                <div class="p-col-12">
                     <!-- <h5 i18n="@@panelsToAplyH5">
                         Paneles para los que aplica el filtro:
                     </h5> -->
 
-                    <div class="ui-g-12">
+                    <div class="p-col-12">
 
-                        <button *ngFor="let panel of panelsToDisplay" type="button" pButton class="ui-button"
+                        <button *ngFor="let panel of panelsToDisplay" type="button" pButton class="ui-button" style="margin-right: 0.5rem;"
                             [ngClass]="{'ui-button-selected': panel.active, 'ui-button-unselected':!panel.active, 'ui-button-unvaliable':!panel.avaliable}"
                             (click)="addPanelToFilter(panel)" label={{panel.title}}>
 
@@ -47,16 +47,16 @@
 
         <div style="margin: 1rem;"></div>
         <p-card [header]="header3" id="anywhereClick">
-            <div class="ui-g">
-                <div class="ui-g-12">
+            <div class="p-grid">
+                <div class="p-col-12">
                     <!-- <h5 i18n="@@filterForH5" id="anywhereClick">
                         Filtrar por:
                     </h5> -->
                     <br>
 
-                    <div class="ui-g">
+                    <div class="p-grid">
 
-                        <div class="ui-g-4">
+                        <div class="p-col-4">
                             <p-dropdown id="selectFilerTable" [options]="targetTables" [(ngModel)]="targetTable"
                                 filter="true" optionLabel="label" [style]="{'width': '100%'}"
                                 i18n-placeholder="@@placeholderTables" placeholder="Entidades"
@@ -64,7 +64,7 @@
                             </p-dropdown>
                         </div>
 
-                        <div class="ui-g-4">
+                        <div class="p-col-4">
                             <p-dropdown id="selectFilterColumn" [options]="targetCols" [(ngModel)]="targetCol"
                                 filter="true" optionLabel="label" [style]="{'width': '100%'}"
                                 i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
@@ -72,7 +72,7 @@
                             </p-dropdown>
                         </div>
 
-                        <div class="ui-g-4">
+                        <div class="p-col-4">
                             <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
                                 *ngIf=" targetCol && targetCol.value.column_type !== 'date'" [options]="targetValues"
                                 [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30"
@@ -93,12 +93,12 @@
 
 
 
-    <p-footer class="footer">
+    <div footer>
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
             <button id="saveFilterButton" type="submit" pButton (click)="saveGlobalFilter()" i18n-label="@@guardarBtn"
-                label="Confirmar" icon="fa fa-check" class="ui-button ml-2" [disabled]="confirmDisabled()"></button>
-            <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2"
+                label="Confirmar" icon="fa fa-check" class="p-button-raised p-button-success" [disabled]="confirmDisabled()"></button>
+            <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger"
                 i18n-label="@@cancelarBtn" label="Cancelar"></button>
         </div>
-    </p-footer>
+    </div>
 </eda-dialog>

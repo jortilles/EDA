@@ -18,11 +18,13 @@ router.get('/check-connection/:id', authGuard, roleGuard, DataSourceController.C
 
 router.get('/:id', authGuard, roleGuard, DataSourceController.GetDataSourceById);
 
-router.post('/add-data-source/:optimize', authGuard, roleGuard, DataSourceController.GenerateDataModel);
+router.post('/add-data-source/', authGuard, roleGuard, DataSourceController.GenerateDataModel);
 
 router.post('/query', authGuard, roleGuard, DashboardController.execQuery);
 
 router.post('/reload/:id', authGuard, roleGuard, DataSourceController.RefreshDataModel);
+
+router.post('/remove-cache', authGuard, roleGuard, DataSourceController.removeCacheFromModel);
 
 router.put('/:id', authGuard, roleGuard, DataSourceController.UpdateDataSource);
 

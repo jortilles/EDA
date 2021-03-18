@@ -1,5 +1,6 @@
+import { EdaDialogController } from './../../../../../shared/components/eda-dialogs/eda-dialog/eda-dialog-controller';
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, Inject } from '@angular/core';
 import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog';
 import { EdaDialogAbstract } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-abstract';
 import { MenuItem } from 'primeng/api';
@@ -15,13 +16,15 @@ import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-co
   styleUrls: ['../../../../../../assets/sass/eda-styles/components/table-dialog.component.css']
 })
 
-export class TableDialogComponent extends EdaDialogAbstract {
+export class TableDialogComponent extends EdaDialogAbstract implements AfterViewInit {
 
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public items: MenuItem[];
+
+  public gradientMenuController: EdaDialogController;
 
 
   public row_totals;
@@ -32,6 +35,26 @@ export class TableDialogComponent extends EdaDialogAbstract {
   public trend;
   public sortedSerie;
   public sortedColumn;
+  public cols: Array<any> = [];
+  public styles = [];
+
+  /**Strings */
+  public addTotals: string = $localize`:@@addTotals:Totales`;
+  public addPercentages: string = $localize`:@@addPercentages:Porcentajes`;
+  public addStyles: string = $localize`:@@addStyles:Código de color`;
+  public removeRowTotals: string = $localize`:@@removeRowTotals:Quitar totales de fila`
+  public removeRowSubtotals: string = $localize`:@@removeRowSubtotals:Quitar subtotales de fila`
+  public addRowTotals: string = $localize`:@@addRowTotals:Totales de fila`
+  public addRowSubtotals: string = $localize`:@@addRowSubtotals:Subtotales de fila`
+  public addColTotals: string = $localize`:@@addColTotals:Totales de columna`;
+  public removeColTotals: string = $localize`:@@removeColTotals:Quitar totales de columna`;
+  public addOnlyPercentages: string = $localize`:@@addOnlyPercentages:Sólo Porcentajes`;
+  public addOnlyValues: string = $localize`:@@addOnlyValues:Sólo valores`;
+  public addValuesPercentages: string = $localize`:@@addValuesPercentages:Valores y Porcentajes`;
+  public addTrend: string = $localize`:@@addtrend:Tendencia`;
+  public removeTrend: string = $localize`:@@removetrend:Quitar tendencia`;
+
+  public tableTitleDialog = $localize`:@@tableTitleDialog:Propiedades de la tabla`;
 
   constructor() {
     super();
@@ -39,15 +62,19 @@ export class TableDialogComponent extends EdaDialogAbstract {
     this.dialog = new EdaDialog({
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: 'PROPIEDADES DE LA TABLA'
+      title: this.tableTitleDialog
     });
+  }
+  ngAfterViewInit(): void {
+
   }
 
   setChartProperties() {
-
+    this.setCols();
+    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
   }
   onShow(): void {
-  
+
     this.panelChartConfig = this.controller.params.panelChart;
     if (this.panelChartConfig && this.panelChartConfig.config) {
       const config = (<TableConfig>this.panelChartConfig.config.getConfig());
@@ -61,97 +88,178 @@ export class TableDialogComponent extends EdaDialogAbstract {
       this.sortedColumn = config.sortedColumn;
     } else {
       this.panelChartConfig.config = new ChartConfig(
-        new TableConfig(false, false, 5, false, false, false, false, null, null)
+        new TableConfig(false, false, 5, false, false, false, false, null, null, null)
       )
     }
+
     this.setItems();
 
   }
 
 
   private rowTotals() {
-    this.myPanelChartComponent.currentConfig.withTrend = false;
-    this.myPanelChartComponent.currentConfig.withRowTotals = !this.myPanelChartComponent.currentConfig.withRowTotals;
+    const currentConfig = this.myPanelChartComponent.currentConfig;
+    currentConfig.withTrend = false;
+    currentConfig.withRowTotals = !currentConfig.withRowTotals;
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
-    this.row_totals = this.myPanelChartComponent.currentConfig.withRowTotals;
+    this.row_totals = currentConfig.withRowTotals;
     this.setItems();
   }
 
-  private rowTrend(){
-    this.myPanelChartComponent.currentConfig.withRowTotals = false;
-    this.myPanelChartComponent.currentConfig.withTrend = !this.myPanelChartComponent.currentConfig.withTrend;
+  private rowTrend() {
+    const currentConfig = this.myPanelChartComponent.currentConfig;
+    currentConfig.withRowTotals = false;
+    currentConfig.withTrend = !currentConfig.withTrend;
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
-    this.trend = this.myPanelChartComponent.currentConfig.withTrend;
+    this.trend = currentConfig.withTrend;
     this.setItems();
   }
 
   private colSubTotals() {
-  
+
+    const currentConfig = this.myPanelChartComponent.currentConfig;
+
     if (this.onlyPercentages) return;
-    this.myPanelChartComponent.currentConfig.withColSubTotals = !this.myPanelChartComponent.currentConfig.withColSubTotals;
+    currentConfig.withColSubTotals = !currentConfig.withColSubTotals;
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
-    this.col_subtotals = this.myPanelChartComponent.currentConfig.withColSubTotals;
+    this.col_subtotals = currentConfig.withColSubTotals;
     this.setItems();
   }
+
   private colTotals() {
+
+    const currentConfig = this.myPanelChartComponent.currentConfig;
+
     if (this.onlyPercentages) return;
-    this.myPanelChartComponent.currentConfig.withColTotals = !this.myPanelChartComponent.currentConfig.withColTotals;
+
+    currentConfig.withColTotals = !currentConfig.withColTotals;
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
-    this.col_totals = this.myPanelChartComponent.currentConfig.withColTotals;
+    this.col_totals = currentConfig.withColTotals;
+
     this.setItems();
   }
 
   private percentages() {
+
+    const currentConfig = this.myPanelChartComponent.currentConfig;
     if (this.onlyPercentages === true) {
 
-      this.myPanelChartComponent.currentConfig.resultAsPecentage = true;
-      this.myPanelChartComponent.currentConfig.onlyPercentages = false;
+      currentConfig.resultAsPecentage = true;
+      currentConfig.onlyPercentages = false;
 
     } else {
 
-      this.myPanelChartComponent.currentConfig.resultAsPecentage = !this.myPanelChartComponent.currentConfig.resultAsPecentage;
-      this.myPanelChartComponent.currentConfig.onlyPercentages = false;
+      currentConfig.resultAsPecentage = !currentConfig.resultAsPecentage;
+      currentConfig.onlyPercentages = false;
 
     }
 
-
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
-    this.resultAsPecentage = this.myPanelChartComponent.currentConfig.resultAsPecentage;
-    this.onlyPercentages = this.myPanelChartComponent.currentConfig.onlyPercentages;
+    this.resultAsPecentage = currentConfig.resultAsPecentage;
+    this.onlyPercentages = currentConfig.onlyPercentages;
+    this.setCols();
     this.setItems();
   }
 
   private setOnlyPercentages() {
 
-    this.myPanelChartComponent.currentConfig.resultAsPecentage = !this.myPanelChartComponent.currentConfig.onlyPercentages;
-    this.myPanelChartComponent.currentConfig.onlyPercentages = !this.myPanelChartComponent.currentConfig.onlyPercentages;
+    const currentConfig = this.myPanelChartComponent.currentConfig;
+
+    currentConfig.resultAsPecentage = !currentConfig.onlyPercentages;
+    currentConfig.onlyPercentages = !currentConfig.onlyPercentages;
 
     //no totals
-    this.myPanelChartComponent.currentConfig.withColSubTotals = false;
-    this.col_subtotals = this.myPanelChartComponent.currentConfig.withColSubTotals;
+    currentConfig.withColSubTotals = false;
+    this.col_subtotals = currentConfig.withColSubTotals;
 
-    this.myPanelChartComponent.currentConfig.withColTotals = false;
-    this.col_totals = this.myPanelChartComponent.currentConfig.withColTotals;
+    currentConfig.withColTotals = false;
+    this.col_totals = currentConfig.withColTotals;
 
 
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
-    this.resultAsPecentage = this.myPanelChartComponent.currentConfig.resultAsPecentage;
-    this.onlyPercentages = this.myPanelChartComponent.currentConfig.onlyPercentages;
-    this.setItems();
+    this.resultAsPecentage = currentConfig.resultAsPecentage;
+    this.onlyPercentages = currentConfig.onlyPercentages;
+    this.setCols();
+    //this.setItems();
 
+  }
+
+  private setStyle(col) {
+    if (this.controller.params.panelChart.chartType === 'table') {
+      this.gradientMenuController = new EdaDialogController({
+        params: {
+          col: col,
+          style: this.styles.filter(style => style.col === col.field)[0]
+        },
+        close: (event, response) => this.onCloseGradientController(event, response)
+      })
+    } else {
+      this.gradientMenuController = new EdaDialogController({
+        params: {
+          col: col,
+          style: this.styles.filter(style => style.col === col.header)[0]
+        },
+        close: (event, response) => this.onCloseGradientController(event, response, col)
+      })
+    }
+  }
+
+  private setCols() {
+
+    if (this.controller.params.panelChart.chartType === 'table') {
+
+      if (this.onlyPercentages) {
+        this.cols = this.myPanelChartComponent.componentRef.instance.inject.cols.filter(col => col.type === "EdaColumnPercentage");
+      }
+      else {
+        this.cols = this.myPanelChartComponent.componentRef.instance.inject.cols.filter(col => col.type === "EdaColumnNumber" || col.type === "EdaColumnPercentage");
+      }
+    } else {
+
+      this.cols = [];
+
+      let series = this.myPanelChartComponent.componentRef.instance.inject.series;
+
+      let cols = new Map();
+
+      series[series.length - 1].labels.forEach(serie => {
+        if (!cols.has(serie.metric)) {
+          cols.set(serie.metric, [serie.column])
+        }
+        else {
+          let col = cols.get(serie.metric);
+          col.push(serie.column);
+          cols.set(serie.metric, col);
+        }
+      });
+
+      cols.forEach((value, key) => {
+        this.cols.push({ header: key, col: value, field: key })
+      });
+
+      /**Remove trend col */
+      this.cols = this.cols.filter(col => col.header !== undefined);
+
+
+      if (this.onlyPercentages) this.cols = [];
+    }
+    this.setItems();
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
   }
+  
   saveChartConfig() {
+
     const config = (<TableConfig>this.panelChartConfig.config.getConfig());
     const rows = config.visibleRows;
     const sortedSerie = config.sortedSerie;
-    const sortedColumn = config.sortedColumn
+    const sortedColumn = config.sortedColumn;
+    const styles = this.styles;
 
-    const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows, 
-      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn);
+    const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
+      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles);
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }
@@ -160,84 +268,134 @@ export class TableDialogComponent extends EdaDialogAbstract {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
+  private onCloseGradientController(event, response, col?) {
+
+    if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+      this.styles = this.styles.filter(style => style.col !== response.col);
+
+      if (!response.noStyle) {
+        if (this.controller.params.panelChart.chartType === 'table') {
+          this.styles.push(response);
+        } else {
+          response.col = col.header;
+          response.cols = col.col
+          this.styles.push(response);
+        }
+      }
+    }
+    if (!this.myPanelChartComponent.componentRef.instance.inject.pivot) {
+
+      this.myPanelChartComponent.componentRef.instance.applyStyles(this.styles);
+
+    } else {
+
+      this.myPanelChartComponent.componentRef.instance.applyPivotSyles(this.styles);
+
+    }
+    this.gradientMenuController = undefined;
+  }
+
   private setItems() {
 
     if (this.controller.params.panelChart.chartType === 'table') {
       this.items = [
         {
-          label: "Totales",
+          label: this.addTotals,
           icon: "pi pi-list",
           items: [
             {
-              label: this.col_totals === true ? "Quitar totales de columna" : "Totales de columna",
+              label: this.col_totals === true ? this.removeColTotals : this.addColTotals,
               command: () => this.colTotals()
             },
             {
-              label: this.col_subtotals === true ? "Quitar Subtotales de columna" : "Subtotales de columna",
+              label: this.col_subtotals === true ? this.removeRowSubtotals : this.addRowSubtotals,
               command: () => this.colSubTotals()
             }
           ]
         },
         {
-          label: "Porcentajes",
+          label: this.addPercentages,
           icon: "pi pi-list",
           items: [
             {
-              label: !this.resultAsPecentage || this.onlyPercentages ? "Valores y porcentajes" : "Sólo valores",
+              label: !this.resultAsPecentage || this.onlyPercentages ? this.addValuesPercentages : this.addOnlyValues,
               icon: " ",
               command: () => this.percentages()
             },
             {
-              label: !this.onlyPercentages ? "Sólo porcentajes" : "Sólo valores",
+              label: !this.onlyPercentages ? this.addOnlyPercentages : this.addOnlyValues,
               icon: " ",
               command: () => this.setOnlyPercentages()
             }
           ]
+        },
+        {
+          label: this.addStyles,
+          icon: "pi pi-list",
+          items: this.cols.map(col => {
+            return {
+              label: col.header,
+              icon: " ",
+              command: () => this.setStyle(col)
+            }
+          })
         }
       ]
     } else {
       this.items = [
 
         {
-          label: "Totales",
+          label: this.addTotals,
           icon: "pi pi-list",
           items: [
             {
-              label: this.row_totals === true ? "Quitar totales de fila" : "Totales de fila",
-              disabled : this.trend,
+              label: this.row_totals === true ? this.removeRowTotals : this.addRowTotals,
+              disabled: this.trend,
               command: () => this.rowTotals()
             },
             {
-              label: this.trend === true ? "Quitar Tendencia" : "Tendencia",
-              disabled : this.row_totals,
+              label: this.trend === true ? this.removeTrend : this.addTrend,
+              disabled: this.row_totals,
               command: () => this.rowTrend()
             },
             {
-              label: this.col_totals === true ? "Quitar totales de columna" : "Totales de columna",
+              label: this.col_totals === true ? this.removeColTotals : this.addColTotals,
               command: () => this.colTotals()
             },
             {
-              label: this.col_subtotals === true ? "Quitar Subtotales de columna" : "Subtotales de columna",
+              label: this.col_subtotals === true ? this.removeRowSubtotals : this.addRowSubtotals,
               command: () => this.colSubTotals()
             }
           ]
         },
         {
-          label: "Porcentajes",
+          label: this.addPercentages,
           icon: "pi pi-list",
           items: [
 
             {
-              label: !this.resultAsPecentage || this.onlyPercentages ? "Valores y porcentajes" : "Sólo valores",
+              label: !this.resultAsPecentage || this.onlyPercentages ? this.addValuesPercentages : this.addOnlyValues,
               icon: " ",
               command: () => this.percentages()
             },
             {
-              label: !this.onlyPercentages ? "Sólo porcentajes" : "Sólo valores",
+              label: !this.onlyPercentages ? this.addOnlyPercentages : this.addOnlyValues,
               icon: " ",
               command: () => this.setOnlyPercentages()
             }
           ]
+        },
+        {
+          label: this.addStyles,
+          icon: "pi pi-list",
+          items: this.cols.map(col => {
+            return {
+              label: col.header,
+              icon: " ",
+              command: () => this.setStyle(col)
+            }
+          })
         }
 
       ];

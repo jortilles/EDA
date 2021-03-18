@@ -1,35 +1,42 @@
 <eda-dialog [inject]="dialog">
-    <form [formGroup]="form">
-        <div class="ui-g">
-            <div class="ui-g-12">
-                <div class="form-group">
-                    <label i18n="@@inputNombre">NOMBRE *</label>
-                    <input type="text" class="form-control" formControlName="name" pInputText>
+    <div body>
+
+
+        <form [formGroup]="form">
+            <div class="p-grid">
+                <div class="p-col-12">
+                    <div class="form-group">
+                        <label i18n="@@inputNombre">NOMBRE *</label>
+                        <input type="text" class="form-control" formControlName="name" pInputText>
+                    </div>
                 </div>
+
+                <div class="p-col-12">
+                    <p-card header="Usuarios" >
+                        <p-pickList [source]="lists.avaibles" [target]="lists.selecteds" [responsive]="true"
+                            sourceHeader="Disponibles" targetHeader="Seleccionados" [sourceStyle]="{width: '100%'}"
+                            [targetStyle]="{width: '100%'}" [showSourceControls]="false" [showTargetControls]="false">
+                            <ng-template let-user pTemplate="item">
+                                <div class="ui-helper-clearfix">
+                                    <img [src]="user.img | image" alt="user image"
+                                        style="display:inline-block;margin:2px 0 2px 2px" width="25" height="25">
+                                    <span style="font-size:14px;float:right;margin:15px 5px 0 0">{{user.name}}</span>
+                                </div>
+                            </ng-template>
+                        </p-pickList>
+                    </p-card>
+                </div>
+
             </div>
+        </form>
+    </div>
 
-            <div class="ui-g-12">
-                <p-card header="Usuarios" [style]="{'height': '250px'}">
-                    <p-pickList [source]="lists.avaibles" [target]="lists.selecteds" [responsive]="true"
-                        sourceHeader="Disponibles" targetHeader="Seleccionados" [sourceStyle]="{width: '100%'}"
-                        [targetStyle]="{width: '100%'}" [showSourceControls]="false" [showTargetControls]="false">
-                        <ng-template let-user pTemplate="item">
-                            <div class="ui-helper-clearfix">
-                                <img [src]="user.img | image" alt="user image" style="display:inline-block;margin:2px 0 2px 2px" width="25" height="25">
-                                <span style="font-size:14px;float:right;margin:15px 5px 0 0">{{user.name}}</span>
-                            </div>
-                        </ng-template>
-                    </p-pickList>
-                </p-card>
-            </div>
-
-        </div>
-    </form>
-
-    <p-footer class="footer">
+    <div footer>
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-            <button type="button" pButton (click)="save()" class="ui-button ml-2" i18n-label="@@guardarBtn" icon="fa fa-check" label="Confirmar" id="eda_group_detail_confirmar"></button>
-            <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="cerrarBtn" label="Cerrar"></button>
+            <button type="button" pButton (click)="save()" class="p-button-raised p-button-success"
+                i18n-label="@@guardarBtn" icon="fa fa-check" label="Confirmar" id="eda_group_detail_confirmar"></button>
+            <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger"
+                i18n-label="cerrarBtn" label="Cerrar"></button>
         </div>
-    </p-footer>
+    </div>
 </eda-dialog>

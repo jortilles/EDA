@@ -8,6 +8,7 @@ export class TableConfig {
   withTrend : Boolean; 
   sortedSerie : any;
   sortedColumn : any;
+  styles : Array<any>;
 
   constructor(
     onlyPercentages: Boolean, 
@@ -18,7 +19,8 @@ export class TableConfig {
     withRowTotals: Boolean,
     withTrend:Boolean,
     sortedSerie :any,
-    sortedColumn : any
+    sortedColumn : any,
+    styles : Array<any>
     ) {
       this.onlyPercentages = onlyPercentages;
       this.resultAsPecentage = resultAsPecentage;
@@ -29,6 +31,7 @@ export class TableConfig {
       this.withTrend = withTrend;
       this.sortedSerie = sortedSerie;
       this.sortedColumn = sortedColumn;
+      this.styles = styles;
   }
 
 }

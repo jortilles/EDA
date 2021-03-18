@@ -18,15 +18,21 @@
 @import url(../eda-styles/index-styles.css);
 
 .custom  .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-    background: rgba(47, 79, 79, 0.795);
-    color: rgb(253, 251, 251);
-    box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+    background: #010913ce !important;
+    font: 12px Questrial;
+    color: #fbfbfb  !important;;
+    cursor: pointer;
+    pointer-events: none;
+    z-index: 1;
   }
 
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-    background: rgba(47, 79, 79, 0.795) !important;
-    color: rgb(253, 251, 251) !important;
-    box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+    background: #010913ce !important;
+    font: 12px Questrial;
+    color: #fbfbfb  !important;;
+    cursor: pointer;
+    pointer-events: none;
+    z-index: 1;
 }
 
 
@@ -36,7 +42,7 @@ body, html {
 
 body {
     background: #fff;
-    font-family: sans-serif!important;
+    font-family: "Questrial"!important;
     margin: 0;
     overflow-y: initial;
     overflow-x: hidden;
@@ -61,7 +67,6 @@ body.swal2-height-auto {
     border-top: 1px solid rgba(120, 130, 140, 0.13);
     background: #ffffff;
 }
-
 .container-fluid {
     padding: 10px 25px;
 }
@@ -362,7 +367,7 @@ h4,
 h5,
 h6 {
     color: #455a64;
-    font-family: sans-serif;
+    font-family: "Questrial";
     font-weight: 400;
 }
 

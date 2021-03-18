@@ -2,6 +2,7 @@ import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/c
 import { Component, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
+import { UserService } from '@eda/services/service.index';
 
 
 
@@ -14,17 +15,29 @@ import { PanelChart } from '../panel-charts/panel-chart';
 export class KpiEditDialogComponent extends EdaDialogAbstract {
 
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
+  @ViewChild('mailConfig', { static: false }) mailConfig: any;
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
 
   public value: number;
-  public operand: string ;
+  public operand: string;
   public color: string = '#ff0000';
   public alerts: Array<any> = [];
-  public alertInfo : string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`
+  public alertInfo: string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`;
+  public ptooltipViewAlerts:string=$localize`:@@ptooltipViewAlerts:Configurar alertas`;
 
-  constructor() {
+  public units: string;
+  public quantity: number;
+  public hours: any;
+  public hoursSTR = $localize`:@@hours:Hora/s`;
+  public daysSTR = $localize`:@@days:Día/s`;
+  public mailMessage = '';
+  public currentAlert = null;
+  public users : any ;
+  public selectedUsers:any;
+
+  constructor( private userService: UserService,) {
 
     super();
 
@@ -60,7 +73,8 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
       {
         value: this.value ? this.value : 0,
         operand: this.operand,
-        color: this.color
+        color: this.color,
+        mailing: { units: null, quantity: null, hours: null, minutes: null, users: [], mailMessage:null, enabled: false }
       });
   }
   deleteAlert(item) {
@@ -84,6 +98,69 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     const b = parseInt(hex.substring(4, 6), 16);
 
     return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
+  }
+  openConfigDialog($event, alert) {
+
+   
+      this.userService.getUsers().subscribe(
+          res => this.users = res.map(user => ({label: user.name, value: user})),
+          err => console.log(err)
+      );
+
+
+    this.hours = `${alert.mailing.hours || '00'}:${alert.mailing.minutes || '00'}`;
+    this.units = alert.mailing.units;
+    this.quantity = alert.mailing.quantity;
+    this.selectedUsers = alert.mailing.users;
+    this.mailMessage = alert.mailing.mailMessage;
+    this.currentAlert = alert;
+    this.mailConfig.toggle($event);
+  }
+
+  saveMailingConfig() {
+
+    const hours = this.hours && typeof this.hours === 'string' ? this.hours.slice(0, 2) :
+      this.hours ? this.fillWithZeros(this.hours.getHours()) : null;
+    const minutes = this.hours && typeof this.hours === 'string' ? this.hours.slice(3, 5) :
+      this.hours ? this.fillWithZeros(this.hours.getMinutes()) : null;
+
+    
+    this.currentAlert.mailing = {
+      units: this.units, 
+      quantity: this.quantity, 
+      hours: hours, 
+      minutes: minutes, 
+      users:this.selectedUsers,
+      mailMessage:this.mailMessage,
+      lastUpdated : new Date().toISOString(), 
+      enabled: true
+    }
+
+    this.currentAlert = null;
+    this.units = null;
+    this.quantity = null;
+    this.hours = null;
+    this.mailMessage = null;
+    this.selectedUsers = [];
+    this.mailConfig.hide();
+  }
+  closeMailingConfig() {
+    this.currentAlert = null;
+    this.units = null;
+    this.quantity = null;
+    this.hours = null;
+    this.mailMessage = null;
+    this.selectedUsers = [];
+    this.mailConfig.hide();
+  }
+
+  fillWithZeros(n: number) {
+    if (n < 10) return `0${n}`
+    else return `${n}`;
+  }
+
+  disableMailConfirm(){
+    return (!this.quantity || !this.units || !(this.selectedUsers.length > 0) || !this.mailMessage)
   }
 
 }

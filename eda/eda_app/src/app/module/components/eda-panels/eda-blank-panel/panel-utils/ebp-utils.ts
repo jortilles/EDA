@@ -49,6 +49,22 @@ export const EbpUtils = {
         str = $localize`:@@chartInfo12:Es necesario un campo vinculado a un archivo GeoJson y un campo de tipo numérico.`;
         description += `\n${str}`;
         break;
+      case 'parallelSets':
+        str = $localize`:@@chartInfo14:Un Parallel Set necesita dos o más categorias y un campo numérico`;
+        description += `\n${str}`;
+        break;
+      case 'treeMap':
+        str = $localize`:@@chartInfo15:Un Tree Map necesita un campo numérico y una o más categorias`;
+        description += `\n${str}`;
+        break;
+      case 'scatterPlot':
+        str = $localize`:@@chartInfo16:Un Scatter Plot necesita una categoria y dos o tres campos numéricos`;
+        description += `\n${str}`;
+        break;
+      case 'knob':
+          str = $localize`:@@chartInfo17:El velocímetro necesita uno o dos valores numéricos, en caso de disponer de dos valores el segundo se interpretará como límite`;
+          description += `\n${str}`;
+          break;
       default:
         description = $localize`:@@chartInfo13:Los datos seleccionados no permiten utilizar este gráfico.`;
         break;
@@ -97,21 +113,30 @@ export const EbpUtils = {
       case 'parallelSets':
         description = 'tune'
         break;
+      case 'treeMap':
+        description = 'dashboard'
+        break;
+      case 'scatterPlot':
+        description = 'scatter_plot'
+        break;
+      case 'knob':
+        description = 'explore'
+        break;
     }
 
     return description;
   },
-  chartType : (type: string): number => {
+  chartType: (type: string): number => {
     if (['table', 'crosstable'].includes(type)) {
-        return 0;
+      return 0;
     }
     if (['bar', 'line', 'piechart'].includes(type)) {
-        return 1;
+      return 1;
     }
     if (type === 'kpi') {
-        return 3;
+      return 3;
     }
     return -1;
-}
+  }
 
 }

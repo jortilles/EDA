@@ -32,7 +32,9 @@ export class DsConfigWrapperComponent implements OnInit {
   public name: string;
   public header: string = $localize`:@@DataModelHeader:Configurar nuevo orígen de datos`;
   public optimizeString : string = $localize`:@@OptimizeQuery:Optimizar consultas`;
+  public allowCacheSTR : string = $localize`:@@allowCache: Habilitar caché`
   public optimize: boolean = true;
+  public allowCache:boolean = true;
   private project_id: string;
 
 
@@ -55,7 +57,8 @@ export class DsConfigWrapperComponent implements OnInit {
       password: [null],
       schema: [null],
       sid: [{ name: 'SID', value: 1 }],
-      optimize: [true]
+      optimize: [true],
+      allowCache:[true]
     });
 
   }
@@ -85,20 +88,22 @@ export class DsConfigWrapperComponent implements OnInit {
       name: this.form.value.name,
       type: this.form.value.type.value,
       database: this.form.value.db,
-      project_id: this.project_id
+      project_id: this.project_id,
+      optimize: this.form.value.optimize ? 1 : 0,
+      allowCache: this.form.value.allowCache ? 1 : 0
     }
 
     this.dataSourceService.testConnection(connection).subscribe(
 
       () => {
-        const optimize = this.form.value.optimize ? 1 : 0;
-        this.dataSourceService.addDataSource(connection, optimize).subscribe(
+  
+        this.dataSourceService.addDataSource(connection).subscribe(
           res => {
             let title = $localize`:@@DatadourceTitle:Fuente de datos: `
             Swal.fire({
               title: `${title} ${this.form.value.name}`,
               text: $localize`:@@DatasourceText:Creada correctamente`,
-              type: 'success'
+              icon: 'success'
             });
             this.reloadDataSources();
             this.spinnerService.off();
@@ -131,18 +136,20 @@ export class DsConfigWrapperComponent implements OnInit {
       password: this.form.value.password,
       schema: this.form.value.schema,
       sid: this.form.value.sid.value,
+      optimize: this.form.value.optimize ? 1 : 0,
+      allowCache: this.form.value.allowCache ? 1 : 0
     };
 
     this.dataSourceService.testConnection(connection).subscribe(
       () => {
-        const optimize = this.optimize ? 1 : 0; // count rows in every table
-        this.dataSourceService.addDataSource(connection, optimize).subscribe(
+
+        this.dataSourceService.addDataSource(connection).subscribe(
           res => {
             let title = $localize`:@@DatadourceTitle:Fuente de datos: `
             Swal.fire({
               title: `${title} ${this.form.value.name}`,
               text: $localize`:@@DatasourceText:Creada correctamente`,
-              type: 'success'
+              icon: 'success'
             });
             this.reloadDataSources();
             this.spinnerService.off();
@@ -200,7 +207,7 @@ export class DsConfigWrapperComponent implements OnInit {
   fileLoaded() {
 
     this.project_id = this.fileUploader.currentFile.file.project_id;
-    console.log(this.project_id);
+
 
   }
 

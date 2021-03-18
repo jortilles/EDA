@@ -14,6 +14,8 @@ import { ModelSettingsComponent } from './model-settings/model-settings.componen
 // Guard
 import { VerifyTokenGuard } from '../../services/guards/verify-token.guard';
 import { GroupListComponent } from './groups-management/group-list/group-list.component';
+import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
+import { MailManagementComponent } from './mail-management/mail-management.component';
 
 
 const pagesRoutes: Routes = [
@@ -28,6 +30,8 @@ const pagesRoutes: Routes = [
     { path: 'groups-management', component: GroupListComponent, canActivate: [VerifyTokenGuard] },
     { path: 'users-management', component: UsersLlistaComponent, canActivate: [VerifyTokenGuard]},
     { path: 'models-management', component: ModelSettingsComponent, canActivate:[VerifyTokenGuard]},
+    { path: 'alerts-management', component: AlertsManagementComponent, canActivate:[VerifyTokenGuard]},
+    { path: 'mail-management', component: MailManagementComponent, canActivate:[VerifyTokenGuard]},
     { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

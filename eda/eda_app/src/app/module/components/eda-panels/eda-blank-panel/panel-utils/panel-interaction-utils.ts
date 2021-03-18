@@ -275,6 +275,7 @@ export const PanelInteractionUtils = {
       // Reseting all configs of column removed
       ebp.currentQuery[match].ordenation_type = 'No';
       ebp.currentQuery[match].aggregation_type.forEach(ag => ag.selected = false);
+      ebp.currentQuery[match].format = '';
       ebp.currentQuery.splice(match, 1);
 
     } else if (list === 'filter') {
@@ -287,8 +288,9 @@ export const PanelInteractionUtils = {
     // Carregar de nou l'array Columns amb la columna borrada
     PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id));
 
+
     // Buscar relacións per tornar a mostrar totes les taules
-    if (ebp.currentQuery.length === 0) {
+    if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
 
       ebp.tablesToShow = ebp.tables;
 

@@ -1,28 +1,27 @@
-<div class="ui-g">
+<div class="p-grid">
 
-    <div class="ui-g-4 ui-sm-12">
+    <div class="p-col-4 ui-sm-12">
         <p-card>
             
 
                 <div class="wraper">
+                    <div style="margin: 0.2em; font-size:1.2rem" i18n="Titulo Card|Titulo card@@tituloCard"> Modelo de
+                        datos </div>
+
                     <button pButton (click)="this.refreshModel()" class="header-button" icon="fa fa-refresh"
-                        iconPos="center" i18n-title="@@Refresh" title="Refrescar modelo de datos">
+                        iconPos="center"  [pTooltip]="refreshSTR">
                     </button>
 
                     <button id="saveModel" pButton (click)="dataModelService.sendModel()" class="header-button"
-                        icon="fa fa-save" iconPos="center" i18n-title="@@saveModel" title="Guardar modelo de datos">
+                        icon="fa fa-save" iconPos="center" [pTooltip]="saveModelSTR">
                     </button>
 
                     <button pButton (click)="reLoadModelFromDb()" class="header-button" icon="fa fa-database"
-                        iconPos="center" i18n-title="@@updateModel" title="Actualizar modelo de la base de datos">
+                        iconPos="center" [pTooltip]="updateModelSTR">
                     </button>
 
-                    <span style="margin-left: 5px; font-size:1rem" i18n="Titulo Card|Titulo card@@tituloCard"> Modelo de
-                        datos </span>
-
                     <button id="deleteModel" pButton (click)="deleteDatasource()" class="header-button"
-                        icon="fa fa-trash" iconPos="center" style="float: right;" i18n-title="@@deleteModel"
-                        title="Borrar modelo de datos">
+                        icon="fa fa-trash" iconPos="center" style="float: right;" [pTooltip]="deleteModelSTR">
                     </button>
                 </div>
 
@@ -36,7 +35,7 @@
         </p-card>
     </div>
 
-    <div class="ui-g-8  ui-sm-12">
+    <div class="p-col-8  ui-sm-12">
         <app-data-source-detail (onTableCreated)="reLoadModelFromDb()"></app-data-source-detail>
     </div>
 

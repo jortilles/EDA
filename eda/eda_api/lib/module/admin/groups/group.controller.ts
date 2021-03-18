@@ -31,9 +31,9 @@ export class GroupController {
             let groups: IGroup[] = [];
 
             if (isAdmin) {
-                groups = await Group.find({}, 'name role').exec();
+                groups = await Group.find({}, 'name role users').exec();
             } else {
-                groups = await Group.find({ 'users': { $in: req.user._id } }, 'name role').exec();
+                groups = await Group.find({ 'users': { $in: req.user._id } }, 'name role users').exec();
             }
 
             return res.status(200).json(groups);
@@ -43,6 +43,7 @@ export class GroupController {
     }
 
     static async getGroup(req: Request, res: Response, next: NextFunction) {
+
         try {
             Group.findById({ _id: req.params.id }, async (err, group: IGroup) => {
                 if (err) {
@@ -61,6 +62,8 @@ export class GroupController {
     static async createGroup(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body;
+
+            console.log(req.body)
 
             const group: IGroup = new Group({
                 name: body.name,

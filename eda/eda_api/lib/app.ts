@@ -5,6 +5,8 @@ import fileUpload from 'express-fileupload';
 import { NextFunction, Request, Response } from 'express';
 import { callInterceptor } from './services/call-interceptor';
 import errorMiddleware from './middleware/error.middleware';
+import { CachedQueryService } from './services/cache-service/cached-query.service';
+
 
 import Router from './router';
 
@@ -12,6 +14,8 @@ const path = require('path');
 const database = require('../config/database.config');
 const mongoose = require('mongoose');
 const compression = require('compression');
+import schedule from 'node-schedule';
+import * as EdaScheduler from './EdaScheduler';
 
 class App {
     public app: express.Application;
@@ -33,8 +37,8 @@ class App {
         this.app.set('view engine', 'pug');
 
         // Body Parser
-        this.app.use(bodyParser.json({limit: '50mb'}));
-        this.app.use(bodyParser.urlencoded({limit: '50mb', extended: true, parameterLimit: 1000000}));
+        this.app.use(bodyParser.json({ limit: '50mb' }));
+        this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 1000000 }));
 
         // Cors
         this.app.use(cors());
@@ -47,6 +51,9 @@ class App {
 
         // File Upload
         this.app.use(fileUpload());
+
+        //jobs
+        EdaScheduler.initJobs();
     }
 
     private mongoSetup(): void {

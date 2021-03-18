@@ -24,7 +24,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
     this.dialog = new EdaDialog({
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: ''
+      title: $localize`:@@addCalculatedColTitle:Añadir columna calculada a la tabla `
     });
     this.dialog.style = { width: '50%', height: '40%', top: '50px', left: '90px' };
 
@@ -34,7 +34,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
     });
   }
   onShow(): void {
-    const title = $localize`:@@addCalculatedColTitle:Añadir columna calculada a la tabla `
+    const title = this.dialog.title;
     this.dialog.title = `${title} ${this.controller.params.table.name}`;
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {

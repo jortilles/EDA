@@ -6,6 +6,7 @@ import _ = require('lodash');
 
 
 export const roleGuard = async function (req: Request, res: Response, next: NextFunction) {
+    
     let userID = req.user._id;
 
     if ( !_.isNil(userID) ) {

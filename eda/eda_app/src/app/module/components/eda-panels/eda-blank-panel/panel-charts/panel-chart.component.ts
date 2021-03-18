@@ -1,3 +1,9 @@
+import { EdaKnob } from './../../../eda-knob/edaKnob';
+import { EdaKnobComponent } from './../../../eda-knob/eda-knob.component';
+import { KnobConfig } from './chart-configuration-models/knob-config';
+import { EdaScatter } from './../../../eda-scatter/eda-scatter.component';
+import { EdaTreeMap } from './../../../eda-treemap/eda-treemap.component';
+import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
 import { TableConfig } from './chart-configuration-models/table-config';
 import {
@@ -31,7 +37,7 @@ import { EdaD3 } from '@eda/components/eda-d3/eda-d3';
     templateUrl: './panel-chart.component.html',
     styleUrls: []
 })
-export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
+export class PanelChartComponent implements OnInit, OnChanges,  OnDestroy {
     ngOnDestroy(): void {
         this.destroyComponent();
     }
@@ -53,12 +59,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         private zone: NgZone) { }
 
     ngOnInit(): void {
-        
-     }
+        this.NO_DATA = false;
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
         this.NO_DATA = false
-        if (this.props.data && this.props.data.values.length !== 0) {
+        
+        if (this.props.data && this.props.data.values.length !== 0 && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
             this.NO_DATA = false;
             this.changeChartType();
 
@@ -89,8 +96,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (['geoJsonMap', 'coordinatesMap'].includes(type)) {
             this.renderMap(type);
         }
-        if (type === 'parallelSets'){
+        if (type === 'parallelSets') {
             this.renderParallelSets();
+        }
+        if (type === 'treeMap') {
+            this.renderTreeMap();
+        }
+        if (type === 'scatterPlot') {
+            this.renderScatter();
+        }
+        if (type === 'knob') {
+            this.renderKnob()
         }
     }
 
@@ -113,7 +129,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
     private renderEdaChart(type: string) {
 
-        const isbarline = this.props.edaChart === 'barline';
+        const isbarline = this.props.edaChart === 'barline' ;
         const isstacked = this.props.edaChart === 'stackedbar';
 
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
@@ -122,9 +138,23 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.data.values,
             dataTypes, dataDescription, isbarline);
 
+        const minMax = this.props.chartType !== 'line' ? {min:null, max:null} : this.chartUtils.getMinMax(chartData);
+
         const manySeries = chartData[1].length > 10 ? true : false;
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
-            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps);
+            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, minMax);
+
+        /**Add trend datasets*/
+        let cfg : any = this.props.config.getConfig();
+        if (cfg.addTrend && (cfg.chartType === 'line')) {
+            let trends = [];
+            chartData[1].forEach(serie => {
+                let trend = this.chartUtils.getTrend(serie);
+                trends.push(trend);
+            });
+            trends.forEach(trend => chartData[1].push(trend));
+        }
+
 
         let chartConfig: any = {};
         chartConfig.chartType = this.props.chartType;
@@ -141,6 +171,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
 
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
+
 
         this.createEdaChartComponent(chartConfig);
     }
@@ -176,6 +207,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.onNotify.subscribe(data => {
             (<TableConfig>config).visibleRows = data;
         });
+        this.componentRef.instance.inject.onSortPivotEvent.subscribe(data => {
+            (<TableConfig>config).sortedSerie = data;
+        });
+        this.componentRef.instance.inject.onSortColEvent.subscribe(data => {
+            (<TableConfig>config).sortedColumn = data;
+        });
         this.currentConfig = this.componentRef.instance.inject;
         this.componentRef.instance.inject.linkedDashboardProps = this.props.linkedDashboardProps;
     }
@@ -187,6 +224,28 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.withTrend = config.withTrend;
         this.componentRef.instance.inject.resultAsPecentage = config.resultAsPecentage;
         this.componentRef.instance.inject.checkTotals(null, config.visibleRows);
+        this.componentRef.instance.inject.sortedSerie = config.sortedSerie;
+        this.componentRef.instance.inject.sortedColumn = config.sortedColumn;
+        this.configUpdated.emit();
+    }
+
+    /**renderKnob */
+
+    private renderKnob() {
+        let chartConfig: EdaKnob = new EdaKnob();
+        chartConfig.data = this.props.data;
+        chartConfig.dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        chartConfig.color = this.props.config['config']['color'] ? this.props.config['config']['color'] : null;
+        chartConfig.limits = this.props.config['config']['limits'] ? this.props.config['config']['limits'] : null;
+        this.createEdaKnobComponent(chartConfig)
+
+    }
+
+    private createEdaKnobComponent(inject) {
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaKnobComponent);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
     }
 
     /**
@@ -196,7 +255,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         let chartConfig: any = {};
         chartConfig.value = this.props.data.values[0][0];
         chartConfig.header = this.props.query[0].display_name.default;
-        const config : any = this.props.config;
+        const config: any = this.props.config;
         const alertLimits = config.config.alertLimits;
         if (config) {
             chartConfig.sufix = (<KpiConfig>config.getConfig()).sufix;
@@ -260,11 +319,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject = inject;
     }
 
-    private renderParallelSets(){
-        
+    private renderParallelSets() {
+
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-        
-        let inject : EdaD3 = new EdaD3;
+
+        let inject: EdaD3 = new EdaD3;
         inject.size = this.props.size;
         inject.id = this.randomID();
         inject.data = this.props.data;
@@ -275,12 +334,58 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.createParallelSetsComponent(inject);
     }
 
-    private createParallelSetsComponent(inject:any){
+    private createParallelSetsComponent(inject: any) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaD3Component);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
-        
+
+    }
+
+    private renderTreeMap() {
+
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+
+        let inject: TreeMap = new TreeMap;
+        inject.size = this.props.size;
+        inject.id = this.randomID();
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.colors = this.props.config.getConfig()['colors'];
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createTreeMap(inject);
+    }
+
+    private createTreeMap(inject: any) {
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaTreeMap);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+
+    }
+
+    private renderScatter() {
+
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+
+        let inject: TreeMap = new TreeMap;
+        inject.size = this.props.size;
+        inject.id = this.randomID();
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.colors = this.props.config.getConfig()['colors'];
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createScatter(inject);
+    }
+
+    private createScatter(inject: any) {
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaScatter);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+
     }
 
     private randomID() {

@@ -51,7 +51,7 @@ export class EditModelPanel {
     type: string, host: string, database: string, user: string, password: string, schema:string, port:number
   };
   metadata: {
-    model_name: string, model_granted_roles: any;
+    model_name: string, model_granted_roles: any, cache_config
   };
 }
 

@@ -38,13 +38,14 @@ export const PanelOptions = {
 
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.chartController = new EdaDialogController({
-              params: { panelId: _.get(panelComponent.panel, 'id'), chart: panelComponent.graficos },
+              params: { panelId: _.get(panelComponent.panel, 'id'), chart: panelComponent.graficos, config: panelComponent.panelChartConfig },
               close: (event, response) => panelComponent.onCloseChartProperties(event, response)
             });
 
           } else if (['table', 'crosstable'].includes(panelComponent.graficos.chartType)) {
 
             panelComponent.contextMenu.hideContextMenu();
+  
             panelComponent.tableController = new EdaDialogController({
               params: { panelId: _.get(panelComponent.panel, 'id'), panelChart: panelComponent.panelChartConfig },
               close: (event, response) => panelComponent.onCloseTableProperties(event, response)
@@ -140,7 +141,8 @@ export const PanelOptions = {
             datasource : panelComponent.inject.dataSource._id,
             charttype : panelComponent.panelChart.props.chartType,
             modeSQL : panelComponent.panel.content.query.query.modeSQL,
-            dashboard_id : panelComponent.inject.dashboard_id
+            dashboard_id : panelComponent.inject.dashboard_id,
+            linkedDashboard : panelComponent.panel.linkedDashboardProps
           },
           close : (event, response) => panelComponent.onCloseLinkDashboardProperties(event, response)
         })

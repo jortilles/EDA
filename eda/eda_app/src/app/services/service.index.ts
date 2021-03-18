@@ -10,6 +10,7 @@ export * from './utils/column-utils.service';
 export * from './utils/map-util.service'
 export * from './utils/upload-file.service'
 export * from './utils/date-utils.service'
+export * from './utils/styles-service'
 
 
 // Sidebar
@@ -26,7 +27,9 @@ export * from './api/global.service'; // Global
 export * from './api/datasource.service'; // Datasource
 export * from './api/global-filters.service'; // Global filter
 export * from './api/group.service'; // Group
-export * from './api/createTable.service'
+export * from './api/createTable.service';
+export * from './api/mail.service';
+
 
 // Guards
 export { LoginGuardGuard } from './guards/login-guard.guard';

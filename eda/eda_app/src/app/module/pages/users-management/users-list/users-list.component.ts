@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '@eda/models/user-models/user.model';
 import { EdaContextMenu, EdaContextMenuItem, EdaDialogCloseEvent, EdaDialogController } from '@eda/shared/components/shared-components.index';
-import { EdaTable, EdaColumnText, EdaColumnContextMenu, EdaColumnFilterMultiSelect } from '@eda/components/component.index';
+import { EdaTable, EdaColumnText, EdaColumnContextMenu } from '@eda/components/component.index';
 import { UserService, AlertService, SpinnerService } from '@eda/services/service.index';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
@@ -78,11 +78,11 @@ export class UsersLlistaComponent implements OnInit {
             Swal.fire($localize`:@@cantDeleteUser:No se puede borrar el usuario`, $localize`:@@cantSelfDelete:No se puede borrar a si mismo`, 'error');
             return;
         }
-        let title = $localize`:@@DeleteUserMessage:Estas a punto de borrar el usuario `
+        let title = $localize`:@@DeleteUserMessage:Estás a punto de borrar el usuario `
         Swal.fire({
-            title: '¿Estas seguro?',
+            title: $localize`:@@Sure:¿Estás seguro?`,
             text: `${title} ${user.name}`,
-            type: 'warning',
+            icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',

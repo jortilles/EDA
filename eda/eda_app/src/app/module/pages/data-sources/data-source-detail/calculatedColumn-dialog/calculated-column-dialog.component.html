@@ -1,31 +1,33 @@
 <eda-dialog [inject]="dialog">
+  <div body>
 
-  <h4 i18n="@@columnaCalculada" class="visibility-segment">
-    Nueva columna calculada
-  </h4>
+    <h4 i18n="@@columnaCalculada" class="visibility-segment">
+      Nueva columna calculada
+    </h4>
 
-  <form [formGroup]="form" class="form-horizontal form-material">
+    <form [formGroup]="form" class="form-horizontal form-material">
 
-    <div style="margin: 10px">
-      <h6 i18n="@@inputNombre">Nombre</h6>
-      <p><input pInputText type="text" size="50" formControlName="colName" id="eda_col_nombre"></p>
-    </div>
-
-    <div style="margin: 10px">
-      <h6 i18n="@@inputDescripcion">Descripción</h6>
-      <p><input pInputText type="text" size="50" formControlName="description" id="eda_descripcion"></p>
-    </div>
-
-    <p-footer class="footer">
-      <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-        <button type="button" pButton (click)="saveColumn()" class="ui-button" i18n-label="@@guardarBtn"
-          icon="fa fa-check" label="Confirmar">
-        </button>
-        <button type="button" pButton (click)="closeDialog()" class="ui-button-danger ml-2" i18n-label="@@cerrarBtn"
-          label="Cerrar"></button>
+      <div style="margin: 10px">
+        <h6 i18n="@@inputNombre">Nombre</h6>
+        <p><input pInputText type="text" size="50" formControlName="colName" id="eda_col_nombre"></p>
       </div>
-    </p-footer>
-  </form>
+
+      <div style="margin: 10px">
+        <h6 i18n="@@inputDescripcion">Descripción</h6>
+        <p><input pInputText type="text" size="50" formControlName="description" id="eda_descripcion"></p>
+      </div>
+    </form>
+
+  </div>
+  <div footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+      <button type="button" pButton (click)="saveColumn()" class="ui-button" i18n-label="@@guardarBtn"
+        icon="fa fa-check" label="Confirmar">
+      </button>
+      <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
+        label="Cerrar"></button>
+    </div>
+  </div>
 
 
 </eda-dialog>

@@ -125,7 +125,7 @@ export class UserController {
                 if (!user && !ad) {
                     reject(new HttpException(400, 'Incorrect user'));
                 } else if (!user && ad) {
-                    resolve();
+                    resolve(null);
                 }
 
                 resolve(user)
@@ -135,6 +135,7 @@ export class UserController {
     }
 
     static async create(req: Request, res: Response, next: NextFunction) {
+
         try {
             const body = req.body;
 
@@ -148,6 +149,7 @@ export class UserController {
 
             user.save(async (err, userSaved) => {
                 if (err) {
+                    console.log(err);
                     return next(new HttpException(400, 'Some error ocurred while creating the User'));
                 }
 
@@ -159,6 +161,7 @@ export class UserController {
                 return res.status(201).json({ ok: true, user: userSaved, userToken: req.user });
             });
         } catch (err) {
+            console.log(err);
             next(err);
         }
     }
@@ -173,7 +176,13 @@ export class UserController {
     }
 
     static async getUsers(req: Request, res: Response, next: NextFunction) {
+
         try {
+
+            let userID = req.user._id;
+            const groups = await Group.find({ users: { $in: userID } }).exec();
+            const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
+
             User.find({}, 'name email img role google').exec((err, users: IUser[]) => {
                 if (err) {
                     return next(new HttpException(500, 'Error loading users'));
@@ -192,12 +201,33 @@ export class UserController {
                         user.role = groupsUsers;
                     }
 
+                    users = isAdmin ? users : UserController.filterUsersByGroup(req.user, users);
+
                     return res.status(200).json(users);
                 });
             })
         } catch (err) {
             next(err);
         }
+    }
+
+    /**Get all users who belong to the same grup as user */
+    static filterUsersByGroup(user, users) {
+
+        let filteredUsers = [user];
+
+        user.role.forEach(Role => {
+
+            users.forEach(user => {
+ 
+                if(!filteredUsers.map( user => user._id).includes(user._id) &&  user.role.filter(role => !!role).map(role => role._id).includes(Role)){
+                    filteredUsers.push(user);
+                }
+            });
+        });
+
+        return filteredUsers;
+
     }
 
     static async getUser(req: Request, res: Response, next: NextFunction) {

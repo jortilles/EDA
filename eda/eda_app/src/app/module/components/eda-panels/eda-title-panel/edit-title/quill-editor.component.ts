@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 
 
@@ -10,6 +10,8 @@ import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/c
 })
 
 export class TitleDialogComponent extends EdaDialogAbstract {
+
+  // @ViewChild('Editor') editor: any;
 
   public dialog : EdaDialog;
   public title : string;

@@ -23,7 +23,9 @@ import {
     MapUtilsService,
     UploadFileService,
     DateUtils,
-    AddTableService
+    AddTableService,
+    StyleService,
+    MailService
 } from './service.index';
 
 
@@ -53,7 +55,9 @@ import {
         MapUtilsService,
         UploadFileService,
         DateUtils,
-        AddTableService
+        AddTableService,
+        StyleService,
+        MailService
     ]
 })
 export class ServicesModule { }

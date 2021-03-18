@@ -36,6 +36,11 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
   public column: string;
 
   public activateProgressBar: boolean = false;
+  public noLink: boolean = false;
+
+  public oldLinked : any = null ;
+  public unLinkString : string = $localize`:@@unlink:Desvincular del informe: `
+  public noValidColumn : string = $localize`:@@NoValidCol:No hay columnas válidas`
 
   constructor(private dashboardService: DashboardService, private alertService: AlertService) {
     super();
@@ -49,17 +54,24 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
 
   saveChartConfig() {
+    if (!this.noLink) {
+      const dashboard_name = this.dasboards.filter(d => d['value'] === this.selectedDashboard)[0].label;
+      //Get index -> only non numeric
+      const colIndex = this.controller.params.query
+        .map((col: any, i: number) => { return { i: i, name: col.column_name } })
+        .filter(col => col.name === this.sourceColumn)[0].i;
 
-    const dashboard_name = this.dasboards.filter(d => d['value'] === this.selectedDashboard)[0].label;
-    //Get index -> only non numeric
-    const colIndex = this.controller.params.query
-    .map((col:any, i:number) => {return {i:i, name:col.column_name}})
-    .filter(col => col.name === this.sourceColumn)[0].i;
 
-    this.onClose(
-      EdaDialogCloseEvent.UPDATE,
-      new LinkedDashboardProps(this.sourceColumn, this.sourceTable, dashboard_name, <any>this.selectedDashboard, this.targetColumn, this.targetTable, colIndex)
-    );
+      this.onClose(
+        EdaDialogCloseEvent.UPDATE,
+        new LinkedDashboardProps(this.sourceColumn, this.sourceTable, dashboard_name, <any>this.selectedDashboard, this.targetColumn, this.targetTable, colIndex)
+      );
+    } else {
+      this.onClose(
+        EdaDialogCloseEvent.UPDATE, null);
+    }
+
+
   }
 
   closeChartConfig() {
@@ -68,24 +80,22 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
   onShow(): void {
 
-    if ((this.controller.params.charttype === 'parallelSets' ) && !this.controller.params.modeSQL) {
+    this.oldLinked = this.controller.params.linkedDashboard ? this.controller.params.linkedDashboard.dashboardName : null;
+    if ((this.controller.params.charttype === 'parallelSets') && !this.controller.params.modeSQL) {
 
-      console.log(this.controller.params.query);
-      this.columns = this.controller.params.query.filter(col => col.column_type === 'text')
+      this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
         });
-        console.log(this.columns);
-
     }
 
-    if ((this.controller.params.charttype === 'treeMap' ) && !this.controller.params.modeSQL) {
+    else if ((this.controller.params.charttype === 'treeMap') && !this.controller.params.modeSQL) {
 
-      this.columns = this.controller.params.query.filter(col => col.column_type === 'text')
+      this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
         });
-        
+
       if (this.columns.length > 1) this.column = this.columns[1].colname;
       else this.column = this.columns[0].colname;
 
@@ -93,16 +103,20 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
     else if (this.controller.params.charttype !== 'table' && !this.controller.params.modeSQL) {
 
-      let column = this.controller.params.query.filter(col => col.column_type === 'text')
-        .map(col => { return { col: col.column_name, table: col.table_id, colname: col.display_name.default } })[0];
-      this.column = column.colname;
-      this.initDashboards(column);
+      let column = this.controller.params.query
+        .map((col, i) => { return { col: col.column_name, table: col.table_id, colname: col.display_name.default, index:i, column_type:col.column_type } })
+        .filter(col => (col.column_type === 'text' || col.column_type === 'date'))[0];
+      this.column = column.index === 0 ?  column.colname : this.noValidColumn;
+
+      if(column.index === 0){
+        this.initDashboards(column);
+      }
 
     }
 
     else if (this.controller.params.charttype === 'table' && !this.controller.params.modeSQL) {
 
-      this.columns = this.controller.params.query.filter(col => col.column_type === 'text')
+      this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
         });
@@ -110,7 +124,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
     }
 
     else if (this.controller.params.modeSQL) {
-      this.columns = this.controller.params.query.filter(col => col.column_type === 'text')
+      this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
         });
@@ -123,14 +137,14 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
   }
 
-  public filterFilters(){
-    this.filters = this.filters.filter( column => column.dashboardID === <any>this.selectedDashboard);
+  public filterFilters() {
+    this.filters = this.filters.filter(column => column.dashboardID === <any>this.selectedDashboard);
   }
 
-  public handleTargetColumn(){
+  public handleTargetColumn() {
 
     this.targetColumn = this.selectedFilter.colname;
-    this.targetTable = this.selectedFilter.table ;
+    this.targetTable = this.selectedFilter.table;
 
   }
 
@@ -186,12 +200,12 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
             res.dashboard.config.filters.forEach(filter => {
 
-              filters.push({colname:filter.column.value.column_name, dashboardID : dashboards[i]._id, table:filter.table.value });
+              filters.push({ colname: filter.column.value.column_name, dashboardID: dashboards[i]._id, table: filter.table.value });
 
             });
 
             this.dasboards.push({ label: dashboards[i].config.title, value: dashboards[i]._id });
-            
+
           }
 
         }

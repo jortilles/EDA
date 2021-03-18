@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 import { Column } from '@eda/models/model.index';
 import { EdaColumnNumber } from './eda-columns/eda-column-number';
 import { EdaColumnPercentage } from './eda-columns/eda-column-percentage';
-import { Output, EventEmitter } from '@angular/core';
+import { Output, EventEmitter, Component } from '@angular/core';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
 
 interface PivotTableSerieParams {
@@ -24,11 +24,12 @@ interface PivotTableSerieParams {
 
 }
 
+
 export class EdaTable {
 
-    @Output() onNotify: EventEmitter<any> = new EventEmitter();
-    @Output() onSortPivotEvent: EventEmitter<any> = new EventEmitter();
-    @Output() onSortColEvent: EventEmitter<any> = new EventEmitter();
+    public onNotify: EventEmitter<any> = new EventEmitter();
+    public onSortPivotEvent: EventEmitter<any> = new EventEmitter();
+    public onSortColEvent: EventEmitter<any> = new EventEmitter();
 
     private _value: any[] = [];
 
@@ -65,13 +66,19 @@ export class EdaTable {
 
     public autolayout: boolean = true;
     public sortedSerie: any = null;
-    public sortedColumn : any = {field:null, order:null};
+    public sortedColumn: any = { field: null, order: null };
+
+    public styles: [];
+
+    public Totals:string = $localize`:@@addTotals:Totales`;
+    public SubTotals:string = $localize`:@@SubTotals:SubTotales`;
+    public Trend:string = $localize`:@@addtrend:Tendencia`;
 
 
     public constructor(init: Partial<EdaTable>) {
         Object.assign(this, init);
         this.initRows = init['visibleRows'] || 10;
-        if(!this.sortedColumn) this.sortedColumn  = {field:null, order:null}
+        if (!this.sortedColumn) this.sortedColumn = { field: null, order: null }
     }
 
     get value() {
@@ -261,7 +268,7 @@ export class EdaTable {
 
             //add total header
             if (!colNames.includes(valuesKeys[0])) {
-                this.series[this.series.length - 2].labels.push({ title: `Totales`, rowspan: 1, colspan: valuesKeys.length, isTotal: true });
+                this.series[this.series.length - 2].labels.push({ title: this.Totals, rowspan: 1, colspan: valuesKeys.length, isTotal: true });
             }
 
             //add cols and headers
@@ -318,7 +325,7 @@ export class EdaTable {
 
             //add total header
             if (!colNames.includes(valuesKeys[0])) {
-                this.series[this.series.length - 2].labels.push({ title: `Tendencia`, rowspan: 1, colspan: valuesKeys.length, isTotal: true });
+                this.series[this.series.length - 2].labels.push({ title: this.Trend, rowspan: 1, colspan: valuesKeys.length, isTotal: true });
             }
 
             //add cols and headers
@@ -386,7 +393,7 @@ export class EdaTable {
             }
             else {
                 if (firstNonNumericRow) {
-                    this.partialTotalsRow.push({ data: "Subtotales ", border: " ", class: 'sub-total-row-header', type: col.type });
+                    this.partialTotalsRow.push({ data: `${this.SubTotals} `, border: " ", class: 'sub-total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
                     this.partialTotalsRow.push({ data: " ", border: " ", class: 'sub-total-row', type: col.type });
@@ -432,7 +439,7 @@ export class EdaTable {
             }
             else {
                 if (firstNonNumericRow) {
-                    this.totalsRow.push({ data: "Totales ", border: " ", class: 'total-row-header', type: col.type });
+                    this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
                     firstNonNumericRow = false;
                 } else {
                     this.totalsRow.push({ data: " ", border: " ", class: 'total-row', type: col.type });
@@ -578,30 +585,30 @@ export class EdaTable {
         this.sort(serie);
     }
 
-   
+
     public onSort($event) {
-     
+
         this.sortedColumn = $event;
         this.onSortColEvent.emit($event);
         this.checkTotals(null);
     }
 
-    sort(serie){
+    sort(serie) {
         if (typeof this._value[0][serie.column] === 'string') {
 
             this._value = this._value.sort((a, b) => {
                 if (serie.sortState === true) {
                     if (a[serie.column] < b[serie.column])
                         return -1;
-                        if (a[serie.column] > b[serie.column])
+                    if (a[serie.column] > b[serie.column])
                         return 1;
                     return 0;
                 } else {
                     if (a[serie.column] > b[serie.column])
-                    return -1;
+                        return -1;
                     if (a[serie.column] < b[serie.column])
-                    return 1;
-                return 0;
+                        return 1;
+                    return 0;
                 }
             });
 
@@ -872,7 +879,7 @@ export class EdaTable {
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 serie.labels.push({
                     title: labels.seriesLabels[0][i],
-                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false
+                    rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false, metric:labels.metricsLabels[0]
                 })
             }
             series.push(serie);
@@ -898,7 +905,7 @@ export class EdaTable {
             for (let i = 0; i < numCols; i++) {
                 serie.labels.push({
                     title: labels.metricsLabels[i % labels.metricsLabels.length],
-                    rowspan: 1, colspan: 1, sortable: false
+                    rowspan: 1, colspan: 1, sortable: false, metric :labels.metricsLabels[i % labels.metricsLabels.length]
                 })
             }
             series.push(serie)
@@ -911,5 +918,9 @@ export class EdaTable {
             label.sortState = false;
         });
     }
+
+
+
+   
 
 }

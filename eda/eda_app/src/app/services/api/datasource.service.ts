@@ -47,7 +47,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 type: '', host: '', database: ' ', user: ' ', password: ' ', schema : '', port:null
             },
             metadata: {
-                model_name: ' ', model_granted_roles: []
+                model_name: ' ', model_granted_roles: [], cache_config:{}
             }
         }
     );
@@ -337,6 +337,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._modelMetadata.next(tmpMetadata);
     }
 
+    addCacheConfig(config:any){
+        let tmpMetadata = this._modelMetadata.getValue();
+        tmpMetadata.cache_config = config;
+        this._modelMetadata.next(tmpMetadata);
+    }
+
     getRelationIndex(rel: Relation, tableIndex: string | number) {
         return this._databaseModel.getValue()[tableIndex].relations
             .findIndex((r: { source_table: any; source_column: any; target_table: any; target_column: any; }) => {
@@ -399,7 +405,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
     }
 
     addView(table:any){
-        console.log(table)
+
         const tmp_model = this._databaseModel.getValue();
         tmp_model.push(table);
         this._databaseModel.next(tmp_model);
@@ -545,8 +551,8 @@ export class DataSourceService extends ApiService implements OnDestroy {
         return this.getParams(`${this.globalDSRoute}/check-connection/${id}`, connection);
     }
 
-    addDataSource(connection, optimize): Observable<any> {
-        return this.post(`${this.globalDSRoute}/add-data-source/${optimize}`, connection);
+    addDataSource(connection): Observable<any> {
+        return this.post(`${this.globalDSRoute}/add-data-source`, connection);
     }
 
     executeQuery(body): Observable<any> {
@@ -555,6 +561,11 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     getViewResults(body): Observable<any>{
         return this.post(`${this.globalDSRoute}/get-view-results`, body);
+    }
+
+
+    removeCache(id:string): Observable<any> {
+        return this.post(`${this.globalDSRoute}/remove-cache`, {id:id});
     }
 
 

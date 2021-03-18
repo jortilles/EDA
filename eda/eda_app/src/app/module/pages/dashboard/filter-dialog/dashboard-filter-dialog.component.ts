@@ -62,7 +62,8 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
             title: $localize`:@@DashboardFilters:FILTROS DEL INFORME`,
         });
-        this.dialog.style= {width: '70%', height: '85vh', top: '18vh', left: '12rem'};
+        this.dialog.style= {width: '70%'};
+        
     
     }
 
@@ -138,7 +139,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
 
     saveGlobalFilter() {
         if (this.panelstoFilter.length === 0 || !this.targetTable || !this.targetCol) {
-            return this.alertService.addWarning($localize`:@@MandatoryFields:Recuerde rellenar los campos obligatorios`);
+            return this.alertService.addWarning($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
         }
 
         this.filtersList.push({

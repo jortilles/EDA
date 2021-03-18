@@ -14,8 +14,11 @@ eda-blank-panel :root {
 }
 
 
-.input-icons i { 
-    position: absolute; 
+.input-icons { 
+    
+    min-width: 95%;
+    margin: 0.5em;
+    margin-bottom: 0.2em;
 }
   
 .tab-view .input-icons { 
@@ -102,9 +105,9 @@ h2 {
     right: 0;
     min-height: 0;
 }
-#help-menu{
+/* #help-menu{
     margin-top: 1em;
-}
+} */
 #query-area{
     margin-top:1em;
 }
@@ -116,10 +119,10 @@ h2 {
     max-height: 60vh;
     overflow:auto;
 }
-body .ui-accordion .ui-accordion-content {
+/* body .p-accordion .p-accordion-content {
     max-height: 50vh !important;
     overflow:auto !important;
-}
+} */
 #help-text  p{
     font-size: small;
     margin:10px;
@@ -183,7 +186,7 @@ body .ui-accordion .ui-accordion-header a {
 
 .column-list {
     padding: 2px;
-    max-height: 55vh;
+    max-height: 57vh;
     background: #fff;
     border-radius: 4px;
     overflow-y: auto !important;
@@ -236,10 +239,26 @@ body .ui-accordion .ui-accordion-header a {
 
     cursor: pointer;
     z-index: 99999 !important;
+
+    /* display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5em 0.2em;
+    box-sizing: border-box;
+    background: #fff;
+    cursor: pointer;
+    z-index: 99999 !important;
+    box-shadow: 0 1px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
+    border-radius: 4px;
+    margin: 0.3em;
+    cursor: pointer;
+    background-color: #395f79c7;
+    color: white; */
 }
 
 .our-table-box:hover {
-    color: var(--header-bg-color);
+    color: #67757c;
     background-color: rgb(226, 233, 236);
 }
 
@@ -251,11 +270,11 @@ body .ui-accordion .ui-accordion-header a {
 
     margin-bottom: 1px;
     padding: 5px 10px;
-    border: solid 3px var(--main-font-color);;
+    border: solid 2px grey;
     border-radius: 4px;
     box-sizing: border-box;
 
-    color: var(--main-font-color);
+    color: #67757c;
     background: white;
     font-size: 13px;
     font-weight: 600;
@@ -310,6 +329,23 @@ body .ui-accordion .ui-accordion-header a {
     z-index: 99999 !important;
 }
 
+/* .column-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5em 0.2em;
+    box-sizing: border-box;
+    color: var(--header-bg-color);
+    background: #fff;
+    cursor:grab;
+    z-index: 99999 !important;
+    box-shadow: 0 1px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
+    border-radius: 4px;
+    margin: 0.3em;
+    background-color: #d6e4e8;
+} */
+
 .ui-dialog .ui-dialog-titlebar {
     border: 1px solid #c8c8c8;
     background-color: #e6e6e6;
@@ -339,7 +375,7 @@ body .ui-accordion .ui-accordion-header a {
 .aggregation-box {
     margin: 1px 1px 0 1px;
     width: 98%;
-    height: 3vh;
+    height: 2.5em; 
     border: solid 1px rgb(183, 193, 201);
     border-radius: 4px;
     display: flex;
@@ -347,14 +383,14 @@ body .ui-accordion .ui-accordion-header a {
     box-sizing: border-box;
     justify-content: center;
     align-items: center;
-    color: var(--main--font-color);
-    background-color: var(--main--bg-color);
+    color: #67757c;
+    background-color: white;
     cursor: pointer;
     font-weight: 400;
 }
 
 .aggregation-box:hover {
-    color: var(--main--font-color);
+    color: #67757c;
     background-color: rgb(226, 233, 236);
 }
 
@@ -362,7 +398,7 @@ body .ui-accordion .ui-accordion-header a {
     /* border: solid 1px rgb(161, 160, 160);
     color:var(--main-bg-color);
     background:var(--main--button-color); */
-    border: solid 2px var(--main-font-color);
+    border: solid 2px #67757c;
 }
 
 .aggregation-not-posible {
@@ -463,16 +499,16 @@ eda-blank-panel h4 {
 }
 
 .chart-color-selection {
-    display: flex;
-    flex-flow: column wrap;
-    max-height: 280px;
+    /* display: flex;
+    flex-flow: column wrap; */
+    max-height: 55vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
 
-.edaChartSelector .ui-dropdown-panel .ui-dropdown-items-wrapper {
+.edaChartSelector .p-dropdown-panel .p-dropdown-items-wrapper {
     overflow: auto; 
-    max-height: 350px !important;
+    max-height: 54vh !important;
 }
 
 .edaColumnDialogFilter .ui-multiselect-header .ui-multiselect-filter-container {

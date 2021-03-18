@@ -1,15 +1,17 @@
 <p-toast>
-    <ng-template let-message pTemplate="message">
-        <div class="ui-g-12">
-            <div class="ui-g-2">
-                <!-- <i class="pi pi-exclamation-triangle" style="font-size: 2em"></i> -->
+    <div>
+        <ng-template let-message pTemplate="message">
+
+            <div class="p-grid">
+                <div class="p-col-12">
+                    <h3>{{message.summary}}</h3>
+                </div>
+                <div class="p-col-12">
+                    <h6 [innerHTML]="message.detail"></h6>
+                </div>
             </div>
-            <div class="ui-g-10">
-                <h3 style="margin: 0; padding-top: inherit;">{{message.summary}}</h3>
-            </div>
-        </div>
-        <p [innerHTML]="message.detail" style="padding-left:0.75em;"></p>
-    </ng-template>
+        </ng-template>
+    </div>
 </p-toast>
 
 <div [ngClass]="{'lock-on': displaySpinner, 'lock-off': !displaySpinner}"></div>

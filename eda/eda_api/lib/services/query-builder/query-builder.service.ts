@@ -1,5 +1,15 @@
 import * as _ from 'lodash';
 
+class TreeNode {
+    public value : string;
+    public child : Array<TreeNode>
+    constructor(value) {
+      this.value = value;
+      this.child = [];
+    }
+  }
+  
+
 export abstract class QueryBuilderService {
     public query: any;
     public dataModel: any;
@@ -263,27 +273,35 @@ export abstract class QueryBuilderService {
 
         const graph = this.buildGraph();
         const schema = this.dataModel.ds.connection.schema;
-        const tablesInQuery = this.parseTablesInQuery(userQuery.SQLexpression);
+        const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         let query = userQuery.SQLexpression;
+        
+        if (modelPermissions.length > 0) {
 
-        let tablesNoSchema = this.parseSchema(tablesInQuery, schema);
 
+            const root = this.BuildTree(query);
+            const value = this.replaceOnTree(root);
 
-        /**Mark tables to avoid undesired replaces */
-        tablesNoSchema.forEach((table, i) => {
-            let whitespaces = `[\n\r\s]*`
-            let reg = new RegExp(`${tablesInQuery[i]}` + whitespaces, "g");
-            query = query.replace(reg, `┘┘${tablesInQuery[i]}┘┘`);
+            if(!value) return null;
 
-        });
+            const tablesInQuery = this.parseTablesInQuery(userQuery.SQLexpression);
+            let tablesNoSchema = this.parseSchema(tablesInQuery, schema);
+    
+            /**Mark tables to avoid undesired replaces */
+            tablesNoSchema.forEach((table, i) => {
+                let whitespaces = `[\n\r\s]*`
+                let reg = new RegExp(`${tablesInQuery[i]}` + whitespaces, "g");
+                query = query.replace(reg, `┘┘${tablesInQuery[i]}┘┘`);
 
-        tablesNoSchema.forEach((table, i) => {
-            query = this.sqlReplacePermissions(query, table, graph, `┘┘${tablesInQuery[i]}┘┘`);
-        });
+            });
 
-        let reg = new RegExp(`┘┘`, "g");
-        query = query.replace(reg, ``); 
+            tablesNoSchema.forEach((table, i) => {
+                query = this.sqlReplacePermissions(query, table, graph, `┘┘${tablesInQuery[i]}┘┘`);
+            });
 
+            let reg = new RegExp(`┘┘`, "g");
+            query = query.replace(reg, ``); 
+        }
 
         //Isolate filters from query
         const filterMarks = [];
@@ -359,39 +377,32 @@ export abstract class QueryBuilderService {
         return noLineComments.join(' ')
     }
 
+
+
     parseTablesInQuery = (sqlQuery: string) => {
         /**remove  comments */
-        const reg = new RegExp(/[()]/, 'g')
-        sqlQuery = this.cleanComments(sqlQuery).replace(reg, '') + ' ';
-
-        let currWord = '';
-        let operand = null;
+        let reg = new RegExp(/[()]/, 'g')
+        sqlQuery = this.cleanComments(sqlQuery).replace(reg, '').replace(/\s\s+/g, ' ') + ' ';
+        reg = new RegExp(/\(/, 'g')
+        sqlQuery = sqlQuery.replace(reg, ' ( ');
+        reg = new RegExp(/\)/, 'g')
+        sqlQuery = sqlQuery.replace(reg, ' ) ');
+        let words = [];
         let tables = [];
 
-        for (let i = 0; i < sqlQuery.length; i++) {
-            currWord += sqlQuery[i];
-            if (sqlQuery[i] === ' ') {
-                if ((operand === 'FROM' || operand === 'JOIN')
-                    && !['FROM', 'SELECT', 'JOIN'].includes(currWord.toUpperCase().trim())
-                    && currWord !== ' ') {
-                    tables.push(currWord.trim());
-                    operand = null;
-                }
-                currWord = '';
-            }
-            if (currWord.toUpperCase().trim() === 'FROM' && sqlQuery[i + 1] === ' ') {
-                operand = 'FROM';
-            }
-            if (currWord.toUpperCase().trim() === 'SELECT' && sqlQuery[i + 1] === ' ') {
-                operand = 'SELECT';
-            }
-            if (currWord.toUpperCase().trim() === 'JOIN' && sqlQuery[i + 1] === ' ') {
-                operand = 'JOIN';
+        words = sqlQuery.split(' ');
+        for (let i = 0; i < words.length; i++) {
+            if ( 
+                (words[i].toUpperCase() === 'FROM' || words[i].toUpperCase() === 'JOIN') &&
+                ( words[i+1] !== '(' &&  words[i+1].toUpperCase() !== 'SELECT')  // la paraula que ve despres de un from i no es una subconsulta
+            ){
+                    tables.push( words[i+1] );
             }
         }
-
         return tables.filter(this.onlyUnique);
     }
+
+   
     onlyUnique = (value, index, self) => {
         return self.indexOf(value) === index;
     }
@@ -435,5 +446,115 @@ export abstract class QueryBuilderService {
         insert = insert.slice(0, -1);
         return insert;
     }
+
+
+    public BuildTree = (query) => {
+
+        let sqlQuery = query.replace(/[\t\n\r]/gm, '');
+        sqlQuery = `(${sqlQuery})`;
+      
+        let nestedQueries = [];
+        let parents = '';
+      
+        for (let i = 0; i < sqlQuery.length; i++) {
+      
+          if (sqlQuery[i] === '(') parents += '(';
+          if (sqlQuery[i] === ')') parents += ')';
+      
+          let nested = '';
+          let j = i + 1;
+          let opened = 0;
+      
+          if (sqlQuery[i] === '(') {
+            nested += '(';
+            opened++;
+            while (opened > 0 && j < sqlQuery.length) {
+              nested += sqlQuery[j];
+              if (sqlQuery[j] === '(') { opened++ };
+              if (sqlQuery[j] === ')') { opened-- };
+              j++;
+            }
+          }
+          if (nested.length > 0) {
+            nestedQueries.push(nested);
+          }
+        }
+      
+        let root = new TreeNode(nestedQueries[0])
+        let stack = [root];
+        let node = null;
+        let ptr = 1;
+      
+        for (let i = 1; i < parents.length; i++) {
+      
+          if (parents[i] === '(') {
+      
+            let newNode = new TreeNode(nestedQueries[ptr]);
+      
+            if (stack.length > 0) {
+              node = stack[stack.length - 1];
+              node.child.push(newNode);
+              stack.push(newNode);
+            } else {
+              stack.push(newNode);
+            }
+            ptr++;
+      
+          } else if (parents[i] === ')') {
+            stack.pop();
+          }
+        }
+        return root;
+      
+      }
+      
+      public replaceOnTree = (root) => {
+      
+        if (root.child.length === 0) {
+          if (!this.checkFormat(root.value)) return false;
+          else return true;
+        }
+        else {
+          let str = root.value;
+          for (let i = 0; i < root.child.length; i++) {
+      
+            const check = this.replaceOnTree(root.child[i]);
+      
+            if (check) {
+              str = str.replace(root.child[i].value, ' ___ ');
+            } else {
+              return false;
+            }
+      
+          }
+          if (!this.checkFormat(str)) return false;
+          else return true;
+        }
+      
+      }
+      
+      public checkFormat = (expression) => {
+      
+        const words = expression.split(/\s+/);
+        let currentOperand = '';
+        for (let i = 0; i < words.length; i++) {
+      
+          let word = words[i].toUpperCase();
+          if (
+            word === 'FROM'
+            || word === 'SELECT'
+            || word === 'JOIN'
+            || word === 'WHERE'
+          ) {
+            currentOperand = word;
+          }
+      
+          if (currentOperand === 'FROM' && word.includes(',')) return false;
+      
+        }
+      
+        return true;
+      
+      }
 
 }

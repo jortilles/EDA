@@ -4,6 +4,7 @@ import { ChartConfig } from '../../module/components/eda-panels/eda-blank-panel/
 import { Column } from './../../shared/models/dashboard-models/column.model';
 import { Injectable } from '@angular/core';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
+import * as _ from 'lodash';
 
 export interface EdaChartType {
     label: string;
@@ -386,8 +387,118 @@ export class ChartUtilsService {
         return names
     }
 
+    getMinMax(data:any){
+
+        let min = Infinity;
+        let max = -Infinity;
+
+        data[1].forEach(set => {
+
+            set.data.forEach(value => {
+                if(value !== null && value !== undefined) {
+                    if(value > max) max = value;
+                    if(value < min) min = value;
+                }
+            });
+
+        });
+        
+        let min_om = Math.pow(10, Math.floor(Math.log10(Math.abs(min))));
+        let min_sign = min < 0;
+        min = Math.ceil(Math.abs(min)/min_om)*min_om ;
+
+        let max_om = Math.pow(10, Math.floor(Math.log10(Math.abs(max))));
+        max = Math.ceil(max/max_om)*max_om ;
+  
+        if(min < max){
+            if(min < max*0.25) min = max*0.25;
+        }else{
+            if(max < min*0.25) max = min*0.25;
+        }
+
+        if (min_sign) min = -min;
+        min = min > 0 && max > 0 ? 0 : min;
+        return {min:min, max:max}
+
+    }
+
+    public getTrend = (values:any) => {
+
+        let x_values = values.data.map((v, y) => y );
+        let y_values = this.findLineByLeastSquares(x_values, values.data)[1];
+
+        let trend = _.cloneDeep(values);
+        let label = $localize`:@@addtrend:Tendencia`;
+        trend.label = `${label} ${trend.label}`;
+        trend.data = y_values;
+
+        return trend;
+    }
+
+    public findLineByLeastSquares = (values_x, values_y) => {
+        let sum_x = 0;
+        let sum_y = 0;
+        let sum_xy = 0;
+        let sum_xx = 0;
+        let count = 0;
+    
+        /*
+         * We'll use those variables for faster read/write access.
+         */
+        let x = 0;
+        let y = 0;
+        let values_length = values_x.length;
+    
+        if (values_length != values_y.length) {
+            throw new Error('The parameters values_x and values_y need to have same size!');
+        }
+    
+        /*
+         * Nothing to do.
+         */
+        if (values_length === 0) {
+            return [ [], [] ];
+        }
+    
+        /*
+         * Calculate the sum for each of the parts necessary.
+         */
+        for (let v = 0; v < values_length; v++) {
+            x = values_x[v];
+            y = values_y[v];
+            sum_x += x;
+            sum_y += y;
+            sum_xx += x*x;
+            sum_xy += x*y;
+            count++;
+        }
+    
+        /*
+         * Calculate m and b for the formular:
+         * y = x * m + b
+         */
+        let m = (count*sum_xy - sum_x*sum_y) / (count*sum_xx - sum_x*sum_x);
+        let b = (sum_y/count) - (m*sum_x)/count;
+    
+        /*
+         * We will make the x and y result line now
+         */
+        let result_values_x = [];
+        let result_values_y = [];
+    
+        for (let v = 0; v < values_length; v++) {
+            x = values_x[v];
+            y = x * m + b;
+            result_values_x.push(x);
+            result_values_y.push(y);
+        }
+    
+        return [result_values_x, result_values_y];
+    }
+
     public initChartOptions(type: string, numericColumn: string,
-        labelColum: any[], manySeries: boolean, stacked: boolean, size: any, linkedDashboard:LinkedDashboardProps): { chartOptions: any, chartPlugins: any } {
+        labelColum: any[], manySeries: boolean, stacked: boolean, size: any, 
+        linkedDashboard:LinkedDashboardProps,  minMax : {min:number, max:number}): { chartOptions: any, chartPlugins: any } {
 
         const t = $localize`:@@linkedTo:Vinculado con`;
         const linked = linkedDashboard ?  `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
@@ -424,8 +535,8 @@ export class ChartUtilsService {
             }
         };
 
-        const maxTicksLimit = size.width < 200 ? 5 : size.width < 400 ? 15 : 40;
-        const maxTicksLimitHorizontal = size.height < 200 ? 5 : size.height < 400 ? 15 : 40;
+        const maxTicksLimit = size.width < 200 ? 5 : size.width < 400 ? 10 : size.width < 600 ? 20 : 40;
+        const maxTicksLimitHorizontal = size.height < 200 ? 5 : size.height < 400 ? 10 :  size.height < 600 ? 20 : 40;
 
         switch (type) {
             case 'doughnut':
@@ -616,11 +727,14 @@ export class ChartUtilsService {
                     },
                     scales: {
                         xAxes: [{
-                            gridLines: { drawOnChartArea: false },
+                            gridLines: {  display: false, drawOnChartArea: false},
                             ticks: {
+                                maxRotation: 30,
+                                minRotation: 30,
                                 callback: (value) => {
                                     if (value)
                                         return value.length > 30 ? (value.substr(0, 17) + '...') : value;
+
                                 },
                                 autoSkip: true,
                                 maxTicksLimit: maxTicksLimit,
@@ -631,21 +745,32 @@ export class ChartUtilsService {
                         }],
                         yAxes: [
                             {
-                                gridLines: { drawBorder: false, display: true },
+                                gridLines: {   drawBorder: false, 
+                                                display: true, 
+                                                zeroLineWidth: 1}
+                                              ,
 
-                                id: 'y-axis-0', position: 'left',
+                                id: 'y-axis-0', position: 'left'   ,
                                 ticks: {
                                     callback: (value) => {
-                                        if (value)
+                                        if (value){
                                             return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE');
+                                        }else{
+                                            return 0;
+                                        }
                                     },
+                                    
                                     autoSkip: true,
-                                    maxTicksLimit: 6,
+                                    maxTicksLimit: 4,
                                     fontSize: edaFontSize,
                                     fontStyle: edafontStyle,
-                                    beginAtZero: true
+                                    beginAtZero: true,
+                                    max:minMax.max,
+                                    min:minMax.min
+                                    
                                 },
                                 stacked: false
+                            
                             }
                         ]
                     },

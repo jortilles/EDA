@@ -43,7 +43,7 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
 
   onShow(): void {
     this.panelChartConfig = this.controller.params.panelChart;
-    console.log(this.panelChartConfig);
+
 
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {

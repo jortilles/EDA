@@ -129,7 +129,7 @@ export class ModelSettingsComponent implements OnInit {
   }
 
   async onDashboardFilesAdded() {
-    console.log('foooooo');
+ 
     const file = this.file2.nativeElement.files[0];
     try {
       let fileReader = new FileReader();
@@ -184,7 +184,15 @@ export class ModelSettingsComponent implements OnInit {
         this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
       },
       err => {
-        this.alertService.addError(err);
+        this.dashboardService.addNewDashboard(this.loadedDashboard).subscribe(
+          () => {
+
+            this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+          },
+          err => {
+            this.alertService.addError(err);
+          }
+        );
       }
     );
   }

@@ -4,16 +4,16 @@
 
     <form [formGroup]="form" (ngSubmit)="switchTypes()">
 
-      <div class="ui-g">
+      <div class="p-grid">
 
-        <div class="ui-g-4 ui-md-4">
+        <div class="p-col-12 p-md-4">
           <div class="form-group">
             <label i18n="@@inputNombre">NOMBRE *</label>
             <input type="text" class="form-control" formControlName="name" id="eda_ds_name" pInputText>
           </div>
         </div>
 
-        <div class="ui-g-4 ui-md-4">
+        <div class="p-col-12 p-md-4">
           <div class="form-group">
             <label i18n="@@inputTipo">TIPO *</label>
             <p-dropdown [options]="dbTypes" formControlName="type" id="eda_ds_type"
@@ -25,7 +25,7 @@
 
 
 
-        <div *ngIf="form.value.type && form.value.type.value ==='oracle'" class="ui-g-4 ui-md-4">
+        <div *ngIf="form.value.type && form.value.type.value ==='oracle'" class="p-col-12 p-md-4">
           <div class="form-group">
             <label i18n="@@inputServidor">SERVIDOR *</label>
             <input type="text" class="form-control" formControlName="host" id="eda_ds_host" pInputText>
@@ -33,92 +33,100 @@
         </div>
 
         <div *ngIf="!form.value.type || (form.value.type.value !=='oracle' && form.value.type.value !=='bigquery')"
-          class="ui-g-4 ui-md-4">
+          class="p-col-4 p-md-4">
           <div class="form-group">
             <label i18n="@@inputServidor">SERVIDOR *</label>
             <input type="text" class="form-control" formControlName="host" id="eda_ds_host" pInputText>
           </div>
         </div>
 
-        <div *ngIf="form.value.type && form.value.type.value !== 'bigquery'" class="ui-g-12">
+        <div *ngIf="form.value.type && form.value.type.value !== 'bigquery'" class="p-col-12">
 
-          <div *ngIf="form.value.type && form.value.type.value ==='oracle'" class="ui-g-6 ui-md-2">
-            <div class="form-group">
-              <label i18n="@@inputServidor">SID?</label>
-              <p-dropdown [options]="sidOpts" formControlName="sid" placeholder='SID/SERVICE_NAME' optionLabel="name"
-                [style]="{width:'100%', padding:'.35rem .75rem'}"> </p-dropdown>
+          <div class="p-grid">
+
+            <div *ngIf="form.value.type && form.value.type.value ==='oracle'" class="p-col-12 p-md-4">
+              <div class="form-group">
+                <label i18n="@@inputServidor">SID?</label>
+                <p-dropdown [options]="sidOpts" formControlName="sid" placeholder='SID/SERVICE_NAME' optionLabel="name"
+                  [style]="{width:'100%', padding:'.35rem .75rem'}"> </p-dropdown>
+              </div>
             </div>
+
+            <div *ngIf="form.value.type && form.value.type.value ==='oracle'" class="p-col-12 p-md-4">
+              <div class="form-group">
+                <label i18n="@@inputNombreDb">BASE DE DATOS *</label>
+                <input type="text" class="form-control" formControlName="db" id="eda_ds_db" pInputText>
+              </div>
+            </div>
+
+
+            <div *ngIf="!form.value.type || form.value.type.value !=='oracle'" class="p-col-12 p-md-4">
+              <div class="form-group">
+                <label i18n="@@inputNombreDb2">BASE DE DATOS *</label>
+                <input type="text" class="form-control" formControlName="db" id="eda_ds_db" pInputText>
+              </div>
+            </div>
+
+
+            <div class="p-col-12 p-md-4">
+              <div class="form-group">
+                <label i18n="@@inputNombreEsquema">ESQUEMA</label>
+                <input type="text" class="form-control" formControlName="schema" id="eda_ds_schema" pInputText>
+              </div>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+              <div class="form-group">
+                <label i18n="@@inputPort">PUERTO *</label>
+                <input type="number" class="form-control" formControlName="port" id="eda_ds_port" pInputText>
+              </div>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+              <div class="form-group">
+                <label i18n="@@inputUsuario">USUARIO *</label>
+                <input type="text" class="form-control" formControlName="user" id="eda_ds_user" pInputText>
+              </div>
+            </div>
+
+            <div class="p-col-12 p-md-4">
+              <div class="form-group">
+                <label i18n="@@inputPassword">CONTRASEÑA *</label>
+                <input type="password" class="form-control" formControlName="password" id="eda_ds_password" pInputText>
+              </div>
+            </div>
+
           </div>
 
-          <div *ngIf="form.value.type && form.value.type.value ==='oracle'" class="ui-g-6 ui-md-2">
-            <div class="form-group">
-              <label i18n="@@inputNombreDb">BASE DE DATOS *</label>
-              <input type="text" class="form-control" formControlName="db" id="eda_ds_db" pInputText>
+          <div *ngIf="form.value.type && form.value.type.value === 'bigquery'" class="p-col-12" style="padding: 0;">
+
+            <label i18n="@@inputBigQueryKeys" style="padding-left:0.5rem">Subir archivo de claves (json) *</label>
+            <div class="form-group" style="padding-left:0.2rem">
+              <app-uploadFile #fileUploader route="/global/upload/bigqueryCredentials" (onFileSaved)="fileLoaded()">
+              </app-uploadFile>
             </div>
-          </div>
-
-
-          <div *ngIf="!form.value.type || form.value.type.value !=='oracle'" class="ui-g-4 ui-md-4">
-            <div class="form-group">
-              <label i18n="@@inputNombreDb2">BASE DE DATOS *</label>
-              <input type="text" class="form-control" formControlName="db" id="eda_ds_db" pInputText>
+            <div class="p-col-12 p-md-4">
+              <div class="form-group">
+                <label i18n="@@inputNombreDb2">BASE DE DATOS *</label>
+                <input type="text" class="form-control" formControlName="db" id="eda_ds_db" pInputText>
+              </div>
             </div>
+
           </div>
-
-
-          <div class="ui-g-4 ui-md-4">
-            <div class="form-group">
-              <label i18n="@@inputNombreEsquema">ESQUEMA</label>
-              <input type="text" class="form-control" formControlName="schema" id="eda_ds_schema" pInputText>
-            </div>
-          </div>
-
-          <div class="ui-g-4 ui-md-4">
-            <div class="form-group">
-              <label i18n="@@inputPort">PUERTO *</label>
-              <input type="number" class="form-control" formControlName="port" id="eda_ds_port" pInputText>
-            </div>
-          </div>
-
-          <div class="ui-g-12 ui-md-4">
-            <div class="form-group">
-              <label i18n="@@inputUsuario">USUARIO *</label>
-              <input type="text" class="form-control" formControlName="user" id="eda_ds_user" pInputText>
-            </div>
-          </div>
-
-          <div class="ui-g-12 ui-md-4">
-            <div class="form-group">
-              <label i18n="@@inputPassword">CONTRASEÑA *</label>
-              <input type="password" class="form-control" formControlName="password" id="eda_ds_password" pInputText>
-            </div>
-          </div>
-
         </div>
 
-        <div *ngIf="form.value.type && form.value.type.value === 'bigquery'" class="ui-g-12"  style="padding: 0;">
-
-          <label i18n="@@inputBigQueryKeys" style="padding-left:0.5rem">Subir archivo de claves (json) *</label>
-          <div class="form-group" style="padding-left:0.2rem" >
-            <app-uploadFile #fileUploader route="/global/upload/bigqueryCredentials" (onFileSaved)="fileLoaded()"></app-uploadFile>
-          </div>
-          <div  class="ui-g-4 ui-md-4">
-            <div class="form-group">
-              <label i18n="@@inputNombreDb2">BASE DE DATOS *</label>
-              <input type="text" class="form-control" formControlName="db" id="eda_ds_db" pInputText>
-            </div>
-          </div>
-
-        </div>
-
-        <div style="display: flex;" class="ui-g-12 ui-md-12">
-          <p-checkbox [ngStyle]="{'border': '0ch'}"  class="form-control" formControlName="optimize" [label]="optimizeString" [binary]="true">
+        <div class="p-col-12 p-md-6">
+          <p-checkbox [ngStyle]="{'border': '0ch'}" class="form-control" formControlName="optimize"
+            [label]="optimizeString" [binary]="true">
           </p-checkbox>
-          <button style="margin: auto;" type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Guardar"
-          id="eda_ds_guardar"></button>
+          <p-checkbox [ngStyle]="{'border': '0ch'}" class="form-control" formControlName="allowCache"
+            [label]="allowCacheSTR" [binary]="true">
+          </p-checkbox>
         </div>
-
-
+        <div class="p-col-12 p-md-6" style="text-align: right;">
+          <button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Guardar"
+            id="eda_ds_guardar"></button>
+        </div>
       </div>
 
     </form>

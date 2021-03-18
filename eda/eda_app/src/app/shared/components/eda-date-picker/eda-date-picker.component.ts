@@ -23,6 +23,7 @@ export class EdaDatePickerComponent implements OnChanges {
 
   public active: boolean = false;
   public locale: {};
+  public firstDayOfWeek : number = 0;
 
   public ranges: Array<SelectItem> =
     [
@@ -48,6 +49,7 @@ export class EdaDatePickerComponent implements OnChanges {
     let lan_ca = new RegExp('\/ca\/', 'i');
     let lan_es = new RegExp('\/es\/', 'i');
     this.locale = lan_ca.test(url) ? locales.ca : lan_es.test(url) ? locales.es : locales.en;
+    this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 0;
   
   }
 

@@ -1,5 +1,5 @@
 <div class="main-content" (window:resize)="onResize($event)" id='myDashboard'>
-    <div class="ui-g-12" style="padding:2px">
+    <div class="p-col-12" style="padding:2px">
         <eda-dashboard-panel class="pointer" (click)="setTitle()">
             <div class="d-flex justify-content-center">
                 <h3 *ngIf="!titleClick" class="edaTitle"> {{title}} </h3>
@@ -12,30 +12,34 @@
     <!-- ============================================================== -->
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
-    <div class="ui-g-12" style="padding:4px;">
-        <button class="filter-button" *ngIf="filtersList.length  > 0"
-            (click)="reloadPanelsWithTimeOut()">
-            <i id="applyFilterButton" class="pi pi-filter fiter-icon"></i> {{filtrar}}
+    <div *ngIf="filtersList.length  > 0" style="margin: 0.5em;">
+        <button pButton pRipple type="button" (click)="reloadPanelsWithTimeOut()" style="color:#888;border: 0; margin-right: 0.3em;"
+            class="p-button-raised p-button-outlined" icon="pi pi-filter"
+             [label]="filtrar">
+            <!-- <i id="applyFilterButton" class="pi pi-filter fiter-icon"></i> {{filtrar}} -->
         </button>
         <span *ngFor="let filter of filtersList">
-            <span class="filter-name"  >
+            <span class="filter-name">
                 {{filter.column.label}}:
             </span>
             <p-multiSelect *ngIf="filter.column.value.column_type !== 'date'" [options]="filter.data"
-                [(ngModel)]="filter.selectedItems" [virtualScroll]="true" itemSize="30"
+                [(ngModel)]="filter.selectedItems" [virtualScroll]="false" itemSize="30"
                 defaultLabel="{{filter.column.label}}" class="global-filter-dropdown" maxSelectedLabels="1"
                 (onPanelHide)="applyGlobalFilter(filter)">
 
                 <p-footer>
-                    <button type="submit" pButton (click)="removeGlobalFilter(filter)" icon="fa fa-trash"
-                        class="ui-button-danger"></button>
+                    <button pButton pRipple type="button" (click)="removeGlobalFilter(filter)" icon="pi pi-trash"
+                        class="p-button-danger p-button-rounded  p-button-outlined"
+                        style="margin: 0.2em;"></button>
                 </p-footer>
 
             </p-multiSelect>
             <eda-date-picker *ngIf="filter.column.value.column_type === 'date'" [inject]="datePickerConfigs[filter.id]"
-                (onDatesChanges)="processPickerEvent($event, filter)" (onRemove)="removeGlobalFilter(filter)" [autoRemove]="true"></eda-date-picker>
+                (onDatesChanges)="processPickerEvent($event, filter)" (onRemove)="removeGlobalFilter(filter)"
+                [autoRemove]="true"></eda-date-picker>
         </span>
     </div>
+
 
 
     <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions"
@@ -117,32 +121,36 @@
 <!-- ============================================================== -->
 <!-- Right sidebar -->
 <!-- ============================================================== -->
-<p-sidebar [(visible)]="display_v.rightSidebar" position="right" [baseZIndex]="10000" blockScroll="true">
+<p-sidebar [(visible)]="display_v.rightSidebar" position="right" [baseZIndex]="10000" blockScroll="true"
+    [showCloseIcon]="false" [style]="{width:'15em'}">
 
     <div>
 
         <div class="right-sidebar-blocks-title  mt-1">
-           <span class="ml-2">{{datasourceName}}</span>
+            <span class="ml-2">{{datasourceName}}</span>
         </div>
 
     </div>
     <hr>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddWidget()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
+        (click)="onAddWidget()">
         <div>
             <i id="newPanel" class="fa fa-columns"></i>
             <span i18n="@@opcionPanel" class="ml-2">NUEVO PANEL</span>
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddTitle()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
+        (click)="onAddTitle()">
         <div>
             <i class="fa fa-columns"></i>
             <span i18n="@@opcionTitulo" class="ml-2">NUEVO TEXTO</span>
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="addGlobalFilter()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
+        (click)="addGlobalFilter()">
         <div>
             <i id="newFilter" class="fa fa-filter"></i>
             <span i18n="@@opcionFiltro" class="ml-2">NUEVO FILTRO</span>
@@ -160,21 +168,26 @@
 
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
         <div>
-            <i class="fa fa-folder-open"></i>
-            <span  class="ml-2"> {{addTagString}} </span>
-            <p-dropdown [options]="tags" [(ngModel)]="selectedtag" optionLabel="label" (onChange)="selectTag()" [placeholder]="newTag" ></p-dropdown>
-            <input style="max-width: 70%; margin-top: 0.2rem;" *ngIf="addTag" type="text" pInputText [(ngModel)]="tag.label"> 
+            <div>
+                <i class="fa fa-folder-open"></i>
+                <span class="ml-2"> {{addTagString}} </span>
+            </div>
+            <p-dropdown [options]="tags" [(ngModel)]="selectedtag" optionLabel="label" (onChange)="selectTag()"
+                [placeholder]="newTag"></p-dropdown>
+            <input style=" margin-top: 0.4rem;" *ngIf="addTag" type="text" pInputText [(ngModel)]="tag.label">
         </div>
     </div>
 
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
         <div>
             <span class="ml-2">LIVE DASHBOARD</span>
-            <input style="max-width: 70%; margin-top: 0.2rem;" [placeholder]="Seconds_to_refresh"  type="number" pInputText [(ngModel)]="refreshTime" > 
+            <input style="width: 100%; margin-top: 0.2rem;" [placeholder]="Seconds_to_refresh" type="number" pInputText
+                [(ngModel)]="refreshTime">
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveDashboard()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
+        (click)="saveDashboard()">
         <div>
             <i id="saveDashboard" class="fa fa-save"></i>
             <span i18n="@@opcionGuardar" class="ml-2">GUARDAR INFORME</span>
@@ -221,7 +234,7 @@
     </div>
 </p-sidebar>
 
-<div >
+<div>
     <span i18n="@@notSavedChanges" class="div-cambios " *ngIf="display_v.notSaved"> Hay cambios sin guardar... </span>
 
     <button (click)="display_v.rightSidebar = true"

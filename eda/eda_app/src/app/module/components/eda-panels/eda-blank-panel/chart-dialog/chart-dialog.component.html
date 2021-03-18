@@ -1,30 +1,31 @@
 <eda-dialog [inject]="dialog">
 
-    <div class="ui-g">
+    <div body class="p-grid">
 
-        <div class="ui-g-8">
+        <div class="p-col-8">
 
-            <div class="eda-chart-panel">
+            <div class="eda-chart-panel" style="margin-left: 6em;">
 
-                <div style="height: 70%">
-                    <eda-chart #myEdaChart *ngIf="chart" [inject]="chart"></eda-chart>
-                </div>
+
+                <panel-chart #PanelChartComponent [props]="panelChartConfig"
+                    style="height: 70%; width: 70%; display:block;  margin-top:5em">
+                </panel-chart>
 
             </div>
 
         </div>
 
-        <div class="ui-g-4">
+        <div class="p-col-4">
 
             <h6 i18n="@@colorsChartH6" class="custom-border-b1">
                 Colores
             </h6>
 
-            <div class="chart-color-selection">
+            <div class="p-grid chart-color-selection">
 
                 <ng-container *ngFor="let serie of series; let i = index">
 
-                    <div class="mb-1">
+                    <div class=" p-col-6 ">
                         <input type="text" pInputText style="width: 40%" [value]="serie.label"
                             [style.border-color]="serie.border" />
 
@@ -41,25 +42,35 @@
 
             </div>
 
+            <h6 *ngIf="showTrend" i18n="@@addtrend" class="custom-border-b1" style="margin-top: 2em;">
+                Tendencia
+            </h6>
+
+            <div *ngIf="showTrend">
+                <p-inputSwitch id="switchQueryMode" class="p-col-1 sql-switch" [(ngModel)]="addTrend"
+                    tooltipPosition="left" (onChange)="checkTrend()">
+                </p-inputSwitch>
+            </div>
+
         </div>
 
     </div>
 
 
-    <p-footer class="footer">
+    <div footer>
 
         <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
 
-            <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check" class="ui-button ml-2"
+            <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check" class="p-button-raised p-button-success"
                 i18n-label="@@guardarButton" label="Confirmar" id="eda_chart_dialog_confirmar">
             </button>
 
-            <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="ui-button-danger ml-2"
+            <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="p-button-raised p-button-danger"
                 i18n-label="@@cancelarButton" label="Cancelar">
             </button>
 
         </div>
 
-    </p-footer>
+    </div>
 
 </eda-dialog>

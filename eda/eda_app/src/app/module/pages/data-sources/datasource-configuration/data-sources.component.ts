@@ -59,19 +59,20 @@ export class DataSourcesComponent {
                 user: this.form.value.user,
                 password: this.form.value.password,
                 schema: this.form.value.schema,
-                sid: this.form.value.sid.value
+                sid: this.form.value.sid.value,
+                optimize : this.optimize ? 1 : 0
             };
 
             this.dataSourceService.testConnection(connection).subscribe(
                 () => {
-                    const optimize = this.optimize ? 1 : 0; // count rows in every table
-                    this.dataSourceService.addDataSource(connection, optimize).subscribe(
+        
+                    this.dataSourceService.addDataSource(connection).subscribe(
                         res => {
                             let title = $localize`:@@DatadourceTitle:Fuente de datos: `
                             Swal.fire({
                                 title: `${title} ${this.form.value.name}`,
                                 text: $localize`:@@DatasourceText:Creada correctamente`,
-                                type: 'success'
+                                icon: 'success'
                             });
                             this.reloadDataSources();
                             this.spinnerService.off();
