@@ -1,9 +1,10 @@
-import { OnInit, Input, AfterViewChecked } from '@angular/core';
+import { OnInit, Input, AfterViewChecked, SecurityContext } from '@angular/core';
 import { Component, AfterViewInit } from '@angular/core';
 import { MapUtilsService } from '@eda/services/service.index';
 import { EdaMap } from './eda-map';
 import { LatLngExpression } from 'leaflet';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { DomSanitizer } from '@angular/platform-browser';
 
 const L = require('./topoJsonExtention')
 @Component({
@@ -47,7 +48,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   public boundaries: Array<any> = [];
 
   constructor(
-    private mapUtilsService: MapUtilsService
+    private mapUtilsService: MapUtilsService, private _sanitizer: DomSanitizer
   ) {
     this.customOptions = { 'className': 'custom', offset: [-20, -20], autoPan: false , closeButton:false};
   }
@@ -300,6 +301,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
 
   private initLegend = (groups: Array<number>, label: string, color: string): void => {
     let me = this;
+    label = me._sanitizer.sanitize(SecurityContext.HTML, label)
     this.legend.onAdd = function (map) {
       var div = L.DomUtil.create("div", "legend");
       div.style.backgroundColor = "rgba(255, 255, 255, 0.804)";
@@ -317,8 +319,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
                           </span><span>&nbsp ${new Intl.NumberFormat("de-DE").format(Math.floor(g[i]))} - 
                           ${new Intl.NumberFormat("de-DE").format(Math.floor(g[i - 1]))}</span><br>`;
       }
-
-      return div;
+      return div
     };
 
     this.legend.addTo(this.map);

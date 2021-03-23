@@ -77,7 +77,8 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onCloseKpiProperties(event, response) }
             });
 
-          } else if (panelComponent.graficos.chartType === 'parallelSets') {
+          } 
+          else if (panelComponent.graficos.chartType === 'parallelSets') {
 
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.sankeyController = new EdaDialogController({
@@ -88,7 +89,8 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onCloseSankeyProperties(event, response) }
             });
 
-          } else if(panelComponent.graficos.chartType === 'treeMap'){
+          } 
+          else if(panelComponent.graficos.chartType === 'treeMap'){
 
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.treeMapController = new EdaDialogController({
@@ -99,7 +101,20 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onCloseTreeMapProperties(event, response) }
             });
 
-          }else if(panelComponent.graficos.chartType === 'scatterPlot'){
+          }
+          else if (panelComponent.graficos.chartType === 'funnel') {
+
+            panelComponent.contextMenu.hideContextMenu();
+            panelComponent.funnelController = new EdaDialogController({
+              params: {
+                panelID: _.get(panelComponent.panel, 'id'),
+                panelChart: panelComponent.panelChartConfig
+              },
+              close: (event, response) => { panelComponent.onCloseFunnelProperties(event, response) }
+            });
+
+          }
+          else if(panelComponent.graficos.chartType === 'scatterPlot'){
 
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.scatterPlotController = new EdaDialogController({

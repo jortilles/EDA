@@ -205,7 +205,7 @@ body .ui-accordion .ui-accordion-header a {
     min-height: 40px;
     background: #1b69822e;
     overflow: hidden;
-    margin-top: 16px;
+    margin-top: 0.5em;
 }
 
 .filter-list {
@@ -218,6 +218,7 @@ body .ui-accordion .ui-accordion-header a {
     min-height: 40px;
     background: #6f9c672e;
     overflow: hidden;
+    margin-top: 0.5em;
 }
 
 .our-table-box {
@@ -547,7 +548,7 @@ body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider  {
  line-height: 22px;
  font-size: 18px;
  color: #455a64;
- font-family: sans-serif;
+ font-family: 'Questrial';
  font-weight: 400;
  box-sizing: border-box;
 

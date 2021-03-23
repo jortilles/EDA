@@ -39,7 +39,7 @@ export class CreateDashboardComponent extends EdaDialogAbstract {
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
             style: { height: '50%', width: '60%' },
-            title: 'CREA TU NUEVO INFORME'
+            title: $localize`:@@newDashboardtitle:CREA TU NUEVO INFORME`
         });
     }
 
@@ -62,7 +62,11 @@ export class CreateDashboardComponent extends EdaDialogAbstract {
     }
 
     private loadGroups(): void {
-        this.dss = this.controller.params.dataSources;
+        this.dss = this.controller.params.dataSources.sort((a, b) => {
+            let va = a.model_name.toLowerCase();
+            let vb = b.model_name.toLowerCase();
+            return va < vb ?  -1 : va > vb ? 1 : 0
+        });
 
         this.groupService.getGroupsByUser().subscribe(
             res => {

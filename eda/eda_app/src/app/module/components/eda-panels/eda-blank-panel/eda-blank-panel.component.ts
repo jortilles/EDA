@@ -59,6 +59,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public kpiController: EdaDialogController;
     public sankeyController: EdaDialogController;
     public treeMapController: EdaDialogController;
+    public funnelController:EdaDialogController;
     public linkDashboardController: EdaDialogController;
     public scatterPlotController: EdaDialogController;
     public knobController: EdaDialogController;
@@ -333,8 +334,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content = { query, chart, edaChart };
 
             /**This is to repaint on panel redimension */
-            if (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob'].includes(chart)) {
-
+            if (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob', 'funnel'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
 
@@ -413,7 +413,6 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
-
         
         this.graficos = {};
         let allow = _.find(this.chartTypes, c => c.value === type);
@@ -437,7 +436,6 @@ export class EdaBlankPanelComponent implements OnInit {
      * @return current chart layout
      */
     public getChartStyles( chart: string) {
-
         if (this.panel.content && this.panel.content.chart === chart) {
             return new ChartConfig(this.panel.content.query.output.config);
         } else {
@@ -676,6 +674,19 @@ export class EdaBlankPanelComponent implements OnInit {
         this.treeMapController = undefined;
     }
 
+    public onCloseFunnelProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+            this.panel.content.query.output.config.colors = response.colors;
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+
+            this.dashboardService._notSaved.next(true);
+
+        }
+        this.funnelController = undefined;
+    }
+
     public onCloseScatterProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
@@ -744,12 +755,13 @@ export class EdaBlankPanelComponent implements OnInit {
                     || content.chart === 'parallelSets'
                     || content.chart === 'treeMap'
                     || content.chart === 'scatterPlot'
+                    || content.chart === 'funnel'
                     || content.chart === 'knob')
             ) {
 
                 setTimeout(() => {
-                    const config = ChartsConfigUtils.recoverConfig(content.chart, content.query.output.config);
 
+                    const config = ChartsConfigUtils.recoverConfig(content.chart, content.query.output.config);
                     this.changeChartType(content.chart, content.edaChart, config);
                 })
             }

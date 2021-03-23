@@ -45,10 +45,10 @@ body .preview-chart-box {
   }
 
   .edit-blink {
-    -webkit-animation: yellow-fade 1s ease-in-out 0s;
-    -moz-animation: yellow-fade 1s ease-in-out 0s;
-    -o-animation: yellow-fade 1s ease-in-out 0s;
-    animation: yellow-fade 1s ease-in-out 0s;
+    -webkit-animation: yellow-fade 2s 2 ease-in-out 0s;
+    -moz-animation: yellow-fade 2s 2 ease-in-out 0s;
+    -o-animation: yellow-fade 2s 2 ease-in-out 0s;
+    animation: yellow-fade 2s 2 ease-in-out 0s;
     border-radius: 5%;
   }
 
@@ -58,4 +58,14 @@ body .preview-chart-box {
     transition: .3s;
   }
 
-  
+
+.eda-col-class-date{
+/* not set */ 
+}
+.eda-col-class-numeric{
+  font-weight: bold;
+}
+
+.eda-col-class-text{
+  font-style: italic;
+}

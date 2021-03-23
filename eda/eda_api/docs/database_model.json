@@ -7,7 +7,7 @@
             "database" : "stg",
             "schema" : "",
             "user" : "postgres",
-            "password" : "viladrau-2018"
+            "password" : ""
         },
         "metadata" : {
             "model_name" : "ATY STG",

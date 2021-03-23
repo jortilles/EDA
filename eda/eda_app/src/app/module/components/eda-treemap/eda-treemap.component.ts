@@ -35,12 +35,33 @@ export class EdaTreeMap implements AfterViewInit {
 
   ngOnInit(): void {
     this.id = `treeMap_${this.inject.id}`;
-    this.data = this.formatData(this.inject.data);;
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors : ChartsColors.map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
+    this.data = this.formatData(this.inject.data);
+
+    this.colors = this.inject.colors.length > 0 ? this.inject.colors
+      : this.getColors(this.data.children.length, ChartsColors)
+        .map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
+
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
+
+  }
+
+  getColors(dataLength, colors) {
+
+    const colorsLength = colors.length;
+    let outputColors: Array<any> = colors;
+
+    if (dataLength > colorsLength) {
+      let repeat = Math.ceil(dataLength / colorsLength);
+
+      for (let i = 0; i < repeat - 1; i++) {
+        outputColors = [...outputColors, ...colors]
+      }
+    }
+
+    return outputColors.filter((_, index) => index < dataLength);
 
   }
 
@@ -68,12 +89,12 @@ export class EdaTreeMap implements AfterViewInit {
 
     const thirdRow = this.inject.linkedDashboard ? `Linked to ${this.inject.linkedDashboard.dashboardName}` : '';
 
-    const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length*(14/12)]);
+    const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (14 / 12)]);
 
     const pixelWithRate = 7;
     const width = maxLength * pixelWithRate;
 
-    return {firstRow:firstRow, secondRow:secondRow, thirdRow:thirdRow, width:width}
+    return { firstRow: firstRow, secondRow: secondRow, thirdRow: thirdRow, width: width }
   }
 
 
@@ -132,17 +153,17 @@ export class EdaTreeMap implements AfterViewInit {
         const tooltipData = this.getToolTipData(data);
 
 
-        let text =  `${tooltipData.firstRow} <br/> ${tooltipData.secondRow}`;
+        let text = `${tooltipData.firstRow} <br/> ${tooltipData.secondRow}`;
         text = this.inject.linkedDashboard ? text + `<br/> <h6>  ${tooltipData.thirdRow} </h6>` : text;
         let height = this.inject.linkedDashboard ? '5em' : '4em';
 
-      
+
         this.div.transition()
           .duration(200)
           .style('opacity', .9);
         this.div.html(text)
-          .style('left', (d.pageX - 81  ) + 'px')
-          .style('top', (d.pageY - 49 ) + 'px')
+          .style('left', (d.pageX - 81) + 'px')
+          .style('top', (d.pageY - 49) + 'px')
           .style('width', `${tooltipData.width}px`)
           .style('height', height);
       })
@@ -154,9 +175,9 @@ export class EdaTreeMap implements AfterViewInit {
 
         const linked = this.inject.linkedDashboard ? 0 : 10;
         const tooltipData = this.getToolTipData(data);
-        
-        this.div.style("top", (d.pageY - 70 + linked ) + "px")
-          .style("left", (d.pageX - tooltipData.width/2) + "px");
+
+        this.div.style("top", (d.pageY - 70 + linked) + "px")
+          .style("left", (d.pageX - tooltipData.width / 2) + "px");
       });;
 
 
@@ -164,7 +185,7 @@ export class EdaTreeMap implements AfterViewInit {
     leaf.append("text")
       .selectAll("tspan")
       .data(d => {
-        let value = (d.x1 - d.x0 < 40) || (d.y1 - d.y0 < 40)  ? [''] :
+        let value = (d.x1 - d.x0 < 40) || (d.y1 - d.y0 < 40) ? [''] :
           d.parent ? d.parent.data.name.split(/(?=[A-Z][a-z])|\s+/g).concat(d.data.name.split(/(?=[A-Z][a-z])|\s+/g))
             : d.data.name.split(/(?=[A-Z][a-z])|\s+/g);
 

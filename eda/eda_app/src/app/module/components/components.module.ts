@@ -36,7 +36,9 @@ import {
     EdaKnobComponent,
     Knob,
     KnobDialogComponent,
-    TableGradientDialogComponent
+    TableGradientDialogComponent,
+    EdaFunnelComponent,
+    FunnelDialog
 
  } from './component.index';
 import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
@@ -80,7 +82,9 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         EdaKnobComponent,
         Knob,
         KnobDialogComponent,
-        TableGradientDialogComponent
+        TableGradientDialogComponent,
+        EdaFunnelComponent,
+        FunnelDialog
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -95,6 +99,7 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         EdaMapComponent,
         EdaGeoJsonMapComponent,
         EdaD3Component,
+        EdaFunnelComponent,
         LinkDashboardsComponent,
         TitleDialogComponent,
         EdaTreeMap,
@@ -102,9 +107,10 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         EdaKnobComponent,
         Knob,
         KnobDialogComponent,
-        TableGradientDialogComponent
+        TableGradientDialogComponent,
+        FunnelDialog
     ],
-    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent, EdaD3Component, EdaTreeMap, EdaScatter, EdaKnobComponent, Knob],
+    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent, EdaD3Component, EdaTreeMap, EdaScatter, EdaKnobComponent, Knob, EdaFunnelComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ComponentsModule { }

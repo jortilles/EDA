@@ -122,7 +122,7 @@
 <!-- Right sidebar -->
 <!-- ============================================================== -->
 <p-sidebar [(visible)]="display_v.rightSidebar" position="right" [baseZIndex]="10000" blockScroll="true"
-    [showCloseIcon]="false" [style]="{width:'15em'}">
+    [showCloseIcon]="false" [style]="{width:'17em', overflow: 'auto'}">
 
     <div>
 
@@ -239,6 +239,7 @@
 
     <button (click)="display_v.rightSidebar = true"
         class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
-        <i id="gearButton" class="fa fa-cog text-white"></i>
+        <i id="gearButton" class="fa fa-cog text-white" style="font-size: 14px;"></i>
     </button>
+
 </div>

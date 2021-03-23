@@ -8,6 +8,8 @@ import { SchedulerFunctions } from './../scheduler/schedulerFunctions';
 const fs = require('fs');
 const path = require("path");
 
+/**Mailing service */
+
 
 export class MailingService {
 

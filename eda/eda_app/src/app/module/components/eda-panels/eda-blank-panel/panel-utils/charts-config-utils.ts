@@ -6,6 +6,7 @@ import { ChartJsConfig } from '../panel-charts/chart-configuration-models/chart-
 import { KpiConfig } from '../panel-charts/chart-configuration-models/kpi-config';
 import { MapConfig } from '../panel-charts/chart-configuration-models/map-config';
 import { SankeyConfig } from '../panel-charts/chart-configuration-models/sankey-config';
+import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.config';
 
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
 import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
@@ -51,7 +52,7 @@ export const ChartsConfigUtils = {
         legendPosition: ebp.panelChart.componentRef.instance.inject.legendPosition
       }
     }
-    else if (["parallelSets", "treeMap", "scatterPlot"].includes(ebp.panelChart.props.chartType)) {
+    else if (["parallelSets", "treeMap", "scatterPlot", "funnel"].includes(ebp.panelChart.props.chartType)) {
 
       config =
       {
@@ -74,7 +75,6 @@ export const ChartsConfigUtils = {
         addTrend: ebp.panelChart.props.config ? ebp.panelChart.props.config.getConfig()['addTrend'] : false
       };
   }
-
     return new ChartConfig(config);
 
   },
@@ -105,6 +105,9 @@ export const ChartsConfigUtils = {
     } else if (type === 'scatterPlot') {
       return new ScatterConfig([]);
     }
+    else if (type === 'funnel') {
+      return new FunnelConfig([]);
+    }
     else if (type === 'knob') {
 
       return new KnobConfig(null, null);
@@ -114,7 +117,7 @@ export const ChartsConfigUtils = {
     }
   },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | KnobConfig | FunnelConfig) => {
 
     if (['table', 'crosstable'].includes(type)) {
       return new ChartConfig(config);
@@ -144,6 +147,9 @@ export const ChartsConfigUtils = {
 
     }
     else if(type === 'knob'){
+      return new ChartConfig(config);
+    }
+    else if (type === 'funnel') {
       return new ChartConfig(config);
     }
 

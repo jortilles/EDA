@@ -8,7 +8,7 @@
     <div id="edit" [ngClass]="{'edit-blink': lodash.isEmpty(panel.content) }">
         <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
     </div>
-    
+
 </div>
 
 <!-- Body of Panel -->
@@ -74,8 +74,8 @@
                                 (mouseover)="showDescription(column)" (mouseout)="description= ''" cdkDrag
                                 (cdkDragDropped)="searchRelations(column, $event)">
 
-                                <span class="text-left" title="{{column.description.default}}">
-                                    {{column.display_name.default}}
+                                <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">
+                                    {{column.display_name.default}} 
                                 </span>
 
                             </div>
@@ -100,7 +100,7 @@
 
                                 <span class="close-thin pointer" (click)="removeColumn( item, 'select' )"></span>
 
-                                <span class="text-center">
+                                <span    class=" text-center eda-col-class-{{item.column_type}}" >
                                     {{item.display_name.default}}
                                 </span>
 
@@ -111,7 +111,7 @@
                         <h4 class="mt-4" i18n="@@filtrosH4">
                             Filtros
                         </h4>
-                        <hr>
+                        <hr class="mb-0">
 
                         <div class="filter-list" cdkDropList cdkDropListOrientation="horizontal"
                             #filterList="cdkDropList" [cdkDropListData]="filtredColumns"
@@ -125,12 +125,13 @@
 
                                 <span class="close-thin pointer" (click)="removeColumn( item, 'filter' )"></span>
 
-                                <span class="text-center">
+                                <span  class=" text-center eda-col-class-{{item.column_type}}" >
                                     {{item.display_name.default}}
                                 </span>
                             </div>
 
                         </div>
+                        
                         <div class="p-grid">
                             <div class="p-col-12 p-md-12 infoFiltres">
                                 <span i18n="@@topQueryH4">
@@ -181,54 +182,55 @@
                                 </p-overlayPanel>
 
 
+                                <div class="p-grid">
 
-                                <div class="p-col-12 p-md-6 pl-2">
-                                    <h5 i18n="@@resumenAtrH6">
-                                        Resumen de atributos
-                                    </h5>
+                                    <div class="p-col-12 p-md-6 pl-2">
+                                        <h5 i18n="@@resumenAtrH6">
+                                            Resumen de atributos
+                                        </h5>
 
-                                    <div *ngFor='let column of this.currentQuery'>
-                                        <span>{{column.table_id}} . {{column.display_name.default}}</span>
+                                        <div *ngFor='let column of this.currentQuery'>
+                                            <span>{{column.table_id}} . {{column.display_name.default}}</span>
 
-                                        <span *ngFor='let aggregation of column.aggregation_type'>
-                                            <span
-                                                *ngIf='aggregation.selected === true && aggregation.display_name !== "no"'>
-                                                ( {{aggregation.display_name}} )
+                                            <span *ngFor='let aggregation of column.aggregation_type'>
+                                                <span
+                                                    *ngIf='aggregation.selected === true && aggregation.display_name !== "no"'>
+                                                    ( {{aggregation.display_name}} )
+                                                </span>
                                             </span>
-                                        </span>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="p-col-12 p-md-6 pl-2">
+                                        <h5 i18n="@@resumenFiltrosPanelH6">
+                                            Resumen de filtros del panel
+                                        </h5>
+
+                                        <div *ngFor='let filter of this.selectedFilters'>
+                                            <span> {{filter.filter_table}} . {{filter.filter_column}} (
+                                                {{filter.filter_type}} )</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-col-12 p-md-6 pl-2">
+                                        <h5 i18n="@@resumenFiltrosInformeH6">
+                                            Resumen de filtros del informe
+                                        </h5>
+
+                                        <div *ngFor='let filter of this.globalFilters'>
+                                            <span> {{filter.filter_table}} . {{filter.filter_column}} (
+                                                {{filter.filter_type}} )</span>
+                                        </div>
                                     </div>
                                 </div>
-
-
-                                <div class="p-col-12 p-md-6 pl-2">
-                                    <h5 i18n="@@resumenFiltrosPanelH6">
-                                        Resumen de filtros del panel
-                                    </h5>
-
-                                    <div *ngFor='let filter of this.selectedFilters'>
-                                        <span> {{filter.filter_table}} . {{filter.filter_column}} (
-                                            {{filter.filter_type}} )</span>
-                                    </div>
-                                </div>
-
-                                <div class="p-col-12 p-md-6 pl-2">
-                                    <h5 i18n="@@resumenFiltrosInformeH6">
-                                        Resumen de filtros del informe
-                                    </h5>
-
-                                    <div *ngFor='let filter of this.globalFilters'>
-                                        <span> {{filter.filter_table}} . {{filter.filter_column}} (
-                                            {{filter.filter_type}} )</span>
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div *ngIf="modeSQL" class="p-grid">
-                    
+
                     <div class="p-col-7">
                         <h6 i18n="@@sqlExpresionH6">Expresión SQL</h6>
                         <hr>
@@ -248,11 +250,12 @@
 
                         <h6 i18n="@@indicaciones">Indicaciones</h6>
                         <hr>
-                        <p-accordion *ngIf="this.display_v.page_dialog" id="help-text" (onOpen)="accopen($event)" (onClose)="accopen($event)">
+                        <p-accordion *ngIf="this.display_v.page_dialog" id="help-text" (onOpen)="accopen($event)"
+                            (onClose)="accopen($event)">
                             <p-accordionTab i18n-header="@@informacionGeneral" header="Información general">
                                 <ng-template pTemplate="content">
                                     <p i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
-                                        en tu  modelo.
+                                        en tu modelo.
                                         Para ello introduce la consulta en el cuadro de texto y selecciona la tabla
                                         principal
                                         (puede ser cualquiera de las que aparecen en la consulta).
@@ -272,7 +275,7 @@
                                 </ng-template>
                             </p-accordionTab>
                             <p-accordionTab i18n-header="@@linkFilters"
-                                header="Vincular consulta con los filtros del panel" >
+                                header="Vincular consulta con los filtros del panel">
                                 <ng-template pTemplate="content">
                                     <p i18n="@@indicaciones5"> Puedes vincular los filtros del informe con la consulta
                                     </p>
@@ -299,8 +302,8 @@
                                     </ul>
                                 </ng-template>
                             </p-accordionTab>
-                            <p-accordionTab i18n-header="@@examples" header="Ejemplos" >
-                                <ng-template pTemplate="content" >
+                            <p-accordionTab i18n-header="@@examples" header="Ejemplos">
+                                <ng-template pTemplate="content">
                                     <p i18n="@@indicaciones9">Consulta simple</p>
                                     <ul>
                                         <li style="font-weight: bold;"> SELECT c.customername FROM
@@ -319,7 +322,8 @@
                                         <li i18n="@@indicaciones13"> Consulta con filtros vinculados</li>
                                         <ul>
                                             <li style=" font-weight: bold">SELECT c.customername FROM
-                                                CUSTOMERS c WHERE c.customername IN ('Julia', 'john') AND {{' ${c.city}'}}
+                                                CUSTOMERS c WHERE c.customername IN ('Julia', 'john') AND {{'
+                                                ${c.city}'}}
                                             </li>
                                         </ul>
                                     </ul>
@@ -458,6 +462,8 @@
 <app-sankey-dialog *ngIf="sankeyController" [controller]="sankeyController"></app-sankey-dialog>
 
 <app-treeMap-dialog *ngIf="treeMapController" [controller]="treeMapController"></app-treeMap-dialog>
+
+<app-funnel-dialog *ngIf="funnelController" [controller]="funnelController"></app-funnel-dialog>
 
 <app-scatterPlot-dialog *ngIf="scatterPlotController" [controller]="scatterPlotController"></app-scatterPlot-dialog>
 

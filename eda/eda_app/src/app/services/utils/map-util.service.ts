@@ -1,11 +1,12 @@
 import { LinkedDashboardProps } from './../../module/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
-import { Injectable } from '@angular/core';
+import { Injectable, SecurityContext } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
 import { Observable } from 'rxjs';
 import { ApiService } from '../api/api.service';
 import { shareReplay } from 'rxjs/operators';
 import { LatLngExpression } from 'leaflet';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Injectable({ providedIn: 'root' })
 
@@ -13,7 +14,7 @@ export class MapUtilsService extends ApiService {
     private route = '/global/upload/addFile';
     private mapsObservables$: {} = {};
 
-    constructor(protected http: HttpClient) {
+    constructor(protected http: HttpClient, private _sanitizer: DomSanitizer) {
         super(http);
     }
     initShapes(mapID: string): void {
@@ -70,22 +71,24 @@ export class MapUtilsService extends ApiService {
     }
 
     private makePopup = (data: any, labels: Array<string>): string => {
+        const me = this;
         let div = '';
         for (let i = 2; i < 4; i++) {
             if (data[i] !== undefined) {
-                div += `<div> ${labels[i]} :  ${data[i]} </div>`;
+                div += `<div> ${me._sanitizer.sanitize(SecurityContext.HTML, labels[i])} :  ${data[i]} </div>`;
             }
         }
         return `` + div;
     }
     public makeGeoJsonPopup = (layer_id: string, data: Array<number>, labels: Array<string>, labelIndex: number): string => {
 
+        const me = this;
         let row = data.filter(row => row[labelIndex] !== null && row[labelIndex].toUpperCase().replace(/\s/g, '') === layer_id.toUpperCase().replace(/\s/g, ''))[0];
         let div = '';
         for (let i = 0; i < labels.length; i++) {
             if (row !== undefined) {
                 let value = typeof row[i] === 'number' ? parseFloat(row[i]).toLocaleString('de-DE') : row[i];
-                div += `<div> ${labels[i]} :  ${value} </div>`;
+                div += `<div> ${me._sanitizer.sanitize(SecurityContext.HTML, labels[i])} :  ${value} </div>`;
             } else {
                 div = `<div> No data </div>`;
             }

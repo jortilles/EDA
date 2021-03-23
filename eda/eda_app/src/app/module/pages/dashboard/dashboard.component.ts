@@ -12,7 +12,7 @@ import { SelectItem } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import domtoimage from 'dom-to-image';
 import Swal from 'sweetalert2';
-import * as jspdf from 'jspdf';
+import jspdf from 'jspdf';
 import * as _ from 'lodash';
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
 
@@ -984,7 +984,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             found 
             && panel.content
             && !found.panelChart.NO_DATA
-            && (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob'].includes(panel.content.chart))
+            && (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob', 'funnel'].includes(panel.content.chart))
             && !$event.isNew) {
             found.savePanel();
         }// found.onGridsterResize($event);

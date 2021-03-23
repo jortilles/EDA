@@ -27,7 +27,7 @@
 }
 
 html {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 * {
@@ -3240,7 +3240,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
   color: #6c757d;
 }
 .p-card .p-card-content {
-  padding: 0.2rem 0;
+  padding: 0.1rem 0;
 }
 .p-card .p-card-footer {
   padding: 1rem 0 0 0;
@@ -5184,4 +5184,17 @@ body .d3tooltip > h6{
   border-width: 7px;
   border-style: solid;
   border-color: #041429cf transparent transparent transparent;
+}
+
+
+/* cosas de jj */
+#div_new_dashboard{
+  margin-bottom: 1rem !important;
+}
+#div_new_dashboard div{
+    padding: 0.1rem !important;
+    
+}
+#div_new_dashboard h3{
+  font-weight: bold !important;
 }

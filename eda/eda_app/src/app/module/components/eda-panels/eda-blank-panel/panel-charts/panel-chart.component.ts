@@ -29,6 +29,8 @@ import { EdaGeoJsonMapComponent } from '@eda/components/eda-map/eda-geoJsonMap.c
 import * as _ from 'lodash';
 import { EdaMap } from '@eda/components/eda-map/eda-map';
 import { EdaD3 } from '@eda/components/eda-d3/eda-d3';
+import { EdaFunnelComponent } from '@eda/components/eda-funnel/eda-funnel.component';
+
 
 
 
@@ -83,6 +85,7 @@ export class PanelChartComponent implements OnInit, OnChanges,  OnDestroy {
      * changes chart Type
      */
     public changeChartType() {
+  
         const type = this.props.chartType;
         if (['table', 'crosstable'].includes(type)) {
             this.renderEdaTable(type);
@@ -107,6 +110,9 @@ export class PanelChartComponent implements OnInit, OnChanges,  OnDestroy {
         }
         if (type === 'knob') {
             this.renderKnob()
+        }
+        if(type === 'funnel'){
+            this.renderFunnel();
         }
     }
 
@@ -143,6 +149,7 @@ export class PanelChartComponent implements OnInit, OnChanges,  OnDestroy {
         const manySeries = chartData[1].length > 10 ? true : false;
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, minMax);
+
 
         /**Add trend datasets*/
         let cfg : any = this.props.config.getConfig();
@@ -337,6 +344,29 @@ export class PanelChartComponent implements OnInit, OnChanges,  OnDestroy {
     private createParallelSetsComponent(inject: any) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaD3Component);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+
+    }
+
+    private renderFunnel() {
+
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+
+        let inject: EdaD3 = new EdaD3;
+        inject.size = this.props.size;
+        inject.id = this.randomID();
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.colors = this.props.config.getConfig()['colors'];
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+        
+        this.createFunnelComponent(inject);
+    }
+
+    private createFunnelComponent(inject: any) {
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaFunnelComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
 

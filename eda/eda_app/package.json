@@ -40,7 +40,7 @@
     "dom-to-image": "^2.6.0",
     "font-awesome": "^4.7.0",
     "html2canvas": "^1.0.0-rc.5",
-    "jspdf": "^1.5.3",
+    "jspdf": "^2.3.1",
     "leaflet": "^1.6.0",
     "lodash": "^4.17.15",
     "moment": "^2.26.0",

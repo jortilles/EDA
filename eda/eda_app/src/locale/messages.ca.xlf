@@ -632,7 +632,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                             Selección
 </source>
 <target>
-                            Selecció
+                            Sel·lecció
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -3407,6 +3407,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Conexión  </source>
     <target>Connexió</target>
   </trans-unit>
+
+    <trans-unit id="newDashboardtitle">
+    <source>CREA TU NUEVO INFORME  </source>
+    <target>CREA EL TEU NOU INFORME</target>
+  </trans-unit>
+
 
 </body>
 </file>

@@ -3385,6 +3385,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Connection</target>
   </trans-unit>
 
+  <trans-unit id="newDashboardtitle">
+    <source>CREA TU NUEVO INFORME  </source>
+    <target>YOUR NEW DASHBOARD</target>
+  </trans-unit>
+
+
 
 </body>
 </file>

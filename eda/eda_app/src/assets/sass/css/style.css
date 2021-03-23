@@ -19,7 +19,7 @@
 
 .custom  .leaflet-popup-content-wrapper, .leaflet-popup-tip {
     background: #010913ce !important;
-    font: 12px Questrial;
+    font: 11px Questrial;
     color: #fbfbfb  !important;;
     cursor: pointer;
     pointer-events: none;

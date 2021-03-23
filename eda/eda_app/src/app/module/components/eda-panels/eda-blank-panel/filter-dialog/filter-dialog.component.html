@@ -1,6 +1,6 @@
 <eda-dialog [inject]="dialog">
 
-    <div body class="p-grid" > 
+    <div body class="p-grid">
 
         <div class="p-col-12">
             <h4 i18n="@@filtrarH4">
@@ -11,12 +11,12 @@
 
         <div class="p-grid p-col-12 mt-2">
 
-            <div class="p-col-12 mt-1" [ngClass]="{ 'ui-md-6': !display.between }">
+            <div class="p-col-12 mt-1" [ngClass]="{ 'p-md-6': !display.between }">
 
                 <span class="p-float-label">
 
                     <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
-                        [autoDisplayFirst]="false" [style]="{'width': '33%'}" [showClear]="true" [filter]="true"
+                        [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true" [filter]="true"
                         (onChange)="handleFilterChange(filterSelected)">
                     </p-dropdown>
 
@@ -30,18 +30,18 @@
 
             <ng-container *ngIf="!display.between">
 
-                <div class="p-col-12 p-md-6">
+                <div class="p-col-12 p-md-6" style="margin-top: 0.2em;">
 
                     <ng-container *ngIf="!!display.calendar && !filter.switch">
 
-                        <div class="form-group">
+                        <div class="form-group " style="margin-top: -1.5em;">
 
-                            <label i18n="@@fechaLabel"  for="datepicker">
+                            <label i18n="@@fechaLabel" for="datepicker" style="margin-bottom: 0;">
                                 Fecha
                             </label>
 
                             <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
-                                (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+                                (input)="handleValidForm({value1: $event.target.value})" pInputText required > 
 
                         </div>
 
@@ -49,7 +49,7 @@
 
                     <ng-container *ngIf="!display.calendar && !filter.switch">
 
-                        <span *ngIf="display.filterValue" class="ui-float-label">
+                        <span *ngIf="display.filterValue" class="p-float-label">
 
                             <input id="float-input" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
                                 (input)="handleValidForm({value1: $event.target.value})" pInputText required>
@@ -67,7 +67,7 @@
                         <span class="ui-float-label mt-1">
 
                             <p-multiSelect id="float-input" [options]="dropDownFields" [(ngModel)]="filterValue.value1"
-                                [virtualScroll]="true" [itemSize]="34"  defaultLabel="Selecciona..."
+                                [virtualScroll]="true" [itemSize]="34" defaultLabel="Selecciona..."
                                 [style]="{width: '100%'}" (onChange)="handleValidForm({value1: filterValue.value1})"
                                 [selectionLimit]="limitSelectionFields" [filter]="true">
                             </p-multiSelect>
@@ -92,7 +92,7 @@
 
                         <div class="form-group mb-0">
 
-                            <label i18n="@@fechaInicioLabel"   for="datepicker">
+                            <label i18n="@@fechaInicioLabel" for="datepicker">
                                 Fecha inicio
                             </label>
 
@@ -107,8 +107,7 @@
 
                         <div class="form-group mb-0">
 
-                            <label i18n="@@fechaFinalLabel"  
-                                for="datepicker">
+                            <label i18n="@@fechaFinalLabel" for="datepicker">
                                 Fecha final
                             </label>
 
@@ -179,7 +178,7 @@
 
                         <div class="form-group mb-0">
 
-                            <label i18n="@@valor2Label"  for="multiselect2">
+                            <label i18n="@@valor2Label" for="multiselect2">
                                 Valor 2
                             </label>
 
@@ -222,7 +221,7 @@
 
                     <div class="p-col-3" style="margin-left: 25px; padding: 25px;">
 
-                        <p-button (onClick)="addFilter()" [disabled]="display.filterButton" 
+                        <p-button (onClick)="addFilter()" [disabled]="display.filterButton"
                             i18n-label="@@addFilterButton" label="Añadir filtro">
                         </p-button>
 
@@ -236,7 +235,7 @@
 
 
 
-        <div *ngIf="filter.forDisplay.length !== 0" class="p-col-12">
+        <div *ngIf="filter.forDisplay.length !== 0" class="p-col-6">
 
             <div class="p-col-12 foot-card">
 
@@ -286,8 +285,8 @@
 
     <div footer>
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-            <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success" i18n-label="@@guardarBtn"
-                label="Confirmar" icon="fa fa-check"></button>
+            <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success"
+                i18n-label="@@guardarBtn" label="Confirmar" icon="fa fa-check"></button>
         </div>
     </div>
 </eda-dialog>

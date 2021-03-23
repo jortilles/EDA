@@ -512,7 +512,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             }
         };
         this.updateModelInServer(this.model_id, body).subscribe(
-            (r) => alert(r.message),
+            (r) => this.alertService.addSuccess($localize`:@@modelSaved:Modelo guardado correctamente`),
             (err) => this.alertService.addError(err)
         );
     }

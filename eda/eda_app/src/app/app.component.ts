@@ -66,14 +66,12 @@ export class AppComponent implements OnInit {
         let lan_ca = new RegExp('\/ca\/', 'i');
         let lan_es = new RegExp('\/es\/', 'i');
 
-        console.log(lan_ca.test(url), lan_es.test(url))
-
         if (lan_ca.test(url)) {
             this.config.setTranslation(
                 {
                     dayNames: ["Diumenge", "Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte"],
-                    dayNamesShort: ["Dl", "Dt", "Dc", "Dj", "Dv", "Ds", "Dg"],
-                    dayNamesMin: ["Dl", "Dm", "Dc", "Dj", "Dv", "Ds", "Dm"],
+                    dayNamesShort: ["Dg", "Dl", "Dt", "Dc", "Dj", "Dv", "Ds"],
+                    dayNamesMin: ["Dg", "Dl", "Dt", "Dc", "Dj", "Dv", "Ds"],
                     monthNames: ["Gener", "Febrer", "Març", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Desembre"],
                     monthNamesShort: ["Gen", "Febr", "Març", "Abr", "Maig", "Juny", "Jul", "Ag", "Set", "Oct", "Nov", "Des"],
                     today: 'Avui',
