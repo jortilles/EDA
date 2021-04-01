@@ -38,7 +38,7 @@
                 <div *ngIf="!modeSQL" class="p-grid">
 
                     <div class="p-col-6 p-md-2 pl-2 pr-2">
-                        <h4 i18n="@@entidadesH4">
+                        <h4 i18n="@@entidadesH4"  i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos." >
                             Entidades
                         </h4>
                         <hr class="mb-0">
@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="p-col-6 p-md-2 pl-2">
-                        <h4 i18n="@@atributosH4">
+                        <h4 i18n="@@atributosH4"  i18n-title="@@atributsTitle" title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes" >
                             Atributos
                         </h4>
 
@@ -83,7 +83,7 @@
                     </div>
 
                     <div class="p-col-12 p-md-8 pl-2">
-                        <h4 i18n="@@seleccionH4">
+                        <h4 i18n="@@seleccionH4" i18n-title="@@seleccionTitle" title="Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.">
                             Selección
                         </h4>
                         <hr class="mb-0">
@@ -234,7 +234,7 @@
                     <div class="p-col-7">
                         <h6 i18n="@@sqlExpresionH6">Expresión SQL</h6>
                         <hr>
-                        <textarea id="query-area" class="sqlInput" rows="20" cols="100" pInputTextarea
+                        <textarea id="query-area" class="sqlInput" rows="12" cols="100" pInputTextarea
                             autoResize="autoResize" [(ngModel)]="currentSQLQuery"></textarea>
                         <div class="p-col-6">
                             <h6 i18n="@@originTable">Tabla origen</h6>

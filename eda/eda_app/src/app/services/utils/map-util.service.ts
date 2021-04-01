@@ -11,7 +11,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 @Injectable({ providedIn: 'root' })
 
 export class MapUtilsService extends ApiService {
-    private route = '/global/upload/addFile';
+    private route = '/global/upload/readGeoJsonFile';
     private mapsObservables$: {} = {};
 
     constructor(protected http: HttpClient, private _sanitizer: DomSanitizer) {

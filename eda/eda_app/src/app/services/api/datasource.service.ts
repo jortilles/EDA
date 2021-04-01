@@ -44,7 +44,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         {
             type: '',
             connection: {
-                type: '', host: '', database: ' ', user: ' ', password: ' ', schema : '', port:null
+                type: '', host: '', database: ' ', user: ' ', password: ' ', schema : '', port:null, warehouse:''
             },
             metadata: {
                 model_name: ' ', model_granted_roles: [], cache_config:{}

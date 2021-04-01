@@ -172,7 +172,7 @@ export class MailingService {
       const dataModelObject = JSON.parse(JSON.stringify(dataModel));
       const query = await connection.getQueryBuilded(alertQuery.query, dataModelObject, user);
 
-      connection.pool = await connection.getPool();
+      connection.client = await connection.getclient();
       const getResults = await connection.execQuery(query);
       const results = [];
 
@@ -200,7 +200,7 @@ export class MailingService {
       const dataModelObject = JSON.parse(JSON.stringify(dataModel));
       const query = connection.BuildSqlQuery(alertQuery.query, dataModelObject, user);
 
-      connection.pool = await connection.getPool();
+      connection.client = await connection.getclient();
       const getResults = await connection.execQuery(query);
       const results = [];
 

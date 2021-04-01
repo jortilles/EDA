@@ -64,6 +64,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: this.tableTitleDialog
     });
+    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
   }
   ngAfterViewInit(): void {
 

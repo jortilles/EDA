@@ -22,7 +22,7 @@ export class TableGradientDialogComponent extends EdaDialogAbstract{
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
     });
 
-    this.dialog.style = { width: '40%', height: '35%', 'top': '-184px', 'left': '-20px' };
+    this.dialog.style = { width: '40%', height: '35%', 'top': '-4em', 'left': '1em' };
   }
 
   closeDialog(){

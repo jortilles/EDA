@@ -75,7 +75,7 @@
                         <div class="p-col-4">
                             <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
                                 *ngIf=" targetCol && targetCol.value.column_type !== 'date'" [options]="targetValues"
-                                [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30"
+                                [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30" display="chip"
                                 [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
                                 [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto" appendTo="body">
                             </p-multiSelect>

@@ -1,6 +1,7 @@
 import { Dialog } from 'primeng/dialog';
 import { EdaContextMenuItem } from '@eda/shared/components/eda-context-menu/eda-context-menu-item';
 import * as _ from 'lodash';
+import { getSupportedInputTypes } from '@angular/cdk/platform';
 
 export class EdaContextMenu {
     public dialog: Dialog;
@@ -18,11 +19,20 @@ export class EdaContextMenu {
     showContextMenu(event?: any) {
         this.display = true;
 
+        console.log(event.x, event.y, screen.width, screen.height);
+        console.log(screen.height - event.y)
+
         if (event) {
             this.left = _.subtract(event.x, 326);
-            this.top = event.y;
+            
+            if(screen.height - event.y > 400){
+                this.top = event.y;
+            }else{
+                this.top = event.y - 300;
+            }
 
-            const position = { left: _.subtract(event.x, 326)+'px', top: event.y+'px' };
+
+            const position = { left: this.left+'px', top: this.top+'px' };
 
             Object.assign(this.style, position)
             this.dialog.style = this.style

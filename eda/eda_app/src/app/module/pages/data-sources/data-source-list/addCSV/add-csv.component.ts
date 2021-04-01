@@ -46,7 +46,7 @@ export class AddCsvComponent extends EdaDialogAbstract {
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: $localize`:@@addTableTitle:Añadir Tabla`
     });
-    this.dialog.style = { width: '80%', height: '70%', top: '10px', left: '20px' };
+    this.dialog.style = { width: '80%', height: '65%', top:"-4em", left:'1em' };
 
     this.names = ['type', 'format', 'separator'];
 

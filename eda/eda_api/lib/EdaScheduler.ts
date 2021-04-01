@@ -5,7 +5,6 @@ const cache_config = require('../config/cache.config');
 const mail_config  = require('../config/mailing.config');
 
 
-
 export const initJobs = ()=> {
   // MailingService.mailingService();
   /**Cleanning cached queries */
@@ -14,6 +13,5 @@ export const initJobs = ()=> {
 
   /**Check mail sending */
   const mailSender   = schedule.scheduleJob(mail_config.MAILING_SCHEDULE, () => MailingService.mailingService() );
-
 }
 

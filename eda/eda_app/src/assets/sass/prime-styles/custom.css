@@ -1228,6 +1228,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
 }
 .p-multiselect-panel .p-multiselect-items {
   padding: 0.5rem 0;
+  min-width: 200px;
 }
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
   margin: 0;
@@ -3227,7 +3228,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
   border-radius: 3px;
 }
 .p-card .p-card-body {
-  padding: 1rem;
+  padding: 2rem;
 }
 .p-card .p-card-title {
   font-size: 1.2rem;
@@ -5184,17 +5185,4 @@ body .d3tooltip > h6{
   border-width: 7px;
   border-style: solid;
   border-color: #041429cf transparent transparent transparent;
-}
-
-
-/* cosas de jj */
-#div_new_dashboard{
-  margin-bottom: 1rem !important;
-}
-#div_new_dashboard div{
-    padding: 0.1rem !important;
-    
-}
-#div_new_dashboard h3{
-  font-weight: bold !important;
 }

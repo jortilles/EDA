@@ -1,4 +1,4 @@
-from node:buster
+from node:12.22.0-buster
 
 # instalar
 ENV DEBIAN_FRONTEND noninteractive

@@ -1970,12 +1970,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="newPanelTitle">
-<source>Nuevo</source>
-<target>New</target>
+<source>Nuevo Panel</source>
+<target>New Pannel</target>
 </trans-unit>
 <trans-unit id="newPanelTitle2">
-<source>Nuevo</source>
-<target>New</target>
+<source>Nuevo Panel</source>
+<target>New Pannel</target>
 </trans-unit>
 
 <trans-unit id="addMap" datatype="html">
@@ -3389,6 +3389,32 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>CREA TU NUEVO INFORME  </source>
     <target>YOUR NEW DASHBOARD</target>
   </trans-unit>
+  
+ <trans-unit id="inputCuenta">
+    <source>CUENTA*  </source>
+    <target>ACCOUNT* </target>   
+  </trans-unit>
+
+   <trans-unit id="inputCuentaEdit">
+    <source>CUENTA  </source>
+    <target>Account </target>
+  </trans-unit> 
+
+  <trans-unit id="entidadesTitle">
+    <source>Clique sobre un entidad para ver sus atributos.</source>
+    <target>Click on an entity to see its attributes</target>
+  </trans-unit>
+
+    <trans-unit id="atributsTitle">
+    <source>Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
+    <target>Attributes of an entity. Drag attributes onto selection or filters to view them. By clicking on the attribute you access its properties</target>
+  </trans-unit>
+
+    <trans-unit id="seleccionTitle">
+    <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
+    <target>To launch a query. Select the attributes you want to see, click on them to configure them and run the query. You can always go back to this view.</target>
+  </trans-unit>
+
 
 
 

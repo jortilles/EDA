@@ -42,7 +42,7 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
             title: $localize`:@@addRelationTo:Añadir relación a la tabla`
         });
-        this.dialog.style = { width: '40%', height: '50%', top: '50px', left: '100px' };
+        this.dialog.style = { width: '40%', height: '50%', top:"-4em", left:'1em' };
 
         this.form = this.formBuilder.group({
             sourceCol: [null, Validators.required],

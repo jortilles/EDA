@@ -28,6 +28,7 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
     });
+    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
   }
   ngAfterViewChecked(): void {
     if (!this.colors && this.myPanelChartComponent.componentRef) {

@@ -28,7 +28,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: $localize`:@@ViewDatamodel:Añadir Vista`
     });
-    this.dialog.style = { width: '60%', height: '70%', top: '30px', left: '100px' };
+    this.dialog.style = { width: '55%', height: '75%', top:"-4em", left:'1em' };
 
     this.form = this.formBuilder.group({
       viewName: [null, Validators.required],

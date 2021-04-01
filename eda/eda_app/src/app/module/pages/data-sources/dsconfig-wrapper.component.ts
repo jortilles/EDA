@@ -20,7 +20,8 @@ export class DsConfigWrapperComponent implements OnInit {
     { name: 'MySQL', value: 'mysql' },
     { name: 'Vertica', value: 'vertica' },
     { name: 'Oracle', value: 'oracle' },
-    { name: 'BigQuery', value: 'bigquery' }
+    { name: 'BigQuery', value: 'bigquery' },
+    { name: 'SnowFlake', value: 'snowflake' },
   ];
 
   public sidOpts: any[] = [
@@ -31,10 +32,10 @@ export class DsConfigWrapperComponent implements OnInit {
   public type: any;
   public name: string;
   public header: string = $localize`:@@DataModelHeader:Configurar nuevo orígen de datos`;
-  public optimizeString : string = $localize`:@@OptimizeQuery:Optimizar consultas`;
-  public allowCacheSTR : string = $localize`:@@allowCache: Habilitar caché`
+  public optimizeString: string = $localize`:@@OptimizeQuery:Optimizar consultas`;
+  public allowCacheSTR: string = $localize`:@@allowCache: Habilitar caché`
   public optimize: boolean = true;
-  public allowCache:boolean = true;
+  public allowCache: boolean = true;
   private project_id: string;
 
 
@@ -57,8 +58,9 @@ export class DsConfigWrapperComponent implements OnInit {
       password: [null],
       schema: [null],
       sid: [{ name: 'SID', value: 1 }],
+      warehouse:[null],
       optimize: [true],
-      allowCache:[true]
+      allowCache: [true]
     });
 
   }
@@ -96,7 +98,7 @@ export class DsConfigWrapperComponent implements OnInit {
     this.dataSourceService.testConnection(connection).subscribe(
 
       () => {
-  
+
         this.dataSourceService.addDataSource(connection).subscribe(
           res => {
             let title = $localize`:@@DatadourceTitle:Fuente de datos: `
@@ -134,6 +136,7 @@ export class DsConfigWrapperComponent implements OnInit {
       port: this.form.value.port,
       user: this.form.value.user,
       password: this.form.value.password,
+      warehouse:this.form.value.warehouse,
       schema: this.form.value.schema,
       sid: this.form.value.sid.value,
       optimize: this.form.value.optimize ? 1 : 0,

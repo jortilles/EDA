@@ -1977,12 +1977,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="newPanelTitle">
-<source>Nuevo</source>
-<target>Nou</target>
+<source>Nuevo Panel</source>
+<target>Nou Panell</target>
 </trans-unit>
 <trans-unit id="newPanelTitle2">
-<source>Nuevo</source>
-<target>Nou</target>
+<source>Nuevo Panel</source>
+<target>Nou Panell</target>
 </trans-unit>
 
 <trans-unit id="addMap" datatype="html">
@@ -3411,6 +3411,32 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <trans-unit id="newDashboardtitle">
     <source>CREA TU NUEVO INFORME  </source>
     <target>CREA EL TEU NOU INFORME</target>
+  </trans-unit>
+
+  <trans-unit id="inputCuenta">
+    <source>CUENTA*  </source>
+    <target>COMPTE *</target>
+  </trans-unit> 
+
+   <trans-unit id="inputCuentaEdit">
+    <source>Cuenta  </source>
+    <target>Compte </target>
+
+  </trans-unit> 
+
+  <trans-unit id="entidadesTitle">
+    <source>Clique sobre un entidad para ver sus atributos. </source>
+    <target>Cliqueu sobre una entitat per veure els seus atributs</target>
+  </trans-unit>
+
+    <trans-unit id="atributsTitle">
+    <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
+    <target>Atributs d'una entitat. Arrossegueu els atributs a la selecció o els filtres per consultar-los. Fent clic sobre l'atribut s'accedeix als seus propiedaes</target>
+  </trans-unit>
+
+    <trans-unit id="seleccionTitle">
+    <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
+    <target>Per llançar una consulta. Seleccioneu els atributs que voleu veure, Cliqueu sobre ells per configurar-i executi la consulta. Sempre podrà tornar a aquesta vista.</target>
   </trans-unit>
 
 

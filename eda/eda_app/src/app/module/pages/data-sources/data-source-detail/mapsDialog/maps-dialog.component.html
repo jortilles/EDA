@@ -1,7 +1,7 @@
 <eda-dialog [inject]="dialog">
   <div body class="p-grid">
 
-    <div class="p-col-12 p-xl-4 ">
+    <div class="p-col-12 p-xl-4">
 
       <p-card>
         <div class="p-grid">
@@ -17,11 +17,11 @@
             <div style="margin-bottom: 10px" class="p-col-12 p-md-12">
               <h6 i18n="@@inputMapField"> Campo a usar para vincular el modelo con el mapa</h6>
               <p-dropdown [options]="fields" formControlName="selectedField" placeholder="Selecciona un campo"
-                optionLabel="campo" [showClear]="true" optionLabel="label"></p-dropdown>
+                optionLabel="campo" [showClear]="true" optionLabel="label" [style]="{'width':'209px'}" ></p-dropdown>
 
               <div style="margin-top: 10px">
                 <h6 i18n="@@inputMapName"> Nombre del mapa</h6>
-                <p><input pInputText type="text" formControlName="mapName" size="50" id="map_name"></p>
+                <p><input pInputText type="text" formControlName="mapName" size="30" id="map_name"></p>
               </div>
 
             </div>
@@ -31,8 +31,8 @@
                 <p i18n="@@inputxDescription">Si desconoces las coordenadas del centro las calcularemos automáticamente
                 </p>
               </span>
-              <p><input pInputText type="text" formControlName="x" size="23" style="margin-right: 2px">
-                <input pInputText type="text" formControlName="y" size="23">
+              <p><input pInputText type="text" formControlName="x" size="30" style="margin-right: 2px">
+                <input pInputText type="text" formControlName="y" size="30">   
               </p>
             </div>
 
@@ -41,7 +41,7 @@
       </p-card>
     </div>
 
-    <div class="p-col-12 p-xl-4 ">
+    <div class="p-col-12 p-xl-4">
 
       <p-card>
         <div class="p-grid">
@@ -52,13 +52,13 @@
             <div style="margin-bottom: 10px">
               <h6 i18n="@@inputMapTables">Tablas</h6>
               <p-dropdown [options]="tables" [(ngModel)]="selectedTable" placeholder="Selecciona una tabla"
-                optionLabel="Tabla" [showClear]="true" (onChange)="getColumns()" optionLabel="label"></p-dropdown>
+                optionLabel="Tabla" [showClear]="true" (onChange)="getColumns()" [style]="{'width':'209px'}"  optionLabel="label"></p-dropdown>
             </div>
 
             <div style="margin-bottom: 10px">
               <h6 i18n="@@inputMapColumns">Columnas</h6>
               <p-dropdown [options]="columns" [(ngModel)]="selectedColumn" placeholder="Selecciona una columna"
-                optionLabel="Columna" [showClear]="true" (onChange)="pushItem()" optionLabel="label"></p-dropdown>
+                optionLabel="Columna" [showClear]="true" (onChange)="pushItem()" [style]="{'width':'209px'}" optionLabel="label"></p-dropdown>
             </div>
 
             <ul>
@@ -75,7 +75,7 @@
         </div>
       </p-card>
     </div>
-    <div class="p-col-12 p-xl-4 ">
+    <div class="p-col-12 p-xl-4">
       <p-card>
         <div class="p-grid">
           <div class="p-col-12 p-md-12">

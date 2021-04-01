@@ -39,7 +39,7 @@ export class UploadFileController {
     return res.status(201).json({ ok: true, file:newfile });
   }
 
-  static readFile = async (req: Request, res: Response, next: NextFunction) => {
+  static readGeoJsonFile = async (req: Request, res: Response, next: NextFunction) => {
     let features : Array<any>;
     try {
 

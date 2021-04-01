@@ -157,7 +157,7 @@ export class CachedQueryService {
   static async execQuery(model_id: string, query: string, labels: Array<string>) {
 
     const connection = await ManagerConnectionService.getConnection(model_id);
-    connection.pool = await connection.getPool();
+    connection.client = await connection.getclient();
     const getResults = await connection.execQuery(query);
     const results = [];
 

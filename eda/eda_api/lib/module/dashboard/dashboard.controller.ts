@@ -282,7 +282,7 @@ export class DashboardController {
             const cachedQuery = cacheEnabled ? await CachedQueryService.checkQuery(req.body.model_id, query) : null;
 
             if (!cachedQuery) {
-                connection.pool = await connection.getPool();
+                connection.client = await connection.getclient();
                 const getResults = await connection.execQuery(query);
                 const results = [];
 
@@ -346,7 +346,7 @@ export class DashboardController {
             const cachedQuery = cacheEnabled ? await CachedQueryService.checkQuery(req.body.model_id, query) : null;
 
             if (!cachedQuery) {
-                connection.pool = await connection.getPool();
+                connection.client = await connection.getclient();
                 const getResults = await connection.execQuery(query);
                 const results = [];
                 let labels: Array<string>;
@@ -446,7 +446,7 @@ export class DashboardController {
             const query = req.body.query
             console.log(query);
 
-            connection.pool = await connection.getPool();
+            connection.client = await connection.getclient();
             const getResults = await connection.execQuery(query);
             const results = [];
             let labels: Array<string>;

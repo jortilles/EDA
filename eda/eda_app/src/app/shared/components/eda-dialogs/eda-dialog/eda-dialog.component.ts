@@ -21,7 +21,7 @@ export class EdaDialogComponent implements AfterViewInit {
         window.setTimeout(() => { this.display = true});
         this.ngZone.runOutsideAngular(() => {
             setTimeout(() => {
-                this.dialog.center();
+                // this.dialog.center();
             }, 0);
         });
     }

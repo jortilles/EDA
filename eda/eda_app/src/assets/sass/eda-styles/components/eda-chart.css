@@ -16,7 +16,6 @@
 }
 
 .eda-chart-panel {
-    overflow: auto;
     position: absolute;
     width: 66%;
     top: 30px;

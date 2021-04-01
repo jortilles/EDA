@@ -54,7 +54,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             title: ''
         });
 
-        this.dialog.style = { width: '50%', height: '70%'};
+        this.dialog.style = { width: '50%', height: '70%', top:"-4em", left:'1em'};
 
     }
 

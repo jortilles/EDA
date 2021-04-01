@@ -26,7 +26,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: $localize`:@@addCalculatedColTitle:Añadir columna calculada a la tabla `
     });
-    this.dialog.style = { width: '50%', height: '40%', top: '50px', left: '90px' };
+    this.dialog.style = { width: '50%', height: '40%', top:"-4em", left:'1em'};
 
     this.form = this.formBuilder.group({
       colName: [null, Validators.required],

@@ -10,7 +10,7 @@ import * as _ from 'lodash';
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
-    styleUrls: ['../../../../assets/sass/eda-styles/components/home.component.css']
+    styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
     public dashController: EdaDialogController;

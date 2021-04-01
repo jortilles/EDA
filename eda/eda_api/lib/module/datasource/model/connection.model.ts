@@ -1,4 +1,4 @@
-function Connection(user, host, database, password, port, type, schema, sid) {
+function Connection(user, host, database, password, port, type, schema, sid, warehouse) {
     this.user = user;
     this.host = host;
     this.database = database;
@@ -8,6 +8,7 @@ function Connection(user, host, database, password, port, type, schema, sid) {
     this.schema=schema;
     this.searchPath=schema;
     this.sid = sid;
+    this.warehouse = warehouse;
 }
 
 export default Connection;

@@ -32,7 +32,7 @@ export class CacheDialogComponent extends EdaDialogAbstract {
       title: $localize`:@@adChacheConfig:Configurar caché del modelo `
     });
 
-    this.dialog.style = { width: '45%', height: '70%', top: '50px', left: '90px' };
+    this.dialog.style = { width: '45%', height:'60%', top:"-4em", left:'1em'};
 
   }
   onShow(): void {

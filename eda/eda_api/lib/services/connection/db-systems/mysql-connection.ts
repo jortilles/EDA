@@ -13,22 +13,22 @@ export class MysqlConnection extends AbstractConnection {
     private queryBuilder: MySqlBuilderService;
     private AggTypes: AggregationTypes;
 
-    async getPool() {
+    async getclient() {
         return createConnection(this.config);
     }
 
     async tryConnection(): Promise<any> {
         try {
             return new Promise((resolve, reject) => {
-                this.pool = createConnection(this.config);
+                this.client = createConnection(this.config);
                 console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
-                this.pool.connect((err: MysqlError, connection: SqlConnection) => {
+                this.client.connect((err: MysqlError, connection: SqlConnection) => {
                     if (err) {
                         return reject(err);
                     }
                     if (connection) {
                         this.itsConnected();
-                        this.pool.end();
+                        this.client.end();
                         return resolve(connection);
                     }
                 });
@@ -42,7 +42,7 @@ export class MysqlConnection extends AbstractConnection {
     async generateDataModel(optimize:number): Promise<any> {
         try {
             const tableNames = [];
-            this.pool = await this.getPool();
+            this.client = await this.getclient();
             const schema = this.config.database;
             let tables = [];
             const query = `
@@ -54,8 +54,21 @@ export class MysqlConnection extends AbstractConnection {
                 let tableName = r['TABLE_NAME'];
                 tableNames.push(tableName);
             });
-            this.pool = await this.getPool();
-            this.pool.query = util.promisify(this.pool.query);
+
+            /**Search for foreign keys */
+            const fkQuery = `SELECT TABLE_NAME as 'primary_table', COLUMN_NAME as 'pk_column', 
+                                    REFERENCED_TABLE_NAME as 'foreign_table', REFERENCED_COLUMN_NAME as 'fk_column'
+                            FROM  INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+                            WHERE
+                            REFERENCED_TABLE_SCHEMA = '${schema}'
+                            and REFERENCED_TABLE_NAME is not null
+                            AND REFERENCED_COLUMN_NAME is not null;`
+
+            this.client = await this.getclient();
+            const foreignKeys = await this.execQuery(fkQuery);
+
+            this.client = await this.getclient();
+            this.client.query = util.promisify(this.client.query);
             for (let i = 0; i < tableNames.length; i++) {
 
                 let new_table = await this.setTable(tableNames[i]);
@@ -73,8 +86,12 @@ export class MysqlConnection extends AbstractConnection {
                     tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
-            this.pool.end();
-            return await this.commonColumns(tables);
+            this.client.end();
+            
+            /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
+            if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
+            else return await this.getRelations(tables);
+
         } catch (err) {
             throw err;
         }
@@ -82,29 +99,15 @@ export class MysqlConnection extends AbstractConnection {
 
     async execQuery(query: string): Promise<any> {
         try {
-            this.pool.query = util.promisify(this.pool.query);
-            const rows = await this.pool.query(query);
-            this.pool.end();
+            this.client.query = util.promisify(this.client.query);
+            const rows = await this.client.query(query);
+            this.client.end();
             return rows;
         } catch (err) {
             console.log(err);
             throw err;
         }
 
-    }
-
-    async getDataSource(id: string) {
-        try {
-            return await DataSource.findOne({ _id: id }, (err, datasource) => {
-
-                if (err) {
-                    throw Error(err);
-                }
-                return datasource;
-            });
-        } catch (err) {
-            throw err;
-        }
     }
 
     async getQueryBuilded(queryData: any, dataModel: any, user: any) {
@@ -123,7 +126,7 @@ export class MysqlConnection extends AbstractConnection {
         `;
         return new Promise(async (resolve, reject) => {
             try {
-                const count = await this.pool.query(query);
+                const count = await this.client.query(query);
                 resolve(count);
             } catch (err) {
                 reject(err);
@@ -140,8 +143,8 @@ export class MysqlConnection extends AbstractConnection {
 
         return new Promise(async (resolve, reject) => {
             try {
-                //this.pool = createConnection(this.config);
-                const getColumns = await this.pool.query(query);
+                //this.client = createConnection(this.config);
+                const getColumns = await this.client.query(query);
                 const newTable = {
                     table_name: tableName,
                     display_name: {
@@ -191,62 +194,6 @@ export class MysqlConnection extends AbstractConnection {
             .join(' ');
     }
 
-
-
-    private async commonColumns(dm) {
-        let data_model = dm;
-        let visited = [];
-        // Recorrem totes les columnes de totes les taules i comparem amb totes les columnes de cada taula (menys la que estem recorrent
-        // Taules
-        for (let l = 0; l < data_model.length; l++) {
-            visited.push(data_model[l].table_name);
-            // Columnes
-            for (let k = 0; k < data_model[l].columns.length; k++) {
-                let sourceColumn = { source_column: data_model[l].columns[k].column_name, column_type: data_model[l].columns[k].column_type };
-                // Taules
-                for (let j = 0; j < data_model.length; j++) {
-
-                    if (!visited.includes(data_model[j].table_name)) {
-                        // Columnes
-                        for (let i = 0; i < data_model[j].columns.length; i++) {
-                            let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
-                            if ((sourceColumn.source_column.toLowerCase().includes("_id") ||
-                                sourceColumn.source_column.toLowerCase().includes("id_") ||
-                                sourceColumn.source_column.toLowerCase().includes("number") ||
-                                sourceColumn.source_column.toLowerCase().startsWith("sk") ||
-                                sourceColumn.source_column.toLowerCase().startsWith("tk") ||
-                                sourceColumn.source_column.toLowerCase().endsWith("sk") ||
-                                sourceColumn.source_column.toLowerCase().endsWith("tk") ||
-                                sourceColumn.source_column.toLowerCase().includes("code"))
-                                && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
-
-                                // FER EL CHECK AMB ELS INNER JOINS ---- DESHABILITAT (Masses connexions a la db)
-                                let a = true; //await checkJoins(pool, data_model[l].table_name, sourceColumn.source_column, data_model[j].table_name, targetColumn.target_column);
-
-                                if (a) {
-                                    data_model[l].relations.push({
-                                        source_table: data_model[l].table_name,
-                                        source_column: [sourceColumn.source_column],
-                                        target_table: data_model[j].table_name,
-                                        target_column: [targetColumn.target_column],
-                                        visible: true
-                                    });
-                                    data_model[j].relations.push({
-                                        source_table: data_model[j].table_name,
-                                        source_column:[ targetColumn.target_column],
-                                        target_table: data_model[l].table_name,
-                                        target_column: [sourceColumn.source_column],
-                                        visible: true
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return data_model;
-    }
 
     createTable(queryData: any): string {
         throw new Error('Method not implemented.');

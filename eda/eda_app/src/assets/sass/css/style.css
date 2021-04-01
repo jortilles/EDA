@@ -1227,3 +1227,11 @@ pre {
         position: relative;
     }
 }
+
+
+.p-datatable-thead tr{
+    background: aliceblue !important;
+}
+.p-datatable .p-datatable-thead > tr > th{
+    background: aliceblue !important;
+}

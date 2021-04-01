@@ -228,3 +228,13 @@ app-dashboard {
     color:#004961;
 }
 
+
+#myDashboard >>> .p-card .p-card-body {
+    padding: 0.6em;
+  }
+
+#customMultiselect >>> .p-multiselect-items-wrapper {
+    min-width: 250px;
+    }
+  
+  

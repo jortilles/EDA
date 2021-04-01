@@ -1,7 +1,7 @@
 import { Client as PgClient } from 'pg';
 import { PgBuilderService } from '../../query-builder/qb-systems/pg-builder-service';
 import { AbstractConnection } from '../abstract-connection';
-import { AggregationTypes }  from  '../../../module/global/model/aggregation-types';
+import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 import DataSource from '../../../module/datasource/model/datasource.model';
 
 var types = require('pg').types;
@@ -9,7 +9,7 @@ types.setTypeParser(1700, 'text', parseFloat);
 
 
 export class PgConnection extends AbstractConnection {
-   
+
     GetDefaultSchema(): string {
         return 'public';
     }
@@ -17,38 +17,38 @@ export class PgConnection extends AbstractConnection {
     private queryBuilder: PgBuilderService;
     private AggTypes: AggregationTypes;
 
-    async getPool(){
-        try{
+    async getclient() {
+        try {
             const connection = new PgClient(this.config);
             return connection;
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     }
 
     async tryConnection(): Promise<any> {
         try {
-            this.pool = await this.getPool();
+            this.client = await this.getclient();
             console.log('\x1b[32m%s\x1b[0m', 'Connecting to PostgreSQL database...\n');
-            await this.pool.connect();
+            await this.client.connect();
             this.itsConnected();
-            await this.pool.end();
+            await this.client.end();
             return;
         } catch (err) {
             throw err;
         }
     }
 
-    async generateDataModel(optimize:number): Promise<any> {
+    async generateDataModel(optimize: number): Promise<any> {
         try {
-            this.pool = await this.getPool();
-            const tableNames = [];
+            this.client = await this.getclient();
+            let tableNames = [];
             const tables = [];
 
-            let whereTableSchema: string = !this.config.schema 
+            let whereTableSchema: string = !this.config.schema
                 ? `NOT IN ('pg_catalog', 'information_schema')`
                 : `=  '${this.config.schema}' `
-            ;
+                ;
             const query = `
                 SELECT table_name 
                 FROM information_schema.tables 
@@ -59,38 +59,49 @@ export class PgConnection extends AbstractConnection {
                 WHERE table_schema ${whereTableSchema}
             `;
 
-            const getResults = await this.execQuery(query);
-            
+            /**Get tables */
+            tableNames = await this.execQuery(query).then(res => res.map(row => row.table_name));
+            /*
             for (let i = 0, n = getResults.length; i < n; i++) {
                 const result = getResults[i];
                 tableNames.push(result['table_name']);
             }
+            */
 
+            /**Get foreign keys */
+            const fkQuery = this.getForeignKeysQuery(); 
+            this.client = await this.getclient();
+            const foreignKeys = await this.execQuery(fkQuery);
 
             // New client is needed, old client has been closed;
-            this.pool = await this.getPool();
-            this.pool.connect();
+            this.client = await this.getclient();
+            this.client.connect();
 
+            /**Set tables */
             for (let i = 0; i < tableNames.length; i++) {
                 let new_table = await this.setTable(tableNames[i]);
                 let count = 0;
-                if(optimize === 1){
+                if (optimize === 1) {
                     const dbCount = await this.countTable(tableNames[i], `${this.config.schema || 'public'}`);
                     count = dbCount.rows[0].count;
                 }
                 new_table.tableCount = count;
                 tables.push(new_table);
             }
-
+            /**Set columns */
             for (let i = 0; i < tables.length; i++) {
                 for (let j = 0; j < tables[i].columns.length; j++) {
                     tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
 
-            this.pool.end();
+            this.client.end();
 
-            return await this.commonColumns(tables);
+            /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
+            if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
+            else return await this.getRelations(tables);
+            
+
         } catch (err) {
             throw err;
         }
@@ -99,7 +110,7 @@ export class PgConnection extends AbstractConnection {
     async execQuery(query: string): Promise<any> {
         let client: { connect: () => void; query: (arg0: string) => any; end: () => void; };
         try {
-            client = this.pool;
+            client = this.client;
             client.connect();
             const searchPath = await client.query(`SET search_path TO '${this.config.schema || 'public'}';`)
             const result = await client.query(query);
@@ -110,20 +121,6 @@ export class PgConnection extends AbstractConnection {
             throw err;
         } finally {
             client.end();
-        }
-    }
-
-    async getDataSource(id: string) {
-        try {
-            return await DataSource.findOne({ _id: id }, (err, datasource) => {
-                if (err) {
-                    throw Error(err);
-                }
-                return datasource;
-            });
-        } catch (err) {
-            console.log(err);
-            throw err;
         }
     }
 
@@ -138,13 +135,13 @@ export class PgConnection extends AbstractConnection {
     }
 
 
-    private async countTable(tableName: string, schema:string): Promise<any> {
+    private async countTable(tableName: string, schema: string): Promise<any> {
         const query = `
         SELECT count(*) as count from ${schema}.${tableName}
         `;
         return new Promise(async (resolve, reject) => {
             try {
-                const count = await this.pool.query(query);
+                const count = await this.client.query(query);
                 resolve(count);
             } catch (err) {
                 reject(err);
@@ -157,7 +154,7 @@ export class PgConnection extends AbstractConnection {
 
         return new Promise(async (resolve, reject) => {
             try {
-                const getColumns = await this.pool.query(query);
+                const getColumns = await this.client.query(query);
                 const newTable = {
                     table_name: tableName,
                     display_name: {
@@ -181,7 +178,7 @@ export class PgConnection extends AbstractConnection {
         });
     }
 
-    private setColumns(c, tableCount?:number) {
+    private setColumns(c, tableCount?: number) {
         let column = c;
         column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
         column.description = { default: this.normalizeName(column.column_name), localized: [] };
@@ -189,7 +186,7 @@ export class PgConnection extends AbstractConnection {
 
 
         column.column_type === 'numeric'
-            ? column.aggregation_type =   AggregationTypes.getValues() 
+            ? column.aggregation_type = AggregationTypes.getValues()
             : column.aggregation_type = [{ value: 'none', display_name: 'no' }];
 
         column.computed_column == 'no'   // las posibilidades son no, computed_numeric, computed_string
@@ -210,71 +207,35 @@ export class PgConnection extends AbstractConnection {
             .join(' ');
     }
 
-
-
-    private async commonColumns(dm) {
-        let data_model = dm;
-        let visited = [];
-        // Recorrem totes les columnes de totes les taules i comparem amb totes les columnes de cada taula (menys la que estem recorrent
-        // Taules
-        for (let l = 0; l < data_model.length; l++) {
-            visited.push(data_model[l].table_name);
-            // Columnes
-            for (let k = 0; k < data_model[l].columns.length; k++) {
-                let sourceColumn = { source_column: data_model[l].columns[k].column_name, column_type: data_model[l].columns[k].column_type };
-                // Taules
-                for (let j = 0; j < data_model.length; j++) {
-
-                    if (!visited.includes(data_model[j].table_name)) {
-                        // Columnes
-                        for (let i = 0; i < data_model[j].columns.length; i++) {
-                            let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
-                            if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
-                                sourceColumn.source_column.toLowerCase().includes('id_') ||
-                                sourceColumn.source_column.toLowerCase().includes('number') ||
-                                sourceColumn.source_column.toLowerCase().startsWith("sk") ||
-                                sourceColumn.source_column.toLowerCase().startsWith("tk") ||
-                                sourceColumn.source_column.toLowerCase().endsWith("sk") ||
-                                sourceColumn.source_column.toLowerCase().endsWith("tk") ||
-                                sourceColumn.source_column.toLowerCase().includes('code'))
-                                && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
-
-                                // FER EL CHECK AMB ELS INNER JOINS ---- DESHABILITAT (Masses connexions a la db)
-                                let a = true; //await checkJoins(pool, data_model[l].table_name, sourceColumn.source_column, data_model[j].table_name, targetColumn.target_column);
-
-                                if (a) {
-                                    data_model[l].relations.push({
-                                        source_table: data_model[l].table_name,
-                                        source_column: [sourceColumn.source_column],
-                                        target_table: data_model[j].table_name,
-                                        target_column: [targetColumn.target_column],
-                                        visible: true
-                                    });
-                                    data_model[j].relations.push({
-                                        source_table: data_model[j].table_name,
-                                        source_column: [targetColumn.target_column],
-                                        target_table: data_model[l].table_name,
-                                        target_column: [sourceColumn.source_column],
-                                        visible: true
-                                    });
-
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return data_model;
-    }
-
     createTable(queryData: any): string {
-        this.queryBuilder = new PgBuilderService(queryData, {ds:{model:{tables:[]}}}, null);
+        this.queryBuilder = new PgBuilderService(queryData, { ds: { model: { tables: [] } } }, null);
         return this.queryBuilder.createTable(queryData);
     }
 
-    generateInserts(queryData:any):string {
-        this.queryBuilder = new PgBuilderService(queryData, {ds:{model:{tables:[]}}}, null);
+    generateInserts(queryData: any): string {
+        this.queryBuilder = new PgBuilderService(queryData, { ds: { model: { tables: [] } } }, null);
         return this.queryBuilder.generateInserts(queryData);
     }
+
+    getForeignKeysQuery(){
+
+        return `select kcu.table_name as foreign_table, rel_kcu.table_name as primary_table, kcu.column_name as fk_column, rel_kcu.column_name as pk_column
+            from information_schema.table_constraints tco
+            join information_schema.key_column_usage kcu
+               on tco.constraint_schema = kcu.constraint_schema
+               and tco.constraint_name = kcu.constraint_name
+            join information_schema.referential_constraints rco
+               on tco.constraint_schema = rco.constraint_schema
+               and tco.constraint_name = rco.constraint_name
+            join information_schema.key_column_usage rel_kcu
+               on rco.unique_constraint_schema = rel_kcu.constraint_schema
+               and rco.unique_constraint_name = rel_kcu.constraint_name
+               and kcu.ordinal_position = rel_kcu.ordinal_position
+            where tco.constraint_type = 'FOREIGN KEY'
+            order by kcu.table_schema,  kcu.table_name, kcu.ordinal_position;`
+
+    }
+
+    
+
 }

@@ -280,7 +280,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
                     if (!res.dashboard.config.panel) { // Si el dashboard no te cap panel es crea un automatic
                         me.panels.push(
-                            new EdaPanel({ id: me.fileUtiles.generateUUID(), title: $localize`:@@newPanelTitle:Nuevo`, type: EdaPanelType.BLANK, w: 20, h: 10, dragAndDrop: true, resizable: true })
+                            new EdaPanel({ id: me.fileUtiles.generateUUID(), title: $localize`:@@newPanelTitle:Nuevo Panel`, type: EdaPanelType.BLANK, w: 20, h: 10, dragAndDrop: true, resizable: true })
                         );
 
                         // Check url for filters in params
@@ -600,7 +600,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             .executeQuery(this.queryBuilderService.normalQuery([filter.column.value], queryParams))
             .subscribe(
                 res => {
-                    filter.data = res[1].map(item => ({ label: item[0], value: item[0] }));
+                    filter.data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
                 }, err => {
                     this.alertService.addError(err);
                 }
@@ -681,6 +681,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     /** Apply filter to panels when filter's selected value changes */
     public applyGlobalFilter(filter): void {
+        console.log(filter);
         const newFilter = this.formatFilter(filter);
         filter.panelList
             .map(id => this.edaPanels.toArray().find(p => p.panel.id === id))
@@ -784,7 +785,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public onAddWidget(): void {
         let panel = new EdaPanel({
             id: this.fileUtiles.generateUUID(),
-            title: $localize`:@@newPanelTitle2:Nuevo`,
+            title: $localize`:@@newPanelTitle2:Nuevo Panel`,
             type: EdaPanelType.BLANK,
             w: 20,
             h: 10,

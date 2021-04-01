@@ -52,6 +52,8 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
         });
 
+        this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
+
         this.drops.pointStyles = [
             { label: 'Puntos', value: 'circle' },
             { label: 'Triangulos', value: 'triangle' },

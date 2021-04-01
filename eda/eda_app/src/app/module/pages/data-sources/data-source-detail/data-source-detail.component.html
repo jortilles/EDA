@@ -194,13 +194,20 @@
                         <p-dropdown [options]="tiposBD" [(ngModel)]="selectedTipoBD"
                             i18n-placeholder="placeholder|Dropdown tipos@@placeholderDropdown"
                             i18n-placeholder="@@inputTipo" placeholder="Tipo" optionLabel="label"
-                            (onChange)="setDbType()">
+                            (onChange)="setDbType()" [style]="{width:'150px'}">
                         </p-dropdown>
                     </div>
 
-                    <div class="p-col-12  p-xl-4" *ngIf="  selectedTipoBD.value !== 'bigquery'">
+                    <div class="p-col-12  p-xl-4" *ngIf="  selectedTipoBD.value !== 'bigquery' && selectedTipoBD.value !== 'snowflake'">
                         <h5 class="title-datamodel" i18n="@@inputHost">
                             Host
+                        </h5>
+                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
+                    </div>
+
+                    <div class="p-col-12  p-xl-4" *ngIf="selectedTipoBD.value === 'snowflake'">
+                        <h5 class="title-datamodel" i18n="@@inputCuentaEdit">
+                            Cuenta
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
                     </div>
@@ -224,6 +231,13 @@
                             Esquema
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.schema" (keyup)="update()">
+                    </div>
+
+                    <div class="p-col-12  p-xl-4" *ngIf="selectedTipoBD.value === 'snowflake'">
+                        <h5 class="title-datamodel" >
+                            Warehouse
+                        </h5>
+                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.warehouse" (keyup)="update()">
                     </div>
 
                     <div class="p-col-12  p-xl-4" *ngIf="selectedTipoBD.value !== 'bigquery'">

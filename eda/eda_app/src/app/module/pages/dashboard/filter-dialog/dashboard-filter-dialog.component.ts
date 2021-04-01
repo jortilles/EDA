@@ -138,6 +138,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     saveGlobalFilter() {
+
         if (this.panelstoFilter.length === 0 || !this.targetTable || !this.targetCol) {
             return this.alertService.addWarning($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
         }
@@ -167,7 +168,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.dashboardService.executeQuery(
             this.queryBuilderService.normalQuery([this.targetCol.value], params)
         ).subscribe(
-            res => this.targetValues = res[1].map(item => ({ label: item[0], value: item[0] })),
+            res => this.targetValues = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] })),
             err => this.alertService.addError(err)
         );
     }

@@ -210,16 +210,16 @@ export class DataSourceController {
 
     static async CheckConnection(req: Request, res: Response, next: NextFunction) {
 
-        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery'].includes(req.qs.type)) {
+        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake'].includes(req.qs.type)) {
 
-            next(new HttpException(404, 'Only postgres, MySQL, oracle, SqlServer and Vertica are accepted'));
+            next(new HttpException(404, '"Only" postgres, MySQL, oracle, SqlServer, Google BigQuery, Snowflake and Vertica are accepted'));
 
         } else {
 
             try {
                 const cn = req.qs.type !== 'bigquery' ? new ConnectionModel(req.qs.user, req.qs.host, req.qs.database,
                     req.qs.password, req.qs.port, req.qs.type,
-                    req.qs.schema, req.qs.sid)
+                    req.qs.schema, req.qs.sid, req.qs.warehouse)
                     : new BigQueryConfig(req.qs.type, req.qs.database, req.qs.project_id);
 
                 const manager = await ManagerConnectionService.testConnection(cn);
@@ -242,7 +242,7 @@ export class DataSourceController {
                 const passwd = req.qs.password === '__-(··)-__' ? EnCrypterService.decode(actualDS.ds.connection.password) : req.qs.password;
 
                 const cn = new ConnectionModel(req.qs.user, req.qs.host, req.qs.database, passwd,
-                    req.qs.port, req.qs.type, req.qs.schema, req.qs.sid);
+                    req.qs.port, req.qs.type, req.qs.schema, req.qs.sidm, req.qs.warehouse);
                 const manager = await ManagerConnectionService.testConnection(cn);
                 await manager.tryConnection();
                 return res.status(200).json({ ok: true });
@@ -286,7 +286,8 @@ export class DataSourceController {
                         searchPath: req.body.project_id || manager.GetDefaultSchema(),
                         user: null,
                         password: null,
-                        sid: null
+                        sid: null,
+                        warehouse:null
                     },
                     metadata: {
                         model_name: req.body.name,
@@ -319,7 +320,7 @@ export class DataSourceController {
       
         try {
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database,
-                req.body.password, req.body.port, req.body.type, req.body.schema, req.body.sid);
+                req.body.password, req.body.port, req.body.type, req.body.schema, req.body.sid,  req.qs.warehouse);
             const manager = await ManagerConnectionService.testConnection(cn);
             const tables = await manager.generateDataModel(req.body.optimize);
             const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
@@ -337,7 +338,8 @@ export class DataSourceController {
                         searchPath: req.body.schema || manager.GetDefaultSchema(),
                         user: req.body.user,
                         password: EnCrypterService.encrypt(req.body.password),
-                        sid: req.body.sid
+                        sid: req.body.sid,
+                        warehouse: req.body.warehouse
                     },
                     metadata: {
                         model_name: req.body.name,
@@ -387,7 +389,7 @@ export class DataSourceController {
             const passwd = req.body.password === '__-(··)-__' ? EnCrypterService.decode(actualDS.ds.connection.password) : req.body.password
 
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database, passwd,
-                req.body.port, req.body.type, req.body.schema, req.body.sid);
+                req.body.port, req.body.type, req.body.schema, req.body.sid,  req.qs.warehouse);
             const manager = await ManagerConnectionService.testConnection(cn);
             const storedDataModel = JSON.parse(JSON.stringify(actualDS));
             const tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized);
@@ -403,7 +405,8 @@ export class DataSourceController {
                         searchPath: req.body.schema || manager.GetDefaultSchema(),
                         user: req.body.user,
                         password: passwd,
-                        sid: req.body.sid
+                        sid: req.body.sid,
+                        warehouse:req.body.warehouse
                     },
                     metadata: {
                         model_name: req.body.name,

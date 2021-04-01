@@ -14,10 +14,10 @@ export class BigQueryConnection extends AbstractConnection {
       const projectId = this.config.project_id;
       const keyFilename = `D:/Proyectos/EDA/eda_api/lib/files/${this.config.project_id}.json`;
 
-      this.pool = new BigQuery({ projectId, keyFilename });
+      this.client = new BigQuery({ projectId, keyFilename });
       const sqlQuery = `SELECT "Ok" as succes`;
       const options = { query: sqlQuery };
-      const [rows] = await this.pool.query(options);
+      const [rows] = await this.client.query(options);
       return;
 
     } catch (err) {
@@ -31,12 +31,12 @@ export class BigQueryConnection extends AbstractConnection {
 
     try {
 
-      this.pool = this.getPool();
+      this.client = this.getclient();
       const tableNames = [];
       const tables = [];
       const sqlQuery = `SELECT table_name FROM ${this.config.schema}.INFORMATION_SCHEMA.TABLES`;
       const options = { query: sqlQuery };
-      const [rows] = await this.pool.query(options);
+      const [rows] = await this.client.query(options);
 
       for (let i = 0, n = rows.length; i < n; i++) {
         const result = rows[i];
@@ -60,7 +60,7 @@ export class BigQueryConnection extends AbstractConnection {
         }
       }
 
-      return await this.commonColumns(tables);
+      return await this.getRelations(tables);
 
     } catch (err) {
       throw err;
@@ -72,7 +72,7 @@ export class BigQueryConnection extends AbstractConnection {
     const options = { query: query };
     return new Promise(async (resolve, reject) => {
       try {
-        const [getColumns] = await this.pool.query(options);
+        const [getColumns] = await this.client.query(options);
         const newTable = {
           table_name: tableName,
           display_name: {
@@ -132,26 +132,12 @@ export class BigQueryConnection extends AbstractConnection {
     const options = { query: query };
     return new Promise(async (resolve, reject) => {
       try {
-        const count = await this.pool.query(options);
+        const count = await this.client.query(options);
         resolve(count);
       } catch (err) {
         reject(err);
       }
     })
-  }
-
-  async getDataSource(id: string) {
-    try {
-      return await DataSource.findOne({ _id: id }, (err, datasource) => {
-        if (err) {
-          throw Error(err);
-        }
-        return datasource;
-      });
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
   }
 
   async getQueryBuilded(queryData: any, dataModel: any, user: any) {
@@ -190,7 +176,7 @@ export class BigQueryConnection extends AbstractConnection {
   }
 
 
-  getPool(): Promise<any> {
+  getclient(): Promise<any> {
 
     const projectId = this.config.project_id;
     const keyFilename = `D:/Proyectos/EDA/eda_api/lib/files/${this.config.project_id}.json`;
@@ -200,62 +186,6 @@ export class BigQueryConnection extends AbstractConnection {
 
   GetDefaultSchema(): string {
     throw new Error("Method not implemented.");
-  }
-
-  private async commonColumns(dm) {
-    let data_model = dm;
-    let visited = [];
-    // Recorrem totes les columnes de totes les taules i comparem amb totes les columnes de cada taula (menys la que estem recorrent
-    // Taules
-    for (let l = 0; l < data_model.length; l++) {
-      visited.push(data_model[l].table_name);
-      // Columnes
-      for (let k = 0; k < data_model[l].columns.length; k++) {
-        let sourceColumn = { source_column: data_model[l].columns[k].column_name, column_type: data_model[l].columns[k].column_type };
-        // Taules
-        for (let j = 0; j < data_model.length; j++) {
-
-          if (!visited.includes(data_model[j].table_name)) {
-            // Columnes
-            for (let i = 0; i < data_model[j].columns.length; i++) {
-              let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
-              if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
-                sourceColumn.source_column.toLowerCase().includes('id_') ||
-                sourceColumn.source_column.toLowerCase().includes('number') ||
-                sourceColumn.source_column.toLowerCase().startsWith("sk") ||
-                sourceColumn.source_column.toLowerCase().startsWith("tk") ||
-                sourceColumn.source_column.toLowerCase().endsWith("sk") ||
-                sourceColumn.source_column.toLowerCase().endsWith("tk") ||
-                sourceColumn.source_column.toLowerCase().includes('code'))
-                && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
-
-                // FER EL CHECK AMB ELS INNER JOINS ---- DESHABILITAT (Masses connexions a la db)
-                let a = true; //await checkJoins(pool, data_model[l].table_name, sourceColumn.source_column, data_model[j].table_name, targetColumn.target_column);
-
-                if (a) {
-                  data_model[l].relations.push({
-                    source_table: data_model[l].table_name,
-                    source_column: [sourceColumn.source_column],
-                    target_table: data_model[j].table_name,
-                    target_column: [targetColumn.target_column],
-                    visible: true
-                  });
-                  data_model[j].relations.push({
-                    source_table: data_model[j].table_name,
-                    source_column: [targetColumn.target_column],
-                    target_table: data_model[l].table_name,
-                    target_column: [sourceColumn.source_column],
-                    visible: true
-                  });
-
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    return data_model;
   }
 
 }

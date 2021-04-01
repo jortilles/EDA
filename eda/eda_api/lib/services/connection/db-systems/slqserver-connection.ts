@@ -14,7 +14,7 @@ export class SQLserverConnection extends AbstractConnection {
     }
 
     private queryBuilder: SQLserviceBuilderService;
-    async getPool(): Promise<any> {
+    async getclient(): Promise<any> {
         let config = {
             server: this.config.host,
             port: parseInt(this.config.port),
@@ -27,10 +27,10 @@ export class SQLserverConnection extends AbstractConnection {
             }
         }
 
-        const pool = new SQLservice.ConnectionPool(config);
+        const client = new SQLservice.Connectionclient(config);
 
         return new Promise((resolve, reject) => {
-            pool.connect((err, conn) => {
+            client.connect((err, conn) => {
                 if (err) {
                     return reject(err);
                 }
@@ -45,9 +45,9 @@ export class SQLserverConnection extends AbstractConnection {
     async tryConnection(): Promise<void> {
         try {
             console.log('\x1b[32m%s\x1b[0m', 'Connecting to SQLserver database...\n');
-            this.pool = await this.getPool();
+            this.client = await this.getclient();
             this.itsConnected();
-            return this.pool;
+            return this.client;
         } catch (err) {
             console.log(err)
             throw err;
@@ -56,7 +56,7 @@ export class SQLserverConnection extends AbstractConnection {
 
     async generateDataModel(optimize:number): Promise<any> {
         try {
-            this.pool = await this.getPool();
+            this.client = await this.getclient();
             let tableNames = [];
             let tables = [];
             let where: string = '';
@@ -95,17 +95,45 @@ export class SQLserverConnection extends AbstractConnection {
                     tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
-            return await this.commonColumns(tables);
+
+            /**Foreign keys */
+
+            const fkQuery = `
+            select tab.name as foreign_table, col.name as fk_column, pk_tab.name as primary_table, pk_col.name as pk_column
+            from sys.tables tab
+            inner join sys.columns col 
+                on col.object_id = tab.object_id
+            left outer join sys.foreign_key_columns fk_cols
+                on fk_cols.parent_object_id = tab.object_id
+                and fk_cols.parent_column_id = col.column_id
+            left outer join sys.foreign_keys fk
+                on fk.object_id = fk_cols.constraint_object_id
+            left outer join sys.tables pk_tab
+                on pk_tab.object_id = fk_cols.referenced_object_id
+            left outer join sys.columns pk_col
+                on pk_col.column_id = fk_cols.referenced_column_id
+                and pk_col.object_id = fk_cols.referenced_object_id
+            where fk.name is not null
+            and schema_name(tab.schema_id) = '${schema}'
+            order by schema_name(tab.schema_id) + '.' + tab.name,
+            col.column_id`;
+
+            const foreignKeys = await this.execQuery(fkQuery);
+
+            /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
+            if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
+            else return await this.getRelations(tables);
+
         } catch (err) {
             throw err;
         } finally {
-            this.pool.close();
+            this.client.close();
         }
     }
 
     async execQuery(query: string): Promise<any> {
         let connection: { query: (arg0: string, arg1: (err: any, resultset: any) => void) => void; };
-        connection = this.pool;
+        connection = this.client;
         return new Promise(async (resolve, reject) => {
             connection.query(query, (err, response) => {
                 if (err) {
@@ -115,21 +143,6 @@ export class SQLserverConnection extends AbstractConnection {
                 resolve(rows);
             });
         }).catch(err => { throw err });
-    }
-
-
-    async getDataSource(id: string) {
-        try {
-            return await DataSource.findOne({ _id: id }, (err, datasource) => {
-                if (err) {
-                    throw Error(err);
-                }
-                return datasource;
-            });
-        } catch (err) {
-            console.log(err);
-            throw err;
-        }
     }
 
     getQueryBuilded(queryData: any, dataModel: any, user: any): Promise<any> {
@@ -148,7 +161,7 @@ export class SQLserverConnection extends AbstractConnection {
 
         return new Promise(async (resolve, reject) => {
             try {
-                const count = await this.pool.query(query);
+                const count = await this.client.query(query);
                 resolve(count);
             } catch (err) {
                 console.log(err)
@@ -224,61 +237,6 @@ export class SQLserverConnection extends AbstractConnection {
             .join(' ');
     }
 
-
-    private async commonColumns(dm) {
-        let data_model = dm;
-        let visited = [];
-        // Recorrem totes les columnes de totes les taules i comparem amb totes les columnes de cada taula (menys la que estem recorrent
-        // Taules
-        for (let l = 0; l < data_model.length; l++) {
-            visited.push(data_model[l].table_name);
-            // Columnes
-            for (let k = 0; k < data_model[l].columns.length; k++) {
-                let sourceColumn = { source_column: data_model[l].columns[k].column_name, column_type: data_model[l].columns[k].column_type };
-                // Taules
-                for (let j = 0; j < data_model.length; j++) {
-
-                    if (!visited.includes(data_model[j].table_name)) {
-                        // Columnes
-                        for (let i = 0; i < data_model[j].columns.length; i++) {
-                            let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
-                            if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
-                                sourceColumn.source_column.toLowerCase().includes('id_') ||
-                                sourceColumn.source_column.toLowerCase().includes('number') ||
-                                sourceColumn.source_column.toLowerCase().startsWith("sk") ||
-                                sourceColumn.source_column.toLowerCase().startsWith("tk") ||
-                                sourceColumn.source_column.toLowerCase().endsWith("sk") ||
-                                sourceColumn.source_column.toLowerCase().endsWith("tk") ||
-                                sourceColumn.source_column.toLowerCase().includes('code'))
-                                && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
-
-                                // FER EL CHECK AMB ELS INNER JOINS ---- DESHABILITAT (Masses connexions a la db)
-                                let a = true; //await checkJoins(pool, data_model[l].table_name, sourceColumn.source_column, data_model[j].table_name, targetColumn.target_column);
-
-                                if (a) {
-                                    data_model[l].relations.push({
-                                        source_table: data_model[l].table_name,
-                                        source_column: [sourceColumn.source_column],
-                                        target_table: data_model[j].table_name,
-                                        target_column: [targetColumn.target_column],
-                                        visible: true
-                                    });
-                                    data_model[j].relations.push({
-                                        source_table: data_model[j].table_name,
-                                        source_column: [targetColumn.target_column],
-                                        target_table: data_model[l].table_name,
-                                        target_column: [sourceColumn.source_column],
-                                        visible: true
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return data_model;
-    }
     createTable(queryData: any): string {
         throw new Error('Method not implemented.');
     }

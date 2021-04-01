@@ -82,7 +82,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'MySQL', value: 'mysql' },
         { label: 'Vertica', value: 'vertica' },
         { label: 'Oracle', value: 'oracle' },
-        { label: 'BigQuery', value: 'bigquery' }
+        { label: 'BigQuery', value: 'bigquery' },
+        { label: 'SnowFlake', value: 'snowflake'}
     ];
     public selectedTipoBD: SelectItem;
 
@@ -268,6 +269,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
         this.dataModelService.currentModelPanel.subscribe(
             modelPanel => {
+                console.log(modelPanel)
                 this.modelPanel = modelPanel;
                 this.selectedTipoBD = this.tiposBD.filter(type => type.value === modelPanel.connection.type)[0];
             }, err => this.alertService.addError(err)

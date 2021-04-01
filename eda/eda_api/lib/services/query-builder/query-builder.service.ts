@@ -275,6 +275,7 @@ export abstract class QueryBuilderService {
         const schema = this.dataModel.ds.connection.schema;
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         let query = userQuery.SQLexpression;
+
         
         if (modelPermissions.length > 0) {
 
@@ -545,6 +546,7 @@ export abstract class QueryBuilderService {
             || word === 'SELECT'
             || word === 'JOIN'
             || word === 'WHERE'
+            || word === 'GROUP'
           ) {
             currentOperand = word;
           }

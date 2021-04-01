@@ -8,8 +8,8 @@ import { roleGuard } from '../../guards/role-guard';
 const router = express.Router();
 
 router.put('', authGuard, UploadController.uploadProfile);
-router.post('/addFile', authGuard, roleGuard, UploadFileController.uploadFile );
+router.post('/addFile', authGuard,  UploadFileController.uploadFile );
 router.post('/bigqueryCredentials', authGuard,roleGuard, UploadFileController.uploadBigQueryCredentials );
-router.get('/addFile/:id', authGuard, roleGuard, UploadFileController.readFile );
+router.get('/readGeoJsonFile/:id', authGuard, UploadFileController.readGeoJsonFile );
 
 export default router;

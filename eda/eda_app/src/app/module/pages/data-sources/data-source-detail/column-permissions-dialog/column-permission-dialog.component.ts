@@ -52,7 +52,7 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
             title: $localize`:@@AñadirPermiso:Añadir permiso`
         });
 
-        this.dialog.style = { width: '40%', height:'70%'};
+        this.dialog.style = { width: '40%', height:'65%', top:"-4em", left:'1em'};
     }
 
     onShow() {

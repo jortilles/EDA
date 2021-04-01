@@ -12,7 +12,7 @@ export class VerticaConnection extends AbstractConnection {
 
     private queryBuilder: PgBuilderService;
 
-    async getPool() {
+    async getclient() {
         return new Promise((resolve, reject) => {
             Vertica.connect(this.config, (err, conn) => {
                 if (err) {
@@ -30,9 +30,9 @@ export class VerticaConnection extends AbstractConnection {
     async tryConnection(): Promise<any> {
         try {
             console.log('\x1b[32m%s\x1b[0m', 'Connecting to Vertica database...\n');
-            this.pool = await this.getPool();
+            this.client = await this.getclient();
             this.itsConnected();
-            return this.pool;
+            return this.client;
         } catch (err) {
             console.log(err)
             throw err;
@@ -41,7 +41,7 @@ export class VerticaConnection extends AbstractConnection {
 
     async generateDataModel(optimize:number): Promise<any> {
         try {
-            this.pool = await this.getPool();
+            this.client = await this.getclient();
             let tableNames = [];
             let tables = [];
             const query = `
@@ -55,6 +55,7 @@ export class VerticaConnection extends AbstractConnection {
                 let tableName = r['table_name'];
                 tableNames.push(tableName);
             });
+
 
             for (let i = 0; i < tableNames.length; i++) {
                 let new_table = await this.setTable(tableNames[i]);
@@ -73,7 +74,26 @@ export class VerticaConnection extends AbstractConnection {
                     tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
-            return await this.commonColumns(tables);
+
+            /**Foreign keys */
+            const fkQuery = `
+            select col.table_name as foreign_table, col.column_name as fk_column, fks.reference_table_name as primary_table, fks.reference_column_name as pk_column
+            from v_catalog.columns col
+            inner join v_catalog.foreign_keys fks
+                    on col.table_schema = fks.table_schema
+                    and col.table_name = fks.table_name
+                    and col.column_name = fks.column_name
+            where col.table_schema = '${this.config.schema || 'public'}'
+            order by col.table_schema,
+                    col.table_name,
+                    col.ordinal_position;
+            `;
+
+            const foreignKeys = await this.execQuery(fkQuery);
+            /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
+            if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
+            else return await this.getRelations(tables);
+
         } catch (err) {
             throw err;
         }
@@ -81,7 +101,7 @@ export class VerticaConnection extends AbstractConnection {
 
     async execQuery(query: string): Promise<any> {
         let connection: { query: (arg0: string, arg1: (err: any, resultset: any) => void) => void; };
-        connection = this.pool;
+        connection = this.client;
         return new Promise(async (resolve, reject) => {
             connection.query(query, (err, resultset) => {
                 if (err) {
@@ -91,19 +111,6 @@ export class VerticaConnection extends AbstractConnection {
                 resolve(rows);
             });
         }).catch(err => { throw err });
-    }
-
-    async getDataSource(id: string) {
-        try {
-            return await DataSource.findOne({ _id: id }, (err, datasource) => {
-                if (err) {
-                    throw Error(err);
-                }
-                return datasource;
-            });
-        } catch (err) {
-            throw err;
-        }
     }
 
     async getQueryBuilded(queryData: any, dataModel: any, user: any) {
@@ -122,7 +129,7 @@ export class VerticaConnection extends AbstractConnection {
         SELECT count(*) as count from ${schema}.${tableName}
         `;
         return new Promise(async (resolve, reject) => {
-            this.pool.query(query, (err, resultset) => {
+            this.client.query(query, (err, resultset) => {
                 if (err) {
                     return resolve({count:0});
                 }
@@ -199,61 +206,6 @@ export class VerticaConnection extends AbstractConnection {
                 return obj
             }, {})
         })
-    }
-
-    private async commonColumns(dm) {
-        let data_model = dm;
-        let visited = [];
-        // Recorrem totes les columnes de totes les taules i comparem amb totes les columnes de cada taula (menys la que estem recorrent
-        // Taules
-        for (let l = 0; l < data_model.length; l++) {
-            visited.push(data_model[l].table_name);
-            // Columnes
-            for (let k = 0; k < data_model[l].columns.length; k++) {
-                let sourceColumn = { source_column: data_model[l].columns[k].column_name, column_type: data_model[l].columns[k].column_type };
-                // Taules
-                for (let j = 0; j < data_model.length; j++) {
-
-                    if (!visited.includes(data_model[j].table_name)) {
-                        // Columnes
-                        for (let i = 0; i < data_model[j].columns.length; i++) {
-                            let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
-                            if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
-                                sourceColumn.source_column.toLowerCase().includes('id_') ||
-                                sourceColumn.source_column.toLowerCase().includes('number') ||
-                                sourceColumn.source_column.toLowerCase().startsWith("sk") ||
-                                sourceColumn.source_column.toLowerCase().startsWith("tk") ||
-                                sourceColumn.source_column.toLowerCase().endsWith("sk") ||
-                                sourceColumn.source_column.toLowerCase().endsWith("tk") ||
-                                sourceColumn.source_column.toLowerCase().includes('code'))
-                                && sourceColumn.source_column === targetColumn.target_column && sourceColumn.column_type === targetColumn.column_type) {
-
-                                // FER EL CHECK AMB ELS INNER JOINS ---- DESHABILITAT (Masses connexions a la db)
-                                let a = true; //await checkJoins(pool, data_model[l].table_name, sourceColumn.source_column, data_model[j].table_name, targetColumn.target_column);
-
-                                if (a) {
-                                    data_model[l].relations.push({
-                                        source_table: data_model[l].table_name,
-                                        source_column: [sourceColumn.source_column],
-                                        target_table: data_model[j].table_name,
-                                        target_column: [targetColumn.target_column],
-                                        visible: true
-                                    });
-                                    data_model[j].relations.push({
-                                        source_table: data_model[j].table_name,
-                                        source_column: [targetColumn.target_column],
-                                        target_table: data_model[l].table_name,
-                                        target_column: [sourceColumn.source_column],
-                                        visible: true
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return data_model;
     }
 
     createTable(queryData: any): string {

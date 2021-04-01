@@ -22,18 +22,19 @@
             <span class="filter-name">
                 {{filter.column.label}}:
             </span>
-            <p-multiSelect *ngIf="filter.column.value.column_type !== 'date'" [options]="filter.data"
-                [(ngModel)]="filter.selectedItems" [virtualScroll]="false" itemSize="30"
-                defaultLabel="{{filter.column.label}}" class="global-filter-dropdown" maxSelectedLabels="1"
-                (onPanelHide)="applyGlobalFilter(filter)">
+
+            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'" [options]="filter.data"
+                [(ngModel)]="filter.selectedItems" [virtualScroll]="true" itemSize="30" [maxSelectedLabels]="3"
+                defaultLabel="{{filter.column.label}}" display="chip" class="customMultiselect"
+                (onPanelHide)="applyGlobalFilter(filter)" [style]="{'max-width': '200px', 'min-width':'200px'}">
 
                 <p-footer>
                     <button pButton pRipple type="button" (click)="removeGlobalFilter(filter)" icon="pi pi-trash"
                         class="p-button-danger p-button-rounded  p-button-outlined"
                         style="margin: 0.2em;"></button>
                 </p-footer>
-
             </p-multiSelect>
+            
             <eda-date-picker *ngIf="filter.column.value.column_type === 'date'" [inject]="datePickerConfigs[filter.id]"
                 (onDatesChanges)="processPickerEvent($event, filter)" (onRemove)="removeGlobalFilter(filter)"
                 [autoRemove]="true"></eda-date-picker>

@@ -1,17 +1,17 @@
 <eda-dialog [inject]="dialog">
   <div body class="p-grid">
 
-    <div class="p-col-12 p-md-2 ">
+    <div class="p-col-12 p-md-2 " style="margin-top: 1em;">
       <div style="margin-bottom: 10px" class="p-col-12">
-        <span class="ui-float-label">
-          <input id="float-input" type="text" pInputText [(ngModel)]="tableName">
-          <label i18n="@@placeholderTableName" for="float-input">Nombre de la tabla</label>
+        <span class="p-float-label">
+          <input id="tablename" type="text" pInputText [(ngModel)]="tableName">
+          <label i18n="@@placeholderTableName" for="tablename">Nombre de la tabla</label>
         </span>
       </div>
       <div style="margin-bottom: 10px" class="p-col-12">
-        <span class="ui-float-label">
-          <input id="float-input" type="text" pInputText [(ngModel)]="delimiter">
-          <label i18n="@@placeholderInputSeparator" for="float-input">Separador</label>
+        <span class="p-float-label">
+          <input id="separator" type="text" pInputText [(ngModel)]="delimiter">
+          <label i18n="@@placeholderInputSeparator" for="separator">Separador</label>
         </span>
       </div>
 
@@ -25,7 +25,7 @@
 
     </div>
 
-    <div class="p-col-12 p-md-10  ">
+    <div class="p-col-12 p-md-10  " style="margin-top: 1em;">
       <p-table [value]="csvColumns" styleClass="p-datatable-sm">
         <ng-template pTemplate="header">
           <tr>

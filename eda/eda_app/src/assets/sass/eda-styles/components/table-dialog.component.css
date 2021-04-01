@@ -1,8 +1,5 @@
 .table-div{
   margin-top: 1.5rem;
-  overflow: auto;
-  overflow-y: auto;
-  max-height: 400px;
 }
 .total-item{
   min-width: 80px;
