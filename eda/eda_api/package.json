@@ -43,6 +43,7 @@
         "oracledb": "^5.0.0",
         "pg": "^8.2.1",
         "pug": "^3.0.2",
+        "puppeteer": "^8.0.0",
         "qs": "^6.9.4",
         "readable-stream": "^3.6.0",
         "snowflake-promise": "^4.5.0",

@@ -1,7 +1,6 @@
 import * as oracledbTypes from 'oracledb';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
-import DataSource from '../../../module/datasource/model/datasource.model';
 import { OracleBuilderService } from '../../query-builder/qb-systems/oracle-builder.service';
 import oracledb from 'oracledb';
 
@@ -40,13 +39,13 @@ export class OracleConnection extends AbstractConnection {
                     )
                 )` : `${this.config.host}/${this.config.database}`;
 
-
             const client = await oracledb.createPool({
                 user: this.config.user,
                 password: this.config.password,
                 connectString: connectString
             });
             const connection = await client.getConnection();
+
             return connection;
 
         } catch (err) {
@@ -110,7 +109,7 @@ export class OracleConnection extends AbstractConnection {
             AND      CHILD.CONSTRAINT_NAME  =  CT.CONSTRAINT_NAME 
             AND      CT.R_OWNER  =  PARENT.OWNER
             AND      CT.R_CONSTRAINT_NAME  =  PARENT.CONSTRAINT_NAME 
-            AND      CT.OWNER  = '${this.config.schema}'; 
+            AND      CT.OWNER  = '${this.config.schema}'
             `
             this.client = await this.getclient();
             const foreignKeys = await this.execQuery(fkQuery);
@@ -237,11 +236,17 @@ export class OracleConnection extends AbstractConnection {
     }
 
     private setColumns(c, tableCount?: number) {
+
         let column: any = {};
         column.column_name = c[0];
         column.display_name = { default: this.normalizeName(c[0]), localized: [] };
         column.description = { default: this.normalizeName(c[0]), localized: [] };
-        column.column_type = this.normalizeType(c[1]) || column.column_type;
+
+        const dbType = c[1];
+        column.column_type = this.normalizeType(dbType) || dbType;
+        let floatOrInt =  this.floatOrInt(dbType);
+        column.minimumFractionDigits = floatOrInt === 'int' &&  column.column_type === 'numeric' ? 0 
+        : floatOrInt === 'float' &&  column.column_type === 'numeric' ? 2 : null;
 
 
         column.column_type === 'numeric'

@@ -1,49 +1,75 @@
-<div style="min-width: 85%; padding: 5rem;">
+<div style="min-width: 85%; padding: 5rem;" class="p-grid">
 
-  <p-card [header]="header">
+  <div class="p-col-12">
 
-    <form [formGroup]="form" (ngSubmit)="sendMailconfig()">
+    <p-card [header]="header">
 
-      <div class="p-grid">
+      <form [formGroup]="form" (ngSubmit)="sendMailconfig()">
 
-        <div class="form-group p-col-3 ui-md-3">
-          <label i18n="@@inputServidor">SERVIDOR *</label>
-          <input type="text" class="form-control" formControlName="host" id="eda_mail_host" pInputText>
+        <div class="p-grid">
+
+          <div class="form-group p-col-12 p-md-3">
+            <label i18n="@@inputServidor">SERVIDOR *</label>
+            <input type="text" class="form-control" formControlName="host" id="eda_mail_host" pInputText>
+          </div>
+
+          <div class="form-group p-col-12 p-md-3">
+            <label i18n="@@inputPort">PUERTO *</label>
+            <input type="number" class="form-control" formControlName="port" id="eda_mail_port" pInputText>
+          </div>
+
+          <div class="form-group p-col-12 p-md-3">
+            <label i18n="@@inputUsuario">USUARIO *</label>
+            <input type="text" class="form-control" formControlName="user" id="eda_mail_user" pInputText>
+          </div>
+
+          <div class="form-group p-col-12 p-md-3">
+            <label i18n="@@inputPassword">CONTRASEÑA *</label>
+            <input type="password" class="form-control" formControlName="password" id="eda_ds_password" pInputText>
+          </div>
+
+          <div class="form-group p-col-12 p-md-12" style="margin-left: 0.5em;">
+            <h6 i18n="@@inputSecurity">TLS *</h6>
+            <p-inputSwitch formControlName="secure"></p-inputSwitch>
+          </div>
+
+          <div class="p-col-8 p-lg-10">
+            <button type="button" pButton (click)="checkCredentials()" class="ui-button-success ml-2"
+              i18n-label="@@checkCredentials" label="Comprobar credenciales" [disabled]="!form.valid"></button>
+          </div>
+
+          <div class="p-col-4 p-lg-2">
+            <button style="margin: auto;" type="submit" pButton class="ui-button-success ml-2" icon="fa fa-save" i18n-label="@@guardarBtn"
+              label="Guardar" id="eda_MAIL_guardar" [disabled]="!form.valid"></button>
+          </div>
+
+
         </div>
 
-        <div class="form-group p-col-3 ui-md-3">
-          <label i18n="@@inputPort">PUERTO *</label>
-          <input type="number" class="form-control" formControlName="port" id="eda_mail_port" pInputText>
-        </div>
+      </form>
+    </p-card>
 
-        <div class="form-group p-col-3 ui-md-3">
-          <label i18n="@@inputUsuario">USUARIO *</label>
-          <input type="text" class="form-control" formControlName="user" id="eda_mail_user" pInputText>
-        </div>
+  </div>
 
-        <div class="form-group p-col-3 ui-md-3">
-          <label i18n="@@inputPassword">CONTRASEÑA *</label>
-          <input type="password" class="form-control" formControlName="password" id="eda_ds_password" pInputText>
-        </div>
+  <div class="p-col-12 p-lg-6">
 
-        <div class="form-group p-col-12 ui-md-12" style="margin-left: 0.5em;">
-          <h6 i18n="@@inputSecurity">TLS *</h6>
-          <p-inputSwitch formControlName="secure"></p-inputSwitch>
-        </div>
+    <p-card [header]="alertsHeader" [style]="{marginTop:'1em'}">
 
-        <div class="p-col-10 ui-md-10">
-          <button type="button" pButton (click)="checkCredentials()" class="ui-button-success ml-2"
-          i18n-label="@@checkCredentials" label="Comprobar credenciales"  [disabled]="!form.valid"></button>
-        </div>
+      <eda-table [inject]="alertsTable"></eda-table>
 
-        <div class="p-col-2 ui-md-2">
-          <button style="margin: auto;" type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn"
-            label="Guardar" id="eda_MAIL_guardar" [disabled]="!form.valid"></button>
-        </div>
+    </p-card>
+
+  </div>
+  
+  <div class="p-col-12 p-lg-6">
+
+    <p-card [header]="dashboardsHeader" [style]="{marginTop:'1em'}">
+
+      <eda-table [inject]="dashboardsTable"></eda-table>
+
+    </p-card>
+
+  </div>
 
 
-      </div>
-
-    </form>
-  </p-card>
 </div>

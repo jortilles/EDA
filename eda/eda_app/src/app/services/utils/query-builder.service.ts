@@ -35,6 +35,7 @@ export class QueryBuilderService extends ApiService {
         col.aggregation_type = col.aggregation_type[0] ? col.aggregation_type[0].value : 'none';
         col.ordenation_type = column.ordenation_type;
         col.format = column.format;
+        col.minimumFractionDigits = column.minimumFractionDigits;
         col.order = 0;
         col.column_granted_roles = column.column_granted_roles;
         col.row_granted_roles = column.row_granted_roles;
@@ -88,6 +89,8 @@ export class QueryBuilderService extends ApiService {
             col.column_granted_roles = select[i].column_granted_roles;
             col.row_granted_roles = select[i].row_granted_roles;
             col.tableCount = select[i].tableCount;
+            col.minimumFractionDigits = select[i].minimumFractionDigits;
+            col.cumulativeSum = select[i].cumulativeSum;
             queryColumns.push(col);
             labels.push(select[i].column_name);
 

@@ -67,6 +67,7 @@ export abstract class AbstractConnection {
             case 'FLOAT64': return 'numeric';
             case 'REAL': return 'numeric';
             case 'LONG': return 'numeric';
+            case 'FIXED': return 'number';
             case 'DATE': return 'date';
             case 'TIMESTAMP': return 'date';
             case 'TIME': return 'date';
@@ -83,8 +84,42 @@ export abstract class AbstractConnection {
             case 'NVARCHAR': return 'text';
             case 'CHAR': return 'text';
             case 'NCHAR': return 'text';
-            case 'FIXED': return 'number';
             default: return 'text';
+        }
+    }
+
+    public floatOrInt(type){
+        let cleanType = type.replace(/ *\([^)]*\) */g, '').toUpperCase();
+        switch(cleanType){
+
+            case 'BIT': return 'int';
+            case 'INT4': return 'int';
+            case 'INT8': return 'int';
+            case 'INT': return 'int';
+            case 'INT64': return 'int';
+            case 'INTEGER': return 'int';
+            case 'TINYINT': return 'int';
+            case 'SMALLINT': return 'int';
+            case 'MEDIUMINT': return 'int';
+            case 'BIGINT': return 'int';
+            case 'SERIAL': return 'int';
+            case 'LONG': return 'int';
+            case 'VARBINARY': return 'int';
+            case 'DECIMAL': return 'float';
+            case 'DEC': return 'float';
+            case 'DOUBLE': return 'float';
+            case 'DOUBLE PRECISSION': return 'float';
+            case 'FLOAT': return 'float';
+            case 'FLOAT8': return 'float';
+            case 'FLOAT16': return 'float';
+            case 'FLOAT64': return 'float';
+            case 'REAL': return 'float';
+            case 'NUMERIC': return 'float';
+            case 'FIXED' : return 'float';
+            case 'NUMBER': return 'float';
+            case 'FIXED': return 'float';
+            default : return 'float';
+
         }
     }
 

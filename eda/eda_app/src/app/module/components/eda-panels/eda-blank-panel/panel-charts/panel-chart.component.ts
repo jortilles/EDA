@@ -1,6 +1,5 @@
 import { EdaKnob } from './../../../eda-knob/edaKnob';
 import { EdaKnobComponent } from './../../../eda-knob/eda-knob.component';
-import { KnobConfig } from './chart-configuration-models/knob-config';
 import { EdaScatter } from './../../../eda-scatter/eda-scatter.component';
 import { EdaTreeMap } from './../../../eda-treemap/eda-treemap.component';
 import { TreeMap } from './../../../eda-treemap/eda-treeMap';
@@ -39,7 +38,7 @@ import { EdaFunnelComponent } from '@eda/components/eda-funnel/eda-funnel.compon
     templateUrl: './panel-chart.component.html',
     styleUrls: []
 })
-export class PanelChartComponent implements OnInit, OnChanges,  OnDestroy {
+export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     ngOnDestroy(): void {
         this.destroyComponent();
     }
@@ -60,20 +59,26 @@ export class PanelChartComponent implements OnInit, OnChanges,  OnDestroy {
         @Self() private ownRef: ElementRef,
         private zone: NgZone) { }
 
+
     ngOnInit(): void {
         this.NO_DATA = false;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        this.NO_DATA = false
-        
+
         if (this.props.data && this.props.data.values.length !== 0 && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
-            this.NO_DATA = false;
+          
+            setTimeout(_ => {
+                this.NO_DATA = false;
+            })
             this.changeChartType();
 
         } else {
-            this.NO_DATA = true;
             this.destroyComponent();
+            setTimeout(_ => {
+                this.NO_DATA = true;
+            })
+           
         }
     }
 
@@ -201,16 +206,22 @@ export class PanelChartComponent implements OnInit, OnChanges,  OnDestroy {
       * @param inject chart configuration
       */
     private createEdatableComponent(type: string) {
+
         this.entry.clear();
+
         const factory = this.resolver.resolveComponentFactory(EdaTableComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = this.initializeTable(type, this.props.config.getConfig());
         this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.props.data.labels, this.props.data.values);
         const config = this.props.config.getConfig();
+
         if (config) {
+
             this.componentRef.instance.inject.rows = (<TableConfig>config).visibleRows;
             this.setTableProperties((<TableConfig>config));
+
         }
+
         this.componentRef.instance.inject.onNotify.subscribe(data => {
             (<TableConfig>config).visibleRows = data;
         });
@@ -442,24 +453,25 @@ export class PanelChartComponent implements OnInit, OnChanges,  OnDestroy {
         const tableColumns = [];
         //console.log("WARNING! Unique names");
         for (let i = 0, n = this.props.query.length; i < n; i += 1) {
-            // No em surt aixoooo
+          
             const label = this.props.data.labels[i];
             const r: Column = this.props.query[i];
+
             if (_.isEqual(r.column_type, 'date')) {
                 // No em surt aixoooo
-                tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label }));
+                tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label, description:r.description.default}));
             } else if (_.isEqual(r.column_type, 'numeric')) {
                 // No em surt aixoooo
-                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label }))
+                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description:r.description.default }))
             } else if (_.isEqual(r.column_type, 'text')) {
                 // No em surt aixoooo
-                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label }));
+                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description:r.description.default }));
             } else if (_.isEqual(r.column_type, 'text')) {
                 // No em surt aixoooo
-                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label }));
+                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description:r.description.default }));
             }
             else if (_.isEqual(r.column_type, 'coordinate')) {
-                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label }));
+                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description:r.description.default}));
             }
         }
         if (type === 'table') {

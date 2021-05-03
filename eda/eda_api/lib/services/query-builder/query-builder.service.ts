@@ -160,7 +160,7 @@ export abstract class QueryBuilderService {
         if (schema) {
             origin = `${schema}.${origin}`;
         }
-        return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin} `;
+        return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;
     }
 
 

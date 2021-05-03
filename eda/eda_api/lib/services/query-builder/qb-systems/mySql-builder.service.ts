@@ -83,7 +83,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       filters.forEach(f => {
 
         const column = this.findColumn(f.filter_table, f.filter_column);
-        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `CAST( ${column.SQLexpression} as decimal(32,2))`;
+        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits }))`;
 
         if (f.filter_type === 'not_null') {
           filtersString += '\nand ' + this.filterToString(f, type);
@@ -125,7 +125,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       filters.forEach(f => {
 
         const column = this.findColumn(f.filter_table, f.filter_column);
-        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `CAST( ${column.SQLexpression} as decimal(32,2))`;
+        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits }))`;
 
         if (f.filter_type === 'not_null') {
           filtersString += '\nand ' + this.filterToString(f, type);
@@ -216,26 +216,30 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   public getSeparedColumns(origin: string, dest: string[]): any {
 
+  
     const columns = [];
     const grouping = [];
 
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
+      if (!el.hasOwnProperty('minimumFractionDigits')) {
+        el.minimumFractionDigits = 0;
+      }
 
       // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor.
       if (el.computed_column === 'computed_numeric') {
-        columns.push(` cast( ${el.SQLexpression}  as decimal(32,2) ) as "${el.display_name}"`);
+        columns.push(` cast( ${el.SQLexpression}  as decimal(32,${el.minimumFractionDigits }) ) as "${el.display_name}"`);
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`cast( count( distinct \`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,2) ) as \`${el.display_name}\``);
+            columns.push(`cast( count( distinct \`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits }) ) as \`${el.display_name}\``);
           } else {
-            columns.push(`cast(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,2) ) as \`${el.display_name}\``);
+            columns.push(`cast(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits }) ) as \`${el.display_name}\``);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`cast(\`${el.table_id}\`.\`${el.column_name}\` as decimal(32,2)) as \`${el.display_name}\``);
+            columns.push(`cast(\`${el.table_id}\`.\`${el.column_name}\` as decimal(32,${el.minimumFractionDigits })) as \`${el.display_name}\``);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
@@ -284,7 +288,10 @@ export class MySqlBuilderService extends QueryBuilderService {
   public filterToString(filterObject: any, type: string): any {
 
     const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
-    const colname = type == 'where' ? `\`${filterObject.filter_table}\`.\`${filterObject.filter_column}\`` : `CAST( ${column.SQLexpression}  as DECIMAL(32,2))`;
+    if (!column.hasOwnProperty('minimumFractionDigits')) {
+      column.minimumFractionDigits = 0;
+    }
+    const colname = type == 'where' ? `\`${filterObject.filter_table}\`.\`${filterObject.filter_column}\`` : `CAST( ${column.SQLexpression}  as DECIMAL(32,${column.minimumFractionDigits }))`;
     let colType = column.column_type;
 
     switch (this.setFilterType(filterObject.filter_type)) {

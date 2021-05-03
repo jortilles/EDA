@@ -1,6 +1,6 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {SelectItem} from 'primeng/api';
-import {EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent} from '@eda/shared/components/shared-components.index';
+import {EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent, EdaDatePickerComponent} from '@eda/shared/components/shared-components.index';
 import {Column} from '@eda/models/model.index';
 import {
     AlertService,
@@ -17,6 +17,10 @@ import * as _ from 'lodash';
 })
 
 export class FilterDialogComponent extends EdaDialogAbstract {
+
+    @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
+
+
     public dialog: EdaDialog;
     public selectedColumn: Column;
 
@@ -32,6 +36,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         types: [],
         forDisplay: [],
         selecteds: [],
+        range : null
     };
     public inputType: string;
     public filterValue: any = {};
@@ -67,20 +72,23 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     addFilter() {
+
         const table =  this.selectedColumn.table_id;
         const column = this.selectedColumn.column_name;
         const type = this.filterSelected.value;
+        const range = this.filter.range;
+
         this.filter.selecteds.push(   
-            this.columnUtils.addFilter(this.filterValue, table, column, type)
+            this.columnUtils.addFilter(this.filterValue, table, column, type, range)
         );
         
-
         this.carregarFilters();
 
         /* Reset Filter Form */
         this.resetDisplay();
         this.filterSelected = undefined; // filtre seleccionat cap
         this.filterValue = {}; // filtre ningun
+        this.filter.range = null;
     }
 
     carrega() {
@@ -173,6 +181,26 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 res => this.dropDownFields = res[1].map(item => ({label : item[0], value: item[0]}) ),
                 err => this.alertService.addError(err)
             );
+        }
+    }
+
+    processPickerEvent(event){
+        if (event.dates) {
+            const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            if (!event.dates[1]) {
+                event.dates[1] = event.dates[0];
+            }
+
+            let stringRange = [event.dates[0], event.dates[1]]
+                .map(date => {
+                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                    return `${ye}-${mo}-${da}`
+                });
+
+            this.filter.range = event.range;
+            this.filterValue.value1 = stringRange[0];
+            this.filterValue.value2 = stringRange[1];
+            this.display.filterButton = false;
         }
     }
 

@@ -64,7 +64,7 @@
               </div>
             </div>
 
-            <div *ngIf="form.value.type && ['oracle','snowflake'].includes(form.value.type)" class="p-col-12 p-md-4">
+            <div *ngIf="form.value.type && ['oracle','snowflake'].includes(form.value.type.value)" class="p-col-12 p-md-4">
               <div class="form-group">
                 <label i18n="@@inputNombreDb">BASE DE DATOS *</label>
                 <input type="text" class="form-control" formControlName="db" id="eda_ds_db" pInputText>

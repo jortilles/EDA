@@ -295,7 +295,13 @@ export class DashboardController {
 
                 const output = [req.body.output.labels, results];
 
-                if (output[1].length < cache_config.MAX_STORED_ROWS &&  cacheEnabled) {
+                /**CHAPUZA SUMA ACUMULATIVA -> 
+                 * Si hay fechas agregadas por mes o dia 
+                 * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numericos
+                 */
+                DashboardController.cumulativeSum(output, req.body.query);
+
+                if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
                     CachedQueryService.storeQuery(req.body.model_id, query, output);
                 }
 
@@ -333,8 +339,8 @@ export class DashboardController {
             const query = connection.BuildSqlQuery(req.body.query, dataModelObject, req.user);
 
             /**If query is in format select foo from a, b queryBuilder returns null */
-            if(!query){
-               return next(new HttpException(500, 'Queries in format "select x from A, B" are not suported'));
+            if (!query) {
+                return next(new HttpException(500, 'Queries in format "select x from A, B" are not suported'));
             }
 
             console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
@@ -363,7 +369,7 @@ export class DashboardController {
                 }
 
                 const output = [labels, results];
-                if (output[1].length < cache_config.MAX_STORED_ROWS  && cacheEnabled) {
+                if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
                     CachedQueryService.storeQuery(req.body.model_id, query, output);
                 }
 
@@ -469,6 +475,54 @@ export class DashboardController {
             next(new HttpException(500, 'Error quering database'));
         }
 
+    }
+
+    static async cumulativeSum(data, query) {
+
+        let mustSum = false;
+        query.fields.forEach(field => {
+            if (field.column_type === 'date' && ['month', 'day'].includes(field.format) && !!field.cumulativeSum) {
+                mustSum = true;
+            }
+        })
+
+        if (mustSum) {
+
+            let types = query.fields.map(field => field.column_type);
+            let dateIndex = types.indexOf('date');
+
+            let prevValues = query.fields.map(_ => 0);
+            let prevDate = 0;
+            let prevHead = '';
+            let newRows = [];
+
+            data[1].forEach(row => {
+
+                let currentDate = parseInt(row[dateIndex].slice(-2)); /**01, 02, 03 ...etc. */
+                let currentHead = row[dateIndex].slice(0, -2); /** 2020-01, 2020-02 ...etc. */
+                let newRow = [];
+
+                types.forEach((type, index) => {
+
+                    let value = row[index];
+
+                    if (type === 'numeric' && currentDate > prevDate && currentHead === prevHead) {
+                        value = row[index] + prevValues[index]
+                    }
+
+                    prevValues[index] = value;
+                    newRow.push(value)
+                });
+
+                prevDate = currentDate;
+                prevHead = currentHead;
+                newRows.push(newRow);
+
+            });
+
+            data[1] = newRows;
+
+        }
     }
 
 }

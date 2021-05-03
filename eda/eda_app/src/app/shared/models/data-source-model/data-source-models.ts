@@ -43,6 +43,7 @@ export class EditColumnPanel {
     parent: string;
     SQLexpression: any;
     computed_column:string;
+    minimumFractionDigits:number;
 }
 
 export class EditModelPanel {

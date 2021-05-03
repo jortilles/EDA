@@ -148,7 +148,7 @@ export class EdaScatter implements AfterViewInit {
         let serieText = data.category ? `${this.inject.dataDescription.otherColumns[1].name}  : ${data.label}`
           : `${this.inject.dataDescription.otherColumns[0].name} : ${data.label}`;
         let metricText = data.metricValue ?
-          ` ${this.inject.dataDescription.numericColumns[2].name} :  ${data.metricValue.toLocaleString()}`
+          ` ${this.inject.dataDescription.numericColumns[2].name} :  ${data.metricValue.toLocaleString(undefined, { maximumFractionDigits: 6 })}`
           : ``;
 
         let linkedText = this.inject.linkedDashboard ? `Linked to ${this.inject.linkedDashboard.dashboardName} </h6>`: '';

@@ -215,22 +215,28 @@ export class PgBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
+      if (!el.hasOwnProperty('minimumFractionDigits')) {
+        el.minimumFractionDigits = 0;
+      }
+
       // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor.
       if (el.computed_column === 'computed_numeric') {
-        columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  ,2) as "${el.display_name}"`);
-      } else {
+        columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  , ${el.minimumFractionDigits}) as "${el.display_name}"`);
+      }
+      else {
 
         if (el.aggregation_type !== 'none') {
+
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`ROUND( count( distinct "${el.table_id}"."${el.column_name}")::numeric, 2)::float as "${el.display_name}"`);
+            columns.push(`ROUND( count( distinct "${el.table_id}"."${el.column_name}")::numeric, ${el.minimumFractionDigits})::float as "${el.display_name}"`);
           } else {
-            columns.push(`ROUND(${el.aggregation_type}("${el.table_id}"."${el.column_name}")::numeric, 2)::float as "${el.display_name}"`);
+            columns.push(`ROUND(${el.aggregation_type}("${el.table_id}"."${el.column_name}")::numeric, ${el.minimumFractionDigits})::float as "${el.display_name}"`);
           }
 
 
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`ROUND("${el.table_id}"."${el.column_name}"::numeric, 2)::float as "${el.display_name}"`);
+            columns.push(`ROUND("${el.table_id}"."${el.column_name}"::numeric, ${el.minimumFractionDigits})::float as "${el.display_name}"`);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
@@ -278,7 +284,10 @@ export class PgBuilderService extends QueryBuilderService {
   public filterToString(filterObject: any, type: any) {
 
     const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
-    const colname = type == 'where' ? `"${filterObject.filter_table}"."${filterObject.filter_column}"` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  ,2)`;
+    if (!column.hasOwnProperty('minimumFractionDigits')) {
+      column.minimumFractionDigits = 0;
+    }
+    const colname = type == 'where' ? `"${filterObject.filter_table}"."${filterObject.filter_column}"` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  , ${column.minimumFractionDigits})`;
     let colType = column.column_type;
 
     switch (this.setFilterType(filterObject.filter_type)) {
@@ -300,7 +309,7 @@ export class PgBuilderService extends QueryBuilderService {
   }
 
   public processFilter(filter: any, columnType: string) {
- 
+
     filter = filter.map(elem => {
       if (elem === null || elem === undefined) return 'ihatenulos';
       else return elem;

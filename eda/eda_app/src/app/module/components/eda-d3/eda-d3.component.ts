@@ -109,8 +109,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("height", d => d.y1 - d.y0)
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
-    // .append("title")
-    // .text(d => `${d.name}\n${d.value.toLocaleString()}`)
+  
 
     svg.append("g")
       .attr("fill", "none")
@@ -146,7 +145,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         let metricLabel = this.inject.dataDescription.numericColumns[0].name;
 
         const firstRow = `${data.names.join(" → ")}`;
-        const secondRow =  `${metricLabel} : ${data.value.toLocaleString()}`;
+        const secondRow =  `${metricLabel} : ${data.value.toLocaleString('de-DE', {maximumFractionDigits: 6 })}`;
         const thirdRow = this.inject.linkedDashboard ? `linked to ${this.inject.linkedDashboard.dashboardName}` : '';
        
         const link = this.inject.linkedDashboard ? `<br/> <h6>${thirdRow}</h6>` : '';
@@ -203,7 +202,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .text(d => d.name)
       .append("tspan")
       .attr("fill-opacity", 0.7)
-      .text(d => ` ${d.value.toLocaleString()}`);
+      .text(d => ` ${d.value.toLocaleString('de-DE', {maximumFractionDigits: 6 })}`);
   }
 
 

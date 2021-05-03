@@ -22,8 +22,8 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public dialog: EdaDialog;
     public chart: EdaChart;
     public oldChart: EdaChart;
-    public addTrend: boolean = false;
-    public showTrend: boolean = false;
+    public addTrend: boolean;
+    public showTrend: boolean = true;
     public panelChartConfig: PanelChart = new PanelChart();
 
 
@@ -85,6 +85,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.oldChart = _.cloneDeep(this.controller.params.chart);
         this.chart = this.controller.params.chart;
+        this.showTrend = this.chart.chartType === 'line';
         this.load();
 
     }

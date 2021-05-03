@@ -31,6 +31,7 @@ import {CacheDialogComponent} from './data-sources/data-source-detail/cache-dial
 import {SecurityDialogComponent} from './data-sources/data-source-detail/security-dialog/security-dialog.component';
 import {AlertsManagementComponent} from './alerts-management/alerts-management.component';
 import { MailManagementComponent } from './mail-management/mail-management.component';
+import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
 
 // Routes
 import { PAGES_ROUTES } from './pages.routes';
@@ -71,7 +72,8 @@ import { UploadFileComponent } from './data-sources/data-source-detail/upload-fi
         CacheDialogComponent,
         SecurityDialogComponent,
         AlertsManagementComponent,
-        MailManagementComponent
+        MailManagementComponent,
+        DashboardMailDialogComponent
     ]
 })
 export class PagesModule { }

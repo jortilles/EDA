@@ -172,7 +172,12 @@ export class MysqlConnection extends AbstractConnection {
         let column = c;
         column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
         column.description = { default: this.normalizeName(column.column_name), localized: [] };
-        column.column_type = this.normalizeType(column.column_type) || column.column_type;
+        
+        const dbType = column.column_type;
+        column.column_type = this.normalizeType(dbType) || dbType;
+        let floatOrInt =  this.floatOrInt(dbType);
+        column.minimumFractionDigits = floatOrInt === 'int' &&  column.column_type === 'numeric' ? 0 
+        : floatOrInt === 'float' &&  column.column_type === 'numeric' ? 2 : null;
 
         column.column_type === 'numeric'
             ? column.aggregation_type = AggregationTypes.getValues()

@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { SelectItem } from 'primeng/api';
-import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/components/shared-components.index';
+import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
 import {
     DashboardService,
     FilterType,
@@ -21,6 +21,9 @@ import { aggTypes } from 'app/config/aggretation-types';
 })
 
 export class ColumnDialogComponent extends EdaDialogAbstract {
+
+    @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
+
     public dialog: EdaDialog;
     public selectedColumn: Column;
 
@@ -35,7 +38,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         switch: false,
         types: [],
         forDisplay: [],
-        selecteds: []
+        selecteds: [],
+        range:null
     };
     public filterSelected: FilterType;
     public filterValue: any = {};
@@ -46,6 +50,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public inputType: string;
     public dropDownFields: SelectItem[];
     public limitSelectionFields: number;
+    public cumulativeSum: boolean;
 
     constructor(private dashboardService: DashboardService,
         private chartUtils: ChartUtilsService,
@@ -63,7 +68,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
             title: $localize`:@@col:Columna`
         });
-        this.dialog.style = { width: '85%', height:'75%', top:"-4em", left:'1em'};
+        this.dialog.style = { width: '85%', height: '75%', top: "-4em", left: '1em' };
     }
 
     onShow(): void {
@@ -74,7 +79,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.dialog.title = `${col} ${title} ${from} ${this.controller.params.table}`;
 
         this.carregarValidacions();
-        
+
         for (let i = 0, n = this.filter.types.length; i < n; i += 1) {
             if (this.selectedColumn.column_type === 'text') {
                 this.filter.types[i].typeof.map(type => {
@@ -104,12 +109,13 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     carregarValidacions() {
-        
+
         this.carregarFilters();
         this.handleAggregationType(this.selectedColumn);
         this.handleOrdTypes(this.selectedColumn);
-        if(this.selectedColumn.column_type === "date"){
+        if (this.selectedColumn.column_type === "date") {
             this.handleDataFormatTypes(this.selectedColumn);
+            this.addCumulativeSum();
         }
         this.handleInputTypes();
     }
@@ -118,9 +124,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const table = this.selectedColumn.table_id;
         const column = this.selectedColumn.column_name;
         const type = this.filterSelected.value;
+        const range = this.filter.range;
 
         this.filter.selecteds.push(
-            this.columnUtils.addFilter(this.filterValue, table, column, type)
+            this.columnUtils.addFilter(this.filterValue, table, column, type, range)
         );
         this.carregarFilters();
 
@@ -128,6 +135,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.resetDisplay();
         this.filterSelected = undefined; // filtre seleccionat cap
         this.filterValue = {}; // filtre ningun
+        this.filter.range = null;
     }
 
     removeFilter(item: any) {
@@ -138,7 +146,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 _.startsWith(f.filter_column, this.selectedColumn.column_name) &&
                 !f.removed;
         });
-        
+
     }
 
     addAggregation(type) {
@@ -202,7 +210,32 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             return this.selectedColumn.column_name === c.column_name &&
                 this.selectedColumn.table_id === c.table_id;
         });
-        column.format = format.value; 
+        column.format = format.value;
+    }
+
+    addCumulativeSum() {
+
+        //Add to query
+        const newCol: Column = this.controller.params.currentQuery.find(c => {
+            return this.selectedColumn.column_name === c.column_name &&
+                this.selectedColumn.table_id === c.table_id;
+        });
+        this.cumulativeSum = newCol.cumulativeSum;
+
+    }
+
+    handleCumulativeSum() {
+        const newCol: Column = this.controller.params.currentQuery.find(c => {
+            return this.selectedColumn.column_name === c.column_name &&
+                this.selectedColumn.table_id === c.table_id;
+        });
+
+        newCol.cumulativeSum = this.cumulativeSum;
+    }
+
+    cumulativeSumAllowed() {
+        let current = this.formatDates.filter(f => f.selected === true)[0];
+        return ['month', 'day'].includes(current.value);
     }
 
     handleFilterChange(filter: FilterType) {
@@ -335,7 +368,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                     o.value !== column.ordenation_type ? o.selected = false : o.selected = true;
                 });
 
-                this.controller.params.currentQuery.find(c => column.column_name === c.column_name && column.table_id === c.table_id).ordenation_type = column.ordenation_type ;
+                this.controller.params.currentQuery.find(c => column.column_name === c.column_name && column.table_id === c.table_id).ordenation_type = column.ordenation_type;
                 //addOrd.ordenation_type = column.ordenation_type;
                 return;
             }
@@ -420,8 +453,28 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
     }
 
-    getAggName(value:string){
+    getAggName(value: string) {
         return aggTypes.filter(agg => agg.value === value)[0].label;
+    }
+
+    processPickerEvent(event) {
+        if (event.dates) {
+            const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            if (!event.dates[1]) {
+                event.dates[1] = event.dates[0];
+            }
+
+            let stringRange = [event.dates[0], event.dates[1]]
+                .map(date => {
+                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
+                    return `${ye}-${mo}-${da}`
+                });
+
+            this.filter.range = event.range;
+            this.filterValue.value1 = stringRange[0];
+            this.filterValue.value2 = stringRange[1];
+            this.display.filterButton = false;
+        }
     }
 
     /* Close functions */

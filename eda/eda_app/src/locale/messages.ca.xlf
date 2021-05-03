@@ -1496,7 +1496,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">142</context>
 </context-group>
 </trans-unit>
-<trans-unit id="conexionH5" datatype="html">
+<trans-unit id="conexionh4" datatype="html">
 <source>
             Conexión
 </source>
@@ -3384,8 +3384,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="mailmanagementHeader">
-    <source>Gestión de correo </source>
-    <target>Gestió del correu</target>
+    <source>Gestión de correo y envio de mails </source>
+    <target>Gestió del correu i eviament de mails</target>
   </trans-unit>
 
   <trans-unit id="mailConfSaved">
@@ -3438,6 +3438,46 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
     <target>Per llançar una consulta. Seleccioneu els atributs que voleu veure, Cliqueu sobre ells per configurar-i executi la consulta. Sempre podrà tornar a aquesta vista.</target>
   </trans-unit>
+
+  <trans-unit id="agregacionh5">
+    <source>Agregación   </source>
+    <target>Agregació  </target>
+  </trans-unit> 
+
+     <trans-unit id="inputFormat">
+    <source>Número de decimales   </source>
+    <target>Número de decimals  </target>
+  </trans-unit> 
+
+     <trans-unit id="DashboardMailingTitle">
+    <source>Configuración del envío por email  </source>
+    <target>Configuració dels enviaments per email  </target>
+  </trans-unit> 
+
+    <trans-unit id="opcionMail">
+    <source>Enviar por email  </source>
+    <target>Enviar per email  </target>
+  </trans-unit> 
+
+  <trans-unit id="noMail">
+    <source>Sin alertas de correo </source>
+    <target>Sense alertes de correu </target>
+  </trans-unit> 
+
+  <trans-unit id="dashbaordsMailingHeader">
+    <source>Envio de informes por email  </source>
+    <target>Enviament d'informes per email</target>
+  </trans-unit> 
+
+    <trans-unit id="cumulativeSum">
+    <source>Suma acumulativa   </source>
+    <target>Suma acumulativa  </target>
+  </trans-unit> 
+
+   <trans-unit id="ptooltipViewAlerts">
+    <source>Configurar alertas</source>
+    <target>Configurar alertes</target>
+  </trans-unit> 
 
 
 </body>

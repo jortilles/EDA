@@ -19,7 +19,7 @@ export const ChartsConfigUtils = {
     let config: any = null;
 
     if (ebp.panelChart.componentRef && ['table', 'crosstable'].includes(ebp.panelChart.props.chartType)) {
-      tableRows = ebp.panelChart.componentRef.instance.inject.rows;
+      tableRows = ebp.panelChart.componentRef.instance.inject.rows || 10;
       config =
       {
         withColTotals: ebp.panelChart.componentRef.instance.inject.withColTotals,
@@ -43,14 +43,7 @@ export const ChartsConfigUtils = {
       }
 
     } else if (['geoJsonMap', 'coordinatesMap'].includes(ebp.panelChart.props.chartType)) {
-      config =
-      {
-        coordinates: ebp.panelChart.componentRef.instance.inject.coordinates,
-        zoom: ebp.panelChart.componentRef.instance.inject.zoom,
-        color: ebp.panelChart.componentRef.instance.inject.color,
-        logarithmicScale: ebp.panelChart.componentRef.instance.inject.logarithmicScale,
-        legendPosition: ebp.panelChart.componentRef.instance.inject.legendPosition
-      }
+      config =  ebp.panelChart.props.config.getConfig() ;
     }
     else if (["parallelSets", "treeMap", "scatterPlot", "funnel"].includes(ebp.panelChart.props.chartType)) {
 
@@ -70,9 +63,9 @@ export const ChartsConfigUtils = {
 
     else{
       config = { 
-        colors: ebp.graficos.chartColors, 
+        colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
         chartType: ebp.panelChart.props.chartType, 
-        addTrend: ebp.panelChart.props.config ? ebp.panelChart.props.config.getConfig()['addTrend'] : false
+        addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false
       };
   }
     return new ChartConfig(config);

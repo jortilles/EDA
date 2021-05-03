@@ -1,9 +1,11 @@
+import { UserController } from './../../module/admin/users/user.controller';
 
 import { ManagerConnectionService } from '../../services/connection/manager-connection.service';
-import Dashboard, { IDashboard } from '../../module/dashboard/model/dashboard.model';
+import Dashboard from '../../module/dashboard/model/dashboard.model';
 const mailConfig = require('../../../config/mailing.config')
 let nodemailer = require('nodemailer');
 import { SchedulerFunctions } from './../scheduler/schedulerFunctions';
+import { MailDashboardsController } from '../dashboardToPDFService/mail-dashboards.controller';
 
 const fs = require('fs');
 const path = require("path");
@@ -16,7 +18,6 @@ export class MailingService {
   static async mailingService() {
 
     const newDate = new Date().toISOString();
-
     const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
 
     const transporter = nodemailer.createTransport(config);
@@ -28,54 +29,112 @@ export class MailingService {
 
         console.log(`\n\x1b[34m=====\x1b[0m \x1b[32mMail server is ready to take our messages\x1b[0m \x1b[34m=====\x1b[0m\n`)
 
-        try {
+        this.alertSending(newDate, transporter);
+        this.dashboardSending(newDate, transporter);
 
-          const dashboards = await Dashboard.find({ 'config.mailingEnabled': true });
-          let dashboardsToUpdate = [];
-
-          const alerts = MailingService.getAlerts(dashboards);
-
-
-          /**Check alerts  */
-          alerts.forEach((alert, i) => {
-
-            let shouldUpdate = false;
-
-            if (alert.value.mailing.units === 'hours') {
-
-              shouldUpdate = SchedulerFunctions.checkScheduleHours(alert.value.mailing.quantity, alert.value.mailing.lastUpdated);
-
-            } else if (alert.value.mailing.units === 'days') {
-
-              const mailing = alert.value.mailing;
-              shouldUpdate = SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated);
-
-            }
-
-            if (shouldUpdate) {
-
-              MailingService.mailSending(alert, transporter);
-              alert.value.mailing.lastUpdated = newDate;
-
-              /**Push dashboard to update */
-              if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) dashboardsToUpdate.push(dashboards.filter(d => d._id === alert.dashboard_id)[0]);
-            }
-
-          });
-
-          /**Update dashbaords */
-          dashboardsToUpdate.forEach(d => {
-            Dashboard.replaceOne({ _id: d._id }, d).exec()
-          });
-
-        } catch (err) {
-
-          console.log(err);
-        }
 
       }
     });
 
+
+  }
+
+  static async alertSending(newDate: string, transporter: any) {
+    try {
+
+      const dashboards = await Dashboard.find({ 'config.mailingAlertsEnabled': true });
+      let dashboardsToUpdate = [];
+
+      const alerts = MailingService.getAlerts(dashboards);
+
+      /**Check alerts  */
+      alerts.forEach((alert, i) => {
+
+        let shouldUpdate = false;
+
+        if (alert.value.mailing.units === 'hours') {
+
+          shouldUpdate = SchedulerFunctions.checkScheduleHours(alert.value.mailing.quantity, alert.value.mailing.lastUpdated);
+
+        } else if (alert.value.mailing.units === 'days') {
+
+          const mailing = alert.value.mailing;
+          shouldUpdate = SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated);
+
+        }
+
+        if (shouldUpdate) {
+
+          MailingService.mailAlertsSending(alert, transporter);
+          alert.value.mailing.lastUpdated = newDate;
+
+          /**Push dashboard to update */
+          if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) dashboardsToUpdate.push(dashboards.filter(d => d._id === alert.dashboard_id)[0]);
+        }
+
+      });
+
+      /**Update dashbaords */
+      dashboardsToUpdate.forEach(d => {
+        Dashboard.replaceOne({ _id: d._id }, d).exec()
+      });
+
+    } catch (err) {
+      throw err;
+    }
+
+
+
+  }
+
+  static async dashboardSending(newDate: string, transporter: any) {
+
+    try {
+
+      const dashboards = await Dashboard.find({ 'config.sendViaMailConfig.enabled': true });
+      const token = await UserController.provideFakeToken();
+
+      let dashboardsToUpdate = [];
+
+      dashboards.forEach(dashboard => {
+
+        const userMails = dashboard.config.sendViaMailConfig.users.map(user => user.email);
+        const dashboardID = dashboard._id;
+        let shouldUpdate = false;
+
+        if (dashboard.config.sendViaMailConfig.units = 'hours') {
+
+          shouldUpdate = SchedulerFunctions.checkScheduleHours(dashboard.config.sendViaMailConfig.quantity, dashboard.config.sendViaMailConfig.lastUpdated);
+
+        } else if (dashboard.config.sendViaMailConfig.units = 'minutes') {
+          const mailing = dashboard.config.sendViaMailConfig;
+          shouldUpdate = SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated);
+
+        }
+
+        if (shouldUpdate) {
+
+          userMails.forEach( mail => {
+            MailDashboardsController.sendDashboard(dashboardID, mail, transporter, dashboard.config.sendViaMailConfig.mailMessage, token);
+          });
+
+          dashboard.config.sendViaMailConfig.lastUpdated = newDate;
+
+          if (!dashboardsToUpdate.map(d => d._id).includes(dashboardID)) {
+            dashboardsToUpdate.push(dashboard)
+          };
+
+        }
+      });
+
+       /**Update dashbaords */
+       dashboardsToUpdate.forEach(d => {
+        Dashboard.replaceOne({ _id: d._id }, d).exec()
+      });
+
+    } catch (err) {
+      throw err;
+    }
 
   }
 
@@ -108,7 +167,7 @@ export class MailingService {
   /**Chech kpi condition and send mail if condition is true
    * 
    */
-  static mailSending(alert, transporter) {
+  static mailAlertsSending(alert, transporter) {
 
     alert.value.mailing.users.forEach(async user => {
 
@@ -140,6 +199,41 @@ export class MailingService {
         });
       }
     })
+  }
+
+  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message){
+
+    let text = `${message}\n-------------------------------------------- \n\n`;
+
+    let mailOptions = {
+      from: mailConfig.user,
+      to: userMail,
+      subject: 'Eda Dashboard Sending Service',
+      text: text,
+      attachments: [{
+        filename: filename,
+        path: `${filepath}/${filename}`,
+        contentType: 'application/pdf'
+      }],
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${new Date().toISOString()}`);
+      }
+
+      /**Remove file */
+      try{
+        fs.unlinkSync(`${filepath}/${filename}`);
+      }catch(err){
+        throw err
+      }
+
+    });
+
+
   }
 
   static compareValues(v1, v2, op) {

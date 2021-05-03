@@ -1229,9 +1229,11 @@ pre {
 }
 
 
+
 .p-datatable-thead tr{
-    background: aliceblue !important;
-}
-.p-datatable .p-datatable-thead > tr > th{
-    background: aliceblue !important;
-}
+    background:  #e9ecef !important;
+  }
+  .p-datatable .p-datatable-thead > tr > th{
+    background: #e9ecef !important;
+    border: 1px solid #fff;
+  }

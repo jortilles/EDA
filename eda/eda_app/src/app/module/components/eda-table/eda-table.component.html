@@ -1,15 +1,12 @@
 <div class="eda-table">
-    <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="inject.rows" 
-        [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body" (onPage)="inject.onPage($event)" (onSort)="inject.onSort($event)" 
-        [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null" [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null"
-        [autoLayout]="inject.autolayout" >
+    <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="inject.rows" [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body" (onPage)="inject.onPage($event)" (onSort)="inject.onSort($event)" [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
+        [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null" [autoLayout]="inject.autolayout">
 
         <!-- Search -->
         <ng-template pTemplate="caption" *ngIf="inject.search">
             <div class="text-right">
                 <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-                <input type="text" pInputText size="50" placeholder="Cercador" [disabled]="inject.value.length === 0"
-                    (input)="table.filterGlobal($event.target.value, 'contains')">
+                <input type="text" pInputText size="50" placeholder="Cercador" [disabled]="inject.value.length === 0" (input)="table.filterGlobal($event.target.value, 'contains')">
             </div>
         </ng-template>
 
@@ -22,8 +19,8 @@
             </tr>
 
             <tr *ngFor="let serie of inject.series">
-                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan"
-                    (click)="inject.onHeaderClick(label)" style="text-align:center">
+                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan" 
+                (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center">
                     {{label.title}}
                     <p-sortIcon *ngIf="label.sortable"></p-sortIcon>
                 </th>
@@ -32,8 +29,8 @@
 
             <tr *ngIf="!inject.pivot" class="header-title">
                 <ng-container *ngFor="let col of inject.cols">
-                    <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field"  [class]="col.styleClass"
-                        [width]="col.width" [attr.rowspan]="col.rowspan" >
+                <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)" 
+                    [width]="col.width" [attr.rowspan]="col.rowspan">
                         {{col.header}}
                         <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
                     </th>
@@ -44,9 +41,7 @@
                     <th>
                         <ng-container *ngIf="col.filter" [ngSwitch]="col.filter.type">
                             <ng-container *ngSwitchCase="'EdaColumnFilterMultiSelect'">
-                                <p-multiSelect [showHeader]="true" defaultLabel="Tot" [(ngModel)]="col.filter.ngModel"
-                                    [options]="col.filter.options" [style]="col.filter.style"
-                                    (onChange)="_tableFilter(table, $event.value, col)" appendTo="body">
+                                <p-multiSelect [showHeader]="true" defaultLabel="Tot" [(ngModel)]="col.filter.ngModel" [options]="col.filter.options" [style]="col.filter.style" (onChange)="_tableFilter(table, $event.value, col)" appendTo="body">
                                 </p-multiSelect>
                             </ng-container>
                         </ng-container>
@@ -55,16 +50,16 @@
             </tr>
         </ng-template>
 
+        <!-- COLUMN CONTENT -->
+
         <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
                 <ng-container *ngFor="let col of inject.cols">
-                    <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width" 
-                        (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer;" 
-                        [ngClass]="getStyle(col, rowData)"  >
-                        <ng-container [ngSwitch]="col.type" >
+                    <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer;" [ngClass]="getStyle(col, rowData)">
+                        <ng-container [ngSwitch]="col.type">
                             <!-- ngSwitch TEXT -->
                             <ng-container *ngSwitchCase="'EdaColumnText'">
-                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getTooltip(col)">
+                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)">
                                     {{ lodash.get(rowData, col.field) }}
                                 </div>
 
@@ -74,13 +69,13 @@
 
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
-                            <ng-container *ngSwitchCase="'EdaColumnNumber'" >
-                                {{ lodash.get(rowData, col.field) | number:'':'es' }}
+                            <ng-container *ngSwitchCase="'EdaColumnNumber'">
+                                {{ lodash.get(rowData, col.field) | number:'1.0-10':'es' }}
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
                             <ng-container *ngSwitchCase="'EdaColumnDate'">
                                 <!-- {{ lodash.get(rowData, col.field) }} -->
-                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getTooltip(col)">
+                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)">
                                     {{ lodash.get(rowData, col.field) }}
                                 </div>
 
@@ -100,8 +95,8 @@
                             </ng-container>
                             <ng-container *ngSwitchCase="'EdaColumnChart'">
 
-                                <p-chart type="line" [data]="lodash.get(rowData, col.field)" width="90%" height="20%" [options]="chartOptions"  ></p-chart>
-                               
+                                <p-chart type="line" [data]="lodash.get(rowData, col.field)" width="90%" height="20%" [options]="chartOptions"></p-chart>
+
                             </ng-container>
                         </ng-container>
                     </td>
@@ -111,14 +106,12 @@
 
         <ng-template pTemplate="footer" id="totalsFooter">
             <tr *ngIf="inject.withColSubTotals">
-                <td *ngFor="let column of  inject.partialTotalsRow" [style.text-align]=column.style
-                    [style.border]=column.border style="padding: 0.571em 0.857em;" [class]=column.class>
+                <td *ngFor="let column of  inject.partialTotalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [class]=column.class>
                     {{column.data}}
                 </td>
             </tr>
             <tr *ngIf="inject.withColTotals">
-                <td *ngFor="let column of  inject.totalsRow" [style.text-align]=column.style
-                    [style.border]=column.border style="padding: 0.571em 0.857em;" [class]=column.class>
+                <td *ngFor="let column of  inject.totalsRow" [style.text-align]=column.style [style.border]=column.border style="padding: 0.571em 0.857em;" [class]=column.class>
                     {{column.data}}
                 </td>
             </tr>
@@ -126,11 +119,9 @@
         </ng-template>
 
         <ng-template pTemplate="summary">
-            <div class="ui-helper-clearfix" >
-                <span i18n="@@registers1" *ngIf="table.filteredValue != undefined" style="margin-top: -0.5em;"
-                    class="items-length float-right">{{ table.filteredValue.length }} registros</span>
-                <span i18n="@@registers2" *ngIf="!table.filteredValue && table.value.length" style="margin-top: -0.5em;"
-                    class="items-length float-right">{{ table.value.length }} registros</span>
+            <div class="ui-helper-clearfix">
+                <span i18n="@@registers1" *ngIf="table.filteredValue != undefined" style="margin-top: -0.5em;" class="items-length float-right">{{ table.filteredValue.length }} registros</span>
+                <span i18n="@@registers2" *ngIf="!table.filteredValue && table.value.length" style="margin-top: -0.5em;" class="items-length float-right">{{ table.value.length }} registros</span>
             </div>
         </ng-template>
     </p-table>

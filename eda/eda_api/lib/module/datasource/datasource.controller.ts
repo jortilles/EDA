@@ -97,7 +97,7 @@ export class DataSourceController {
                     const roles = [];
                     //Get users with permission
                     e.ds.metadata.model_granted_roles.forEach(permission => {
-                        //console.log(permission, req.user.role)
+
                         switch(permission.type){
                             case 'users':
                                 permission.users.forEach(user => {
@@ -325,7 +325,6 @@ export class DataSourceController {
             const tables = await manager.generateDataModel(req.body.optimize);
             const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 
-            console.log(req.body);
 
             const datasource: IDataSource = new DataSource({
                 ds: {

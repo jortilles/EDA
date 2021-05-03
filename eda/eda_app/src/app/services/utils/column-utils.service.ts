@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 export class ColumnUtilsService {
     constructor( private fileUtiles: FileUtiles ) { }
 
-    public addFilter(obj: any, table: string, column: string, type: string): object {
+    public addFilter(obj: any, table: string, column: string, type: string, selectedRange:string): object {
         const values = Object.keys(obj).map((key) => {
             if (!_.isNil(Object.values(obj[key]))) {
                 //transform single values to array _-(··)-_  
@@ -24,6 +24,7 @@ export class ColumnUtilsService {
             filter_column: column,
             filter_type: type,
             filter_elements: values,
+            selectedRange:selectedRange,
             isGlobal : false
         };
     }

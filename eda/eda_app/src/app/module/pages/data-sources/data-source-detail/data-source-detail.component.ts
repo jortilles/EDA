@@ -269,7 +269,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
         this.dataModelService.currentModelPanel.subscribe(
             modelPanel => {
-                console.log(modelPanel)
                 this.modelPanel = modelPanel;
                 this.selectedTipoBD = this.tiposBD.filter(type => type.value === modelPanel.connection.type)[0];
             }, err => this.alertService.addError(err)

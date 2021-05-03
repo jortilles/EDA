@@ -85,7 +85,7 @@ export class EdaTreeMap implements AfterViewInit {
     const firstRow = `${label} : ${data.data.name}`;
 
     let metricLabel = this.inject.dataDescription.numericColumns[0].name;
-    const secondRow = `${metricLabel} : ${data.data.value.toLocaleString()}`;
+    const secondRow = `${metricLabel} : ${data.data.value.toLocaleString('de-DE', {maximumFractionDigits: 6 })}`;
 
     const thirdRow = this.inject.linkedDashboard ? `Linked to ${this.inject.linkedDashboard.dashboardName}` : '';
 
@@ -211,8 +211,10 @@ export class EdaTreeMap implements AfterViewInit {
 
     data.values.forEach(r => {
 
-      const row = _.cloneDeep(r);
-      rootNode = this.buildTree(row, rootNode);
+      if(!r.includes(null)){
+        const row = _.cloneDeep(r);
+        rootNode = this.buildTree(row, rootNode);
+      }
 
     });
 

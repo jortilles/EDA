@@ -419,7 +419,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
-        this.graficos.addTrend = config ? config.getConfig()['addTrend'] : false;
+        this.graficos.addTrend = config && config.getConfig() ? config.getConfig()['addTrend'] : false;
 
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
@@ -772,19 +772,6 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.responsive = event.currentTarget.innerWidth <= 1440;
     }
 
-    // public onGridsterResize(event: any) {
-    //     const content = this.panel.content;
-    //     /**Resize d3 charts  */
-    //     if (content &&
-    //         content.chart === 'parallelSets') {
-    //         setTimeout(() => {
-    //             const config = ChartsConfigUtils.recoverConfig(content.chart, content.query.output.config);
-    //             PanelInteractionUtils.verifyData(this);
-    //             this.changeChartType(content.chart, content.edaChart, config);
-    //         }, 1)
-    //     }
-    // }
-
     /** Run query From dashboard component */
     public runQueryFromDashboard = (globalFilters: boolean) => QueryUtils.runQuery(this, globalFilters);
 
@@ -841,8 +828,8 @@ export class EdaBlankPanelComponent implements OnInit {
         const query = QueryUtils.initEdaQuery(this);
         let serverQuery = await QueryUtils.getQueryFromServer(this, query);
 
-        let whereIndex = serverQuery.indexOf('where');
-        const TO_REPLACE_SIZE = 17;
+        let whereIndex = serverQuery.lastIndexOf('where 1 = 1');
+        const TO_REPLACE_SIZE = 18;
         if (whereIndex >= 0) {
             serverQuery = serverQuery.substring(0, whereIndex - 1) + '\nwhere ' + serverQuery.substring(whereIndex + TO_REPLACE_SIZE, serverQuery.length);
         }

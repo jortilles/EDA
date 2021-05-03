@@ -87,7 +87,7 @@ export class MapUtilsService extends ApiService {
         let div = '';
         for (let i = 0; i < labels.length; i++) {
             if (row !== undefined) {
-                let value = typeof row[i] === 'number' ? parseFloat(row[i]).toLocaleString('de-DE') : row[i];
+                let value = typeof row[i] === 'number' ? parseFloat(row[i]).toLocaleString('de-DE', {maximumFractionDigits: 6 }) : row[i];
                 div += `<div> ${me._sanitizer.sanitize(SecurityContext.HTML, labels[i])} :  ${value} </div>`;
             } else {
                 div = `<div> No data </div>`;

@@ -1496,7 +1496,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">142</context>
 </context-group>
 </trans-unit>
-<trans-unit id="conexionH5" datatype="html">
+<trans-unit id="conexionh4" datatype="html">
 <source>
             Conexión
 </source>
@@ -3361,8 +3361,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="mailmanagementHeader">
-    <source>Gestión de correo </source>
-    <target>Email management</target>
+    <source>Gestión de correo y envio de mails</source>
+    <target>Email and email sending management</target>
   </trans-unit>
 
   <trans-unit id="mailConfSaved">
@@ -3415,6 +3415,45 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>To launch a query. Select the attributes you want to see, click on them to configure them and run the query. You can always go back to this view.</target>
   </trans-unit>
 
+    <trans-unit id="agregacionh5">
+    <source>Agregación   </source>
+    <target>Aggregation  </target>
+  </trans-unit> 
+
+    <trans-unit id="inputFormat">
+    <source>Número de decimales   </source>
+    <target>Decimal places  </target>
+  </trans-unit> 
+
+  <trans-unit id="DashboardMailingTitle">
+    <source>Configuración del envío por email  </source>
+    <target>Mail sending configuration  </target>
+  </trans-unit> 
+
+    <trans-unit id="opcionMail">
+    <source>Enviar por email  </source>
+    <target>Send via email  </target>
+  </trans-unit> 
+
+   <trans-unit id="noMail">
+    <source>Sin alertas de correo </source>
+    <target>No mail alerts  </target>
+  </trans-unit> 
+
+    <trans-unit id="dashbaordsMailingHeader">
+    <source>Envio de informes por email </source>
+    <target>Dashboards mail sending</target>
+  </trans-unit> 
+
+ <trans-unit id="cumulativeSum">
+    <source>Suma acumulativa   </source>
+    <target>Cumulative sum </target>
+  </trans-unit> 
+
+    <trans-unit id="ptooltipViewAlerts">
+    <source>Configurar alertas</source>
+    <target>Alerts configuration</target>
+  </trans-unit> 
 
 
 

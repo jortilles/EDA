@@ -14,6 +14,7 @@ const SEED = require('../../../../config/seed').SEED;
 export class UserController {
 
     static async login(req: Request, res: Response, next: NextFunction) {
+
         try {
             const body = req.body;
             let token: string;
@@ -219,8 +220,8 @@ export class UserController {
         user.role.forEach(Role => {
 
             users.forEach(user => {
- 
-                if(!filteredUsers.map( user => user._id).includes(user._id) &&  user.role.filter(role => !!role).map(role => role._id).includes(Role)){
+
+                if (!filteredUsers.map(user => user._id).includes(user._id) && user.role.filter(role => !!role).map(role => role._id).includes(Role)) {
                     filteredUsers.push(user);
                 }
             });
@@ -360,10 +361,34 @@ export class UserController {
         }
     }
 
+    static async provideToken(req: Request, res: Response, next: NextFunction) {
+
+        User.findOne({email:req.params.usermail}, 'name email img role google').exec(async (err, user: IUser) => {
+            if (err) {
+                return next(new HttpException(500, `User with this id not found`));
+            }
+            if (!user) {
+                return next(new HttpException(500, `User with this id not found`));
+            }
+            if(user){
+          
+                let token = await jwt.sign({ user }, SEED, { expiresIn: 3600 }); // 4 hours
+                return res.status(200).json({ user, token: token, id: user._id });
+            }
+        });
+
+        
+    }
+
+    static async provideFakeToken(){
+        let token = await jwt.sign({ name:'fakeuser' }, SEED, { expiresIn: 60 });
+        return token;
+    }
+
 }
 
 function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+    const ip = req.headers['x-forwarded-for'] || req.get('origin')
 
     ServerLogService.log({ level, action, userMail, ip, type });
 }

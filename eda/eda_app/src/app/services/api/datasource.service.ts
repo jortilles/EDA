@@ -231,6 +231,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         columnPanel.aggregation_type = column.aggregation_type.map((a: { value: any; }) => a.value);
         columnPanel.column_granted_roles = column.column_granted_roles;
         columnPanel.row_granted_roles = column.row_granted_roles;
+        columnPanel.minimumFractionDigits = parseInt(column.minimumFractionDigits);
         columnPanel.visible = column.visible;
         columnPanel.parent = node.parent.label;
         this._columnPanel.next(columnPanel);
@@ -381,7 +382,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 return { value: a, 'display_name': display_name[0] ? display_name[0].label : 'No' };
             });
 
-
+            tmp_model[tableIndex].columns[columnindex].minimumFractionDigits = parseInt(panel.minimumFractionDigits) || 0;
             tmp_model[tableIndex].columns[columnindex].column_granted_roles = panel.column_granted_roles;
             tmp_model[tableIndex].columns[columnindex].row_granted_roles = panel.row_granted_roles;
             tmp_model[tableIndex].columns[columnindex].visible = panel.visible;
@@ -512,7 +513,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             }
         };
         this.updateModelInServer(this.model_id, body).subscribe(
-            (r) => this.alertService.addSuccess($localize`:@@modelSaved:Modelo guardado correctamente`),
+            (r) => this.alertService.addSuccess($localize`:@@ModelSaved:Modelo guardado correctamente`),
             (err) => this.alertService.addError(err)
         );
     }

@@ -39,7 +39,7 @@ export class SidebarComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.user = this.userService.user;
+        this.user = this.userService.getUserObject();
         this.setEditMode()
         // Ens subscribim a l'observable currentDatasources que ha de tenir el valor actual dels noms dels datasources.
         this.sidebarService.currentDatasources.subscribe(

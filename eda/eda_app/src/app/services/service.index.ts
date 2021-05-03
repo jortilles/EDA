@@ -7,10 +7,10 @@ export * from './utils/file-utils.service';
 export * from './utils/query-builder.service';
 export * from './utils/chart-utils.service';
 export * from './utils/column-utils.service';
-export * from './utils/map-util.service'
-export * from './utils/upload-file.service'
-export * from './utils/date-utils.service'
-export * from './utils/styles-service'
+export * from './utils/map-util.service';
+export * from './utils/upload-file.service';
+export * from './utils/date-utils.service';
+export * from './utils/styles-service';
 
 
 // Sidebar

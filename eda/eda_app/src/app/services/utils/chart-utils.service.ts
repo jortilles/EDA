@@ -177,6 +177,7 @@ export class ChartUtilsService {
 
     public transformDataQueryForTable(labels: any[], values: any[]) {
         const output = [];
+        values = values.filter(row => !row.every(element => element === null));
         // Load the Table for a preview
         for (let i = 0; i < values.length; i += 1) {
             const obj = {};
@@ -185,7 +186,6 @@ export class ChartUtilsService {
             }
             output.push(obj);
         }
-
         return output;
     }
 
@@ -565,7 +565,7 @@ export class ChartUtilsService {
                                     }, 0);
                                     const elem = data.datasets[0].data[tooltipItem.index];
                                     const percentage = elem / total * 100;
-                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE')} (${percentage.toFixed(2)}%)`;
+                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', {maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
                                 }
 
                             },
@@ -593,7 +593,7 @@ export class ChartUtilsService {
                             },
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
-                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE')} `;
+                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE', {maximumFractionDigits: 6 })} `;
                             },
                             afterLabel: (t, d) => {
                             },
@@ -626,7 +626,7 @@ export class ChartUtilsService {
                                 beginAtZero: true,
                                 callback: (value) => {
                                     if (value)
-                                        return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE');
+                                        return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', {maximumFractionDigits: 6 });
                                 },
                                 fontSize: edaFontSize
                             }
@@ -655,7 +655,7 @@ export class ChartUtilsService {
                             },
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
-                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.xLabel).toLocaleString('de-DE')} `;
+                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.xLabel).toLocaleString('de-DE', {maximumFractionDigits: 6 })} `;
                             },
                             footer : () => { return linked },
                         }
@@ -671,7 +671,7 @@ export class ChartUtilsService {
                             ticks: {
                                 callback: (value) => {
                                     if (value)
-                                        return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE');
+                                        return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', {maximumFractionDigits: 6 });
                                 },
                                 autoSkip: true,
                                 maxTicksLimit: 4,
@@ -721,7 +721,7 @@ export class ChartUtilsService {
                             },
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
-                                    return ` ${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE')}  `;
+                                    return ` ${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE', {maximumFractionDigits: 6 })}  `;
                             },
                             footer : () => { return linked },
                         }
@@ -755,7 +755,7 @@ export class ChartUtilsService {
                                 ticks: {
                                     callback: (value) => {
                                         if (value){
-                                            return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE');
+                                            return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', {maximumFractionDigits: 6 });
                                         }else{
                                             return 0;
                                         }

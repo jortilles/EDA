@@ -63,8 +63,6 @@ export class GroupController {
         try {
             const body = req.body;
 
-            console.log(req.body)
-
             const group: IGroup = new Group({
                 name: body.name,
                 role: "EDA_USER_ROLE",

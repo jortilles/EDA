@@ -47,7 +47,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
 
   saveColumn() {
     if (this.form.invalid) {
-      return this.alertService.addError($localize`:@@MandatoryFields:Recuerde llenar los campos obligatorios`);
+      return this.alertService.addError($localize`:@@mandatoryFields:Recuerde llenar los campos obligatorios`);
     } else {
 
       const column: any = {

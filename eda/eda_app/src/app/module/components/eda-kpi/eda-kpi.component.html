@@ -4,7 +4,7 @@
         <div class="pointer pl-5 pr-5" title="Añadir unidades">
             <div [ngStyle]="getStyle()" (click)="setSufix()" fittext
                 minFontSize="18" maxFontSize="70" activateOnResize="true">
-                {{inject.value | number:'':'es'}} {{inject.sufix}}
+                {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
             </div>
             <div *ngIf="!!sufixClick" class="ui-inputgroup w-100">
                 <input type="text" class="w-100" pInputText (focusout)="setSufix()" (keydown.enter)="setSufix()"

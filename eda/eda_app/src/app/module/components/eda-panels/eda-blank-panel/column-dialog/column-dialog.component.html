@@ -1,6 +1,6 @@
 <eda-dialog [inject]="dialog">
 
-    <div body class="p-grid mb-0 pb-0" >
+    <div body class="p-grid mb-0 pb-0">
 
         <div class="p-col-12 p-lg-2">
 
@@ -51,7 +51,7 @@
 
             <div class="p-grid mt-2">
 
-                <div class="p-col-12 mt-1" [ngClass]="{ 'p-md-6': !display.between }">
+                <div class="p-col-12 mt-1" [ngClass]="{ 'p-md-6': (!display.between && !display.calendar ) || (!!display.calendar )}">
 
                     <span class="p-float-label">
                         <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
@@ -73,13 +73,15 @@
 
                         <ng-container *ngIf="!!display.calendar && !filter.switch">
 
-                            <div class="form-group">
+                            <div >
+
+                                <!-- <label i18n="@@fechaLabel" class="p-float-label" for="datepicker">
+                                    Fecha
+                                </label> -->
 
                                 <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
                                     (input)="handleValidForm({value1: $event.target.value})" pInputText required>
-                                <label i18n="@@fechaLabel" class="p-float-label" for="datepicker">
-                                    Fecha
-                                </label>
+                    
 
                             </div>
 
@@ -130,20 +132,20 @@
 
                         <div class="p-col-6 mt-3">
 
-                            <div class="form-group mb-0">
+                            <div style="margin-top: -0.8em;">
 
-                                <label i18n="@@fechaInicioLabel" class="p-float-label" for="datepicker1">
-                                    Fecha inicio
-                                </label>
+                                <!-- <label i18n="@@DateSelectRange" class="p-float-label" for="datepicker1">
+                                    Selecciona un rango
+                                </label> -->
 
-                                <input id="datepicker1" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
-                                    (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+                                <eda-date-picker #myCalendar (onDatesChanges)="processPickerEvent($event)">
+                                </eda-date-picker>
 
                             </div>
 
                         </div>
 
-                        <div class="p-col-6 mt-3">
+                        <!-- <div class="p-col-6 mt-3">
 
                             <div class="form-group mb-0">
 
@@ -156,7 +158,7 @@
 
                             </div>
 
-                        </div>
+                        </div> -->
 
                     </ng-container>
 
@@ -307,6 +309,12 @@
 
                             </div>
 
+                            <div *ngIf="cumulativeSumAllowed()" style="margin-top: 1.5em; margin-left: 1em;">
+                                <h6 i18n="@@cumulativeSum">Suma acumulativa</h6>
+                                <p-inputSwitch id="cumulativeSum" [(ngModel)]="cumulativeSum"
+                                    (onChange)="handleCumulativeSum()"></p-inputSwitch>
+                            </div>
+
                         </ng-container>
 
                     </ng-container>
@@ -372,8 +380,9 @@
     <div footer>
 
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-            <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success" i18n-label="@@guardarButton"
-                icon="fa fa-check" label="Confirmar" id="eda_column_dialog_confirmar"></button>
+            <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success"
+                i18n-label="@@guardarButton" icon="fa fa-check" label="Confirmar"
+                id="eda_column_dialog_confirmar"></button>
         </div>
 
     </div>
