@@ -72,6 +72,7 @@ then
         echo "node is running"
 else
         echo "start node"
+        cd /eda/eda_api
         #npm start >/eda/eda_api/api.log 2>&1
         npm run start:forever >/eda/eda_api/api.log 2>&1
 fi
