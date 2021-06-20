@@ -79,12 +79,14 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     }
     if (filters.length) {
 
+      let equalfilters = this.getEqualFilters(filters);
+      filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
       let filtersString = `\n${type} 1 = 1 `;
 
       filters.forEach(f => {
 
         const column = this.findColumn(f.filter_table, f.filter_column);
-        const colname = type == 'where' ? `"${f.filter_table}"."${f.filter_column}"` : `CAST( ${column.SQLexpression} as DECIMAL(32, ${column.minimumFractionDigits })) `;
+        const colname = type == 'where' ? `"${f.filter_table}"."${f.filter_column}"` : `CAST( ${column.SQLexpression} as DECIMAL(32, ${column.minimumFractionDigits})) `;
 
         if (f.filter_type === 'not_null') {
 
@@ -107,7 +109,12 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
 
         }
       });
+
+      /**Allow filter ranges */
+      filtersString = this.mergeFilterStrings(filtersString, equalfilters, type);
+
       return filtersString;
+      
     } else {
       return '';
     }
@@ -122,7 +129,7 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
       filters.forEach(f => {
 
         const column = this.findColumn(f.filter_table, f.filter_column);
-        const colname = type == 'where' ? `"${f.filter_table}"."${f.filter_column}"` : `CAST( ${column.SQLexpression} as DECIMAL(32, ${column.minimumFractionDigits })) `;
+        const colname = type == 'where' ? `"${f.filter_table}"."${f.filter_column}"` : `CAST( ${column.SQLexpression} as DECIMAL(32, ${column.minimumFractionDigits})) `;
 
         if (f.filter_type === 'not_null') {
 
@@ -215,25 +222,31 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
       }
       // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor.
       if (el.computed_column === 'computed_numeric') {
-        columns.push(` CAST( ${el.SQLexpression}  AS DECIMAL(32, ${el.minimumFractionDigits })) as "${el.display_name}"`);
+        columns.push(` CAST( ${el.SQLexpression}  AS DECIMAL(32, ${el.minimumFractionDigits})) as "${el.display_name}"`);
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`CAST(count( distinct "${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits }))as "${el.display_name}"`);
+            columns.push(`CAST(count( distinct "${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits}))as "${el.display_name}"`);
           } else {
-            columns.push(`CAST(${el.aggregation_type}("${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits })) as "${el.display_name}"`);
+            columns.push(`CAST(${el.aggregation_type}("${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits})) as "${el.display_name}"`);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`CAST("${el.table_id}"."${el.column_name}" AS DECIMAL(32, ${el.minimumFractionDigits })) "${el.display_name}"`);
+            columns.push(`CAST("${el.table_id}"."${el.column_name}" AS DECIMAL(32, ${el.minimumFractionDigits})) "${el.display_name}"`);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'month')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' ) as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'week')) {
+                columns.push(`YEAROFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE) ) as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'week_day')) {
+                columns.push(`DAYOFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE) ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'timestamp')) {
+                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI:SS' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'No')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
               }
@@ -250,9 +263,15 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
               grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' )`);
             } else if (_.isEqual(el.format, 'month')) {
               grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' )`);
+            } else if (_.isEqual(el.format, 'week')) {
+              grouping.push(`YEAROFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE))`);
+            } else if (_.isEqual(el.format, 'week_day')) {
+              grouping.push(`DAYOFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE))`);
             } else if (_.isEqual(el.format, 'day')) {
               grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' )`);
-            } else if (_.isEqual(el.format, 'No')) {
+            } else if (_.isEqual(el.format, 'timestamp')) {
+              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI:SS' )`);
+            }  else if (_.isEqual(el.format, 'No')) {
               grouping.push(`"${el.table_id}"."${el.column_name}"`);
             }
           } else {
@@ -276,7 +295,7 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     if (!column.hasOwnProperty('minimumFractionDigits')) {
       column.minimumFractionDigits = 0;
     }
-    const colname = type == 'where' ? `"${filterObject.filter_table}"."${filterObject.filter_column}"` : `CAST( ${column.SQLexpression}  as DECIMAL(32, ${column.minimumFractionDigits }))`;
+    const colname = type == 'where' ? `"${filterObject.filter_table}"."${filterObject.filter_column}"` : `CAST( ${column.SQLexpression}  as DECIMAL(32, ${column.minimumFractionDigits}))`;
     let colType = column.column_type;
 
     switch (this.setFilterType(filterObject.filter_type)) {

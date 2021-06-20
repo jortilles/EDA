@@ -8,14 +8,40 @@
 
 
                 <panel-chart #PanelChartComponent [props]="panelChartConfig"
-                    style="height: 70%; width: 70%; display:block;  margin-top:5em">
+                    style="height: 70%; width: 90%; display:block;  margin-top:5em">
                 </panel-chart>
 
             </div>
 
         </div>
 
-        <div class="p-col-4">
+        <div class="p-col-2">
+
+            <h6 i18n="@@addtrend" class="custom-border-b1" style="margin-top: 2em;">
+                Tendencia
+            </h6>
+
+            <div [pTooltip]="trendTooltip" tooltipPosition="left">
+                <p-inputSwitch id="switchQueryMode" class="p-col-1 sql-switch" [(ngModel)]="addTrend"
+                    tooltipPosition="left" (onChange)="checkTrend()" [disabled]="!showTrend">
+                </p-inputSwitch>
+            </div>
+        </div>
+        <div class="p-col-2">
+            <h6 i18n="@@addComparative" class="custom-border-b1" style="margin-top: 2em;">
+                Comparativa
+            </h6>
+
+            <div [pTooltip]="comparativeTooltip" tooltipPosition="left">
+                <p-inputSwitch id="switchQueryMode" class="p-col-1 sql-switch" [(ngModel)]="addComparative"
+                    tooltipPosition="left" (onChange)="setComparative()" [disabled]="!showComparative">
+                </p-inputSwitch>
+            </div>
+
+
+        </div>
+
+        <div class="p-col-4 p-offset-8">
 
             <h6 i18n="@@colorsChartH6" class="custom-border-b1">
                 Colores
@@ -42,15 +68,6 @@
 
             </div>
 
-            <h6 *ngIf="showTrend" i18n="@@addtrend" class="custom-border-b1" style="margin-top: 2em;">
-                Tendencia
-            </h6>
-
-            <div *ngIf="showTrend">
-                <p-inputSwitch id="switchQueryMode" class="p-col-1 sql-switch" [(ngModel)]="addTrend"
-                    tooltipPosition="left" (onChange)="checkTrend()">
-                </p-inputSwitch>
-            </div>
 
         </div>
 
@@ -61,12 +78,13 @@
 
         <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
 
-            <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check" class="p-button-raised p-button-success"
-                i18n-label="@@guardarButton" label="Confirmar" id="eda_chart_dialog_confirmar">
+            <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
+                class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
+                id="eda_chart_dialog_confirmar">
             </button>
 
-            <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="p-button-raised p-button-danger"
-                i18n-label="@@cancelarButton" label="Cancelar">
+            <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
+                class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
             </button>
 
         </div>

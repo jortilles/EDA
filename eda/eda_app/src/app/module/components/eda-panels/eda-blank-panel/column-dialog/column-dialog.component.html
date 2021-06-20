@@ -309,10 +309,10 @@
 
                             </div>
 
-                            <div *ngIf="cumulativeSumAllowed()" style="margin-top: 1.5em; margin-left: 1em;">
+                            <div  style="margin-top: 1.5em; margin-left: 1em;" [pTooltip]="cumulativeSumTooltip" tooltipPosition="left">
                                 <h6 i18n="@@cumulativeSum">Suma acumulativa</h6>
                                 <p-inputSwitch id="cumulativeSum" [(ngModel)]="cumulativeSum"
-                                    (onChange)="handleCumulativeSum()"></p-inputSwitch>
+                                    (onChange)="handleCumulativeSum()" [disabled]="!cumulativeSumAllowed()"></p-inputSwitch >
                             </div>
 
                         </ng-container>

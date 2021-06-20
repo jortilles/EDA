@@ -115,6 +115,12 @@ export class UserController {
         }
     }
 
+    static async singleSingnOn(req:Request, res:Response, next:NextFunction){
+
+        console.log('Single Sign On', req.body);
+        return res.status(200).json({user:req.body.userMail})
+    }
+
     static async getUserInfoByEmail(usuari: string, ad: boolean): Promise<any> {
 
         return new Promise((resolve, reject) => {

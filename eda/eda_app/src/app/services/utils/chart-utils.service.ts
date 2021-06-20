@@ -54,7 +54,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes16:Funnel`, value: 'funnel', subValue: 'funnel', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
-       
+
     ];
 
     public filterTypes: FilterType[] = [
@@ -80,7 +80,10 @@ export class ChartUtilsService {
     public formatDates: FormatDates[] = [
         { display_name: $localize`:@@dates1:AÑO`, value: 'year', selected: false },
         { display_name: $localize`:@@dates2:MES`, value: 'month', selected: false },
+        { display_name: $localize`:@@dates5:SEMANA`, value: 'week', selected: false },
         { display_name: $localize`:@@dates3:DIA`, value: 'day', selected: false },
+        { display_name: $localize`:@@dates6:DIA DE LA SEMANA`, value: 'week_day', selected: false },
+        { display_name: $localize`:@@dates7:FECHA COMPLETA`, value: 'timestamp', selected: false },
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
 
@@ -109,10 +112,13 @@ export class ChartUtilsService {
 
             //If one serie
             if (dataDescription.otherColumns.length === 1 && dataDescription.numericColumns.length === 1) {
+
+                _output[0] = values.map(v => v[label_idx]);
                 _output[1] = [{
                     data: values.map(v => v[number_idx]),
                     label: dataDescription.otherColumns[0].name
                 }];
+
                 //if two series
             } else if (dataDescription.numericColumns.length === 1) {
                 let series = [];
@@ -125,7 +131,7 @@ export class ChartUtilsService {
                     // let data_point = null;
                     series.forEach((serie, i) => {
                         const t = serie.filter(s => s[label_idx] === l).map(e => e[number_idx])[0];
-                        t != null ? _output[1][i].data.push(t) : _output[1][i].data.push(null);
+                        t !== null ? _output[1][i].data.push(t) : _output[1][i].data.push(null);
                     });
                 });
                 //If >1 numeric series
@@ -194,7 +200,7 @@ export class ChartUtilsService {
      * @param currentQuery 
      * @return [] notAllowed chart types
      */
-    public getNotAllowedCharts(dataDescription: any): any[] {
+    public getNotAllowedCharts(dataDescription: any, query: any): any[] {
         let notAllowed =
             [
                 'table', 'crosstable', 'kpi', 'geoJsonMap', 'coordinatesMap',
@@ -214,8 +220,15 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
         }
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
+        const aggregation =
+            query.filter(col => col.column_type === 'numeric')
+            .map(col => col.aggregation_type
+                .filter(agg => agg.selected === true && agg.value !== 'none')
+                .map(agg => agg.selected))
+                .reduce((a, b) => a || b, false)[0];
+
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
-            || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4) {
+            || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4 && aggregation) {
             notAllowed.splice(notAllowed.indexOf('bar'), 1);
             notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
             notAllowed.splice(notAllowed.indexOf('line'), 1);
@@ -248,24 +261,24 @@ export class ChartUtilsService {
         }
 
         //parallelSets
-        if(dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length > 1){
+        if (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length > 1) {
             notAllowed.splice(notAllowed.indexOf('parallelSets'), 1);
         }
 
         //treeMap
-        if(dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length > 0){
+        if (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length > 0) {
             notAllowed.splice(notAllowed.indexOf('treeMap'), 1);
         }
 
         //scatterPlot
-        if(dataDescription.numericColumns.length >= 2 && dataDescription.numericColumns.length <= 3 
-            && dataDescription.otherColumns.length < 3  && dataDescription.otherColumns.length > 0){
+        if (dataDescription.numericColumns.length >= 2 && dataDescription.numericColumns.length <= 3
+            && dataDescription.otherColumns.length < 3 && dataDescription.otherColumns.length > 0) {
             notAllowed.splice(notAllowed.indexOf('scatterPlot'), 1);
         }
 
-         //knob
-         if(dataDescription.numericColumns.length <= 2  && dataDescription.numericColumns.length > 0 
-            && dataDescription.otherColumns.length === 0){
+        //knob
+        if (dataDescription.numericColumns.length <= 2 && dataDescription.numericColumns.length > 0
+            && dataDescription.otherColumns.length === 0) {
             notAllowed.splice(notAllowed.indexOf('knob'), 1);
         }
         return notAllowed;
@@ -388,7 +401,7 @@ export class ChartUtilsService {
         return names
     }
 
-    getMinMax(data:any){
+    getMinMax(data: any) {
 
         let min = Infinity;
         let max = -Infinity;
@@ -396,36 +409,77 @@ export class ChartUtilsService {
         data[1].forEach(set => {
 
             set.data.forEach(value => {
-                if(value !== null && value !== undefined) {
-                    if(value > max) max = value;
-                    if(value < min) min = value;
+                if (value !== null && value !== undefined) {
+                    if (value > max) max = value;
+                    if (value < min) min = value;
                 }
             });
 
         });
-        
+
         let min_om = Math.pow(10, Math.floor(Math.log10(Math.abs(min))));
         let min_sign = min < 0;
-        min = Math.ceil(Math.abs(min)/min_om)*min_om ;
+        min = Math.ceil(Math.abs(min) / min_om) * min_om;
 
         let max_om = Math.pow(10, Math.floor(Math.log10(Math.abs(max))));
-        max = Math.ceil(max/max_om)*max_om ;
-  
-        if(min < max){
-            if(min < max*0.25) min = max*0.25;
-        }else{
-            if(max < min*0.25) max = min*0.25;
+        max = Math.ceil(max / max_om) * max_om;
+
+        if (min < max) {
+            if (min < max * 0.25) min = max * 0.25;
+        } else {
+            if (max < min * 0.25) max = min * 0.25;
         }
 
         if (min_sign) min = -min;
         min = min > 0 && max > 0 ? 0 : min;
-        return {min:min?min:0, max:max?max : 0}
+        return { min: min ? min : 0, max: max ? max : 0 }
 
     }
 
-    public getTrend = (values:any) => {
+    public comparePeriods = (data, query) => {
 
-        let x_values = values.data.map((v, y) => y );
+
+        let types = query.map(field => field.column_type);
+        let dateIndex = types.indexOf('date');
+        let newRows = [];
+
+        const format = query.filter((_, i) => i === dateIndex)[0].format;
+
+        data.values.forEach(row => {
+  
+            let currentDate = row[dateIndex].slice(-2); /**01, 02, 03 ...etc. */
+            let currentHead =row[dateIndex].slice(0, -3); /** 2020-01, 2020-02 ...etc. */
+  
+            let newRow = [];
+
+            row.forEach((field, i) => {
+
+                if (i === dateIndex) {
+                    newRow.push(currentDate);
+                    newRow.push(currentHead);
+                } else {
+                    newRow.push(field);
+                }
+            });
+            newRows.push(newRow);
+
+        });
+        return newRows.sort(function (a, b) {
+            if (a[dateIndex] > b[dateIndex]) {
+              return 1;
+            }
+            if (a[dateIndex] < b[dateIndex]) {
+              return -1;
+            }
+            // a must be equal to b
+            return 0;
+          });
+
+    }
+
+    public getTrend = (values: any) => {
+
+        let x_values = values.data.map((v, y) => y);
         let y_values = this.findLineByLeastSquares(x_values, values.data)[1];
 
         let trend = _.cloneDeep(values);
@@ -442,25 +496,25 @@ export class ChartUtilsService {
         let sum_xy = 0;
         let sum_xx = 0;
         let count = 0;
-    
+
         /*
          * We'll use those variables for faster read/write access.
          */
         let x = 0;
         let y = 0;
         let values_length = values_x.length;
-    
+
         if (values_length != values_y.length) {
             throw new Error('The parameters values_x and values_y need to have same size!');
         }
-    
+
         /*
          * Nothing to do.
          */
         if (values_length === 0) {
-            return [ [], [] ];
+            return [[], []];
         }
-    
+
         /*
          * Calculate the sum for each of the parts necessary.
          */
@@ -469,40 +523,40 @@ export class ChartUtilsService {
             y = values_y[v];
             sum_x += x;
             sum_y += y;
-            sum_xx += x*x;
-            sum_xy += x*y;
+            sum_xx += x * x;
+            sum_xy += x * y;
             count++;
         }
-    
+
         /*
          * Calculate m and b for the formular:
          * y = x * m + b
          */
-        let m = (count*sum_xy - sum_x*sum_y) / (count*sum_xx - sum_x*sum_x);
-        let b = (sum_y/count) - (m*sum_x)/count;
-    
+        let m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
+        let b = (sum_y / count) - (m * sum_x) / count;
+
         /*
          * We will make the x and y result line now
          */
         let result_values_x = [];
         let result_values_y = [];
-    
+
         for (let v = 0; v < values_length; v++) {
             x = values_x[v];
             y = x * m + b;
             result_values_x.push(x);
             result_values_y.push(y);
         }
-    
+
         return [result_values_x, result_values_y];
     }
 
     public initChartOptions(type: string, numericColumn: string,
-        labelColum: any[], manySeries: boolean, stacked: boolean, size: any, 
-        linkedDashboard:LinkedDashboardProps,  minMax : {min:number, max:number}): { chartOptions: any, chartPlugins: any } {
+        labelColum: any[], manySeries: boolean, stacked: boolean, size: any,
+        linkedDashboard: LinkedDashboardProps, minMax: { min: number, max: number }): { chartOptions: any, chartPlugins: any } {
 
         const t = $localize`:@@linkedTo:Vinculado con`;
-        const linked = linkedDashboard ?  `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
+        const linked = linkedDashboard ? `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
 
         const options = {
             chartOptions: {},
@@ -537,7 +591,7 @@ export class ChartUtilsService {
         };
 
         const maxTicksLimit = size.width < 200 ? 5 : size.width < 400 ? 10 : size.width < 600 ? 20 : 40;
-        const maxTicksLimitHorizontal = size.height < 200 ? 5 : size.height < 400 ? 10 :  size.height < 600 ? 20 : 40;
+        const maxTicksLimitHorizontal = size.height < 200 ? 5 : size.height < 400 ? 10 : size.height < 600 ? 20 : 40;
 
         switch (type) {
             case 'doughnut':
@@ -565,11 +619,11 @@ export class ChartUtilsService {
                                     }, 0);
                                     const elem = data.datasets[0].data[tooltipItem.index];
                                     const percentage = elem / total * 100;
-                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', {maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
+                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
                                 }
 
                             },
-                            footer : () => { return linked },
+                            footer: () => { return linked },
                             afterLabel: (t, d) => { }
                         }
                     },
@@ -593,11 +647,11 @@ export class ChartUtilsService {
                             },
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
-                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE', {maximumFractionDigits: 6 })} `;
+                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE', { maximumFractionDigits: 6 })} `;
                             },
                             afterLabel: (t, d) => {
                             },
-                            footer : () => { return linked },
+                            footer: () => { return linked },
                         }
                     },
                     scales: {
@@ -626,7 +680,7 @@ export class ChartUtilsService {
                                 beginAtZero: true,
                                 callback: (value) => {
                                     if (value)
-                                        return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', {maximumFractionDigits: 6 });
+                                        return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 });
                                 },
                                 fontSize: edaFontSize
                             }
@@ -655,9 +709,9 @@ export class ChartUtilsService {
                             },
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
-                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.xLabel).toLocaleString('de-DE', {maximumFractionDigits: 6 })} `;
+                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.xLabel).toLocaleString('de-DE', { maximumFractionDigits: 6 })} `;
                             },
-                            footer : () => { return linked },
+                            footer: () => { return linked },
                         }
 
                     },
@@ -671,7 +725,7 @@ export class ChartUtilsService {
                             ticks: {
                                 callback: (value) => {
                                     if (value)
-                                        return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', {maximumFractionDigits: 6 });
+                                        return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 });
                                 },
                                 autoSkip: true,
                                 maxTicksLimit: 4,
@@ -721,14 +775,14 @@ export class ChartUtilsService {
                             },
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
-                                    return ` ${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE', {maximumFractionDigits: 6 })}  `;
+                                    return ` ${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE', { maximumFractionDigits: 6 })}  `;
                             },
-                            footer : () => { return linked },
+                            footer: () => { return linked },
                         }
                     },
                     scales: {
                         xAxes: [{
-                            gridLines: {  display: false, drawOnChartArea: false},
+                            gridLines: { display: false, drawOnChartArea: false },
                             ticks: {
                                 maxRotation: 30,
                                 minRotation: 30,
@@ -746,32 +800,34 @@ export class ChartUtilsService {
                         }],
                         yAxes: [
                             {
-                                gridLines: {   drawBorder: false, 
-                                                display: true, 
-                                                zeroLineWidth: 1}
-                                              ,
+                                gridLines: {
+                                    drawBorder: false,
+                                    display: true,
+                                    zeroLineWidth: 1
+                                }
+                                ,
 
-                                id: 'y-axis-0', position: 'left'   ,
+                                id: 'y-axis-0', position: 'left',
                                 ticks: {
                                     callback: (value) => {
-                                        if (value){
-                                            return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', {maximumFractionDigits: 6 });
-                                        }else{
+                                        if (value) {
+                                            return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 });
+                                        } else {
                                             return 0;
                                         }
                                     },
-                                    
+
                                     autoSkip: true,
                                     maxTicksLimit: 4,
                                     fontSize: edaFontSize,
                                     fontStyle: edafontStyle,
                                     beginAtZero: true,
-                                    max:minMax.max,
-                                    min:minMax.min
-                                    
+                                    max: minMax.max,
+                                    min: minMax.min
+
                                 },
                                 stacked: false
-                            
+
                             }
                         ]
                     },

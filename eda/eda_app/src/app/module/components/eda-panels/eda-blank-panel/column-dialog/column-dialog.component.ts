@@ -39,7 +39,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         types: [],
         forDisplay: [],
         selecteds: [],
-        range:null
+        range: null
     };
     public filterSelected: FilterType;
     public filterValue: any = {};
@@ -51,6 +51,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public dropDownFields: SelectItem[];
     public limitSelectionFields: number;
     public cumulativeSum: boolean;
+    public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
+                                            para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
 
     constructor(private dashboardService: DashboardService,
         private chartUtils: ChartUtilsService,
@@ -72,6 +74,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     onShow(): void {
+
         this.selectedColumn = this.controller.params.selectedColumn;
         const allowed = [];
         const title = this.selectedColumn.display_name.default;
@@ -171,6 +174,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     addOrdenation(ord: any) {
+
         const select = this.controller.params.currentQuery;
 
         _.find(this.ordenationTypes, o => o.value === ord.value).selected = true;
@@ -211,6 +215,10 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 this.selectedColumn.table_id === c.table_id;
         });
         column.format = format.value;
+
+        if (!this.cumulativeSumAllowed()) {
+            this.cumulativeSum = false;
+        }
     }
 
     addCumulativeSum() {
@@ -229,14 +237,26 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             return this.selectedColumn.column_name === c.column_name &&
                 this.selectedColumn.table_id === c.table_id;
         });
-
         newCol.cumulativeSum = this.cumulativeSum;
+
+        /**
+        * Force ascending order
+        */
+        if (!!this.cumulativeSum) {
+            this.ordenationTypes = this.ordenationTypes.map(t => {
+                let type = t;
+                t.selected = t.value === 'Asc'
+                return type
+            });
+            this.addOrdenation({ display_name: "ASC", value: "Asc", selected: true });
+        }
     }
 
     cumulativeSumAllowed() {
         let current = this.formatDates.filter(f => f.selected === true)[0];
-        return ['month', 'day'].includes(current.value);
+        return ['month', 'week', 'day'].includes(current.value);
     }
+
 
     handleFilterChange(filter: FilterType) {
         if (filter) {

@@ -6,7 +6,7 @@ import DataSource from '../../../module/datasource/model/datasource.model';
 const SQLservice = require('mssql')
 
 export class SQLserverConnection extends AbstractConnection {
-    
+
     GetDefaultSchema(): string {
         return 'dbo';
     }
@@ -52,23 +52,35 @@ export class SQLserverConnection extends AbstractConnection {
         }
     }
 
-    async generateDataModel(optimize:number): Promise<any> {
+    async generateDataModel(optimize: number, filter: string): Promise<any> {
         try {
             this.client = await this.getclient();
             let tableNames = [];
             let tables = [];
             let where: string = '';
             let schema = this.config.schema;
-    
+
             if (!schema) {
                 schema = 'dbo';
             }
             where = ` AND TABLE_SCHEMA = '${schema}'`;
+
+            /**
+            * Set filter for tables if exists
+            */
+            const filters = filter ? filter.split(',') : []
+            let filter_str = filter ? `AND ( table_name LIKE '%${filters[0].trim()}%'` : ``;
+            for (let i = 1; i < filters.length; i++) {
+                filter_str += ` OR table_name LIKE '%${filters[i].trim()}%'`;
+            }
+            if (filter) filter_str += ' )';
+
+
             const query = `
-                SELECT TABLE_NAME from INFORMATION_SCHEMA.TABLES WHERE TABLE_tYPE = 'BASE TABLE' ${where}  
+                SELECT TABLE_NAME from INFORMATION_SCHEMA.TABLES WHERE TABLE_tYPE = 'BASE TABLE' ${where} ${filter_str}
                 UNION ALL
-                SELECT TABLE_NAME from INFORMATION_SCHEMA.VIEWS v WHERE 1=1 ${where} 
-                ORDER BY TABLE_NAME
+                SELECT TABLE_NAME from INFORMATION_SCHEMA.VIEWS v WHERE 1=1 ${where}  ${filter_str}
+                ORDER BY TABLE_NAME 
             `;
 
             const getResults = await this.execQuery(query);
@@ -80,7 +92,7 @@ export class SQLserverConnection extends AbstractConnection {
             for (let i = 0; i < tableNames.length; i++) {
                 let new_table = await this.setTable(tableNames[i]);
                 let count = 0;
-                if(optimize === 1){
+                if (optimize === 1) {
                     const dbCount = await this.countTable(tableNames[i], `${this.config.schema || 'dbo'}`);
                     count = dbCount.recordset[0].count;
                 }
@@ -119,8 +131,8 @@ export class SQLserverConnection extends AbstractConnection {
             const foreignKeys = await this.execQuery(fkQuery);
 
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
-            if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
-            else return await this.getRelations(tables);
+            if (foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
+            else return await this.setRelations(tables);
 
         } catch (err) {
             throw err;
@@ -154,7 +166,7 @@ export class SQLserverConnection extends AbstractConnection {
     }
 
 
-    private async countTable(tableName: string, schema:string): Promise<any> {
+    private async countTable(tableName: string, schema: string): Promise<any> {
         const query = `SELECT count(*) as count from ${schema}.${tableName}`;
 
         return new Promise(async (resolve, reject) => {
@@ -163,7 +175,7 @@ export class SQLserverConnection extends AbstractConnection {
                 resolve(count);
             } catch (err) {
                 console.log(err)
-                resolve({recordset:[0]})
+                resolve({ recordset: [0] })
                 //reject(err);
             }
         })
@@ -207,17 +219,17 @@ export class SQLserverConnection extends AbstractConnection {
         }
     }
 
-    private setColumns(c, tableCount?:number) {
+    private setColumns(c, tableCount?: number) {
         let column = c;
 
         column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
         column.description = { default: this.normalizeName(column.column_name), localized: [] };
-        
+
         const dbType = column.column_type;
         column.column_type = this.normalizeType(dbType) || dbType;
-        let floatOrInt =  this.floatOrInt(dbType);
-        column.minimumFractionDigits = floatOrInt === 'int' &&  column.column_type === 'numeric' ? 0 
-        : floatOrInt === 'float' &&  column.column_type === 'numeric' ? 2 : null;
+        let floatOrInt = this.floatOrInt(dbType);
+        column.minimumFractionDigits = floatOrInt === 'int' && column.column_type === 'numeric' ? 0
+            : floatOrInt === 'float' && column.column_type === 'numeric' ? 2 : null;
 
         column.column_type === 'numeric'
             ? column.aggregation_type = AggregationTypes.getValues()
@@ -242,7 +254,7 @@ export class SQLserverConnection extends AbstractConnection {
     createTable(queryData: any): string {
         throw new Error('Method not implemented.');
     }
-    generateInserts(queryData:any):string {
+    generateInserts(queryData: any): string {
         throw new Error('Method not implemented.');
     }
 }

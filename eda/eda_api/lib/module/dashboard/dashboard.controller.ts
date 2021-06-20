@@ -295,21 +295,30 @@ export class DashboardController {
 
                 const output = [req.body.output.labels, results];
 
-                /**CHAPUZA SUMA ACUMULATIVA -> 
-                 * Si hay fechas agregadas por mes o dia 
-                 * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numericos
-                 */
-                DashboardController.cumulativeSum(output, req.body.query);
 
                 if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
                     CachedQueryService.storeQuery(req.body.model_id, query, output);
                 }
 
+                /**CHAPUZA SUMA ACUMULATIVA -> 
+                 * Si hay fechas agregadas por mes o dia 
+                 * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numéricos
+                 */
+                DashboardController.cumulativeSum(output, req.body.query);
+
                 console.log('\x1b[32m%s\x1b[0m', `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
                 return res.status(200).json(output);
 
+                /**
+                 * La consulta és a la caché
+                 */
             } else {
-
+                /**CHAPUZA SUMA ACUMULATIVA -> 
+                * Si hay fechas agregadas por mes o dia 
+                * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numéricos
+                */
+                console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾');
+                DashboardController.cumulativeSum(cachedQuery.cachedQuery.response, req.body.query);
                 console.log('\x1b[32m%s\x1b[0m', `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
                 return res.status(200).json(cachedQuery.cachedQuery.response);
             }
@@ -377,6 +386,7 @@ export class DashboardController {
                 return res.status(200).json(output);
 
             } else {
+                console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾');
                 console.log('\x1b[32m%s\x1b[0m', `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
                 return res.status(200).json(cachedQuery.cachedQuery.response);
             }
@@ -479,14 +489,14 @@ export class DashboardController {
 
     static async cumulativeSum(data, query) {
 
-        let mustSum = false;
+        let shouldCompare = false;
         query.fields.forEach(field => {
-            if (field.column_type === 'date' && ['month', 'day'].includes(field.format) && !!field.cumulativeSum) {
-                mustSum = true;
+            if (field.column_type === 'date' && ['month', 'week', 'day'].includes(field.format) && !!field.cumulativeSum) {
+                shouldCompare = true;
             }
         })
 
-        if (mustSum) {
+        if (shouldCompare) {
 
             let types = query.fields.map(field => field.column_type);
             let dateIndex = types.indexOf('date');
@@ -503,10 +513,9 @@ export class DashboardController {
                 let newRow = [];
 
                 types.forEach((type, index) => {
-
                     let value = row[index];
 
-                    if (type === 'numeric' && currentDate > prevDate && currentHead === prevHead) {
+                    if (type === 'numeric' && currentDate >= prevDate && currentHead === prevHead) {
                         value = row[index] + prevValues[index]
                     }
 
@@ -524,5 +533,30 @@ export class DashboardController {
 
         }
     }
+
+    static async cleanDashboardCache(req: Request, res: Response, next: NextFunction) {
+
+        const connection = await ManagerConnectionService.getConnection(req.body.model_id);
+        const dataModel = await connection.getDataSource(req.body.model_id);
+
+        if (dataModel.ds.metadata.cache_config.enabled) {
+            /**Security check */
+            const allowed = DashboardController.securityCheck(dataModel, req.user);
+            if (!allowed) {
+                return next(new HttpException(500, `Sorry, you are not allowed here, contact your administrator`));
+            }
+
+            const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+
+            req.body.queries.forEach(async query => {
+                let sqlQuery = await connection.getQueryBuilded(query, dataModelObject, req.user);
+                let hashedQuery = CachedQueryService.build(req.body.model_id, sqlQuery);
+                let res = await CachedQueryService.deleteQuery(hashedQuery);
+            })
+        }
+
+        return res.status(200).json({ok:true});
+    }
+
 
 }

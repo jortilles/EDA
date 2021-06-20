@@ -20,9 +20,7 @@ export class EdaTreeMap implements AfterViewInit {
   @Input() inject: TreeMap;
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
-  div = d3.select("body").append('div')
-    .attr('class', 'd3tooltip')
-    .style('opacity', 0);
+  div = null;
 
   id: string;
   svg: any;
@@ -34,17 +32,19 @@ export class EdaTreeMap implements AfterViewInit {
   heigth: number;
 
   ngOnInit(): void {
-    this.id = `treeMap_${this.inject.id}`;
-    this.data = this.formatData(this.inject.data);
 
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors
-      : this.getColors(this.data.children.length, ChartsColors)
-        .map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
+    this.id = `treeMap_${this.inject.id}`;
 
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
+
+    this.data = this.formatData(this.inject.data);
+
+    this.colors = this.inject.colors.length > 0 ? this.inject.colors
+      : this.getColors(this.data.children.length, ChartsColors)
+        .map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
 
   }
 
@@ -157,6 +157,9 @@ export class EdaTreeMap implements AfterViewInit {
         text = this.inject.linkedDashboard ? text + `<br/> <h6>  ${tooltipData.thirdRow} </h6>` : text;
         let height = this.inject.linkedDashboard ? '5em' : '4em';
 
+        this.div = d3.select("app-root").append('div')
+        .attr('class', 'd3tooltip')
+        .style('opacity', 0);
 
         this.div.transition()
           .duration(200)
@@ -168,9 +171,7 @@ export class EdaTreeMap implements AfterViewInit {
           .style('height', height);
       })
       .on('mouseout', (d) => {
-        this.div.transition()
-          .duration(500)
-          .style('opacity', 0);
+        this.div.remove()
       }).on("mousemove", (d, data) => {
 
         const linked = this.inject.linkedDashboard ? 0 : 10;
@@ -209,8 +210,21 @@ export class EdaTreeMap implements AfterViewInit {
 
     let rootNode = new Map();
 
-    data.values.forEach(r => {
+    /**Numeric value at end */
+    const newData = [];
+    data.values.forEach(row => {
 
+      let newRow = [];
+      let numericValue = row.splice(this.metricIndex, 1)[0];
+      newRow = [...row];
+      newRow.push(numericValue);
+      row.splice(this.metricIndex, 0, numericValue);
+      newData.push(newRow);
+
+    });
+
+    newData.forEach(r => {
+      
       if(!r.includes(null)){
         const row = _.cloneDeep(r);
         rootNode = this.buildTree(row, rootNode);
@@ -252,7 +266,7 @@ export class EdaTreeMap implements AfterViewInit {
   }
 
   unnest(node: Map<string, any>) {
-
+    
     const values = [];
     node.forEach((value, key) => {
       if (typeof value === 'number') {

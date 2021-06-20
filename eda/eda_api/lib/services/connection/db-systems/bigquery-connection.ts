@@ -27,14 +27,25 @@ export class BigQueryConnection extends AbstractConnection {
     }
   }
 
-  async generateDataModel(optimize:number): Promise<any> {
+  async generateDataModel(optimize: number, filter:string): Promise<any> {
 
     try {
 
       this.client = this.getclient();
       const tableNames = [];
       const tables = [];
-      const sqlQuery = `SELECT table_name FROM ${this.config.schema}.INFORMATION_SCHEMA.TABLES`;
+
+      /**
+      * Set filter for tables if exists
+      */
+      const filters = filter ? filter.split(',') : []
+      let filter_str = filter ? `where ( table_name LIKE '%${filters[0].trim()}%'` : ``;
+      for (let i = 1; i < filters.length; i++) {
+        filter_str += ` OR table_name LIKE '%${filters[i].trim()}%'`;
+      }
+      if (filter) filter_str += ' )';
+
+      const sqlQuery = `SELECT table_name FROM ${this.config.schema}.INFORMATION_SCHEMA.TABLES ${filter_str}`;
       const options = { query: sqlQuery };
       const [rows] = await this.client.query(options);
 
@@ -60,7 +71,7 @@ export class BigQueryConnection extends AbstractConnection {
         }
       }
 
-      return await this.getRelations(tables);
+      return await this.setRelations(tables);
 
     } catch (err) {
       throw err;
@@ -100,12 +111,12 @@ export class BigQueryConnection extends AbstractConnection {
     let column = c;
     column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
     column.description = { default: this.normalizeName(column.column_name), localized: [] };
-    
+
     const dbType = column.column_type;
     column.column_type = this.normalizeType(dbType) || dbType;
-    let floatOrInt =  this.floatOrInt(dbType);
-    column.minimumFractionDigits = floatOrInt === 'int' &&  column.column_type === 'numeric' ? 0 
-    : floatOrInt === 'float' &&  column.column_type === 'numeric' ? 2 : null;
+    let floatOrInt = this.floatOrInt(dbType);
+    column.minimumFractionDigits = floatOrInt === 'int' && column.column_type === 'numeric' ? 0
+      : floatOrInt === 'float' && column.column_type === 'numeric' ? 2 : null;
 
 
     column.column_type === 'numeric'
@@ -164,17 +175,17 @@ export class BigQueryConnection extends AbstractConnection {
 
   async execQuery(query: string): Promise<any> {
 
-    try{
-      
+    try {
+
       const projectId = this.config.project_id;
       const keyFilename = `D:/Proyectos/EDA/eda_api/lib/files/${this.config.project_id}.json`;
       const options = { query: query };
       const client = new BigQuery({ projectId, keyFilename });
       const results = await client.query(options);
-  
+
       return results[0];
 
-    }catch(err){
+    } catch (err) {
       console.log(err);
       throw err;
     }

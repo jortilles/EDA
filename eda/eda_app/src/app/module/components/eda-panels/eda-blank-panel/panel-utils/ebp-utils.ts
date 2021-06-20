@@ -9,7 +9,7 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       case 'barline':
-        str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una série numéricas`;
+        str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una série numéricas. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
       case 'stackedbar':
@@ -17,15 +17,15 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       case 'line':
-        str = $localize`:@@chartInfo5:Un gráfico de línea necesita una o más categorías y una série numérica`;
+        str = $localize`:@@chartInfo5:Un gráfico de línea necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
       case 'horizontalBar':
-        str = $localize`:@@chartInfo6:Un gráfico de barras necesita una o más categorías y una série numérica`;
+        str = $localize`:@@chartInfo6:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
       case 'bar':
-        str = $localize`:@@chartInfo7:Un gráfico de barras necesita una o más categorías y una série numérica`;
+        str = $localize`:@@chartInfo7:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
       case 'polarArea':

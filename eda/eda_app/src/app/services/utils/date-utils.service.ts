@@ -14,9 +14,12 @@ export class DateUtils {
         switch (range) {
             case 'all': return this.allDates();
             case 'yesterday': return this.setYesterday();
+            case 'beforeYesterday': return this.setBeforeYesterday();
             case 'weekStart': return this.setWeekStart();
             case 'monthStart': return this.setMonthStart();
+            case 'monthStartPreviousYear': return this.setMonthStartPreviousYear();
             case 'yearStart': return this.setYearStart();
+            case 'yearStartPreviousYear': return this.setYearStartPreviousYear();
             case 'last7': return this.setLast7();
             case 'last15': return this.setLast15();
             case 'last30': return this.setLast30();
@@ -32,6 +35,11 @@ export class DateUtils {
         const d = new Date();
         const yesterday = d.setDate(d.getDate() - 1);
         return [new Date(yesterday), new Date(yesterday)]
+    }
+    public setBeforeYesterday(): Array<Date> {
+        const d = new Date();
+        const beforeYesterday = d.setDate(d.getDate() - 2);
+        return [new Date(beforeYesterday), new Date(beforeYesterday)]
     }
     public setWeekStart(): Array<Date> {
         const getMonday = (d: Date) => {
@@ -49,8 +57,22 @@ export class DateUtils {
         const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
         return [monthStart, today];
     }
+    public setMonthStartPreviousYear(): Array<Date> {
+        const t = new Date();
+        const today = new Date( t.getFullYear()-1, t.getMonth(), t.getDate());
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        return [monthStart, today];
+    }
+    
     public setYearStart(): Array<Date> {
         const today = new Date();
+        const yearStart = new Date(today.getFullYear(), 0, 1);
+        return [yearStart, today];
+    }
+
+    public setYearStartPreviousYear(): Array<Date> {
+        const t = new Date();
+        const today = new Date( t.getFullYear()-1, t.getMonth(), t.getDate());
         const yearStart = new Date(today.getFullYear(), 0, 1);
         return [yearStart, today];
     }

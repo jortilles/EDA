@@ -269,7 +269,7 @@ export class DataSourceController {
 
             const cn = new BigQueryConfig(req.body.type, req.body.database, req.body.project_id);
             const manager = await ManagerConnectionService.testConnection(cn);
-            const tables = await manager.generateDataModel(req.body.optimize);
+            const tables = await manager.generateDataModel(req.body.optimize,  req.body.filter);
 
 
             const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG
@@ -322,7 +322,7 @@ export class DataSourceController {
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database,
                 req.body.password, req.body.port, req.body.type, req.body.schema, req.body.sid,  req.qs.warehouse);
             const manager = await ManagerConnectionService.testConnection(cn);
-            const tables = await manager.generateDataModel(req.body.optimize);
+            const tables = await manager.generateDataModel(req.body.optimize, req.body.filter);
             const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 
 
@@ -345,7 +345,8 @@ export class DataSourceController {
                         model_id: '',
                         model_granted_roles: [],
                         optimized: req.params.optimize === '1',
-                        cache_config :CC
+                        cache_config :CC,
+                        filter:req.body.filter
                     },
                     model: {
                         tables: tables
@@ -353,8 +354,11 @@ export class DataSourceController {
                 }
             });
 
+        
+
             datasource.save((err, data_source) => {
                 if (err) {
+                    console.log(err);
                     return next(new HttpException(500, `Error saving the datasource`));
                 }
 
@@ -391,7 +395,7 @@ export class DataSourceController {
                 req.body.port, req.body.type, req.body.schema, req.body.sid,  req.qs.warehouse);
             const manager = await ManagerConnectionService.testConnection(cn);
             const storedDataModel = JSON.parse(JSON.stringify(actualDS));
-            const tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized);
+            const tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized,storedDataModel.ds.metadata.filter);
 
             const datasource: IDataSource = new DataSource({
                 ds: {

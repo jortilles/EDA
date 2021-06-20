@@ -245,6 +245,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private initializeDashboard(): void {
+
         const me = this;
 
         me.route.paramMap.subscribe(
@@ -353,9 +354,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     let range = this.dateUtilsService.getRange(pFilter.selectedRange);
                     let stringRange = this.dateUtilsService.rangeToString(range);
 
-                    pFilter.filter_elements[0]  = {value1:[stringRange[0]]}
-                    pFilter.filter_elements[1]  = {value2:[stringRange[1]]}
-                    
+                    pFilter.filter_elements[0] = { value1: [stringRange[0]] }
+                    pFilter.filter_elements[1] = { value2: [stringRange[1]] }
+
                 }
 
                 panel.content.query.query.filters.push(pFilter);
@@ -363,7 +364,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             });
 
         });
-        
+
         /**Set ranges for dates in global filters */
         this.filtersList.filter(f => f.selectedRange).forEach(filter => {
 
@@ -859,8 +860,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public onResetWidgets(): void {
-        // Netejem els canvis i utilitzem la última copia feta, per defecte sempre hi haura 1 panel
-        this.panels = this.panelsCopy.map(panel => ({ ...panel }));
+
+        let body =
+        {
+            model_id: this.dataSource._id,
+            queries: this.panels.map(panel => panel.content.query.query)
+        }
+
+        this.dashboardService.cleanCache(body).subscribe(
+            res => {
+                this.initializeDashboard();
+                this.display_v.rightSidebar = false;
+                this.dashboardService._notSaved.next(false);
+            },
+            err => console.log(err)
+        )
     }
 
     public getsharedURL(): string {

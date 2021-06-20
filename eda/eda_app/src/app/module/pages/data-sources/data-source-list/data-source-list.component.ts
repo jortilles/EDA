@@ -17,12 +17,14 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public selectedFile: TreeNode;
     public id: string;
     public navigationSubscription: any;
+    public selectedNode : TreeNode;
 
     //Strings
     public refreshSTR = $localize`:@@Refresh:Refrescar modelo de datos`;
     public saveModelSTR = $localize`:@@saveModel:Guardar modelo de datos`;
     public updateModelSTR = $localize`:@@updateModel:Actualizar modelo de datos`;
     public deleteModelSTR = $localize`:@@deleteModel:Borrar modelo de datos`;
+    public unsaved : string;
 
 
     constructor(public dataModelService: DataSourceService,
@@ -47,7 +49,13 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
             (data) => this.treeData = data,
             (err) => this.alertService.addError(err)
         );
-
+        
+        this.dataModelService.unsaved.subscribe(
+            (data) => {
+                this.unsaved = data ? $localize`:@@notSavedChanges:Hay cambios sin guardar...` : ''
+            },
+            (err) => this.alertService.addError(err)
+        )
         this.dataModelService.getModelById(this.id);        
     }
 
@@ -96,12 +104,31 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     }
 
     nodeSelect(event: { node: any; }) {
+        this.selectedNode = event.node;
+        this.removehiglight(this.treeData[0])
+        event.node.type = 'selected'
         event.node.data === 'tabla' ? this.dataModelService.editTable(event.node) :
             event.node.data === 'columna' ? this.dataModelService.editColumn(event.node) : this.dataModelService.editModel(event.node);
     }
 
+    removehiglight(node){
+        if(node.children.length === 0)
+        {
+            node.type = 'unselected';
+            return;
+        }
+        else
+        {
+            node.type = 'unselected';
+            node.children.forEach(node =>{
+                this.removehiglight(node)
+            } )
+        }
+    }
+
+
     nodeUnselect(event: any) {
-        // De moment res
+        console.log('Unselected:', event.node)
     }
 
     refreshModel() {

@@ -6,7 +6,6 @@ const mailConfig = require('../../../config/mailing.config')
 let nodemailer = require('nodemailer');
 import { SchedulerFunctions } from './../scheduler/schedulerFunctions';
 import { MailDashboardsController } from '../dashboardToPDFService/mail-dashboards.controller';
-
 const fs = require('fs');
 const path = require("path");
 
@@ -201,9 +200,10 @@ export class MailingService {
     })
   }
 
-  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message){
+  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string){
 
     let text = `${message}\n-------------------------------------------- \n\n`;
+    text += link;
 
     let mailOptions = {
       from: mailConfig.user,

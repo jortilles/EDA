@@ -72,6 +72,8 @@ export class PgBuilderService extends QueryBuilderService {
     }
     if (filters.length) {
 
+      let equalfilters = this.getEqualFilters(filters);
+      filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
       let filtersString = `\n${type} 1 = 1 `;
 
       filters.forEach(f => {
@@ -106,6 +108,9 @@ export class PgBuilderService extends QueryBuilderService {
           }
         }
       });
+
+      /**Allow filter ranges */
+      filtersString = this.mergeFilterStrings(filtersString, equalfilters, type);
       return filtersString;
     } else {
       return '';
@@ -243,8 +248,14 @@ export class PgBuilderService extends QueryBuilderService {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'month')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM') as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'week')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'IYYY-IW') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+              }else if (_.isEqual(el.format, 'timestamp')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI:SS') as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'week_day')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'ID') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'No')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
               }
@@ -257,11 +268,29 @@ export class PgBuilderService extends QueryBuilderService {
           // GROUP BY
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
+
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY')`);
+
             } else if (_.isEqual(el.format, 'month')) {
+
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM')`);
-            } else if (_.isEqual(el.format, 'day')) {
+
+            } else if (_.isEqual(el.format, 'week')) {
+
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'IYYY-IW')`);
+            }
+            else if (_.isEqual(el.format, 'day')) {
+
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD')`);
+
+            }else if (_.isEqual(el.format, 'timestamp')) {
+
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI:SS')`);
+
+            } else if (_.isEqual(el.format, 'week_day')) {
+
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'ID')`);
+
             } else if (_.isEqual(el.format, 'No')) {
               grouping.push(`"${el.table_id}"."${el.column_name}"`);
             }

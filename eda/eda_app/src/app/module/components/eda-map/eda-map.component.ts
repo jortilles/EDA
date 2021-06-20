@@ -36,7 +36,7 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
   }
 
   private initMap = (): void => {
-
+    console.log(this.inject)
 
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {

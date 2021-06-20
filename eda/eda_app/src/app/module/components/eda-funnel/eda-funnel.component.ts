@@ -33,9 +33,10 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   width: number;
   heigth: number;
 
-  div = d3.select("body").append('div')
-    .attr('class', 'd3tooltip')
-    .style('opacity', 0);
+  // div = d3.select("body").append('div')
+  //   .attr('class', 'd3tooltip')
+  //   .style('opacity', 0);
+  div = null;
 
 
   constructor() {

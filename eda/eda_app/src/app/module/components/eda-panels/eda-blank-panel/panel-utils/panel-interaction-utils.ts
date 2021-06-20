@@ -248,7 +248,7 @@ export const PanelInteractionUtils = {
       if (dataDescription.totalColumns === 0 || _.isEmpty(ebp.chartData)) {
         //this.alertService.addWarning($localize`:@@NoRecords:No se pudo obtener ningún registro`);
       } else {
-        notAllowedCharts = ebp.chartUtils.getNotAllowedCharts(dataDescription);
+        notAllowedCharts = ebp.chartUtils.getNotAllowedCharts(dataDescription, ebp.currentQuery);
         tooManyDataForCharts = ebp.chartUtils.getTooManyDataForCharts(ebp.chartData.length);
 
       }

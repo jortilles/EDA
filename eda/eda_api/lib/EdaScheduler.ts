@@ -15,6 +15,6 @@ export const initJobs = ()=> {
 
   /**Check mail sending */
   const mailSender   = schedule.scheduleJob(mail_config.MAILING_SCHEDULE, () => MailingService.mailingService() );
-  //MailingService.mailingService();
+  MailingService.mailingService();
 }
 

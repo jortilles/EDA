@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.get('', authGuard,  DashboardController.getDashboards);
 
+router.post('/clean-refresh', authGuard, DashboardController.cleanDashboardCache)
+
 router.get('/:id', authGuard, DashboardController.getDashboard);
 
 router.post('', authGuard, DashboardController.create);

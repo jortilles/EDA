@@ -29,14 +29,17 @@ export class EdaDatePickerComponent implements OnChanges {
     [
       { label: $localize`:@@DatePickerAll:Todas`, value: 'all' },
       { label: $localize`:@@DatePickerYesterday:Ayer`, value: 'yesterday' },
+      { label: $localize`:@@DatePickerBeforeYesterday:Antes de Ayer`, value: 'beforeYesterday' },
       { label: $localize`:@@DatePickerWeek:Ésta semana`, value: 'weekStart' },
       { label: $localize`:@@DatePickerMonth:Éste mes`, value: 'monthStart' },
+      { label: $localize`:@@DatePickerMonthPreviousYear:Éste mes del año pasado`, value: 'monthStartPreviousYear' },
       { label: $localize`:@@DatePickerYear:Éste año`, value: 'yearStart' },
+      { label: $localize`:@@DatePickerYearPreviousYear:El año pasado`, value: 'yearStartPreviousYear' },
       { label: $localize`:@@DatePickerLast7:Últimos 7 días`, value: 'last7' },
       { label: $localize`:@@DatePickerLast15:Últimos 15 días`, value: 'last15' },
       { label: $localize`:@@DatePickerLast30:Últimos 30 días`, value: 'last30' },
       { label: $localize`:@@DatePickerLast60:Últimos 60 días`, value: 'last60' },
-      { label: $localize`:@@DatePickerLast120:Últimos 120 días`, value: 'last120' }
+      { label: $localize`:@@DatePickerLast120:Últimos 120 días`, value: 'last120' },
     ];
 
   public selectedRange: SelectItem;

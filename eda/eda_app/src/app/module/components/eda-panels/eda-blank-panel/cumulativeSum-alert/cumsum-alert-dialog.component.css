@@ -1,0 +1,15 @@
+h2{
+  color : rgb(255, 136, 0)
+}
+/* #alertdialog{
+  text-align: center;
+} */
+.center {
+  margin: 0;
+  top: 15%;
+  text-align: center;
+  margin-top: 1em;
+}
+.right{
+  text-align: left;
+}

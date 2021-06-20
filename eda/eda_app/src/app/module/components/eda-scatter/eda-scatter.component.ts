@@ -20,10 +20,7 @@ export class EdaScatter implements AfterViewInit {
   @Input() inject: ScatterPlot;
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
-  div = d3.select("body").append('div')
-    .attr('class', 'd3tooltip')
-    .attr('id', 'scatterDiv')
-    .style('opacity', 0);
+  div = null;
 
   id: string;
   svg: any;
@@ -151,7 +148,7 @@ export class EdaScatter implements AfterViewInit {
           ` ${this.inject.dataDescription.numericColumns[2].name} :  ${data.metricValue.toLocaleString(undefined, { maximumFractionDigits: 6 })}`
           : ``;
 
-        let linkedText = this.inject.linkedDashboard ? `Linked to ${this.inject.linkedDashboard.dashboardName} </h6>`: '';
+        let linkedText = this.inject.linkedDashboard ? `Linked to ${this.inject.linkedDashboard.dashboardName} </h6>` : '';
 
         const maxLength = dataUtils.maxLengthElement([categoryText.length, serieText.length, metricText.length, linkedText.length]);
         const pixelWithRate = 7;
@@ -162,9 +159,13 @@ export class EdaScatter implements AfterViewInit {
         text = metricText ? text + `${metricText}<br/>` : text;
         text = this.inject.linkedDashboard ? text + `<h6> ${linkedText} </h6>` : text;
 
-        let height: any = this.inject.linkedDashboard ? 5 : 4;
+        let height: any = this.inject.linkedDashboard ? 5 : 3;
         height = data.category ? height + 1 + 'em' : height + 'em';
 
+        this.div = d3.select("app-root").append('div')
+          .attr('class', 'd3tooltip')
+          .attr('id', 'scatterDiv')
+          .style('opacity', 0);
 
         this.div.transition()
           .duration(200)
@@ -177,14 +178,12 @@ export class EdaScatter implements AfterViewInit {
           .style('line-height', 1.1);
       })
       .on('mouseout', (d) => {
-        this.div.transition()
-          .duration(500)
-          .style('opacity', 0);
+        this.div.remove();
       }).on("mousemove", (d, data) => {
         const sizes = this.div.node().getBoundingClientRect();
         this.div
-        .style("top", (d.pageY - sizes.height - 7) + "px")
-        .style("left", (d.pageX - sizes.width/2 ) + "px");
+          .style("top", (d.pageY - sizes.height - 7) + "px")
+          .style("left", (d.pageX - sizes.width / 2) + "px");
       }).on('click', (mouseevent, data) => {
 
         if (this.inject.linkedDashboard) {

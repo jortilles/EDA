@@ -8,7 +8,7 @@ export class MailDashboardsController {
 
     try {
 
-      const browser = await puppeteer.launch();
+      const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
       const loginPage = await browser.newPage();
 
       const wait = (ms) => {
@@ -19,12 +19,13 @@ export class MailDashboardsController {
 
         try {
           const res = await response.json();
-          const browser = await puppeteer.launch({ headless: true });
+
+          const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
           const page = await browser.newPage();
 
           await page.setViewport({
-            width: 1280,
-            height: 600
+            width: 1366,
+            height: 768
           });
 
 
@@ -42,14 +43,17 @@ export class MailDashboardsController {
           await page.pdf(
             {
               path: `${__dirname}/${dashboard}_${userMail}.pdf`,
-              format: 'a4',
+              // format: 'a3',
+              width:1380,
+              height:775,
               printBackground: true,
               displayHeaderFooter: false,
-              landscape: true,
+              landscape: false,
 
             });
           await browser.close();
-          MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message);
+          const link = `${serverConfig.server_baseURL}/#/dashboard/${dashboard}`
+          MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link);
 
         } catch (err) {
           throw err;

@@ -55,6 +55,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public chartController: EdaDialogController;
     public tableController: EdaDialogController;
     public alertController: EdaDialogController;
+    public cumsumAlertController : EdaDialogController;
     public mapController: EdaDialogController;
     public kpiController: EdaDialogController;
     public sankeyController: EdaDialogController;
@@ -611,7 +612,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.graficos = {};
                 this.graficos = _.cloneDeep(properties);
                 this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType };
-                const layout = new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType, this.graficos.addTrend));
+                const layout = new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType, this.graficos.addTrend, this.graficos.addComparative));
 
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
@@ -829,7 +830,7 @@ export class EdaBlankPanelComponent implements OnInit {
         let serverQuery = await QueryUtils.getQueryFromServer(this, query);
 
         let whereIndex = serverQuery.lastIndexOf('where 1 = 1');
-        const TO_REPLACE_SIZE = 18;
+        const TO_REPLACE_SIZE = 16;
         if (whereIndex >= 0) {
             serverQuery = serverQuery.substring(0, whereIndex - 1) + '\nwhere ' + serverQuery.substring(whereIndex + TO_REPLACE_SIZE, serverQuery.length);
         }

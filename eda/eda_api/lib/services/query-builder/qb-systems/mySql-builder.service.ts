@@ -1,5 +1,6 @@
 import { QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
+import { filter, values } from 'lodash';
 
 
 
@@ -78,12 +79,14 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
     if (filters.length) {
 
+      let equalfilters = this.getEqualFilters(filters);
+      filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
       let filtersString = `\n${type} 1 = 1 `;
 
       filters.forEach(f => {
 
         const column = this.findColumn(f.filter_table, f.filter_column);
-        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits }))`;
+        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
 
         if (f.filter_type === 'not_null') {
           filtersString += '\nand ' + this.filterToString(f, type);
@@ -110,11 +113,15 @@ export class MySqlBuilderService extends QueryBuilderService {
           }
         }
       });
+
+      /**Allow filter ranges */
+      filtersString = this.mergeFilterStrings(filtersString, equalfilters, type);
       return filtersString;
     } else {
       return '';
     }
   }
+
 
   public getHavingFilters(filters, type: string): any {
 
@@ -125,7 +132,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       filters.forEach(f => {
 
         const column = this.findColumn(f.filter_table, f.filter_column);
-        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits }))`;
+        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
 
         if (f.filter_type === 'not_null') {
           filtersString += '\nand ' + this.filterToString(f, type);
@@ -184,12 +191,12 @@ export class MySqlBuilderService extends QueryBuilderService {
           let joinColumns = this.findJoinColumns(e[j], e[i]);
           let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? table.query : `\`${table.name}\`` })[0];
 
-           //Version compatibility string//array
+          //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
 
             joinString.push(`inner join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
-          
-          }else{
+
+          } else {
 
             let join = `inner join ${t} on`;
 
@@ -203,7 +210,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             joinString.push(join);
 
           }
-          
+
           joined.push(e[j]);
 
         }
@@ -216,7 +223,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   public getSeparedColumns(origin: string, dest: string[]): any {
 
-  
+
     const columns = [];
     const grouping = [];
 
@@ -229,26 +236,45 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor.
       if (el.computed_column === 'computed_numeric') {
-        columns.push(` cast( ${el.SQLexpression}  as decimal(32,${el.minimumFractionDigits }) ) as "${el.display_name}"`);
+        columns.push(` cast( ${el.SQLexpression}  as decimal(32,${el.minimumFractionDigits}) ) as "${el.display_name}"`);
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`cast( count( distinct \`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits }) ) as \`${el.display_name}\``);
+            columns.push(`cast( count( distinct \`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits}) ) as \`${el.display_name}\``);
           } else {
-            columns.push(`cast(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits }) ) as \`${el.display_name}\``);
+            columns.push(`cast(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits}) ) as \`${el.display_name}\``);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`cast(\`${el.table_id}\`.\`${el.column_name}\` as decimal(32,${el.minimumFractionDigits })) as \`${el.display_name}\``);
+            columns.push(`cast(\`${el.table_id}\`.\`${el.column_name}\` as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
+
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y') as \`${el.display_name}\``);
+
               } else if (_.isEqual(el.format, 'month')) {
+
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m') as \`${el.display_name}\``);
+
+              } else if (_.isEqual(el.format, 'week')) {
+
+                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%x-%v') as \`${el.display_name}\``);
+
               } else if (_.isEqual(el.format, 'day')) {
+
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d') as \`${el.display_name}\``);
-              } else {
+
+              } else if (_.isEqual(el.format, 'week_day')) {
+
+                columns.push(`WEEKDAY(\`${el.table_id}\`.\`${el.column_name}\`) + 1 as \`${el.display_name}\``);
+
+              }else if (_.isEqual(el.format, 'timestamp')) {
+
+                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i:%s') as \`${el.display_name}\``);
+
+              }  else {
+
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d') as \`${el.display_name}\``);
               }
             } else {
@@ -261,16 +287,37 @@ export class MySqlBuilderService extends QueryBuilderService {
           // GROUP BY
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
+
               grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y')`);
+
             } else if (_.isEqual(el.format, 'month')) {
+
               grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m')`);
+
+            } else if (_.isEqual(el.format, 'week')) {
+
+              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%x-%v')`);
+
+            } else if (_.isEqual(el.format, 'week_day')) {
+
+              grouping.push(`WEEKDAY(\`${el.table_id}\`.\`${el.column_name}\`) + 1`);
+
             } else if (_.isEqual(el.format, 'day')) {
+
               grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d')`);
+
+            }else if (_.isEqual(el.format, 'timestamp')) {
+
+              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i:%s')`);
+
             } else {
+
               grouping.push(`\`${el.table_id}\`.\`${el.column_name}\``);
             }
           } else {
+
             grouping.push(`\`${el.table_id}\`.\`${el.column_name}\``);
+
           }
         }
       }
@@ -291,7 +338,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (!column.hasOwnProperty('minimumFractionDigits')) {
       column.minimumFractionDigits = 0;
     }
-    const colname = type == 'where' ? `\`${filterObject.filter_table}\`.\`${filterObject.filter_column}\`` : `CAST( ${column.SQLexpression}  as DECIMAL(32,${column.minimumFractionDigits }))`;
+    const colname = type == 'where' ? `\`${filterObject.filter_table}\`.\`${filterObject.filter_column}\`` : `CAST( ${column.SQLexpression}  as DECIMAL(32,${column.minimumFractionDigits}))`;
     let colType = column.column_type;
 
     switch (this.setFilterType(filterObject.filter_type)) {
