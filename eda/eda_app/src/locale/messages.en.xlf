@@ -1023,6 +1023,17 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">38</context>
 </context-group>
 </trans-unit>
+
+<trans-unit id="beforeYesterday" datatype="html">
+<source> Antes de Ayer </source>
+<target> Before Yesterday </target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
+<context context-type="linenumber">39</context>
+</context-group>
+</trans-unit>
+
+
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
 <target> This week </target>
@@ -1496,7 +1507,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">142</context>
 </context-group>
 </trans-unit>
-<trans-unit id="conexionH5" datatype="html">
+<trans-unit id="conexionh4" datatype="html">
 <source>
             Conexión
 </source>
@@ -1964,6 +1975,20 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>NO</source>
 <target>NO</target>
 </trans-unit>
+<trans-unit id="dates5">
+<source>SEMANA</source>
+<target>SETMANA</target>
+</trans-unit>
+<trans-unit id="dates6">
+<source>DIA DE LA SEMANA</source>
+<target>DIA DE LA SETMANA</target>
+</trans-unit>
+
+<trans-unit id="dates7">
+<source>FECHA COMPLETA</source>
+<target>TIMESTAMP</target>
+</trans-unit>
+
 <trans-unit id="ChartProps">
 <source>PROPIEDADES DEL gráfico</source>
 <target>CHART PROPERTIES</target>
@@ -2238,7 +2263,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="chartInfo3">
 <source>Un gráfico de barras necesita una o más categorías y una série numéricas.</source>
-<target>Bar  chart needs one or more categories and one numeric serie.</target>
+<target>Bar  chart needs one or more categories and one numeric serie. If there is also two series numeric data should be aggregated.</target>
 </trans-unit>
 <trans-unit id="chartInfo4">
 <source> Un gráfico combinado necesita una categoría y dos séries numéricas.</source>
@@ -2246,15 +2271,15 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="chartInfo5">
 <source>Un gráfico de línea necesita una o más categorías y una série numérica.</source>
-<target>Line chart needs one or more categories and one numeric serie.</target>
+<target>Line chart needs one or more categories and one numeric serie. If there is also two series numeric data should be aggregated.</target>
 </trans-unit>
 <trans-unit id="chartInfo6">
 <source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
-<target>Bar chart needs one or more categories and one numeric serie.</target>
+<target>Bar chart needs one or more categories and one numeric serie. If there is also two series numeric data should be aggregated.</target>
 </trans-unit>
 <trans-unit id="chartInfo7">
 <source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
-<target>Bar chart needs one or more categories and one numeric serie.</target>
+<target>Bar chart needs one or more categories and one numeric serie. If there is also two series numeric data should be aggregated.</target>
 </trans-unit>
 <trans-unit id="chartInfo8">
 <source>Un gráfico polar necesita una categoría y una série numérica.</source>
@@ -2624,6 +2649,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Ayer</source>
 <target>Yesterday</target>
 </trans-unit>
+<trans-unit id="DatePickerBeforeYesterday">
+<source>Antes de ayer</source>
+<target>Before Yesterday</target>
+</trans-unit>
 <trans-unit id="DatePickerWeek">
 <source>Ésta semana</source>
 <target>This week</target>
@@ -2632,9 +2661,17 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Éste mes</source>
 <target>This month</target>
 </trans-unit>
+<trans-unit id="DatePickerMonthPreviousYear">
+<source>Éste mes del año pasado</source>
+<target>This month from previous year</target>
+</trans-unit>
 <trans-unit id="DatePickerYear">
 <source>Éste año</source>
 <target>This year</target>
+</trans-unit>
+<trans-unit id="DatePickerYearPreviousYear">
+<source>El año pasado</source>
+<target>Last year</target>
 </trans-unit>
 <trans-unit id="DatePickerLast7">
 <source> Últimos 7 días </source>
@@ -3361,8 +3398,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="mailmanagementHeader">
-    <source>Gestión de correo </source>
-    <target>Email management</target>
+    <source>Gestión de correo y envio de mails</source>
+    <target>Email and email sending management</target>
   </trans-unit>
 
   <trans-unit id="mailConfSaved">
@@ -3415,6 +3452,83 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>To launch a query. Select the attributes you want to see, click on them to configure them and run the query. You can always go back to this view.</target>
   </trans-unit>
 
+    <trans-unit id="agregacionh5">
+    <source>Agregación   </source>
+    <target>Aggregation  </target>
+  </trans-unit> 
+
+    <trans-unit id="inputFormat">
+    <source>Número de decimales   </source>
+    <target>Decimal places  </target>
+  </trans-unit> 
+
+  <trans-unit id="DashboardMailingTitle">
+    <source>Configuración del envío por email  </source>
+    <target>Mail sending configuration  </target>
+  </trans-unit> 
+
+    <trans-unit id="opcionMail">
+    <source>Enviar por email  </source>
+    <target>Send via email  </target>
+  </trans-unit> 
+
+   <trans-unit id="noMail">
+    <source>Sin alertas de correo </source>
+    <target>No mail alerts  </target>
+  </trans-unit> 
+
+    <trans-unit id="dashbaordsMailingHeader">
+    <source>Envio de informes por email </source>
+    <target>Dashboards mail sending</target>
+  </trans-unit> 
+
+ <trans-unit id="cumulativeSum">
+    <source>Suma acumulativa   </source>
+    <target>Cumulative sum </target>
+  </trans-unit> 
+
+    <trans-unit id="ptooltipViewAlerts">
+    <source>Configurar alertas</source>
+    <target>Alerts configuration</target>
+  </trans-unit> 
+
+
+  <trans-unit id="inputFilter">
+    <source>Filtros</source>
+    <target>Filters</target>
+  </trans-unit> 
+
+     <trans-unit id="comparativeTooltip">
+    <source>La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes y un único campo numèrico agregado</source>
+    <target>Compare function is only allowed in queries with one date field monthly or weekly aggregated and one numeric field</target>
+  </trans-unit> 
+
+     <trans-unit id="trendTooltip">
+    <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
+    <target>Trend function is only allowed in line charts</target>
+  </trans-unit> 
+
+     <trans-unit id="filterTooltip">
+    <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
+    <target>Could add words separated by commas, which will be applied as LIKE filters when retrieving the tables from your database</target>
+  </trans-unit> 
+
+   <trans-unit id="cumulativeSumTooltip">
+    <source>Si activas ésta función se calculará la suma acumulativa 
+                                            para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes o dia.</source>
+    <target>Activating this function the cumulative sum for numeric filelds will be calculated. 
+                                        It can only be activated if date field is aggregated by month, week or day. </target>
+  </trans-unit> 
+
+   <trans-unit id="cumsumAlertMessage1">
+    <source> La suma acumulativa sólo se puede aplicar si se dispone de una única serie no numérica.</source>
+    <target>Cummulative sum can only be applied in one non-numeric serie.</target>
+  </trans-unit> 
+
+     <trans-unit id="cumsumAlertMessage2">
+    <source>Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna no numérica.</source>
+    <target>Disable cummulative function in date field or remove one non-numeric field. </target>
+  </trans-unit> 
 
 
 

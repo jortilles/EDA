@@ -74,7 +74,7 @@ export class UsersLlistaComponent implements OnInit {
 
     deleteUser(user: User) {
         this.table._hideContexMenu();
-        if (user._id === this.userService.user._id) {
+        if (user._id === this.userService.getUserObject()._id) {
             Swal.fire($localize`:@@cantDeleteUser:No se puede borrar el usuario`, $localize`:@@cantSelfDelete:No se puede borrar a si mismo`, 'error');
             return;
         }

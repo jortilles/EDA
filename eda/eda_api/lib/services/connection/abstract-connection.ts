@@ -26,7 +26,7 @@ export abstract class AbstractConnection {
 
     abstract tryConnection(): Promise<void>;
 
-    abstract generateDataModel(optimize: number): Promise<any>;
+    abstract generateDataModel(optimize: number, filters:string): Promise<any>;
 
     abstract execQuery(query: string): Promise<any>;
 
@@ -40,10 +40,10 @@ export abstract class AbstractConnection {
 
     normalizeType(type: string) {
         let cleanType = type.replace(/ *\([^)]*\) */g, '').toUpperCase();
-        
+
         switch (cleanType) {
             case 'NUMERIC': return 'numeric';
-            case 'FIXED' : return 'numeric';
+            case 'FIXED': return 'numeric';
             case 'NUMBER': return 'numeric';
             case 'BIT': return 'numeric';
             case 'INT4': return 'numeric';
@@ -67,6 +67,7 @@ export abstract class AbstractConnection {
             case 'FLOAT64': return 'numeric';
             case 'REAL': return 'numeric';
             case 'LONG': return 'numeric';
+            case 'FIXED': return 'number';
             case 'DATE': return 'date';
             case 'TIMESTAMP': return 'date';
             case 'TIME': return 'date';
@@ -83,8 +84,42 @@ export abstract class AbstractConnection {
             case 'NVARCHAR': return 'text';
             case 'CHAR': return 'text';
             case 'NCHAR': return 'text';
-            case 'FIXED': return 'number';
             default: return 'text';
+        }
+    }
+
+    public floatOrInt(type) {
+        let cleanType = type.replace(/ *\([^)]*\) */g, '').toUpperCase();
+        switch (cleanType) {
+
+            case 'BIT': return 'int';
+            case 'INT4': return 'int';
+            case 'INT8': return 'int';
+            case 'INT': return 'int';
+            case 'INT64': return 'int';
+            case 'INTEGER': return 'int';
+            case 'TINYINT': return 'int';
+            case 'SMALLINT': return 'int';
+            case 'MEDIUMINT': return 'int';
+            case 'BIGINT': return 'int';
+            case 'SERIAL': return 'int';
+            case 'LONG': return 'int';
+            case 'VARBINARY': return 'int';
+            case 'DECIMAL': return 'float';
+            case 'DEC': return 'float';
+            case 'DOUBLE': return 'float';
+            case 'DOUBLE PRECISSION': return 'float';
+            case 'FLOAT': return 'float';
+            case 'FLOAT8': return 'float';
+            case 'FLOAT16': return 'float';
+            case 'FLOAT64': return 'float';
+            case 'REAL': return 'float';
+            case 'NUMERIC': return 'float';
+            case 'FIXED': return 'float';
+            case 'NUMBER': return 'float';
+            case 'FIXED': return 'float';
+            default: return 'float';
+
         }
     }
 
@@ -203,11 +238,84 @@ export abstract class AbstractConnection {
     }
 
     /**
+     * get relations in given model manually
+     * @param dm 
+     * @returns model with relations
+     */
+    public setRelations(dm) {
+        let data_model = dm;
+        let columns_map = new Map();
+
+        /**
+         * Store columns in a map, every key (column) has all tables in wich appear
+         */
+        data_model.forEach((table, index) => {
+
+            table.columns.forEach(column => {
+
+                if ((column.column_name.toLowerCase().includes('_id') ||
+                    column.column_name.toLowerCase().includes('id_') ||
+                    column.column_name.toLowerCase().includes('number') ||
+                    column.column_name.toLowerCase().startsWith("sk") ||
+                    column.column_name.toLowerCase().startsWith("tk") ||
+                    column.column_name.toLowerCase().endsWith("sk") ||
+                    column.column_name.toLowerCase().endsWith("tk") ||
+                    column.column_name.toLowerCase().includes('code'))) {
+
+                    let node = columns_map.get(column.column_name)
+                    if (node) {
+
+                        node.tables.push(index);
+                        columns_map.set(column.column_name, node)
+
+                    } else {
+                        columns_map.set(column.column_name, { col_name: column.column_name, tables: [index] })
+                    }
+                }
+            })
+        });
+
+        /**
+         * Set relations in every table
+         */
+        columns_map.forEach((value, key) => {
+
+            if (value.tables.length > 1) {
+
+                for (let i = 0; i < value.tables.length; i++) {
+                    for (let j = i + 1; j < value.tables.length; j++) {
+
+                        let origin = data_model[value.tables[i]];
+                        let dest = data_model[value.tables[j]];
+
+                        origin.relations.push({
+                            source_table: origin.table_name,
+                            source_column: [value.col_name],
+                            target_table: dest.table_name,
+                            target_column: [value.col_name],
+                            visible: true
+                        });
+                        dest.relations.push({
+                            source_table: dest.table_name,
+                            source_column: [value.col_name],
+                            target_table: origin.table_name,
+                            target_column: [value.col_name],
+                            visible: true
+                        });
+                    }
+                }
+            }
+        })
+
+        return data_model;
+    }
+
+    /**
      * To RE-DO!!!!
      * @param dm datamodel (array with tables)
      * @returns 
      */
-    public getRelations(dm) {
+    public setRelations_old(dm) {
         let data_model = dm;
         let visited = [];
         // Recorrem totes les columnes de totes les taules i comparem amb totes les columnes de cada taula (menys la que estem recorrent
@@ -223,6 +331,7 @@ export abstract class AbstractConnection {
                     if (!visited.includes(data_model[j].table_name)) {
                         // Columnes
                         for (let i = 0; i < data_model[j].columns.length; i++) {
+                            console.log(l, k, j, i)
                             let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
                             if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
                                 sourceColumn.source_column.toLowerCase().includes('id_') ||
@@ -259,17 +368,17 @@ export abstract class AbstractConnection {
 
     async getDataSource(id: string) {
         try {
-          return await DataSource.findOne({ _id: id }, (err, datasource) => {
-            if (err) {
-              throw Error(err);
-            }
-            return datasource;
-          });
+            return await DataSource.findOne({ _id: id }, (err, datasource) => {
+                if (err) {
+                    throw Error(err);
+                }
+                return datasource;
+            });
         } catch (err) {
-          console.log(err);
-          throw err;
+            console.log(err);
+            throw err;
         }
-      }
+    }
 
 }
 

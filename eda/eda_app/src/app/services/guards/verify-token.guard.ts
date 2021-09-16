@@ -13,7 +13,7 @@ export class VerifyTokenGuard implements CanActivate {
   ) { }
 
   canActivate(): Promise<boolean> | boolean {
-    const token = this.userService.token;
+    const token = this.userService.getToken();
     const payload = JSON.parse(atob(token.split('.')[1]));
     const expired = this.expired(payload.exp);
 

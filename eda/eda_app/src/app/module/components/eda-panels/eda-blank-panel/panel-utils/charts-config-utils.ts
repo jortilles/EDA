@@ -19,7 +19,7 @@ export const ChartsConfigUtils = {
     let config: any = null;
 
     if (ebp.panelChart.componentRef && ['table', 'crosstable'].includes(ebp.panelChart.props.chartType)) {
-      tableRows = ebp.panelChart.componentRef.instance.inject.rows;
+      tableRows = ebp.panelChart.componentRef.instance.inject.rows || 10;
       config =
       {
         withColTotals: ebp.panelChart.componentRef.instance.inject.withColTotals,
@@ -42,16 +42,15 @@ export const ChartsConfigUtils = {
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits
       }
 
-    } else if (['geoJsonMap', 'coordinatesMap'].includes(ebp.panelChart.props.chartType)) {
-      config =
+    } else if (['coordinatesMap', 'geoJsonMap'].includes(ebp.panelChart.props.chartType)) {
+
+      config = 
       {
-        coordinates: ebp.panelChart.componentRef.instance.inject.coordinates,
-        zoom: ebp.panelChart.componentRef.instance.inject.zoom,
-        color: ebp.panelChart.componentRef.instance.inject.color,
-        logarithmicScale: ebp.panelChart.componentRef.instance.inject.logarithmicScale,
-        legendPosition: ebp.panelChart.componentRef.instance.inject.legendPosition
+        zoom:ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
+        coordinates : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null
       }
     }
+
     else if (["parallelSets", "treeMap", "scatterPlot", "funnel"].includes(ebp.panelChart.props.chartType)) {
 
       config =
@@ -70,9 +69,10 @@ export const ChartsConfigUtils = {
 
     else{
       config = { 
-        colors: ebp.graficos.chartColors, 
+        colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
         chartType: ebp.panelChart.props.chartType, 
-        addTrend: ebp.panelChart.props.config ? ebp.panelChart.props.config.getConfig()['addTrend'] : false
+        addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
+        addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false
       };
   }
     return new ChartConfig(config);
@@ -92,7 +92,7 @@ export const ChartsConfigUtils = {
     }
     else if (['bar', 'line', 'piechart', 'doughnut'].includes(type)) {
 
-      return new ChartJsConfig(null, type, false);
+      return new ChartJsConfig(null, type, false, false);
 
     } else if (type === 'parallelSets') {
 

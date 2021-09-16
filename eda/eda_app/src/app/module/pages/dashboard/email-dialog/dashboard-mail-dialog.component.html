@@ -1,0 +1,70 @@
+<eda-dialog [inject]="dialog" >
+
+<div body>
+  
+  <div class="p-grid" >
+    <div class="p-col-3">
+
+
+      <h6 i18n="@@SendMailEvery"> Enviar mail de alerta cada: </h6>
+
+      <div class="p-col-12" style="margin-top: -0.4em;">
+        <p-inputNumber [(ngModel)]="quantity"></p-inputNumber>
+      </div>
+      <div class="p-col-12">
+        <p-radioButton name="groupname" value="days" [label]="daysSTR" [(ngModel)]="units">
+        </p-radioButton>
+      </div>
+      <div class="p-col-12" *ngIf="units==='days'">
+        <p i18n="@@at"> A las </p>
+        <p-calendar [timeOnly]="true" [(ngModel)]="hours"></p-calendar>
+      </div>
+      <div class="p-col-12">
+        <p-radioButton name="groupname" value="hours" [label]="hoursSTR" [(ngModel)]="units">
+        </p-radioButton>
+      </div>
+    </div>
+
+    <div class="p-col-5">
+
+
+      <h6 i18n="@@SendMailWho"> Destinatarios </h6>
+      <div>
+        <p-multiSelect [(ngModel)]="selectedUsers" [options]="users" [style]="{width: '80%'}" optionLabel="label">
+        </p-multiSelect>
+      </div>
+
+    </div>
+
+    <div class="p-col-4">
+
+      <h6 i18n="@@SendMailWhat"> Contenido del mail: </h6>
+
+      <textarea rows="8" cols="30" pInputTextarea autoResize="autoResize" [(ngModel)]="mailMessage"></textarea>
+
+    </div>
+
+  </div>
+
+  <div class="p-col-12">
+    <h6 i18n="@@noMail">Sin alertas de correo</h6>
+    <p-inputSwitch id="switchCache" class="p-col-1" [(ngModel)]="disabled" tooltipPosition="left">
+    </p-inputSwitch>
+  </div>
+
+
+</div>
+
+<div footer>
+
+
+  <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+    <button id="saveFilterButton" type="submit" pButton (click)="save()" i18n-label="@@guardarBtn" [disabled]="disableConfirm()"
+        label="Confirmar" icon="fa fa-check" class="p-button-raised p-button-success" ></button>
+    <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger"
+        i18n-label="@@cancelarBtn" label="Cancelar"></button>
+</div>
+
+</div>
+  
+</eda-dialog>

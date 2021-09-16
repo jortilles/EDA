@@ -16,7 +16,7 @@ export class AlertsManagementComponent implements OnInit {
   public dashboards: Array<any> = [];
   public alerts: Array<any> = [];
   public alertsTable: EdaTable;
-  public panelHeader:string = $localize`:@@alertsConfigTitle:Gestión de alertas`
+  public panelHeader:string = $localize`:@@alertsConfigTitle:Gestión de alertas`;
 
   constructor(private dashboardService: DashboardService, private router: Router,) {
 
@@ -25,14 +25,7 @@ export class AlertsManagementComponent implements OnInit {
       contextMenu: new EdaContextMenu( {
         style:{top:'-250px', left:'-500px'},
         contextMenuItems: [
-          // new EdaContextMenuItem({
-          //   label: 'ELIMINAR', command: () => {
-          //     console.log(this.dashboards);
-          //     const elem = this.alertsTable.getContextMenuRow().data ;
-          //     const dashboard_id = elem._id
-          //     const dashboard = this.dashboards.filter(d => d.id === dashboard_id)
-          //   }
-          // }),
+
           new EdaContextMenuItem({
             label: $localize`:@@gotodashboard:Ir al informe`, command: () => {
               

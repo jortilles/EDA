@@ -1,0 +1,15 @@
+<eda-dialog [inject]="dialog">
+  
+  <div body id=alertdialog class="center">
+    <h2 i18n="@@dangerQuery">¡Cuidado!</h2>
+    <h5 i18n="@@cumsumAlertMessage1">
+      La suma acumulativa sólo se puede aplicar si se dispone de una única serie no numérica.
+    </h5>
+    <h5 i18n="@@cumsumAlertMessage2" style="margin-bottom: 2em;">
+      Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna no numérica. 
+    </h5>
+    <button type="button" pButton (click)="close(false)" icon="pi pi-check"  class="p-button-raised p-button-warning"
+      i18n-label="@@AddFiltersWarningButton" label="Entendido">
+    </button>
+  </div>
+</eda-dialog>

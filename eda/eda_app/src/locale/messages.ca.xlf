@@ -1023,6 +1023,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">38</context>
 </context-group>
 </trans-unit>
+<trans-unit id="beforeYesterday" datatype="html">
+<source> Antes de Ayer </source>
+<target> Abans d'ahir </target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
+<context context-type="linenumber">39</context>
+</context-group>
+</trans-unit>
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
 <target> Aquesta setmana </target>
@@ -1496,7 +1504,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">142</context>
 </context-group>
 </trans-unit>
-<trans-unit id="conexionH5" datatype="html">
+<trans-unit id="conexionh4" datatype="html">
 <source>
             Conexión
 </source>
@@ -1971,6 +1979,18 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>NO</source>
 <target>NO</target>
 </trans-unit>
+<trans-unit id="dates5">
+<source>SEMANA</source>
+<target>SETMANA</target>
+</trans-unit>
+<trans-unit id="dates6">
+<source>DIA DE LA SEMANA</source>
+<target>DIA DE LA SETMANA</target>
+</trans-unit>
+<trans-unit id="dates7">
+<source>FECHA COMPLETA</source>
+<target>DATA COMPLETA</target>
+</trans-unit>
 <trans-unit id="ChartProps">
 <source>PROPIEDADES DEL gráfico</source>
 <target>PROPIETATS DEL GRÀFIC</target>
@@ -2243,8 +2263,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Un  KPI necessita un únic número.</target>
 </trans-unit>
 <trans-unit id="chartInfo3">
-<source>Un gráfico de barras necesita una o más categorías y una série numéricas.</source>
-<target>Un gràfic de barres necessita una o més categories i una sèrie numèrica.</target>
+<source>Un gráfico de barras necesita una o más categorías y una série numéricas. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
+<target>Un gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
 </trans-unit>
 <trans-unit id="chartInfo4">
 <source> Un gráfico combinado necesita una categoría y dos séries numéricas.</source>
@@ -2252,15 +2272,15 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="chartInfo5">
 <source>Un gráfico de línea necesita una o más categorías y una série numérica.</source>
-<target>Un gràfic de línia necessita una o més categories i una sèrie numèrica.</target>
+<target>Un gràfic de línia necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
 </trans-unit>
 <trans-unit id="chartInfo6">
 <source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
-<target>Un gràfic de barres necessita una o més categories i una sèrie numèrica.</target>
+<target>Un gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
 </trans-unit>
 <trans-unit id="chartInfo7">
 <source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
-<target>Un gràfic de barres necessita una o més ctegorries i una sèrie numèrica.</target>
+<target>Un gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
 </trans-unit>
 <trans-unit id="chartInfo8">
 <source>Un gráfico polar necesita una categoría y una série numérica.</source>
@@ -2632,6 +2652,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Ayer</source>
 <target>Ahir</target>
 </trans-unit>
+<trans-unit id="DatePickerBeforeYesterday">
+<source>Antes de ayer</source>
+<target>Abans d'ahir</target>
+</trans-unit>
 <trans-unit id="DatePickerWeek">
 <source>Ésta semana</source>
 <target>Aquesta setmana</target>
@@ -2640,9 +2664,17 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Éste mes</source>
 <target>Aquest mes</target>
 </trans-unit>
+<trans-unit id="DatePickerMonthPreviousYear">
+<source>Éste mes del año pasado</source>
+<target>Aquest mes de l'any passat</target>
+</trans-unit>
 <trans-unit id="DatePickerYear">
 <source>Éste año</source>
 <target>Aquest any</target>
+</trans-unit>
+<trans-unit id="DatePickerYearPreviousYear">
+<source>El año pasado</source>
+<target>L'any passat</target>
 </trans-unit>
 <trans-unit id="DatePickerLast7">
 <source> Últimos 7 días </source>
@@ -3384,8 +3416,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="mailmanagementHeader">
-    <source>Gestión de correo </source>
-    <target>Gestió del correu</target>
+    <source>Gestión de correo y envio de mails </source>
+    <target>Gestió del correu i eviament de mails</target>
   </trans-unit>
 
   <trans-unit id="mailConfSaved">
@@ -3438,6 +3470,84 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
     <target>Per llançar una consulta. Seleccioneu els atributs que voleu veure, Cliqueu sobre ells per configurar-i executi la consulta. Sempre podrà tornar a aquesta vista.</target>
   </trans-unit>
+
+  <trans-unit id="agregacionh5">
+    <source>Agregación   </source>
+    <target>Agregació  </target>
+  </trans-unit> 
+
+     <trans-unit id="inputFormat">
+    <source>Número de decimales   </source>
+    <target>Número de decimals  </target>
+  </trans-unit> 
+
+     <trans-unit id="DashboardMailingTitle">
+    <source>Configuración del envío por email  </source>
+    <target>Configuració dels enviaments per email  </target>
+  </trans-unit> 
+
+    <trans-unit id="opcionMail">
+    <source>Enviar por email  </source>
+    <target>Enviar per email  </target>
+  </trans-unit> 
+
+  <trans-unit id="noMail">
+    <source>Sin alertas de correo </source>
+    <target>Sense alertes de correu </target>
+  </trans-unit> 
+
+  <trans-unit id="dashbaordsMailingHeader">
+    <source>Envio de informes por email  </source>
+    <target>Enviament d'informes per email</target>
+  </trans-unit> 
+
+    <trans-unit id="cumulativeSum">
+    <source>Suma acumulativa   </source>
+    <target>Suma acumulativa  </target>
+  </trans-unit> 
+
+   <trans-unit id="ptooltipViewAlerts">
+    <source>Configurar alertas</source>
+    <target>Configurar alertes</target>
+  </trans-unit> 
+
+     <trans-unit id="inputFilter">
+    <source>Filtros</source>
+    <target>Filtres</target>
+  </trans-unit> 
+
+     <trans-unit id="comparativeTooltip">
+    <source>La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado</source>
+    <target>La funció de comparar només es pot activar si es disposa d'un camp de data agregat per mes o setmana i un únic camp numèric agregat</target>
+  </trans-unit> 
+
+     <trans-unit id="trendTooltip">
+    <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
+    <target>La funció d'afegir una tendència només es pot activar en els gràfics de línies</target>
+  </trans-unit> 
+
+     <trans-unit id="filterTooltip">
+    <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
+    <target>Pots afegir paraules separades per comes, que s'aplicaràn com a filtres de tipus LIKE a l'hora de recuperar les taules de la teva base de dades</target>
+  </trans-unit> 
+
+   <trans-unit id="cumulativeSumTooltip">
+    <source>Si activas ésta función se calculará la suma acumulativa 
+                                            para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes o dia.</source>
+    <target>Si actives questa funció es calcularà la suma acumulativa per els camps numèrics que escullis.
+    Només es pot activar si la data està agregada per mes, setmana o dia.</target>
+  </trans-unit> 
+
+
+     <trans-unit id="cumsumAlertMessage1">
+    <source> La suma acumulativa sólo se puede aplicar si se dispone de una única serie no numérica.</source>
+    <target>La suma acumulativa només es pot aplicar si es disposa d'una única sèrie no numèrica.</target>
+  </trans-unit> 
+
+     <trans-unit id="cumsumAlertMessage2">
+    <source>Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna no numérica.</source>
+    <target>Pots desactivar la funció acumulativa en el camp de data o treure una columna no numèrica. </target>
+  </trans-unit> 
 
 
 </body>

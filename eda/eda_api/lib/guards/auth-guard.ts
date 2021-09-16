@@ -9,6 +9,7 @@ const jwt = require ('jsonwebtoken');
 
 
 export const authGuard = async function (req: Request, res: Response, next: NextFunction) {
+   
     let token = req.qs.token;
     // return next(new HttpException(401, 'Invalid Token'));
     if ( !_.isNil(token) ) {

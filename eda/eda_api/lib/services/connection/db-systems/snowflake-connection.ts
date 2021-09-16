@@ -44,7 +44,7 @@ export class SnowflakeConnection extends AbstractConnection {
     }
   }
 
-  async generateDataModel(optimize: number): Promise<any> {
+  async generateDataModel(optimize: number, filter:string): Promise<any> {
 
     try {
 
@@ -56,7 +56,15 @@ export class SnowflakeConnection extends AbstractConnection {
       const resultTables = await this.execQuery(tablesQuery).then(res => res.map(row => ({ name: row.name, count: row.rows })));
       const resultViews = await this.execQuery(viewsQuery).then(res => res.map(row => ({ name: row.name, count: row.rows })));
 
-      tableNames = [...resultTables, ...resultViews];
+      const filterTable = (str, filters) => {
+        let isIncluded = false;
+        filters.split(',').forEach(filter => {
+          if(str.inlcludes(filter.trim())) isIncluded = true;
+        });
+        return isIncluded;
+      }
+
+      tableNames = [...resultTables, ...resultViews].filter(table => filterTable(table, filter));
 
       const foreignKeys = await this.execQuery(this.getForeigKeysQuery());
 
@@ -76,7 +84,7 @@ export class SnowflakeConnection extends AbstractConnection {
 
       /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
       if (foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
-      else return await this.getRelations(tables);
+      else return await this.setRelations(tables);
 
 
     } catch (err) {
@@ -139,7 +147,12 @@ export class SnowflakeConnection extends AbstractConnection {
     let column = c;
     column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
     column.description = { default: this.normalizeName(column.column_name), localized: [] };
-    column.column_type = this.normalizeType(column.column_type) || column.column_type;
+    
+    const dbType = column.column_type;
+    column.column_type = this.normalizeType(dbType) || dbType;
+    let floatOrInt =  this.floatOrInt(dbType);
+    column.minimumFractionDigits = floatOrInt === 'int' &&  column.column_type === 'numeric' ? 0 
+    : floatOrInt === 'float' &&  column.column_type === 'numeric' ? 2 : null;
 
 
     column.column_type === 'numeric'

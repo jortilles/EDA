@@ -33,7 +33,8 @@ export class DsConfigWrapperComponent implements OnInit {
   public name: string;
   public header: string = $localize`:@@DataModelHeader:Configurar nuevo orígen de datos`;
   public optimizeString: string = $localize`:@@OptimizeQuery:Optimizar consultas`;
-  public allowCacheSTR: string = $localize`:@@allowCache: Habilitar caché`
+  public allowCacheSTR: string = $localize`:@@allowCache: Habilitar caché`;
+  public filterTooltip: string = $localize`:@@filterTooltip:Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos`;
   public optimize: boolean = true;
   public allowCache: boolean = true;
   private project_id: string;
@@ -60,7 +61,8 @@ export class DsConfigWrapperComponent implements OnInit {
       sid: [{ name: 'SID', value: 1 }],
       warehouse:[null],
       optimize: [true],
-      allowCache: [true]
+      allowCache: [true],
+      filter : [null]
     });
 
   }
@@ -92,7 +94,8 @@ export class DsConfigWrapperComponent implements OnInit {
       database: this.form.value.db,
       project_id: this.project_id,
       optimize: this.form.value.optimize ? 1 : 0,
-      allowCache: this.form.value.allowCache ? 1 : 0
+      allowCache: this.form.value.allowCache ? 1 : 0,
+      filter : this.form.value.filter 
     }
 
     this.dataSourceService.testConnection(connection).subscribe(
@@ -140,7 +143,8 @@ export class DsConfigWrapperComponent implements OnInit {
       schema: this.form.value.schema,
       sid: this.form.value.sid.value,
       optimize: this.form.value.optimize ? 1 : 0,
-      allowCache: this.form.value.allowCache ? 1 : 0
+      allowCache: this.form.value.allowCache ? 1 : 0,
+      filter : this.form.value.filter 
     };
 
     this.dataSourceService.testConnection(connection).subscribe(

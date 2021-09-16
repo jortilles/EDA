@@ -1,14 +1,14 @@
 import * as _ from 'lodash';
 
 class TreeNode {
-    public value : string;
-    public child : Array<TreeNode>
+    public value: string;
+    public child: Array<TreeNode>
     constructor(value) {
-      this.value = value;
-      this.child = [];
+        this.value = value;
+        this.child = [];
     }
-  }
-  
+}
+
 
 export abstract class QueryBuilderService {
     public query: any;
@@ -160,7 +160,7 @@ export abstract class QueryBuilderService {
         if (schema) {
             origin = `${schema}.${origin}`;
         }
-        return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin} `;
+        return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;
     }
 
 
@@ -203,7 +203,7 @@ export abstract class QueryBuilderService {
                     break;
                 case 'groups':
                     this.groups.forEach(group => {
-                        if(permission.groups.includes(group) && !permission.global){
+                        if (permission.groups.includes(group) && !permission.global) {
                             permissions.push(permission)
                         }
                     })
@@ -276,18 +276,18 @@ export abstract class QueryBuilderService {
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         let query = userQuery.SQLexpression;
 
-        
+
         if (modelPermissions.length > 0) {
 
 
             const root = this.BuildTree(query);
             const value = this.replaceOnTree(root);
 
-            if(!value) return null;
+            if (!value) return null;
 
             const tablesInQuery = this.parseTablesInQuery(userQuery.SQLexpression);
             let tablesNoSchema = this.parseSchema(tablesInQuery, schema);
-    
+
             /**Mark tables to avoid undesired replaces */
             tablesNoSchema.forEach((table, i) => {
                 let whitespaces = `[\n\r\s]*`
@@ -301,7 +301,7 @@ export abstract class QueryBuilderService {
             });
 
             let reg = new RegExp(`┘┘`, "g");
-            query = query.replace(reg, ``); 
+            query = query.replace(reg, ``);
         }
 
         //Isolate filters from query
@@ -339,7 +339,7 @@ export abstract class QueryBuilderService {
         const permissions = this.getPermissions(modelPermissions, this.tables, origin);
 
         let tables = this.dataModel.ds.model.tables
-        .map(table => { return { name: table.table_name, query: table.query } });
+            .map(table => { return { name: table.table_name, query: table.query } });
 
         if (permissions.length > 0) {
             permissions.forEach(permission => {
@@ -393,17 +393,17 @@ export abstract class QueryBuilderService {
 
         words = sqlQuery.split(' ');
         for (let i = 0; i < words.length; i++) {
-            if ( 
+            if (
                 (words[i].toUpperCase() === 'FROM' || words[i].toUpperCase() === 'JOIN') &&
-                ( words[i+1] !== '(' &&  words[i+1].toUpperCase() !== 'SELECT')  // la paraula que ve despres de un from i no es una subconsulta
-            ){
-                    tables.push( words[i+1] );
+                (words[i + 1] !== '(' && words[i + 1].toUpperCase() !== 'SELECT')  // la paraula que ve despres de un from i no es una subconsulta
+            ) {
+                tables.push(words[i + 1]);
             }
         }
         return tables.filter(this.onlyUnique);
     }
 
-   
+
     onlyUnique = (value, index, self) => {
         return self.indexOf(value) === index;
     }
@@ -453,110 +453,159 @@ export abstract class QueryBuilderService {
 
         let sqlQuery = query.replace(/[\t\n\r]/gm, '');
         sqlQuery = `(${sqlQuery})`;
-      
+
         let nestedQueries = [];
         let parents = '';
-      
+
         for (let i = 0; i < sqlQuery.length; i++) {
-      
-          if (sqlQuery[i] === '(') parents += '(';
-          if (sqlQuery[i] === ')') parents += ')';
-      
-          let nested = '';
-          let j = i + 1;
-          let opened = 0;
-      
-          if (sqlQuery[i] === '(') {
-            nested += '(';
-            opened++;
-            while (opened > 0 && j < sqlQuery.length) {
-              nested += sqlQuery[j];
-              if (sqlQuery[j] === '(') { opened++ };
-              if (sqlQuery[j] === ')') { opened-- };
-              j++;
+
+            if (sqlQuery[i] === '(') parents += '(';
+            if (sqlQuery[i] === ')') parents += ')';
+
+            let nested = '';
+            let j = i + 1;
+            let opened = 0;
+
+            if (sqlQuery[i] === '(') {
+                nested += '(';
+                opened++;
+                while (opened > 0 && j < sqlQuery.length) {
+                    nested += sqlQuery[j];
+                    if (sqlQuery[j] === '(') { opened++ };
+                    if (sqlQuery[j] === ')') { opened-- };
+                    j++;
+                }
             }
-          }
-          if (nested.length > 0) {
-            nestedQueries.push(nested);
-          }
+            if (nested.length > 0) {
+                nestedQueries.push(nested);
+            }
         }
-      
+
         let root = new TreeNode(nestedQueries[0])
         let stack = [root];
         let node = null;
         let ptr = 1;
-      
+
         for (let i = 1; i < parents.length; i++) {
-      
-          if (parents[i] === '(') {
-      
-            let newNode = new TreeNode(nestedQueries[ptr]);
-      
-            if (stack.length > 0) {
-              node = stack[stack.length - 1];
-              node.child.push(newNode);
-              stack.push(newNode);
-            } else {
-              stack.push(newNode);
+
+            if (parents[i] === '(') {
+
+                let newNode = new TreeNode(nestedQueries[ptr]);
+
+                if (stack.length > 0) {
+                    node = stack[stack.length - 1];
+                    node.child.push(newNode);
+                    stack.push(newNode);
+                } else {
+                    stack.push(newNode);
+                }
+                ptr++;
+
+            } else if (parents[i] === ')') {
+                stack.pop();
             }
-            ptr++;
-      
-          } else if (parents[i] === ')') {
-            stack.pop();
-          }
         }
         return root;
-      
-      }
-      
-      public replaceOnTree = (root) => {
-      
+
+    }
+
+    public replaceOnTree = (root) => {
+
         if (root.child.length === 0) {
-          if (!this.checkFormat(root.value)) return false;
-          else return true;
+            if (!this.checkFormat(root.value)) return false;
+            else return true;
         }
         else {
-          let str = root.value;
-          for (let i = 0; i < root.child.length; i++) {
-      
-            const check = this.replaceOnTree(root.child[i]);
-      
-            if (check) {
-              str = str.replace(root.child[i].value, ' ___ ');
-            } else {
-              return false;
+            let str = root.value;
+            for (let i = 0; i < root.child.length; i++) {
+
+                const check = this.replaceOnTree(root.child[i]);
+
+                if (check) {
+                    str = str.replace(root.child[i].value, ' ___ ');
+                } else {
+                    return false;
+                }
+
             }
-      
-          }
-          if (!this.checkFormat(str)) return false;
-          else return true;
+            if (!this.checkFormat(str)) return false;
+            else return true;
         }
-      
-      }
-      
-      public checkFormat = (expression) => {
-      
+
+    }
+
+    public checkFormat = (expression) => {
+
+        console.log(expression)
         const words = expression.split(/\s+/);
         let currentOperand = '';
         for (let i = 0; i < words.length; i++) {
-      
-          let word = words[i].toUpperCase();
-          if (
-            word === 'FROM'
-            || word === 'SELECT'
-            || word === 'JOIN'
-            || word === 'WHERE'
-            || word === 'GROUP'
-          ) {
-            currentOperand = word;
-          }
-      
-          if (currentOperand === 'FROM' && word.includes(',')) return false;
-      
+
+            let word = words[i].toUpperCase();
+            console.log(word);
+            if (
+                word === 'FROM'
+                || word === 'SELECT'
+                || word === 'JOIN'
+                || word === 'WHERE'
+                || word === 'GROUP'
+            ) {
+                currentOperand = word;
+            }
+
+            if (currentOperand === 'FROM' && word.includes(',')) return false;
+
         }
-      
+
         return true;
-      
-      }
+
+    }
+
+    public getEqualFilters = (filters) => {
+        let filterMap = new Map();
+        let toRemove = [];
+        filters.forEach(filter => {
+
+            let key = filter.filter_table + filter.filter_column;
+            let node = filterMap.get(key);
+            if (node) {
+                node.push(filter);
+                node.forEach(filter => {
+                    if (!toRemove.includes(filter.filter_id)) {
+                        toRemove.push(filter.filter_id);
+                    }
+                })
+            } else {
+                filterMap.set(filter.filter_table + filter.filter_column, [filter]);
+            }
+
+        });
+        filterMap.forEach((value, key) => {
+            if (value.lenght < 2) {
+                filterMap.delete(key);
+            }
+        })
+        return { map: filterMap, toRemove: toRemove };
+    }
+
+
+    public mergeFilterStrings = (filtersString, equalfilters, type) => {
+        if (equalfilters.toRemove.length > 0) {
+
+            equalfilters.map.forEach((value, key) => {
+                let filterSTR = 'and ('
+                value.forEach(f => {
+                    filterSTR += this.filterToString(f, type) + '\nor ';
+                });
+
+                filterSTR = filterSTR.slice(0, -3);
+                filterSTR += ')';
+                filtersString += filterSTR;
+            });
+
+        }
+
+        return filtersString;
+    }
 
 }

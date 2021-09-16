@@ -25,7 +25,7 @@ import {
     DateUtils,
     AddTableService,
     StyleService,
-    MailService
+    MailService,
 } from './service.index';
 
 
@@ -57,7 +57,8 @@ import {
         DateUtils,
         AddTableService,
         StyleService,
-        MailService
+        MailService,
+
     ]
 })
 export class ServicesModule { }

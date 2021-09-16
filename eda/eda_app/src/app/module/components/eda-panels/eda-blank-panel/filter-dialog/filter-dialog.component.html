@@ -11,7 +11,7 @@
 
         <div class="p-grid p-col-12 mt-2">
 
-            <div class="p-col-12 mt-1" [ngClass]="{ 'p-md-6': !display.between }">
+            <div class="p-col-12 mt-1" [ngClass]="{ 'p-md-6': (!display.between && !display.calendar ) || (!!display.calendar )}">
 
                 <span class="p-float-label">
 
@@ -90,20 +90,20 @@
 
                     <div class="p-col-6 mt-3">
 
-                        <div class="form-group mb-0">
+                        <div style="margin-top: -0.8em;" >
 
-                            <label i18n="@@fechaInicioLabel" for="datepicker">
+                            <!-- <label i18n="@@fechaInicioLabel" for="datepicker">
                                 Fecha inicio
-                            </label>
+                            </label> -->
 
-                            <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
-                                (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+                            <eda-date-picker #myCalendar (onDatesChanges)="processPickerEvent($event)">
+                            </eda-date-picker>
 
                         </div>
 
                     </div>
 
-                    <div class="p-col-6 mt-3">
+                    <!-- <div class="p-col-6 mt-3">
 
                         <div class="form-group mb-0">
 
@@ -116,7 +116,7 @@
 
                         </div>
 
-                    </div>
+                    </div> -->
 
                 </ng-container>
 

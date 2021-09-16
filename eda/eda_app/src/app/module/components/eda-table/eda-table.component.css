@@ -38,3 +38,11 @@
   text-align: left;
   font-weight: bold !important;
 }
+
+.p-datatable-thead tr{
+  background:  #e9ecef !important;
+}
+.p-datatable .p-datatable-thead > tr > th{
+  background: #e9ecef !important;
+  border: 1px solid #fff;
+}

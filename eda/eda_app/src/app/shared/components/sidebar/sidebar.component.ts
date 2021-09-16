@@ -2,7 +2,7 @@ import { DashboardService } from './../../../services/api/dashboard.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from '@eda/models/model.index';
-import { SidebarService, UserService, AlertService } from '@eda/services/service.index';
+import { SidebarService, UserService, AlertService, DataSourceService } from '@eda/services/service.index';
 import { LogoSidebar } from '@eda/configs/index';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 
@@ -26,7 +26,8 @@ export class SidebarComponent implements OnInit {
         public userService: UserService,
         public sidebarService: SidebarService,
         private alertService: AlertService,
-        private dashboardService: DashboardService
+        private dashboardService: DashboardService,
+        public dataSourceService : DataSourceService
     ) {
         this.logoSidebar = LogoSidebar;
 
@@ -39,13 +40,14 @@ export class SidebarComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.user = this.userService.user;
+        this.user = this.userService.getUserObject();
         this.setEditMode()
         // Ens subscribim a l'observable currentDatasources que ha de tenir el valor actual dels noms dels datasources.
         this.sidebarService.currentDatasources.subscribe(
             data => this.dataSourceMenu = data,
             err => this.alertService.addError(err)
         );
+        
     }
 
     getMobileSize(event?): void {
@@ -133,7 +135,19 @@ export class SidebarComponent implements OnInit {
             case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
         }
     }
+    public checkNotSaved(){
+        let url = window.location.href
+        if(url.includes('data-source'))
+        {
+            this.checkNotSavedDatasource(); 
+        }
+        else if(url.includes('dashboard'))
+        {
 
+            this.checkNotSavedHome()
+        }
+        
+    }
     public checkNotSavedHome() {
 
         const options =
@@ -147,9 +161,33 @@ export class SidebarComponent implements OnInit {
         if (this.dashboardService._notSaved.value === false) {
             this.router.navigate(['/home/']);
         } else {
-            this.dashboardService._notSaved.next(false);
+            
             Swal.fire(options).then((result) => {
                 if (result.isConfirmed) {
+                    this.dashboardService._notSaved.next(false);
+                    this.router.navigate(['/home/']);
+                }
+            })
+        }
+    }
+
+    public checkNotSavedDatasource() {
+
+        const options =
+            {
+                text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
+                icon: 'warning',
+                showDenyButton: true,
+                denyButtonText: $localize`:@@cancelarButton:Cancelar`,
+            } as SweetAlertOptions
+
+        if (this.dataSourceService._unsaved.value === false) {
+            this.router.navigate(['/home/']);
+        } else {
+            
+            Swal.fire(options).then((result) => {
+                if (result.isConfirmed) {
+                    this.dataSourceService._unsaved.next(false);
                     this.router.navigate(['/home/']);
                 }
             })

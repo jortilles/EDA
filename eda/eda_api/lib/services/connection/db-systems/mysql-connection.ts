@@ -39,14 +39,29 @@ export class MysqlConnection extends AbstractConnection {
         }
     }
 
-    async generateDataModel(optimize:number): Promise<any> {
+    async generateDataModel(optimize:number, filter:string): Promise<any> {
         try {
             const tableNames = [];
             this.client = await this.getclient();
             const schema = this.config.database;
             let tables = [];
+
+
+            /**
+            * Set filter for tables if exists
+            */
+             const filters = filter ? filter.split(',') : []
+             let filter_str = filter ? `AND ( table_name LIKE '%${filters[0].trim()}%'` : ``;
+             for (let i = 1; i < filters.length; i++) {
+                 filter_str += ` OR table_name LIKE '%${filters[i].trim()}%'`;
+             }
+             if (filter) filter_str += ' )';
+
+
             const query = `
-            SELECT *  FROM information_schema.tables   WHERE table_type in ( 'BASE TABLE', 'VIEW', 'base table', 'view')  and TABLE_SCHEMA = '${schema}';
+            SELECT *  FROM information_schema.tables   
+            WHERE table_type in ( 'BASE TABLE', 'VIEW', 'base table', 'view')  
+            and TABLE_SCHEMA = '${schema}' ${filter_str};
             `;
 
             const getResults = await this.execQuery(query);
@@ -90,7 +105,7 @@ export class MysqlConnection extends AbstractConnection {
             
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
             if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
-            else return await this.getRelations(tables);
+            else return await this.setRelations(tables);
 
         } catch (err) {
             throw err;
@@ -172,7 +187,12 @@ export class MysqlConnection extends AbstractConnection {
         let column = c;
         column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
         column.description = { default: this.normalizeName(column.column_name), localized: [] };
-        column.column_type = this.normalizeType(column.column_type) || column.column_type;
+        
+        const dbType = column.column_type;
+        column.column_type = this.normalizeType(dbType) || dbType;
+        let floatOrInt =  this.floatOrInt(dbType);
+        column.minimumFractionDigits = floatOrInt === 'int' &&  column.column_type === 'numeric' ? 0 
+        : floatOrInt === 'float' &&  column.column_type === 'numeric' ? 2 : null;
 
         column.column_type === 'numeric'
             ? column.aggregation_type = AggregationTypes.getValues()

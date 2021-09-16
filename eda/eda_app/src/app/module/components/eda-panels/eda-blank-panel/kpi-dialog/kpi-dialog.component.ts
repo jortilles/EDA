@@ -36,6 +36,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
   public currentAlert = null;
   public users : any ;
   public selectedUsers:any;
+  public disabled:boolean;
 
   constructor( private userService: UserService,) {
 
@@ -102,13 +103,13 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
   }
   openConfigDialog($event, alert) {
 
-   
       this.userService.getUsers().subscribe(
           res => this.users = res.map(user => ({label: user.name, value: user})),
           err => console.log(err)
       );
 
 
+    this.disabled = !alert.mailing.enabled;
     this.hours = `${alert.mailing.hours || '00'}:${alert.mailing.minutes || '00'}`;
     this.units = alert.mailing.units;
     this.quantity = alert.mailing.quantity;
@@ -134,7 +135,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
       users:this.selectedUsers,
       mailMessage:this.mailMessage,
       lastUpdated : new Date().toISOString(), 
-      enabled: true
+      enabled: !this.disabled
     }
 
     this.currentAlert = null;

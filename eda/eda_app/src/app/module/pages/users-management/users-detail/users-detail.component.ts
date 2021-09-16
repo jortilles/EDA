@@ -28,7 +28,8 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@newUserTitle:CREAR NUEVO USUARIO`
+            title: $localize`:@@newUserTitle:CREAR NUEVO USUARIO`,
+            style :  { width: '80%', height: '70%', top:"-4em", left:'1em'}
         });
 
         this.form = this.fb.group({

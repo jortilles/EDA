@@ -83,7 +83,7 @@ export const QueryUtils = {
   },
 
 
-  getQueryFromServer:async(ebp:EdaBlankPanelComponent, query:Query) : Promise<string> => {
+  getQueryFromServer: async (ebp: EdaBlankPanelComponent, query: Query): Promise<string> => {
 
     const serverquery = await ebp.dashboardService.getBuildedQuery(query).toPromise();
     return serverquery;
@@ -164,27 +164,45 @@ export const QueryUtils = {
       return;
     }
 
-    const totalTableCount = ebp.currentQuery.reduce((a, b) => {
-      return a + parseInt(b.tableCount);
-    }, 0);
 
+    /**
+    * Cumulative sum check 
+    */
+    const dataDescription = ebp.chartUtils.describeData(ebp.currentQuery, ebp.chartLabels);
+    const cumulativeSum = ebp.currentQuery.filter(field => field.column_type === 'date' && field.cumulativeSum === true).length > 0;
 
-    const aggregations = ebp.currentQuery.filter(col => col.aggregation_type.filter(agg => (agg.value != 'none' && agg.selected === true)).length > 0).length;
-
-    if (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT && (ebp.selectedFilters.length + aggregations <= 0)) {
-
-      ebp.alertController = new EdaDialogController({
-        params: { totalTableCount: totalTableCount },
-        close: (event, response) => {
-          if (response) {
-            QueryUtils.runQuery(ebp, false);
-          }
-          ebp.alertController = null;
+    if (dataDescription.otherColumns.length > 1 && cumulativeSum) {
+      ebp.cumsumAlertController = new EdaDialogController({
+        params: null,
+        close: (event) => {
+          ebp.cumsumAlertController = null;
         }
-      });
-
+      })
     } else {
-      QueryUtils.runQuery(ebp, false);
+
+      /**
+          * Too much rows check
+          */
+      const totalTableCount = ebp.currentQuery.reduce((a, b) => {
+        return a + parseInt(b.tableCount);
+      }, 0);
+      const aggregations = ebp.currentQuery.filter(col => col.aggregation_type.filter(agg => (agg.value !== 'none' && agg.selected === true)).length > 0).length;
+
+      if (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT && (ebp.selectedFilters.length + aggregations <= 0)) {
+
+        ebp.alertController = new EdaDialogController({
+          params: { totalTableCount: totalTableCount },
+          close: (event, response) => {
+            if (response) {
+              QueryUtils.runQuery(ebp, false);
+            }
+            ebp.alertController = null;
+          }
+        });
+
+      } else {
+        QueryUtils.runQuery(ebp, false);
+      }
     }
   },
 

@@ -1,7 +1,6 @@
 import * as oracledbTypes from 'oracledb';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
-import DataSource from '../../../module/datasource/model/datasource.model';
 import { OracleBuilderService } from '../../query-builder/qb-systems/oracle-builder.service';
 import oracledb from 'oracledb';
 
@@ -17,9 +16,9 @@ export class OracleConnection extends AbstractConnection {
     private queryBuilder: OracleBuilderService;
     private AggTypes: AggregationTypes;
 
-    constructor(config){
+    constructor(config) {
         super(config);
-        if(!this.config.schema){
+        if (!this.config.schema) {
             this.config.schema = this.GetDefaultSchema();
         }
     }
@@ -31,7 +30,7 @@ export class OracleConnection extends AbstractConnection {
     async getclient() {
 
         try {
-            const connectString = parseInt(this.config.sid) === 1 ? 
+            const connectString = parseInt(this.config.sid) === 1 ?
                 `(DESCRIPTION =
                     (ADDRESS = (PROTOCOL = TCP)(HOST = ${this.config.host})(PORT = ${this.config.port}))
                     (CONNECT_DATA =
@@ -40,13 +39,13 @@ export class OracleConnection extends AbstractConnection {
                     )
                 )` : `${this.config.host}/${this.config.database}`;
 
-
             const client = await oracledb.createPool({
                 user: this.config.user,
                 password: this.config.password,
                 connectString: connectString
             });
             const connection = await client.getConnection();
+
             return connection;
 
         } catch (err) {
@@ -72,23 +71,40 @@ export class OracleConnection extends AbstractConnection {
         }
     }
 
-    async generateDataModel(optimize:number): Promise<any> {
+    async generateDataModel(optimize: number, filter: string): Promise<any> {
         try {
             // this.client = await this.getclient();
             const tableNames = [];
             const tables = [];
 
-            let whereTableSchema: string = `OWNER = '${this.config.schema}'`
-                
+            let whereTableSchema: string = `OWNER = '${this.config.schema}'`;
+
+            /**
+           * Set filter for tables if exists
+           */
+            const filters = filter ? filter.split(',') : []
+            let filter_str = filter ? `AND ( OBJECT_NAME LIKE '%${filters[0].trim()}%'` : ``;
+            for (let i = 1; i < filters.length; i++) {
+                filter_str += ` OR OBJECT_NAME LIKE '%${filters[i].trim()}%'`;
+            }
+            if (filter) filter_str += ' )';
+
+            let v_filter_str = filter ? `AND ( VIEW_NAME LIKE '%${filters[0].trim()}%'` : ``;
+            for (let i = 1; i < filters.length; i++) {
+                v_filter_str += ` OR VIEW_NAME LIKE '%${filters[i].trim()}%'`;
+            }
+            if (filter) v_filter_str += ' )';
+
+
             const query = `
               SELECT DISTINCT OBJECT_NAME 
               FROM ALL_OBJECTS
               WHERE OBJECT_TYPE = 'TABLE'
-              AND ${whereTableSchema}
+              AND ${whereTableSchema} ${filter_str}
               UNION ALL
               SELECT DISTINCT VIEW_NAME
               from sys.all_views
-              WHERE ${whereTableSchema}
+              WHERE ${whereTableSchema} ${v_filter_str}
             `;
 
             const getResults = await this.execQuery(query);
@@ -110,7 +126,7 @@ export class OracleConnection extends AbstractConnection {
             AND      CHILD.CONSTRAINT_NAME  =  CT.CONSTRAINT_NAME 
             AND      CT.R_OWNER  =  PARENT.OWNER
             AND      CT.R_CONSTRAINT_NAME  =  PARENT.CONSTRAINT_NAME 
-            AND      CT.OWNER  = '${this.config.schema}'; 
+            AND      CT.OWNER  = '${this.config.schema}'
             `
             this.client = await this.getclient();
             const foreignKeys = await this.execQuery(fkQuery);
@@ -135,8 +151,8 @@ export class OracleConnection extends AbstractConnection {
             }
 
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
-            if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
-            else return await this.getRelations(tables);
+            if (foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
+            else return await this.setRelations(tables);
 
         } catch (err) {
             throw err;
@@ -151,14 +167,14 @@ export class OracleConnection extends AbstractConnection {
         let client: oracledbTypes.Connection;
         try {
             client = await this.getclient();
-            
+
             await client.execute(`alter session set current_schema = ${this.config.schema} `)
-            const result  = await client.execute(query);
+            const result = await client.execute(query);
             const labels = result.metaData.map(x => x.name);
             const parsedResults = [];
             result.rows.forEach(row => {
                 const r = {};
-                for(let j = 0; j < labels.length; j++){
+                for (let j = 0; j < labels.length; j++) {
                     r[labels[j]] = row[j];
                 }
                 parsedResults.push(r);
@@ -237,11 +253,17 @@ export class OracleConnection extends AbstractConnection {
     }
 
     private setColumns(c, tableCount?: number) {
+
         let column: any = {};
         column.column_name = c[0];
         column.display_name = { default: this.normalizeName(c[0]), localized: [] };
         column.description = { default: this.normalizeName(c[0]), localized: [] };
-        column.column_type = this.normalizeType(c[1]) || column.column_type;
+
+        const dbType = c[1];
+        column.column_type = this.normalizeType(dbType) || dbType;
+        let floatOrInt = this.floatOrInt(dbType);
+        column.minimumFractionDigits = floatOrInt === 'int' && column.column_type === 'numeric' ? 0
+            : floatOrInt === 'float' && column.column_type === 'numeric' ? 2 : null;
 
 
         column.column_type === 'numeric'
@@ -268,7 +290,7 @@ export class OracleConnection extends AbstractConnection {
     createTable(queryData: any): string {
         throw new Error('Method not implemented.');
     }
-    generateInserts(queryData:any):string {
+    generateInserts(queryData: any): string {
         throw new Error('Method not implemented.');
     }
 }

@@ -3,8 +3,7 @@
         <eda-dashboard-panel class="pointer" (click)="setTitle()">
             <div class="d-flex justify-content-center">
                 <h3 *ngIf="!titleClick" class="edaTitle"> {{title}} </h3>
-                <input *ngIf="!!titleClick" (focusout)="setTitle()" (keydown.enter)="setTitle()" type="text"
-                    class="w-100" [(ngModel)]="title" pInputText autofocusOnShow>
+                <input *ngIf="!!titleClick" (focusout)="setTitle()" (keydown.enter)="setTitle()" type="text" class="w-100" [(ngModel)]="title" pInputText autofocusOnShow>
             </div>
         </eda-dashboard-panel>
     </div>
@@ -13,9 +12,7 @@
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
     <div *ngIf="filtersList.length  > 0" style="margin: 0.5em;">
-        <button pButton pRipple type="button" (click)="reloadPanelsWithTimeOut()" style="color:#888;border: 0; margin-right: 0.3em;"
-            class="p-button-raised p-button-outlined" icon="pi pi-filter"
-             [label]="filtrar">
+        <button pButton pRipple type="button" (click)="reloadPanelsWithTimeOut()" style="color:#888;border: 0; margin-right: 0.3em;" class="p-button-raised p-button-outlined" icon="pi pi-filter" [label]="filtrar">
             <!-- <i id="applyFilterButton" class="pi pi-filter fiter-icon"></i> {{filtrar}} -->
         </button>
         <span *ngFor="let filter of filtersList">
@@ -23,42 +20,31 @@
                 {{filter.column.label}}:
             </span>
 
-            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'" [options]="filter.data"
-                [(ngModel)]="filter.selectedItems" [virtualScroll]="true" itemSize="30" [maxSelectedLabels]="3"
-                defaultLabel="{{filter.column.label}}" display="chip" class="customMultiselect"
-                (onPanelHide)="applyGlobalFilter(filter)" [style]="{'max-width': '200px', 'min-width':'200px'}">
+        <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'" [options]="filter.data" [(ngModel)]="filter.selectedItems" [virtualScroll]="true" itemSize="30" [maxSelectedLabels]="3" defaultLabel="{{filter.column.label}}" display="chip"
+            class="customMultiselect" [style]="{'max-width': '200px', 'min-width':'200px'}" (onChange)="applyGlobalFilter(filter)">
 
-                <p-footer>
-                    <button pButton pRipple type="button" (click)="removeGlobalFilter(filter)" icon="pi pi-trash"
-                        class="p-button-danger p-button-rounded  p-button-outlined"
-                        style="margin: 0.2em;"></button>
-                </p-footer>
-            </p-multiSelect>
-            
-            <eda-date-picker *ngIf="filter.column.value.column_type === 'date'" [inject]="datePickerConfigs[filter.id]"
-                (onDatesChanges)="processPickerEvent($event, filter)" (onRemove)="removeGlobalFilter(filter)"
-                [autoRemove]="true"></eda-date-picker>
+            <p-footer>
+                <button pButton pRipple type="button" (click)="removeGlobalFilter(filter)" icon="pi pi-trash" class="p-button-danger p-button-rounded  p-button-outlined" style="margin: 0.2em;"></button>
+            </p-footer>
+        </p-multiSelect>
+
+        <eda-date-picker *ngIf="filter.column.value.column_type === 'date'" [inject]="datePickerConfigs[filter.id]" (onDatesChanges)="processPickerEvent($event, filter)" (onRemove)="removeGlobalFilter(filter)" [autoRemove]="true"></eda-date-picker>
         </span>
     </div>
 
 
 
-    <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions"
-        #gridster1>
+    <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions" #gridster1>
         <!-- Normal Size -->
         <ng-container *ngIf="!toLitle && !toMedium">
-            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="true"
-                [resizable]="panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y"
-                (change)="itemChange($event, panel)">
+            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="true" [resizable]="panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y" (change)="itemChange($event, panel)">
 
                 <ng-container [ngSwitch]="panel.type">
 
-                    <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject"
-                        (remove)="onRemovePanel($event)">
+                    <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)">
                     </eda-blank-panel>
 
-                    <eda-title-panel *ngSwitchCase="1" #edaPanel [panel]="panel" [inject]="inject"
-                        (remove)="onRemovePanel($event)">
+                    <eda-title-panel *ngSwitchCase="1" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)">
                     </eda-title-panel>
 
                 </ng-container>
@@ -68,18 +54,14 @@
 
         <!-- Mid  Size -->
         <ng-container *ngIf="toMedium">
-            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop"
-                [resizable]="panel.resizable" [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h"
-                [(x)]="panel.tamanyMig.x" [(y)]="panel.tamanyMig.y" (change)="itemChange($event, panel)">
+            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop" [resizable]="panel.resizable" [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h" [(x)]="panel.tamanyMig.x" [(y)]="panel.tamanyMig.y" (change)="itemChange($event, panel)">
 
                 <ng-container [ngSwitch]="panel.type">
 
-                    <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject"
-                        (remove)="onRemovePanel($event)">
+                    <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)">
                     </eda-blank-panel>
 
-                    <eda-title-panel *ngSwitchCase="1" #edaPanel [panel]="panel" [inject]="inject"
-                        (remove)="onRemovePanel($event)">
+                    <eda-title-panel *ngSwitchCase="1" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)">
                     </eda-title-panel>
 
                 </ng-container>
@@ -89,18 +71,14 @@
 
         <!-- Mobile Size -->
         <ng-container *ngIf="toLitle">
-            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop"
-                [resizable]="panel.resizable" [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h"
-                [(x)]="panel.tamanyMobil.x" [(y)]="panel.tamanyMobil.y" (change)="itemChange($event, panel)">
+            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop" [resizable]="panel.resizable" [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h" [(x)]="panel.tamanyMobil.x" [(y)]="panel.tamanyMobil.y" (change)="itemChange($event, panel)">
 
                 <ng-container [ngSwitch]="panel.type">
 
-                    <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject"
-                        (remove)="onRemovePanel($event)">
+                    <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)">
                     </eda-blank-panel>
 
-                    <eda-title-panel *ngSwitchCase="1" #edaPanel [panel]="panel" [inject]="inject"
-                        (remove)="onRemovePanel($event)">
+                    <eda-title-panel *ngSwitchCase="1" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)">
                     </eda-title-panel>
 
                 </ng-container>
@@ -120,10 +98,14 @@
 <dashboard-filter-dialog *ngIf="filterController" [controller]="filterController"></dashboard-filter-dialog>
 
 <!-- ============================================================== -->
+<!-- SENT VIA EMAIL PANEL -->
+<!-- ============================================================== -->
+<dashboard-mail-dialog *ngIf="emailController" [controller]="emailController"></dashboard-mail-dialog>
+
+<!-- ============================================================== -->
 <!-- Right sidebar -->
 <!-- ============================================================== -->
-<p-sidebar [(visible)]="display_v.rightSidebar" position="right" [baseZIndex]="10000" blockScroll="true"
-    [showCloseIcon]="false" [style]="{width:'17em', overflow: 'auto'}">
+<p-sidebar [(visible)]="display_v.rightSidebar" position="right" [baseZIndex]="10000" blockScroll="true" [showCloseIcon]="false" [style]="{width:'17em', overflow: 'auto'}">
 
     <div>
 
@@ -134,24 +116,21 @@
     </div>
     <hr>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="onAddWidget()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddWidget()">
         <div>
             <i id="newPanel" class="fa fa-columns"></i>
             <span i18n="@@opcionPanel" class="ml-2">NUEVO PANEL</span>
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="onAddTitle()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="onAddTitle()">
         <div>
             <i class="fa fa-columns"></i>
             <span i18n="@@opcionTitulo" class="ml-2">NUEVO TEXTO</span>
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="addGlobalFilter()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="addGlobalFilter()">
         <div>
             <i id="newFilter" class="fa fa-filter"></i>
             <span i18n="@@opcionFiltro" class="ml-2">NUEVO FILTRO</span>
@@ -173,8 +152,7 @@
                 <i class="fa fa-folder-open"></i>
                 <span class="ml-2"> {{addTagString}} </span>
             </div>
-            <p-dropdown [options]="tags" [(ngModel)]="selectedtag" optionLabel="label" (onChange)="selectTag()"
-                [placeholder]="newTag"></p-dropdown>
+            <p-dropdown [options]="tags" [(ngModel)]="selectedtag" optionLabel="label" (onChange)="selectTag()" [placeholder]="newTag"></p-dropdown>
             <input style=" margin-top: 0.4rem;" *ngIf="addTag" type="text" pInputText [(ngModel)]="tag.label">
         </div>
     </div>
@@ -182,13 +160,11 @@
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
         <div>
             <span class="ml-2">LIVE DASHBOARD</span>
-            <input style="width: 100%; margin-top: 0.2rem;" [placeholder]="Seconds_to_refresh" type="number" pInputText
-                [(ngModel)]="refreshTime">
+            <input style="width: 100%; margin-top: 0.2rem;" [placeholder]="Seconds_to_refresh" type="number" pInputText [(ngModel)]="refreshTime">
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1"
-        (click)="saveDashboard()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="saveDashboard()">
         <div>
             <i id="saveDashboard" class="fa fa-save"></i>
             <span i18n="@@opcionGuardar" class="ml-2">GUARDAR INFORME</span>
@@ -209,18 +185,22 @@
         </div>
     </div>
 
+    <div class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="openMailConfig();">
+        <div>
+            <i class="fa fa-envelope-o"></i>
+            <span i18n="@@opcionMail" class="ml-2">ENVIAR POR EMAIL</span>
+        </div>
+    </div>
+
     <hr>
 
     <div *ngIf="display_v.edit_mode">
         <form [formGroup]="form">
             <div style="margin: 8px; display: flex;">
-                <p-selectButton [options]="visibleTypes" formControlName="visible"
-                    (onChange)="handleSelectedBtn($event)">
+                <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)">
                 </p-selectButton>
                 <div class="w-100" *ngIf="display_v.groups">
-                    <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false"
-                        optionLabel="name" defaultLabel="Elige grupos *" [style]="{ width: '100%' }" itemSize="30"
-                        (onPanelHide)="saveDashboard()">
+                    <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false" optionLabel="name" defaultLabel="Elige grupos *" [style]="{ width: '100%' }" itemSize="30" (onPanelHide)="saveDashboard()">
                     </p-multiSelect>
                 </div>
 
@@ -238,8 +218,7 @@
 <div>
     <span i18n="@@notSavedChanges" class="div-cambios " *ngIf="display_v.notSaved"> Hay cambios sin guardar... </span>
 
-    <button (click)="display_v.rightSidebar = true"
-        class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
+    <button (click)="display_v.rightSidebar = true" class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
         <i id="gearButton" class="fa fa-cog text-white" style="font-size: 14px;"></i>
     </button>
 

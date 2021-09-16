@@ -19,6 +19,7 @@ export * from './eda-table/eda-column-filter/eda-column-filter-multiselect';
 export * from './eda-map/eda-map.component';
 export * from './eda-map/eda-geoJsonMap.component';
 export * from './eda-funnel/eda-funnel.component';
+
  // export * from './eda-d3/eda-d3.component';
 
 // Eda KPI
@@ -43,6 +44,7 @@ export {SafeHtmlPipe} from './eda-panels/eda-title-panel/htmlSanitizer.pipe'
 export {SafeUrlPipe} from './eda-panels/eda-title-panel/urlSanitizer.pipe'
 export { TitleDialogComponent } from './eda-panels/eda-title-panel/edit-title/quill-editor.component'
 export { AlertDialogComponent } from './eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component';
+export {CumSumAlertDialogComponent} from './eda-panels/eda-blank-panel/cumulativeSum-alert/cumsum-alert-dialog.component';
 export { MapEditDialogComponent } from './eda-panels/eda-blank-panel/maps-dialog/mapedit-dialog.component';
 export { KpiEditDialogComponent } from './eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component';
 export { SankeyDialog } from './eda-panels/eda-blank-panel/sankey-dialog/sankey-dialog.component';

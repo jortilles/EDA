@@ -31,7 +31,7 @@ export class EdaTable {
     public onSortPivotEvent: EventEmitter<any> = new EventEmitter();
     public onSortColEvent: EventEmitter<any> = new EventEmitter();
 
-    private _value: any[] = [];
+    public _value: any[] = [];
 
     public cols: EdaColumn[] = [];
     public rows: number = 10;
@@ -173,14 +173,16 @@ export class EdaTable {
     }
 
     getColsInfo() {
-        let out = { numeric: [], text: [], numericLabels: [], textLabels: [] }
+        let out = { numeric: [], text: [], numericLabels: [], textLabels: [], numericDescriptions:[], textDescriptions:[] }
         this.cols.forEach((col, index) => {
             if (col.type === "EdaColumnNumber") {
                 out.numeric.push(index)
                 out.numericLabels.push(col.header);
+                out.numericDescriptions.push(col.description)
             } else {
                 out.text.push(index)
                 out.textLabels.push(col.header);
+                out.textDescriptions.push(col.description)
             }
         });
         return out;
@@ -383,8 +385,7 @@ export class EdaTable {
             if (col.type === "EdaColumnNumber") {
                 this.partialTotalsRow.push(
                     {
-                        data: parseFloat(partialRow[col.field].toFixed(2))
-                            .toLocaleString('de-DE'),
+                        data: parseFloat(partialRow[col.field]).toLocaleString('de-DE'),
                         style: "right",
                         class: "sub-total-row",
                         border: '',
@@ -429,7 +430,7 @@ export class EdaTable {
             if (col.type === "EdaColumnNumber") {
                 this.totalsRow.push(
                     {
-                        data: parseFloat(row[col.field].toFixed(2))
+                        data: parseFloat(row[col.field])
                             .toLocaleString('de-DE'),
                         style: "right",
                         class: "total-row",
@@ -643,6 +644,8 @@ export class EdaTable {
             }
         });
         newLabels.metricsLabels = colsInfo.numericLabels;
+        newLabels.metricsDescriptions = colsInfo.numericDescriptions;
+        newLabels.textDescriptions = colsInfo.textDescriptions;
 
         this._value = this.mergeRows(rowsToMerge);
         this.cols = this.mergeColumns(colsToMerge);
@@ -850,6 +853,7 @@ export class EdaTable {
      * @param colsInfo contains userName for main column
      */
     buildHeaders(labels: any, colsInfo: any) {
+
         let series = [];
         const numRows = labels.seriesLabels.length + 1 //1 for metrics labels
         let numCols = 1;
@@ -861,24 +865,27 @@ export class EdaTable {
         let mainColHeader = {
             title: colsInfo.textLabels[0],
             column: labels.mainLabel,
-            rowspan: numRows, colspan: 1, sortable: true
+            rowspan: numRows, colspan: 1, sortable: true, description:colsInfo.textDescriptions[0]
         }
         series.push({ labels: [mainColHeader] });
+        colsInfo.textDescriptions.splice(0, 1);
 
         //if there is only one metric the metric is the header
         if (labels.metricsLabels.length > 1) {
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 series[0].labels.push({
-                    title: labels.seriesLabels[0][i],
+                    title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
                     rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false
                 })
             }
         } else {
-            series[0].labels.push({ title: labels.metricsLabels[0], rowspan: 1, colspan: numCols });
+            /**The metric is the header */
+            series[0].labels.push({ title: labels.metricsLabels[0], rowspan: 1, colspan: numCols, description:labels.metricsDescriptions[0]});
+
             let serie = { labels: [] };
             for (let i = 0; i < labels.seriesLabels[0].length; i++) {
                 serie.labels.push({
-                    title: labels.seriesLabels[0][i],
+                    title: labels.seriesLabels[0][i], description : labels.textDescriptions[0],
                     rowspan: 1, colspan: numCols / labels.seriesLabels[0].length, sortable: false, metric:labels.metricsLabels[0]
                 })
             }
@@ -891,7 +898,7 @@ export class EdaTable {
             let serie = { labels: [] };
             for (let j = 0; j < labels.seriesLabels[i].length * mult; j++) {
                 serie.labels.push({
-                    title: labels.seriesLabels[i][j % labels.seriesLabels[i].length],
+                    title: labels.seriesLabels[i][j % labels.seriesLabels[i].length], description : labels.textDescriptions[i],
                     rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false
                 });
             }
@@ -904,13 +911,15 @@ export class EdaTable {
             let serie = { labels: [] }
             for (let i = 0; i < numCols; i++) {
                 serie.labels.push({
-                    title: labels.metricsLabels[i % labels.metricsLabels.length],
+                    title: labels.metricsLabels[i % labels.metricsLabels.length], description : labels.metricsDescriptions[i % labels.metricsLabels.length],
                     rowspan: 1, colspan: 1, sortable: false, metric :labels.metricsLabels[i % labels.metricsLabels.length]
                 })
             }
+
             series.push(serie)
         }
         this.series = series;
+
         //set column name for column labels
         this.series[this.series.length - 1].labels.forEach((label, i) => {
             label.column = this.cols[i + 1].field;

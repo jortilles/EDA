@@ -17,8 +17,8 @@ export const KNOB_VALUE_ACCESSOR: any = {
             <path [attr.d]="rangePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="rangeColor" class="p-knob-range"></path>
             <path [attr.d]="valuePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="valueColor" class="p-knob-value"></path>
             <text *ngIf="showValue" [attr.x]="50" [attr.y]="57" text-anchor="middle" [attr.fill]="textColor" [class]="textClass" [attr.name]="name">{{valueToDisplay()}}</text>
-            <text [attr.x]="20" [attr.y]="100"  text-anchor="middle"  class="p-knob-infotext">{{min.toLocaleString('de-DE')}}</text>
-            <text [attr.x]="80" [attr.y]="100"  text-anchor="middle" class="p-knob-infotext">{{max.toLocaleString('de-DE')}}</text>  
+            <text [attr.x]="20" [attr.y]="100"  text-anchor="middle"  class="p-knob-infotext">{{min.toLocaleString('de-DE', {maximumFractionDigits: 6 })}}</text>
+            <text [attr.x]="80" [attr.y]="100"  text-anchor="middle" class="p-knob-infotext">{{max.toLocaleString('de-DE', {maximumFractionDigits: 6 })}}</text>  
         </svg>
         </div>
     `,

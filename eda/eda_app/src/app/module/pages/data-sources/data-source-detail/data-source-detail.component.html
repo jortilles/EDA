@@ -123,6 +123,15 @@
 
         </div>
 
+        <div *ngIf="selectedcolumnType === 'numeric'" style="margin-bottom: 1em; margin-top: 0.5em;">
+            <h5 class="title-datamodel" i18n="@@inputFormat">
+                Número de decimales
+            </h5>
+            <div>
+                <p><input pInputText type="number" size="50" [(ngModel)]="columnPanel.minimumFractionDigits" (keyup)="update()"></p>
+            </div>
+        </div>
+
         <div *ngIf="columnPanel.computed_column === 'no'">
             <h5 class="title-datamodel" i18n="@@rolesPermisos">Roles y permisos de fila</h5>
             <eda-table [inject]="table"></eda-table>
@@ -143,7 +152,7 @@
 
         <div>
             <button *ngIf="columnPanel.SQLexpression" type="button" pButton (click)="checkCalculatedColumn(columnPanel)"
-                class="ui-button-success ml-2" label="Comprobar expresión"></button>
+                class="ui-button-success ml-2" label="Comprobar expresión" style="margin-right: 5px;"></button>
             <button *ngIf="columnPanel.computed_column !== 'no'" type="button" pButton
                 (click)="deleteCalculatedCol(columnPanel)" class="p-button-raised p-button-danger" i18n-label="@@borrar"
                 label="Borrar"></button>
@@ -254,6 +263,15 @@
                         <input pInputText type="password" [(ngModel)]="modelPanel.connection.password"
                             (keyup)="update()" autocomplete="new-password">
                     </div>
+
+                    <div class="p-col-12  p-xl-4">
+                        <h5 class="title-datamodel" i18n="@@inputFilter">
+                            Filtros
+                        </h5>
+                        <input pInputText type="text" [(ngModel)]="modelPanel.metadata.filter" (keyup)="update()">
+                    </div>
+
+
                     <div class="p-col-12 " *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <button type="button" pButton (click)="checkConection()" class="ui-button-success ml-2"
                             i18n-label='@@checkConnection' label="Comprobar conexión"></button>

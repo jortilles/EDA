@@ -46,4 +46,8 @@ export class DashboardService extends ApiService {
         return this.post(`${this.route}getQuey`, body);
     }
 
+    cleanCache(body):Observable<any>{
+        return this.post(`${this.route}clean-refresh`, body);
+    }
+
 }

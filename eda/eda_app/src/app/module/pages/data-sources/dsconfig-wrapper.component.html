@@ -64,7 +64,7 @@
               </div>
             </div>
 
-            <div *ngIf="form.value.type && ['oracle','snowflake'].includes(form.value.type)" class="p-col-12 p-md-4">
+            <div *ngIf="form.value.type && ['oracle','snowflake'].includes(form.value.type.value)" class="p-col-12 p-md-4">
               <div class="form-group">
                 <label i18n="@@inputNombreDb">BASE DE DATOS *</label>
                 <input type="text" class="form-control" formControlName="db" id="eda_ds_db" pInputText>
@@ -108,6 +108,13 @@
               </div>
             </div>
 
+            <div class="p-col-12 p-md-4">
+              <div class="form-group">
+                <label i18n="@@inputFilter">FILTROS</label>
+                <input type="text" class="form-control" formControlName="filter" id="eda_ds_filter" pInputText [pTooltip]="filterTooltip" tooltipPosition="left">
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -126,7 +133,16 @@
             </div>
           </div>
 
+          <div class="p-col-12 p-md-4">
+            <div class="form-group">
+              <label i18n="@@inputFilter">FILTROS</label>
+              <input type="text" class="form-control" formControlName="filter" id="eda_ds_filter" pInputText>
+            </div>
+          </div>
         </div>
+
+
+
         <div class="p-col-12 p-md-12">
           <p-checkbox [ngStyle]="{'border': '0ch'}" class="form-control" formControlName="optimize"
             [label]="optimizeString" [binary]="true">

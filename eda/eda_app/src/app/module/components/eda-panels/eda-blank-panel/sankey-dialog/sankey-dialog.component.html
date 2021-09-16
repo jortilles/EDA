@@ -18,19 +18,19 @@
       </h6>
 
       <div class="p-grid chart-color-selection" id="sankeyColorWrapper">
-        <ng-container *ngFor="let label of labels; let i = index">
+        <div *ngFor="let label of labels; let i = index">
 
           <div class="p-col">
 
             <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor(label)" format="hex"
-              appendTo="sankeyColorWrapper">
+              appendTo="body">
             </p-colorPicker>
 
             <input type="text" pInputText class="eda-color-pick" [(ngModel)]="colors[i]"
               (input)="handleInputColor(label)" minlength="7">
 
           </div>
-        </ng-container>
+        </div>
       </div>
     </div>
 

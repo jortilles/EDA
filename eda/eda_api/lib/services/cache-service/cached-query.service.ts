@@ -173,4 +173,8 @@ export class CachedQueryService {
 
   }
 
+  static async deleteQuery(hashedQuery){
+    return await CachedQuery.deleteOne({ 'cachedQuery.hashedQuery': { $eq: hashedQuery } });
+  }
+
 }

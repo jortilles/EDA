@@ -1,15 +1,20 @@
 import * as  express from 'express';
 import { authGuard } from '../../../guards/auth-guard';
 import { roleGuard } from '../../../guards/role-guard';
+import {originGuard} from '../../../guards/origin-guard';
 import { UserController } from './user.controller';
 const router = express.Router();
 
 // Login routes
 router.post('/login', UserController.login);
+router.get('/fake-login/:usermail/:token', originGuard, UserController.provideToken );
+router.post('/sso', UserController.singleSingnOn)
+
 
 // User Routes // Role Guard
 // router.get('', authGuard, roleGuard, UserController.getUsers);
 router.get('', authGuard,  UserController.getUsers);
+
 
 router.get('/profile-img/:img', authGuard, UserController.findProfileImg);
 

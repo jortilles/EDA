@@ -49,6 +49,7 @@ export class EdaTableComponent implements OnInit {
         };
     }
     ngOnInit(): void {
+        
         if(this.inject.styles && !this.inject.pivot){
             this.applyStyles(this.inject.styles)
         }else if(this.inject.styles && this.inject.pivot){
@@ -88,7 +89,10 @@ export class EdaTableComponent implements OnInit {
         }
     }
 
-    getTooltip(col) {
+    getTooltip = (col) => `${col.description}` || ``;
+    
+
+    getLinkTooltip(col) {
         return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
     }
 

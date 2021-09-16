@@ -28,9 +28,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   width: number;
   heigth: number;
 
-  div = d3.select("body").append('div')
-    .attr('class', 'd3tooltip')
-    .style('opacity', 0);
+  div = null;
 
 
   constructor() {
@@ -109,8 +107,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("height", d => d.y1 - d.y0)
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
-    // .append("title")
-    // .text(d => `${d.name}\n${d.value.toLocaleString()}`)
+
 
     svg.append("g")
       .attr("fill", "none")
@@ -146,16 +143,22 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         let metricLabel = this.inject.dataDescription.numericColumns[0].name;
 
         const firstRow = `${data.names.join(" → ")}`;
-        const secondRow =  `${metricLabel} : ${data.value.toLocaleString()}`;
+        const secondRow = `${metricLabel} : ${data.value.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`;
         const thirdRow = this.inject.linkedDashboard ? `linked to ${this.inject.linkedDashboard.dashboardName}` : '';
-       
+
         const link = this.inject.linkedDashboard ? `<br/> <h6>${thirdRow}</h6>` : '';
         let text = `${firstRow} <br/> ${secondRow} ${link}`;
 
-        const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length*(14/12)]);
+        const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (14 / 12)]);
         const pixelWithRate = 7;
-        const width = maxLength * pixelWithRate;
+        const width = maxLength * pixelWithRate + 10;
         const height = this.inject.linkedDashboard ? '5em' : '4em';
+
+        console.log(width)
+
+        this.div = d3.select("body").append('div')
+          .attr('class', 'd3tooltip')
+          .style('opacity', 0);
 
         this.div
           .style('width', `${width}px`)
@@ -167,17 +170,15 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         this.div.html(text)
           .style('left', (d.pageX - 50 - width) + 'px')
           .style('top', (d.pageY - 80) + 'px')
-          .style('width', width)
-          .style('height', height);
+          // .style('width', width)
+          // .style('height', height);
 
       })
       .on('mouseout', (d) => {
 
         this.hideLinks();
 
-        this.div.transition()
-          .duration(500)
-          .style('opacity', 0);
+        this.div.remove();
 
       }).on("mousemove", (d, data) => {
 
@@ -203,7 +204,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .text(d => d.name)
       .append("tspan")
       .attr("fill-opacity", 0.7)
-      .text(d => ` ${d.value.toLocaleString()}`);
+      .text(d => ` ${d.value.toLocaleString('de-DE', { maximumFractionDigits: 6 })}`);
   }
 
 
@@ -265,7 +266,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       return allIn;
     }
 
-    d3.selectAll('path').style(
+    d3.selectAll(`#${this.id}`).selectAll('path').filter(p => !!p['source']).style(
       'opacity',
       (p: any) => {
         return (p && allNamesInArray(data.names, p.names)) ? '1' : '0.3'
@@ -275,8 +276,8 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   }
 
   hideLinks() {
-    d3.selectAll('rect').style('opacity', '1');
-    d3.selectAll('path').style('opacity', '1');
+    d3.selectAll(`#${this.id}`).selectAll('rect').style('opacity', '1');
+    d3.selectAll(`#${this.id}`).selectAll('path').style('opacity', '1');
   }
 
 }

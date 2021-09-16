@@ -38,7 +38,8 @@ import {
     KnobDialogComponent,
     TableGradientDialogComponent,
     EdaFunnelComponent,
-    FunnelDialog
+    FunnelDialog,
+    CumSumAlertDialogComponent
 
  } from './component.index';
 import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
@@ -67,6 +68,7 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         TableDialogComponent,
         PanelChartComponent,
         AlertDialogComponent,
+        CumSumAlertDialogComponent,
         EdaMapComponent,
         EdaGeoJsonMapComponent,
         MapEditDialogComponent,

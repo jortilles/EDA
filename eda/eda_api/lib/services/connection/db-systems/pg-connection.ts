@@ -39,24 +39,40 @@ export class PgConnection extends AbstractConnection {
         }
     }
 
-    async generateDataModel(optimize: number): Promise<any> {
+    async generateDataModel(optimize: number, filter: string): Promise<any> {
         try {
             this.client = await this.getclient();
             let tableNames = [];
             const tables = [];
 
+            /**
+             * Set filter for tables if exists
+             */
+            const filters = filter ? filter.split(',') : []
+            let filter_str = filter ? `AND ( table_name LIKE '%${filters[0].trim()}%'` : ``;
+            for (let i = 1; i < filters.length; i++) {
+                filter_str += ` OR table_name LIKE '%${filters[i].trim()}%'`
+            }
+            if(filter) filter_str += ' )';
+
+            /**
+             * Build query
+             */
             let whereTableSchema: string = !this.config.schema
                 ? `NOT IN ('pg_catalog', 'information_schema')`
                 : `=  '${this.config.schema}' `
                 ;
             const query = `
-                SELECT table_name 
-                FROM information_schema.tables 
-                WHERE table_type = 'BASE TABLE' AND table_schema ${whereTableSchema}
-                UNION ALL
-                SELECT  table_name 
-                FROM  information_schema.views 
-                WHERE table_schema ${whereTableSchema}
+            SELECT distinct table_name from 
+               ( 
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_type = 'BASE TABLE' AND table_schema ${whereTableSchema} ${filter_str}
+                    UNION ALL
+                    SELECT table_name 
+                    FROM  information_schema.views 
+                    WHERE table_schema ${whereTableSchema} ${filter_str}
+                ) t
             `;
 
             /**Get tables */
@@ -69,7 +85,7 @@ export class PgConnection extends AbstractConnection {
             */
 
             /**Get foreign keys */
-            const fkQuery = this.getForeignKeysQuery(); 
+            const fkQuery = this.getForeignKeysQuery();
             this.client = await this.getclient();
             const foreignKeys = await this.execQuery(fkQuery);
 
@@ -98,9 +114,9 @@ export class PgConnection extends AbstractConnection {
             this.client.end();
 
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
-            if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
-            else return await this.getRelations(tables);
-            
+            if (foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
+            else return await this.setRelations(tables);
+
 
         } catch (err) {
             throw err;
@@ -180,9 +196,15 @@ export class PgConnection extends AbstractConnection {
 
     private setColumns(c, tableCount?: number) {
         let column = c;
+
         column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
         column.description = { default: this.normalizeName(column.column_name), localized: [] };
-        column.column_type = this.normalizeType(column.column_type) || column.column_type;
+
+        const dbType = column.column_type;
+        column.column_type = this.normalizeType(dbType) || dbType;
+        let floatOrInt = this.floatOrInt(dbType);
+        column.minimumFractionDigits = floatOrInt === 'int' && column.column_type === 'numeric' ? 0
+            : floatOrInt === 'float' && column.column_type === 'numeric' ? 2 : null;
 
 
         column.column_type === 'numeric'
@@ -217,7 +239,7 @@ export class PgConnection extends AbstractConnection {
         return this.queryBuilder.generateInserts(queryData);
     }
 
-    getForeignKeysQuery(){
+    getForeignKeysQuery() {
 
         return `select kcu.table_name as foreign_table, rel_kcu.table_name as primary_table, kcu.column_name as fk_column, rel_kcu.column_name as pk_column
             from information_schema.table_constraints tco
@@ -236,6 +258,6 @@ export class PgConnection extends AbstractConnection {
 
     }
 
-    
+
 
 }

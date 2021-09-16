@@ -144,8 +144,7 @@ export class UserService extends ApiService {
 
     /** Verify if user is logged */
     isLogged() {
-        // return localStorage.getItem('token') ? true : false;
-        return this.token.length > 5;
+        return this.token.length > 5 || !!localStorage.getItem('token');
     }
 
     /** Logout user and clean localstorage */
@@ -174,6 +173,14 @@ export class UserService extends ApiService {
             }).catch((err) => {
                 this.alertService.addError(err)
             });
+    }
+
+    getUserObject(){
+        return JSON.parse(localStorage.getItem('user'));
+    }
+
+    getToken(){
+        return localStorage.getItem('token');
     }
 }
 

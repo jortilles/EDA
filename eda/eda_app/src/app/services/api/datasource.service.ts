@@ -40,6 +40,9 @@ export class DataSourceService extends ApiService implements OnDestroy {
     private _modelConnection = new BehaviorSubject<any>([]);
     modelConnection = this._modelConnection.asObservable();
 
+    public _unsaved = new BehaviorSubject<boolean>(false);
+    unsaved = this._unsaved.asObservable();
+
     private _modelPanel = new BehaviorSubject<EditModelPanel>(
         {
             type: '',
@@ -47,7 +50,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 type: '', host: '', database: ' ', user: ' ', password: ' ', schema : '', port:null, warehouse:''
             },
             metadata: {
-                model_name: ' ', model_granted_roles: [], cache_config:{}
+                model_name: ' ', model_granted_roles: [], cache_config:{}, filter:''
             }
         }
     );
@@ -87,6 +90,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._modelConnection.next([]);
         this._typePanel.next('');
         this._treeData.next([]);
+        this._unsaved.next(false)
     }
 
     expandNode(node){
@@ -103,14 +107,15 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
 
     /** Generates tree from DataModel */
-    generateTree(model_name?: string, table_name?: string): Array<TreeNode> {
+    generateTree(model_name?: string, table_name?: string, element?:any): Array<TreeNode> {
         // Root node --> Model name
         const root: TreeNode = {
             label: this._modelMetadata.getValue().model_name,
             data: 'root',
             children: [],
             icon: 'fa  fa-sitemap',
-            expanded: model_name ? true : false
+            expanded: model_name ? true : false,
+            type: element && element.type === 'root' ? 'selected' : 'unselected'
         };
 
         // table nodes
@@ -124,6 +129,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 currTable.collapsedIcon = 'fa fa-table';
                 currTable.expandedIcon = 'fa fa-table';
                 currTable.expanded = table_name === table.display_name.default;
+                currTable.type = element &&  element.name === table.display_name.default ? 'selected' : 'unselected'
                 tables.push(currTable);
 
                 // Column nodes
@@ -132,8 +138,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
                     currCol.label = column.display_name.default;
                     currCol.data = 'columna';
                     currCol.children = [];
-                    currCol.icon = 'fa fa-eda-columns ';
+                    currCol.icon = 'fa fa-columns';
+                    currCol.type = element && element.name === column.display_name.default ? 'selected' : 'unselected'
                     currTable.children.push(currCol);
+
                 });
             });
         // order by name....
@@ -231,6 +239,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
         columnPanel.aggregation_type = column.aggregation_type.map((a: { value: any; }) => a.value);
         columnPanel.column_granted_roles = column.column_granted_roles;
         columnPanel.row_granted_roles = column.row_granted_roles;
+        columnPanel.minimumFractionDigits = parseInt(column.minimumFractionDigits);
         columnPanel.visible = column.visible;
         columnPanel.parent = node.parent.label;
         this._columnPanel.next(columnPanel);
@@ -381,7 +390,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 return { value: a, 'display_name': display_name[0] ? display_name[0].label : 'No' };
             });
 
-
+            tmp_model[tableIndex].columns[columnindex].minimumFractionDigits = parseInt(panel.minimumFractionDigits) || 0;
             tmp_model[tableIndex].columns[columnindex].column_granted_roles = panel.column_granted_roles;
             tmp_model[tableIndex].columns[columnindex].row_granted_roles = panel.row_granted_roles;
             tmp_model[tableIndex].columns[columnindex].visible = panel.visible;
@@ -390,7 +399,8 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
         } else if (panel.type === 'root') {
         }
-        this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name, panel.parent));
+        this._unsaved.next(true)
+        this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name, panel.parent, panel));
     }
 
     addCalculatedColumn(dialogRes: any) {
@@ -512,9 +522,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
             }
         };
         this.updateModelInServer(this.model_id, body).subscribe(
-            (r) => this.alertService.addSuccess($localize`:@@modelSaved:Modelo guardado correctamente`),
+            (r) => this.alertService.addSuccess($localize`:@@ModelSaved:Modelo guardado correctamente`),
             (err) => this.alertService.addError(err)
         );
+        this._unsaved.next(false)
     }
 
 

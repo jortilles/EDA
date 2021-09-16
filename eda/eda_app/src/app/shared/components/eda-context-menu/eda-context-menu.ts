@@ -19,9 +19,6 @@ export class EdaContextMenu {
     showContextMenu(event?: any) {
         this.display = true;
 
-        console.log(event.x, event.y, screen.width, screen.height);
-        console.log(screen.height - event.y)
-
         if (event) {
             this.left = _.subtract(event.x, 326);
             

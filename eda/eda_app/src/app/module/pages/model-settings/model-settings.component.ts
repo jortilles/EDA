@@ -95,9 +95,9 @@ export class ModelSettingsComponent implements OnInit {
   private initDashboards(): void {
     this.dashboardService.getDashboards().subscribe(data => {
       let dashboards = [].concat.apply([], [data.dashboards, data.group, data.publics, data.shared]);
-      //console.log(dashboards);
+
       this.dashboards = dashboards.map(d => {
-        //console.log(d);
+
         return { label: d.config.title, value: d }
       })
     })

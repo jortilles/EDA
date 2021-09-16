@@ -158,7 +158,7 @@ body .ui-tree {
     right: 2px;
     -webkit-transition: background 3s;
     transition: background 3s;
-    border-radius: 3px;
+    border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
@@ -1229,9 +1229,11 @@ pre {
 }
 
 
+
 .p-datatable-thead tr{
-    background: aliceblue !important;
-}
-.p-datatable .p-datatable-thead > tr > th{
-    background: aliceblue !important;
-}
+    background:  #e9ecef !important;
+  }
+  .p-datatable .p-datatable-thead > tr > th{
+    background: #e9ecef !important;
+    border: 1px solid #fff;
+  }

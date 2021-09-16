@@ -1,4 +1,3 @@
-import { DataSource } from './../../../shared/models/data-source-model/datasource.model';
 import { DateUtils } from './../../../services/utils/date-utils.service';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
 import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
@@ -15,6 +14,7 @@ import Swal from 'sweetalert2';
 import jspdf from 'jspdf';
 import * as _ from 'lodash';
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
+import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-dashboard',
@@ -40,6 +40,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public dashboard: Dashboard;
     public visibleTypes: SelectItem[] = [];
     public filterController: EdaDialogController;
+    public emailController: EdaDialogController;
     public applyToAllfilter: { present: boolean, refferenceTable: string, id: string };
     public grups: IGroup[] = [];
     public toLitle: boolean = false;
@@ -60,12 +61,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         maxWidth: 40,
         maxHeight: 200,
         minWidth: 3,
-        minHeight: 1
+        minHeight: 1,
+        resizeHandles: { s: false, e: false, n: false, w: false, se: false, ne: false, sw: false, nw: false },
     };
     public tag: any;;
     public tags: Array<any>;
     public selectedtag: any;
     public addTag: boolean = false;
+    public sendViaMailConfig: any = { enabled: false };
 
 
     // Display Variables
@@ -190,9 +193,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             dragAndDrop: window.innerWidth > 1000,
             resizable: window.innerWidth > 1000,
             resizeHandles: {
-                s: true,
-                e: true,
-                se: true
+                sw: true,
+                se: true,
             },
             widthHeightRatio: 1,
             lines: {
@@ -243,6 +245,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private initializeDashboard(): void {
+
         const me = this;
 
         me.route.paramMap.subscribe(
@@ -272,6 +275,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.stopRefresh = false;
                         this.startCountdown(me.refreshTime);
                     }
+                    me.sendViaMailConfig = config.sendViaMailConfig || this.sendViaMailConfig;
 
 
                     if (config.visible === 'group') {
@@ -336,16 +340,49 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private updateFilterDatesInPanels(): void {
+
+        /**Set ranges for dates in panel filters */
+        this.panels.filter(panel => panel.content).forEach(panel => {
+
+            let panelFilters = [...panel.content.query.query.filters];
+            panel.content.query.query.filters = [];
+
+            panelFilters.forEach(pFilter => {
+
+                if (!!pFilter.selectedRange) {
+
+                    let range = this.dateUtilsService.getRange(pFilter.selectedRange);
+                    let stringRange = this.dateUtilsService.rangeToString(range);
+
+                    pFilter.filter_elements[0] = { value1: [stringRange[0]] }
+                    pFilter.filter_elements[1] = { value2: [stringRange[1]] }
+
+                }
+
+                panel.content.query.query.filters.push(pFilter);
+
+            });
+
+        });
+
+        /**Set ranges for dates in global filters */
         this.filtersList.filter(f => f.selectedRange).forEach(filter => {
+
             let range = this.dateUtilsService.getRange(filter.selectedRange);
             let stringRange = this.dateUtilsService.rangeToString(range);
             filter.selectedItems = stringRange;
+
             this.panels.filter(panel => panel.content).forEach(panel => {
+
                 const panelFilters = [...panel.content.query.query.filters];
                 panel.content.query.query.filters = [];
+
                 panelFilters.forEach(pFilter => {
+
                     if (pFilter.filter_id === filter.id) {
+
                         panel.content.query.query.filters.push(this.formatFilter(filter));
+
                     } else {
                         panel.content.query.query.filters.push(pFilter);
                     }
@@ -608,7 +645,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private findGlobalFilterByUrlParams(urlParams: any): void {
-      
+
         if (Object.keys(urlParams).length > 0) {
             for (let i = 0, n = this.filtersList.length; i < n; i += 1) {
                 const filter = this.filtersList[i];
@@ -629,7 +666,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                                     panelFilter.push(newFilter);
 
                                 });
-                            
+
                         }
                     }
                 }
@@ -638,25 +675,26 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private formatFilter(filter): any {
+
         const isDate = filter.column.value.column_type === 'date';
         const year_length = 4;
         const year_month_length = 7;
 
-        if(isDate && filter.selectedItems[0] && !filter.selectedItems[1]){
+        if (isDate && filter.selectedItems[0] && !filter.selectedItems[1]) {
             const year = filter.selectedItems[0];
-            if(filter.selectedItems[0].length === year_length ){
+            if (filter.selectedItems[0].length === year_length) {
                 filter.selectedItems[0] = `${year}-01-01`;
                 filter.selectedItems[1] = `${year}-12-31`;
             }
-            else if(filter.selectedItems[0].length === year_month_length){
+            else if (filter.selectedItems[0].length === year_month_length) {
                 const year_month = filter.selectedItems[0];
-                const year = parseInt(year_month.slice(0,5))
+                const year = parseInt(year_month.slice(0, 5))
                 const month = parseInt(year_month.slice(5, 7));
-                let days = new Date(year,month, 0).getDate();
-                let daysstr  = days < 10 ? `0${days}` : `${days}`
+                let days = new Date(year, month, 0).getDate();
+                let daysstr = days < 10 ? `0${days}` : `${days}`
                 filter.selectedItems[0] = `${year_month}-01`;
                 filter.selectedItems[1] = `${year_month}-${daysstr}`;
-            }else{
+            } else {
                 filter.selectedItems[1] = filter.selectedItems[0]
             }
         }
@@ -681,7 +719,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     /** Apply filter to panels when filter's selected value changes */
     public applyGlobalFilter(filter): void {
-        console.log(filter);
         const newFilter = this.formatFilter(filter);
         filter.panelList
             .map(id => this.edaPanels.toArray().find(p => p.panel.id === id))
@@ -794,6 +831,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         this.setPanelSizes(panel);
+        this.display_v.rightSidebar = false;
     }
 
     public onAddTitle(): void {
@@ -809,6 +847,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             color: '#000000'
         });
         this.setPanelSizes(panel);
+        this.display_v.rightSidebar = false;
     }
 
     public onRemovePanel(panel): void {
@@ -821,8 +860,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public onResetWidgets(): void {
-        // Netejem els canvis i utilitzem la última copia feta, per defecte sempre hi haura 1 panel
-        this.panels = this.panelsCopy.map(panel => ({ ...panel }));
+
+        let body =
+        {
+            model_id: this.dataSource._id,
+            queries: this.panels.map(panel => panel.content.query.query)
+        }
+
+        this.dashboardService.cleanCache(body).subscribe(
+            res => {
+                this.initializeDashboard();
+                this.display_v.rightSidebar = false;
+                this.dashboardService._notSaved.next(false);
+            },
+            err => console.log(err)
+        )
     }
 
     public getsharedURL(): string {
@@ -869,7 +921,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     visible: this.form.controls['visible'].value,
                     tag: this.getTag(),
                     refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
-                    mailingEnabled:  this.getMailingEnabled()
+                    mailingAlertsEnabled: this.getMailingAlertsEnabled(),
+                    sendViaMailConfig: this.sendViaMailConfig,
 
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
@@ -895,7 +948,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    public getMailingEnabled():boolean {
+    public getMailingAlertsEnabled(): boolean {
 
         let mailingenabled = false;
 
@@ -955,6 +1008,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     }
 
+    public openMailConfig() {
+        const params = { dashboard: this.id, config: this.sendViaMailConfig };
+        this.display_v.rightSidebar = false;
+        this.emailController = new EdaDialogController({
+            params,
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.sendViaMailConfig = response;
+                    this.saveDashboard();
+                }
+                this.emailController = undefined;
+            }
+        });
+
+    }
+
     // Others
     public handleSelectedBtn(event): void {
         const groupControl = this.form.get('group');
@@ -982,7 +1051,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.gridItemEvent = $event;
         let found = this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0];
         if (
-            found 
+            found
             && panel.content
             && !found.panelChart.NO_DATA
             && (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob', 'funnel'].includes(panel.content.chart))
@@ -1032,5 +1101,4 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }, 2000)
 
     }
-
 }

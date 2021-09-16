@@ -1,6 +1,6 @@
 <div class="p-grid animated fadeIn">
 
-    <div class="p-col-12"  id="div_new_dashboard">
+    <div *ngIf="!isObserver" class="p-col-12"  id="div_new_dashboard">
         <eda-dashboard-panel class="pointer" >
 
             <div id="home_new_dashboard" class="d-flex justify-content-center" (click)="initDialog()">

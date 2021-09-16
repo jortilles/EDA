@@ -12,4 +12,6 @@ export interface Column {
     ordenation_type: string;
     format: string;
     visible: boolean;
+    minimumFractionDigits:number;
+    cumulativeSum: boolean;
 }

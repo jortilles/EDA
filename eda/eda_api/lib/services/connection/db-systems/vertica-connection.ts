@@ -39,15 +39,29 @@ export class VerticaConnection extends AbstractConnection {
         }
     }
 
-    async generateDataModel(optimize:number): Promise<any> {
+    async generateDataModel(optimize: number, filter:string): Promise<any> {
         try {
             this.client = await this.getclient();
             let tableNames = [];
             let tables = [];
+
+            /**
+            * Set filter for tables if exists
+            */
+            const filters = filter ? filter.split(',') : []
+            let filter_str = filter ? `AND ( table_name LIKE '%${filters[0].trim()}%'` : ``;
+            for (let i = 1; i < filters.length; i++) {
+                filter_str += ` OR table_name LIKE '%${filters[i].trim()}%'`
+            }
+            if (filter) filter_str += ' )';
+
+            /**
+             * Query
+             */
             const query = `
-              SELECT table_name FROM tables WHERE is_system_table = false and table_schema = '${this.config.schema || 'public'}'
+              SELECT table_name FROM tables WHERE is_system_table = false and table_schema = '${this.config.schema || 'public'}' ${filter_str}
               UNION ALL
-              SELECT table_name FROM v_catalog.views WHERE is_system_view = false and table_schema = '${this.config.schema || 'public'}'`
+              SELECT table_name FROM v_catalog.views WHERE is_system_view = false and table_schema = '${this.config.schema || 'public'}' ${filter_str}`
                 ;
 
             const getResults = await this.execQuery(query);
@@ -61,7 +75,7 @@ export class VerticaConnection extends AbstractConnection {
                 let new_table = await this.setTable(tableNames[i]);
 
                 let count = 0;
-                if(optimize === 1){
+                if (optimize === 1) {
                     const dbCount = await this.countTable(tableNames[i], `${this.config.schema || 'public'}`);
                     count = dbCount[0].count;
                 }
@@ -91,8 +105,8 @@ export class VerticaConnection extends AbstractConnection {
 
             const foreignKeys = await this.execQuery(fkQuery);
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
-            if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
-            else return await this.getRelations(tables);
+            if (foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
+            else return await this.setRelations(tables);
 
         } catch (err) {
             throw err;
@@ -117,7 +131,7 @@ export class VerticaConnection extends AbstractConnection {
         this.queryBuilder = new PgBuilderService(queryData, dataModel, user);
         return this.queryBuilder.builder();
     }
-    
+
     BuildSqlQuery(queryData: any, dataModel: any, user: any): string {
         this.queryBuilder = new PgBuilderService(queryData, dataModel, user);
         return this.queryBuilder.sqlBuilder(queryData, queryData.filters);
@@ -131,7 +145,7 @@ export class VerticaConnection extends AbstractConnection {
         return new Promise(async (resolve, reject) => {
             this.client.query(query, (err, resultset) => {
                 if (err) {
-                    return resolve({count:0});
+                    return resolve([{ count: 0 }]);
                 }
                 let rows = this.mapToJSON(resultset);
                 resolve(rows);
@@ -170,12 +184,18 @@ export class VerticaConnection extends AbstractConnection {
         }
     }
 
-    private setColumns(c, tableCount:number) {
+    private setColumns(c, tableCount: number) {
         let column = c;
 
         column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
         column.description = { default: this.normalizeName(column.column_name), localized: [] };
-        column.column_type = this.normalizeType(column.data_type) || column.data_type;
+
+        const dbType = column.data_type;
+        column.column_type = this.normalizeType(dbType) || dbType;
+        let floatOrInt = this.floatOrInt(dbType);
+        column.minimumFractionDigits = floatOrInt === 'int' && column.column_type === 'numeric' ? 0
+            : floatOrInt === 'float' && column.column_type === 'numeric' ? 2 : null;
+
 
         column.column_type === 'numeric'
             ? column.aggregation_type = AggregationTypes.getValues()
@@ -211,7 +231,7 @@ export class VerticaConnection extends AbstractConnection {
     createTable(queryData: any): string {
         throw new Error('Method not implemented.');
     }
-    generateInserts(queryData:any):string {
+    generateInserts(queryData: any): string {
         throw new Error('Method not implemented.');
     }
 }

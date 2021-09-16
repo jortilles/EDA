@@ -14,7 +14,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
   public dialog: EdaDialog;
   public form: FormGroup;
   public table: any;
-  public ok : boolean = false;
+  public ok: boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -28,12 +28,12 @@ export class ViewDialogComponent extends EdaDialogAbstract {
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: $localize`:@@ViewDatamodel:Añadir Vista`
     });
-    this.dialog.style = { width: '55%', height: '75%', top:"-4em", left:'1em' };
+    this.dialog.style = { width: '55%', height: '75%', top: "-4em", left: '1em' };
 
     this.form = this.formBuilder.group({
       viewName: [null, Validators.required],
       description: [null, Validators.required],
-      technical_name : [null, Validators.required],
+      technical_name: [null, Validators.required],
       SQLexpression: [null, Validators.required]
     });
   }
@@ -86,7 +86,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
       display_name: { default: column_name, localized: [] },
       description: { default: this.beautifulNames(column_name), localized: [] },
       column_type: type,
-      aggregation_type: [{ value: 'none', display_name: 'no' }],
+      aggregation_type: this.getAggregation(type),
       column_granted_roles: [],
       row_granted_roles: [],
       visible: true,
@@ -95,12 +95,33 @@ export class ViewDialogComponent extends EdaDialogAbstract {
     return column;
   }
 
+  getAggregation(type: string) {
+
+    if (type === 'numeric') {
+
+      return [
+        { value: 'sum', display_name: 'Suma' },
+        { value: 'avg', display_name: 'Media' },
+        { value: 'max', display_name: 'Máximo' },
+        { value: 'min', display_name: 'Mínimo' },
+        { value: 'count', display_name: 'Cuenta Valores' },
+        { value: 'count_distinct', display_name: 'Valores Distintos' },
+        { value: 'none', display_name: 'no' }
+      ]
+
+
+    } else {
+      return [{ value: 'none', display_name: 'no' }]
+    }
+
+  }
+
   buildTable(columns: Array<any>) {
     const table = {
       table_name: `${this.form.value.technical_name.replace(' ', '_')}`,
-      display_name: { default: `${this.form.value.viewName}`, localized: [] }, 
-      description: { default: `${this.form.value.viewName}`, localized: [] }, 
-      query:`(${this.form.value.SQLexpression}) as ${this.form.value.technical_name.replace(' ', '_')}`,
+      display_name: { default: `${this.form.value.viewName}`, localized: [] },
+      description: { default: `${this.form.value.description}`, localized: [] },
+      query: `(${this.form.value.SQLexpression}) as ${this.form.value.technical_name.replace(' ', '_')}`,
       table_granted_roles: [],
       table_type: 'view',
       columns: columns,
@@ -117,7 +138,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
 
   saveView() {
     if (this.form.invalid) {
-      return this.alertService.addError($localize`:@@MandatoryFields:Recuerde llenar los campos obligatorios`);
+      return this.alertService.addError($localize`:@@mandatoryFields:Recuerde llenar los campos obligatorios`);
     } else {
       this.onClose(EdaDialogCloseEvent.NEW, this.table);
     }

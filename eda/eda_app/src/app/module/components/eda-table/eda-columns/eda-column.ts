@@ -4,6 +4,7 @@ export abstract class EdaColumn {
     width: any;
     field: any;
     header: any;
+    description:any;
     filter: EdaColumnFilter;
     styleClass: any;
     type: string;

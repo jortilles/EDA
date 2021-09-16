@@ -143,6 +143,12 @@
       </div>
 
       <div class="p-col-12">
+        <h6 i18n="@@noMail">Sin alertas de correo</h6>
+        <p-inputSwitch id="switchCache" class="p-col-1" [(ngModel)]="disabled" tooltipPosition="left">
+        </p-inputSwitch>
+      </div>
+
+      <div class="p-col-12">
         <button type="submit" pButton icon="fa fa-check" class="p-button-raised p-button-success" i18n-label="@@guardarButton"
           (click)="saveMailingConfig()" label="Confirmar" [disabled]="disableMailConfirm()" style="margin-right: 4px;">
         </button>

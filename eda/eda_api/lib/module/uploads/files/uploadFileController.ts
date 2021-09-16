@@ -14,6 +14,7 @@ const topoJson = require('topojson-server');
 export class UploadFileController {
 
   static uploadFile = async (req: Request, res: Response, next: NextFunction) => {
+  
     let file = null;
     try {
       const fileToSave: IGeoJsonFile = new GeoJsonFile({ file: req.body.type });

@@ -69,12 +69,15 @@ export class OracleBuilderService extends QueryBuilderService {
       this.permissions.forEach(permission => { filters.push(permission); });
     }
     if (filters.length) {
+
+      let equalfilters = this.getEqualFilters(filters);
+      filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
       let filtersString = `\n${type} 1=1 `;
 
       filters.forEach(f => {
 
         const column = this.findColumn(f.filter_table, f.filter_column);
-        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  ,2)`;
+        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  , ${column.minimumFractionDigits})`;
 
         if (f.filter_type === 'not_null') {
           filtersString += '\nand ' + this.filterToString(f, type);
@@ -100,6 +103,10 @@ export class OracleBuilderService extends QueryBuilderService {
           }
         }
       });
+
+      /**Allow filter ranges */
+      filtersString = this.mergeFilterStrings(filtersString, equalfilters, type);
+      
       return filtersString;
     } else {
       return '';
@@ -114,7 +121,7 @@ export class OracleBuilderService extends QueryBuilderService {
       filters.forEach(f => {
 
         const column = this.findColumn(f.filter_table, f.filter_column);
-        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  ,2)`;
+        const colname = type == 'where' ? `\`${f.filter_table}\`.\`${f.filter_column}\`` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  , ${column.minimumFractionDigits})`;
 
         if (f.filter_type === 'not_null') {
           filtersString += '\nand ' + this.filterToString(f, type);
@@ -171,7 +178,7 @@ export class OracleBuilderService extends QueryBuilderService {
           let t = tables.filter(table => table.name === e[j])
             .map(table => { return table.query ? this.cleanViewString(table.query) : `"${table.name}"` })[0];
 
-           //Version compatibility string//array
+          //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
 
             joinString.push(`inner join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
@@ -207,6 +214,10 @@ export class OracleBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
+      if (!el.hasOwnProperty('minimumFractionDigits')) {
+        el.minimumFractionDigits = 0;
+      }
+
       // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor.
       if (el.computed_column === 'computed_numeric') {
         columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  ,2) as "${el.display_name}"`);
@@ -214,24 +225,30 @@ export class OracleBuilderService extends QueryBuilderService {
 
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`ROUND( count( distinct "${el.table_id}"."${el.column_name}"), 2) as "${el.display_name}"`);
+            columns.push(`ROUND( count( distinct "${el.table_id}"."${el.column_name}"), ${el.minimumFractionDigits}) as "${el.display_name}"`);
           } else {
-            columns.push(`ROUND(${el.aggregation_type}("${el.table_id}"."${el.column_name}"), 2) as "${el.display_name}"`);
+            columns.push(`ROUND(${el.aggregation_type}("${el.table_id}"."${el.column_name}"),  ${el.minimumFractionDigits}) as "${el.display_name}"`);
           }
 
 
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`ROUND("${el.table_id}"."${el.column_name}", 2) as "${el.display_name}"`);
+            columns.push(`ROUND("${el.table_id}"."${el.column_name}", ${el.minimumFractionDigits}) as "${el.display_name}"`);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'month')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM') as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'week')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'IYYY-IW') as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'week_day')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'D') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'No')) {
+              }else if (_.isEqual(el.format, 'timestamp')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH24:MI:SS') as "${el.display_name}"`);
+              }  else if (_.isEqual(el.format, 'No')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
               }
             } else {
@@ -246,8 +263,14 @@ export class OracleBuilderService extends QueryBuilderService {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY')`);
             } else if (_.isEqual(el.format, 'month')) {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM')`);
+            } else if (_.isEqual(el.format, 'week')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'IYYY-IW')`);
+            } else if (_.isEqual(el.format, 'week_day')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'D')`);
             } else if (_.isEqual(el.format, 'day')) {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD')`);
+            } else if (_.isEqual(el.format, 'timestamp')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH24:MI:SS')`);
             } else if (_.isEqual(el.format, 'No')) {
               grouping.push(`"${el.table_id}"."${el.column_name}"`);
             }
@@ -270,7 +293,10 @@ export class OracleBuilderService extends QueryBuilderService {
   public filterToString(filterObject: any, type: string) {
 
     const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
-    const colname = type == 'where' ? `"${filterObject.filter_table}"."${filterObject.filter_column}"` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  ,2)`;
+    if (!column.hasOwnProperty('minimumFractionDigits')) {
+      column.minimumFractionDigits = 0;
+    }
+    const colname = type == 'where' ? `"${filterObject.filter_table}"."${filterObject.filter_column}"` : `ROUND(  CAST( ${column.SQLexpression}  as numeric)  ,${column.minimumFractionDigits})`;
     let colType = column.column_type;
 
     switch (this.setFilterType(filterObject.filter_type)) {

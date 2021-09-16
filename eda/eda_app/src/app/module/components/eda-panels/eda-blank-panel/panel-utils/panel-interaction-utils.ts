@@ -65,6 +65,7 @@ export const PanelInteractionUtils = {
       const fields = ebp.panel.content.query.query.fields;
       for (let i = 0, n = fields.length; i < n; i++) {
         ebp.currentQuery[i].format = fields[i].format;
+        ebp.currentQuery[i].cumulativeSum = fields[i].cumulativeSum;
       }
     }
   },
@@ -247,7 +248,7 @@ export const PanelInteractionUtils = {
       if (dataDescription.totalColumns === 0 || _.isEmpty(ebp.chartData)) {
         //this.alertService.addWarning($localize`:@@NoRecords:No se pudo obtener ningún registro`);
       } else {
-        notAllowedCharts = ebp.chartUtils.getNotAllowedCharts(dataDescription);
+        notAllowedCharts = ebp.chartUtils.getNotAllowedCharts(dataDescription, ebp.currentQuery);
         tooManyDataForCharts = ebp.chartUtils.getTooManyDataForCharts(ebp.chartData.length);
 
       }
