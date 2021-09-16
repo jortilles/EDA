@@ -1,5 +1,4 @@
 import { NgModule, Component, ChangeDetectionStrategy, ViewEncapsulation, Input, forwardRef, ChangeDetectorRef, ElementRef, Output, EventEmitter} from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export const KNOB_VALUE_ACCESSOR: any = {
@@ -12,11 +11,12 @@ export const KNOB_VALUE_ACCESSOR: any = {
     selector: 'p-knob',
     template: `
         <div [ngClass]="containerClass()" [class]="styleClass" [ngStyle]="style">
-        <svg viewBox="0 0 110 110" [style.width]="size + 'px'" [style.height]="size + 'px'" (click)="onClick($event)" (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)"
+        <svg viewBox="0 0 100 100" [style.width]="size + 'px'" [style.height]="size + 'px'" (click)="onClick($event)" (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)"
             (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
             <path [attr.d]="rangePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="rangeColor" class="p-knob-range"></path>
             <path [attr.d]="valuePath()" [attr.stroke-width]="strokeWidth" [attr.stroke]="valueColor" class="p-knob-value"></path>
             <text *ngIf="showValue" [attr.x]="50" [attr.y]="57" text-anchor="middle" [attr.fill]="textColor" [class]="textClass" [attr.name]="name">{{valueToDisplay()}}</text>
+            <text *ngIf="mustShow()" [attr.x]="50" [attr.y]="65" text-anchor="middle" [attr.fill]="textColor" class="p-knob-infotext">{{compareValueToDisplay()}}</text>
             <text [attr.x]="20" [attr.y]="100"  text-anchor="middle"  class="p-knob-infotext">{{min.toLocaleString('de-DE', {maximumFractionDigits: 6 })}}</text>
             <text [attr.x]="80" [attr.y]="100"  text-anchor="middle" class="p-knob-infotext">{{max.toLocaleString('de-DE', {maximumFractionDigits: 6 })}}</text>  
         </svg>
@@ -35,11 +35,11 @@ export class Knob {
 
     @Input() severity: string;
 
-    @Input() valueColor: string = "var(--primary-color, Black)";
+    @Input() valueColor: string = "var(--knob-value)";
 
-    @Input() rangeColor: string = "var(--surface-d, LightGray)";
+    @Input() rangeColor: string = "var(--knob-range)";
 
-    @Input() textColor: string = "var(--text-color-secondary, Black)";
+    @Input() textColor: string = "var(--knob-text)";
 
     @Input() valueTemplate: string = "{value}";
 
@@ -50,6 +50,8 @@ export class Knob {
     @Input() step: number = 1;
 
     @Input() min: number = 0;
+
+    @Input() comprareValue: number = 0;
 
     @Input() max: number = 100;
 
@@ -266,8 +268,14 @@ export class Knob {
     }
 
     valueToDisplay() {
-        return this.valueTemplate.replace("{value}", this._value.toLocaleString('de-DE'));
+        return this.valueTemplate.replace("{value}",  this._value.toLocaleString('de-DE') );
     }
+    compareValueToDisplay() {
+         return this.valueTemplate.replace("{value}", 'Vs ' +  this.comprareValue.toLocaleString('de-DE') );
+     }
+    mustShow(){
+        return  this._value > this.comprareValue;
+     }
 
     get _value(): number {
         return this.value != null ? this.value : this.min;

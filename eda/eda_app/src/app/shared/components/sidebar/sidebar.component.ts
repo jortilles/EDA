@@ -2,7 +2,7 @@ import { DashboardService } from './../../../services/api/dashboard.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from '@eda/models/model.index';
-import { SidebarService, UserService, AlertService, DataSourceService } from '@eda/services/service.index';
+import { SidebarService, UserService, AlertService, DataSourceService, StyleProviderService } from '@eda/services/service.index';
 import { LogoSidebar } from '@eda/configs/index';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 
@@ -27,7 +27,8 @@ export class SidebarComponent implements OnInit {
         public sidebarService: SidebarService,
         private alertService: AlertService,
         private dashboardService: DashboardService,
-        public dataSourceService : DataSourceService
+        public dataSourceService : DataSourceService,
+        public styleProviderService : StyleProviderService
     ) {
         this.logoSidebar = LogoSidebar;
 
@@ -78,7 +79,7 @@ export class SidebarComponent implements OnInit {
     }
 
     setEditMode(): void {
-        const user = localStorage.getItem('user');
+        const user = sessionStorage.getItem('user');
         const userName = JSON.parse(user).name;
         this.edit_mode = (userName !== 'edaanonim');
     }
@@ -93,7 +94,7 @@ export class SidebarComponent implements OnInit {
 
     goToDataSource(datasource): void {
         if (datasource) {
-
+            this.styleProviderService.setDefaultBackgroundColor();
             if (this.dashboardService._notSaved.value === false) {
                 this.router.navigate(['/data-source/', datasource._id]);
             } else {
@@ -118,6 +119,7 @@ export class SidebarComponent implements OnInit {
     }
 
     ignoreNotSaved(){
+        this.styleProviderService.setDefaultBackgroundColor();
         this.dashboardService._notSaved.next(false);
     }
 
@@ -136,7 +138,10 @@ export class SidebarComponent implements OnInit {
         }
     }
     public checkNotSaved(){
-        let url = window.location.href
+
+        this.styleProviderService.setDefaultBackgroundColor();
+        let url = window.location.href;
+
         if(url.includes('data-source'))
         {
             this.checkNotSavedDatasource(); 
@@ -145,6 +150,10 @@ export class SidebarComponent implements OnInit {
         {
 
             this.checkNotSavedHome()
+        }
+        else
+        {
+            this.router.navigate(['/home/']);
         }
         
     }

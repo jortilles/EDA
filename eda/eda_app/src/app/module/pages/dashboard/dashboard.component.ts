@@ -5,7 +5,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dashboard, EdaPanel, EdaTitlePanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { EdaDialogController, EdaDialogCloseEvent, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
-import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupService, IGroup, SpinnerService } from '@eda/services/service.index';
+import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupService, IGroup, SpinnerService, UserService, StyleProviderService, DashboardStyles } from '@eda/services/service.index';
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { SelectItem } from 'primeng/api';
 import { Subscription } from 'rxjs';
@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
 import jspdf from 'jspdf';
 import * as _ from 'lodash';
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
-import { filter } from 'rxjs/operators';
+
 
 @Component({
     selector: 'app-dashboard',
@@ -41,12 +41,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public visibleTypes: SelectItem[] = [];
     public filterController: EdaDialogController;
     public emailController: EdaDialogController;
+    public saveasController: EdaDialogController;
+    public editStylesController: EdaDialogController;
     public applyToAllfilter: { present: boolean, refferenceTable: string, id: string };
     public grups: IGroup[] = [];
     public toLitle: boolean = false;
     public toMedium: boolean = false;
     public datasourceName: string;
     public group: string = '';
+    public onlyIcanEdit: boolean = false;
 
     // Grid Global Variables
     public inject: InjectEdaPanel;
@@ -93,10 +96,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public refreshTime: number = null;
     public stopRefresh: boolean = false;
 
+    public styles : DashboardStyles;
+
     public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
     public addTagString: string = $localize`:@@addTag:AÑADIR ETIQUETA`;
     public newTag = $localize`:@@newTag:Nueva etiqueta`;
     public Seconds_to_refresh = $localize`:@@seconds_to_refresh:Intervalo de recarga`;
+    public canIeditTooltip = $localize`:@@canIeditTooltip:Si esta opción está seleccionada sólo el propietario del informe y los administradores podrán guardar los cambios`;
+
 
     constructor(
         private dashboardService: DashboardService,
@@ -108,12 +115,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
-        private dateUtilsService: DateUtils
+        private dateUtilsService: DateUtils,
+        private userService: UserService,
+        private stylesProviderService: StyleProviderService
     ) {
+        
         this.initializeResponsiveSizes();
         this.initializeGridsterOptions();
         this.initializeForm();
-        let tags = JSON.parse(localStorage.getItem('tags'));
+        let tags = JSON.parse(sessionStorage.getItem('tags'));
         if (tags) {
             this.tags = tags.filter(tag => tag.value !== 1);
         } else {
@@ -127,6 +137,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dashboard = new Dashboard({});
 
         this.initializeDashboard();
+        this.initStyles();
 
         this.dashboardService.notSaved.subscribe(
             (data) => {
@@ -163,6 +174,66 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.edaPanelsSubscription) {
             this.edaPanelsSubscription.unsubscribe();
         }
+    }
+
+    private initStyles(): void{
+
+        /**Global */
+        this.stylesProviderService.panelColor.subscribe(panelColor => {
+            document.documentElement.style.setProperty('--panel-color', panelColor);
+        });
+
+        /**Title */
+        this.stylesProviderService.titleFontColor.subscribe(color => {
+            document.documentElement.style.setProperty('--eda-title-font-color', color);
+        });
+        this.stylesProviderService.titleFontFamily.subscribe(font => {
+            document.documentElement.style.setProperty('--eda-title-font-family', font);
+        });
+        this.stylesProviderService.titleFontSize.subscribe(size => {
+            this.stylesProviderService.setTitleFontSize(size);
+        });
+        this.stylesProviderService.titleAlign.subscribe(align => {
+            document.documentElement.style.setProperty('--justifyTitle', align)
+        })
+
+        /**Filters */
+        this.stylesProviderService.filtersFontColor.subscribe(color => {
+            document.documentElement.style.setProperty('--eda-filters-font-color', color);
+        });
+        this.stylesProviderService.filtersFontFamily.subscribe(font => {
+            document.documentElement.style.setProperty('--eda-filters-font-family', font);
+        });
+        this.stylesProviderService.filtersFontSize.subscribe(size => {
+            this.stylesProviderService.setfiltersFontSize(size);
+        });
+
+        /**Title */
+        this.stylesProviderService.panelTitleFontColor.subscribe(color => {
+            document.documentElement.style.setProperty('--panel-title-font-color', color);
+        });
+        this.stylesProviderService.panelTitleFontFamily.subscribe(font => {
+            document.documentElement.style.setProperty('--panel-title-font-family', font);
+        });
+        this.stylesProviderService.panelTitleFontSize.subscribe(size => {
+            this.stylesProviderService.setPanelTitleFontSize(size);
+        });
+        this.stylesProviderService.panelTitleAlign.subscribe(align => {
+            document.documentElement.style.setProperty('--justifyPanelTitle', align)
+        })
+
+        /**Content */
+        this.stylesProviderService.panelFontColor.subscribe(color => {
+            document.documentElement.style.setProperty('--panel-font-color', color);
+        });
+        this.stylesProviderService.panelFontFamily.subscribe(font => {
+            document.documentElement.style.setProperty('--panel-font-family', font);
+        });
+        this.stylesProviderService.panelFontSize.subscribe(size => {
+            this.stylesProviderService.setPanelContentFontSize(size);
+        });
+
+
     }
 
     // Init functions
@@ -271,11 +342,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.tag = config.tag;
                     me.selectedtag = me.tags.filter(tag => tag.value === me.tag)[0];
                     me.refreshTime = config.refreshTime;
+                    me.onlyIcanEdit = config.onlyIcanEdit;
                     if (me.refreshTime) {
                         this.stopRefresh = false;
                         this.startCountdown(me.refreshTime);
                     }
                     me.sendViaMailConfig = config.sendViaMailConfig || this.sendViaMailConfig;
+                    me.styles = config.styles || this.stylesProviderService.generateDefaultStyles();
+
+                    this.stylesProviderService.setStyles(me.styles);
 
 
                     if (config.visible === 'group') {
@@ -292,7 +367,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.fillFiltersData();
 
                         me.dashboard = new Dashboard({
-                            id: me.id, title: me.title, visible: config.visible, panel: me.panels, user: res.dashboard.user,
+                            onlyIcanEdit: me.onlyIcanEdit, id: me.id, title: me.title, visible: config.visible, panel: me.panels, user: res.dashboard.user,
                             datasSource: me.dataSource, filters: [], applytoAllFilter: { present: false, refferenceTable: null, id: null }
                         });
 
@@ -304,7 +379,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.fillFiltersData();
 
                         me.dashboard = new Dashboard({
-                            id: me.id, title: me.title, visible: config.visible, panel: config.panel, user: res.dashboard.user,
+                            onlyIcanEdit: me.onlyIcanEdit, id: me.id, title: me.title, visible: config.visible, panel: config.panel, user: res.dashboard.user,
                             datasSource: me.dataSource, filters: config.filters, applytoAllFilter: me.applyToAllfilter
                         });
                         /**To update panel filters with filters current data */
@@ -400,7 +475,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Dashboard Panels
     private initializePanels(): void {
 
-        const user = localStorage.getItem('user');
+        const user = sessionStorage.getItem('user');
         const userID = JSON.parse(user)._id;
 
         this.inject = {
@@ -451,7 +526,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Dashboard control
     public async setEditMode() {
-        const user = localStorage.getItem('user');
+        const user = sessionStorage.getItem('user');
         const userName = JSON.parse(user).name;
         const userID = JSON.parse(user)._id;
         this.display_v.edit_mode = (userName !== 'edaanonim') && !(this.grups.filter(group => group.name === 'RO' && group.users.includes(userID)).length !== 0)
@@ -609,6 +684,92 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             });
         }
+    }
+
+    public saveAs() {
+        this.display_v.rightSidebar = false;
+        const params = {
+            dataSource: this.dataSource
+        };
+        this.saveasController = new EdaDialogController({
+            params,
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    const ds = { _id: this.dataSource._id };
+                    const body = {
+                        config: {
+                            title: response.name, visible: response.visible, ds, tag: null, refreshTime: null,
+                            styles: this.stylesProviderService.generateDefaultStyles(),
+                        },
+                        group: response.group
+                            ? _.map(response.group, '_id')
+                            : undefined
+                    };
+
+                    this.dashboardService.addNewDashboard(body).subscribe(
+                        r => {
+                            const body = {
+                                config: {
+                                    title: response.name,
+                                    panel: this.dashboard.panel,
+                                    ds: { _id: this.dataSource._id },
+                                    filters: this.cleanFiltersData(),
+                                    applyToAllfilter: this.applyToAllfilter,
+                                    visible: response.visible,
+                                    tag: this.getTag(),
+                                    refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
+                                    mailingAlertsEnabled: this.getMailingAlertsEnabled(),
+                                    sendViaMailConfig: this.sendViaMailConfig,
+                                    onlyIcanEdit: this.onlyIcanEdit,
+                                    styles:this.styles
+
+                                },
+                                group: response.group ? _.map(response.group, '_id') : undefined
+                            };
+
+                            this.edaPanels.forEach(panel => {
+                                panel.savePanel();
+                            });
+
+                            this.dashboardService.updateDashboard(r.dashboard._id, body).subscribe(
+                                () => {
+                                    this.dashboardService._notSaved.next(false);
+                                    this.display_v.rightSidebar = false;
+                                    this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+                                    this.router.navigate(['/dashboard/', r.dashboard._id]).then(() => {
+                                        window.location.reload();
+                                    });
+
+                                },
+                                err => {
+                                    this.dashboardService._notSaved.next(false);
+                                    this.display_v.rightSidebar = false;
+                                    this.alertService.addError(err);
+                                }
+                            );
+                        },
+                        err => this.alertService.addError(err)
+                    );
+                }
+                this.saveasController = null;
+            }
+        });
+    }
+
+    public editStyles() {
+        this.display_v.rightSidebar = false;
+        const params = this.styles;
+        this.editStylesController = new EdaDialogController({
+            params,
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.stylesProviderService.setStyles(response);
+                    this.styles = response;
+                    this.dashboardService._notSaved.next(true);
+                }     
+                this.editStylesController = null;
+            }
+        })
     }
 
     /** Updates applyToAllFilter in every panel */
@@ -923,6 +1084,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
                     mailingAlertsEnabled: this.getMailingAlertsEnabled(),
                     sendViaMailConfig: this.sendViaMailConfig,
+                    onlyIcanEdit: this.onlyIcanEdit,
+                    styles : this.styles
 
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
@@ -1054,7 +1217,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             found
             && panel.content
             && !found.panelChart.NO_DATA
-            && (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob', 'funnel'].includes(panel.content.chart))
+            && (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob', 'funnel', 'sunburst'].includes(panel.content.chart))
             && !$event.isNew) {
             found.savePanel();
         }// found.onGridsterResize($event);
@@ -1100,5 +1263,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         }, 2000)
 
+    }
+    public canIedit() {
+        let result: boolean = false;
+        result = this.userService.isAdmin;
+        // si no es admin...  
+        if (result == false) {
+            if (this.dashboard.onlyIcanEdit) {
+                if (this.userService.user._id == this.dashboard.user) {
+                    result = true;
+                }
+            } else {
+                result = true;
+            }
+
+        }
+        return result;
     }
 }

@@ -36,7 +36,6 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
   }
 
   private initMap = (): void => {
-    console.log(this.inject)
 
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {
@@ -48,7 +47,7 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
       });
       const tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
       });
 
       tiles.addTo(this.map);

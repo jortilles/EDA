@@ -629,10 +629,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="seleccionH4" datatype="html">
 <source>
-                            Selección
+                            Mostrar los siguientes atributos:
 </source>
 <target>
-                            Selection
+                            Show the following attributes:
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -641,10 +641,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="filtrosH4" datatype="html">
 <source>
-                            Filtros
+                            Filtrar los resultados por:
 </source>
 <target>
-                            Filters
+                            Filter the results by:
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -937,10 +937,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="tituloNuevoInforme" datatype="html">
 <source>
-                    NUEVO INFORME
+                    CREAR UN NUEVO INFORME
 </source>
 <target>
-                    NEW DASHBOARD
+                    CREATE A NEW DASHBOARD
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -1023,17 +1023,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">38</context>
 </context-group>
 </trans-unit>
-
-<trans-unit id="beforeYesterday" datatype="html">
-<source> Antes de Ayer </source>
-<target> Before Yesterday </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">39</context>
-</context-group>
-</trans-unit>
-
-
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
 <target> This week </target>
@@ -1091,8 +1080,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="opcionGuardar" datatype="html">
-<source>GUARDAR INFORME</source>
-<target>SAVE DASHBOARD</target>
+<source>GUARDAR</source>
+<target>SAVE</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">160</context>
@@ -1843,7 +1832,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">345</context>
 </context-group>
 </trans-unit>
-
 <trans-unit id="panelOptions1">
 <source>Editar consulta</source>
 <target>Edit query</target>
@@ -1858,12 +1846,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Exportar a Excel</source>
 <target>Excel export</target>
 </trans-unit>
-
 <trans-unit id="panelOptions4">
 <source>Eliminar panel</source>
 <target>Delete panel</target>
 </trans-unit>
-
 <trans-unit id="chartTypes1">
 <source>Tabla de Datos</source>
 <target>Table</target>
@@ -1923,20 +1909,20 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>NOT EQUAL TO (!=)</target>
 </trans-unit>
 <trans-unit id="filters3">
-<source>MAYOR A (>)</source>
-<target>GREATER THAN (>) </target>
+<source>MAYOR A (&gt;)</source>
+<target>GREATER THAN (&gt;) </target>
 </trans-unit>
 <trans-unit id="filters4">
-<source>MENOR A (<) </source>
-<target>SMALLER THAN (<) </target>
+<source>MENOR A (&lt;) </source>
+<target>SMALLER THAN (&lt;) </target>
 </trans-unit>
 <trans-unit id="filters5">
-<source>MAYOR o IGUAL A (>=) </source>
-<target>BIGGER OR EQUAL TO (>=) </target>
+<source>MAYOR o IGUAL A (&gt;=) </source>
+<target>BIGGER OR EQUAL TO (&gt;=) </target>
 </trans-unit>
 <trans-unit id="filters6">
-<source>MENOR o IGUAL A (<=) </source>
-<target>SMALLER OR EQUAL TO (<=) </target>
+<source>MENOR o IGUAL A (&lt;=) </source>
+<target>SMALLER OR EQUAL TO (&lt;=) </target>
 </trans-unit>
 <trans-unit id="filters7">
 <source>ENTRE (between) </source>
@@ -1955,6 +1941,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>LIKE </target>
 </trans-unit>
 <trans-unit id="filters11">
+<source>NO PARECIDO A (not like)</source>
+<target>NOT LIKE </target>
+</trans-unit>
+<trans-unit id="filters12">
 <source>VALORES NO NULOS (not null)</source>
 <target>NOT NULL</target>
 </trans-unit>
@@ -2236,12 +2226,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 
 <trans-unit id="col">
-<source>Columna</source>
-<target>Column</target>
+<source>Atributo</source>
+<target>Attribute:</target>
 </trans-unit>
 <trans-unit id="table">
-<source>de la tabla</source>
-<target>from table</target>
+<source>de la entidad</source>
+<target>. Entity: </target>
 </trans-unit>
 
 <trans-unit id="addCalculatedColTitle">
@@ -2661,9 +2651,21 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Éste mes</source>
 <target>This month</target>
 </trans-unit>
+<trans-unit id="DatePickerLastMonth">
+<source>El mes pasado</source>
+<target>Last month</target>
+</trans-unit>
+<trans-unit id="DatePickerLastMonthFull">
+<source>El mes pasado completo</source>
+<target>All last month</target>
+</trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
 <source>Éste mes del año pasado</source>
 <target>This month from previous year</target>
+</trans-unit>
+<trans-unit id="DatePickerMonthPreviousYearFull">
+<source>Éste mes al completo del año pasado</source>
+<target>This whole month of last year</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
 <source>Éste año</source>
@@ -2758,8 +2760,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="alertsInfo">
-<source>Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto</source>
-  <target>When the kpi value is (=, <,>) than the defined value, the text color will change  </target>
+<source>Cuando el valor del kpi sea (=, &lt;,&gt;) que el valor definido cambiará el color del texto</source>
+  <target>When the kpi value is (=, &lt;,&gt;) than the defined value, the text color will change  </target>
   </trans-unit>
 
   <trans-unit id="generateView" datatype="html">
@@ -2924,13 +2926,13 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="dragFields">
-    <source>Arrastre aquí los atributos que quiera consultar</source>
-    <target>Drag fields here </target>
+    <source>Arrastre aquí los atributos que quiera ver en su panel</source>
+    <target>Drag here the attributes you want to see in your pannel</target>
   </trans-unit>
 
   <trans-unit id="dragFilters">
     <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
-    <target>Drag filters here </target>
+    <target>Drag here the attributes you want to filter on</target>
   </trans-unit>
 
   <trans-unit id="LegendPosition">
@@ -3423,7 +3425,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="newDashboardtitle">
-    <source>CREA TU NUEVO INFORME  </source>
+    <source>CREA UN NUEVO INFORME</source>
     <target>YOUR NEW DASHBOARD</target>
   </trans-unit>
   
@@ -3503,6 +3505,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Compare function is only allowed in queries with one date field monthly or weekly aggregated and one numeric field</target>
   </trans-unit> 
 
+
+     <trans-unit id="canIeditTooltip">
+    <source>Si esta opción está seleccionada, sólo el propietario del informe y los administradores podrán guardar los cambios</source>
+    <target>If this option is selected, only the report owner and administrators will be able to save changes</target>
+  </trans-unit> 
+     <trans-unit id="onlyIcanEditTag">
+    <source>Edición privada:</source>
+    <target>Private edition:  </target>
+  </trans-unit> 
+
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
     <target>Trend function is only allowed in line charts</target>
@@ -3529,6 +3541,107 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna no numérica.</source>
     <target>Disable cummulative function in date field or remove one non-numeric field. </target>
   </trans-unit> 
+
+   <trans-unit id="SaveAs">
+    <source>GUARDAR COMO...</source>
+    <target>SAVE AS...  </target>
+  </trans-unit> 
+
+     <trans-unit id="opcionGuardarComo">
+    <source>GUARDAR COMO</source>
+    <target>SAVE AS</target>
+  </trans-unit> 
+
+
+   <trans-unit id="editStylesTitle">
+    <source>EDITAR ESTILOS DEL INFORME</source>
+    <target>EDIT DASHBOARD STYLES</target>
+  </trans-unit> 
+
+     <trans-unit id="dashboardTitleEdit">
+    <source>Título del informe</source>
+    <target>Dashboard title</target>
+  </trans-unit> 
+
+     <trans-unit id="filtersEdit">
+    <source>Filtros</source>
+    <target>Filters</target>
+  </trans-unit> 
+
+     <trans-unit id="panelTitleEdit">
+    <source>Título del panel</source>
+    <target>Panel title</target>
+  </trans-unit> 
+
+     <trans-unit id="panelContentEdit">
+    <source>Contenido del panel</source>
+    <target>Panel content</target>
+  </trans-unit> 
+
+     <trans-unit id="ChangeFontFamily">
+    <source>Tipo de fuente</source>
+    <target>Font type</target>
+  </trans-unit> 
+
+     <trans-unit id="ChangeFontSize">
+    <source>Tamaño de fuente</source>
+    <target>Font size</target>
+  </trans-unit> 
+
+     <trans-unit id="ChangeFontColor">
+    <source>Color de la fuente</source>
+    <target>Font color</target>
+  </trans-unit> 
+
+
+  <trans-unit id="ChangeBackgroundColor">
+    <source>Color del fondo</source>
+    <target>Background color </target>
+  </trans-unit> 
+  
+     <trans-unit id="ChangePaneColor">
+    <source>Color del panel</source>
+    <target>Panel color</target>
+  </trans-unit> 
+
+  <trans-unit id="opcionEditarEstilos">
+    <source>EDITAR ESTILOS</source>
+    <target>EDIT STYLES</target>
+  </trans-unit> 
+
+    <trans-unit id="left">
+    <source>Izquierda</source>
+    <target>Left</target>
+  </trans-unit> 
+  <trans-unit id="center">
+    <source>Centro</source>
+    <target>Center</target>
+  </trans-unit> 
+  <trans-unit id="right">
+    <source>Derecha</source>
+    <target>Right</target>
+  </trans-unit> 
+
+  <trans-unit id="resetStylesBtn">
+    <source>Volver a los valores por defecto</source>
+    <target>Set default values</target>
+  </trans-unit> 
+
+    <trans-unit id="samplePanelTitle">
+    <source>Previsualización</source>
+    <target>Previsualization</target>
+  </trans-unit> 
+
+   <trans-unit id="samplePanelDBName">
+    <source>Título del informe</source>
+    <target>Dashboard title</target>
+  </trans-unit> 
+
+   <trans-unit id="samplePanelName">
+    <source>Título del panel</source>
+    <target>Panel title</target>
+  </trans-unit> 
+  
 
 
 

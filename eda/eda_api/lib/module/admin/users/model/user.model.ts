@@ -7,12 +7,13 @@ const roles = {
     message: '{VALUE} no es un role permitido'
 };
 
+
 export interface IUser extends mongoose.Document {
     name: String;
     email: String;
     password: String;
     img: String;
-    role: any[];
+    role: any;
 }
 
 

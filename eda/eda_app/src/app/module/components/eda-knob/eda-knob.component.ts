@@ -11,26 +11,38 @@ import { EdaKnob } from "./edaKnob";
 export class EdaKnobComponent implements OnInit, AfterViewInit {
 
   @Input() inject: EdaKnob;
-  @ViewChild('parentDiv', { static: false }) elementView: ElementRef;
+  @ViewChild('parentDiv')
+  parentDiv: ElementRef;
 
   size: number = 100;
   color: string;
   limits: Array<number>;
   value: number;
+  comprareValue: number;
   class: string;
 
   constructor() { }
 
   ngOnInit(): void {
-
-    this.color = this.inject.color ? this.inject.color : '#409265';
+    this.color = this.inject.color ? this.inject.color : "#024873";
     this.value = this.inject.data.values[0][0];
     this.limits = this.getLimits();
+    this.comprareValue = this.inject.data.values[0][1] ? this.inject.data.values[0][1] : this.limits[1];
     this.class = this.value > 999999 ? 'p-knob-text-small' : this.value < 1000 ? 'p-knob-text-large' : 'p-knob-text';
-
   }
+
   ngAfterViewInit(): void {
-     let val = this.elementView.nativeElement.clientWidth < 300 ? this.elementView.nativeElement.clientWidth /1 : 300;
+    const w = this.parentDiv.nativeElement.offsetWidth;
+    const h = this.parentDiv.nativeElement.offsetHeight;
+    let val:number = 10;
+    if( w>0 && h>0){
+      if( w<=h){
+        val = w;
+      }else{
+        val = h;
+      }
+      val = parseInt((val/1.2).toFixed());
+    }
     setTimeout(_ => { this.size =  val }, 0)
   }
 

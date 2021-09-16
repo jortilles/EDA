@@ -629,10 +629,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="seleccionH4" datatype="html">
 <source>
-                            Selección
+                            Mostrar los siguientes atributos:
 </source>
 <target>
-                            Sel·lecció
+                           Mostra els següents atributs:
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -641,10 +641,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="filtrosH4" datatype="html">
 <source>
-                            Filtros
+                            Filtrar los resultados por:
 </source>
 <target>
-                            Filtres
+                            Filtrar els resultats per:
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -937,10 +937,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="tituloNuevoInforme" datatype="html">
 <source>
-                    NUEVO INFORME
+                    CREAR UN NUEVO INFORME
 </source>
 <target>
-                    NOU INFORME
+                    CREAR UN NOU INFORME
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -1023,14 +1023,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">38</context>
 </context-group>
 </trans-unit>
-<trans-unit id="beforeYesterday" datatype="html">
-<source> Antes de Ayer </source>
-<target> Abans d'ahir </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
-<context context-type="linenumber">39</context>
-</context-group>
-</trans-unit>
+
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
 <target> Aquesta setmana </target>
@@ -1088,8 +1081,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="opcionGuardar" datatype="html">
-<source>GUARDAR INFORME</source>
-<target>GUARDAR INFORME</target>
+<source>GUARDAR</source>
+<target>GUARDAR</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">160</context>
@@ -1927,20 +1920,20 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>NO IGUAL A (!=)</target>
 </trans-unit>
 <trans-unit id="filters3">
-<source>MAYOR A (>)</source>
-<target>MAJOR QUE (>) </target>
+<source>MAYOR A (&gt;)</source>
+<target>MAJOR QUE (&gt;) </target>
 </trans-unit>
 <trans-unit id="filters4">
-<source>MENOR A (<) </source>
-<target>MENOR QUE (<) </target>
+<source>MENOR A (&lt;) </source>
+<target>MENOR QUE (&lt;) </target>
 </trans-unit>
 <trans-unit id="filters5">
-<source>MAYOR o IGUAL A (>=) </source>
-<target>MAJOR o IGUAL QUE (>=) </target>
+<source>MAYOR o IGUAL A (&gt;=) </source>
+<target>MAJOR o IGUAL QUE (&gt;=) </target>
 </trans-unit>
 <trans-unit id="filters6">
-<source>MENOR o IGUAL A (<=) </source>
-<target>MENOR o IGUAL QUE (<=) </target>
+<source>MENOR o IGUAL A (&lt;=) </source>
+<target>MENOR o IGUAL QUE (&lt;=) </target>
 </trans-unit>
 <trans-unit id="filters7">
 <source>ENTRE (between) </source>
@@ -1959,6 +1952,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>SEMBLANT A (like) </target>
 </trans-unit>
 <trans-unit id="filters11">
+<source>NO PARECIDO A (not like)</source>
+<target>NO SEMBLANT A (not like) </target>
+</trans-unit>
+<trans-unit id="filters12">
 <source>VALORES NO NULOS (not null)</source>
 <target>VALORS NO NULS (not null)</target>
 </trans-unit>
@@ -2237,12 +2234,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="col">
-<source>Columna</source>
-<target>Columna</target>
+<source>Atributo</source>
+<target>Atribut</target>
 </trans-unit>
 <trans-unit id="table">
-<source>de la tabla</source>
-<target>de la taula</target>
+<source>de la entidad</source>
+<target>de l'entitat</target>
 </trans-unit>
 
 <trans-unit id="addCalculatedColTitle">
@@ -2664,9 +2661,21 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Éste mes</source>
 <target>Aquest mes</target>
 </trans-unit>
+<trans-unit id="DatePickerLastMonth">
+<source>El mes pasado</source>
+<target>El mes passat</target>
+</trans-unit>
+<trans-unit id="DatePickerLastMonthFull">
+<source>El mes pasado completo</source>
+<target>Tot el mes passat</target>
+</trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
 <source>Éste mes del año pasado</source>
 <target>Aquest mes de l'any passat</target>
+</trans-unit>
+<trans-unit id="DatePickerMonthPreviousYearFull">
+<source>Éste mes al completo del año pasado</source>
+<target>Aquest mes, complert, de l'any passat</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
 <source>Éste año</source>
@@ -2762,8 +2771,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 
 <trans-unit id="alertsInfo">
-<source>Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto</source>
-  <target>Quan el valor del kpi sigui (=, <, >) que el valor definit cambiarà el color del text </target>
+<source>Cuando el valor del kpi sea (=, 	&lt;,	&gt;) que el valor definido cambiará el color del texto</source>
+  <target>Quan el valor del kpi sigui (=, 	&lt;, 	&gt;) que el valor definit cambiarà el color del text </target>
   </trans-unit>
 
   <trans-unit id="ViewDatamodel">
@@ -2925,8 +2934,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="dragFields">
-    <source>Arrastre aquí los atributos que quiera consultar</source>
-    <target>Arrossega aqui els atributs que vols consultar </target>
+    <source>Arrastre aquí los atributos que quiera ver en su panel</source>
+    <target>Arrossega aqui els atributs que vols veure al teu panell</target>
   </trans-unit>
 
   <trans-unit id="draggFilters">
@@ -3441,8 +3450,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
     <trans-unit id="newDashboardtitle">
-    <source>CREA TU NUEVO INFORME  </source>
-    <target>CREA EL TEU NOU INFORME</target>
+    <source>CREA UN NUEVO INFORME</source>
+    <target>CREA UN NOU INFORME</target>
   </trans-unit>
 
   <trans-unit id="inputCuenta">
@@ -3521,6 +3530,17 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>La funció de comparar només es pot activar si es disposa d'un camp de data agregat per mes o setmana i un únic camp numèric agregat</target>
   </trans-unit> 
 
+     <trans-unit id="canIeditTooltip">
+    <source>Si esta opción está seleccionada, sólo el propietario del informe y los administradores podrán guardar los cambios</source>
+    <target>Si aquesta opció està marcada, només el propietari de l'informe i els administradors podran desar els canvis</target>
+  </trans-unit> 
+
+     <trans-unit id="onlyIcanEditTag">
+    <source>Edición privada:</source>
+    <target>Edició privada:  </target>
+  </trans-unit> 
+  
+
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
     <target>La funció d'afegir una tendència només es pot activar en els gràfics de línies</target>
@@ -3548,6 +3568,112 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna no numérica.</source>
     <target>Pots desactivar la funció acumulativa en el camp de data o treure una columna no numèrica. </target>
   </trans-unit> 
+
+       <trans-unit id="SaveAs">
+    <source>GUARDAR COMO...</source>
+    <target>GUARDAR COM...  </target>
+  </trans-unit>  
+
+   <trans-unit id="opcionGuardarComo">
+    <source>GUARDAR COMO</source>
+    <target>GUARDAR COM</target>
+  </trans-unit> 
+
+
+
+
+
+  <trans-unit id="editStylesTitle">
+    <source>EDITAR ESTILOS DEL INFORME</source>
+    <target>EDITAR ESTILS DE L'INFORME</target>
+  </trans-unit> 
+
+     <trans-unit id="dashboardTitleEdit">
+    <source>Título del informe</source>
+    <target>Títol de l'informe</target>
+  </trans-unit> 
+
+     <trans-unit id="filtersEdit">
+    <source>Filtros</source>
+    <target>Filtres</target>
+  </trans-unit> 
+
+     <trans-unit id="panelTitleEdit">
+    <source>Título del panel</source>
+    <target>Títol del panell</target>
+  </trans-unit> 
+
+     <trans-unit id="panelContentEdit">
+    <source>Contenido del panel</source>
+    <target>Contingut del panell</target>
+  </trans-unit> 
+
+     <trans-unit id="ChangeFontFamily">
+    <source>Tipo de fuente</source>
+    <target>Tipus de font</target>
+  </trans-unit> 
+
+     <trans-unit id="ChangeFontSize">
+    <source>Tamaño de fuente</source>
+    <target>Mida de la font</target>
+  </trans-unit> 
+
+     <trans-unit id="ChangeFontColor">
+    <source>Color de la fuente</source>
+    <target>Color de la font</target>
+  </trans-unit> 
+
+
+  <trans-unit id="ChangeBackgroundColor">
+    <source>Color del fondo</source>
+    <target>Color del fons </target>
+  </trans-unit> 
+  
+     <trans-unit id="ChangePaneColor">
+    <source>Color del panel</source>
+    <target>Color del panell</target>
+  </trans-unit> 
+
+  <trans-unit id="opcionEditarEstilos">
+    <source>EDITAR ESTILOS</source>
+    <target>EDITAR ESTILS</target>
+  </trans-unit> 
+
+  <trans-unit id="left">
+    <source>Izquierda</source>
+    <target>Esquerra</target>
+  </trans-unit> 
+  <trans-unit id="center">
+    <source>Centro</source>
+    <target>Centre</target>
+  </trans-unit> 
+  <trans-unit id="right">
+    <source>Derecha</source>
+    <target>Dreta</target>
+  </trans-unit> 
+
+   <trans-unit id="resetStylesBtn">
+    <source>Volver a los valores por defecto</source>
+    <target>Tornar als valors per defecte</target>
+  </trans-unit> 
+
+  <trans-unit id="samplePanelTitle">
+    <source>Previsualización</source>
+    <target>Previsualització</target>
+  </trans-unit> 
+
+   <trans-unit id="samplePanelDBName">
+    <source>Título del informe</source>
+    <target>Títol de l'informe</target>
+  </trans-unit> 
+
+   <trans-unit id="samplePanelName">
+    <source>Título del panel</source>
+    <target>Títol del panell</target>
+  </trans-unit> 
+
+
+  
 
 
 </body>

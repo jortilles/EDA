@@ -66,7 +66,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     onShow(): void {
         this.selectedColumn = this.controller.params.selectedColumn;
         const title = this.selectedColumn.display_name.default;
-        this.dialog.title = `Columna: ${title} de la tabla ${this.controller.params.table}`;
+        this.dialog.title = `Atributo ${title} de la entidad ${this.controller.params.table}`;
 
         this.carrega();
     }

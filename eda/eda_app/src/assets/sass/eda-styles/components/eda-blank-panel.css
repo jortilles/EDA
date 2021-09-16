@@ -90,12 +90,6 @@ h2 {
     cursor: move;
 }
 
-.panel-heading .panel-title {
-    padding: 10px;
-    font-weight: bold;
-    margin: 0;
-}
-
 .panel-body {
     overflow: auto;
     position: absolute;
@@ -464,8 +458,9 @@ span.state-label {
     top: 5px;
 }
 .close-thin:after {
-    content: '×'; /* UTF-8 symbol */
+    content: 'x'; /* UTF-8 symbol */
     color:var(--main--button-color);
+    font-size: medium;
 }
 
 .cdk-drag-preview {
@@ -548,7 +543,7 @@ body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider  {
  line-height: 22px;
  font-size: 18px;
  color: #455a64;
- font-family: 'Questrial';
+ /* font-family: 'Questrial'; */
  font-weight: 400;
  box-sizing: border-box;
 

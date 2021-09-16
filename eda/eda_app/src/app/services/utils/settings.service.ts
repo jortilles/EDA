@@ -15,12 +15,12 @@ export class SettingsService {
     }
 
     saveSettings() {
-        localStorage.setItem('settings', JSON.stringify(this.settings));
+        sessionStorage.setItem('settings', JSON.stringify(this.settings));
     }
 
     loadingSettings() {
-        if (localStorage.getItem('settings')) {
-            this.settings = JSON.parse(localStorage.getItem('settings'));
+        if (sessionStorage.getItem('settings')) {
+            this.settings = JSON.parse(sessionStorage.getItem('settings'));
             this.applyTheme(this.settings.tema);
         } else {
             this.applyTheme(this.settings.tema);

@@ -30,7 +30,7 @@ export class CachedQueryService {
       const queryHash = CachedQueryService.build(model_id, query);
       const storedQuery = await CachedQueryService.getQuery(queryHash);
       if (storedQuery) {
-        const res = await CachedQuery.updateOne({ _id: storedQuery._id }, { 'cachedQuery.lastLoaded': new Date().toISOString() });
+        const res = await CachedQuery.updateOne({ _id: storedQuery._id }, { 'cachedQuery.lastLoaded': SchedulerFunctions.totLocalISOTime(new Date()) });
       }
       return storedQuery;
 
@@ -52,9 +52,9 @@ export class CachedQueryService {
           model_id: model_id,
           hashedQuery: CachedQueryService.build(model_id, query),
           response: response,
-          dateAdded: new Date().toISOString(),
-          lastLoaded: new Date().toISOString(),
-          lastUpdated: new Date().toISOString()
+          dateAdded: SchedulerFunctions.totLocalISOTime(new Date()) ,
+          lastLoaded: SchedulerFunctions.totLocalISOTime(new Date()) ,
+          lastUpdated: SchedulerFunctions.totLocalISOTime(new Date()) 
         }
       });
 
@@ -79,7 +79,7 @@ export class CachedQueryService {
 
     try {
 
-      const res = await CachedQuery.deleteMany({ 'cachedQuery.lastLoaded': { $lte: limitDate.toISOString() } }).exec();
+      const res = await CachedQuery.deleteMany({ 'cachedQuery.lastLoaded': { $lte: SchedulerFunctions.totLocalISOTime(limitDate) } }).exec();
       if (res.n > 0) {
         console.log(`\n\x1b[34m=====\x1b[0m \x1b[32mCleaning service: Removed ${res.n} cached queries \x1b[0m \x1b[34m=====\x1b[0m\n`);
       }
@@ -90,7 +90,7 @@ export class CachedQueryService {
   }
 
   static async updateQueries() {
-    //console.log(`\n\x1b[34m=====\x1b[0m \x1b[32mUpdating service\x1b[0m \x1b[34m=====\x1b[0m\n`);
+    console.log(`\n\x1b[34m=====\x1b[0m \x1b[32mUpdating service\x1b[0m \x1b[34m=====\x1b[0m\n`);
 
     try {
 
@@ -120,12 +120,14 @@ export class CachedQueryService {
 
         if (shouldUpdate) {
 
+          console.log('Cached query should update queries!')
+
           updatedQueries++;
 
           const updatedValues = await CachedQueryService.execQuery(query.cachedQuery.model_id, query.cachedQuery.query, query.cachedQuery.response[0]);
           const updated = await CachedQuery.updateOne({ _id: query._id },
             {
-              'cachedQuery.lastUpdated': new Date().toISOString(),
+              'cachedQuery.lastUpdated': SchedulerFunctions.totLocalISOTime(new Date()) ,
               'cachedQuery.response': updatedValues
             }).exec();
 

@@ -4,6 +4,7 @@ import { HttpException } from '../../global/model/index';
 import Group, { IGroup } from './model/group.model';
 import User from '../users/model/user.model';
 import Dashboard from '../../dashboard/model/dashboard.model';
+import { QueryOptions } from 'mongoose';
 
 
 export class GroupController {
@@ -125,10 +126,11 @@ export class GroupController {
 
     static async deleteGroup(req: Request, res: Response, next: NextFunction) {
         try {
-            await Dashboard.update({}, { $pull: { group: req.params.id } }).exec();
-            await User.update({ role: req.params.id }, { $pull: { role: { $in: [req.params.id] } } }).exec();
+            await Dashboard.updateOne({}, { $pull: { group: req.params.id } }).exec();
+            await User.updateOne({ role: req.params.id }, { $pull: { role: { $in: [req.params.id] } } }).exec();
+            let options:QueryOptions = {};
 
-            Group.findByIdAndDelete(req.params.id, async (err, groupDeleted: IGroup) => {
+            Group.findByIdAndDelete(req.params.id, options, async (err,  groupDeleted: IGroup) => {
                 if (err) {
                     return next(new HttpException(500, 'Error removing group'));
                 }

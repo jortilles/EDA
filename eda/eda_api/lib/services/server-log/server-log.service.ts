@@ -1,5 +1,6 @@
 const { createLogger, format, transports } = require('winston');
 const { combine, timestamp,  prettyPrint  } = format;
+import CSV from 'winston-csv-format';
 
 
 var options = {
@@ -21,10 +22,8 @@ var options = {
 };
 
 const ServerLogService = createLogger({
-  format: combine(
-    timestamp(),
-    prettyPrint()
-  ),
+  format: 
+    CSV(['level', 'action', 'userMail', 'ip', 'type', 'date_str' ], { delimiter: ',' }),
   transports: [new transports.File(options.file)]
 });
 

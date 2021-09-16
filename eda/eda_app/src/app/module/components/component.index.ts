@@ -1,9 +1,3 @@
-import { Knob } from './eda-knob/primengKnob/knob';
-import { ScatterPlotDialog } from './eda-panels/eda-blank-panel/scatterPlotDialog/scatterPlot-dialog.component';
-import { TreeMapDialog } from './eda-panels/eda-blank-panel/treeMapDialog/treeMap-dialog.component';
-import { EdaTreeMap } from './eda-treemap/eda-treemap.component';
-import { SankeyDialog } from './eda-panels/eda-blank-panel/sankey-dialog/sankey-dialog.component';
-import { EdaD3Component } from './eda-d3/eda-d3.component';
 
 // Eda Chart
 export { EdaChartComponent } from './eda-chart/eda-chart.component';
@@ -56,4 +50,6 @@ export { EdaTreeMap} from './eda-treemap/eda-treemap.component';
 export { EdaKnobComponent } from './eda-knob/eda-knob.component';
 export { KnobDialogComponent } from './eda-panels/eda-blank-panel/knob-dialog/knob-dialog.component';
 export {Knob} from './eda-knob/primengKnob/knob';
-export {FunnelDialog} from './eda-panels/eda-blank-panel/funnel-dialog/funnel-dialog.component'
+export {FunnelDialog} from './eda-panels/eda-blank-panel/funnel-dialog/funnel-dialog.component';
+export {EdaSunburstComponent} from './eda-sunburst/eda-sunburst.component';
+export {SunburstDialogComponent} from './eda-panels/eda-blank-panel/sunbrust-dialog/sunburst-dialog.component';

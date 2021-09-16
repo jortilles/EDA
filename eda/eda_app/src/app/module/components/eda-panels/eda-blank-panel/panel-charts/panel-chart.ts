@@ -1,3 +1,4 @@
+import { DashboardStyles } from '@eda/services/service.index';
 import { LinkedDashboardProps } from '../link-dashboards/link-dashboard-props';
 import { ChartConfig } from './chart-configuration-models/chart-config';
 

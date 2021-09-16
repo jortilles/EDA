@@ -45,6 +45,9 @@ import {InputNumberModule} from 'primeng/inputnumber';
 import {ToolbarModule} from 'primeng/toolbar';
 import {EditorModule} from 'primeng/editor';
 import {ToggleButtonModule} from 'primeng/togglebutton';
+import {SliderModule }  from 'primeng/slider';
+
+
 
 
 @NgModule({
@@ -94,7 +97,8 @@ import {ToggleButtonModule} from 'primeng/togglebutton';
         ToolbarModule,
         EditorModule,
         ToggleButtonModule,
-        MessageModule
+        MessageModule,
+        SliderModule
     ]
 })
 export class PrimengModule { }

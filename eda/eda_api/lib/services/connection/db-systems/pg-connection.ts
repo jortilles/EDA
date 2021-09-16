@@ -2,7 +2,6 @@ import { Client as PgClient } from 'pg';
 import { PgBuilderService } from '../../query-builder/qb-systems/pg-builder-service';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
-import DataSource from '../../../module/datasource/model/datasource.model';
 
 var types = require('pg').types;
 types.setTypeParser(1700, 'text', parseFloat);
@@ -229,13 +228,15 @@ export class PgConnection extends AbstractConnection {
             .join(' ');
     }
 
-    createTable(queryData: any): string {
-        this.queryBuilder = new PgBuilderService(queryData, { ds: { model: { tables: [] } } }, null);
+    createTable(queryData: any, user:any): string {
+
+        this.queryBuilder = new PgBuilderService(queryData, { ds: { model: { tables: [] } } }, user._id);
         return this.queryBuilder.createTable(queryData);
     }
 
-    generateInserts(queryData: any): string {
-        this.queryBuilder = new PgBuilderService(queryData, { ds: { model: { tables: [] } } }, null);
+    generateInserts(queryData: any, user:any): string {
+ 
+        this.queryBuilder = new PgBuilderService(queryData, { ds: { model: { tables: [] } } }, user._id);
         return this.queryBuilder.generateInserts(queryData);
     }
 

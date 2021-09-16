@@ -347,6 +347,10 @@ export class MySqlBuilderService extends QueryBuilderService {
         if (filterObject.filter_type === 'like') {
           return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
         }
+        if (filterObject.filter_type === 'not_like') { 
+          filterObject.filter_type = 'not like'
+          return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+        }   
         return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
@@ -426,4 +430,58 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     return query;
   }
+
+  
+  public createTable(queryData: any) {
+    let create = `CREATE TABLE ${queryData.tableName} ( `;
+    queryData.columns.forEach(col => {
+        create += ` \`${this.abc_123(col.field)}\` ${this.getMysqlColType(col.type)}, `;
+    });
+    create = create.slice(0, -2);
+    create += ' );'
+    return create;
+}
+
+public abc_123(str: string): string {
+    return str.replace(/[^\w\s]/gi, '').replace(/ /gi, '_');
+}
+
+public generateInserts(queryData: any) {
+    let insert = `INSERT INTO ${queryData.tableName} VALUES\n`;
+    queryData.data.forEach((register) => {
+        let row = '('
+        Object.values(register).forEach((value: any, i) => {
+            const type = queryData.columns[i].type;
+            if (type === 'text') {
+                row += `'${value.replace(/'/g, "''")}',`;
+            } else if (type === 'timestamp') {
+                let date = value ? `STR_TO_DATE('${value}', '${this.getMysqlDateFormat( queryData.columns[i].format)}'),` : `${null},`
+                row += `${date}`;
+            } else {
+                value = queryData.columns[i].separator === ',' ? parseFloat(value.replace(".", "").replace(",", "."))
+                    : parseFloat(value.replace(",", ""));
+                value = value ? value : null;
+                row += `${value},`;
+            }
+        });
+        row = row.slice(0, -1);
+        row += ')';
+        insert += `${row},`
+    });
+    insert = insert.slice(0, -1);
+    return insert;
+  }
+
+  public getMysqlDateFormat(format:string){
+    
+  const f = format.replace('YYYY', '%Y').replace('MM', '%m').replace('DD', '%d').replace('HH','%H').replace('MI','%i').replace('SS','%s');
+  return f; 
+  }
+
+  public getMysqlColType(type:string){
+    const t = type.replace('numeric','decimal(10,4)');
+    return t;
+  }
+
+
 }

@@ -24,10 +24,7 @@
   --surface-900: #212121;
   --content-padding:1rem;
   --inline-spacing:0.5rem;
-}
 
-html {
-  font-size: 13px;
 }
 
 * {
@@ -39,7 +36,6 @@ html {
   font-size: 0.9rem;
   font-weight: normal;
 }
-
 .p-component-overlay {
   background-color: rgba(0, 0, 0, 0.4);
   transition-duration: 0.2s;
@@ -5186,3 +5182,4 @@ body .d3tooltip > h6{
   border-style: solid;
   border-color: #041429cf transparent transparent transparent;
 }
+

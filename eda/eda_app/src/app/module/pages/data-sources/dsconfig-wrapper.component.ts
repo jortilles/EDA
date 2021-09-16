@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SidebarService, DataSourceService, SpinnerService, AlertService } from '@eda/services/service.index';
+import { SidebarService, DataSourceService, SpinnerService, AlertService, StyleProviderService } from '@eda/services/service.index';
 import Swal from 'sweetalert2';
 import { UploadFileComponent } from './data-source-detail/upload-file/upload-file.component';
 
@@ -22,6 +22,7 @@ export class DsConfigWrapperComponent implements OnInit {
     { name: 'Oracle', value: 'oracle' },
     { name: 'BigQuery', value: 'bigquery' },
     { name: 'SnowFlake', value: 'snowflake' },
+    { name: 'jsonWebService', value:'jsonwebservice'}
   ];
 
   public sidOpts: any[] = [
@@ -47,7 +48,8 @@ export class DsConfigWrapperComponent implements OnInit {
     private dataSourceService: DataSourceService,
     private spinnerService: SpinnerService,
     private alertService: AlertService,
-    private router: Router) {
+    private router: Router,
+    public styleProviderService:StyleProviderService) {
 
     this.form = this.formBuilder.group({
       name: [null, Validators.required],
@@ -68,6 +70,8 @@ export class DsConfigWrapperComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this.styleProviderService.setDefaultBackgroundColor();
 
   }
 

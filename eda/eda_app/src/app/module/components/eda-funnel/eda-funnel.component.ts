@@ -163,8 +163,10 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .text(({ value }) => d3.format(',')(value))
       .attr('style', `
         fill: ${values};
-        font-size: 22px;
-      `);
+      `)
+      .style("font-family", "var(--panel-font-family)")
+      .attr("fill", "var(--panel-font-color)")
+      .style("font-size", "var(--panel-big)");
 
     svg.selectAll('.labels')
       .data(data)
@@ -175,10 +177,10 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .attr('y', 50)
       .text(({ label }) => label)
       .attr('style', `
-          fill: ${labels};
-          font-family: 'Questrial';
+          font-family: var(--panel-font-family);
           font-size: 14px;
-      `);
+      `)
+      .attr("fill", 'var(--panel-font-color)');
 
     svg.selectAll('.percentages')
       .data(data)

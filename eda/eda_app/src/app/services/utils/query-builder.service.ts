@@ -46,7 +46,7 @@ export class QueryBuilderService extends ApiService {
             id: '1',
             model_id: params.dataSource,
             user: {
-                user_id: localStorage.getItem('id'),
+                user_id: sessionStorage.getItem('id'),
                 user_roles: ['USER_ROLE']
             },
             dashboard: {
@@ -100,7 +100,7 @@ export class QueryBuilderService extends ApiService {
             id: '1',
             model_id: params.dataSource,
             user: {
-                user_id: localStorage.getItem('id'),
+                user_id: sessionStorage.getItem('id'),
                 user_roles: ['USER_ROLE']
             },
             dashboard: {

@@ -1,8 +1,9 @@
 .total-col {
-  background-color: #5ba38b34 !important; 
-  color: #004d4b !important;
+  background-color: #5ba38b8c !important; 
+  color:var(--panel-font-color)!important;
   text-align: right;
   font-weight: normal;
+
 }
 
 .trend-col{
@@ -13,36 +14,32 @@
 }
 
 .sub-total-row {
-  background-color: #e9ba614d!important; 
-  color: #00302f !important;
+  background-color: #d4ba8996!important; 
+  color:var(--panel-font-color)!important;
   text-align: right;
   font-weight: bold !important;
 }
 
 .total-row {
-  background-color: #e9b9619c!important; 
-  color: #00302f !important;
+  background-color: #caa66477!important; 
+  color:var(--panel-font-color)!important;
   text-align: right;
   font-weight: bold !important;
+  border: 1px solid #e9ecef;
+  border-width: 0 0 1px 0;
 }
 .sub-total-row-header {
-  background-color: #e9ba614d!important; 
-  color: #00302f !important;
+  background-color: #d4ba8996!important; 
+  color:var(--panel-font-color)!important;
   text-align: left;
   font-weight: bold !important;
 }
 
 .total-row-header{
-  background-color: #e9b9619c!important; 
-  color: #00302f !important;
+  background-color: #caa66477!important; 
+  color:var(--panel-font-color)!important;
   text-align: left;
   font-weight: bold !important;
 }
 
-.p-datatable-thead tr{
-  background:  #e9ecef !important;
-}
-.p-datatable .p-datatable-thead > tr > th{
-  background: #e9ecef !important;
-  border: 1px solid #fff;
-}
+

@@ -14,6 +14,8 @@ interface IDashboardConfig {
     visible: string;
     ds: any;
     panel: any[];
+    onlyIcanEdit: boolean;
+    styles:any;
 }
 
 const DashboardSchema = new mongoose.Schema({

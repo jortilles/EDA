@@ -122,6 +122,9 @@ export const EbpUtils = {
       case 'knob':
         description = 'explore'
         break;
+      case 'sunburst':
+        description = 'brightness_high'
+        break;
       case 'funnel':
         description = 'filter_alt'
     }

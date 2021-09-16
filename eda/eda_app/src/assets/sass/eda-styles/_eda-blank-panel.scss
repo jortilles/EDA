@@ -45,23 +45,21 @@ body .preview-chart-box {
   }
 
   .edit-blink {
-    -webkit-animation: yellow-fade 2s 2 ease-in-out 0s;
-    -moz-animation: yellow-fade 2s 2 ease-in-out 0s;
-    -o-animation: yellow-fade 2s 2 ease-in-out 0s;
-    animation: yellow-fade 2s 2 ease-in-out 0s;
-    border-radius: 5%;
+    -webkit-animation: yellow-fade 2s 1 ease-in-out 0s;
+    -moz-animation: yellow-fade 2s 1 ease-in-out 0s;
+    -o-animation: yellow-fade 2s 1 ease-in-out 0s;
+    animation: yellow-fade 2s 1 ease-in-out 0s;
+    border-radius: 10%;
+    margin: 0.1em;
+    border:0;
   }
 
   #edit:hover{
-    background: #eeeeee;
-    border-radius: 5%;
+    background: #eeeeee77;
+    border-radius: 10%;
     transition: .3s;
   }
 
-
-.eda-col-class-date{
-/* not set */ 
-}
 .eda-col-class-numeric{
   font-weight: bold;
 }

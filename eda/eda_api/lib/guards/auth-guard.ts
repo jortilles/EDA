@@ -9,7 +9,7 @@ const jwt = require ('jsonwebtoken');
 
 
 export const authGuard = async function (req: Request, res: Response, next: NextFunction) {
-   
+ 
     let token = req.qs.token;
     // return next(new HttpException(401, 'Invalid Token'));
     if ( !_.isNil(token) ) {
@@ -26,7 +26,7 @@ export const authGuard = async function (req: Request, res: Response, next: Next
                 url = url.replace('/' + v, '/:' + k);
             });
 
-            // console.log('\x1b[34m=====\x1b[0m Route Guard -- url: [' + url + '] method: [' + req.method + '] userAuth: [ EDA_USER_ROLE ] \x1b[34m=====\x1b[0m');
+            //console.log('\x1b[34m=====\x1b[0m Route Guard -- url: [' + url + '] method: [' + req.method + '] userAuth: [ EDA_USER_ROLE ] \x1b[34m=====\x1b[0m');
 
             next();
         });

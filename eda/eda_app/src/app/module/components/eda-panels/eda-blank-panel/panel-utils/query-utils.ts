@@ -1,4 +1,3 @@
-import { UserEDAQuery } from './../query-types/user-query';
 import { MAX_TABLE_ROWS_FOR_ALERT } from '@eda/configs/config';
 import { Query } from '@eda/models/model.index';
 import { EdaDialogController } from '@eda/shared/components/shared-components.index';
@@ -187,8 +186,13 @@ export const QueryUtils = {
         return a + parseInt(b.tableCount);
       }, 0);
       const aggregations = ebp.currentQuery.filter(col => col.aggregation_type.filter(agg => (agg.value !== 'none' && agg.selected === true)).length > 0).length;
-
-      if (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT && (ebp.selectedFilters.length + aggregations <= 0)) {
+      /**
+       * If the table row count is greather than the MAX_TABLE_ROWS_FOR_ALERT
+       * And there is no aggretation
+       * And there is no limit OR the limit is over the MAX_TABLE_ROWS_FOR_ALERT 
+       */
+      if ( (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT)  && (ebp.selectedFilters.length + aggregations <= 0 )   
+            &&  ( ( ebp.queryLimit == undefined  )  ||  (  ebp.queryLimit >  MAX_TABLE_ROWS_FOR_ALERT ) )   ) {
 
         ebp.alertController = new EdaDialogController({
           params: { totalTableCount: totalTableCount },

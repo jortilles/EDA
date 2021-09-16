@@ -83,7 +83,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'Vertica', value: 'vertica' },
         { label: 'Oracle', value: 'oracle' },
         { label: 'BigQuery', value: 'bigquery' },
-        { label: 'SnowFlake', value: 'snowflake'}
+        { label: 'SnowFlake', value: 'snowflake'},
+        { label: 'JsonWebService', value: 'jsonwebservice'}
     ];
     public selectedTipoBD: SelectItem;
 
@@ -412,7 +413,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
     openNewViewDialog() {
         this.viewController = new EdaDialogController({
-            params: { user: localStorage.getItem('user'), model_id: this.dataModelService.model_id },
+            params: { user: sessionStorage.getItem('user'), model_id: this.dataModelService.model_id },
             close: (event, response) => {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
                     this.dataModelService.addView(response);

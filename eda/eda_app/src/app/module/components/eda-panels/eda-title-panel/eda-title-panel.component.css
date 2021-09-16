@@ -10,3 +10,25 @@
 .eda-title-panel a {
   color: #13427d !important;
 }
+
+
+
+/*============================================================== 
+  For Laptop & above all (1370px) 
+  ============================================================== */
+  @media (max-width: 1370px) {
+    .ql-size-small {
+      font-size: 0.6em;
+    }
+    .ql-size-large {
+      font-size: 1em;
+    }
+    .ql-size-huge {
+      font-size: 1.2em;
+    }
+    .eda-title-panel a {
+      color: #13427d !important;
+    }
+    
+
+  }

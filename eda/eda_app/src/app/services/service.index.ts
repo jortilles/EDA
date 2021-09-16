@@ -11,6 +11,7 @@ export * from './utils/map-util.service';
 export * from './utils/upload-file.service';
 export * from './utils/date-utils.service';
 export * from './utils/styles-service';
+export * from './utils/style-provider.service'
 
 
 // Sidebar
@@ -29,6 +30,7 @@ export * from './api/global-filters.service'; // Global filter
 export * from './api/group.service'; // Group
 export * from './api/createTable.service';
 export * from './api/mail.service';
+
 
 
 // Guards

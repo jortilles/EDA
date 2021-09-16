@@ -189,29 +189,32 @@ export class MailManagementComponent implements OnInit {
           }
 
 
+
           /**Alerts */
-          data.dashboard.config.panel.forEach(panel => {
+          if (data.dashboard.config.panel) {
+            data.dashboard.config.panel.forEach(panel => {
 
-            if (panel.content && panel.content.chart === 'kpi' && panel.content.query.output.config.alertLimits) {
+              if (panel.content && panel.content.chart === 'kpi' && panel.content.query.output.config.alertLimits) {
 
-              panel.content.query.output.config.alertLimits.forEach(alert => {
+                panel.content.query.output.config.alertLimits.forEach(alert => {
 
-                if (alert.mailing.enabled) {
+                  if (alert.mailing.enabled) {
 
 
-                  this.alerts.push({ alert: alert, dashboard: dashboard, panel: panel.title, field: panel.content.query.query.fields[0].display_name });
-                  this.alertsTable.value.push({
-                    alerta: `KPI ${alert.operand} ${alert.value}`,
-                   panel: panel.title,
-                    dashboard: dashboard.config.title,
-                    model: data.datasource.name,
-                    data: dashboard
-                  })
+                    this.alerts.push({ alert: alert, dashboard: dashboard, panel: panel.title, field: panel.content.query.query.fields[0].display_name });
+                    this.alertsTable.value.push({
+                      alerta: `KPI ${alert.operand} ${alert.value}`,
+                      panel: panel.title,
+                      dashboard: dashboard.config.title,
+                      model: data.datasource.name,
+                      data: dashboard
+                    })
 
-                }
-              });
-            }
-          })
+                  }
+                });
+              }
+            })
+          }
 
         })
       })

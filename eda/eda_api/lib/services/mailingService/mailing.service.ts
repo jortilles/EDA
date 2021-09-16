@@ -16,7 +16,7 @@ export class MailingService {
 
   static async mailingService() {
 
-    const newDate = new Date().toISOString();
+    const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
     const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
 
     const transporter = nodemailer.createTransport(config);
@@ -193,7 +193,7 @@ export class MailingService {
           if (error) {
             console.log(error);
           } else {
-            console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${new Date().toISOString()}`);
+            console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${SchedulerFunctions.totLocalISOTime(new Date()) }`);
           }
         });
       }
@@ -221,7 +221,7 @@ export class MailingService {
       if (error) {
         console.log(error);
       } else {
-        console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${new Date().toISOString()}`);
+        console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${SchedulerFunctions.totLocalISOTime(new Date()) }`);
       }
 
       /**Remove file */

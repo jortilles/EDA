@@ -14,7 +14,7 @@ import {
 import { EdaKpiComponent } from '../../../eda-kpi/eda-kpi.component';
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
-import { ChartUtilsService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
 
 import { Column } from '@eda/models/model.index';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
@@ -30,6 +30,9 @@ import * as _ from 'lodash';
 import { EdaMap } from '@eda/components/eda-map/eda-map';
 import { EdaD3 } from '@eda/components/eda-d3/eda-d3';
 import { EdaFunnelComponent } from '@eda/components/eda-funnel/eda-funnel.component';
+import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
+import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
+import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
 
 
 
@@ -55,10 +58,32 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public currentConfig: any;
     public NO_DATA: boolean;
 
+    /**Styles */
+    public fontColor: string;
+    public fontFamily: string;
+    public fontSize: number;
+
     constructor(public resolver: ComponentFactoryResolver,
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
-        private zone: NgZone) { }
+        private zone: NgZone,
+        private styleProviderService: StyleProviderService) {
+
+        this.styleProviderService.panelFontColor.subscribe(color => {
+            this.fontColor = color;
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'barline'].includes(this.props.chartType)) this.ngOnChanges(null);
+        });
+
+        this.styleProviderService.panelFontFamily.subscribe(family => {
+            this.fontFamily = family;
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'barline'].includes(this.props.chartType)) this.ngOnChanges(null);
+        });
+
+        this.styleProviderService.panelFontSize.subscribe(size => {
+            this.fontSize = size;
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'barline'].includes(this.props.chartType)) this.ngOnChanges(null);
+        });
+    }
 
 
     ngOnInit(): void {
@@ -67,14 +92,23 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     ngOnChanges(changes: SimpleChanges): void {
 
-        if (this.props.data && this.props.data.values.length !== 0 && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
+        /**
+         * If data change chart type
+         */
+        if (this.props.data && this.props.data.values.length !== 0
+            && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
 
             setTimeout(_ => {
                 this.NO_DATA = false;
-            })
+            });
+
             this.changeChartType();
 
-        } else {
+        }
+        /**
+         * If no data
+         */
+        else {
             this.destroyComponent();
             setTimeout(_ => {
                 this.NO_DATA = true;
@@ -120,6 +154,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (type === 'funnel') {
             this.renderFunnel();
         }
+        if (type === 'sunburst') {
+            this.renderSunburst();
+        }
     }
 
     /**
@@ -153,21 +190,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
-        
-        if (!!cfg.addComparative 
-            && (['line', 'bar'].includes(cfg.chartType)) 
-            && this.props.query.length === 2 
-            && this.props.query.filter(field => field.column_type === 'date').length > 0
-            && ['month', 'week'].includes(this.props.query.filter(field => field.column_type === 'date')[0].format) ) {
 
-            values = this.chartUtils.comparePeriods(this.props.data ,this.props.query);
+        if (!!cfg.addComparative
+            && (['line', 'bar'].includes(cfg.chartType))
+            && this.props.query.length === 2
+            && this.props.query.filter(field => field.column_type === 'date').length > 0
+            && ['month', 'week'].includes(this.props.query.filter(field => field.column_type === 'date')[0].format)) {
+
+            values = this.chartUtils.comparePeriods(this.props.data, this.props.query);
             let types = this.props.query.map(field => field.column_type);
             let dateIndex = types.indexOf('date');
             dataTypes.splice(dateIndex, 0, 'date');
-            let dateCol = dataDescription.otherColumns.filter( c => c.index === dateIndex )[0];
-            let newCol = {name:dateCol.name + '_newDate', index:dateCol.index + 1};
+            let dateCol = dataDescription.otherColumns.filter(c => c.index === dateIndex)[0];
+            let newCol = { name: dateCol.name + '_newDate', index: dateCol.index + 1 };
             dataDescription.otherColumns.push(newCol);
-            dataDescription.totalColumns ++;
+            dataDescription.totalColumns++;
 
         }
 
@@ -178,8 +215,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
 
         const manySeries = chartData[1].length > 10 ? true : false;
+        const styles:StyleConfig = {
+            fontFamily: this.fontFamily,
+            fontSize: this.fontSize,
+            fontColor: this.fontColor
+        }
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
-            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, minMax);
+            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, minMax, styles);
 
 
         /**Add trend datasets*/
@@ -276,8 +318,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private renderKnob() {
         let chartConfig: EdaKnob = new EdaKnob();
-        chartConfig.data = this.props.data;
-        chartConfig.dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const dataTypes = this.props.query.map(column => column.column_type);
+        chartConfig.data = this.chartUtils.transformData4Knob(this.props.data, dataTypes);
+        chartConfig.dataDescription = this.chartUtils.describeData4Knob(this.props.query, this.chartUtils.transformData4Knob(this.props.data, dataTypes));
         chartConfig.color = this.props.config['config']['color'] ? this.props.config['config']['color'] : null;
         chartConfig.limits = this.props.config['config']['limits'] ? this.props.config['config']['limits'] : null;
         this.createEdaKnobComponent(chartConfig)
@@ -435,7 +478,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
 
-        let inject: TreeMap = new TreeMap;
+        let inject: ScatterPlot = new ScatterPlot;
         inject.size = this.props.size;
         inject.id = this.randomID();
         inject.data = this.props.data;
@@ -449,6 +492,31 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createScatter(inject: any) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaScatter);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+
+    }
+
+
+    private renderSunburst() {
+
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+
+        let inject: SunBurst = new SunBurst;
+
+        inject.size = this.props.size;
+        inject.id = this.randomID();
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.colors = this.props.config.getConfig()['colors'];
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createSunburst(inject);
+    }
+
+    private createSunburst(inject: any) {
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaSunburstComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
 

@@ -1,8 +1,9 @@
 <eda-dialog [inject]="dialog">
+  
   <div body class=p-grid>
 
-    <div class="p-col-12">
-      <panel-chart #PanelChartComponent [props]="panelChartConfig">
+    <div class="p-col-12" style=" background-color: var(--panel-color); margin: 2em; width: 90%; height: 15vh;">
+      <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig">
       </panel-chart>
     </div>
 
@@ -60,7 +61,7 @@
             <li *ngFor="let item of alerts">
               <div class="wrap-alert">
 
-                <i class="fa fa-envelope" style="cursor: pointer; margin-top: 2px;"
+                <i  *ngIf="canIRunAlerts" class="fa fa-envelope" style="cursor: pointer; margin-top: 2px;"
                   (click)="openConfigDialog($event, item)" [pTooltip]="ptooltipViewAlerts"></i> &nbsp;&nbsp;
                 &nbsp;&nbsp;
                 <span class="dot" [ngStyle]="{'background-color':item.color, 'marginTop':'3px'}"></span>

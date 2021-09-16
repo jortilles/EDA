@@ -7,12 +7,14 @@ import User from '../admin/users/model/user.model';
 import Group from '../admin/groups/model/group.model';
 import formatDate from '../../services/date-format/date-format.service';
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
+import { QueryOptions } from 'mongoose';
 const cache_config = require('../../../config/cache.config');
 
 
 export class DashboardController {
 
     static async getDashboards(req: Request, res: Response, next: NextFunction) {
+
         try {
             let admin, privates, group, publics, shared = [];
             const groups = await Group.find({ users: { $in: req.user._id } }).exec();
@@ -33,6 +35,7 @@ export class DashboardController {
 
             return res.status(200).json({ ok: true, dashboards: privates, group, publics, shared, isAdmin });
         } catch (err) {
+            console.log(err);
             next(new HttpException(400, 'Some error ocurred loading dashboards'));
         }
 
@@ -55,18 +58,26 @@ export class DashboardController {
 
     static async getGroupsDashboards(req: Request) {
         try {
-            const groups = await Group.find({ users: { $in: req.user._id } }).exec();
-            const dashboards = await Dashboard.find({ group: { $in: groups.map(g => g._id) } }, 'config.title config.visible group config.tag').exec();
+            const userGroups = await Group.find({ users: { $in: req.user._id } }).exec();
+            const dashboards = await Dashboard.find({ group: { $in: userGroups.map(g => g._id) } }, 'config.title config.visible group config.tag').exec();
+            const groupDashboards = [];
 
             for (let i = 0, n = dashboards.length; i < n; i += 1) {
                 const dashboard = dashboards[i];
-                for (const group of dashboard[i].group) {
-                    dashboard.group = groups.filter(g => JSON.stringify(g._id) === JSON.stringify(group));
+                for (const dashboardGroup of dashboard.group) {
+                    //dashboard.group = groups.filter(g => JSON.stringify(g._id) === JSON.stringify(group));
+                    for( const userGroup of userGroups ){
+                        if( JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup) ){
+                            groupDashboards.push(dashboard)
+                        }
+                    }
+
+
                 }
             }
-
-            return dashboards;
+            return groupDashboards;
         } catch (err) {
+            console.log(err);
             throw new HttpException(400, 'Error loading groups dashboards');
         }
     }
@@ -75,6 +86,7 @@ export class DashboardController {
         try {
             const dashboards = await Dashboard.find({}, 'config.title config.visible config.tag').exec();
             const publics = [];
+
             for (const dashboard of dashboards) {
                 if (dashboard.config.visible === 'public') {
                     publics.push(dashboard);
@@ -239,8 +251,9 @@ export class DashboardController {
     }
 
     static async delete(req: Request, res: Response, next: NextFunction) {
+        let options:QueryOptions = {};
         try {
-            Dashboard.findByIdAndDelete(req.params.id, (err, dashboard) => {
+            Dashboard.findByIdAndDelete(req.params.id, options, (err, dashboard) => {
 
                 if (err) {
                     return next(new HttpException(500, 'Error removing dashboard'));
@@ -267,7 +280,7 @@ export class DashboardController {
             /**Security check */
             const allowed = DashboardController.securityCheck(dataModel, req.user);
             if (!allowed) {
-                return next(new HttpException(500, `Sorry, you are not allowed here, contact your administrator`));
+                return next(new HttpException(500, `Sorry, this DataModel has security activated: you are not allowed here, contact your administrator`));
             }
 
             const dataModelObject = JSON.parse(JSON.stringify(dataModel));
@@ -278,7 +291,7 @@ export class DashboardController {
             console.log('\n-------------------------------------------------------------------------------\n');
 
             /**cached query */
-            let cacheEnabled = dataModelObject.ds.metadata.cache_config && dataModelObject.ds.metadata.cache_config.enabled;
+            let cacheEnabled = dataModelObject.ds.metadata.cache_config && dataModelObject.ds.metadata.cache_config.enabled === true;
             const cachedQuery = cacheEnabled ? await CachedQueryService.checkQuery(req.body.model_id, query) : null;
 
             if (!cachedQuery) {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SettingsService } from '@eda/services/service.index';
+import { SettingsService, StyleProviderService } from '@eda/services/service.index';
 
 declare function init_plugins();
 
@@ -10,7 +10,13 @@ declare function init_plugins();
 })
 export class PagesComponent implements OnInit {
 
-    constructor(private settingSerive: SettingsService) {
+    backgroundColor : string 
+
+    constructor(private settingSerive: SettingsService, private styleProviderService : StyleProviderService) {
+
+        this.styleProviderService.pageBackground.subscribe((backgroundColor)=>{
+            this.backgroundColor = backgroundColor;
+        })
 
     }
 

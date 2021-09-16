@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { filter } from 'lodash';
 
 class TreeNode {
     public value: string;
@@ -263,7 +264,7 @@ export abstract class QueryBuilderService {
     }
 
     public setFilterType(filter: string) {
-        if (['=', '!=', '>', '<', '<=', '>=', 'like'].includes(filter)) return 0;
+        if (['=', '!=', '>', '<', '<=', '>=', 'like', 'not_like'].includes(filter)) return 0;
         else if (['not_in', 'in'].includes(filter)) return 1;
         else if (filter === 'between') return 2;
         else if (filter === 'not_null') return 3;
@@ -566,8 +567,8 @@ export abstract class QueryBuilderService {
         let toRemove = [];
         filters.forEach(filter => {
 
-            let key = filter.filter_table + filter.filter_column;
-            let node = filterMap.get(key);
+            let myKey = filter.filter_table + filter.filter_column + filter.isGlobal;
+            let node = filterMap.get(myKey);
             if (node) {
                 node.push(filter);
                 node.forEach(filter => {
@@ -576,13 +577,13 @@ export abstract class QueryBuilderService {
                     }
                 })
             } else {
-                filterMap.set(filter.filter_table + filter.filter_column, [filter]);
+                filterMap.set(myKey, [filter]);
             }
 
         });
-        filterMap.forEach((value, key) => {
-            if (value.lenght < 2) {
-                filterMap.delete(key);
+        filterMap.forEach((value, k) => {
+             if (value.length < 2) {
+                filterMap.delete(k);
             }
         })
         return { map: filterMap, toRemove: toRemove };
@@ -593,13 +594,13 @@ export abstract class QueryBuilderService {
         if (equalfilters.toRemove.length > 0) {
 
             equalfilters.map.forEach((value, key) => {
-                let filterSTR = 'and ('
+                let filterSTR = '\nand ('
                 value.forEach(f => {
-                    filterSTR += this.filterToString(f, type) + '\nor ';
+                    filterSTR += this.filterToString(f, type) + '\n  or ';
                 });
 
                 filterSTR = filterSTR.slice(0, -3);
-                filterSTR += ')';
+                filterSTR += ') ';
                 filtersString += filterSTR;
             });
 

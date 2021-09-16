@@ -17,6 +17,11 @@
 @import url(../css/animate.css);
 @import url(../eda-styles/index-styles.css);
 
+html {
+    font-size: 13px;
+  }
+  
+
 .custom  .leaflet-popup-content-wrapper, .leaflet-popup-tip {
     background: #010913ce !important;
     font: 11px Questrial;
@@ -150,7 +155,7 @@ body .ui-tree {
 
 .gridster-item-inner {
     position: absolute;
-    background: #fff;
+    background: var(--panel-color);
     border: 1px solid transparent;
     top: 2px;
     bottom: 2px;
@@ -1021,6 +1026,40 @@ pre {
     .auto-height {
         min-height: 186px;
     }
+
+    h1 {
+        line-height: 35px;
+        font-size: 32px;
+    }
+    
+    h2 {
+        line-height: 30px;
+        font-size: 20px;
+    }
+    
+    h3 {
+        line-height: 30px;
+        font-size: 18px;
+    }
+    
+    h4 {
+        line-height: 20px;
+        font-size: 16px;
+    }
+    
+    h5 {
+        line-height: 16px;
+        font-size: 14px;
+        font-weight: 400;
+    }
+    
+    h6 {
+        line-height: 13px;
+        font-size: 10px;
+        font-weight: 200;
+    }
+
+
 }
 
 @media (max-width: 1366px) {
@@ -1237,3 +1276,241 @@ pre {
     background: #e9ecef !important;
     border: 1px solid #fff;
   }
+
+
+
+/*============================================================== 
+  Editable variables 
+  ============================================================== */
+:root {
+    --panel-color: #fff;
+    --justifyTitle:'center';
+    --justifyPanelTitle:'right';
+
+    --small-font :0.9rem;
+    --big-font: 1rem;
+    --eda-title-small : 1.7rem;
+    --eda-title-big : 1.8rem;
+    --eda-filters-small:1rem;
+    --eda-filters-big:1.1rem;
+    --eda-panel-title-small : 1.1rem;
+    --eda-panel-title-big : 1.2rem;
+    --panel-small:0.9rem;
+    --panel--big:1rem;
+
+    --eda-title-font-family: "Arial";
+    --eda-filters-font-family : "Times new Roman";
+    --panel-title-font-family: "Papyrus";
+    --panel-font-family: "Monospace";
+
+    --eda-title-font-color:"#455a64";
+    --eda-filters-font-color:"#455a64";
+    --panel-title-font-color:"#455a64";
+    --panel-font-color:"#455a64";
+  }
+
+  
+.eda-title {
+    font-family: var(--eda-title-font-family);
+    font-size: var(--eda-title-big);
+    color:var(--eda-title-font-color);
+    line-height: 0.7;
+    text-align: center;
+    margin-bottom: auto;
+    font-weight: 600;
+    white-space: nowrap;
+    
+}
+
+.justify-title-content {
+    -ms-flex-pack: var(--justifyTitle)!important;
+    justify-content: var(--justifyTitle)!important;
+}
+
+.filters-size{
+    font-size: var(--eda-filters-big);
+    font-family: var(--eda-filters-font-family);
+    color:var(--eda-filters-font-color)!important;
+}
+
+.panel-heading .panel-title {
+    text-align:var(--justifyPanelTitle);
+    font-size: var(--eda-panel-title-big);
+    font-family: var(--panel-title-font-family);
+    color:var(--panel-title-font-color);
+    padding: 10px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.component .p-datatable table{
+    border: 1px solid rgb(240, 239, 239);
+}
+
+.component .p-datatable-wrapper{
+    font-size: var(--panel-big);
+    font-family: var(--panel-font-family);
+}
+
+.component .p-datatable .p-datatable-thead > tr > th{
+    background: #dbdfe480 !important;
+    color:var(--panel-font-color)!important;
+    border: 1px solid #fff;
+  }
+
+.component .p-datatable .p-datatable-tbody > tr{
+    color:var(--panel-font-color)!important;
+    background:rgba(245, 241, 241, 0.219);
+    border-left: 1px solid #fff !important;
+    border-right: 1px solid #fff!important;
+}
+
+.p-datatable .p-datatable-tfoot > tr > td:last-child {
+
+    border-right: 1px solid #fff!important;
+    /* border-width: 0 0 1px 0!important; */
+}
+
+.p-datatable .p-datatable-tfoot > tr > td:first-child {
+
+    border-left: 1px solid #fff!important;
+    /* border-width: 0 0 1px 1px!important; */
+}
+
+.p-datatable-thead tr {
+    background: #e9ecef00 !important;
+}
+
+
+.component .p-paginator {
+    background: rgba(248, 242, 242, 0.199);
+    border: 1px solid #fff;
+}
+.component .p-paginator .p-paginator-pages .p-paginator-page {
+    font-size: var(--panel-big);
+    font-family: var(--panel-font-family);
+    color:var(--panel-font-color);
+}
+.component .p-datatable .p-datatable-footer {
+    font-size: var(--panel-big);
+    font-family: var(--panel-font-family);
+    color:var(--panel-font-color);
+    background-color: rgba(248, 242, 242, 0.199);
+    border: 1px solid #fff;
+}
+.component .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+    font-size: var(--panel-big);
+    font-family: var(--panel-font-family);
+    background: #E8F5E9;
+    border-color: #E8F5E9;
+    color: #495057 !important;
+}
+.component .p-paginator .p-paginator-first, .p-paginator .p-paginator-prev, .p-paginator .p-paginator-next, .p-paginator .p-paginator-last {
+    color:var(--panel-font-color) !important;
+}
+
+.map {
+    background-color: #faf5f500!important;
+}
+
+
+.map-legend {
+    font-size: var(--panel-big);
+    font-family: var(--panel-font-family);
+    color:var(--panel-font-color);
+}
+
+
+
+.map-legend h6{
+    font-size: var(--panel-big);
+    font-family: var(--panel-font-family);
+    color:var(--panel-font-color);
+}
+.tick{
+    font-size: var(--panel-big);
+    font-family: var(--panel-font-family);
+    color:var(--panel-font-color);
+}
+
+
+
+
+  /*============================================================== 
+  For Laptop & above all (1370px) 
+  ============================================================== */
+  @media (max-width: 1370px) {
+    html {
+      font-size: 11px;
+    }
+    .p-component {
+      font-size: 0.8rem;
+    }
+    .p-card .p-card-title {
+      font-size: 0.8rem;
+      font-weight: 200;
+    }
+    .p-card .p-card-subtitle {
+      font-weight: 200;
+    }
+
+  }
+  
+
+/*============================================================== 
+  For Laptop & above all (1370px) 
+  ============================================================== */
+  @media (max-width: 1370px) {
+
+    .eda-title {
+        font-family: var(--font-family);
+        font-size: var(--eda-title-small);
+        line-height: 0.7;
+        text-align: center;
+        margin-bottom: auto;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    
+    .filters-size{
+        font-size: var(--eda-filters-small);
+        font-family: var(--eda-filters-font-family);
+        color:var(--eda-filters-font-color)!important;
+    }
+
+    .panel-heading .panel-title {
+        font-size: var(--eda-panel-title-small);
+        font-family: var(--font-family);
+        padding: 10px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .p-datatable-wrapper{
+        font-size: var(--panel-small);
+      }
+
+    .map-legend {
+        font-size: var(--panel-small);
+    }
+    
+    .map-legend h6{
+        font-size: var(--panel-small);
+    }
+
+    .tick{
+        font-size: var(--panel-small);
+    }
+
+    .component .p-paginator .p-paginator-pages .p-paginator-page {
+        font-size: var(--panel-small);
+
+    }
+    .component .p-datatable .p-datatable-footer {
+        font-size: var(--panel-small);
+
+    }
+
+  }
+

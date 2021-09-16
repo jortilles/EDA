@@ -51,11 +51,19 @@ The easiest way to run and try EDA  is using docker:
 docker run -p 80:80 jortilles/eda:latest
 ```
 
-
 Once the process if finish, just go to **http://localhost**
 
 * The default user is: **eda@jortilles.com**
 * The default password is: **default**
+
+If you are a Windows user, you can download a Windows bundle from sourceforge:
+https://sourceforge.net/projects/enterprise-data-analytics/
+Download the latest package. unzip it wherever you want and run: run_eda.bat
+It only has one prerequisite: node.js lts.
+It will open several windows. The mongodb database and the web server.
+After all, you can go to http: // localhost: 8080 / index.html
+
+
 
 Easily, you can do dashboads as nice as this one: 
 

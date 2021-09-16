@@ -1,5 +1,5 @@
 <div class="panel-heading d-flex justify-content-between">
-    <div class="d-flex justify-content-between align-items-center">
+    <div style="width: 100%;">
         <h6 id="p-header" class="panel-title" style="cursor: default">
             {{ panel.title || title }}
         </h6>
@@ -14,7 +14,7 @@
 <!-- Body of Panel -->
 <div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner === true}">
     <div *ngIf="display_v.saved_panel" class="p-1" style="height: 100%">
-        <panel-chart #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties()"
+        <panel-chart class="component" #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties()"
             style="height: 100%; width: 100%; display:block">
         </panel-chart>
     </div>
@@ -84,7 +84,7 @@
 
                     <div class="p-col-12 p-md-8 pl-2">
                         <h4 i18n="@@seleccionH4" i18n-title="@@seleccionTitle" title="Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.">
-                            Selección
+                            Mostrar los siguientes atributos:
                         </h4>
                         <hr class="mb-0">
 
@@ -109,7 +109,7 @@
                         </div>
 
                         <h4 class="mt-4" i18n="@@filtrosH4">
-                            Filtros
+                            Filtrar los resultados por: 
                         </h4>
                         <hr class="mb-0">
 
@@ -190,7 +190,7 @@
                                         </h5>
 
                                         <div *ngFor='let column of this.currentQuery'>
-                                            <span>{{column.table_id}} . {{column.display_name.default}}</span>
+                                            <span> {{ getNiceTableName( column.table_id )  }} - {{column.display_name.default}}</span>
 
                                             <span *ngFor='let aggregation of column.aggregation_type'>
                                                 <span
@@ -362,7 +362,7 @@
             <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA"
                 [disabled]="display_v.disablePreview || currentQuery.length === 0">
                 <div class="p-grid p-0 h-100">
-                    <div class="p-col-8 p-1 preview-chart-box">
+                    <div class="p-col-8 p-1 preview-chart-box component" style="background-color: var(--panel-color);">
                         <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
                             style="height: 100%; width: 100%; display:block"></panel-chart>
                     </div>
@@ -472,5 +472,7 @@
 <link-dashboards-dialog *ngIf="linkDashboardController" [controller]="linkDashboardController"></link-dashboards-dialog>
 
 <knob-dialog *ngIf="knobController" [controller]="knobController"> </knob-dialog>
+
+<sunburst-dialog *ngIf="sunburstController" [controller]="sunburstController"> </sunburst-dialog>
 
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>

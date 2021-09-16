@@ -1,7 +1,7 @@
 import { GroupService } from './../../../services/api/group.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertService, DashboardService, SidebarService } from '@eda/services/service.index';
+import { AlertService, DashboardService, SidebarService, StyleProviderService } from '@eda/services/service.index';
 import { EdaDialogController, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { IGroup } from '@eda/services/api/group.service';
 import Swal from 'sweetalert2';
@@ -44,10 +44,12 @@ export class HomeComponent implements OnInit {
         private sidebarService: SidebarService,
         private router: Router,
         private alertService: AlertService,
-        private groupService: GroupService
+        private groupService: GroupService,
+        private stylesProviderService: StyleProviderService
     ) {
         this.sidebarService.getDataSourceNames();
         this.sidebarService.getDataSourceNamesForDashboard();
+        this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles())
 
         if (window.innerWidth < 1000) {
             this.toLitle = true;
@@ -69,7 +71,7 @@ export class HomeComponent implements OnInit {
     private setIsObserver = async () => {
         this.groupService.getGroupsByUser().subscribe(
             res => {
-                const user = localStorage.getItem('user');
+                const user = sessionStorage.getItem('user');
                 const userID = JSON.parse(user)._id;
                 this.grups = res;
                 this.isObserver = this.grups.filter(group => group.name === 'RO' && group.users.includes(userID)).length !== 0
@@ -79,7 +81,7 @@ export class HomeComponent implements OnInit {
     }
 
     private ifAnonymousGetOut(): void {
-        const user = localStorage.getItem('user');
+        const user = sessionStorage.getItem('user');
         const userName = JSON.parse(user).name;
 
         if (userName === 'edaanonim' || userName === 'RO') {
@@ -112,7 +114,7 @@ export class HomeComponent implements OnInit {
                 this.tags.unshift({ label: this.noTagLabel, value: 0 });
                 this.tags.push({ label: this.AllTags, value: 1 });
                 this.tags = this.tags.filter(tag => tag.value !== null);
-                localStorage.setItem('tags', JSON.stringify(this.tags));
+                sessionStorage.setItem('tags', JSON.stringify(this.tags));
                 this.filterDashboards({ label: this.AllTags, value: 1 });
 
                 this.setIsObserver();

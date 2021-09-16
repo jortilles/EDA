@@ -5,11 +5,11 @@
 <script type="text/javascript">
         var userLang = navigator.language || navigator.userLanguage;
         if(userLang.indexOf('es') >=0){
-                window.location.href = window.location.href+'/es';
+                window.location.href = window.location.href.replace('/index.html','')+'/es/index.html';
         }else if(userLang === 'ca-ES'){
-                window.location.href = window.location.href+'/ca';
+                window.location.href = window.location.href.replace('/index.html','')+'/ca/index.html';
         }else{
-                window.location.href = window.location.href+'/en';
+                window.location.href = window.location.href.replace('/index.html','')+'/en/index.html';
         }
 </script>
 </body>

@@ -50,6 +50,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @Input() inject: InjectEdaPanel;
     @Output() remove: EventEmitter<any> = new EventEmitter();
 
+    /** propietats que s'injecten al dialog amb les propietats específiques de cada gràfic. */
     public configController: EdaDialogController;
     public filterController: EdaDialogController;
     public chartController: EdaDialogController;
@@ -64,6 +65,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public linkDashboardController: EdaDialogController;
     public scatterPlotController: EdaDialogController;
     public knobController: EdaDialogController;
+    public sunburstController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
 
@@ -104,7 +106,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public editSQLQuery: string = $localize`:@@EditSQLQuery:EDITAR CONSULTA SQL`;
 
     public limitRowsInfo: string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
-    public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera consultar`;
+    public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera ver en su panel`;
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
@@ -197,7 +199,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     getEditMode() {
-        const user = localStorage.getItem('user');
+        const user = sessionStorage.getItem('user');
         const userName = JSON.parse(user).name;
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
@@ -335,7 +337,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content = { query, chart, edaChart };
 
             /**This is to repaint on panel redimension */
-            if (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob', 'funnel'].includes(chart)) {
+            if (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob', 'funnel', 'sunburst'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
 
@@ -389,7 +391,7 @@ export class EdaBlankPanelComponent implements OnInit {
             edaChart: subType,
             maps: this.inject.dataSource.model.maps,
             size: { x: this.panel.w, y: this.panel.h },
-            linkedDashboardProps: this.panel.linkedDashboardProps
+            linkedDashboardProps: this.panel.linkedDashboardProps,
 
         });
     }
@@ -699,6 +701,16 @@ export class EdaBlankPanelComponent implements OnInit {
         }
         this.scatterPlotController = undefined;
     }
+    public onCloseSunburstProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            this.panel.content.query.output.config.colors = response.colors;
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService._notSaved.next(true);
+        }
+        // Fa que desapareixi el dialeg
+        this.sunburstController = undefined;
+    }
     public onCloseKnobProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
@@ -757,7 +769,8 @@ export class EdaBlankPanelComponent implements OnInit {
                     || content.chart === 'treeMap'
                     || content.chart === 'scatterPlot'
                     || content.chart === 'funnel'
-                    || content.chart === 'knob')
+                    || content.chart === 'knob'
+                    || content.chart === 'sunburst' )
             ) {
 
                 setTimeout(() => {
@@ -863,5 +876,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public accopen(e){
 
+    }
+    /** This funciton return the display name for a given table. Its used for the query resumen      */
+    public getNiceTableName(  table ){
+         return this.tables.find( t => t.table_name === table).display_name.default;
     }
 }

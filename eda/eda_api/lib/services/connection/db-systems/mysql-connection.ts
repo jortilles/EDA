@@ -214,11 +214,17 @@ export class MysqlConnection extends AbstractConnection {
             .join(' ');
     }
 
+    createTable(queryData: any, user:any): string {
 
-    createTable(queryData: any): string {
-        throw new Error('Method not implemented.');
+        this.queryBuilder = new MySqlBuilderService(queryData, { ds: { model: { tables: [] } } }, user._id);
+        return this.queryBuilder.createTable(queryData);
     }
-    generateInserts(queryData:any):string {
-        throw new Error('Method not implemented.');
+
+    generateInserts(queryData: any, user:any): string {
+ 
+        this.queryBuilder = new MySqlBuilderService(queryData, { ds: { model: { tables: [] } } }, user._id);
+        return this.queryBuilder.generateInserts(queryData);
     }
+
+
 }

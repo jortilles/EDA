@@ -154,8 +154,6 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         const width = maxLength * pixelWithRate + 10;
         const height = this.inject.linkedDashboard ? '5em' : '4em';
 
-        console.log(width)
-
         this.div = d3.select("body").append('div')
           .attr('class', 'd3tooltip')
           .style('opacity', 0);
@@ -191,7 +189,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
 
     svg.append("g")
-      .style("font", "14px Questrial")
+      .style("font", "14px")
       .style("font-weight", 700)
       .selectAll("text")
       .data(nodes)
@@ -200,7 +198,9 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("y", d => (d.y1 + d.y0) / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
-      .attr("fill", "#02414c")
+      .style("font-family", "var(--panel-font-family)")
+      .attr("fill", "var(--panel-font-color)")
+      .style("font-size", "var(--panel-big)")
       .text(d => d.name)
       .append("tspan")
       .attr("fill-opacity", 0.7)

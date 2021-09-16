@@ -37,6 +37,8 @@ import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-m
 import { PAGES_ROUTES } from './pages.routes';
 import { CalculatedColumnDialogComponent } from './data-sources/data-source-detail/calculatedColumn-dialog/calculated-column-dialog.component';
 import { UploadFileComponent } from './data-sources/data-source-detail/upload-file/upload-file.component';
+import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.component';
+import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
 
 @NgModule({
     imports: [
@@ -73,7 +75,9 @@ import { UploadFileComponent } from './data-sources/data-source-detail/upload-fi
         SecurityDialogComponent,
         AlertsManagementComponent,
         MailManagementComponent,
-        DashboardMailDialogComponent
+        DashboardMailDialogComponent,
+        SaveAsDialogComponent,
+        EditStylesDialogComponent
     ]
 })
 export class PagesModule { }

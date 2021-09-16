@@ -305,6 +305,10 @@ export class SQLserviceBuilderService extends QueryBuilderService {
         if (filterObject.filter_type === 'like') {
           return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
         }
+        if (filterObject.filter_type === 'not_like') { 
+          filterObject.filter_type = 'not like'
+          return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+        }   
         return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }

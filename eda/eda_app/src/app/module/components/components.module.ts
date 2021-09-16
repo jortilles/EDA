@@ -1,5 +1,4 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA  } from '@angular/core';
-import {AngularFittextModule} from 'angular-fittext';
 
 // Module
 import { CoreModule } from '../../core/core.module';
@@ -39,7 +38,9 @@ import {
     TableGradientDialogComponent,
     EdaFunnelComponent,
     FunnelDialog,
-    CumSumAlertDialogComponent
+    CumSumAlertDialogComponent,
+    EdaSunburstComponent,
+    SunburstDialogComponent
 
  } from './component.index';
 import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
@@ -50,8 +51,7 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
     imports: [
         CoreModule,
         SharedModule,
-        DragDropModule,
-        AngularFittextModule
+        DragDropModule 
     ],
     declarations: [
         EdaBlankPanelComponent,
@@ -86,7 +86,9 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         KnobDialogComponent,
         TableGradientDialogComponent,
         EdaFunnelComponent,
-        FunnelDialog
+        FunnelDialog,
+        EdaSunburstComponent,
+        SunburstDialogComponent
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -110,9 +112,12 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         Knob,
         KnobDialogComponent,
         TableGradientDialogComponent,
-        FunnelDialog
+        FunnelDialog,
+        EdaSunburstComponent,
+        SunburstDialogComponent
     ],
-    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent, EdaD3Component, EdaTreeMap, EdaScatter, EdaKnobComponent, Knob, EdaFunnelComponent],
+    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent, EdaD3Component, EdaTreeMap, 
+                        EdaScatter, EdaKnobComponent, Knob, EdaFunnelComponent,EdaSunburstComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ComponentsModule { }

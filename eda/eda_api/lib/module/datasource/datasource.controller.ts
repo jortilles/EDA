@@ -7,6 +7,7 @@ import ConnectionModel from './model/connection.model';
 import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import BigQueryConfig from './model/BigQueryConfig.model';
 import CachedQuery, { ICachedQuery } from '../../services/cache-service/cached-query.model';
+import { QueryOptions } from 'mongoose';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -36,8 +37,8 @@ export class DataSourceController {
     }
 
     static async GetDataSourcesNames(req: Request, res: Response, next: NextFunction) {
-
-        DataSource.find({}, '_id ds.metadata.model_name ds.security', (err, ds) => {
+        let options:QueryOptions = {};
+        DataSource.find({}, '_id ds.metadata.model_name ds.security', options, (err, ds) => {
             if (!ds) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
@@ -77,8 +78,8 @@ export class DataSourceController {
 
     static async GetDataSourcesNamesForDashboard(req: Request, res: Response, next: NextFunction) {
 
-
-        DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles', (err, ds) => {
+        let options:QueryOptions = {};
+        DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles',options, (err, ds) => {
             if (!ds) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
@@ -186,16 +187,16 @@ export class DataSourceController {
                     if (stopLoop) {
                         return false;
                     }
-
-                    Dashboard.findByIdAndDelete(dbds[i]._id, (err, dashboard) => {
+                    let options:QueryOptions = {};
+                    Dashboard.findByIdAndDelete(dbds[i]._id, options, (err, dashboard) => {
                         if (err) {
                             stopLoop = true;
                             return next(new HttpException(500, 'Error removing dashboard'));
                         }
                     });
                 }
-
-                DataSource.findByIdAndDelete(req.params.id, (err, dataSource) => {
+                let options:QueryOptions = {};
+                DataSource.findByIdAndDelete(req.params.id, options, (err, dataSource) => {
                     if (err) {
                         return next(new HttpException(500, 'Error removing dataSource'));
                     }
@@ -210,7 +211,7 @@ export class DataSourceController {
 
     static async CheckConnection(req: Request, res: Response, next: NextFunction) {
 
-        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake'].includes(req.qs.type)) {
+        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice'].includes(req.qs.type)) {
 
             next(new HttpException(404, '"Only" postgres, MySQL, oracle, SqlServer, Google BigQuery, Snowflake and Vertica are accepted'));
 
@@ -322,7 +323,7 @@ export class DataSourceController {
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database,
                 req.body.password, req.body.port, req.body.type, req.body.schema, req.body.sid,  req.qs.warehouse);
             const manager = await ManagerConnectionService.testConnection(cn);
-            const tables = await manager.generateDataModel(req.body.optimize, req.body.filter);
+            const tables = await manager.generateDataModel(req.body.optimize, req.body.filter, req.body.name);
             const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 
 
@@ -336,7 +337,7 @@ export class DataSourceController {
                         schema: req.body.schema || manager.GetDefaultSchema(),
                         searchPath: req.body.schema || manager.GetDefaultSchema(),
                         user: req.body.user,
-                        password: EnCrypterService.encrypt(req.body.password),
+                        password: EnCrypterService.encrypt(req.body.password || 'no'),
                         sid: req.body.sid,
                         warehouse: req.body.warehouse
                     },
@@ -354,8 +355,6 @@ export class DataSourceController {
                 }
             });
 
-        
-
             datasource.save((err, data_source) => {
                 if (err) {
                     console.log(err);
@@ -364,6 +363,7 @@ export class DataSourceController {
 
                 return res.status(201).json({ ok: true, data_source_id: data_source._id });
             });
+
         } catch (err) {
             next(err);
         }
@@ -464,6 +464,7 @@ export class DataSourceController {
     static async removeCacheFromModel(req: Request, res: Response, next: NextFunction){
         try{
             const queries = await CachedQuery.deleteMany({ 'cachedQuery.model_id':  req.body.id }).exec();
+            console.log(queries);
             return res.status(200).json({ ok: true});
         }catch(err){
             next(err);

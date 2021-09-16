@@ -5,7 +5,6 @@ import fileUpload from 'express-fileupload';
 import { NextFunction, Request, Response } from 'express';
 import { callInterceptor } from './services/call-interceptor';
 import errorMiddleware from './middleware/error.middleware';
-import { CachedQueryService } from './services/cache-service/cached-query.service';
 
 
 import Router from './router';
@@ -14,7 +13,6 @@ const path = require('path');
 const database = require('../config/database.config');
 const mongoose = require('mongoose');
 const compression = require('compression');
-import schedule from 'node-schedule';
 import * as EdaScheduler from './EdaScheduler';
 
 class App {

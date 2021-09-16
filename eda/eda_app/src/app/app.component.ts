@@ -42,11 +42,13 @@ export class AppComponent implements OnInit {
         // Alert Service
         this.alertService.getAlerts$.subscribe(alert => {
 
-            this.messageService.add({
-                severity: alert.severity,
-                summary: alert.summary,
-                detail: alert.detail
-            });
+            if(alert.detail !== "401"){
+                this.messageService.add({
+                    severity: alert.severity,
+                    summary: alert.summary,
+                    detail: alert.detail
+                });
+            }
 
             if (!_.isNil(alert.nextPage)) {
                 if (_.isEqual(alert.nextPage, 'logout')) {

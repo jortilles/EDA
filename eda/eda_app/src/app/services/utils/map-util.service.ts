@@ -28,7 +28,7 @@ export class MapUtilsService extends ApiService {
         return this.mapsObservables$[mapID];
     }
 
-    makeMarkers = (map: L.Map, data: Array<any>, labels: Array<any>, linkedDashboardProps : LinkedDashboardProps): void => {
+    makeMarkers = (map: L.Map, data: Array<any>, labels: Array<any>, linkedDashboardProps: LinkedDashboardProps): void => {
 
         const maxValue = Math.max(...data.map(x => x[3]), 0);
 
@@ -54,7 +54,7 @@ export class MapUtilsService extends ApiService {
                 circle.on('mouseout', function (e) {
                     this.closePopup();
                 });
-                circle.on('click', ()=> { this.linkDashboard(d[2], linkedDashboardProps)})
+                circle.on('click', () => { this.linkDashboard(d[2], linkedDashboardProps) })
                 circle.addTo(map);
             }
 
@@ -62,12 +62,12 @@ export class MapUtilsService extends ApiService {
 
     }
 
-    private linkDashboard = (value, linkedDashboard:LinkedDashboardProps) => {
+    private linkDashboard = (value, linkedDashboard: LinkedDashboardProps) => {
         if (linkedDashboard) {
             const props = linkedDashboard;
-            const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+            const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
             window.open(url, "_blank");
-          }
+        }
     }
 
     private makePopup = (data: any, labels: Array<string>): string => {
@@ -80,14 +80,19 @@ export class MapUtilsService extends ApiService {
         }
         return `` + div;
     }
-    public makeGeoJsonPopup = (layer_id: string, data: Array<number>, labels: Array<string>, labelIndex: number): string => {
+    public makeGeoJsonPopup = (layer_id: string, data: Array<number>, labels: Array<string>, labelIndex: number, totalSum:number): string => {
 
         const me = this;
         let row = data.filter(row => row[labelIndex] !== null && row[labelIndex].toUpperCase().replace(/\s/g, '') === layer_id.toUpperCase().replace(/\s/g, ''))[0];
+
+        //console.log(total);
         let div = '';
         for (let i = 0; i < labels.length; i++) {
             if (row !== undefined) {
-                let value = typeof row[i] === 'number' ? parseFloat(row[i]).toLocaleString('de-DE', {maximumFractionDigits: 6 }) : row[i];
+                let value =
+                    typeof row[i] === 'number' ?
+                        `${parseFloat(row[i]).toLocaleString('de-DE', { maximumFractionDigits: 6 })} ( ${(parseFloat(row[i]) / totalSum * 100).toFixed(2)}% )`
+                        : row[i];
                 div += `<div> ${me._sanitizer.sanitize(SecurityContext.HTML, labels[i])} :  ${value} </div>`;
             } else {
                 div = `<div> No data </div>`;

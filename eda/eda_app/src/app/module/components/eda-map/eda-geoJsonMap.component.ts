@@ -50,7 +50,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   constructor(
     private mapUtilsService: MapUtilsService, private _sanitizer: DomSanitizer
   ) {
-    this.customOptions = { 'className': 'custom', offset: [-20, -20], autoPan: false , closeButton:false};
+    this.customOptions = { 'className': 'custom', offset: [-20, -20], autoPan: false, closeButton: false };
   }
   ngOnInit(): void {
     this.loading = true;
@@ -79,14 +79,16 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
 
   private initShapesLayer = () => {
     const field = this.serverMap['field'];
+    const totalSum = this.inject.data.map(row => row[this.dataIndex]).reduce((a, b) => a + b);
+    
     this.geoJson = new L.TopoJSON(this.shapes, {
       style: (feature) => this.style(feature, this.color),
       onEachFeature: this.onEachFeature
     });
     this.geoJson.eachLayer((layer) => {
-      this.boundaries.push(layer._bounds)
+      this.boundaries.push(layer._bounds);
       layer.bindPopup(this.mapUtilsService.makeGeoJsonPopup(layer.feature.properties[field], this.inject.data,
-        this.inject.labels, this.labelIdx), this.customOptions);
+        this.inject.labels, this.labelIdx, totalSum), this.customOptions);
       layer.on('mouseover', function () { layer.openPopup(); });
       layer.on('mouseout', function () { layer.closePopup(); });
       layer.on("click", () => this.openLinkedDashboard(layer.feature.properties.name))
@@ -95,6 +97,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       this.geoJson.addTo(this.map);
       if (this.inject.zoom) this.map.zoom = this.inject.zoom
       else this.map.fitBounds(this.boundaries);
+
     }
     this.geoJson.on('add', this.onloadLayer());
   }
@@ -109,15 +112,13 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   private initMap = (): void => {
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {
+        minZoom: 0,
         center: this.getCenter(this.inject.data),
         zoom: this.inject.zoom ? this.inject.zoom : 0,
         dragging: !L.Browser.mobile,
         tap: !L.Browser.mobile
       });
-      const tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      });
+      this.map.options.minZoom = this.setMinZoom();
       //tiles.addTo(this.map);
       this.initLegend(this.groups, this.inject.labels[this.dataIndex], this.color);
       this.map.on('moveend', (event) => {
@@ -127,6 +128,29 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       this.map.on('zoomend', (event) => {
         this.inject.zoom = this.map.getZoom();
       });
+    }
+
+  }
+
+  private setMinZoom(): number {
+
+    let bounds = this.map.getBounds();
+    let NE = bounds._northEast;
+    let SW = bounds._southWest;
+    let lng = NE.lng - SW.lng;
+
+    /**Zomm level for world map */
+    let zoomLevel = 0;
+    let bound = 200;
+
+    if (lng > bound) return zoomLevel;
+    else
+    {
+      while(lng < bound){
+        bound = bound / 2;
+        zoomLevel ++;
+      }
+      return zoomLevel;
     }
 
   }
@@ -154,7 +178,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   private getCenter(data: Array<any>) {
     let coordinates = this.inject.coordinates ? this.inject.coordinates : [this.serverMap.center[1], this.serverMap.center[0]]
     return coordinates as LatLngExpression;
-    //return [41.38879, 2.15899]  as LatLngExpression; //---Barcelona
+
   }
 
   private onEachFeature = (feature, layer) => {
@@ -187,7 +211,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     const field = this.serverMap['field'];
     let fillColor = this.getColor(this.groups, this.bindDataToProperties(feature.properties[field]), color);
     return {
-      weight: 1,
+      weight: 0.1,
       opacity: 1,
       color: '#FFFFFF',
       fillOpacity: 0.5,
@@ -226,7 +250,10 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
    */
   private getGroups = (data: any, n = 5) => {
     let max = data.reduce((a: number, b: number) => Math.max(a, b));
-    let div = max / n, groups = [max];
+    let min = data.reduce((a: number, b: number) => Math.min(a, b));
+    // El primer rang comença amb el número mes petit
+    let div = (max - min) / n;
+    let groups = [max];
     while (groups.length < 5) {
       max -= div;
       groups.push(max);
@@ -304,7 +331,8 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     label = me._sanitizer.sanitize(SecurityContext.HTML, label)
     this.legend.onAdd = function (map) {
       var div = L.DomUtil.create("div", "legend");
-      div.style.backgroundColor = "rgba(255, 255, 255, 0.804)";
+      L.DomUtil.addClass(div, 'map-legend');
+      div.style.backgroundColor = "#ffffff38";
       div.style.borderRadius = "5%";
       div.innerHTML += `<h6 style="padding : 5px; padding-top:10px; padding-bottom:0px;font-weight:bold">
                         ${(label.charAt(0).toUpperCase() + label.slice(1)).replace(new RegExp('_', 'g'), ' ')} </h6>`;

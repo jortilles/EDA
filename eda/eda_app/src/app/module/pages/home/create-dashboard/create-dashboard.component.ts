@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertService, DashboardService, GroupService, IGroup } from '@eda/services/service.index';
+import { AlertService, DashboardService, GroupService, IGroup, StyleProviderService } from '@eda/services/service.index';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/components/shared-components.index';
 import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
@@ -23,7 +23,8 @@ export class CreateDashboardComponent extends EdaDialogAbstract {
         private dashboardService: DashboardService,
         private groupService: GroupService,
         private formBuilder: FormBuilder,
-        private alertService: AlertService
+        private alertService: AlertService,
+        private stylesProviderService: StyleProviderService
     ) {
         super();
         this.initializeDialog();
@@ -39,7 +40,7 @@ export class CreateDashboardComponent extends EdaDialogAbstract {
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
             style: { height: '50%', width: '60%' },
-            title: $localize`:@@newDashboardtitle:CREA TU NUEVO INFORME`
+            title: $localize`:@@newDashboardtitle:CREA UN NUEVO INFORME`
         });
     }
 
@@ -103,7 +104,9 @@ export class CreateDashboardComponent extends EdaDialogAbstract {
         } else {
             const ds = { _id: this.form.value.ds._id };
             const body = {
-                config: { title: this.form.value.name, visible: this.form.value.visible, ds, tag: null, refreshTime:null},
+                config: { title: this.form.value.name, visible: this.form.value.visible, ds, tag: null, 
+                    refreshTime:null, 
+                    styles:this.stylesProviderService.generateDefaultStyles()},
                 group: this.form.value.group
                     ? _.map(this.form.value.group, '_id')
                     : undefined

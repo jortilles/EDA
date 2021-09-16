@@ -22,6 +22,8 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
 
   public legendPosition : string;
 
+  public display:boolean=false;
+
   constructor() {
 
     super();
@@ -63,6 +65,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     this.color= this.controller.params.color;
     this.logarithmicScale = this.controller.params.logarithmicScale;
     this.panelChartConfig = this.controller.params.panelChart;
+    this.display = true;
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);

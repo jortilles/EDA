@@ -44,7 +44,7 @@ export class EdaTreeMap implements AfterViewInit {
 
     this.colors = this.inject.colors.length > 0 ? this.inject.colors
       : this.getColors(this.data.children.length, ChartsColors)
-        .map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
+        ;
 
   }
 
@@ -61,7 +61,7 @@ export class EdaTreeMap implements AfterViewInit {
       }
     }
 
-    return outputColors.filter((_, index) => index < dataLength);
+    return outputColors.filter((_, index) => index < dataLength).map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
 
   }
 
@@ -194,8 +194,9 @@ export class EdaTreeMap implements AfterViewInit {
         return value
       })
       .join("tspan")
-      .style("font-size", "12px")
-      .style("font-family", "Questrial")
+      .style("font-size", "var(--panel-big)")
+      .style("font-family", "var(--panel-font-family)")
+      .attr("fill", "var(--panel-font-color)")
       .attr("x", 3)
       .attr("y", (d, i, nodes) => `${<number><unknown>(i === nodes.length - 1) * 0.3 + 1.1 + i * 0.9}em`)
       .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.7 : null)

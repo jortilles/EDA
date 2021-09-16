@@ -8,6 +8,7 @@ import { AbstractConnection } from './abstract-connection';
 import DataSource from '../../module/datasource/model/datasource.model';
 import { EnCrypterService } from '../encrypter/encrypter.service';
 import { SQLserverConnection } from './db-systems/slqserver-connection';
+import { JSONWebServiceConnection } from './db-systems/json-webservice-connection';
 
 export const
     MS_CONNECTION = 'mssql',
@@ -17,7 +18,8 @@ export const
     SQLS_CONNECTION = 'sqlserver',
     ORACLE_CONNECTION = 'oracle',
     BIGQUERY_CONNECTION = 'bigquery',
-    SNOWFLAKE_CONNECTION = 'snowflake';
+    SNOWFLAKE_CONNECTION = 'snowflake',
+    WEB_SERVICE = 'jsonwebservice'
 
 
 
@@ -45,6 +47,8 @@ export class ManagerConnectionService {
                 return new BigQueryConnection(config);
             case SNOWFLAKE_CONNECTION:
                 return new SnowflakeConnection(config);
+            case WEB_SERVICE:
+                return new JSONWebServiceConnection(config);
             default:
                 return null;
         }
@@ -69,6 +73,8 @@ export class ManagerConnectionService {
                 return new BigQueryConnection(config);
             case SNOWFLAKE_CONNECTION:
                 return new SnowflakeConnection(config);
+            case WEB_SERVICE:
+                return new JSONWebServiceConnection(config);
             default:
                 return null;
         }

@@ -1,3 +1,12 @@
+@charset "UTF-8";
+:root {
+  --knob-range:#C9C9C9;
+  --knob-text:#000000;
+  --knob-value:#ddff47;
+
+}
+
+
 @keyframes dash-frame {
   100% {
       stroke-dashoffset: 0;
@@ -13,21 +22,28 @@
   fill: none;
 }
 .p-knob-text {
-  font-size: 0.7rem;
+  fill:var(--panel-font-color);
+  font-size: 0.8rem;
   text-align: center;
   font-weight: bold;
+  /* text-shadow: 2px 2px 1px  rgb(208,208,208); */
 }
 .p-knob-text-small {
+  fill:var(--panel-font-color);
   font-size: 0.5rem;
   text-align: center;
   font-weight: bold;
+  /* text-shadow: 2px 2px 1px rgb(208,208,208); */
 }
 .p-knob-text-large {
-  font-size: 0.9rem;
+  fill:var(--panel-font-color);
+  font-size: 1rem;
   text-align: center;
   font-weight: bold;
+  /* text-shadow: 2px 2px 1px rgb(208,208,208); */
 }
 .p-knob-infotext {
+  fill:var(--panel-font-color);
   font-size: 0.5rem;
   text-align: center;
 }

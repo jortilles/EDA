@@ -126,6 +126,17 @@ export const PanelOptions = {
             });
 
           }
+          else if(panelComponent.graficos.chartType === 'sunburst'){
+            panelComponent.contextMenu.hideContextMenu();
+            panelComponent.sunburstController = new EdaDialogController({
+              params: {
+                panelID: _.get(panelComponent.panel, 'id'),
+                panelChart: panelComponent.panelChartConfig
+              },
+              close: (event, response) => { panelComponent.onCloseSunburstProperties(event, response) }
+            });
+
+          }
           else if(panelComponent.graficos.chartType === 'knob'){
 
             panelComponent.contextMenu.hideContextMenu();

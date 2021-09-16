@@ -1,3 +1,4 @@
+import { ChartUtilsService } from '@eda/services/service.index';
 
 import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from "@angular/core";
 import { ChartsColors } from '@eda/configs/index';
@@ -31,6 +32,10 @@ export class EdaScatter implements AfterViewInit {
   width: number;
   heigth: number;
 
+  constructor(private chartUtilService : ChartUtilsService){
+
+  }
+
   ngOnInit(): void {
     this.id = `scatterPlot_${this.inject.id}`;
     this.data = this.formatData(this.inject.data);
@@ -60,7 +65,7 @@ export class EdaScatter implements AfterViewInit {
     const svg = this.svg;
     const width = this.svgContainer.nativeElement.clientWidth - 20;
     const height = this.svgContainer.nativeElement.clientHeight - 20;
-    const margin = ({ top: 25, right: 25, bottom: 35, left: 70 });
+    const margin = ({ top: 50, right: 50, bottom: 35, left: 100 });
     const color = d3.scaleOrdinal(this.firstColLabels, this.colors).unknown(this.colors[0]);
 
     // const shape = d3.scaleOrdinal(this.data.map(d => d.category), d3.symbols.map(s => d3.symbol().type(s)()));
@@ -98,23 +103,27 @@ export class EdaScatter implements AfterViewInit {
 
     const yAxis = g => g
       .attr("transform", `translate(${margin.left},0)`)
-      .call(d3.axisLeft(y))
+      .call(d3.axisLeft(y).tickFormat(this.chartUtilService.format10thPowers))
       .call(g => g.select(".domain").remove())
       .call(g => g.append("text")
-        .attr("x", -margin.left)
-        .attr("y", 10)
-        .attr("fill", "currentColor")
+        .attr("x", -margin.left )
+        .attr("y", 30)
+        .attr("fill", "var(--panel-font-color)")
+        .attr("font-family", "var(--panel-font-family)")
+        .attr("font-size", "var(--panel-big)")
         .attr("text-anchor", "start")
         .text(`↑ ${this.inject.dataDescription.numericColumns[1].name}`))
 
     const xAxis = g => g
       .attr("transform", `translate(0,${height - margin.bottom})`)
-      .call(d3.axisBottom(x).ticks(width / 80))
+      .call(d3.axisBottom(x).ticks(width / 80).tickFormat(this.chartUtilService.format10thPowers))
       .call(g => g.select(".domain").remove())
       .call(g => g.append("text")
         .attr("x", width)
-        .attr("y", margin.bottom - 4)
-        .attr("fill", "currentColor")
+        .attr("y", margin.bottom )
+        .attr("fill", "var(--panel-font-color)")
+        .attr("font-family", "var(--panel-font-family)")
+        .attr("font-size", "var(--panel-big)")
         .attr("text-anchor", "end")
         .text(`→ ${this.inject.dataDescription.numericColumns[0].name}`));
 
@@ -129,7 +138,8 @@ export class EdaScatter implements AfterViewInit {
 
     svg.append("g")
       .attr("stroke-width", 1.5)
-      .attr("font-family", "sans-serif")
+      .attr("fill", "var(--panel-font-color)")
+      .attr("font-family", "var(--panel-font-family)")
       .attr("font-size", 10)
       .selectAll("circle")
       .data(this.data)

@@ -4,10 +4,9 @@
 
         <div class="p-col-8">
 
-            <div class="eda-chart-panel" style="margin-left: 6em;">
+            <div class="eda-chart-panel" style="margin-left: 6em; margin-top: 4em; background-color: var(--panel-color);">
 
-
-                <panel-chart #PanelChartComponent [props]="panelChartConfig"
+                <panel-chart *ngIf="!!display" #PanelChartComponent [props]="panelChartConfig"
                     style="height: 70%; width: 90%; display:block;  margin-top:5em">
                 </panel-chart>
 

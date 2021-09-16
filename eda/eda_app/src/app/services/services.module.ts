@@ -26,6 +26,7 @@ import {
     AddTableService,
     StyleService,
     MailService,
+    StyleProviderService
 } from './service.index';
 
 
@@ -58,6 +59,7 @@ import {
         AddTableService,
         StyleService,
         MailService,
+        StyleProviderService
 
     ]
 })

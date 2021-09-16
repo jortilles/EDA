@@ -1,3 +1,4 @@
+
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 import { ChartJsConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-js-config';
 import { ChartConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-config';
@@ -5,6 +6,7 @@ import { Column } from './../../shared/models/dashboard-models/column.model';
 import { Injectable } from '@angular/core';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import * as _ from 'lodash';
+import { StyleConfig } from './style-provider.service';
 
 export interface EdaChartType {
     label: string;
@@ -33,6 +35,7 @@ export interface FormatDates {
     selected: boolean;
 }
 
+
 @Injectable()
 export class ChartUtilsService {
 
@@ -43,6 +46,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes15:Velocímetro`, value: 'knob', subValue: 'knob', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes3:Gráfico de Pastel`, value: 'doughnut', subValue: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes4:Gráfico de Área Polar`, value: 'polarArea', subValue: 'polarArea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes17:Gráfico Solar`, value: 'sunburst', subValue: 'sunburst', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes5:Gráfico de Barras`, value: 'bar', subValue: 'bar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes6:Gráfico de Barras Apiladas`, value: 'bar', subValue: 'stackedbar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes7:Gráfico de Barras Horizontales`, value: 'horizontalBar', subValue: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -68,7 +72,8 @@ export class ChartUtilsService {
         { label: $localize`:@@filters8:DENTRO DE (in)`, value: 'in', typeof: ['numeric', 'date', 'text'] },
         { label: $localize`:@@filters9:FUERA DE (not in)`, value: 'not_in', typeof: ['numeric', 'date', 'text'] },
         { label: $localize`:@@filters10:PARECIDO A (like)`, value: 'like', typeof: ['text'] },
-        { label: $localize`:@@filters11:VALORES NO NULOS (not null)`, value: 'not_null', typeof: ['numeric', 'date', 'text'] }
+        { label: $localize`:@@filters11:NO PARECIDO A (not like)`, value: 'not_like', typeof: ['text'] },
+        { label: $localize`:@@filters12:VALORES NO NULOS (not null)`, value: 'not_null', typeof: ['numeric', 'date', 'text'] }
     ];
 
     public ordenationTypes: OrdenationType[] = [
@@ -86,6 +91,26 @@ export class ChartUtilsService {
         { display_name: $localize`:@@dates7:FECHA COMPLETA`, value: 'timestamp', selected: false },
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
+
+    public transformData4Knob(data: any, dataTypes: string[]): any {
+        let values = [];
+        let res = { labels: [], values: [] };
+        const idx = { label: null, serie: null, numeric: [] };
+        if (data.values.length > 0) {
+            dataTypes.forEach((e: any, i) => {
+                e === 'numeric' ? idx.numeric.push(i) : idx.label != null ? idx.serie = i : idx.label = i;
+            });
+
+            data.values.forEach((e: any, i) => {
+                idx.numeric.forEach((elem, index) => {
+                    values.push(e[idx.numeric[index]]);
+                })
+            });
+            res.values[0] = values.slice(0, 2);
+            res.labels = data.labels.slice(0, 2);
+        }
+        return res;
+    }
 
     public transformDataQuery(type: string, values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean) {
         const output = [];
@@ -201,6 +226,7 @@ export class ChartUtilsService {
      * @return [] notAllowed chart types
      */
     public getNotAllowedCharts(dataDescription: any, query: any): any[] {
+
         let notAllowed =
             [
                 'table', 'crosstable', 'kpi', 'geoJsonMap', 'coordinatesMap',
@@ -219,16 +245,26 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
         }
+        /* no es filtra per agregació. Pot venir d'una consulta sql 
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
-        const aggregation =
+
+        // AIXÒ ES INTERESSANT DE FER-HO PERO CAL ACTUALITZAR LA DESCRIPCIÓ PER AIXÒ I TENIR EN COMPTE QUE POT VENIR D'UNA CONSULTA SQL
+        let aggregation =
             query.filter(col => col.column_type === 'numeric')
             .map(col => col.aggregation_type
                 .filter(agg => agg.selected === true && agg.value !== 'none')
                 .map(agg => agg.selected))
                 .reduce((a, b) => a || b, false)[0];
+        
+        if(aggregation === null ){
+            aggregation = 1; // if there is no aggre
+        }
+        */
+
+
 
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
-            || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4 && aggregation) {
+            || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4  /* && aggregation */) {
             notAllowed.splice(notAllowed.indexOf('bar'), 1);
             notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
             notAllowed.splice(notAllowed.indexOf('line'), 1);
@@ -277,8 +313,15 @@ export class ChartUtilsService {
         }
 
         //knob
-        if (dataDescription.numericColumns.length <= 2 && dataDescription.numericColumns.length > 0
-            && dataDescription.otherColumns.length === 0) {
+        if ((dataDescription.numericColumns.length <= 2 && dataDescription.numericColumns.length > 0
+            && dataDescription.otherColumns.length === 0)
+            ||
+            // si sento un dataset cojo los dos primeros
+            // del estilo:
+            //  var1 - 10
+            //  var 2 - 100
+            (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length === 1)
+        ) {
             notAllowed.splice(notAllowed.indexOf('knob'), 1);
         }
         return notAllowed;
@@ -292,7 +335,7 @@ export class ChartUtilsService {
      */
     public getTooManyDataForCharts(dataSize: number): any[] {
         let notAllowed =
-            ['table', 'crosstable', 'kpi', 'doughnut', 'polarArea', 'line', 'bar',
+            ['table', 'crosstable', 'kpi', 'knob', 'doughnut', 'polarArea', 'line', 'bar',
                 'horizontalBar', 'barline', 'geoJsonMap', 'coordinateMap'];
 
         //table (at least one column)
@@ -305,8 +348,14 @@ export class ChartUtilsService {
         notAllowed.splice(notAllowed.indexOf('coordinateMap'), 1);
 
         // KPI (only one numeric column)
+
         if (dataSize === 1) {
             notAllowed.splice(notAllowed.indexOf('kpi'), 1);
+        }
+        // Knomb (only one or two  numeric column)
+        // only 2 values
+        if (dataSize <= 2) {
+            notAllowed.splice(notAllowed.indexOf('knob'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
         if (dataSize < 50) {
@@ -356,14 +405,17 @@ export class ChartUtilsService {
 
         const config = layout.getConfig();
 
-        if ((<ChartJsConfig>config).colors === null) {
+        if (!(<ChartJsConfig>config).colors) {
             return this.generateColors((<ChartJsConfig>config).chartType);
         }
         if ((<ChartJsConfig>config).chartType === 'doughnut' || (<ChartJsConfig>config).chartType === 'polarArea') {
+
             let edaColors = EdaChartComponent.generatePiecolors();
+
             (<ChartJsConfig>config).colors[0]['backgroundColor'].forEach((element, i) => {
                 edaColors[0].backgroundColor[i] = element;
             });
+
             (<ChartJsConfig>config).colors[0]['backgroundColor'] = edaColors[0].backgroundColor;
 
         }
@@ -371,10 +423,8 @@ export class ChartUtilsService {
     }
 
     public describeData(currentQuery: any, labels: any) {
-
         let names = this.pretifyLabels(currentQuery, labels);
         let out = { numericColumns: [], coordinateColumns: 0, otherColumns: [], totalColumns: 0, query: currentQuery }
-
         currentQuery.forEach((col, i) => {
             if (col.column_type === 'numeric') {
                 out.numericColumns.push({ name: names[i], index: i });
@@ -388,6 +438,20 @@ export class ChartUtilsService {
         return out;
     }
 
+    public describeData4Knob(currentQuery: any, chartData: any) {
+        let out = { numericColumns: [], coordinateColumns: 0, otherColumns: [], totalColumns: 0, query: currentQuery }
+        chartData.values.forEach((element: any[]) => {
+            element.forEach((el, indx) => {
+                if (!isNaN(el)) {
+                    out.numericColumns.push({ name: chartData.labels[indx], index: indx });
+                }
+            });
+            out.totalColumns += 1;
+        });
+        return out;
+    }
+
+
     public pretifyLabels(columns: Array<Column>, labels: Array<string>) {
         let names = [];
         labels.forEach(label => {
@@ -399,6 +463,37 @@ export class ChartUtilsService {
         });
 
         return names
+    }
+
+    public get10thPower = (num) => {
+        let absNum = Math.abs(num)
+        let power = 0;
+        while (absNum >= 10) {
+            absNum = Math.floor(absNum / 10);
+            power++;
+        }
+        return power;
+    }
+
+    public format10thPowers = (num) => {
+
+        const _10thPower = this.get10thPower(num);
+        let result = '';
+
+        if (_10thPower >= 6) {
+            let reducedNum = (num / Math.pow(10, 6)).toLocaleString('de-DE', { style: 'decimal', maximumFractionDigits: 2 , minimumFractionDigits:2});
+            result = reducedNum + 'M'
+        }
+
+        else if (_10thPower >= 3) {
+            let reducedNum = (num / Math.pow(10, 3)).toLocaleString('de-DE', { style: 'decimal', maximumFractionDigits: 0,  minimumFractionDigits:0 });
+            result = reducedNum + 'K'
+        }
+
+        else {
+            result = num.toLocaleString('de-DE', { style: 'decimal', maximumFractionDigits: 2,  minimumFractionDigits:2 });
+        }
+        return result
     }
 
     getMinMax(data: any) {
@@ -446,10 +541,10 @@ export class ChartUtilsService {
         const format = query.filter((_, i) => i === dateIndex)[0].format;
 
         data.values.forEach(row => {
-  
+
             let currentDate = row[dateIndex].slice(-2); /**01, 02, 03 ...etc. */
-            let currentHead =row[dateIndex].slice(0, -3); /** 2020-01, 2020-02 ...etc. */
-  
+            let currentHead = row[dateIndex].slice(0, -3); /** 2020-01, 2020-02 ...etc. */
+
             let newRow = [];
 
             row.forEach((field, i) => {
@@ -466,14 +561,14 @@ export class ChartUtilsService {
         });
         return newRows.sort(function (a, b) {
             if (a[dateIndex] > b[dateIndex]) {
-              return 1;
+                return 1;
             }
             if (a[dateIndex] < b[dateIndex]) {
-              return -1;
+                return -1;
             }
             // a must be equal to b
             return 0;
-          });
+        });
 
     }
 
@@ -553,7 +648,7 @@ export class ChartUtilsService {
 
     public initChartOptions(type: string, numericColumn: string,
         labelColum: any[], manySeries: boolean, stacked: boolean, size: any,
-        linkedDashboard: LinkedDashboardProps, minMax: { min: number, max: number }): { chartOptions: any, chartPlugins: any } {
+        linkedDashboard: LinkedDashboardProps, minMax: { min: number, max: number }, styles: StyleConfig): { chartOptions: any, chartPlugins: any } {
 
         const t = $localize`:@@linkedTo:Vinculado con`;
         const linked = linkedDashboard ? `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
@@ -562,7 +657,13 @@ export class ChartUtilsService {
             chartOptions: {},
             chartPlugins: {}
         };
-        const edaFontSize = manySeries ? 10 : 12;
+        // si la pantalla es petita faig la lletra mes petita
+        let variador = 0;
+        if (window.innerWidth < 1500) {
+            variador = -2;
+        }
+        const edaFontSize = manySeries ? 10 + variador : 12 + variador + styles.fontSize;
+
         const edafontStyle = 'normal';
         const edaPieLegend = {
             display: true,
@@ -571,8 +672,10 @@ export class ChartUtilsService {
             position: 'bottom',
             labels: {
                 fontSize: edaFontSize,
-                boxWidth: manySeries ? 8 : 10,
-                padding: manySeries ? 4 : 8
+                fontFamily: styles.fontFamily,
+                fontColor: styles.fontColor,
+                boxWidth: manySeries ? 8 + variador : 10 + variador,
+                padding: manySeries ? 4 + variador : 8 + variador
             }
         };
         const edaBarLineLegend = {
@@ -582,16 +685,18 @@ export class ChartUtilsService {
             position: 'bottom',
             labels: {
                 fontSize: edaFontSize,
-                boxWidth: manySeries ? 8 : 10,
-                padding: manySeries ? 4 : 8,
+                fontFamily: styles.fontFamily,
+                fontColor: styles.fontColor,
+                boxWidth: manySeries ? 8 + variador : 10 + variador,
+                padding: manySeries ? 4 + variador : 8 + variador,
                 filter: function (legendItem, data) {
                     return legendItem.datasetIndex < 20
-                }
+                },
             }
         };
 
-        const maxTicksLimit = size.width < 200 ? 5 : size.width < 400 ? 10 : size.width < 600 ? 20 : 40;
-        const maxTicksLimitHorizontal = size.height < 200 ? 5 : size.height < 400 ? 10 : size.height < 600 ? 20 : 40;
+        const maxTicksLimit = size.width < 200 ? 5 + variador : size.width < 400 ? 12 + variador : size.width < 600 ? 25 + variador : 40 + variador;
+        const maxTicksLimitHorizontal = size.height < 200 ? 5 + variador : size.height < 400 ? 12 + variador : size.height < 600 ? 25 + variador : 40 + variador;
 
         switch (type) {
             case 'doughnut':
@@ -645,10 +750,20 @@ export class ChartUtilsService {
                                 if (data && tooltipItem)
                                     return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
                             },
+
                             label: (tooltipItem, data) => {
-                                if (data && tooltipItem)
-                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE', { maximumFractionDigits: 6 })} `;
+                                if (data && tooltipItem) {
+                                    const realData = data.datasets[0].data;
+                                    const total = realData.reduce((a, b) => {
+                                        return a + b;
+                                    }, 0);
+                                    const elem = data.datasets[0].data[tooltipItem.index];
+                                    const percentage = elem / total * 100;
+                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
+                                }
+
                             },
+
                             afterLabel: (t, d) => {
                             },
                             footer: () => { return linked },
@@ -664,6 +779,8 @@ export class ChartUtilsService {
                                         return value.length > 30 ? (value.substr(0, 17) + '...') : value;
                                 },
                                 fontSize: edaFontSize, fontStyle: edafontStyle,
+                                fontFamily: styles.fontFamily,
+                                fontColor: styles.fontColor,
                                 maxTicksLimit: maxTicksLimit,
                                 autoSkip: true,
                             }
@@ -680,9 +797,11 @@ export class ChartUtilsService {
                                 beginAtZero: true,
                                 callback: (value) => {
                                     if (value)
-                                        return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 });
+                                        return isNaN(value) ? value : this.format10thPowers(parseFloat(value)) //.toLocaleString('de-DE', { maximumFractionDigits: 6 });
                                 },
-                                fontSize: edaFontSize
+                                fontSize: edaFontSize,
+                                fontFamily: styles.fontFamily,
+                                fontColor: styles.fontColor,
                             }
                         }]
                     },
@@ -707,10 +826,20 @@ export class ChartUtilsService {
                                 if (data && tooltipItem)
                                     return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
                             },
+
                             label: (tooltipItem, data) => {
-                                if (data && tooltipItem)
-                                    return `${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.xLabel).toLocaleString('de-DE', { maximumFractionDigits: 6 })} `;
+                                if (data && tooltipItem) {
+                                    const realData = data.datasets[0].data;
+                                    const total = realData.reduce((a, b) => {
+                                        return a + b;
+                                    }, 0);
+                                    const elem = data.datasets[0].data[tooltipItem.index];
+                                    const percentage = elem / total * 100;
+                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
+                                }
+
                             },
+
                             footer: () => { return linked },
                         }
 
@@ -725,12 +854,14 @@ export class ChartUtilsService {
                             ticks: {
                                 callback: (value) => {
                                     if (value)
-                                        return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 });
+                                        return isNaN(value) ? value : this.format10thPowers(parseFloat(value))// parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 });
                                 },
                                 autoSkip: true,
-                                maxTicksLimit: 4,
+                                maxTicksLimit: maxTicksLimitHorizontal,
                                 fontSize: edaFontSize,
                                 fontStyle: edafontStyle,
+                                fontFamily: styles.fontFamily,
+                                fontColor: styles.fontColor,
                                 beginAtZero: true
                             }
                         }],
@@ -743,8 +874,10 @@ export class ChartUtilsService {
                                 },
 
                                 fontSize: edaFontSize,
+                                fontFamily: styles.fontFamily,
+                                fontColor: styles.fontColor,
                                 beginAtZero: true,
-                                maxTicksLimit: maxTicksLimitHorizontal,
+                                // maxTicksLimit: maxTicksLimitHorizontal,
                                 autoSkip: true
                             }
                         }]
@@ -773,9 +906,23 @@ export class ChartUtilsService {
                                     return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
                                 }
                             },
+                            /*
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem)
                                     return ` ${data.datasets[tooltipItem.datasetIndex].label},  ${numericColumn} : ${parseFloat(tooltipItem.yLabel).toLocaleString('de-DE', { maximumFractionDigits: 6 })}  `;
+                            },
+                            */
+                            label: (tooltipItem, data) => {
+                                if (data && tooltipItem) {
+                                    const realData = data.datasets[0].data;
+                                    const total = realData.reduce((a, b) => {
+                                        return a + b;
+                                    }, 0);
+                                    const elem = data.datasets[0].data[tooltipItem.index];
+                                    const percentage = elem / total * 100;
+                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
+                                }
+
                             },
                             footer: () => { return linked },
                         }
@@ -795,6 +942,8 @@ export class ChartUtilsService {
                                 maxTicksLimit: maxTicksLimit,
                                 fontSize: edaFontSize,
                                 fontStyle: edafontStyle,
+                                fontFamily: styles.fontFamily,
+                                fontColor: styles.fontColor,
                                 beginAtZero: true
                             }
                         }],
@@ -811,7 +960,7 @@ export class ChartUtilsService {
                                 ticks: {
                                     callback: (value) => {
                                         if (value) {
-                                            return isNaN(value) ? value : parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 });
+                                            return isNaN(value) ? value : this.format10thPowers(parseFloat(value))// parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 });
                                         } else {
                                             return 0;
                                         }
@@ -821,6 +970,8 @@ export class ChartUtilsService {
                                     maxTicksLimit: 4,
                                     fontSize: edaFontSize,
                                     fontStyle: edafontStyle,
+                                    fontFamily: styles.fontFamily,
+                                    fontColor: styles.fontColor,
                                     beginAtZero: true,
                                     max: minMax.max,
                                     min: minMax.min

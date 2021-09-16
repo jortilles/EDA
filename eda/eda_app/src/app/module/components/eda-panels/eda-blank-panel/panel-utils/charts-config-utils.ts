@@ -10,6 +10,7 @@ import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.
 
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
 import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
+import { SunburstConfig } from '../panel-charts/chart-configuration-models/sunburst-config';
 
 export const ChartsConfigUtils = {
 
@@ -47,11 +48,15 @@ export const ChartsConfigUtils = {
       config = 
       {
         zoom:ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
-        coordinates : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null
+        coordinates : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
+        logarithmicScale : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
+        legendPosition : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.legendPosition : null,
+        color : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
+        
       }
     }
 
-    else if (["parallelSets", "treeMap", "scatterPlot", "funnel"].includes(ebp.panelChart.props.chartType)) {
+    else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
 
       config =
       {
@@ -90,7 +95,7 @@ export const ChartsConfigUtils = {
       return new TableConfig(false, false, 10, false, false, false, false, null, null, null);
 
     }
-    else if (['bar', 'line', 'piechart', 'doughnut'].includes(type)) {
+    else if (['bar', 'line', 'pie', 'doughnut', 'barline', 'horizontalBar'].includes(type)) {
 
       return new ChartJsConfig(null, type, false, false);
 
@@ -112,47 +117,21 @@ export const ChartsConfigUtils = {
 
       return new KnobConfig(null, null);
     }
+    else if (type === 'sunburst') {
+      return new SunburstConfig([]);
+    }
     else {
       return new KpiConfig('', []);
     }
   },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | KnobConfig | FunnelConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | KnobConfig | FunnelConfig | SunburstConfig) => {
 
-    if (['table', 'crosstable'].includes(type)) {
-      return new ChartConfig(config);
-    }
-    else if (['bar', 'line', 'pie', 'doughnut', 'barline', 'horizontalBar'].includes(type)) {
-      return new ChartConfig(config);
-    }
-    else if (type === 'kpi') {
-      return new ChartConfig(config);
-    }
-    else if (type === 'geoJsonMap') {
-      return new ChartConfig(config);
-    }
-    else if (type === 'coordinatesMap') {
-      return new ChartConfig(config);
-    }
-    else if (type === 'parallelSets') {
-      return new ChartConfig(config);
-
-    } 
-    else if (type === 'treeMap') {
-      return new ChartConfig(config);
-
-    } 
-    else if (type === 'scatterPlot') {
-      return new ChartConfig(config);
-
-    }
-    else if(type === 'knob'){
-      return new ChartConfig(config);
-    }
-    else if (type === 'funnel') {
-      return new ChartConfig(config);
-    }
+    return new ChartConfig(config);
 
   }
+
+
+
 
 }

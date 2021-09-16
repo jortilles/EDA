@@ -27,6 +27,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public showComparative : boolean = true;
     public addComparative : boolean;
     public panelChartConfig: PanelChart = new PanelChart();
+    public display:boolean=false;
 
     public comparativeTooltip = $localize`:@@comparativeTooltip:La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado`
     public trendTooltip = $localize`:@@trendTooltip:La función de añadir tendencia sólo se puede activar en los gràficos de lineas`
@@ -93,6 +94,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.showTrend = this.chart.chartType === 'line';
         this.showComparative =  this.allowCoparative(this.controller.params);
         this.load();
+        this.display = true;
 
     }
 

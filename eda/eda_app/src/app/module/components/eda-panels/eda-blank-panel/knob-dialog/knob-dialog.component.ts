@@ -18,6 +18,7 @@ export class KnobDialogComponent extends EdaDialogAbstract  {
   public min:number;
   public max: number; 
   public limitInQuery : boolean;
+  public display:boolean=false;
 
   constructor(){
     super();
@@ -40,6 +41,7 @@ export class KnobDialogComponent extends EdaDialogAbstract  {
       this.max = limits[1];
     })
     this.limitInQuery = this.controller.params.panelChart.data.labels.length === 2 ? true : false;
+    this.display = true;
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);

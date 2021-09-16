@@ -158,15 +158,6 @@ app-dashboard {
     transition: unset !important;
 }
 
-.edaTitle {
-    font-family: 'Questrial';
-    line-height: 0.7;
-    text-align: center;
-    margin-bottom: auto;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
 .tab-view{
     overflow-y: auto;
     max-height: 90vh;
@@ -221,7 +212,6 @@ app-dashboard {
 }
 .filter-name{
     margin:1px;
-    font-size:small;
 }
 .fiter-icon{
     font-size: 14px;
@@ -231,10 +221,20 @@ app-dashboard {
 
 #myDashboard >>> .p-card .p-card-body {
     padding: 0.6em;
+    background-color: var(--panel-color);
   }
 
 #customMultiselect >>> .p-multiselect-items-wrapper {
     min-width: 250px;
     }
   
-  
+  .canIeditClass{
+margin-top:20px;
+display:table;
+
+  }
+  .canIeditClassLabel{
+
+    display:table-cell;
+    vertical-align:middle;
+  }

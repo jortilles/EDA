@@ -18,6 +18,7 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
   public panelChartConfig: PanelChart = new PanelChart();
   public colors: Array<string>;
   public labels: Array<string>;
+  public display:boolean=false;
 
   constructor() {
 
@@ -31,7 +32,7 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
     this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
   }
   ngAfterViewChecked(): void {
-    if (!this.colors && this.myPanelChartComponent.componentRef) {
+    if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
         this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
@@ -42,6 +43,7 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
 
   onShow(): void {
     this.panelChartConfig = this.controller.params.panelChart;
+    this.display = true;
 
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {

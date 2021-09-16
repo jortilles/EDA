@@ -29,7 +29,7 @@ export class ApiService {
                 result.text = error.error.message;
                 break;
             case 401: /* Token error */
-                result.text = 'La sessión ha expirado';
+                result.text = '401';
                 result.nextPage = 'logout';
                 break;
             case 403:
@@ -52,7 +52,7 @@ export class ApiService {
     }
 
     private getSearchParamToken() {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         let params: HttpParams = new HttpParams();
 
         if (token) {

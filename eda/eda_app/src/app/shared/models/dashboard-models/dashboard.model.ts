@@ -8,6 +8,7 @@ export class Dashboard {
     public filters: any[];
     public applytoAllFilter: {present: boolean, refferenceTable: string, id: string};
     public visible: string;
+    public onlyIcanEdit: boolean = false;
 
     constructor(init: Partial<Dashboard>) {
         Object.assign(this, init);

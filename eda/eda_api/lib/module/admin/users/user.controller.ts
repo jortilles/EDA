@@ -6,6 +6,7 @@ import Group, { IGroup } from '../groups/model/group.model';
 import ServerLogService from '../../../services/server-log/server-log.service';
 import * as path from 'path';
 import * as fs from 'fs';
+import { QueryOptions } from 'mongoose';
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -194,8 +195,8 @@ export class UserController {
                 if (err) {
                     return next(new HttpException(500, 'Error loading users'));
                 }
-
-                Group.find({}, 'name role', (err, groups: IGroup[]) => {
+                let options:QueryOptions = {};
+                Group.find({}, 'name role', options, (err, groups: IGroup[]) => {
                     if (err) {
                         return next(new HttpException(500, 'Error loading users'));
                     }
@@ -244,8 +245,8 @@ export class UserController {
                 if (err) {
                     return next(new HttpException(500, 'User not found with this id'));
                 }
-
-                Group.find({ _id: { $in: user.role } }, 'name role', (err, groups) => {
+                let options:QueryOptions = {};
+                Group.find({ _id: { $in: user.role } }, 'name role', options, (err, groups) => {
                     if (err) {
                         return next(new HttpException(500, 'Error waiting for user groups'));
                     }
@@ -270,8 +271,8 @@ export class UserController {
                 if (err) {
                     return next(new HttpException(500, 'User not found with this id'));
                 }
-
-                Group.find({ _id: { $in: user.role } }, 'name role', (err, groups) => {
+                let options:QueryOptions = {};
+                Group.find({ _id: { $in: user.role } }, 'name role',options, (err, groups) => {
                     if (err) {
                         return next(new HttpException(500, 'Error waiting for user groups'));
                     }
@@ -349,8 +350,9 @@ export class UserController {
     }
 
     static async delete(req: Request, res: Response, next: NextFunction) {
+        let options:QueryOptions = {};
         try {
-            User.findByIdAndDelete(req.params.id, (err, userRemoved) => {
+            User.findByIdAndDelete(req.params.id, options, (err, userRemoved) => {
 
                 if (err) {
                     return next(new HttpException(500, 'Error removing an user'));
@@ -395,6 +397,7 @@ export class UserController {
 
 function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
     const ip = req.headers['x-forwarded-for'] || req.get('origin')
-
-    ServerLogService.log({ level, action, userMail, ip, type });
+    var date = new Date();
+    var date_str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    ServerLogService.log({ level, action, userMail, ip, type, date_str});
 }

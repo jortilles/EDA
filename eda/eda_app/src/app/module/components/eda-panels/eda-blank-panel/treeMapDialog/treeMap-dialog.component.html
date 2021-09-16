@@ -2,9 +2,9 @@
 
   <div body class="p-grid">
     <div class="p-col-8">
-      <div class="eda-chart-panel" style="margin-top: 5em; margin-left: 2em">
-        <div style="height: 70%">
-          <panel-chart #PanelChartComponent [props]="panelChartConfig">
+      <div class="eda-chart-panel" style="margin-top: 5em; margin-left: 2em; background-color: var(--panel-color);">
+        <div style="height: 70%; margin-left: 1em; margin-top: 3em;">
+          <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig">
           </panel-chart>
         </div>
       </div>

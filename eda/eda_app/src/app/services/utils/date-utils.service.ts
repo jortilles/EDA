@@ -17,7 +17,10 @@ export class DateUtils {
             case 'beforeYesterday': return this.setBeforeYesterday();
             case 'weekStart': return this.setWeekStart();
             case 'monthStart': return this.setMonthStart();
+            case 'pastMonth': return this.setPastMonth();
+            case 'pastMonthFull': return this.setPastMonthFull();
             case 'monthStartPreviousYear': return this.setMonthStartPreviousYear();
+            case 'monthFullPreviousYear': return this.setMonthFullPreviousYear();
             case 'yearStart': return this.setYearStart();
             case 'yearStartPreviousYear': return this.setYearStartPreviousYear();
             case 'last7': return this.setLast7();
@@ -57,10 +60,48 @@ export class DateUtils {
         const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
         return [monthStart, today];
     }
+    public setPastMonth(): Array<Date> {
+        const t = new Date();
+        var d = new Date();
+        var newMonth = d.getMonth() - 1;
+        if(newMonth < 0){
+            newMonth += 12;
+            d.setFullYear(d.getFullYear() - 1);  
+        }
+        d.setMonth(newMonth);
+        const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
+        const monthEnd = new Date(d.getFullYear(), d.getMonth(), t.getDate() );
+        
+        return [monthStart, monthEnd];
+    }
+
+    public setPastMonthFull(): Array<Date> {
+        const t = new Date();
+        var d = new Date();
+        var newMonth = d.getMonth() - 1;
+        if(newMonth < 0){
+            newMonth += 12;
+            d.setFullYear(d.getFullYear() - 1);  
+        }
+        d.setMonth(newMonth);
+        const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
+        const monthEnd = new Date(d.getFullYear(), d.getMonth(),  new Date(d.getFullYear(), d.getMonth()+1, 0).getDate() );
+        
+        return [monthStart, monthEnd];
+    }
+
+
     public setMonthStartPreviousYear(): Array<Date> {
         const t = new Date();
         const today = new Date( t.getFullYear()-1, t.getMonth(), t.getDate());
         const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        return [monthStart, today];
+    }
+
+    public setMonthFullPreviousYear(): Array<Date> {
+        const t = new Date();
+        const monthStart = new Date(t.getFullYear()-1, t.getMonth(), 1);
+        const today = new Date( t.getFullYear()-1, t.getMonth(), new Date(t.getFullYear(), t.getMonth()+1, 0).getDate() );
         return [monthStart, today];
     }
     

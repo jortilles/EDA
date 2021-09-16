@@ -2,11 +2,12 @@
 
   <div body class="p-grid">
     <div class="p-col-8">
-      <div class="eda-chart-panel" style="margin-top: 5em; margin-left: 2em">
-        <div style="height: 70%">
-          <panel-chart #PanelChartComponent [props]="panelChartConfig">
+      <div class="eda-chart-panel"   style="margin-top: 5em; margin-left: 2em ; background-color: var(--panel-color);">
+        <div  style="height: 70%">
+          <panel-chart *ngIf="!!display"  #PanelChartComponent [props]="panelChartConfig">
           </panel-chart>
         </div>
+
       </div>
     </div>
 
@@ -41,13 +42,14 @@
   </div>
 
   <div footer>
-  
-      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check" class="p-button-raised p-button-success"
-        i18n-label="@@guardarButton" label="Confirmar" id="eda_chart_dialog_confirmar">
-      </button>
-      <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times" class="p-button-raised p-button-danger"
-        i18n-label="@@cancelarButton" label="Cancelar">
-      </button>
+
+    <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
+      class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
+      id="eda_chart_dialog_confirmar">
+    </button>
+    <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
+      class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
+    </button>
 
   </div>
 

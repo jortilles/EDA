@@ -20,13 +20,13 @@ export abstract class AbstractConnection {
         }
     }
 
-    abstract createTable(queryData: any): string;
+    abstract createTable(queryData: any, user:any): string;
 
-    abstract generateInserts(queryData: any): string;
+    abstract generateInserts(queryData: any, user:any): string;
 
     abstract tryConnection(): Promise<void>;
 
-    abstract generateDataModel(optimize: number, filters:string): Promise<any>;
+    abstract generateDataModel(optimize: number, filters:string, name?:string): Promise<any>;
 
     abstract execQuery(query: string): Promise<any>;
 

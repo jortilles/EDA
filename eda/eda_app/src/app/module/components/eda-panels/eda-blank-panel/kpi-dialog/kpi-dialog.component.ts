@@ -37,6 +37,9 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
   public users : any ;
   public selectedUsers:any;
   public disabled:boolean;
+  public canIRunAlerts: boolean = false;
+
+  public display:boolean=false;
 
   constructor( private userService: UserService,) {
 
@@ -48,6 +51,13 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
       title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
     });
     this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
+
+    if(this.userService.user.name == "edaanonim"){
+      this.canIRunAlerts  = false;
+    }else{
+      this.canIRunAlerts  = true;
+    }
+    
   }
 
   saveChartConfig() {
@@ -65,6 +75,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     this.panelChartConfig = this.controller.params.panelChart;
     const config: any = this.panelChartConfig.config.getConfig();
     this.alerts = [...config.alertLimits] //deepcopy
+    this.display = true;
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);

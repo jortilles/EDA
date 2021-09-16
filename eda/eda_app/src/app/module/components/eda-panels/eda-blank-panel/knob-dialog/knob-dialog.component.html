@@ -3,8 +3,8 @@
   <div body class="p-grid">
     <div class="p-col-8">
       <div class="eda-chart-panel" style="margin-top: 6em;">
-        <div style="height: 70%">
-          <panel-chart #PanelChartComponent [props]="panelChartConfig">
+        <div style="height: 70%; background-color: var(--panel-color); margin: 2em;">
+          <panel-chart *ngIf="display" style="margin: 1em;" #PanelChartComponent [props]="panelChartConfig">
           </panel-chart>
         </div>
       </div>
