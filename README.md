@@ -57,10 +57,15 @@ Once the process if finish, just go to **http://localhost**
 * The default password is: **default**
 
 If you are a Windows user, you can download a Windows bundle from sourceforge:
+
 https://sourceforge.net/projects/enterprise-data-analytics/
+
 Download the latest package. unzip it wherever you want and run: run_eda.bat
+
 It only has one prerequisite: node.js lts.
+
 It will open several windows. The mongodb database and the web server.
+
 After all, you can go to http: // localhost: 8080 / index.html
 
 
