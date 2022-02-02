@@ -59,10 +59,11 @@ export class EdaKpiComponent implements OnInit {
         }
         // But maybe the string lenght is too long... lets check 
         let strlen =  (this.inject.value + this.inject.sufix).length;
-        if( strlen * result > this.containerWidth*2  ){
-            result = result / 2
+        if( strlen * result > this.containerWidth*1.5 ){
+            result = result / 1.8;
         }
         // Ok.... we are done...
+
         return result.toFixed().toString();
 
     }

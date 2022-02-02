@@ -16,6 +16,9 @@ export class DateUtils {
             case 'yesterday': return this.setYesterday();
             case 'beforeYesterday': return this.setBeforeYesterday();
             case 'weekStart': return this.setWeekStart();
+            case 'weekStartFull': return this.setWeekStartFull();
+            case 'pastWeek': return this.setPastWeek();
+            case 'pastWeekFull': return this.setPastWeekFull();
             case 'monthStart': return this.setMonthStart();
             case 'pastMonth': return this.setPastMonth();
             case 'pastMonthFull': return this.setPastMonthFull();
@@ -55,6 +58,48 @@ export class DateUtils {
         const monday = getMonday(new Date());
         return [monday, today];
     }
+    public setWeekStartFull(): Array<Date> {
+        let getMonday = (d: Date) => {
+            d = new Date(d);
+            var day = d.getDay(),
+                diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+            return new Date(d.setDate(diff));
+        }
+        const today = new Date();
+        const monday = getMonday(new Date());
+        today.setDate( monday.getDate() + 6);
+        return [monday, today];
+    }
+
+    public setPastWeek(): Array<Date> {
+        const getMonday = (d: Date) => {
+            d = new Date(d);
+            var day = d.getDay(),
+                diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+            return new Date(d.setDate(diff));
+        }
+        let today = new Date(); 
+        today.setDate(today.getDate() - 7);
+        const monday = getMonday(today);
+        return [monday, today];
+    }
+
+    public setPastWeekFull(): Array<Date> {
+        const getMonday = (d: Date) => {
+            d = new Date(d);
+            var day = d.getDay(),
+                diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+            return new Date(d.setDate(diff));
+        }
+        let today = new Date(); 
+        today.setDate(today.getDate() - 7);
+        const monday = getMonday(today);
+        today.setDate( monday.getDate() + 6);
+        return [monday, today];
+    }
+
+
+
     public setMonthStart(): Array<Date> {
         const today = new Date();
         const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);

@@ -31,11 +31,9 @@ export class MapUtilsService extends ApiService {
     makeMarkers = (map: L.Map, data: Array<any>, labels: Array<any>, linkedDashboardProps: LinkedDashboardProps): void => {
 
         const maxValue = Math.max(...data.map(x => x[3]), 0);
-
         for (const d of data) {
             const radius = typeof d[3] === 'number' ? MapUtilsService.scaledRadius(d[3], maxValue) : 20;
             const color = this.getColor(radius);
-
             const lat = parseFloat(d[0]);// / 1000000 / 2;
             const lon = parseFloat(d[1]); // / 10000;
             const properties = {
@@ -85,7 +83,6 @@ export class MapUtilsService extends ApiService {
         const me = this;
         let row = data.filter(row => row[labelIndex] !== null && row[labelIndex].toUpperCase().replace(/\s/g, '') === layer_id.toUpperCase().replace(/\s/g, ''))[0];
 
-        //console.log(total);
         let div = '';
         for (let i = 0; i < labels.length; i++) {
             if (row !== undefined) {

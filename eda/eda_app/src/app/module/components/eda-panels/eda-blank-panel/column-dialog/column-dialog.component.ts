@@ -68,7 +68,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@col:Columna`
+            title: $localize`:@@col:Atributo`
         });
         this.dialog.style = { width: '85%', height: '75%', top: "-4em", left: '1em' };
     }
@@ -78,7 +78,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.selectedColumn = this.controller.params.selectedColumn;
         const allowed = [];
         const title = this.selectedColumn.display_name.default;
-        const col = $localize`:@@col:Columna`, from = $localize`:@@table:de la tabla`;
+        const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
         this.dialog.title = `${col} ${title} ${from} ${this.controller.params.table}`;
 
         this.carregarValidacions();

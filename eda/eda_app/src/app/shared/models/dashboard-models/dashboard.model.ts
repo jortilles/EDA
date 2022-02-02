@@ -4,6 +4,7 @@ export class Dashboard {
     public title: string;
     public panel: any[];
     public user: string;
+    public group: any[];
     public datasSource: any;
     public filters: any[];
     public applytoAllFilter: {present: boolean, refferenceTable: string, id: string};

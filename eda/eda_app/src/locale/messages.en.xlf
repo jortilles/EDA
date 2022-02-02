@@ -1654,8 +1654,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="inputMapURL" datatype="html">
-<source> Subir archivo GeoJson</source>
-<target>Upload GeoJson file</target>
+<source> Subir archivo GeoJson (JSON)</source>
+<target>Upload GeoJson file (JSON)</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
 <context context-type="linenumber">9</context>
@@ -1735,8 +1735,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="updateModel" datatype="html">
-<source>Actualizar modelo de la base de datos</source>
-<target>Update datamodel from database</target>
+<source>Actualizar modelo de datos desde la base de datos origen para buscar nuevas tablas y columnas</source>
+<target>Update data model from source database to find new tables and columns</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
 <context context-type="linenumber">15</context>
@@ -1750,8 +1750,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="Refresh" datatype="html">
-<source>Refrescar modelo de datos</source>
-<target>Refresh datamodel</target>
+<source>Tornar a carregar el model de dades emmagatzemat</source>
+<target>Reload the stored data model</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
 <context context-type="linenumber">9</context>
@@ -1850,6 +1850,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Eliminar panel</source>
 <target>Delete panel</target>
 </trans-unit>
+<trans-unit id="panelOptionsDup">
+<source>Duplicar panel</source>
+<target>Duplicate panel</target>
+</trans-unit>
+
 <trans-unit id="chartTypes1">
 <source>Tabla de Datos</source>
 <target>Table</target>
@@ -1881,6 +1886,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartTypes8">
 <source>Gráfico de Lineas</source>
 <target>Line chart</target>
+</trans-unit>
+<trans-unit id="chartTypes18">
+<source>Gráfico de Áreas</source>
+<target>Area chart</target>
 </trans-unit>
 <trans-unit id="chartTypes9">
 <source>Mixto: Barras y lineas</source>
@@ -2262,6 +2271,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartInfo5">
 <source>Un gráfico de línea necesita una o más categorías y una série numérica.</source>
 <target>Line chart needs one or more categories and one numeric serie. If there is also two series numeric data should be aggregated.</target>
+</trans-unit>
+<trans-unit id="chartInfoArea">
+<source>Un gráfico de areas necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
+<target>Area chart needs one or more categories and one numeric serie. If there is also two series numeric data should be aggregated.</target>
 </trans-unit>
 <trans-unit id="chartInfo6">
 <source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
@@ -2647,6 +2660,18 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Ésta semana</source>
 <target>This week</target>
 </trans-unit>
+<trans-unit id="DatePickerWeekFull">
+<source>Ésta semana al completo</source>
+<target>All this week</target>
+</trans-unit>
+<trans-unit id="DatePickerLastWeek">
+<source>La semana pasada</source>
+<target>Last week</target>
+</trans-unit>
+<trans-unit id="DatePickerLastWeekFull">
+<source>La semana pasada completa</source>
+<target>All last week</target>
+</trans-unit>
 <trans-unit id="DatePickerMonth">
 <source>Éste mes</source>
 <target>This month</target>
@@ -2978,6 +3003,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="AllTags">
     <source> Todos  </source>
     <target>All  </target>
+  </trans-unit>
+    
+  <trans-unit id="NoneTags">
+    <source> Ninguno  </source>
+    <target>None </target>
   </trans-unit>
 
   <trans-unit id="linkedTo">
@@ -3514,6 +3544,17 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Edición privada:</source>
     <target>Private edition:  </target>
   </trans-unit> 
+
+       <trans-unit id="showLablesTooltip">
+    <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
+    <target>Show or hide labels on charts</target>
+  </trans-unit> 
+
+       <trans-unit id="showLabels">
+    <source>Mostrar Etiquetas</source>
+    <target>Show Tags</target>
+  </trans-unit> 
+
 
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>

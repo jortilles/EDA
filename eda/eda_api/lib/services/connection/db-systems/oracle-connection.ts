@@ -38,14 +38,16 @@ export class OracleConnection extends AbstractConnection {
                         (SID = ${this.config.database})
                     )
                 )` : `${this.config.host}/${this.config.database}`;
-
-            const client = await oracledb.createPool({
+            /** Això es per que oracle  no gestiona bé la conversió dels números a javascript
+             * https://github.com/oracle/node-oracledb/blob/main/doc/api.md#numberhandling
+             */
+            oracledb.fetchAsString = [ oracledb.NUMBER ];
+            const connection  = await oracledb.getConnection({
                 user: this.config.user,
                 password: this.config.password,
                 connectString: connectString
             });
-            const connection = await client.getConnection();
-
+            
             return connection;
 
         } catch (err) {
@@ -128,10 +130,10 @@ export class OracleConnection extends AbstractConnection {
             AND      CT.R_CONSTRAINT_NAME  =  PARENT.CONSTRAINT_NAME 
             AND      CT.OWNER  = '${this.config.schema}'
             `
-            this.client = await this.getclient();
+            //this.client = await this.getclient();
             const foreignKeys = await this.execQuery(fkQuery);
 
-            // New client is needed, old client has been closed;
+            // New client is needed in ordre to run the custom queeires....
             this.client = await this.getclient();
             for (let i = 0; i < tableNames.length; i++) {
                 let new_table = await this.setTable(tableNames[i]);
@@ -163,11 +165,12 @@ export class OracleConnection extends AbstractConnection {
         }
     }
 
+
+
     async execQuery(query: string): Promise<any> {
         let client: oracledbTypes.Connection;
         try {
             client = await this.getclient();
-
             await client.execute(`alter session set current_schema = ${this.config.schema} `)
             const result = await client.execute(query);
             const labels = result.metaData.map(x => x.name);
@@ -175,19 +178,109 @@ export class OracleConnection extends AbstractConnection {
             result.rows.forEach(row => {
                 const r = {};
                 for (let j = 0; j < labels.length; j++) {
-                    r[labels[j]] = row[j];
+                    r[labels[j]] =  row[j] ;
                 }
                 parsedResults.push(r);
             })
+           
+            return parsedResults;
+        } catch (err) {
+            console.log(err);
+            throw err;
+        } finally {
+            if (client) {
+                try {
+                  await client.close();
+                } catch (err) {
+                  console.error(err);
+                }
+              }
+
+        }
+    }
+
+
+
+/* a les consultes sql cal fer-lis un tractament especial per saber su son numeriques o text*/
+    async execSqlQuery(query: string): Promise<any> {
+        let client: oracledbTypes.Connection;
+        try {
+            client = await this.getclient();
+            await client.execute(`alter session set current_schema = ${this.config.schema} `)
+            const result = await client.execute(query);
+            
+            const labels = result.metaData.map(x => x.name);
+            const parsedResults = [];
+            const unparsedResults = [];
+            const types = [];
+            const FALSEnumericColumns =[];
+            
+            try{
+                result.rows.forEach(row => {
+                    const r = {};
+                    const runparsed = {};
+                    const rowTypes = [];
+                    for (let j = 0; j < labels.length; j++) {
+
+                        r[labels[j]] = ( isNaN( row[j]) || ( row[j].length>1 && row[j].indexOf('0')==0  ) ) ? row[j]:parseFloat(row[j])  ;
+                        runparsed[labels[j]] =   row[j];
+                        rowTypes[j] =  ( isNaN( row[j]) || ( row[j].length>1 && row[j].indexOf('0')==0  ) )  ;
+                    }
+                    parsedResults.push(r);
+                    unparsedResults.push(runparsed);
+                    types.push(rowTypes);
+                })
+                /** Tot això es fa per que oracle te un bug i ho retorna tot com a text. Aixó que s'ha de mirar cada columna si tots els valors son numerics i aleshoraes convertir-ho a numeric */
+                //console.log(types);
+
+
+                for(let p=0; p< types.length; p++){
+                    for(let y=0; y< types[p].length; y++){
+                        if( p  < types.length-1 ){
+                            if(types[p][y] ===false && types[p][y] !== types[p+1][y]   ){
+                                FALSEnumericColumns.push(y);
+                            }
+                        }else{
+                            if(p>0){
+                                if(types[p][y] ===false && types[p][y] !== types[p-1][y]   ){
+                                    FALSEnumericColumns.push(y);
+                                }
+                            }
+                        }
+                    }
+                }
+            
+                /* si tinc columnes que aparentment son números pero de cop i volta surt un string el torno a posar com a string */
+                if(FALSEnumericColumns.length>0){
+                    for(let e=0; e< FALSEnumericColumns.length; e++){
+                        for(let q=0; q< parsedResults.length; q++){
+                        parsedResults[q][labels[FALSEnumericColumns[e]]] =unparsedResults[q][labels[FALSEnumericColumns[e]]];                 
+                        }
+                    }
+                }   
+            }catch(e){
+                console.log(e);
+                console.log('The query returned null');
+                console.log(result);
+            }
             return parsedResults;
 
         } catch (err) {
             console.log(err);
             throw err;
         } finally {
-            client.close();
+            if (client) {
+                try {
+                  await client.close();
+                } catch (err) {
+                  console.error(err);
+                }
+              }
+
         }
     }
+
+
 
     async getQueryBuilded(queryData: any, dataModel: any, user: any) {
         this.queryBuilder = new OracleBuilderService(queryData, dataModel, user);

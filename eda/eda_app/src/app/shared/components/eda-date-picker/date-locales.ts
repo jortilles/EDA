@@ -1,4 +1,4 @@
-
+/** NO SE USAN.... SE USAN LAS TRADUCCIONES DE app.component.ts */
 export const locales = {
   es: {
     firstDayOfWeek: 1,
@@ -26,7 +26,7 @@ export const locales = {
   },
   en: {
 
-    firstDayOfWeek: 0,
+    firstDayOfWeek: 1,
     dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     dayNamesShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     dayNamesMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],

@@ -49,6 +49,8 @@ export class EdaBlankPanelComponent implements OnInit {
     @Input() panel: EdaPanel;
     @Input() inject: InjectEdaPanel;
     @Output() remove: EventEmitter<any> = new EventEmitter();
+    @Output() duplicate: EventEmitter<any> = new EventEmitter();
+
 
     /** propietats que s'injecten al dialog amb les propietats específiques de cada gràfic. */
     public configController: EdaDialogController;
@@ -614,7 +616,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.graficos = {};
                 this.graficos = _.cloneDeep(properties);
                 this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType };
-                const layout = new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType, this.graficos.addTrend, this.graficos.addComparative));
+                const layout = new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType, this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels));
 
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
@@ -823,10 +825,19 @@ export class EdaBlankPanelComponent implements OnInit {
         else return QueryUtils.initSqlQuery(this);
     }
 
+    /** duplica un patell del dashboard i el posiciona un punt per sota del origina./ */
+    public duplicatePanel(): void {
+        let duplicatedPanel =   _.cloneDeep(this.panel, true); 
+        duplicatedPanel.id = this.fileUtiles.generateUUID();
+        duplicatedPanel.y = duplicatedPanel.y+1;
+        this.duplicate.emit(duplicatedPanel);
+    }
 
+    
     public removePanel(): void {
         this.remove.emit(this.panel.id);
     }
+
 
     public showDescription(event): void {
         this.description = event.description.default;

@@ -76,6 +76,7 @@ export class PgConnection extends AbstractConnection {
 
             /**Get tables */
             tableNames = await this.execQuery(query).then(res => res.map(row => row.table_name));
+
             /*
             for (let i = 0, n = getResults.length; i < n; i++) {
                 const result = getResults[i];
@@ -139,6 +140,13 @@ export class PgConnection extends AbstractConnection {
         }
     }
 
+    
+    async execSqlQuery(query: string): Promise<any> {
+        return this.execQuery(query);
+    }
+
+
+
     async getQueryBuilded(queryData: any, dataModel: any, user: any) {
         this.queryBuilder = new PgBuilderService(queryData, dataModel, user);
         return this.queryBuilder.builder();
@@ -164,9 +172,10 @@ export class PgConnection extends AbstractConnection {
         })
     }
 
-    private async setTable(tableName: string): Promise<any> {
-        const query = `SELECT column_name, udt_name AS column_type FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '${tableName}';`;
-
+    private async setTable(tableName: string ): Promise<any> {
+        const query = `SELECT column_name, udt_name AS column_type ` +
+        `FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '${tableName}' ` + 
+        `and table_schema = '${this.config.schema || 'public'}' `;
         return new Promise(async (resolve, reject) => {
             try {
                 const getColumns = await this.client.query(query);

@@ -7,6 +7,7 @@ import es from '@angular/common/locales/es';
 
 import * as _ from 'lodash';
 import { StyleService } from '@eda/services/service.index';
+import { EdaColumnChartOptions } from './eda-columns/eda-column-chart-options';
 
 @Component({
     selector: 'eda-table',
@@ -26,27 +27,8 @@ export class EdaTableComponent implements OnInit {
 
     constructor(private elementRef: ElementRef, private styleService: StyleService) {
         registerLocaleData(es);
-        this.chartOptions = {
-            showLines: true,
-            spanGaps: true,
-            responsive: true,
-            maintainAspectRatio: true,
-            legend: {
-                display: false
-            },
-            scales: {
-                xAxes: [{
-                    display: false
-                }],
-                yAxes: [{
-                    display: false
-                }],
-            },
-            elements: {
-                point: { radius: 0, hitRadius: 1, hoverRadius: 1, hoverBorderWidth: 1, pointStyle: 'circle' },
-                line: { borderWidth: 1.5, fill: false, tension: 0.3 }
-            }
-        };
+        /** Definim les caracteristiques del gràfic dintre de la taula.......................... */
+        this.chartOptions = EdaColumnChartOptions;
     }
     ngOnInit(): void {
         

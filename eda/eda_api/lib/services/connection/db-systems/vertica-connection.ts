@@ -127,6 +127,13 @@ export class VerticaConnection extends AbstractConnection {
         }).catch(err => { throw err });
     }
 
+
+    async execSqlQuery(query: string): Promise<any> {
+        return this.execQuery(query);
+    }
+
+
+    
     async getQueryBuilded(queryData: any, dataModel: any, user: any) {
         this.queryBuilder = new PgBuilderService(queryData, dataModel, user);
         return this.queryBuilder.builder();

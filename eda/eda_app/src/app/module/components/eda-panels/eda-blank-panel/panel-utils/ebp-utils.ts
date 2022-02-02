@@ -20,6 +20,10 @@ export const EbpUtils = {
         str = $localize`:@@chartInfo5:Un gráfico de línea necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
+      case 'area':
+          str = $localize`:@@chartInfoArea:Un gráfico de area necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
+          description += `\n${str}`;
+          break;
       case 'horizontalBar':
         str = $localize`:@@chartInfo6:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
@@ -75,7 +79,6 @@ export const EbpUtils = {
 
   getOptionIcon: (value: string): string => {
     let description = '';
-
     switch (value) {
       case 'table':
         description = 'table_chart';
@@ -92,11 +95,17 @@ export const EbpUtils = {
       case 'line':
         description = 'timeline';
         break
+      case 'area':
+        description = 'area_chart';
+        break
       case 'horizontalBar':
         description = 'notes';
         break
       case 'bar':
         description = 'bar_chart';
+        break
+      case 'stackedbar':
+        description = 'stacked_bar_chart';
         break
       case 'polarArea':
         description = 'scatter_plot';

@@ -242,7 +242,7 @@
     position: absolute;
     left: 70px;
     top: 46px;
-    width: 220px;
+    width: 260px;
     padding-bottom: 10px;
     z-index: 1001;
     background: #242a33;
@@ -267,6 +267,7 @@
 
   .mini-sidebar-2 .sidebar-nav #sidebarnav > li:hover > ul {
     height: auto !important;
+    max-height: 500px;
     overflow: auto;
   }
 
@@ -314,7 +315,7 @@
   }
 
   .mini-sidebar-2 .sidebar-nav #sidebarnav > li:hover > a {
-    width: 290px;
+    width: 330px;
     background: #242a33;
     border-bottom-right-radius: 5px;
     border-top-right-radius: 5px;

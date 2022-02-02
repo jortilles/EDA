@@ -1,7 +1,7 @@
 .total-col {
   background-color: #5ba38b8c !important; 
   color:var(--panel-font-color)!important;
-  text-align: right;
+  text-align: right!important;
   font-weight: normal;
 
 }

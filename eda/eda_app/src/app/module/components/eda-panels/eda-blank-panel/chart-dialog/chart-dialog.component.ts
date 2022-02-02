@@ -28,9 +28,11 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public addComparative : boolean;
     public panelChartConfig: PanelChart = new PanelChart();
     public display:boolean=false;
+    public showLabels: boolean;
 
     public comparativeTooltip = $localize`:@@comparativeTooltip:La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado`
     public trendTooltip = $localize`:@@trendTooltip:La función de añadir tendencia sólo se puede activar en los gràficos de lineas`
+    public showLablesTooltip = $localize`:@@showLablesTooltip:Mostrar o ocultar las etiquetas sobre los gráficos`
 
     public drops = {
         pointStyles: [],
@@ -88,6 +90,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
         this.panelChartConfig = this.controller.params.config;
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
+        this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
         this.oldChart = _.cloneDeep(this.controller.params.chart);
         this.chart = this.controller.params.chart;
@@ -202,6 +205,27 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     }
 
+
+    
+    setShowLables(){
+
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.showLabels = this.showLabels;
+        config.colors = this.chart.chartColors;
+        properties.config = c;
+        /**Update chart */
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+        });
+
+    }
+
+
+
     rgb2hex(rgb): string {
         rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
         return (rgb && rgb.length === 4) ? '#' +
@@ -303,7 +327,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.uniformizeStyle();
         this.chart.addTrend = this.addTrend;
         this.chart.addComparative = this.addComparative;
-
+        this.chart.showLabels = this.showLabels;
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
     }
 

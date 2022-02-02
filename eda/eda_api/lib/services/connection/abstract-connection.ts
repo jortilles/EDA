@@ -30,6 +30,8 @@ export abstract class AbstractConnection {
 
     abstract execQuery(query: string): Promise<any>;
 
+    abstract execSqlQuery(query: string): Promise<any>;
+
     abstract getQueryBuilded(queryData: any, dataModel: any, user: any): Promise<any>;
 
     abstract getclient(): Promise<any>;

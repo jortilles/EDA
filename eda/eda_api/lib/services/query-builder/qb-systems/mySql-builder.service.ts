@@ -357,7 +357,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
         return `${colname}  ${filterObject.filter_type} 
-                    ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilter(filterObject.filter_elements[1].value2, colType)}`;
+                    ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `${colname} is not null`;
     }
@@ -388,6 +388,33 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
 
   }
+  /** this funciton is done to get the end of a date time range 2010-01-01 23:59:59 */
+  public processFilterEndRange(filter: any, columnType: string) {
+    filter = filter.map(elem => {
+      if (elem === null || elem === undefined) return 'ihatenulos';
+      else return elem;
+    });
+
+    if (!Array.isArray(filter)) {
+      switch (columnType) {
+        case 'text': return `'${filter}'`;
+        //case 'text': return `'${filter}'`;
+        case 'numeric': return filter;
+        case 'date': return `STR_TO_DATE('${filter} 23:59:59','%Y-%m-%d %H:%i:%S')`
+      }
+    } else {
+      let str = '';
+      filter.forEach(value => {
+        const tail = columnType === 'date'
+          ? `STR_TO_DATE('${value} 23:59:59','%Y-%m-%d %H:%i:%S')`
+          : columnType === 'numeric' ? value : `'${value.replace(/'/g, "''")}'`;
+        str = str + tail + ','
+      });
+      return str.substring(0, str.length - 1);
+    }
+  }
+
+
   buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[]) {
 
     let joinString = `( SELECT ${origin}.* from ${origin} `;

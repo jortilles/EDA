@@ -13,6 +13,7 @@ export class EdaChart {
     linkedDashboardProps : LinkedDashboardProps;
     addTrend: boolean;
     addComparative: boolean;
+    showLabels:boolean;
 
     constructor() { }
 }

@@ -34,7 +34,7 @@ export const PanelOptions = {
 
         if (Object.entries(panelComponent.graficos).length !== 0 && panelComponent.chartData.length !== 0) {
 
-          if (['line', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline'].includes(panelComponent.graficos.chartType)) {
+          if (['line', 'area', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline'].includes(panelComponent.graficos.chartType)) {
 
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.chartController = new EdaDialogController({
@@ -182,6 +182,16 @@ export const PanelOptions = {
       command: () => PanelOptions.readyToExport(panelComponent, 'excel')
     });
   },
+  duplicatePanel: (panelComponent: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: $localize`:@@panelOptionsDup:Duplicar panel`,
+      icon: 'fa fa-clone',
+      command: () => {
+        panelComponent.contextMenu.hideContextMenu();
+        panelComponent.duplicatePanel();
+      }
+    });
+  },
   deletePanel: (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
       label: $localize`:@@panelOptions4:Eliminar panel`,
@@ -192,7 +202,6 @@ export const PanelOptions = {
       }
     });
   },
-
   readyToExport : (panelComponent: EdaBlankPanelComponent, fileType: string): void => {
     if (!panelComponent.panel.content) {
         return panelComponent.alertService.addError(`No tienes contenido para exportar`);
@@ -219,6 +228,7 @@ export const PanelOptions = {
     if(editmode && ![ "crosstable", "kpi"].includes(type) ) menu.push(PanelOptions.linkPanel(panelComponent));
     
     menu.push(PanelOptions.exportExcel(panelComponent));
+    menu.push(PanelOptions.duplicatePanel(panelComponent));
 
     if(editmode) menu.push(PanelOptions.deletePanel(panelComponent));
 

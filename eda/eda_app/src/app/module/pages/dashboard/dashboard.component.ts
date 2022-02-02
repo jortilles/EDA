@@ -304,11 +304,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.groupService.getGroupsByUser().subscribe(
             res => {
                 this.grups = res;
-
                 if (this.grups.length === 0) {
                     this.visibleTypes.splice(1, 1);
                 }
-
+                // pot ser que no estinguin disponibles encara els grups... per això  es crida des de els dos llocs
+                // i es crida també des de aqui.... a mes a mes des de la inicilialització del dashboard
+                // per estar segurn que es tenen disponibles.
+                this.setDashboardGrups();
                 this.setEditMode();
             },
             (err) => this.alertService.addError(err)
@@ -329,7 +331,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 res => {
                     /** res - retorna 2 objectes, el dashboard i el datasource per separat  */
                     const config = res.dashboard.config;
-
+                    // Estableix els permisos d'edició i propietat...
+                    this.setEditMode();
                     // Check dashboard owner
                     this.checkVisibility(res.dashboard);
 
@@ -352,11 +355,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
                     this.stylesProviderService.setStyles(me.styles);
 
-
-                    if (config.visible === 'group') {
-                        this.setDashboardGrups(res);
+                    // pot ser que no estinguin disponibles encara els grups... per això de vegades es perd
+                    // i es crida també des de els subscribe del groupcontroller ... a mes a mes des de la inicilialització del dashboard
+                    // per estar segurn que es tenen disponibles.
+                    let grp = [];
+                    if (config.visible === 'group' && res.dashboard.group) {
+                        grp = res.dashboard.group;
                     }
-
+           
+                    
                     if (!res.dashboard.config.panel) { // Si el dashboard no te cap panel es crea un automatic
                         me.panels.push(
                             new EdaPanel({ id: me.fileUtiles.generateUUID(), title: $localize`:@@newPanelTitle:Nuevo Panel`, type: EdaPanelType.BLANK, w: 20, h: 10, dragAndDrop: true, resizable: true })
@@ -368,7 +375,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
                         me.dashboard = new Dashboard({
                             onlyIcanEdit: me.onlyIcanEdit, id: me.id, title: me.title, visible: config.visible, panel: me.panels, user: res.dashboard.user,
-                            datasSource: me.dataSource, filters: [], applytoAllFilter: { present: false, refferenceTable: null, id: null }
+                            datasSource: me.dataSource, filters: [], applytoAllFilter: { present: false, refferenceTable: null, id: null }, group: grp
                         });
 
                     } else {
@@ -380,11 +387,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
                         me.dashboard = new Dashboard({
                             onlyIcanEdit: me.onlyIcanEdit, id: me.id, title: me.title, visible: config.visible, panel: config.panel, user: res.dashboard.user,
-                            datasSource: me.dataSource, filters: config.filters, applytoAllFilter: me.applyToAllfilter
+                            datasSource: me.dataSource, filters: config.filters, applytoAllFilter: me.applyToAllfilter, group: grp
                         });
                         /**To update panel filters with filters current data */
                         me.updateFilterDatesInPanels();
                     }
+
+                    // pot ser que no estinguin disponibles encara els grups... per això es crida des de els dos llocs
+                    // i es crida també des de els subscribe del groupcontroller ... a mes a mes des de la inicilialització del dashboard
+                    // per estar segurn que es tenen disponibles.
+                    if (config.visible === 'group') {
+                        this.setDashboardGrups();
+                    }
+
 
                     if (this.toLitle) {
                         this.initMobileSizes();
@@ -404,6 +419,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 err => {
                     me.alertService.addError(err);
                     if (err.text === "You don't have permission") {
+                        console.log("You don't have permission");
                         this.router.navigate(['/login']);
                     }
                 }
@@ -533,26 +549,33 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.display_v.anonimous_mode = (userName !== 'edaanonim');
     }
 
-    private setDashboardGrups(res: any): void {
+
+
+    private setDashboardGrups( ): void {
         const me = this;
-
-        me.display_v.groups = true;
-
-        const selectedGroups = [];
-        for (let i = 0, n = me.grups.length; i < n; i += 1) {
-            const group: any = me.grups[i];
-            for (const dashGroup of res.dashboard.group) {
-                if (_.isEqual(group._id, dashGroup)) {
-                    selectedGroups.push(group)
+        try{// debo recibir por un lado el dashboard y por otro el listado de roles. Mientras no tenga los dos esto fallará.
+            // Lo puedo hacer cuando tengo los dos.
+            if(me.grups.length > 0 && me.dashboard.group.length > 0 ){
+                me.display_v.groups = true;
+                const selectedGroups = [];
+                for (let i = 0, n = me.grups.length; i < n; i += 1) {
+                    const group: any = me.grups[i];
+                    for (const dashGroup of me.dashboard.group) {
+                        if (_.isEqual(group._id, dashGroup)) {
+                            selectedGroups.push(group)
+                        }
+                    }
                 }
+                me.form.controls['group'].setValue(selectedGroups);
             }
+        }catch(e){
+            // todavia no se han seteado me.grups o me.dashboard.goup.
         }
-
-        me.form.controls['group'].setValue(selectedGroups);
     }
 
     private checkVisibility(dashboard) {
         if (!this.display_v.anonimous_mode && dashboard.config.visible !== 'shared') {
+            console.log('Check visibility... you cannot see this dashboard');
             this.router.navigate(['/login']);
         }
 
@@ -878,6 +901,41 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         return formatedFilter;
     }
 
+    /** Ajsust the filter dorpdwon widht to make it easier to read.... */
+    public adjustSize(filter): void {
+            // miro si els elements del filtre son llargs....
+            let bol = false;
+            for(var i=0; i< filter.data.length ; i++){
+                if(filter.data[i].value.length > 60 ){
+                    bol = true;
+                    i = i+filter.data.length;
+                }
+            }
+            
+            // si els elements del filtre son llargs amplio el multiselect. 
+            if(bol){    
+                const dropdowns = document.querySelectorAll('p-multiselect');
+                try{
+                dropdowns.forEach(d=>{
+                    d.getElementsByTagName("p-multiselect-label");
+                    if (d.getElementsByClassName("p-multiselect-label")[0].textContent.trim()   == filter.column.label ){
+                        const elems =  d.getElementsByClassName('p-multiselect-panel')  ;
+                        for( var i = 0; i< elems.length; i++ ){
+                            elems[i].setAttribute("style", "width: 500px !important;  z-index:1000; ");       
+                        }
+                    }
+                })
+                }catch(e){
+                        // no passa res... estic aplicant estils.....
+                }
+
+             }
+
+
+
+    }
+
+    
     /** Apply filter to panels when filter's selected value changes */
     public applyGlobalFilter(filter): void {
         const newFilter = this.formatFilter(filter);
@@ -889,6 +947,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // this.reloadPanels();
     }
+
 
     public removeGlobalFilter(filter: any): void {
         // Remove 'applytoall' filter if it's the same fitler
@@ -1020,6 +1079,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
+
+    onDuplicatePanel(panel){
+        this.panels.push(panel);
+        this.dashboardService._notSaved.next(true);
+
+    }
+
+
     public onResetWidgets(): void {
 
         let body =
@@ -1117,11 +1184,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.dashboard.panel.forEach(panel => {
             if (panel.content && panel.content.chart === 'kpi') {
-                panel.content.query.output.config.alertLimits.forEach(alert => {
-                    if (alert.mailing.enabled === true) {
-                        mailingenabled = true
-                    };
-                });
+                try{
+                    panel.content.query.output.config.alertLimits.forEach(alert => {
+                        if (alert.mailing.enabled === true) {
+                            mailingenabled = true
+                        };
+                    });
+                }catch(e){
+                        console.log('error getting mailing alerts.... setting it to false');
+                        mailingenabled = false;
+                }
             }
         });
 

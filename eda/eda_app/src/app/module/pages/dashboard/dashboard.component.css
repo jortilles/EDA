@@ -212,7 +212,9 @@ app-dashboard {
 }
 .filter-name{
     margin:1px;
+    white-space: nowrap;
 }
+
 .fiter-icon{
     font-size: 14px;
     color:#004961;
@@ -224,10 +226,13 @@ app-dashboard {
     background-color: var(--panel-color);
   }
 
-#customMultiselect >>> .p-multiselect-items-wrapper {
-    min-width: 250px;
+
+.customMultiselect >>> ::-webkit-scrollbar {
+        width: 9px;
+        height: 9px;
     }
-  
+
+
   .canIeditClass{
 margin-top:20px;
 display:table;

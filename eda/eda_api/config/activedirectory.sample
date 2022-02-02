@@ -1,7 +1,9 @@
 {
     "url": "",
     "baseDN": "",
+	"groupBaseDN":
     "userNamePrefix": "",
+	"querysAMAccountName": "false",
     "username": "",
     "password": ""
 }

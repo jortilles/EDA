@@ -155,6 +155,14 @@ export class SQLserverConnection extends AbstractConnection {
         }).catch(err => { throw err });
     }
 
+
+
+    async execSqlQuery(query: string): Promise<any> {
+        return this.execQuery(query);
+    }
+
+
+    
     getQueryBuilded(queryData: any, dataModel: any, user: any): Promise<any> {
         this.queryBuilder = new SQLserviceBuilderService(queryData, dataModel, user);
         return this.queryBuilder.builder();

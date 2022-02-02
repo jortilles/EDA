@@ -191,6 +191,11 @@ export class BigQueryConnection extends AbstractConnection {
     }
   }
 
+  async execSqlQuery(query: string): Promise<any> {
+    return this.execQuery(query);
+  
+  }
+
 
   getclient(): Promise<any> {
 

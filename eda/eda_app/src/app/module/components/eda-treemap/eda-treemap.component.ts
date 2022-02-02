@@ -218,6 +218,12 @@ export class EdaTreeMap implements AfterViewInit {
       let newRow = [];
       let numericValue = row.splice(this.metricIndex, 1)[0];
       newRow = [...row];
+      //Replace nulls by   Null strings
+      for( let e=0; e< newRow.length; e++){
+          if( newRow[e] === null ){
+            newRow[e] = 'Null';
+          }
+      }
       newRow.push(numericValue);
       row.splice(this.metricIndex, 0, numericValue);
       newData.push(newRow);

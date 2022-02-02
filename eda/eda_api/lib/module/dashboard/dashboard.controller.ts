@@ -8,6 +8,7 @@ import Group from '../admin/groups/model/group.model';
 import formatDate from '../../services/date-format/date-format.service';
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { QueryOptions } from 'mongoose';
+import ServerLogService from '../../services/server-log/server-log.service';
 const cache_config = require('../../../config/cache.config');
 
 
@@ -32,7 +33,6 @@ export class DashboardController {
                 publics = await DashboardController.getPublicsDashboards();
                 shared = await DashboardController.getSharedDashboards();
             }
-
             return res.status(200).json({ ok: true, dashboards: privates, group, publics, shared, isAdmin });
         } catch (err) {
             console.log(err);
@@ -43,7 +43,7 @@ export class DashboardController {
 
     static async getPrivateDashboards(req: Request) {
         try {
-            const dashboards = await Dashboard.find({ 'user': req.user._id }, 'config.title config.visible config.tag').exec();
+            const dashboards = await Dashboard.find({ 'user': req.user._id }, 'config.title config.visible config.tag config.onlyIcanEdit').exec();
             const privates = [];
             for (const dashboard of dashboards) {
                 if (dashboard.config.visible === 'private') {
@@ -59,9 +59,8 @@ export class DashboardController {
     static async getGroupsDashboards(req: Request) {
         try {
             const userGroups = await Group.find({ users: { $in: req.user._id } }).exec();
-            const dashboards = await Dashboard.find({ group: { $in: userGroups.map(g => g._id) } }, 'config.title config.visible group config.tag').exec();
+            const dashboards = await Dashboard.find({ group: { $in: userGroups.map(g => g._id) } }, 'config.title config.visible group config.tag config.onlyIcanEdit').exec();
             const groupDashboards = [];
-
             for (let i = 0, n = dashboards.length; i < n; i += 1) {
                 const dashboard = dashboards[i];
                 for (const dashboardGroup of dashboard.group) {
@@ -84,7 +83,7 @@ export class DashboardController {
 
     static async getPublicsDashboards() {
         try {
-            const dashboards = await Dashboard.find({}, 'config.title config.visible config.tag').exec();
+            const dashboards = await Dashboard.find({}, 'config.title config.visible config.tag config.onlyIcanEdit').exec();
             const publics = [];
 
             for (const dashboard of dashboards) {
@@ -100,7 +99,7 @@ export class DashboardController {
 
     static async getSharedDashboards() {
         try {
-            const dashboards = await Dashboard.find({}, 'config.title config.visible config.tag').exec();
+            const dashboards = await Dashboard.find({}, 'config.title config.visible config.tag config.onlyIcanEdit').exec();
             const shared = [];
             for (const dashboard of dashboards) {
                 if (dashboard.config.visible === 'shared') {
@@ -115,7 +114,7 @@ export class DashboardController {
 
     static async getAllDashboardToAdmin() {
         try {
-            const dashboards = await Dashboard.find({}, 'user config.title config.visible group config.tag').exec();
+            const dashboards = await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit').exec();
             const publics = [];
             const privates = [];
             const groups = [];
@@ -157,6 +156,7 @@ export class DashboardController {
 
             Dashboard.findOne({ _id: req.params.id }, (err, dashboard) => {
                 if (err) {
+                    console.log('Dashboard not found with this id:' +  req.params.id );
                     return next(new HttpException(500, 'Dashboard not found with this id'));
                 }
 
@@ -164,7 +164,7 @@ export class DashboardController {
                 const roleCheck = !userRoles.includes('ADMIN') && (userGroupDashboards.length === 0) && (dashboard.user.toString() !== user);
 
                 if (visibilityCheck && roleCheck) {
-
+                    console.log('You don\'t have permission ' +  user + ' for dashboard ' + req.params.id );
                     return next(new HttpException(500, "You don't have permission"));
                 }
 
@@ -178,10 +178,44 @@ export class DashboardController {
                     }
 
 
+                    
+
 
                     const toJson = JSON.parse(JSON.stringify(datasource));
+    
+
+                    // si tinc filtres de seguretat....
+                    /*  NO HO IMPLEMENTO ENCARA DEGUT ALS DUBTES SOBRE EL FUNCIONAMENT. 
+                    SI OCULTO COLUMNES QUE PASSA AMB ELS INFORMES QUE FAN SERVIR AQUESTA COLUMNA.
+                    CAL PENSARO UNA MICA MES. PER QUE EN REALITAT ES OCULTAR I NO FILTRAR
+                    
+                    let filteredModel =  toJson.ds.model;
+                    let filteredTable :any;
+                    let filteredTables:any= [];
+                    const hiddenColumns = toJson.ds.metadata.model_granted_roles.filter( d => d.none == true);
+                    hiddenColumns.forEach( c => {
+                       // console.log(c);
+                        toJson.ds.model.tables.forEach(table => {
+                            filteredTable = table;
+                            // Trec la taula que modificare...  
+                            filteredModel.tables.filter(obj=> obj!== table);
+                            table.columns.forEach(col => {
+                                if( col.column_name == c.column && table.table_name == c.table){
+                                    filteredTable.columns  = filteredTable.columns.filter( x=> x.column_name !== c.column);
+                                
+                                }
+                            });
+                            //console.log(filteredTable);
+                            filteredModel.tables.push(filteredTable);
+                        });
+                    }       
+                    );
+                    const ds = { _id: datasource._id, model: filteredModel, name: toJson.ds.metadata.model_name };
+                    */
                     const ds = { _id: datasource._id, model: toJson.ds.model, name: toJson.ds.metadata.model_name };
 
+
+                    insertServerLog(req, 'info', 'DashboardAccessed', req.user.name , ds._id + '--' + ds.name );
                     return res.status(200).json({ ok: true, dashboard, datasource: ds });
                 });
             });
@@ -297,15 +331,44 @@ export class DashboardController {
             if (!cachedQuery) {
                 connection.client = await connection.getclient();
                 const getResults = await connection.execQuery(query);
+                let numerics = [];
+               /** si es oracle haig de fer una merda per tornar els numeros normals. */
+               if(dataModel.ds.connection.type == 'oracle'){
+                    req.body.query.fields.forEach((e,i) => {   
+                        if(e.column_type == 'numeric'){
+                            numerics.push('true');
+                        }else{
+                            numerics.push('false');
+                        }
+                    });
+                
+               }
                 const results = [];
 
-                // Normalize data
+                // Normalize data here i also transform oracle numbers who come as strings to real numbers
                 for (let i = 0, n = getResults.length; i < n; i++) {
                     const r = getResults[i];
-                    const output = Object.keys(r).map(i => r[i]);
+                    const output = Object.keys(r).map((i,ind) =>{
+                        /** si es oracle haig de fer una merda per tornar els numeros normals. */
+                        if(dataModel.ds.connection.type == 'oracle'){
+                              if( numerics[ind] == 'true' ){
+                                    const   res =  parseFloat( r[i] );
+                                      if( isNaN(res) ){
+                                          return null;
+                                      }else{
+                                          return res;
+                                      }
+
+                              }else{
+                                   return r[i];
+                              }                  
+                        }else{
+                            return r[i];
+                        }
+                       
+                    });
                     results.push(output);
                 }
-
                 const output = [req.body.output.labels, results];
 
 
@@ -313,7 +376,7 @@ export class DashboardController {
                     CachedQueryService.storeQuery(req.body.model_id, query, output);
                 }
 
-                /**CHAPUZA SUMA ACUMULATIVA -> 
+                /**SUMA ACUMULATIVA -> 
                  * Si hay fechas agregadas por mes o dia 
                  * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numéricos
                  */
@@ -326,7 +389,7 @@ export class DashboardController {
                  * La consulta és a la caché
                  */
             } else {
-                /**CHAPUZA SUMA ACUMULATIVA -> 
+                /**SUMA ACUMULATIVA -> 
                 * Si hay fechas agregadas por mes o dia 
                 * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numéricos
                 */
@@ -375,7 +438,7 @@ export class DashboardController {
 
             if (!cachedQuery) {
                 connection.client = await connection.getclient();
-                const getResults = await connection.execQuery(query);
+                const getResults = await connection.execSqlQuery(query);
                 const results = [];
                 let labels: Array<string>;
                 if (getResults.length > 0) {
@@ -572,4 +635,18 @@ export class DashboardController {
     }
 
 
+
+}
+
+
+
+function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
+    const ip = req.headers['x-forwarded-for'] || req.get('origin');
+    var date = new Date();
+    var month =date.getMonth()+1 ;
+    var monthstr=month<10?"0"+month.toString(): month.toString();
+    var day = date.getDate();
+    var daystr=day<10?"0"+day.toString(): day.toString();
+    var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    ServerLogService.log({ level, action, userMail, ip, type, date_str});
 }

@@ -40,6 +40,23 @@
 
         </div>
 
+
+
+        <div class="p-col-4 p-offset-8">
+            <h6 i18n="@@showLabels" class="custom-border-b1" style="margin-top: 2em;">
+                Mostrar Etiquetas
+            </h6>
+
+            <div [pTooltip]="showLablesTooltip" tooltipPosition="left">
+                <p-inputSwitch id="switchQueryMode" class="p-col-1 sql-switch" [(ngModel)]="showLabels"
+                    tooltipPosition="left" (onChange)="setShowLables()" >
+                </p-inputSwitch>
+            </div>
+
+
+        </div>
+
+
         <div class="p-col-4 p-offset-8">
 
             <h6 i18n="@@colorsChartH6" class="custom-border-b1">

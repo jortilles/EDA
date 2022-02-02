@@ -69,11 +69,14 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   ngAfterViewInit(): void {
     if (this.serverMap) {
       this.setGroups();
-      this.initMap();
-      this.mapUtilsService.getShapes(this.serverMap['mapID']).subscribe(shapes => {
-        this.shapes = shapes.file;
-        this.initShapesLayer();
-      });
+      this.checkElement( '#' + this.inject.div_name) 
+        .then((element) => {
+            this.initMap();
+            this.mapUtilsService.getShapes(this.serverMap['mapID']).subscribe(shapes => {
+              this.shapes = shapes.file;
+              this.initShapesLayer();
+            });
+        });
     }
   }
 
@@ -98,6 +101,8 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       if (this.inject.zoom) this.map.zoom = this.inject.zoom
       else this.map.fitBounds(this.boundaries);
 
+    }else{
+      console.log('map not yet ready');
     }
     this.geoJson.on('add', this.onloadLayer());
   }
@@ -108,6 +113,21 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     }, 0);
 
   }
+
+
+  private  rafAsync() {
+    return new Promise(resolve => {
+        requestAnimationFrame(resolve); //faster than set time out
+      });
+  }
+
+  private checkElement(selector) {
+      if (document.querySelector(selector) === null) {
+          return this.rafAsync().then(() => this.checkElement(selector));
+      } else {
+          return Promise.resolve(true);
+      }
+  } 
 
   private initMap = (): void => {
     if (L.DomUtil.get(this.inject.div_name) !== null) {
@@ -128,6 +148,8 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       this.map.on('zoomend', (event) => {
         this.inject.zoom = this.map.getZoom();
       });
+    }else{
+      console.log('Div not yet ready');
     }
 
   }

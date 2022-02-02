@@ -126,18 +126,29 @@ body .ui-tree {
 
 
 ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
+    width: 5px;
+    height: 5px;
 }
-
 ::-webkit-scrollbar-thumb {
+    background: #d6d6d6; 
+    border-radius: 3px;
+  }
+::-webkit-scrollbar-thumb:hover {
     background: #ccc;
-    box-shadow: inset 0 0 6px rgba(0,0,0,.5);
+    box-shadow: inset 0 0 6px rgba(94, 94, 94, 0.5);
+    border-radius: 3px;
 }
-
 ::-webkit-scrollbar-track {
     box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    border-radius: 3px;
 }
+
+
+
+
+
+
+
 
 .position-highlight .inner {
     position: absolute;
@@ -1102,6 +1113,7 @@ pre {
         display: -ms-flexbox !important;
         display: flex !important;
     }
+
 }
 
 /*-- ============================================================== 
@@ -1279,6 +1291,10 @@ pre {
 
 
 
+
+
+
+
 /*============================================================== 
   Editable variables 
   ============================================================== */
@@ -1290,6 +1306,7 @@ pre {
     --small-font :0.9rem;
     --big-font: 1rem;
     --eda-title-small : 1.7rem;
+    --eda-title-very-small : 1.2rem;
     --eda-title-big : 1.8rem;
     --eda-filters-small:1rem;
     --eda-filters-big:1.1rem;
@@ -1510,6 +1527,69 @@ pre {
     .component .p-datatable .p-datatable-footer {
         font-size: var(--panel-small);
 
+    }
+
+  }
+
+
+
+/*============================================================== 
+  For olds and small screens
+  ============================================================== */
+  @media (max-width: 1025px) {
+
+    .eda-title {
+        font-family: var(--font-family);
+        font-size: var(--eda-title-very-small); 
+        line-height: 0.7;
+        text-align: center;
+        margin-bottom: auto;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    
+    .filters-size{
+        font-size: var(--eda-filters-small);
+        font-family: var(--eda-filters-font-family);
+        color:var(--eda-filters-font-color)!important;
+    }
+
+    .panel-heading .panel-title {
+        font-size: var(--eda-title-very-small);
+        font-family: var(--font-family);
+        padding: 10px;
+        font-weight: 300;
+        margin: 0;
+    }
+
+    .p-datatable-wrapper{
+        font-size: var(--panel-small);
+      }
+
+    .map-legend {
+        font-size: var(--panel-small);
+    }
+    
+    .map-legend h6{
+        font-size: var(--panel-small);
+    }
+
+    .tick{
+        font-size: var(--panel-small);
+    }
+
+    .component .p-paginator .p-paginator-pages .p-paginator-page {
+        font-size: var(--panel-small);
+
+    }
+    .component .p-datatable .p-datatable-footer {
+        font-size: var(--panel-small);
+
+        
+    }
+    .p-datatable .p-datatable-tfoot>tr>td, .p-datatable .p-datatable-thead>tr>th{
+        font-weight: 300;
     }
 
   }

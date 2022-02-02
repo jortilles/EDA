@@ -38,6 +38,8 @@ export class HomeComponent implements OnInit {
 
     public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
     public AllTags = $localize`:@@AllTags:Todos`;
+    /* ready  */
+    public NoneTags = $localize`:@@NoneTags:Ninguno`;
 
     constructor(
         private dashboardService: DashboardService,
@@ -183,5 +185,25 @@ export class HomeComponent implements OnInit {
             this.visibleDashboards.privats = this.dashboards.privats.filter(db => db.config.tag === tag.value);
         }
     }
+
+
+    public canIEdit( dashboard ) {
+        let result: boolean = false;
+        result = this.isAdmin ;
+        // si no es admin...  
+        if (result == false) {
+            if (dashboard.config.onlyIcanEdit === true) {
+                if ( sessionStorage.getItem('user')  ==  dashboard.user) {
+                    result = true;
+                }
+            } else {
+                result = true;
+            }
+
+        }
+        return result;
+    }
+
+
 
 }

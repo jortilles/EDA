@@ -4,6 +4,7 @@ export class UserActiveDirectoryModel {
     public email: string;
     public userRole: string;
     public adminRole: string;
+    public groups: [];
 
     constructor(init?: Partial<UserActiveDirectoryModel>) {
         Object.assign(this, init);

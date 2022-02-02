@@ -315,7 +315,7 @@ export class SQLserviceBuilderService extends QueryBuilderService {
         return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
       case 2:
         return `${colname}  ${filterObject.filter_type} 
-                        ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilter(filterObject.filter_elements[1].value2, colType)}`;
+                        ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
       case 3:
         return `${colname} is not null`;
     }
@@ -344,6 +344,36 @@ export class SQLserviceBuilderService extends QueryBuilderService {
       return str.substring(0, str.length - 1);
     }
   }
+
+
+
+  /** this funciton is done to get the end of a date time range 2010-01-01 23:59:59 */
+  public processFilterEndRange(filter: any, columnType: string) {
+    filter = filter.map(elem => {
+      if (elem === null || elem === undefined) return 'ihatenulos';
+      else return elem;
+    });
+    if (!Array.isArray(filter)) {
+      switch (columnType) {
+        case 'text': return `'${filter}'`;
+        //case 'text': return `'${filter}'`;
+        case 'numeric': return filter;
+        case 'date': return `CAST('${filter} 23:59:59' as datetime)`
+      }
+    } else {
+      let str = '';
+      filter.forEach(value => {
+        const tail = columnType === 'date'
+          ? `CAST('${value} 23:59:59' as datetime)`
+          : columnType === 'numeric' ? value : `'${value.replace(/'/g, "''")}'`;
+        str = str + tail + ','
+      });
+      return str.substring(0, str.length - 1);
+    }
+  }
+
+
+
 
   /**
    * Builds permissions for sql queries

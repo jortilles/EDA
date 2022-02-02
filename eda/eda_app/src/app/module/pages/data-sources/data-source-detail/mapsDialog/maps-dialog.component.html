@@ -10,7 +10,7 @@
             <h5 class="headerH5" i18n="@@inputMapTables">Propiedades del mapa</h5>
 
             <div style="margin-bottom: 0" class="p-col-12 p-md-12">
-              <h6 i18n="@@inputMapURL"> Subir archivo GeoJson</h6>
+              <h6 i18n="@@inputMapURL"> Subir archivo GeoJson (JSON)</h6>
               <app-uploadFile #fileUploader (onFileSaved)="fileLoaded()"></app-uploadFile>
             </div>
 
@@ -85,7 +85,10 @@
               <ul>
                 <li *ngFor="let item of serverMaps">
                   <i class="fa fa-close" style="color: #c0555e;" (click)="deleteMap(item)"></i>&nbsp;&nbsp;
-                  {{item.name}}
+                  {{item.name}}  &nbsp;   {{item.field}} ->
+                  <span *ngFor="let el of item.linkedColumns">
+                       <br> {{el.table}}  -   {{el.col.display_name.default}}
+                    </span>
                 </li>
               </ul>
             </div>

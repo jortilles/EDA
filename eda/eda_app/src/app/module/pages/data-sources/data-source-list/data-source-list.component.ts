@@ -20,9 +20,9 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public selectedNode : TreeNode;
 
     //Strings
-    public refreshSTR = $localize`:@@Refresh:Refrescar modelo de datos`;
+    public refreshSTR = $localize`:@@Refresh:Volver a cargar el modelo de datos almacenado`;
     public saveModelSTR = $localize`:@@saveModel:Guardar modelo de datos`;
-    public updateModelSTR = $localize`:@@updateModel:Actualizar modelo de datos`;
+    public updateModelSTR = $localize`:@@updateModel:Actualizar modelo de datos desde la base de datos origen para buscar nuevas tablas y columnas`;
     public deleteModelSTR = $localize`:@@deleteModel:Borrar modelo de datos`;
     public unsaved : string;
 

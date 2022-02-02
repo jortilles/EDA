@@ -11,6 +11,7 @@ import { EdaColumnNumber } from './eda-columns/eda-column-number';
 import { EdaColumnPercentage } from './eda-columns/eda-column-percentage';
 import { Output, EventEmitter, Component } from '@angular/core';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
+import { ToastModule } from 'primeng/toast';
 
 interface PivotTableSerieParams {
     mainCol: any,
@@ -251,6 +252,7 @@ export class EdaTable {
 
     rowTotals() {
         if (this.pivot === true) {
+
             const colNames = this.cols.map(col => col.field);
 
             //get unique names for same metric in each sub-set -> columns : A-income, B-income, A-amount, B-amount -> returns:  [income, amount]
@@ -259,7 +261,7 @@ export class EdaTable {
                 .filter(key => numericCols.includes(key))
                 .map(key => key.slice(key.lastIndexOf('~') + 1));
             const valuesKeys = Array.from(new Set(keys));
-
+            
             //get names for new columns from series array
             let pretyNames;
             if (this.series[0].labels.length > 2) {
@@ -294,8 +296,16 @@ export class EdaTable {
 
                 numericCols.forEach(key => {
                     valuesKeys.forEach(valueKey => {
-                        if (key.includes(valueKey)) {
-                            totals[valueKey] = totals[valueKey] + row[key];
+                        if (key.includes(valueKey)) {     
+                            let decimalplaces =  0;  /** esta mierda se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
+                            try{
+                                if(  row[key].toString().split(".")[1].length > 0){
+                                    decimalplaces =  row[key].toString().split(".")[1].length;
+                                }
+                            }catch(e){ }
+                            totals[valueKey] = parseFloat(totals[valueKey]) + parseFloat(row[key]);
+                            totals[valueKey] = totals[valueKey].toFixed(decimalplaces );
+
                         }
                     });
                 });
@@ -417,7 +427,16 @@ export class EdaTable {
                 if (i < values.length) {
                     const currentCol = this.cols.filter(col => col.field === keys[j])[0];
                     if (currentCol.type === "EdaColumnNumber") {
-                        row[keys[j]] = row[keys[j]] + values[i][keys[j]];
+
+                        let decimalplaces =  0;  /** esta mierda se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
+                        try{
+                            if(  row[keys[j]].toString().split(".")[1].length > 0){
+                                decimalplaces =   row[keys[j]].toString().split(".")[1].length;
+                            }
+                        }catch(e){ }
+
+                        row[keys[j]] = parseFloat(row[keys[j]] ) + parseFloat(values[i][keys[j]]);
+                        row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
                     } else {
                         row[keys[j]] = NaN;
                     }
@@ -634,6 +653,8 @@ export class EdaTable {
         }
         const rowsToMerge = [];
         const colsToMerge = [];
+
+
         let newLabels;
         seriesLabels.forEach((serie, index) => {
             let colsRows = this.buildPivotSerie(index);
@@ -646,7 +667,6 @@ export class EdaTable {
         newLabels.metricsLabels = colsInfo.numericLabels;
         newLabels.metricsDescriptions = colsInfo.numericDescriptions;
         newLabels.textDescriptions = colsInfo.textDescriptions;
-
         this._value = this.mergeRows(rowsToMerge);
         this.cols = this.mergeColumns(colsToMerge);
         this.buildHeaders(newLabels, colsInfo);

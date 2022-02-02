@@ -107,6 +107,13 @@ export class SnowflakeConnection extends AbstractConnection {
     }
   }
 
+  async execSqlQuery(query: string): Promise<any> {
+    return this.execQuery(query);
+}
+
+
+
+
   async setTable(tableName: string) {
 
     const query = `SHOW COLUMNS IN TABLE "${this.getSchema()}"."${tableName}"`;

@@ -14,7 +14,7 @@ const topoJson = require('topojson-server');
 export class UploadFileController {
 
   static uploadFile = async (req: Request, res: Response, next: NextFunction) => {
-  
+
     let file = null;
     try {
       const fileToSave: IGeoJsonFile = new GeoJsonFile({ file: req.body.type });
@@ -31,7 +31,7 @@ export class UploadFileController {
           featureCollection: file._id
         }
         const feature: IgeoJsonFeature = new GeoJsonFeature(new_feature);
-        savedFeature = feature.save();        
+        savedFeature = feature.save();   
       } catch (err) {
         return next(new HttpException(400, 'Some error ocurred while saving file'));
       }

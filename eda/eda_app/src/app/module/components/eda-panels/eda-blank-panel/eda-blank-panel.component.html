@@ -1,3 +1,5 @@
+
+<!-- Panel Header -->
 <div class="panel-heading d-flex justify-content-between">
     <div style="width: 100%;">
         <h6 id="p-header" class="panel-title" style="cursor: default">
@@ -100,7 +102,7 @@
 
                                 <span class="close-thin pointer" (click)="removeColumn( item, 'select' )"></span>
 
-                                <span    class=" text-center eda-col-class-{{item.column_type}}" >
+                                <span    class=" text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
                                     {{item.display_name.default}}
                                 </span>
 
@@ -125,7 +127,7 @@
 
                                 <span class="close-thin pointer" (click)="removeColumn( item, 'filter' )"></span>
 
-                                <span  class=" text-center eda-col-class-{{item.column_type}}" >
+                                <span  class=" text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
                                     {{item.display_name.default}}
                                 </span>
                             </div>
@@ -391,7 +393,7 @@
                                         [attr.title]="chart.tooManyData ? getTooManyDataDescription() : (chart.ngIf) ? getOptionDescription(chart.subValue) : '' ">
                                         <span class="material-icons"
                                             [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
-                                            {{getOptionIcon(chart.value)}}
+                                            {{getOptionIcon(chart.subValue)}}
                                         </span>
 
 

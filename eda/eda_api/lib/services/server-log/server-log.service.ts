@@ -23,7 +23,7 @@ var options = {
 
 const ServerLogService = createLogger({
   format: 
-    CSV(['level', 'action', 'userMail', 'ip', 'type', 'date_str' ], { delimiter: ',' }),
+    CSV(['level', 'action', 'userMail', 'ip', 'type', 'date_str' ], { delimiter: '|,|' }),
   transports: [new transports.File(options.file)]
 });
 

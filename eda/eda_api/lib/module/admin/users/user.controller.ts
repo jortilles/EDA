@@ -7,6 +7,8 @@ import ServerLogService from '../../../services/server-log/server-log.service';
 import * as path from 'path';
 import * as fs from 'fs';
 import { QueryOptions } from 'mongoose';
+import { GroupController } from '../groups/group.controller';
+import { createNoSubstitutionTemplateLiteral } from 'typescript';
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -29,9 +31,30 @@ export class UserController {
             if (fs.existsSync(ldapPath)) {
                 // Si el troba, login amb activedirectory
                 // Obtenim informacio del activedirectory
-                const userAD = await ActiveDirectoryService.login(body.email, body.password);
+                
+                
+                const myUser = await ActiveDirectoryService.getUserName(body.email);                
+                
+                const userAD = await ActiveDirectoryService.login(myUser, body.password);
+
+
+
+                // em porto tots els grups del AD per sincronitzar.....
+                const groupsAD = await ActiveDirectoryService.getADGroups( );
+                GroupController.syncroGroupsFromAD(groupsAD) ;
+                const adGroupsInMongo = await GroupController.getLocalGroupsIds(userAD.groups);
+                //Si es admin.... el fico al meu admin
+                
+                if (userAD.adminRole) {
+                    // EL GRUPO ADMIN DE EDA ES FIJO.
+                    adGroupsInMongo.push("135792467811111111111110");
+                }
+
+
                 // Busquem si l'usuari ja el tenim registrat al mongo
                 const userEda = await UserController.getUserInfoByEmail(userAD.username, true);
+
+    
 
                 if (!userEda) {
                     // Si no esta registrat, l'afegim
@@ -40,15 +63,8 @@ export class UserController {
                         email: userAD.username,
                         password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
                         img: body.img,
-                        role: []
+                        role: adGroupsInMongo
                     });
-
-                    if (userAD.adminRole) {
-                        const adminGroup = await Group.findOne({ role: "EDA_ADMIN_ROLE" }, '_id').exec();
-                        userToSave.role.push(adminGroup._id);
-                    }
-
-                    const roles = userToSave.role;
 
                     userToSave.save(async (err, userSaved) => {
                         if (err) {
@@ -62,7 +78,7 @@ export class UserController {
                         // Borrem de tots els grups el usuari actualitzat
                         await Group.updateMany({}, { $pull: { users: userSaved._id } });
                         // Introduim de nou els grups seleccionat al usuari actualitzat
-                        await Group.updateMany({ _id: { $in: roles } }, { $push: { users: userSaved._id } }).exec();
+                        await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: userSaved._id } }).exec();
                         return res.status(200).json({ user, token: token, id: user._id });
                     });
                 } else {
@@ -70,15 +86,7 @@ export class UserController {
                     userEda.name = userAD.displayName;
                     userEda.email = userAD.username;
                     userEda.password = userEda.password;
-                    userEda.role = [];
-
-                    if (userAD.adminRole) {
-                        const adminGroup = await Group.findOne({ role: "EDA_ADMIN_ROLE" }, '_id').exec();
-                        userEda.role.push(adminGroup._id);
-                    }
-
-                    const roles = userEda.role;
-
+                    userEda.role = adGroupsInMongo;
                     userEda.save(async (err, userSaved) => {
                         if (err) {
                             return next(new HttpException(400, 'Some error ocurred while creating the User'));
@@ -91,9 +99,10 @@ export class UserController {
                         // Borrem de tots els grups el usuari actualitzat
                         await Group.updateMany({}, { $pull: { users: userSaved._id } });
                         // Introduim de nou els grups seleccionat al usuari actualitzat
-                        await Group.updateMany({ _id: { $in: roles } }, { $push: { users: userSaved._id } }).exec();
+                        await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: userSaved._id } }).exec();
                         return res.status(200).json({ user, token: token, id: user._id });
                     });
+                    
                 }
             } else {
                 // Si no ho troba, login amb mongo
@@ -115,6 +124,8 @@ export class UserController {
             next(err);
         }
     }
+    
+
 
     static async singleSingnOn(req:Request, res:Response, next:NextFunction){
 
@@ -307,7 +318,6 @@ export class UserController {
     static async update(req: Request, res: Response, next: NextFunction) {
         try {
             const body = req.body;
-
             User.findById(req.params.id, (err, user: IUser) => {
 
                 if (err) {
@@ -398,6 +408,10 @@ export class UserController {
 function insertServerLog(req: Request, level: string, action: string, userMail: string, type: string) {
     const ip = req.headers['x-forwarded-for'] || req.get('origin')
     var date = new Date();
-    var date_str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    var month =date.getMonth()+1 ;
+    var monthstr=month<10?"0"+month.toString(): month.toString();
+    var day = date.getDate();
+    var daystr=day<10?"0"+day.toString(): day.toString();
+    var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     ServerLogService.log({ level, action, userMail, ip, type, date_str});
 }

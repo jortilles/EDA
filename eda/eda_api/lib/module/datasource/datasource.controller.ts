@@ -8,6 +8,7 @@ import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import BigQueryConfig from './model/BigQueryConfig.model';
 import CachedQuery, { ICachedQuery } from '../../services/cache-service/cached-query.model';
 import { QueryOptions } from 'mongoose';
+import { upperCase } from 'lodash';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -18,14 +19,11 @@ export class DataSourceController {
                 if (err) {
                     return next(new HttpException(404, 'Error loading DataSources'));
                 }
-
                 const protectedDataSources = [];
-
                 for (let i = 0, n = dataSources.length; i < n; i += 1) {
                     const datasource = dataSources[i];
                     //datasource.ds.connection.password = EnCrypterService.decode(datasource.ds.connection.password);
                     datasource.ds.connection.password = '__-(··)-__';
-
                     protectedDataSources.push(datasource);
                 }
 
@@ -49,12 +47,10 @@ export class DataSourceController {
 
             for (let i = 0, n = names.length; i < n; i += 1) {
                 const e = names[i];
-
                 output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-
-
             }
-
+            output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : 
+            ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
             return res.status(200).json({ ok: true, ds: output });
         });
     }
@@ -75,7 +71,8 @@ export class DataSourceController {
             next(err);
         }
     }
-
+    /* Aquesta funció retorna els datasources disponibles per fer un dashboard.
+    Un cop filtrats els permisos de grup i de usuari. */
     static async GetDataSourcesNamesForDashboard(req: Request, res: Response, next: NextFunction) {
 
         let options:QueryOptions = {};
@@ -125,7 +122,8 @@ export class DataSourceController {
 
                 }
             }
-
+            output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : 
+                                    ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
             return res.status(200).json({ ok: true, ds: output });
         });
     }
@@ -383,9 +381,8 @@ export class DataSourceController {
             throw err;
         }
     }
-
+    /** Refresh the data model from the source database. The mysql, postgres, oracle, json websercive, etc source...  */
     static async RefreshDataModel(req: Request, res: Response, next: NextFunction) {
-
         try {
 
             const actualDS = await DataSourceController.getMongoDataSource(req.params.id);
@@ -395,7 +392,15 @@ export class DataSourceController {
                 req.body.port, req.body.type, req.body.schema, req.body.sid,  req.qs.warehouse);
             const manager = await ManagerConnectionService.testConnection(cn);
             const storedDataModel = JSON.parse(JSON.stringify(actualDS));
-            const tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized,storedDataModel.ds.metadata.filter);
+            let tables = [];
+
+            if(storedDataModel.ds.connection.type =='jsonwebservice' ){
+                // json webservice get the table name form the model name.... 
+                tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized,storedDataModel.ds.metadata.filter,storedDataModel.ds.metadata.model_name );
+            }else{
+                tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized,storedDataModel.ds.metadata.filter);
+            }
+           
 
             const datasource: IDataSource = new DataSource({
                 ds: {

@@ -7,6 +7,8 @@ import { Injectable } from '@angular/core';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
+import {Chart} from 'chart.js';
+import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 
 export interface EdaChartType {
     label: string;
@@ -51,6 +53,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes6:Gráfico de Barras Apiladas`, value: 'bar', subValue: 'stackedbar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes7:Gráfico de Barras Horizontales`, value: 'horizontalBar', subValue: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes8:Gráfico de Lineas`, value: 'line', subValue: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes18:Gráfico de Áreas`, value: 'line', subValue: 'area', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes9:Mixto: Barras y lineas`, value: 'bar', subValue: 'barline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes12:ParallelSets`, value: 'parallelSets', subValue: 'parallelSets', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes13:TreeMap`, value: 'treeMap', subValue: 'treeMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
@@ -92,6 +95,9 @@ export class ChartUtilsService {
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
 
+    /*
+        Funció especifica per transformar les dades per el velocímetre (knob) 
+    */
     public transformData4Knob(data: any, dataTypes: string[]): any {
         let values = [];
         let res = { labels: [], values: [] };
@@ -112,6 +118,9 @@ export class ChartUtilsService {
         return res;
     }
 
+    /*
+        Aquesta funció manipula les dades per donar-los la forma que esperen els grafics ng-chart
+    */
     public transformDataQuery(type: string, values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean) {
         const output = [];
         const idx = { label: null, serie: null, numeric: [] };
@@ -129,7 +138,7 @@ export class ChartUtilsService {
             output.push(_labels, _values);
             return output;
 
-        } else if (['bar', 'line', 'horizontalBar', 'barline'].includes(type)) {
+        } else if (['bar', 'line', 'area', 'horizontalBar', 'barline'].includes(type)) {
             const l = Array.from(new Set(values.map(v => v[label_idx])));
             const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
             const _output = [[], []];
@@ -230,7 +239,7 @@ export class ChartUtilsService {
         let notAllowed =
             [
                 'table', 'crosstable', 'kpi', 'geoJsonMap', 'coordinatesMap',
-                'doughnut', 'polarArea', 'line', 'bar',
+                'doughnut', 'polarArea', 'line', 'area', 'bar',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob'
             ];
         //table (at least one column)
@@ -268,6 +277,7 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('bar'), 1);
             notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
             notAllowed.splice(notAllowed.indexOf('line'), 1);
+            notAllowed.splice(notAllowed.indexOf('area'), 1);
             notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
         }
         if (dataDescription.numericColumns.length > 1 && dataDescription.otherColumns.length < 2) {
@@ -336,7 +346,7 @@ export class ChartUtilsService {
     public getTooManyDataForCharts(dataSize: number): any[] {
         let notAllowed =
             ['table', 'crosstable', 'kpi', 'knob', 'doughnut', 'polarArea', 'line', 'bar',
-                'horizontalBar', 'barline', 'geoJsonMap', 'coordinateMap'];
+                'horizontalBar', 'barline', 'area', 'geoJsonMap', 'coordinateMap'];
 
         //table (at least one column)
         notAllowed.splice(notAllowed.indexOf('table'), 1);
@@ -370,6 +380,7 @@ export class ChartUtilsService {
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
         if (dataSize < 5000) {
             notAllowed.splice(notAllowed.indexOf('line'), 1);
+            notAllowed.splice(notAllowed.indexOf('area'), 1);
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
         }
 
@@ -481,17 +492,17 @@ export class ChartUtilsService {
         let result = '';
 
         if (_10thPower >= 6) {
-            let reducedNum = (num / Math.pow(10, 6)).toLocaleString('de-DE', { style: 'decimal', maximumFractionDigits: 2 , minimumFractionDigits:2});
+            let reducedNum = (num / Math.pow(10, 6)).toLocaleString('de-DE', { style: 'decimal', maximumFractionDigits: 1 , minimumFractionDigits:0});
             result = reducedNum + 'M'
         }
 
         else if (_10thPower >= 3) {
-            let reducedNum = (num / Math.pow(10, 3)).toLocaleString('de-DE', { style: 'decimal', maximumFractionDigits: 0,  minimumFractionDigits:0 });
+            let reducedNum = (num / Math.pow(10, 3)).toLocaleString('de-DE', { style: 'decimal', maximumFractionDigits: 1,  minimumFractionDigits:0 });
             result = reducedNum + 'K'
         }
 
         else {
-            result = num.toLocaleString('de-DE', { style: 'decimal', maximumFractionDigits: 2,  minimumFractionDigits:2 });
+            result = num.toLocaleString('de-DE', { style: 'decimal', maximumFractionDigits: 2,  minimumFractionDigits:0 });
         }
         return result
     }
@@ -512,17 +523,52 @@ export class ChartUtilsService {
 
         });
 
+        
+
         let min_om = Math.pow(10, Math.floor(Math.log10(Math.abs(min))));
         let min_sign = min < 0;
         min = Math.ceil(Math.abs(min) / min_om) * min_om;
 
+
+
         let max_om = Math.pow(10, Math.floor(Math.log10(Math.abs(max))));
-        max = Math.ceil(max / max_om) * max_om;
+        let max_resto = Math.pow(10, Math.floor(Math.log10(Math.abs(max % max_om))));
+        max_resto==0?max_resto=1:max_resto=max_resto;
+
+
+        // Metode original del pau que arodonia al seguent ordre de magnitud. 
+        // Pero si el maxim es 10.000  estableix 20.000
+        // Ho intento ajustar una mica.
+        //max = Math.ceil(max / max_om) * max_om;
+        
+        // si estic a valors petit poso el max a 5 o a 10
+        if(max_om == 1){
+           if(max <1){
+                max = 1;
+           } else if( max < 3){
+               max = 3;
+           } else if( max < 5){
+                max = 5;
+           }else{
+               max = 10;
+           }
+        }else{
+            // Ara ho arrodoneix a un mumero mes proper al maxim.al centenar per sobre de  la resta
+            if(  ( (max % max_om) /max_om) < 0.5 ){
+                // Si tinc motl marge fins a la seguent unitat de magnitut ho arrodoneixo mes paropor
+                max = max - ( max % max_om) + 
+            ( 2* (  Math.ceil(  ( max % max_om) / max_resto )  *  max_resto) );
+            }else{
+                // Si no ho arodoneixo a la propera unitat de magnitu
+                max = Math.ceil(max / max_om) * max_om;
+            }
+        }
 
         if (min < max) {
             if (min < max * 0.25) min = max * 0.25;
         } else {
             if (max < min * 0.25) max = min * 0.25;
+
         }
 
         if (min_sign) min = -min;
@@ -646,21 +692,33 @@ export class ChartUtilsService {
         return [result_values_x, result_values_y];
     }
 
+
+
+    /** inicialitza les opcions dels gràfics. Aqui es on posem tots els detalls del gràfic. */
     public initChartOptions(type: string, numericColumn: string,
         labelColum: any[], manySeries: boolean, stacked: boolean, size: any,
-        linkedDashboard: LinkedDashboardProps, minMax: { min: number, max: number }, styles: StyleConfig): { chartOptions: any, chartPlugins: any } {
+        linkedDashboard: LinkedDashboardProps, minMax: { min: number, max: number }
+        , styles: StyleConfig, showLabels:boolean, chartSubType:string): { chartOptions: any, chartPlugins: any } {
 
         const t = $localize`:@@linkedTo:Vinculado con`;
         const linked = linkedDashboard ? `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
 
         const options = {
             chartOptions: {},
-            chartPlugins: {}
+            chartPlugins:  [pluginDataLabels]
         };
+
+   
+
+
+
         // si la pantalla es petita faig la lletra mes petita
         let variador = 0;
         if (window.innerWidth < 1500) {
             variador = -2;
+        }
+        if (window.innerWidth < 1100) {
+            variador = -4;
         }
         const edaFontSize = manySeries ? 10 + variador : 12 + variador + styles.fontSize;
 
@@ -697,10 +755,55 @@ export class ChartUtilsService {
 
         const maxTicksLimit = size.width < 200 ? 5 + variador : size.width < 400 ? 12 + variador : size.width < 600 ? 25 + variador : 40 + variador;
         const maxTicksLimitHorizontal = size.height < 200 ? 5 + variador : size.height < 400 ? 12 + variador : size.height < 600 ? 25 + variador : 40 + variador;
+        const maxTicksLimitY = size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 3 :  size.height < 300 ? 4 : 5;
 
+
+
+        /** Defineixo les propietats en funció del tipus de gràfic. */
+        let dataLabelsObjt={}
         switch (type) {
             case 'doughnut':
             case 'polarArea':
+
+                if(showLabels){
+                            dataLabelsObjt =  {
+                                backgroundColor: function(context) {
+                                return context.dataset.backgroundColor;
+                                },
+                                borderColor: 'white',
+                                borderRadius: 25,
+                                borderWidth: 2,
+                                color: 'white',
+                                display: function(context) {
+                                    const chartWidth = context.chart.width;
+                                    const realData = context.dataset.data;
+                                    const total = realData.reduce((a, b) => {
+                                        return a + b;
+                                    }, 0);
+                                    const elem = realData[context.dataIndex];
+                                    const percentage = elem / total * 100;
+                                    if(chartWidth < 200){
+                                        return  percentage > 6 ; /** Mostro la etiqueta si es mes que el 10 % del total  */
+                                    }else{
+                                        return  percentage > 3 ; /** Mostro la etiqueta si es mes que el 10 % del total  */
+                                    }
+                                   
+                              },
+                                font: {
+                                weight: 'bold',
+                                size:  edaFontSize  ,
+                                },
+                                padding: 6,
+                            
+                                formatter: (value) => {
+                                    return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                }
+
+                            }
+                }else{
+                        dataLabelsObjt =   { display: false }
+                    
+                }
                 options.chartOptions = {
                     animation: {
                         duration: 2000,
@@ -733,9 +836,40 @@ export class ChartUtilsService {
                         }
                     },
 
+                    plugins: {
+                        /** configuraicó del datalabel. */
+                        datalabels:dataLabelsObjt
+
+                      }
+
+
                 };
                 break;
             case 'bar':
+
+                if(showLabels){ /** si mostro els datalabels els configuro */
+                    dataLabelsObjt =  {
+                        anchor: 'end',
+                        align: 'top',
+                        display: 'auto',
+                        color: function(context) {
+                            return context.dataset.backgroundColor;
+                            },
+                        font: {
+                        weight: 'bold',
+                        size:  edaFontSize  ,
+                        },
+                        padding: 10,
+                        formatter: (value) => {
+                            return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                        }
+                    }
+                }else{
+                        dataLabelsObjt =   { display: false }
+                    
+                }
+
+
                 options.chartOptions = {
                     animation: {
                         duration: 2000
@@ -793,7 +927,7 @@ export class ChartUtilsService {
                             display: true,
                             ticks: {
                                 autoSkip: true,
-                                maxTicksLimit: 5,
+                                maxTicksLimit: maxTicksLimitY,
                                 beginAtZero: true,
                                 callback: (value) => {
                                     if (value)
@@ -805,12 +939,56 @@ export class ChartUtilsService {
                             }
                         }]
                     },
+                  
                     plugins: {
-                        datalabels: { anchor: 'end', align: 'end' }
+                         /** configuraicó del datalabel. */
+                        datalabels: dataLabelsObjt
                     },
+                   
                 };
                 break;
+
+
             case 'horizontalBar':
+                if(showLabels){
+                    /** si haig de mostrar les etiquetes ho configuro */
+                    dataLabelsObjt =  {
+                        anchor: 'end',
+                        align: 'start',
+                        display: function(context) {
+                            const chartWidth = context.chart.width;
+                            const realData = context.dataset.data;
+                            const total = realData.reduce((a, b) => {
+                                if( a> b){
+                                    return a;
+                                }else{
+                                    return b;
+                                }
+                            }, 0);
+                            const elem = realData[context.dataIndex];
+                            const percentage = elem / total * 100;
+                            if(chartWidth < 200){
+                                return  percentage > 30 ; /** Mostro la etiqueta si es mes que el 30 % del total  */
+                            }else{
+                                return  percentage > 10 ; /** Mostro la etiqueta si es mes que el 30 % del total  */
+                            }
+                      },
+                        color: 'white',
+                        font: {
+                            weight: 'bold',
+                            size:  edaFontSize  
+                        },
+
+                    
+                        formatter: (value) => {
+                            return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                        }
+                    }
+                }else{
+                        dataLabelsObjt =   { display: false }
+                    
+                }
+
                 options.chartOptions = {
                     animation: {
                         duration: 2000
@@ -882,12 +1060,59 @@ export class ChartUtilsService {
                             }
                         }]
                     },
+               
                     plugins: {
-                        datalabels: { anchor: 'end', align: 'end' }
+                         /** configuraicó del datalabel. */
+                        datalabels: dataLabelsObjt
                     },
+                  
                 };
+
                 break;
             case 'line':
+                if(showLabels){
+
+                    dataLabelsObjt = {
+                        backgroundColor: function(context) {
+                          return context.dataset.backgroundColor;
+                        },
+                        anchor: 'end',
+                        align: 'top',
+                        display: function(context) {
+                            const chartWidth = context.chart.width;
+                            const realData = context.dataset.data;
+
+                            if (( (chartWidth/10)  / realData.length  ) < 0.6 ){
+                                return context.dataIndex%5==0  // devuelvo uno de cada 5
+                            }else if (( (chartWidth/10)  / realData.length  ) < 1.5 ){
+                                return context.dataIndex%2==0 // devuelvo uno de cada 2
+                            }else{
+                                return true; // devuelvo todas 
+                            }
+
+                           
+                      },
+
+
+                        borderRadius: 4,
+                        color: 'white',
+                        font: {
+                          weight: 'bold',
+                          size:  edaFontSize-2  
+                        },
+                        formatter: (value) => {
+                            return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                        }
+
+                      }
+
+
+
+                }else{
+                        dataLabelsObjt =   { display: false }
+                    
+                }
+
                 options.chartOptions = {
                     animation: {
                         duration: 2000
@@ -914,15 +1139,19 @@ export class ChartUtilsService {
                             */
                             label: (tooltipItem, data) => {
                                 if (data && tooltipItem) {
-                                    const realData = data.datasets[0].data;
-                                    const total = realData.reduce((a, b) => {
-                                        return a + b;
-                                    }, 0);
-                                    const elem = data.datasets[0].data[tooltipItem.index];
+                                    const realData = data.datasets[tooltipItem.datasetIndex].data;
+                                    let total = 0;
+                                    for( let i = 0; i< realData.length; i++){
+                                        if(isNaN(realData[i])){
+                                            total = total;
+                                        }else{
+                                            total = total + realData[i];
+                                        }
+                                    }
+                                    const elem = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
                                     const percentage = elem / total * 100;
                                     return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
                                 }
-
                             },
                             footer: () => { return linked },
                         }
@@ -967,7 +1196,7 @@ export class ChartUtilsService {
                                     },
 
                                     autoSkip: true,
-                                    maxTicksLimit: 4,
+                                    maxTicksLimit: maxTicksLimitY,
                                     fontSize: edaFontSize,
                                     fontStyle: edafontStyle,
                                     fontFamily: styles.fontFamily,
@@ -984,10 +1213,18 @@ export class ChartUtilsService {
                     },
                     elements: {
                         point: { radius: 2, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
-                        line: { borderWidth: 1.5, fill: false, tension: 0.3 }
-                    }
+                        line: { 
+                                borderWidth: 1.5, 
+                                fill:  chartSubType=='area'?true:false, 
+                                tension: 0.4 }
+                    },
+                    plugins: {
+                         /** configuraicó del datalabel. */
+                        datalabels: dataLabelsObjt
+                    },
                 };
                 break;
+              
         }
 
         return options;

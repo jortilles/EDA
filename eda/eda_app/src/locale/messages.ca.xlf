@@ -1657,8 +1657,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="inputMapURL" datatype="html">
-<source>Subir archivo GeoJson</source>
-<target>Pujar arxiu GeoJson</target>
+<source>Subir archivo GeoJson (JSON)</source>
+<target>Pujar arxiu GeoJson (JSON)</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
 <context context-type="linenumber">9</context>
@@ -1744,8 +1744,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="updateModel" datatype="html">
-<source>Actualizar modelo de la base de datos</source>
-<target>Actualitzar model de la base de dades</target>
+<source>Actualizar modelo de datos desde la base de datos origen para buscar nuevas tablas y columnas</source>
+<target>Actualitzar model de dades des de la base de dades origen per cercar noves taules i columnes</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
 <context context-type="linenumber">15</context>
@@ -1759,8 +1759,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="Refresh" datatype="html">
-<source>Refrescar modelo de datos</source>
-<target>Refrescar model de dades</target>
+<source>Volver a cargar el modelo de datos almacenado</source>
+<target>Tornar a carregar el model de dades emmagatzemat</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
 <context context-type="linenumber">9</context>
@@ -1862,6 +1862,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Eliminar panell</target>
 </trans-unit>
 
+<trans-unit id="panelOptionsDup">
+<source>Duplicar panel</source>
+<target>Duplicar panell</target>
+</trans-unit>
+
 <trans-unit id="chartTypes1">
 <source>Tabla de Datos</source>
 <target>Taula de dades</target>
@@ -1893,6 +1898,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartTypes8">
 <source>Gráfico de Lineas</source>
 <target>Gràfic de línies</target>
+</trans-unit>
+<trans-unit id="chartTypes18">
+<source>Gráfico de Áreas</source>
+<target>Gràfic d'Àrees</target>
 </trans-unit>
 <trans-unit id="chartTypes9">
 <source>Mixto: Barras y lineas</source>
@@ -2270,6 +2279,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartInfo5">
 <source>Un gráfico de línea necesita una o más categorías y una série numérica.</source>
 <target>Un gràfic de línia necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
+</trans-unit>
+<trans-unit id="chartInfoArea">
+<source>Un gráfico de areas necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
+<target>Un gràfic d'àrea necessita una o més categories i una sèrie numèrica. A més, si hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
 </trans-unit>
 <trans-unit id="chartInfo6">
 <source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
@@ -2657,6 +2670,18 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Ésta semana</source>
 <target>Aquesta setmana</target>
 </trans-unit>
+<trans-unit id="DatePickerWeekFull">
+<source>Ésta semana al completo</source>
+<target>Tota aquesta setmana</target>
+</trans-unit>
+<trans-unit id="DatePickerLastWeek">
+<source>La semana pasada</source>
+<target>La setmana passada</target>
+</trans-unit>
+<trans-unit id="DatePickerLastWeekFull">
+<source>La semana pasada completa</source>
+<target>Tota la setmana passada</target>
+</trans-unit>
 <trans-unit id="DatePickerMonth">
 <source>Éste mes</source>
 <target>Aquest mes</target>
@@ -2982,6 +3007,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="AllTags">
     <source> Todos  </source>
     <target>Tots </target>
+  </trans-unit>
+  
+  <trans-unit id="NoneTags">
+    <source> Ninguno  </source>
+    <target>Cap </target>
   </trans-unit>
 
   <trans-unit id="linkedTo">
@@ -3540,6 +3570,17 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Edició privada:  </target>
   </trans-unit> 
   
+
+       <trans-unit id="showLabels">
+    <source>Mostrar Etiquetas</source>
+    <target>Mostra Etiquetes</target>
+  </trans-unit> 
+
+
+     <trans-unit id="showLablesTooltip">
+    <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
+    <target>Mostrar o amagar les etiquetes sobre els gràfics</target>
+  </trans-unit> 
 
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>

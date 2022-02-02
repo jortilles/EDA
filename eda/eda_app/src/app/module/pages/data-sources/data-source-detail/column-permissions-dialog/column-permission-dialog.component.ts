@@ -28,6 +28,7 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
     public selectedValues: Array<any> = [];
 
     public all : boolean = false;
+    public none : boolean = false;
     public type : string; 
 
     public usersLabel = $localize`:@@usersPermissions:Permisos de usuario`;
@@ -98,7 +99,8 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
             permissionFilter = {
                 users : this.selectedUsers.map(usr => usr._id),
                 usersName : this.selectedUsers.map(usr => usr.name),
-                value : this.all ? '(~)' : this.selectedValues,
+                value : this.all ? '(~ => All)' :  this.none ? '(x  => None)' : this.selectedValues,
+                none : this.none ? true : false,
                 table : this.table.table_name,
                 column : this.column.column_name,
                 global : this.all ? true : false,
@@ -109,14 +111,14 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
             permissionFilter = {
                 groups : this.selectedRoles.map(usr => usr._id),
                 groupsName : this.selectedRoles.map(usr => usr.name),
-                value : this.all ? '(~)' : this.selectedValues,
+                value : this.all ? '(~ => All)' :  this.none ? '(x  => None)' : this.selectedValues,
+                none : this.none ? true : false,
                 table : this.table.table_name,
                 column : this.column.column_name,
                 global : this.all ? true : false,
                 type : 'groups'
             };
         }
-     
         this.onClose(EdaDialogCloseEvent.NEW, permissionFilter);
     }
 

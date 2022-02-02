@@ -71,17 +71,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         this.styleProviderService.panelFontColor.subscribe(color => {
             this.fontColor = color;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'barline'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
 
         this.styleProviderService.panelFontFamily.subscribe(family => {
             this.fontFamily = family;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'barline'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
 
         this.styleProviderService.panelFontSize.subscribe(size => {
             this.fontSize = size;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'barline'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
     }
 
@@ -130,7 +130,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (['table', 'crosstable'].includes(type)) {
             this.renderEdaTable(type);
         }
-        if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'barline'].includes(type)) {
+        if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline'].includes(type)) {
             this.renderEdaChart(type);
         }
         if (type === 'kpi') {
@@ -180,7 +180,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const isbarline = this.props.edaChart === 'barline';
         const isstacked = this.props.edaChart === 'stackedbar';
-
+        
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         const dataTypes = this.props.query.map(column => column.column_type);
 
@@ -190,6 +190,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
+       
 
         if (!!cfg.addComparative
             && (['line', 'bar'].includes(cfg.chartType))
@@ -221,7 +222,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             fontColor: this.fontColor
         }
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
-            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, minMax, styles);
+            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
+            minMax, styles, cfg.showLabels,  this.props.edaChart);
 
 
         /**Add trend datasets*/
@@ -239,6 +241,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartType = this.props.chartType;
         chartConfig.edaChart = this.props.edaChart;
         chartConfig.chartLabels = chartData[0];
+
 
         if (type === 'doughnut' || type === 'polarArea') {
             chartConfig.chartData = chartData[1];

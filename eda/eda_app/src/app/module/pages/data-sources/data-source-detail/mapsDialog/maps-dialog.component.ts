@@ -102,8 +102,9 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
         {
           mapID: this.fileUploader.currentFile.file._id,
           field: this.form.value.selectedField.value,
-          name: this.form.value.mapName,
-          center: this.center
+          name: this.form.value.mapName ? this.form.value.mapName : '-' ,
+          center: this.center,
+          linkedColumns: this.linkedColumns
         });
     }
     this.onClose(EdaDialogCloseEvent.NEW,

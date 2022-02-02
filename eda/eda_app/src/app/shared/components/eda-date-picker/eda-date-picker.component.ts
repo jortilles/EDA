@@ -23,7 +23,7 @@ export class EdaDatePickerComponent implements OnChanges {
 
   public active: boolean = false;
   public locale: {};
-  public firstDayOfWeek : number = 0;
+  public firstDayOfWeek : number = 1;
 
   public ranges: Array<SelectItem> =
     [
@@ -31,6 +31,9 @@ export class EdaDatePickerComponent implements OnChanges {
       { label: $localize`:@@DatePickerYesterday:Ayer`, value: 'yesterday' },
       { label: $localize`:@@DatePickerBeforeYesterday:Antes de Ayer`, value: 'beforeYesterday' },
       { label: $localize`:@@DatePickerWeek:Ésta semana`, value: 'weekStart' },
+      { label: $localize`:@@DatePickerWeekFull:Ésta semana al completo`, value: 'weekStartFull' },
+      { label: $localize`:@@DatePickerLastWeek:La semana pasada`, value: 'pastWeek' },
+      { label: $localize`:@@DatePickerLastWeekFull:La semana pasada completa`, value: 'pastWeekFull' },
       { label: $localize`:@@DatePickerMonth:Éste mes`, value: 'monthStart' },
       { label: $localize`:@@DatePickerLastMonth:El mes pasado`, value: 'pastMonth' },
       { label: $localize`:@@DatePickerLastMonthFull:El mes pasado completo`, value: 'pastMonthFull' },
@@ -55,8 +58,8 @@ export class EdaDatePickerComponent implements OnChanges {
     let lan_ca = new RegExp('\/ca\/', 'i');
     let lan_es = new RegExp('\/es\/', 'i');
     this.locale = lan_ca.test(url) ? locales.ca : lan_es.test(url) ? locales.es : locales.en;
-    this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 0;
-  
+    //this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 0;
+    this.firstDayOfWeek = lan_es.test(url) || lan_ca.test(url) ? 1 : 1;
   }
 
   ngOnChanges(changes: SimpleChanges): void {

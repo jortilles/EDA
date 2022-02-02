@@ -71,9 +71,9 @@ export class AppComponent implements OnInit {
         if (lan_ca.test(url)) {
             this.config.setTranslation(
                 {
-                    dayNames: ["Diumenge", "Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte"],
-                    dayNamesShort: ["Dg", "Dl", "Dt", "Dc", "Dj", "Dv", "Ds"],
-                    dayNamesMin: ["Dg", "Dl", "Dt", "Dc", "Dj", "Dv", "Ds"],
+                    dayNames: [ "Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte","Diumenge"],
+                    dayNamesShort: [ "Dg","Dl", "Dt", "Dc", "Dj", "Dv", "Ds"],
+                    dayNamesMin: ["Dg","Dl", "Dt", "Dc", "Dj", "Dv", "Ds" ],
                     monthNames: ["Gener", "Febrer", "Març", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Desembre"],
                     monthNamesShort: ["Gen", "Febr", "Març", "Abr", "Maig", "Juny", "Jul", "Ag", "Set", "Oct", "Nov", "Des"],
                     today: 'Avui',
@@ -87,9 +87,9 @@ export class AppComponent implements OnInit {
         else if (lan_es.test(url)) {
             this.config.setTranslation(
                 {
-                    dayNames: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
-                    dayNamesShort: ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
-                    dayNamesMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+                    dayNames: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado","Domingo"],
+                    dayNamesShort: [ "Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"],
+                    dayNamesMin: ["Do","Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
                     monthNames: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
                     monthNamesShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dec"],
                     today: 'Hoy',
@@ -103,9 +103,9 @@ export class AppComponent implements OnInit {
 
             this.config.setTranslation(
                 {
-                    dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-                    dayNamesShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-                    dayNamesMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+                    dayNames: [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"],
+                    dayNamesShort: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                    dayNamesMin: [ "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
                     monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                     monthNamesShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                     today: 'Today',
