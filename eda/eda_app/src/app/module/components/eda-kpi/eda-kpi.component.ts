@@ -25,18 +25,23 @@ export class EdaKpiComponent implements OnInit {
 
     ngOnInit() {
         registerLocaleData( es );
-        if(this.inject.alertLimits.length > 0){
-            this.inject.alertLimits.forEach(alert => {
-                const operand = alert.operand, warningColor = alert.color;
-                const value1 = this.inject.value, value2 = alert.value;
-                if(this.color !== this.defaultColor) this.defaultColor = this.color;
-                switch(operand){
-                    case '<': this.color = value1 < value2  ?  warningColor  : this.defaultColor; break;
-                    case '=': this.color = value1 === value2 ?  warningColor : this.defaultColor; break;
-                    case '>': this.color = value1 > value2   ?  warningColor : this.defaultColor; break;
-                    default : this.color = this.defaultColor;
-                }
-            });
+        try{
+            if(this.inject.alertLimits.length > 0){
+                this.inject.alertLimits.forEach(alert => {
+                    const operand = alert.operand, warningColor = alert.color;
+                    const value1 = this.inject.value, value2 = alert.value;
+                    if(this.color !== this.defaultColor) this.defaultColor = this.color;
+                    switch(operand){
+                        case '<': this.color = value1 < value2  ?  warningColor  : this.defaultColor; break;
+                        case '=': this.color = value1 === value2 ?  warningColor : this.defaultColor; break;
+                        case '>': this.color = value1 > value2   ?  warningColor : this.defaultColor; break;
+                        default : this.color = this.defaultColor;
+                    }
+                });
+            }
+        }catch(e){
+            console.log('No alert limits defined (alertLimits)');
+            console.log(e);
         }
     }
 

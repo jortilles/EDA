@@ -12,14 +12,27 @@
         </eda-dashboard-panel>
     </div>  
 
+
+
+
     <div class="p-col-12 " *ngIf="tags.length !== 2" style="margin-top: 2em;">
         <p-toolbar class="tag-container" >
             <span class="tag-label"> Tags: </span>
-            <!-- <button  pButton type="button" [label]="tag" class="custom-button" *ngFor="let tag of tags" (click)="filterDashboards(tag)"></button> -->
             <span
                 [className]="selectedTag === tag.value || (tag.value === null && selectedTag === 0 )? 'tag active' : 'tag' "
                 *ngFor="let tag of tags" (click)="filterDashboards(tag)">{{tag.label}}</span>
 
+        </p-toolbar>
+    </div>
+
+
+    <!-- Buscador -->
+    <div class="p-col-12 ml-3"  *ngIf="filteringByName==true ||  (visibleDashboards.publics.length >3 || visibleDashboards.grups.length >3 || visibleDashboards.grups.length >3 || visibleDashboards.privats.length >3 )" style="margin-top: 0em;">
+        <p-toolbar class="tag-container" >
+            <p-toolbar class="tag-container" >
+                <i class="fa fa-search" style="font-size: 16px"></i>
+                <input type="text" id="buscador"  name="buscador" (keyup)="filterTitle($event)"   i18n-placeholder="@@buscarPorNombre" placeholder="Buscar por nombre del informe"> 
+            </p-toolbar>
         </p-toolbar>
     </div>
 

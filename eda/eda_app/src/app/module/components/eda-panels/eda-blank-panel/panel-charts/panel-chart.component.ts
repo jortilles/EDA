@@ -345,10 +345,23 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.value = this.props.data.values[0][0];
         chartConfig.header = this.props.query[0].display_name.default;
         const config: any = this.props.config;
-        const alertLimits = config.config.alertLimits;
+        let alertLimits = [];
+        try{
+            alertLimits = config.config.alertLimits;
+        }catch(e){
+            console.log('No alert Limits definied in config... ');
+            console.log(e);
+        }
         if (config) {
+            try{
             chartConfig.sufix = (<KpiConfig>config.getConfig()).sufix;
-            chartConfig.alertLimits = alertLimits;
+            }catch(e){
+                chartConfig.sufix = '';
+                console.log('No sufix defined inc config.... ');
+                console.log(e)
+            }
+                chartConfig.alertLimits = alertLimits;
+         
         } else {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
@@ -558,7 +571,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label, description: r.description.default }));
             } else if (_.isEqual(r.column_type, 'numeric')) {
                 // No em surt aixoooo
-                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }))
+                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default , decimals: r.minimumFractionDigits}))
             } else if (_.isEqual(r.column_type, 'text')) {
                 // No em surt aixoooo
                 tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));

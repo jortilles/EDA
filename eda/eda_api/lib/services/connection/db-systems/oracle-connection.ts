@@ -221,10 +221,9 @@ export class OracleConnection extends AbstractConnection {
                     const runparsed = {};
                     const rowTypes = [];
                     for (let j = 0; j < labels.length; j++) {
-
-                        r[labels[j]] = ( isNaN( row[j]) || ( row[j].length>1 && row[j].indexOf('0')==0  ) ) ? row[j]:parseFloat(row[j])  ;
+                        r[labels[j]] = ( isNaN( row[j].replace(',', '.') ) || ( row[j].length>1 && row[j].indexOf('0')==0  ) ) ? row[j]:parseFloat(row[j].replace(',', '.') )  ;
                         runparsed[labels[j]] =   row[j];
-                        rowTypes[j] =  ( isNaN( row[j]) || ( row[j].length>1 && row[j].indexOf('0')==0  ) )  ;
+                        rowTypes[j] =   ( isNaN( row[j].replace(',', '.') ) || ( row[j].length>1 && row[j].indexOf('0')==0  ) )  ;
                     }
                     parsedResults.push(r);
                     unparsedResults.push(runparsed);

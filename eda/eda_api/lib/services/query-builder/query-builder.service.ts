@@ -537,13 +537,13 @@ export abstract class QueryBuilderService {
 
     public checkFormat = (expression) => {
 
-        console.log(expression)
+        //console.log(expression)
         const words = expression.split(/\s+/);
         let currentOperand = '';
         for (let i = 0; i < words.length; i++) {
 
             let word = words[i].toUpperCase();
-            console.log(word);
+            //console.log(word);
             if (
                 word === 'FROM'
                 || word === 'SELECT'

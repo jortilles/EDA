@@ -7,6 +7,7 @@ import { IGroup } from '@eda/services/api/group.service';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
 
+
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
@@ -35,6 +36,7 @@ export class HomeComponent implements OnInit {
     public tags: Array<any> = [];
     public grups: Array<any> = [];
     public isObserver: boolean = false;
+    public filteringByName: boolean = false;
 
     public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
     public AllTags = $localize`:@@AllTags:Todos`;
@@ -183,6 +185,22 @@ export class HomeComponent implements OnInit {
             this.visibleDashboards.shared = this.dashboards.shared.filter(db => db.config.tag === tag.value);
             this.visibleDashboards.grups = this.dashboards.grups.filter(db => db.config.tag === tag.value);
             this.visibleDashboards.privats = this.dashboards.privats.filter(db => db.config.tag === tag.value);
+        }
+    }
+
+    public filterTitle(text: any){
+        const stringToFind = text.target.value.toString().toUpperCase();
+        if(stringToFind.length >  1) {
+            this.visibleDashboards.publics = this.dashboards.publics.filter(db => db.config.title.toUpperCase().indexOf(  stringToFind)>=0 );
+            this.visibleDashboards.shared = this.dashboards.shared.filter(db => db.config.title.toUpperCase().indexOf(  stringToFind)>=0 );
+            this.visibleDashboards.grups = this.dashboards.grups.filter(db => db.config.title.toUpperCase().indexOf(  stringToFind)>=0 );
+            this.visibleDashboards.privats = this.dashboards.privats.filter(db =>db.config.title.toUpperCase().indexOf(  stringToFind)>=0 );
+            this.filteringByName = true;
+        }else{
+            this.visibleDashboards = _.cloneDeep(this.dashboards);
+            if(stringToFind.length == 0) {
+                this.filteringByName = false;
+            }
         }
     }
 

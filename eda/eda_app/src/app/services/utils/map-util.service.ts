@@ -78,11 +78,23 @@ export class MapUtilsService extends ApiService {
         }
         return `` + div;
     }
+    // Esta función es para evitar los petes del los nulos de  row[labelIndex].toUpperCase().replace(/\s/g, '') 
+    private labelProcessingHelper( val:any){
+        let res = '';
+        try{
+            res = val.toUpperCase().replace(/\s/g, '') ;
+        }catch(e){
+            console.log('Error processing value... probably a null. Try to avoid them...');
+            console.log(e);
+            res = '';
+        }
+        return res;
+
+    }
+
     public makeGeoJsonPopup = (layer_id: string, data: Array<number>, labels: Array<string>, labelIndex: number, totalSum:number): string => {
-
         const me = this;
-        let row = data.filter(row => row[labelIndex] !== null && row[labelIndex].toUpperCase().replace(/\s/g, '') === layer_id.toUpperCase().replace(/\s/g, ''))[0];
-
+        let row = data.filter(row => row[labelIndex] !== null &&  this.labelProcessingHelper( row[labelIndex] ) === this.labelProcessingHelper( layer_id )   )[0];
         let div = '';
         for (let i = 0; i < labels.length; i++) {
             if (row !== undefined) {

@@ -422,19 +422,21 @@ export class EdaTable {
         const values = this._value;
         const keys = this.cols.map(col => col.field);
 
+      
+
         for (let i = 0; i < values.length; i++) {
             for (let j = 0; j < keys.length; j++) {
                 if (i < values.length) {
                     const currentCol = this.cols.filter(col => col.field === keys[j])[0];
                     if (currentCol.type === "EdaColumnNumber") {
-
-                        let decimalplaces =  0;  /** esta mierda se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
+                        let decimalplaces = 0;
                         try{
-                            if(  row[keys[j]].toString().split(".")[1].length > 0){
-                                decimalplaces =   row[keys[j]].toString().split(".")[1].length;
-                            }
-                        }catch(e){ }
-
+                            let c =  <EdaColumnNumber>currentCol;
+                            decimalplaces =  c.decimals;  /** esta mierda se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
+                        }catch(e){
+                            console.log('error getting decimal places');
+                            console.log(e);
+                         }
                         row[keys[j]] = parseFloat(row[keys[j]] ) + parseFloat(values[i][keys[j]]);
                         row[keys[j]] = row[keys[j]].toFixed(decimalplaces );
                     } else {

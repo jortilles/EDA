@@ -1,0 +1,307 @@
+/* JJ: La meva merda  */
+import * as d3 from 'd3'
+import {
+  Component,
+  AfterViewInit,
+  Input,
+  ViewChild,
+  ElementRef
+} from '@angular/core'
+import { SunBurst } from './eda-sunbrust'
+import { ChartsColors } from '@eda/configs/index'
+
+@Component({
+  selector: 'eda-sunburst' /* tag que jo li dono  */,
+  templateUrl: './eda-sunburst.component.html' /** sdf */,
+  styleUrls: ['./eda-sunburst.component.css']
+})
+export class EdaSunburstComponent implements AfterViewInit {
+  @Input() inject: SunBurst
+  @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef
+
+  div = null
+
+  id: string
+  svg: any
+  data: any
+  colors: Array<string>
+  labels: Array<string>
+  width: number
+  heigth: number
+  metricIndex: number
+
+  ngOnInit (): void {
+    this.id = `sunburst_${this.inject.id}` ;
+    this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
+    this.data = this.formatData(this.inject.data, this.inject.dataDescription);
+    this.labels =  this.generateDomain(this.data);
+    this.colors = this.inject.colors && this.inject.colors.length > 0 ? 
+                  this.inject.colors : this.getColors(this.labels.length, ChartsColors) ;
+
+  }
+
+  ngAfterViewInit () {
+    if (this.svg) this.svg.remove()
+    let id = `#${this.id}`
+    this.svg = d3.select(id)
+    if (
+      this.svg._groups[0][0] !== null &&
+      this.svgContainer.nativeElement.clientHeight > 0
+    ) {
+      this.draw()
+    }
+
+  }
+
+  draw () {
+    const svg = this.svg
+    const width = this.svgContainer.nativeElement.clientWidth - 20
+    const height = this.svgContainer.nativeElement.clientHeight - 20
+    let radius = width / 2
+    /** copio els objectes del d3  */
+    let partition = data =>
+      d3.partition().size([2 * Math.PI, radius * radius])(
+        d3
+          .hierarchy(data)
+          .sum(d => d.value)
+          .sort((a, b) => b.value - a.value)
+      );
+
+    let color = d3
+      .scaleOrdinal()
+      .domain( this.labels )
+      .range( this.colors );
+
+    let arc = d3
+      .arc()
+      .startAngle((d: any) => d.x0)
+      .endAngle((d: any) => d.x1)
+      .padAngle(1 / radius)
+      .padRadius(radius)
+      .innerRadius((d: any) => Math.sqrt(d.y0))
+      .outerRadius((d: any) => Math.sqrt(d.y1) - 1);
+
+    let mousearc = d3
+      .arc()
+      .startAngle((d: any) => d.x0)
+      .endAngle((d: any) => d.x1)
+      .innerRadius((d: any) => Math.sqrt(d.y0))
+      .outerRadius(radius)
+
+    /** comença la mandanga.... */
+    let data = this.buildHierarchy(this.data);
+    const root = partition(data)
+    // Make this into a view, so that the currently hovered sequence is available to the breadcrumb
+    const element = svg.node();
+    element.value = { sequence: [], percentage: 0.0 }
+
+    const label = svg
+      .append('text')
+      .attr('text-anchor', 'middle')
+      .style('visibility', 'hidden');
+
+    label
+      .append('tspan')
+      .attr('class', 'percentage')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('dy', '-0.1em')
+      .attr('font-size', '4rem')
+      .attr('font-weight', 'bold')
+      .text('');
+    label
+      .append('tspan')
+      .attr('class', 'values')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('dy', '1.5em')
+      .attr('font-size', '3rem')
+      .text('');
+
+    svg
+      .attr('viewBox', `${-radius} ${-radius} ${width} ${width}`)
+      .style('max-width', `${width}px`)
+     // .style('font', '12px sans-serif')
+
+    const path = svg
+      .append('g')
+      .selectAll('path')
+      .data(
+        root.descendants().filter(d => {
+          // Don't draw the root node, and for efficiency, filter out nodes that would be too small to see
+          return d.depth && d.x1 - d.x0 > 0.001
+        })
+      )
+      .join('path')
+      .attr('fill', d => color(d.data.name))
+      .attr('d', arc)
+
+    svg
+      .append('g')
+      .attr('fill', 'none')
+      .attr('pointer-events', 'all')
+      .on('mouseleave', () => {
+        path.attr('fill-opacity', 1)
+        label.style('visibility', 'hidden')
+        // Update the value of this view
+        element.value = { sequence: [], percentage: 0.0 }
+        element.dispatchEvent(new CustomEvent('input'))
+      })
+      .selectAll('path')
+      .data(
+        root.descendants().filter(d => {
+          // Don't draw the root node, and for efficiency, filter out nodes that would be too small to see
+          return d.depth && d.x1 - d.x0 > 0.001
+        })
+      )
+      .join('path')
+      .attr('d', mousearc)
+      .on('mouseenter', (event, d) => {
+        // Get the ancestors of the current segment, minus the root
+        const sequence = d
+          .ancestors()
+          .reverse()
+          .slice(1)
+
+        // Highlight the ancestors
+        path.attr('fill-opacity', node =>
+          sequence.indexOf(node) >= 0 ? 1.0 : 0.3
+        )
+        const percentage = ((100 * d.value) / root.value).toPrecision(3)
+
+        // Update the value of this view with the currently hovered sequence and percentage
+        element.value = { sequence, percentage }
+        element.dispatchEvent(new CustomEvent('input'))
+
+                
+
+        label
+          .style('visibility', null)
+          .select('.percentage')
+          .text(percentage + '%')
+          .attr("font-family", "var(--panel-font-family)")
+          .attr("fill", "var(--panel-font-color)")
+
+        var my_path = ''
+        sequence.forEach(path => {
+          my_path = my_path + ', ' + path.data.name
+        })
+        my_path = my_path.slice(1)
+
+        label
+        .style('visibility', null)
+        .select('.values')
+        .text(
+          my_path +
+            ': ' +
+            d.value.toLocaleString(undefined, { maximumFractionDigits: 6 })
+        )
+        .attr("font-family", "var(--panel-font-family)")
+        .attr("fill", "var(--panel-font-color)")
+        // per posar-ho a dalt de tot
+        label.raise();
+        
+      })
+  }
+
+  formatData (data, dataDescription) {
+    let result = []
+    data.values.forEach(row => {
+      let path = ''
+      let element = [];
+      dataDescription.otherColumns.forEach(col => {
+        if (!!row[col.index]) {
+          path = path + '|+-+|' + row[col.index]
+        }
+      })
+      path = path.slice(5)
+      element.push(path)
+      element.push(row[this.metricIndex])
+      result.push(element)
+    })
+    return result
+  }
+
+  getColors (dataLength, colors) {
+    const colorsLength = colors.length
+    let outputColors: Array<any> = colors
+
+    if (dataLength > colorsLength) {
+      let repeat = Math.ceil(dataLength / colorsLength)
+      for (let i = 0; i < repeat - 1; i++) {
+        outputColors = [...outputColors, ...colors]
+      }
+    }
+
+    return outputColors
+      .filter((_, index) => index < dataLength)
+      .map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`)
+  }
+
+  generateDomain (data) {
+    // map executa la funció sobre cada element del array. Es a dir sobre cada fila.
+
+
+    let foo = data.map(elem => elem.filter(value => typeof value !== 'number'))
+    let arr = Array.prototype.concat.apply([], foo);
+    let ancestors = [];
+
+    if(arr.length > 0 ){
+      let row = arr[0].split('|+-+|');
+      row.forEach((element,index) => {
+        let currentLevel = arr.map(element =>  element.split('|+-+|')[index]  );
+        currentLevel = new Set(currentLevel);
+        ancestors = [...currentLevel];
+      });      
+
+    }
+    
+    ancestors = ancestors.concat(arr);
+
+
+    return ancestors;
+  }
+
+  /** copio les funcions del d3 */
+  private buildHierarchy (csv) {
+    // Helper function that transforms the given CSV into a hierarchical format.
+    const root = { name: 'root', children: [] }
+    for (let i = 0; i < csv.length; i++) {
+      const sequence = csv[i][0]
+      const size = +csv[i][1]
+      if (isNaN(size)) {
+        // e.g. if this is a header row
+        continue
+      }
+      const parts = sequence.split('|+-+|')
+      let currentNode = root
+      for (let j = 0; j < parts.length; j++) {
+        const children = currentNode['children']
+        const nodeName = parts[j]
+        let childNode = null
+        if (j + 1 < parts.length) {
+          // Not yet at the end of the sequence; move down the tree.
+          let foundChild = false
+          for (let k = 0; k < children.length; k++) {
+            if (children[k]['name'] == nodeName) {
+              childNode = children[k]
+              foundChild = true
+              break
+            }
+          }
+          // If we don't already have a child node for this branch, create it.
+          if (!foundChild) {
+            childNode = { name: nodeName, children: [] }
+            children.push(childNode)
+          }
+          currentNode = childNode
+        } else {
+          // Reached the end of the sequence; create a leaf node.
+          childNode = { name: nodeName, value: size }
+          children.push(childNode)
+        }
+      }
+    }
+    return root;
+  }
+}

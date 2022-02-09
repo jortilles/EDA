@@ -999,6 +999,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">7</context>
 </context-group>
 </trans-unit>
+<trans-unit id="buscarPorNombre" datatype="html">
+<source>Buscar por nombre del informe</source>
+<target>Cercar per nom de l'informe</target>
+</trans-unit>
 <trans-unit id="selectFuenteDatos" datatype="html">
 <source>Selecciona una fuente de datos *</source>
 <target>Seleciona una font de dades *</target>
