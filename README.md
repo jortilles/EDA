@@ -80,4 +80,4 @@ You can see it in action [here](https://www.youtube.com/watch?v=S0wkoeRqz3k&t=5s
 To see the technical documentation click [here](docs/technical-docs.md) 
 
 ## User Documentation
-We just created a forum for community to talk and have questions and answers at http://edadoc.jortilles.com/en/index.html#/
+We just created documentation site http://edadoc.jortilles.com/en/index.html#/
