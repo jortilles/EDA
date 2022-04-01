@@ -1891,6 +1891,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Gráfico de Barras</source>
 <target>Gràfic de barres</target>
 </trans-unit>
+<trans-unit id="chartTypesHistograma">
+<source>Histograma</source>
+<target>Histograma</target>
+</trans-unit>
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
 <target>Gràfic de barres apilades</target>
@@ -3448,6 +3452,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>El velocímetre necessita un o dos valors numèrics, en cas de disposar de dos valors, el segon s'interpretarà com a límit </target>
   </trans-unit>
 
+     <trans-unit id="chartInfoHistogram">
+    <source>Un histograma requiere una única columna de valores numericos de los que se calculará la frecuencia </source>
+    <target>Un histograma requereix una única columna de valors numèrics dels quals es calcularà la freqüència </target>
+  </trans-unit>
+
+
    <trans-unit id="mailConfOk">
     <source>Credenciales  correctas </source>
     <target> Credencials  correctes</target>
@@ -3717,7 +3727,21 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Títol del panell</target>
   </trans-unit> 
 
+   <trans-unit id="histoGramRangesTxt">
+    <source>Rango</source>
+    <target>Rang</target>
+  </trans-unit> 
 
+  <trans-unit id="histoGramDescTxt">
+    <source>Número de</source>
+    <target>Numero de</target>
+  </trans-unit> 
+
+    <trans-unit id="histoGramDescTxt2">
+    <source>en este rango</source>
+    <target>en aquest rang</target>
+  </trans-unit> 
+  
   
 
 

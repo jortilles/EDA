@@ -17,3 +17,5 @@ export const initJobs = ()=> {
   
 }
 
+console.log('Not Sending mails at the beggining');
+//MailingService.mailingService() ;

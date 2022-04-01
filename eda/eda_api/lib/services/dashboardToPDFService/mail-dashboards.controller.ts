@@ -8,8 +8,10 @@ export class MailDashboardsController {
 
     try {
 
-      const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+      const browser = await puppeteer.launch({ headless: true, args: ['--single-process', '--no-zygote', '--no-sandbox'] });
       const loginPage = await browser.newPage();
+      // Configure the navigation timeout
+      await loginPage.setDefaultNavigationTimeout(300000);
 
       const wait = (ms) => {
         return new Promise<void>(resolve => setTimeout(() => resolve(), ms));
@@ -20,8 +22,9 @@ export class MailDashboardsController {
         try {
           const res = await response.json();
 
-          const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+          const browser = await puppeteer.launch({ headless: true, args: ['--single-process', '--no-zygote', '--no-sandbox'] });
           const page = await browser.newPage();
+          await page.setDefaultNavigationTimeout(300000);
 
           await page.setViewport({
             width: 1366,
@@ -37,7 +40,7 @@ export class MailDashboardsController {
           }, res);
 
           await page.goto(`${serverConfig.server_baseURL}/#/dashboard/${dashboard}`);
-          await wait(10000);
+          await wait(20000);
           const filename = `${dashboard}_${userMail}.pdf`;
           const filepath = __dirname;
           await page.pdf(

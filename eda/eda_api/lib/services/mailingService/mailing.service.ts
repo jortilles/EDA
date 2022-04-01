@@ -23,7 +23,7 @@ export class MailingService {
     const verify = transporter.verify(async (error, sucess) => {
       if (error) {
         console.log(`\n\x1b[33m\u21AF\x1b[0m \x1b[1mMailing service is not configured properly, please check your configuration file\x1b[0m \x1b[33m\u21AF\x1b[0m\n`);
-
+        console.log(error);
       } else {
 
         console.log(`\n\x1b[34m=====\x1b[0m \x1b[32mMail server is ready to take our messages\x1b[0m \x1b[34m=====\x1b[0m\n`)

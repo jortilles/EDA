@@ -174,19 +174,22 @@ export class EdaBlankPanelComponent implements OnInit {
 
         /**If panel comes from server */
         if (this.panel.content) {
+            try{
+                const query = this.panel.content.query;
+            
+                if (query.query.modeSQL) {
+                    this.modeSQL = true;
+                    this.currentSQLQuery = query.query.SQLexpression;
+                    this.sqlOriginTable = this.tables.filter(t => t.table_name === query.query.fields[0].table_id)
+                        .map(table => {
+                            return { label: table.display_name.default, value: table.table_name }
+                        })[0];
+                }
 
-            const query = this.panel.content.query;
-
-            if (query.query.modeSQL) {
-                this.modeSQL = true;
-                this.currentSQLQuery = query.query.SQLexpression;
-                this.sqlOriginTable = this.tables.filter(t => t.table_name === query.query.fields[0].table_id)
-                    .map(table => {
-                        return { label: table.display_name.default, value: table.table_name }
-                    })[0];
+                this.loadChartsData(this.panel.content);
+            }catch(e){
+                console.log('Error loading panen conent.....');
             }
-
-            this.loadChartsData(this.panel.content);
         }
 
         this.dashboardService.notSaved.subscribe(
@@ -383,6 +386,7 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     private renderChart(query: any, chartLabels: any[], chartData: any[], type: string, subType: string, config: ChartConfig) {
 
+
         const chartConfig = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
         this.panelChartConfig = new PanelChart({
@@ -418,9 +422,9 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
-        
+
         this.graficos = {};
-        let allow = _.find(this.chartTypes, c => c.value === type);
+        let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
         this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
@@ -429,9 +433,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             this.panelChart.destroyComponent();
-
             const _config = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
-
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
 
@@ -875,6 +877,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.currentSQLQuery = this.queryFromServer;
         this.queryFromServer = '';
         this.currentQuery = [];
+        this.filtredColumns = [];
         this.modeSQL = true;
     }
 
@@ -882,6 +885,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         this.currentSQLQuery = '';
         this.currentQuery = [];
+        this.filtredColumns = [];
         this.display_v.btnSave = true;
     }
 

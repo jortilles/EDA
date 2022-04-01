@@ -287,9 +287,10 @@ export class BigQueryBuilderService extends QueryBuilderService {
             columns.push(`\`${el.table_id}\`.\`${el.column_name}\` as \`${el.display_name}\``);
           }
           // GROUP BY
-          grouping.push(`\`${el.display_name}\``);
-
-
+          //  Si es una única columna numérica no se agrega.
+          if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
+            grouping.push(`\`${el.display_name}\``);
+          }
         }
       }
     });

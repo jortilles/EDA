@@ -1872,6 +1872,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Gráfico de Barras</source>
 <target>Bar chart</target>
 </trans-unit>
+<trans-unit id="chartTypesHistograma">
+<source>Histograma</source>
+<target>Histogram</target>
+</trans-unit>
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
 <target>Stacked bar chart</target>
@@ -3413,6 +3417,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>El velocímetro necesita uno o dos valores numéricos. En caso de disponer de dos valores el segundo se interpretará como límite </source>
     <target>Gauge requires uno or two numeric values, if two values are provided second one is interpreted as a limit</target>
   </trans-unit>
+     <trans-unit id="chartInfoHistogram">
+    <source>Un histograma requiere una única columna de valores numericos de los que se calculará la frecuencia </source>
+    <target>Histogram wymaga pojedynczej kolumny wartości liczbowych, z których obliczana jest częstotliwość. </target>
+  </trans-unit>
 
    <trans-unit id="mailConfOk">
     <source>Credenciales correctas </source>
@@ -3677,7 +3685,20 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Panel title</target>
   </trans-unit> 
   
+   <trans-unit id="histoGramRangesTxt">
+    <source>Rango</source>
+    <target>Range</target>
+  </trans-unit> 
 
+  <trans-unit id="histoGramDescTxt">
+    <source>Número de</source>
+    <target>Number of</target>
+  </trans-unit> 
+
+      <trans-unit id="histoGramDescTxt2">
+    <source>en este rango</source>
+    <target>in this range</target>
+  </trans-unit> 
 
 
 </body>

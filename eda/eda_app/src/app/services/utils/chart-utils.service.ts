@@ -1,3 +1,9 @@
+/**
+ * 
+ * chart-utils.services.ts: Totes les utilitats dels gràfics.
+ * 
+ */
+
 
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 import { ChartJsConfig } from '../../module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-js-config';
@@ -9,6 +15,7 @@ import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import {Chart} from 'chart.js';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
+import { group } from 'console';
 
 export interface EdaChartType {
     label: string;
@@ -50,6 +57,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes4:Gráfico de Área Polar`, value: 'polarArea', subValue: 'polarArea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes17:Gráfico Solar`, value: 'sunburst', subValue: 'sunburst', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes5:Gráfico de Barras`, value: 'bar', subValue: 'bar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesHistograma:Histograma`, value: 'bar', subValue: 'histogram', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes6:Gráfico de Barras Apiladas`, value: 'bar', subValue: 'stackedbar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes7:Gráfico de Barras Horizontales`, value: 'horizontalBar', subValue: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes8:Gráfico de Lineas`, value: 'line', subValue: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -94,6 +102,9 @@ export class ChartUtilsService {
         { display_name: $localize`:@@dates7:FECHA COMPLETA`, value: 'timestamp', selected: false },
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
+    
+    public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
+
 
     /*
         Funció especifica per transformar les dades per el velocímetre (knob) 
@@ -118,16 +129,27 @@ export class ChartUtilsService {
         return res;
     }
 
+
+
+
+
+
+
+
+
     /*
         Aquesta funció manipula les dades per donar-los la forma que esperen els grafics ng-chart
     */
     public transformDataQuery(type: string, values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean) {
-        const output = [];
+
+        let output = [];
         const idx = { label: null, serie: null, numeric: [] };
 
         dataTypes.forEach((e: any, i) => {
             e === 'numeric' ? idx.numeric.push(i) : idx.label != null ? idx.serie = i : idx.label = i;
         });
+        //console.log(dataTypes);
+
         const label_idx = idx.label;
         const serie_idx = idx.serie;
         const number_idx = idx.numeric[0];
@@ -136,9 +158,10 @@ export class ChartUtilsService {
             const _values = values.map(v => v[number_idx]).filter(elem => elem != null);
             // Faig push a l'array output, que sera retornat per l'inicialització del PieChart
             output.push(_labels, _values);
-            return output;
 
-        } else if (['bar', 'line', 'area', 'horizontalBar', 'barline'].includes(type)) {
+
+        } else if (['bar', 'line', 'area', 'horizontalBar', 'barline', 'histogram'  ].includes(type)  &&  dataTypes.length >  1) {
+
             const l = Array.from(new Set(values.map(v => v[label_idx])));
             const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
             const _output = [[], []];
@@ -198,10 +221,230 @@ export class ChartUtilsService {
                         });
                 });
 
+            }                        
+            output =  _output;
+
+
+            /* Histograma  */
+        } else if (  ['bar' ].includes(type)    &&  dataTypes.length ==  1 && dataTypes[0]== 'numeric'   ) {
+            let distinctNumbers  = Array.from(new Set(values.map(v => v[number_idx]))).filter(element => {
+                return element !== null;
+              });;
+            let allNumbers = values.map(v => v[number_idx]).filter(element => {
+                return element !== null;
+              });;
+            const _output = [[], []];
+
+            let grupos = [];
+            let new_data=[];
+            let num_cols=0;  
+            let salto=0;
+            //Si hay nulos van a parte
+            const grupo_null =  values.map(v => v[number_idx]).filter(element => {
+                return element === null;
+              });;
+
+            distinctNumbers = distinctNumbers.sort(function(a,b){
+                return a-b
+            });
+            allNumbers = allNumbers.sort(function(a,b){
+                return a-b
+            });
+            const min = Math.min(...distinctNumbers);
+            const max= Math.max(...distinctNumbers);
+            let range = (max-min) +1;
+            if( grupo_null.length > 0 ){
+                range = range+1;
             }
-            return _output;
+
+            if(range<30){
+                num_cols=range;                 
+            }else if(range>=30 && range<=100){
+                num_cols=30
+            }else {
+                num_cols=50;
+            }
+
+            if( this.esEntero(distinctNumbers)){
+                salto =  Math.ceil( max/num_cols )  ;
+            }else{  
+                num_cols<5?num_cols=5:num_cols=num_cols;
+                salto =   Math.ceil( max/num_cols * 10) / 10 ;
+            }
+
+
+            if(salto == 1 ){
+                new_data = this.generateNewDataOneForHistogram(allNumbers,num_cols,min,max , salto);
+                grupos =   this.generateGruposOneForHistogram( num_cols,min ); 
+            }else{
+
+                new_data = this.generateNewDataRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto);
+                grupos =   this.generateGruposRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto,  this.esEntero(distinctNumbers) );
+
+
+            }
+            if(grupo_null.length > 0 ){ 
+                new_data.push(grupo_null.length  );
+                grupos.push('null'); 
+                
+            }
+            _output[0]=grupos;
+            _output[1] = [{
+                    data: new_data,
+                    label:  this.histoGramRangesTxt + ' - '  + dataDescription.numericColumns[0].name
+                }];
+            output =  _output;
+
         }
+
+        return output;
     }
+
+
+    /**
+     * 
+     * @param allNumbers 
+     * @param num_cols 
+     * @param min 
+     * @param max 
+     * @param salto 
+     * @returns grupos 
+     */
+    private   generateGruposRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max, salto , esEntero ):any[] {
+        let mi_salto =  0;
+        let mi_min = min;
+        let grupos = [];
+       
+        for(let i=0; i<num_cols; i++){
+            mi_salto =  min+((salto*i)+salto)  ;
+            /*
+            console.log( ' vuelta  ' +  i );
+            console.log( ' mi_min  ' +  mi_min );
+            console.log( ' mi_salto  ' +  mi_salto );
+            console.log( ' max  ' +  max );
+            */
+
+
+            if( mi_salto < max){
+                if(esEntero){
+                    grupos.push(mi_min+" - "+( mi_salto -1));
+                }else{
+                    grupos.push(mi_min+" - "+(mi_salto - 0.1));
+                }
+                
+            }else{
+                grupos.push(mi_min+" - "+max);
+                i = i+num_cols;
+ 
+            }
+ 
+ 
+           mi_min = mi_salto;
+
+        } 
+
+        return grupos;
+    }
+
+
+
+
+
+    private   generateNewDataRangeForHistogram(allNumbers,distinctNumbers, num_cols,min,max, salto ):any[] {
+        let mi_salto =  0;
+        let mi_min = min;
+        let new_data = [];
+       
+        for(let i=0; i<num_cols; i++){
+            mi_salto =   min+((salto*i)+salto)   ;
+            let grupo = [];
+/*
+            console.log( ' vuelta  ' +  i );
+            console.log( ' mi_min  ' +  mi_min );
+            console.log( ' mi_salto  ' +  mi_salto );
+            console.log( ' max  ' +  max );
+*/
+
+            for( let j=0; j < allNumbers.length; j++){
+               if(  ( allNumbers[j] >= mi_min && allNumbers[j] < mi_salto)   && 
+               ( mi_salto <  max )
+               ){            
+                    grupo.push(allNumbers[j]);   
+               }else  if(  
+                        ( allNumbers[j] >= mi_min && allNumbers[j] <= mi_salto)   && 
+                        ( mi_salto >=  max )
+               ){     
+                    grupo.push(allNumbers[j]);   
+                    /*
+                    console.log('estoy en el final aunque no debería.....');
+                    console.log(allNumbers[j]);
+                    console.log(mi_min);
+                    console.log(mi_salto);
+                    console.log(max);
+                    console.log(num_cols);
+                    console.log('----------------');
+                    */
+               }
+            }
+
+                     
+           new_data.push( grupo.length);
+           mi_min = mi_salto;
+           if( mi_min >= max){
+            // Salgo
+            i = num_cols;
+           }
+
+        } 
+
+        return new_data;
+    }
+
+
+    private  generateNewDataOneForHistogram(allNumbers,num_cols,min,max, salto ):any[] {
+        let mi_salto =  0;
+        let new_data = [];
+        for(let i=0; i<num_cols; i++){
+            mi_salto =    min+(salto*i);
+            let grupo = [];
+            for( let j=0; j < allNumbers.length; j++){
+               if( allNumbers[j]== mi_salto)  {            
+                    grupo.push(allNumbers[j]);   
+               }
+            }
+           new_data.push( grupo.length);
+        } 
+        return new_data;
+    }
+
+
+
+    private  generateGruposOneForHistogram(num_cols,min ):any[] {
+        let grupos = [];
+        for(let i=min; i<num_cols; i++){
+            grupos.push(i);      
+
+        } 
+        return grupos;
+    }
+
+
+/** Ajuda per saber si un númeor es enter o no.  */
+    private esEntero(numeros:number[]):boolean{
+        let res = true;
+        numeros.forEach( 
+            (numero)=> {
+            if ( isNaN(numero)){
+                res = false;
+            }
+            if(numero%1!=0){
+                res = false;
+            }
+        });
+        return res;
+    }
+
+
 
     public uniqueLabels(labels: Array<string>) {
         const uniqueLabels = [];
@@ -239,7 +482,7 @@ export class ChartUtilsService {
         let notAllowed =
             [
                 'table', 'crosstable', 'kpi', 'geoJsonMap', 'coordinatesMap',
-                'doughnut', 'polarArea', 'line', 'area', 'bar',
+                'doughnut', 'polarArea', 'line', 'area', 'bar', 'histogram',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob'
             ];
         //table (at least one column)
@@ -272,6 +515,7 @@ export class ChartUtilsService {
 
 
 
+        // barchart i horizontalbar  poden ser grafics normals o poden ser histograms....
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
             || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4  /* && aggregation */) {
             notAllowed.splice(notAllowed.indexOf('bar'), 1);
@@ -280,6 +524,12 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('area'), 1);
             notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
         }
+        // això es per els histogrames.....
+        if (dataDescription.numericColumns.length == 1 && dataDescription.totalColumns == 1 ) {
+            notAllowed.splice(notAllowed.indexOf('histogram'), 1);
+        }
+
+
         if (dataDescription.numericColumns.length > 1 && dataDescription.otherColumns.length < 2) {
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
             const idx = notAllowed.indexOf('stackedbar');
@@ -335,6 +585,7 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('knob'), 1);
         }
         return notAllowed;
+
     }
 
 
@@ -345,7 +596,7 @@ export class ChartUtilsService {
      */
     public getTooManyDataForCharts(dataSize: number): any[] {
         let notAllowed =
-            ['table', 'crosstable', 'kpi', 'knob', 'doughnut', 'polarArea', 'line', 'bar',
+            ['table', 'crosstable', 'kpi', 'knob', 'doughnut', 'polarArea', 'line', 'bar','histogram',
                 'horizontalBar', 'barline', 'area', 'geoJsonMap', 'coordinateMap'];
 
         //table (at least one column)
@@ -383,7 +634,8 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('area'), 1);
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
         }
-
+        //Histogram as many as you want.
+        notAllowed.splice(notAllowed.indexOf('histogram'), 1);
 
         return notAllowed;
     }
@@ -409,6 +661,7 @@ export class ChartUtilsService {
             case 'bar': return EdaChartComponent.generateChartColors();
             case 'line': return EdaChartComponent.generateChartColors();
             case 'horizontalBar': return EdaChartComponent.generateChartColors();
+            case 'histogram': return EdaChartComponent.generateChartColors();
         }
     }
 
@@ -516,25 +769,24 @@ export class ChartUtilsService {
 
             set.data.forEach(value => {
                 if (value !== null && value !== undefined) {
-                    if (value > max) max = value;
-                    if (value < min) min = value;
+                    if (parseFloat(value) > max) max = parseFloat(value);
+                    if (parseFloat(value) < min) min = parseFloat(value);
                 }
             });
 
         });
 
-        
 
         let min_om = Math.pow(10, Math.floor(Math.log10(Math.abs(min))));
         let min_sign = min < 0;
         min = Math.ceil(Math.abs(min) / min_om) * min_om;
 
 
-
         let max_om = Math.pow(10, Math.floor(Math.log10(Math.abs(max))));
         let max_resto = Math.pow(10, Math.floor(Math.log10(Math.abs(max % max_om))));
         max_resto==0?max_resto=1:max_resto=max_resto;
 
+    
 
         // Metode original del pau que arodonia al seguent ordre de magnitud. 
         // Pero si el maxim es 10.000  estableix 20.000
@@ -555,6 +807,7 @@ export class ChartUtilsService {
         }else{
             // Ara ho arrodoneix a un mumero mes proper al maxim.al centenar per sobre de  la resta
             if(  ( (max % max_om) /max_om) < 0.5 ){
+
                 // Si tinc motl marge fins a la seguent unitat de magnitut ho arrodoneixo mes paropor
                 max = max - ( max % max_om) + 
             ( 2* (  Math.ceil(  ( max % max_om) / max_resto )  *  max_resto) );
@@ -563,14 +816,14 @@ export class ChartUtilsService {
                 max = Math.ceil(max / max_om) * max_om;
             }
         }
-
+/*
         if (min < max) {
             if (min < max * 0.25) min = max * 0.25;
         } else {
             if (max < min * 0.25) max = min * 0.25;
 
         }
-
+*/
         if (min_sign) min = -min;
         min = min > 0 && max > 0 ? 0 : min;
         return { min: min ? min : 0, max: max ? max : 0 }
@@ -761,6 +1014,7 @@ export class ChartUtilsService {
 
         /** Defineixo les propietats en funció del tipus de gràfic. */
         let dataLabelsObjt={}
+
         switch (type) {
             case 'doughnut':
             case 'polarArea':
@@ -1142,10 +1396,10 @@ export class ChartUtilsService {
                                     const realData = data.datasets[tooltipItem.datasetIndex].data;
                                     let total = 0;
                                     for( let i = 0; i< realData.length; i++){
-                                        if(isNaN(realData[i])){
+                                        if(isNaN( parseFloat(realData[i]))){
                                             total = total;
                                         }else{
-                                            total = total + realData[i];
+                                            total = total + parseFloat(realData[i]);
                                         }
                                     }
                                     const elem = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];

@@ -1,4 +1,4 @@
-import { MysqlError, createConnection, Connection as SqlConnection } from 'mysql';
+import {  createConnection, Connection as SqlConnection } from 'mysql2';
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
 import DataSource from '../../../module/datasource/model/datasource.model';
@@ -14,15 +14,17 @@ export class MysqlConnection extends AbstractConnection {
     private AggTypes: AggregationTypes;
 
     async getclient() {
-        return createConnection(this.config);
+        const mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
+        return createConnection(mySqlConn);
     }
 
     async tryConnection(): Promise<any> {
         try {
             return new Promise((resolve, reject) => {
-                this.client = createConnection(this.config);
+                const mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
+                this.client = createConnection(mySqlConn);
                 console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
-                this.client.connect((err: MysqlError, connection: SqlConnection) => {
+                this.client.connect((err:Error , connection: SqlConnection): void => {
                     if (err) {
                         return reject(err);
                     }

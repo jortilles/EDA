@@ -45,17 +45,17 @@ body .preview-chart-box {
   }
 
   .edit-blink {
-    -webkit-animation: yellow-fade 2s 1 ease-in-out 0s;
-    -moz-animation: yellow-fade 2s 1 ease-in-out 0s;
-    -o-animation: yellow-fade 2s 1 ease-in-out 0s;
-    animation: yellow-fade 2s 1 ease-in-out 0s;
+    -webkit-animation: yellow-fade 1.5s 2 ease-in-out 0s;
+    -moz-animation: yellow-fade 1.5s 2 ease-in-out 0s;
+    -o-animation: yellow-fade 1.5s 2 ease-in-out 0s;
+    animation: yellow-fade 1.5s 2 ease-in-out 0s;
     border-radius: 10%;
     margin: 0.1em;
     border:0;
   }
 
   #edit:hover{
-    background: #eeeeee77;
+    background: #e0e0e077;
     border-radius: 10%;
     transition: .3s;
   }

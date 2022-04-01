@@ -63,7 +63,9 @@ export class DataSourceController {
                 }
 
                 // dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
-                dataSource.ds.connection.password = '__-(··)-__';
+                // Password is not replaced any more
+                // dataSource.ds.connection.password = '__-(··)-__';
+
 
                 return res.status(200).json({ ok: true, dataSource });
             });
@@ -136,6 +138,7 @@ export class DataSourceController {
             // Validation request
             const body = req.body;
             const psswd = body.ds.connection.password;
+            let ds: IDataSource;
 
             DataSource.findById(req.params.id, (err, dataSource: IDataSource) => {
                 if (err) {
@@ -143,21 +146,28 @@ export class DataSourceController {
                 }
 
                 if (!dataSource) {
-                    return next(new HttpException(400, 'DataSource not exist with id'));
-                }
-
-                body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
-                dataSource.ds = body.ds;
-
-                const iDataSource = new DataSource(dataSource);
+                    console.log('Importing new datasource');
+                   // return next(new HttpException(400, 'DataSource not exist with id'));
+                   ds = new DataSource(body);
+                   console.log(body);
+                }else{
+                    console.log('Importing existing datasource');
+                    // not needed any more as we keep passwords. 
+                    //body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
+                    dataSource.ds = body.ds;
+                    ds = dataSource;
+                }            
 
                 //aparto las relaciones ocultas para optimizar el modelo.
-                dataSource.ds.model.tables.forEach(t => {
+                ds.ds.model.tables.forEach(t => {
                     t.no_relations = t.relations.filter(r => r.visible == false)
                 });
-                dataSource.ds.model.tables.forEach(t => {
+                ds.ds.model.tables.forEach(t => {
                     t.relations = t.relations.filter(r => r.visible !== false)
                 });
+                
+                const iDataSource = new DataSource(ds);
+
 
                 //console.log(dataSource.ds.model.tables);
 

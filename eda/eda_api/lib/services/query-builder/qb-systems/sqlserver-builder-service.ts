@@ -276,7 +276,10 @@ export class SQLserviceBuilderService extends QueryBuilderService {
               grouping.push(`"${el.table_id}"."${el.column_name}"`);
             }
           } else {
-            grouping.push(`"${el.table_id}"."${el.column_name}"`);
+            //  Si es una única columna numérica no se agrega.
+            if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
+              grouping.push(`"${el.table_id}"."${el.column_name}"`);
+            }
           }
         }
       }

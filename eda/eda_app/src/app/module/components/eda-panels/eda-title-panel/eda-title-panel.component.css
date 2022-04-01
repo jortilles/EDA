@@ -13,6 +13,23 @@
 
 
 
+
+
+p.ql-align-left {
+  text-align: left !important;
+}
+p.ql-align-center {
+  text-align: center !important;
+}
+p.ql-align-justify {
+  text-align: justify !important;
+}
+p.ql-align-right {
+  text-align: right !important;
+}
+
+
+
 /*============================================================== 
   For Laptop & above all (1370px) 
   ============================================================== */

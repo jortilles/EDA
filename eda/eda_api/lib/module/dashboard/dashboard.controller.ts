@@ -332,8 +332,8 @@ export class DashboardController {
                 connection.client = await connection.getclient();
                 const getResults = await connection.execQuery(query);
                 let numerics = [];
-               /** si es oracle haig de fer una merda per tornar els numeros normals. */
-               if(dataModel.ds.connection.type == 'oracle'){
+               /** si es oracle   o alguns mysql  haig de fer una merda per tornar els numeros normals. */
+               if(dataModel.ds.connection.type == 'oracle' || dataModel.ds.connection.type == 'mysql'){
                     req.body.query.fields.forEach((e,i) => {   
                         if(e.column_type == 'numeric'){
                             numerics.push('true');
@@ -349,8 +349,8 @@ export class DashboardController {
                 for (let i = 0, n = getResults.length; i < n; i++) {
                     const r = getResults[i];
                     const output = Object.keys(r).map((i,ind) =>{
-                        /** si es oracle haig de fer una merda per tornar els numeros normals. */
-                        if(dataModel.ds.connection.type == 'oracle'){
+                        /** si es oracle  o alguns mysql haig de fer una merda per tornar els numeros normals. */
+                        if(dataModel.ds.connection.type == 'oracle' || dataModel.ds.connection.type == 'mysql'){
                               if( numerics[ind] == 'true' ){
                                     const   res =  parseFloat( r[i] );
                                       if( isNaN(res) ){
@@ -383,6 +383,7 @@ export class DashboardController {
                 DashboardController.cumulativeSum(output, req.body.query);
 
                 console.log('\x1b[32m%s\x1b[0m', `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id} Panel:${req.body.dashboard.panel_id} DONE\n`);
+                
                 return res.status(200).json(output);
 
                 /**

@@ -69,6 +69,10 @@ export const EbpUtils = {
           str = $localize`:@@chartInfo17:El velocímetro necesita uno o dos valores numéricos, en caso de disponer de dos valores el segundo se interpretará como límite`;
           description += `\n${str}`;
           break;
+      case 'histogram':
+        str = $localize`:@@chartInfoHistogram:Un histograma requiere una única columna de valores numericos de los que se calculará la frecuencia`;
+        description += `\n${str}`;
+        break;
       default:
         description = $localize`:@@chartInfo13:Los datos seleccionados no permiten utilizar este gráfico.`;
         break;
@@ -136,6 +140,9 @@ export const EbpUtils = {
         break;
       case 'funnel':
         description = 'filter_alt'
+        break;
+      case 'histogram':
+        description = 'equalizer'
     }
 
     return description;

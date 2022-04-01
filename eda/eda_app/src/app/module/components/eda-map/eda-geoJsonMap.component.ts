@@ -72,6 +72,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       this.checkElement( '#' + this.inject.div_name) 
         .then((element) => {
             this.initMap();
+            console.log('map started');
             this.mapUtilsService.getShapes(this.serverMap['mapID']).subscribe(shapes => {
               this.shapes = shapes.file;
               this.initShapesLayer();
@@ -81,13 +82,15 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   }
 
   private initShapesLayer = () => {
+
     const field = this.serverMap['field'];
     const totalSum = this.inject.data.map(row => row[this.dataIndex]).reduce((a, b) => a + b);
-    
+
     this.geoJson = new L.TopoJSON(this.shapes, {
       style: (feature) => this.style(feature, this.color),
       onEachFeature: this.onEachFeature
     });
+  
     this.geoJson.eachLayer((layer) => {
       this.boundaries.push(layer._bounds);
       layer.bindPopup(this.mapUtilsService.makeGeoJsonPopup(layer.feature.properties[field], this.inject.data,
@@ -97,6 +100,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       layer.on("click", () => this.openLinkedDashboard(layer.feature.properties.name))
     });
     if (this.map) {
+
       this.geoJson.addTo(this.map);
       if (this.inject.zoom) this.map.zoom = this.inject.zoom
       else this.map.fitBounds(this.boundaries);
@@ -104,6 +108,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     }else{
       console.log('map not yet ready');
     }
+
     this.geoJson.on('add', this.onloadLayer());
   }
 
@@ -199,6 +204,13 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
    */
   private getCenter(data: Array<any>) {
     let coordinates = this.inject.coordinates ? this.inject.coordinates : [this.serverMap.center[1], this.serverMap.center[0]]
+    if(coordinates[0]===null || coordinates[1]===null){
+      let x: number, y: number;
+      x=41.972330;
+      y=2.8116391;
+      coordinates[0]=x;
+      coordinates[1]=y;
+    }
     return coordinates as LatLngExpression;
 
   }

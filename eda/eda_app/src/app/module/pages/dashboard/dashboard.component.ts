@@ -242,12 +242,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.toLitle = false;
             this.toMedium = false;
         }
-
+/* NO MORE TAMANY MIG
         if ((window.innerWidth < 1200) && (window.innerWidth > 1000)) {
             this.lanes = 20;
             this.toMedium = true;
             this.toLitle = false;
         }
+*/
         if (window.innerWidth < 1000) {
             this.lanes = 10;
             this.toLitle = true;
@@ -513,7 +514,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 panel.tamanyMobil.y = lastPanel.tamanyMobil.y + lastPanel.tamanyMobil.h;
             }
         }
-
+/* NO LONGER TAMANY MIG
         if (this.toMedium) {
             if (this.panels.length > 0) {
                 const lastPanel = this.panels[this.panels.length - 1];
@@ -523,7 +524,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 panel.tamanyMig.y = lastPanel.tamanyMig.y + lastPanel.tamanyMig.h;
             }
         }
-
+*/
         this.panels.push(panel);
     }
 
@@ -638,12 +639,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.toLitle = false;
             this.toMedium = false;
             this.gridster.setOption('lanes', this.lanes).reload();
+            /* NO MORE TAMANY MIG
         } else if ((innerWidth < 1200) && (innerWidth >= 1000)) {
             this.lanes = 20;
             this.toMedium = true;
             this.toLitle = false;
             this.gridster.setOption('lanes', this.lanes).reload();
             this.initMediumSizes();
+        */
         } else {
             this.lanes = 10;
             this.toLitle = true;

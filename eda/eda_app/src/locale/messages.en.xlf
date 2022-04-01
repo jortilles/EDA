@@ -1879,6 +1879,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Gráfico de Barras</source>
 <target>Bar chart</target>
 </trans-unit>
+<trans-unit id="chartTypesHistograma">
+<source>Histograma</source>
+<target>Histograma</target>
+</trans-unit>
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
 <target>Stacked bar chart</target>
@@ -3423,6 +3427,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Gauge requires uno or two numeric values, if two values are provided second one is interpreted as a limit</target>
   </trans-unit>
 
+     <trans-unit id="chartInfoHistogram">
+    <source>Un histograma requiere una única columna de valores numericos de los que se calculará la frecuencia </source>
+    <target>A histogram requires a single column of numeric values from which the frequency is calculated</target>
+  </trans-unit>
+
    <trans-unit id="mailConfOk">
     <source>Credenciales correctas </source>
     <target> Credencials are oK</target>
@@ -3687,8 +3696,20 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Panel title</target>
   </trans-unit> 
   
+   <trans-unit id="histoGramRangesTxt">
+    <source>Rango</source>
+    <target>Range</target>
+  </trans-unit> 
 
+  <trans-unit id="histoGramDescTxt">
+    <source>Número de</source>
+    <target>Number of</target>
+  </trans-unit> 
 
+    <trans-unit id="histoGramDescTxt2">
+    <source>en este rango</source>
+    <target>in this range</target>
+  </trans-unit> 
 
 </body>
 </file>
