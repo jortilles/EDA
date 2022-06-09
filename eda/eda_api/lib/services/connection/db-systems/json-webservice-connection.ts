@@ -590,6 +590,23 @@ export class JSONWebServiceConnection extends AbstractConnection {
     if (format === 'year') {
       return `${toDate.getFullYear()}`
     }
+    if (format === 'quarter') {
+      let month = toDate.getMonth() + 1;
+      let leadingZerosMonth = 'Q';
+      if( month < 4){
+        leadingZerosMonth = leadingZerosMonth+'1';
+      }else if( month > 3 && month < 7){
+        leadingZerosMonth = leadingZerosMonth+'2';
+      }else if( month > 6 && month < 10){
+        leadingZerosMonth = leadingZerosMonth+'3';
+      }else if( month > 9 && month < 13){
+        leadingZerosMonth = leadingZerosMonth+'4';
+      }else{
+        leadingZerosMonth = leadingZerosMonth+'??';
+      }
+
+      return `${toDate.getFullYear()}-${leadingZerosMonth}`
+    }
     if (format === 'month') {
       let month = toDate.getMonth() + 1
       let leadingZerosMonth = month < 10 ? `0${month}` : `${month}`

@@ -233,7 +233,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       if (!el.hasOwnProperty('minimumFractionDigits')) {
         el.minimumFractionDigits = 0;
       }
-
+   
       // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor.
       if (el.computed_column === 'computed_numeric') {
         columns.push(` cast( ${el.SQLexpression}  as decimal(32,${el.minimumFractionDigits}) ) as "${el.display_name}"`);
@@ -250,31 +250,27 @@ export class MySqlBuilderService extends QueryBuilderService {
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
-
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y') as \`${el.display_name}\``);
 
-              } else if (_.isEqual(el.format, 'month')) {
+              } else if (_.isEqual(el.format, 'quarter')) {
+                columns.push(   `concat( concat( year(\`${el.table_id}\`.\`${el.column_name}\`),'-Q' ),  quarter(\`${el.table_id}\`.\`${el.column_name}\`) )  as \`${el.display_name}\`` );
 
+              } else if (_.isEqual(el.format, 'month')) {
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m') as \`${el.display_name}\``);
 
               } else if (_.isEqual(el.format, 'week')) {
-
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%x-%v') as \`${el.display_name}\``);
 
               } else if (_.isEqual(el.format, 'day')) {
-
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d') as \`${el.display_name}\``);
 
               } else if (_.isEqual(el.format, 'week_day')) {
-
                 columns.push(`WEEKDAY(\`${el.table_id}\`.\`${el.column_name}\`) + 1 as \`${el.display_name}\``);
 
               }else if (_.isEqual(el.format, 'timestamp')) {
-
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i:%s') as \`${el.display_name}\``);
 
               }  else {
-
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d') as \`${el.display_name}\``);
               }
             } else {
@@ -287,32 +283,29 @@ export class MySqlBuilderService extends QueryBuilderService {
           // GROUP BY
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
-
               grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y')`);
 
-            } else if (_.isEqual(el.format, 'month')) {
+            } else if (_.isEqual(el.format, 'quarter')) {
+              grouping.push(   `concat( concat( year(\`${el.table_id}\`.\`${el.column_name}\`),'-Q' ),  quarter(\`${el.table_id}\`.\`${el.column_name}\`) )  ` );
 
+            } else if (_.isEqual(el.format, 'month')) {
               grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m')`);
 
             } else if (_.isEqual(el.format, 'week')) {
-
               grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%x-%v')`);
 
             } else if (_.isEqual(el.format, 'week_day')) {
-
               grouping.push(`WEEKDAY(\`${el.table_id}\`.\`${el.column_name}\`) + 1`);
 
             } else if (_.isEqual(el.format, 'day')) {
-
               grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d')`);
 
             }else if (_.isEqual(el.format, 'timestamp')) {
-
               grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i:%s')`);
 
             } else {
-
               grouping.push(`\`${el.table_id}\`.\`${el.column_name}\``);
+
             }
           } else {
             //  Si es una única columna numérica no se agrega.

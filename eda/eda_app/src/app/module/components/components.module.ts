@@ -15,6 +15,7 @@ import {
     EdaDashboardPanelComponent,
     EdaTitlePanelComponent,
     EdaKpiComponent,
+    EdadynamicTextComponent,
     ColumnDialogComponent,
     FilterDialogComponent,
     ChartDialogComponent,
@@ -24,6 +25,7 @@ import {
     EdaGeoJsonMapComponent,
     MapEditDialogComponent,
     KpiEditDialogComponent,
+    dynamicTextDialogComponent,
     EdaD3Component,
     SankeyDialog,
     LinkDashboardsComponent,
@@ -62,6 +64,7 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         EdaTableComponent,
         EdaChartComponent,
         EdaKpiComponent,
+        EdadynamicTextComponent,
         ColumnDialogComponent,
         FilterDialogComponent,
         ChartDialogComponent,
@@ -73,6 +76,7 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         EdaGeoJsonMapComponent,
         MapEditDialogComponent,
         KpiEditDialogComponent,
+        dynamicTextDialogComponent,
         EdaD3Component,
         SankeyDialog,
         TreeMapDialog,
@@ -99,6 +103,7 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         EdaTableComponent,
         EdaChartComponent,
         EdaKpiComponent,
+        EdadynamicTextComponent,
         PanelChartComponent,
         EdaMapComponent,
         EdaGeoJsonMapComponent,
@@ -116,7 +121,7 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         EdaSunburstComponent,
         SunburstDialogComponent
     ],
-    entryComponents: [EdaChartComponent, EdaKpiComponent, EdaTableComponent, EdaMapComponent, EdaD3Component, EdaTreeMap, 
+    entryComponents: [EdaChartComponent, EdaKpiComponent, EdadynamicTextComponent,,EdaTableComponent, EdaMapComponent, EdaD3Component, EdaTreeMap, 
                         EdaScatter, EdaKnobComponent, Knob, EdaFunnelComponent,EdaSunburstComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA ]
 })

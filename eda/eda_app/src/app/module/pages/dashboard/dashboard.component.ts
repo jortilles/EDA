@@ -1091,21 +1091,20 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     public onResetWidgets(): void {
+            let body =
+            {
+                model_id: this.dataSource._id,
+                queries: this.panels.filter( panel=>panel.content ).map(panel =>{ panel.content.query.query})
+            }
 
-        let body =
-        {
-            model_id: this.dataSource._id,
-            queries: this.panels.map(panel => panel.content.query.query)
-        }
-
-        this.dashboardService.cleanCache(body).subscribe(
-            res => {
-                this.initializeDashboard();
-                this.display_v.rightSidebar = false;
-                this.dashboardService._notSaved.next(false);
-            },
-            err => console.log(err)
-        )
+            this.dashboardService.cleanCache(body).subscribe(
+                res => {
+                    this.initializeDashboard();
+                    this.display_v.rightSidebar = false;
+                    this.dashboardService._notSaved.next(false);
+                },
+                err => console.log(err)
+            )
     }
 
     public getsharedURL(): string {
@@ -1292,7 +1291,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             found
             && panel.content
             && !found.panelChart.NO_DATA
-            && (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob', 'funnel', 'sunburst'].includes(panel.content.chart))
+            && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel', 'sunburst'].includes(panel.content.chart))
             && !$event.isNew) {
             found.savePanel();
         }// found.onGridsterResize($event);

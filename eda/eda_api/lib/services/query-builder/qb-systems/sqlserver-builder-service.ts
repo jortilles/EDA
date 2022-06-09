@@ -238,6 +238,8 @@ export class SQLserviceBuilderService extends QueryBuilderService {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
                 columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' ) as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'quarter')) {
+                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-Q' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'month')) {
                 columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week')) {
@@ -262,6 +264,8 @@ export class SQLserviceBuilderService extends QueryBuilderService {
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
               grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' )`);
+            } else if (_.isEqual(el.format, 'quarter')) {
+              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-Q' )`);
             } else if (_.isEqual(el.format, 'month')) {
               grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' )`);
             } else if (_.isEqual(el.format, 'week')) {

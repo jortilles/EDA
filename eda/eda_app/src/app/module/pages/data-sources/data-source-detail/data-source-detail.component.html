@@ -45,7 +45,16 @@
             <eda-table [inject]="relationsTable"></eda-table>
         </div>
 
+        <div>
+            <h5 class="title-datamodel" i18n="@@rolesPermisosTabla">Visibilidad de tablas</h5>
+            <eda-table [inject]="permissionTable"></eda-table>
+        </div>
+
         <span class="p-buttonset">
+            <button pButton type="button" icon="pi pi-plus"
+            [label]="addPermission" class="p-button-secondary" (click)="openTablePermissionsDialog()"
+            style="margin-bottom: 1px;"> </button>
+
             <button pButton type="button" icon="pi pi-plus" [label]="addRelation" class="p-button-secondary"
                 (click)="openTableRelationDialog()" style="margin-bottom: 1px;"> </button>
             <button *ngIf="selectedTableType !=='view'" pButton type="button" icon="pi pi-plus"
@@ -65,6 +74,10 @@
     </p-card>
 
 </div>
+
+
+
+
 
 <div *ngIf="typePanel==='columna' && columnPanel.technical_name" class="tp-container">
 
@@ -134,7 +147,7 @@
 
         <div *ngIf="columnPanel.computed_column === 'no'">
             <h5 class="title-datamodel" i18n="@@rolesPermisos">Roles y permisos de fila</h5>
-            <eda-table [inject]="table"></eda-table>
+            <eda-table [inject]="permissionsColumn"></eda-table>
         </div>
 
         <button *ngIf="columnPanel.computed_column === 'no'" pButton type="button" icon="pi pi-plus"
@@ -149,7 +162,6 @@
             </p>
         </div>
 
-
         <div>
             <button *ngIf="columnPanel.SQLexpression" type="button" pButton (click)="checkCalculatedColumn(columnPanel)"
                 class="ui-button-success ml-2" label="Comprobar expresión" style="margin-right: 5px;"></button>
@@ -162,15 +174,9 @@
 
 </div>
 
-<app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
-<app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController">
-</app-column-permission-dialog>
-<app-calculated-column-dialog *ngIf="newColController" [controller]="newColController"></app-calculated-column-dialog>
-<app-map-dialog *ngIf="mapController" [controller]="mapController"></app-map-dialog>
-<app-view-dialog id="viewDialog" *ngIf="viewController" [controller]="viewController"></app-view-dialog>
-<app-add-csv-dialog *ngIf="csvPanelController" [controller]="csvPanelController"></app-add-csv-dialog>
-<eda-cache-dialog *ngIf="cacheController" [controller]="cacheController"></eda-cache-dialog>
-<eda-security-dialog *ngIf="securityController" [controller]="securityController"></eda-security-dialog>
+
+
+
 
 
 <div *ngIf="typePanel==='root' && modelPanel.metadata" class="tp-container">
@@ -280,7 +286,6 @@
             </div>
             <div style="margin-bottom: 1rem;" class="p-col-12">
 
-
                 <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;"> {{functionalities}} </h4>
 
                 <span class="p-buttonset">
@@ -291,10 +296,7 @@
                         (click)="openNewViewDialog()" style="margin-bottom: 1px;"> </button>
                     <button pButton type="button" icon="pi pi-plus" [label]="addCSV" class="p-button-secondary"
                         (click)="openCSVDialog()" style="margin-bottom: 1px;"> </button>
-
                 </span>
-
-
             </div>
             <div style="margin-bottom: 1rem;" class="p-col-12">
                 <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;"> {{utilities}} </h4>
@@ -306,12 +308,35 @@
                         class="p-button-secondary" (click)="hideAllRelations()" style="margin-bottom: 1px;"> </button>
                     <button pButton type="button" icon="pi pi-cog" [label]="addCacheConfig" class="p-button-secondary"
                         (click)="openCacheDialog()" style="margin-bottom: 1px;"> </button>
+                    <button pButton type="button" icon="pi pi-plus" [label]="addPermission" class="p-button-secondary" 
+                         (click)="openModelPermissionsDialog()" style="margin-bottom: 1px;"> </button>
                     <button pButton type="button" icon="pi pi-eye" [label]="viewsecurity" class="p-button-secondary"
-                        (click)="openSecurityDialog()" style="margin-bottom: 1px;"> </button>
+                         (click)="openSecurityDialog()" style="margin-bottom: 1px;"> </button>
                 </span>
+
+            </div>
+
+            <div style="margin-bottom: 1rem;" class="p-col-12">
+                <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;" i18n="@@rolesPermisosModelo">Visibilidad a nivel de modelo</h4>
+                <eda-table [inject]="permissionModel"></eda-table>
+
 
             </div>
         </div>
     </p-card>
 
 </div>
+
+
+
+<app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
+<app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController"></app-column-permission-dialog>
+<app-table-permission-dialog *ngIf="tablePermissionsController" [controller]="tablePermissionsController"></app-table-permission-dialog>
+<app-model-permission-dialog *ngIf="modelPermissionsController" [controller]="modelPermissionsController"></app-model-permission-dialog>
+<app-calculated-column-dialog *ngIf="newColController" [controller]="newColController"></app-calculated-column-dialog>
+<app-map-dialog *ngIf="mapController" [controller]="mapController"></app-map-dialog>
+<app-view-dialog id="viewDialog" *ngIf="viewController" [controller]="viewController"></app-view-dialog>
+<app-add-csv-dialog *ngIf="csvPanelController" [controller]="csvPanelController"></app-add-csv-dialog>
+<eda-cache-dialog *ngIf="cacheController" [controller]="cacheController"></eda-cache-dialog>
+<eda-security-dialog *ngIf="securityController" [controller]="securityController"></eda-security-dialog>
+

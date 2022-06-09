@@ -237,6 +237,8 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' ) as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'quarter')) {
+                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-Q' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'month')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week')) {
@@ -261,6 +263,8 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
               grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' )`);
+            } else if (_.isEqual(el.format, 'quarter')) {
+              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-Q' )`);
             } else if (_.isEqual(el.format, 'month')) {
               grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' )`);
             } else if (_.isEqual(el.format, 'week')) {

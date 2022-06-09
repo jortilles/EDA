@@ -22,8 +22,8 @@ export class DataSourceController {
                 const protectedDataSources = [];
                 for (let i = 0, n = dataSources.length; i < n; i += 1) {
                     const datasource = dataSources[i];
-                    //datasource.ds.connection.password = EnCrypterService.decode(datasource.ds.connection.password);
-                    datasource.ds.connection.password = '__-(··)-__';
+                    datasource.ds.connection.password = EnCrypterService.decode(datasource.ds.connection.password);
+                    datasource.ds.connection.password = '__-(··)-__'; 
                     protectedDataSources.push(datasource);
                 }
 
@@ -61,11 +61,10 @@ export class DataSourceController {
                 if (err) {
                     return next(new HttpException(404, 'Datasouce not found'));
                 }
-
-                // dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
-                // Password is not replaced any more
-                // dataSource.ds.connection.password = '__-(··)-__';
-
+                // ocultem el password
+                dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
+                dataSource.ds.connection.password = '__-(··)-__';
+                
 
                 return res.status(200).json({ ok: true, dataSource });
             });
@@ -73,6 +72,7 @@ export class DataSourceController {
             next(err);
         }
     }
+
     /* Aquesta funció retorna els datasources disponibles per fer un dashboard.
     Un cop filtrats els permisos de grup i de usuari. */
     static async GetDataSourcesNamesForDashboard(req: Request, res: Response, next: NextFunction) {
@@ -82,14 +82,11 @@ export class DataSourceController {
             if (!ds) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
-
             const names = JSON.parse(JSON.stringify(ds));
-
             const output = [];
-
             for (let i = 0, n = names.length; i < n; i += 1) {
                 const e = names[i];
-
+                // Si hay permisos de seguridad.....
                 if (e.ds.metadata.model_granted_roles.length > 0) {
 
                     const userID = req.user._id;
@@ -97,8 +94,12 @@ export class DataSourceController {
                     const roles = [];
                     //Get users with permission
                     e.ds.metadata.model_granted_roles.forEach(permission => {
-
                         switch(permission.type){
+                            case 'anyoneCanSee':
+                                if( permission.permission === true ){
+                                     output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                                }
+                            break;
                             case 'users':
                                 permission.users.forEach(user => {
                                     if (!users.includes(user)) users.push(user);
@@ -152,8 +153,7 @@ export class DataSourceController {
                    console.log(body);
                 }else{
                     console.log('Importing existing datasource');
-                    // not needed any more as we keep passwords. 
-                    //body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
+                    body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
                     dataSource.ds = body.ds;
                     ds = dataSource;
                 }            

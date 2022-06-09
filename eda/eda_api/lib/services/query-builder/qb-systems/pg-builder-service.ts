@@ -246,6 +246,8 @@ export class PgBuilderService extends QueryBuilderService {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY') as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'quarter')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-"Q"Q') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'month')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week')) {
@@ -268,27 +270,24 @@ export class PgBuilderService extends QueryBuilderService {
           // GROUP BY
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
-
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY')`);
 
-            } else if (_.isEqual(el.format, 'month')) {
+            } else if (_.isEqual(el.format, 'quarter')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-"Q"Q') `);
 
+            } else if (_.isEqual(el.format, 'month')) {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM')`);
 
             } else if (_.isEqual(el.format, 'week')) {
-
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'IYYY-IW')`);
             }
             else if (_.isEqual(el.format, 'day')) {
-
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD')`);
 
             }else if (_.isEqual(el.format, 'timestamp')) {
-
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI:SS')`);
 
             } else if (_.isEqual(el.format, 'week_day')) {
-
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'ID')`);
 
             } else if (_.isEqual(el.format, 'No')) {

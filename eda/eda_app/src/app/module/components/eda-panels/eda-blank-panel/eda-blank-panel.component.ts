@@ -27,7 +27,7 @@ import { TableUtils } from './panel-utils/tables-utils';
 import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
-import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils';
+import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 
 
 
@@ -61,6 +61,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public cumsumAlertController : EdaDialogController;
     public mapController: EdaDialogController;
     public kpiController: EdaDialogController;
+    public dynamicTextController: EdaDialogController;
     public sankeyController: EdaDialogController;
     public treeMapController: EdaDialogController;
     public funnelController:EdaDialogController;
@@ -293,10 +294,16 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if (!panelContent.query.query.modeSQL) {
 
+            try{
+
             panelContent.query.query.fields.forEach(element => {
                 PanelInteractionUtils.loadColumns(this, this.tables.find(t => t.table_name === element.table_id));
                 PanelInteractionUtils.moveItem(this, this.columns.find(c => c.column_name === element.column_name));
             });
+            }catch(e){
+                console.log('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
+                console.log(e);
+            }
 
         }
 
@@ -342,7 +349,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content = { query, chart, edaChart };
 
             /**This is to repaint on panel redimension */
-            if (['parallelSets', 'kpi', 'treeMap', 'scatterPlot', 'knob', 'funnel', 'sunburst'].includes(chart)) {
+            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel', 'sunburst'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
 
@@ -422,14 +429,13 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
-
         this.graficos = {};
         let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
         this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
         this.graficos.addTrend = config && config.getConfig() ? config.getConfig()['addTrend'] : false;
-
+        this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             this.panelChart.destroyComponent();
@@ -618,7 +624,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.graficos = {};
                 this.graficos = _.cloneDeep(properties);
                 this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType };
-                const layout = new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType, this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels));
+                const layout = new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType, this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,this.graficos.numberOfColumns));
 
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
@@ -747,17 +753,22 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseKpiProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-
             this.panel.content.query.output.config.alertLimits = response.alerts;
             this.panel.content.query.output.config.sufix = response.sufix;
-
             const config = new ChartConfig(this.panel.content.query.output.config);
-
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
             this.dashboardService._notSaved.next(true);
         }
         this.kpiController = undefined;
+    }
+
+    public onClosedynamicTextProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) { 
+            const config = new ChartConfig(response.color);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService._notSaved.next(true);
+        }
+        this.dynamicTextController = undefined;
     }
 
     public handleTabChange(event: any): void {
@@ -774,11 +785,11 @@ export class EdaBlankPanelComponent implements OnInit {
                     || content.chart === 'scatterPlot'
                     || content.chart === 'funnel'
                     || content.chart === 'knob'
-                    || content.chart === 'sunburst' )
+                    || content.chart === 'sunburst' 
+                    || content.chart === 'dynamicText')
             ) {
 
                 setTimeout(() => {
-
                     const config = ChartsConfigUtils.recoverConfig(content.chart, content.query.output.config);
                     this.changeChartType(content.chart, content.edaChart, config);
                 })

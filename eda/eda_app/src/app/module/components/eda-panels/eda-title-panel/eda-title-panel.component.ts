@@ -18,16 +18,16 @@ export class EdaTitlePanelComponent implements OnInit {
     @Input() panel: EdaTitlePanel;
     @Input() inject: InjectEdaPanel;
     @Output() remove: EventEmitter<any> = new EventEmitter();
-    
     titleClick: boolean = false;
     contextMenu: EdaContextMenu;
     editTittleController: EdaDialogController;
-    
     display: any = {
         editMode: true
     }
     public htmlPipe : SafeHtmlPipe
     public urlPipe : SafeUrlPipe
+
+
     constructor(public sanitized: DomSanitizer, public dashboardService : DashboardService){}
     
 

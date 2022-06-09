@@ -47,3 +47,7 @@ th{
   border-radius: 6px;
 
 }
+
+.p-datatable-auto-layout>.p-datatable-wrapper {
+  overflow: hidden;
+}

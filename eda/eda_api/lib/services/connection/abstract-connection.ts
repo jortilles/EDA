@@ -333,7 +333,7 @@ export abstract class AbstractConnection {
                     if (!visited.includes(data_model[j].table_name)) {
                         // Columnes
                         for (let i = 0; i < data_model[j].columns.length; i++) {
-                            console.log(l, k, j, i)
+                            //console.log(l, k, j, i)
                             let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
                             if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
                                 sourceColumn.source_column.toLowerCase().includes('id_') ||

@@ -8,6 +8,10 @@ export const EbpUtils = {
         str = $localize`:@@chartInfo2:Un KPI necesita un único número`;
         description += `\n${str}`;
         break;
+      case 'dynamicText':
+        str = $localize`:@@chartInfoDynamicText:Un texto dinámicos requiere de un único valor NO numérico`;
+        description += `\n${str}`;
+        break;
       case 'barline':
         str = $localize`:@@chartInfo3:Un gráfico de barras necesita una o más categorías y una série numéricas. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
@@ -92,6 +96,9 @@ export const EbpUtils = {
         break
       case 'kpi':
         description = 'attach_money';
+        break
+      case 'dynamicText':
+        description = 'text_rotation_none';
         break
       case 'barline':
         description = 'multiline_chart';

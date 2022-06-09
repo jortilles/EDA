@@ -252,31 +252,27 @@ export class BigQueryBuilderService extends QueryBuilderService {
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
-
                 columns.push(`FORMAT_DATETIME('%Y',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
 
-              } else if (_.isEqual(el.format, 'month')) {
+              } else if (_.isEqual(el.format, 'quarter')) {
+                columns.push(`FORMAT_DATETIME('%Y-%Q', \`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
 
+              } else if (_.isEqual(el.format, 'month')) {
                 columns.push(`FORMAT_DATETIME('%Y-%m', \`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
 
               } else if (_.isEqual(el.format, 'week')) {
-
                 columns.push(`EXTRACT(WEEK FROM \`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
 
               } else if (_.isEqual(el.format, 'week_day')) {
-
                 columns.push(`EXTRACT(DAYOFWEEK FROM \`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
 
               } else if (_.isEqual(el.format, 'day')) {
-
                 columns.push(`FORMAT_DATETIME( '%Y-%m-%d',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
 
               }else if (_.isEqual(el.format, 'timestamp')) {
-
                 columns.push(`FORMAT_DATETIME( '%Y-%m-%d %H:%i:%s',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
 
               } else if (_.isEqual(el.format, 'No')) {
-
                 columns.push(`FORMAT_DATETIME('%Y-%m-%d', \`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
 
               }

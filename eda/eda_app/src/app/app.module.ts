@@ -10,7 +10,6 @@ import { CoreModule } from './core/core.module';
 import { CorePagesModule } from './core/pages/core-pages.module';
 import { SharedModule } from './shared/shared.module';
 import { HttpClientModule } from '@angular/common/http';
-
 // Components
 import { AppComponent } from './app.component';
 import { PagesComponent } from './module/pages/pages.component';

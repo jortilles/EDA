@@ -15,7 +15,7 @@ import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import {Chart} from 'chart.js';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
-import { group } from 'console';
+
 
 export interface EdaChartType {
     label: string;
@@ -52,6 +52,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes1:Tabla de Datos`, value: 'table', subValue: 'table', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes2:Tabla Cruzada`, value: 'crosstable', subValue: 'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: 'KPI', value: 'kpi', subValue: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesDynamicText:Texto Dinámico`, value: 'dynamicText', subValue: 'dynamicText', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes15:Velocímetro`, value: 'knob', subValue: 'knob', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes3:Gráfico de Pastel`, value: 'doughnut', subValue: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes4:Gráfico de Área Polar`, value: 'polarArea', subValue: 'polarArea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -95,6 +96,7 @@ export class ChartUtilsService {
 
     public formatDates: FormatDates[] = [
         { display_name: $localize`:@@dates1:AÑO`, value: 'year', selected: false },
+        { display_name: $localize`:@@datesQ:TRIMESTRE`, value: 'quarter', selected: false },
         { display_name: $localize`:@@dates2:MES`, value: 'month', selected: false },
         { display_name: $localize`:@@dates5:SEMANA`, value: 'week', selected: false },
         { display_name: $localize`:@@dates3:DIA`, value: 'day', selected: false },
@@ -102,7 +104,6 @@ export class ChartUtilsService {
         { display_name: $localize`:@@dates7:FECHA COMPLETA`, value: 'timestamp', selected: false },
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
-    
     public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
 
 
@@ -139,8 +140,9 @@ export class ChartUtilsService {
 
     /*
         Aquesta funció manipula les dades per donar-los la forma que esperen els grafics ng-chart
+        numberOfColumns es el numero de columnes que farem servidr en el histograma
     */
-    public transformDataQuery(type: string, values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean) {
+    public transformDataQuery(type: string, values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
 
         let output = [];
         const idx = { label: null, serie: null, numeric: [] };
@@ -265,28 +267,34 @@ export class ChartUtilsService {
                 num_cols=50;
             }
 
-            if( this.esEntero(distinctNumbers)){
+            //No me llega el numero de columnas fijo el numero de columnas
+            if(!isNaN(numberOfColumns)){
+                num_cols=numberOfColumns;
+            }
+           if( this.esEntero(distinctNumbers)){
                 salto =  Math.ceil( max/num_cols )  ;
             }else{  
                 num_cols<5?num_cols=5:num_cols=num_cols;
                 salto =   Math.ceil( max/num_cols * 10) / 10 ;
             }
+           
 
 
             if(salto == 1 ){
                 new_data = this.generateNewDataOneForHistogram(allNumbers,num_cols,min,max , salto);
                 grupos =   this.generateGruposOneForHistogram( num_cols,min ); 
-            }else{
-
+            }
+            else{
+                if(!isNaN(numberOfColumns)){
+                    num_cols=numberOfColumns;
+                }
                 new_data = this.generateNewDataRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto);
-                grupos =   this.generateGruposRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto,  this.esEntero(distinctNumbers) );
-
-
+                                                                                                                            /** array de un único elemento. Cuando tenga mas ya veré lo que hago */
+                grupos =   this.generateGruposRangeForHistogram( num_cols,min,max , salto,  this.esEntero(distinctNumbers) , dataDescription.query[0].minimumFractionDigits    );
             }
             if(grupo_null.length > 0 ){ 
                 new_data.push(grupo_null.length  );
-                grupos.push('null'); 
-                
+                grupos.push('null');                
             }
             _output[0]=grupos;
             _output[1] = [{
@@ -310,33 +318,28 @@ export class ChartUtilsService {
      * @param salto 
      * @returns grupos 
      */
-    private   generateGruposRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max, salto , esEntero ):any[] {
+    private   generateGruposRangeForHistogram( num_cols,min,max, salto , esEntero , minimumFractionDigits ):any[] {
         let mi_salto =  0;
         let mi_min = min;
         let grupos = [];
-       
         for(let i=0; i<num_cols; i++){
             mi_salto =  min+((salto*i)+salto)  ;
-            /*
-            console.log( ' vuelta  ' +  i );
-            console.log( ' mi_min  ' +  mi_min );
-            console.log( ' mi_salto  ' +  mi_salto );
-            console.log( ' max  ' +  max );
-            */
-
-
             if( mi_salto < max){
                 if(esEntero){
                     grupos.push(mi_min+" - "+( mi_salto -1));
                 }else{
-                    grupos.push(mi_min+" - "+(mi_salto - 0.1));
+                    grupos.push(mi_min.toFixed( minimumFractionDigits ) +" - "+ (mi_salto-0.1).toFixed( minimumFractionDigits ));
                 }
-                
             }else{
-                grupos.push(mi_min+" - "+max);
+                if(Number.isInteger(mi_min)){
+                    grupos.push(mi_min+" - "+max);
+                }else{
+                    grupos.push( mi_min.toFixed(minimumFractionDigits)+" - "+max.toFixed( minimumFractionDigits ));
+                }
+                // Salgo del bucle
                 i = i+num_cols;
- 
             }
+ 
  
  
            mi_min = mi_salto;
@@ -358,12 +361,6 @@ export class ChartUtilsService {
         for(let i=0; i<num_cols; i++){
             mi_salto =   min+((salto*i)+salto)   ;
             let grupo = [];
-/*
-            console.log( ' vuelta  ' +  i );
-            console.log( ' mi_min  ' +  mi_min );
-            console.log( ' mi_salto  ' +  mi_salto );
-            console.log( ' max  ' +  max );
-*/
 
             for( let j=0; j < allNumbers.length; j++){
                if(  ( allNumbers[j] >= mi_min && allNumbers[j] < mi_salto)   && 
@@ -375,19 +372,10 @@ export class ChartUtilsService {
                         ( mi_salto >=  max )
                ){     
                     grupo.push(allNumbers[j]);   
-                    /*
-                    console.log('estoy en el final aunque no debería.....');
-                    console.log(allNumbers[j]);
-                    console.log(mi_min);
-                    console.log(mi_salto);
-                    console.log(max);
-                    console.log(num_cols);
-                    console.log('----------------');
-                    */
                }
             }
 
-                     
+                  
            new_data.push( grupo.length);
            mi_min = mi_salto;
            if( mi_min >= max){
@@ -421,10 +409,10 @@ export class ChartUtilsService {
 
     private  generateGruposOneForHistogram(num_cols,min ):any[] {
         let grupos = [];
-        for(let i=min; i<num_cols; i++){
+        for(let i=min; i<=num_cols; i++){
             grupos.push(i);      
-
         } 
+       
         return grupos;
     }
 
@@ -481,7 +469,7 @@ export class ChartUtilsService {
 
         let notAllowed =
             [
-                'table', 'crosstable', 'kpi', 'geoJsonMap', 'coordinatesMap',
+                'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'area', 'bar', 'histogram',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob'
             ];
@@ -491,6 +479,11 @@ export class ChartUtilsService {
         // KPI (only one numeric column)
         if (dataDescription.totalColumns === 1 && dataDescription.numericColumns.length === 1) {
             notAllowed.splice(notAllowed.indexOf('kpi'), 1);
+        }
+        
+        // DynamicText (only one numeric column)
+        if (dataDescription.totalColumns === 1  && dataDescription.otherColumns.length === 1 ) {
+            notAllowed.splice(notAllowed.indexOf('dynamicText'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
         if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1) {
@@ -596,7 +589,7 @@ export class ChartUtilsService {
      */
     public getTooManyDataForCharts(dataSize: number): any[] {
         let notAllowed =
-            ['table', 'crosstable', 'kpi', 'knob', 'doughnut', 'polarArea', 'line', 'bar','histogram',
+            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'doughnut', 'polarArea', 'line', 'bar','histogram',
                 'horizontalBar', 'barline', 'area', 'geoJsonMap', 'coordinateMap'];
 
         //table (at least one column)
@@ -612,6 +605,7 @@ export class ChartUtilsService {
 
         if (dataSize === 1) {
             notAllowed.splice(notAllowed.indexOf('kpi'), 1);
+            notAllowed.splice(notAllowed.indexOf('dynamicText'), 1);
         }
         // Knomb (only one or two  numeric column)
         // only 2 values
@@ -951,7 +945,7 @@ export class ChartUtilsService {
     public initChartOptions(type: string, numericColumn: string,
         labelColum: any[], manySeries: boolean, stacked: boolean, size: any,
         linkedDashboard: LinkedDashboardProps, minMax: { min: number, max: number }
-        , styles: StyleConfig, showLabels:boolean, chartSubType:string): { chartOptions: any, chartPlugins: any } {
+        , styles: StyleConfig, showLabels:boolean,numberOfColumns:number, chartSubType:string): { chartOptions: any, chartPlugins: any } {
 
         const t = $localize`:@@linkedTo:Vinculado con`;
         const linked = linkedDashboard ? `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';

@@ -14,7 +14,7 @@
 
         </div>
 
-        <div class="p-col-2">
+        <div  class="p-col-2" *ngIf='panelChartConfig.edaChart != "histogram"' >
 
             <h6 i18n="@@addtrend" class="custom-border-b1" style="margin-top: 2em;">
                 Tendencia
@@ -26,7 +26,7 @@
                 </p-inputSwitch>
             </div>
         </div>
-        <div class="p-col-2">
+        <div class="p-col-2" *ngIf='panelChartConfig.edaChart != "histogram"' >
             <h6 i18n="@@addComparative" class="custom-border-b1" style="margin-top: 2em;">
                 Comparativa
             </h6>
@@ -41,8 +41,7 @@
         </div>
 
 
-
-        <div class="p-col-4 p-offset-8">
+        <div class="p-col-2 p-offset-8">
             <h6 i18n="@@showLabels" class="custom-border-b1" style="margin-top: 2em;">
                 Mostrar Etiquetas
             </h6>
@@ -53,8 +52,19 @@
                 </p-inputSwitch>
             </div>
 
-
         </div>
+
+        
+        <div class="p-col-2" style="margin-top: 2em;">
+            <h6 i18n="@@histogramColum" class="custom-border-b1">
+                Columnas
+            </h6>
+        <div [pTooltip]="columnsTooltip" tooltipPosition="left">
+            <input type="number" pInputText id="columnes" name="columnes"
+            min="3" max="100" [(ngModel)]="numberOfColumns" (change)="SetNumberOfColumns()" > 
+        </div>
+       </div>
+
 
 
         <div class="p-col-4 p-offset-8">
@@ -76,7 +86,7 @@
                         </p-colorPicker>
 
                         <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg"
-                            (input)="handleInputColor(serie)" minlength="7">
+                            (input)="handleInputColor(serie)" minlength="7" >
 
                     </div>
 
@@ -86,6 +96,7 @@
 
 
         </div>
+
 
     </div>
 

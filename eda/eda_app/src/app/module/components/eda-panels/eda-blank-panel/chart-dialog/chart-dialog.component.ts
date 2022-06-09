@@ -1,6 +1,6 @@
 
 import { PanelChartComponent } from './../panel-charts/panel-chart.component';
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { PointStyle } from 'chart.js';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/components/shared-components.index';
@@ -26,6 +26,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public showTrend: boolean = true;
     public showComparative : boolean = true;
     public addComparative : boolean;
+    public numberOfColumns : number;
     public panelChartConfig: PanelChart = new PanelChart();
     public display:boolean=false;
     public showLabels: boolean;
@@ -33,7 +34,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public comparativeTooltip = $localize`:@@comparativeTooltip:La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado`
     public trendTooltip = $localize`:@@trendTooltip:La función de añadir tendencia sólo se puede activar en los gràficos de lineas`
     public showLablesTooltip = $localize`:@@showLablesTooltip:Mostrar o ocultar las etiquetas sobre los gráficos`
-
+    public columnsTooltip = $localize`:@@columnsTooltip:Elige cuantas columnas quieres mostrar`
     public drops = {
         pointStyles: [],
         pointSizes: [],
@@ -52,7 +53,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     constructor(private chartUtils: ChartUtilsService,) {
         super();
-
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
@@ -61,6 +61,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
         this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
 
+  
         this.drops.pointStyles = [
             { label: 'Puntos', value: 'circle' },
             { label: 'Triangulos', value: 'triangle' },
@@ -87,10 +88,10 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     }
 
     onShow(): void {
-
         this.panelChartConfig = this.controller.params.config;
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
+        this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'];
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
         this.oldChart = _.cloneDeep(this.controller.params.chart);
         this.chart = this.controller.params.chart;
@@ -98,8 +99,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.showComparative =  this.allowCoparative(this.controller.params);
         this.load();
         this.display = true;
-
-    }
+     }
 
 
 
@@ -172,6 +172,21 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     }
 
+    SetNumberOfColumns(){
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.showLabels = this.showLabels;
+        config.numberOfColumns = this.numberOfColumns;
+        config.colors = this.chart.chartColors;
+        properties.config = c;
+        /**Update chart */  
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+        });
+    }
 
     checkTrend() {
         const properties = this.panelChartConfig;
@@ -179,6 +194,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         let config: any = c.getConfig();
         config.addTrend = this.addTrend;
         config.colors = this.chart.chartColors;
+        config.numberOfColumns = this.numberOfColumns;
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -195,6 +211,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         let config: any = c.getConfig();
         config.addComparative = this.addComparative;
         config.colors = this.chart.chartColors;
+        config.numberOfColumns = this.numberOfColumns;
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -213,6 +230,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         let c: ChartConfig = properties.config;
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
+        config.numberOfColumns = this.numberOfColumns;
         config.colors = this.chart.chartColors;
         properties.config = c;
         /**Update chart */
@@ -328,7 +346,9 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.chart.addTrend = this.addTrend;
         this.chart.addComparative = this.addComparative;
         this.chart.showLabels = this.showLabels;
+        this.chart.numberOfColumns = this.numberOfColumns;
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
+
     }
 
     //On cancel send prev state

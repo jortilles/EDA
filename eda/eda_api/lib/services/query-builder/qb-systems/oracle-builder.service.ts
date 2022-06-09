@@ -238,6 +238,8 @@ export class OracleBuilderService extends QueryBuilderService {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY') as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'quarter')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-"Q"Q') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'month')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week')) {
@@ -261,6 +263,8 @@ export class OracleBuilderService extends QueryBuilderService {
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY')`);
+            } else if (_.isEqual(el.format, 'quarter')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-"Q"Q')`);
             } else if (_.isEqual(el.format, 'month')) {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM')`);
             } else if (_.isEqual(el.format, 'week')) {

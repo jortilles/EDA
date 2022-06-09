@@ -23,6 +23,8 @@ import { DataSourceDetailComponent } from './data-sources/data-source-detail/dat
 import { CreateDashboardComponent } from './home/create-dashboard/create-dashboard.component';
 import { TableRelationsDialogComponent } from './data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component';
 import { ColumnPermissionDialogComponent } from './data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component';
+import { TablePermissionDialogComponent } from './data-sources/data-source-detail/table-permissions-dialog/table-permission-dialog.component';
+import { ModelPermissionDialogComponent } from './data-sources/data-source-detail/model-permissions-dialog/model-permission-dialog.component';
 import { MapDialogComponent } from './data-sources/data-source-detail/mapsDialog/maps-dialog.component';
 import { ViewDialogComponent } from './data-sources/data-source-detail/viewDialog/view-dialog.component';
 import {AddCsvComponent} from './data-sources/data-source-list/addCSV/add-csv.component';
@@ -64,6 +66,8 @@ import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-s
         GroupDetailComponent,
         DashboardFilterDialogComponent,
         ColumnPermissionDialogComponent,
+        TablePermissionDialogComponent,
+        ModelPermissionDialogComponent,
         CalculatedColumnDialogComponent,
         MapDialogComponent,
         UploadFileComponent,

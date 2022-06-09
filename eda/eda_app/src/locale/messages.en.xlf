@@ -1462,24 +1462,20 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">102</context>
 </context-group>
 </trans-unit>
+
 <trans-unit id="addPermission" datatype="html">
-<source> Añadir permiso
-</source>
-<target> Add permission
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">108</context>
-</context-group>
-</trans-unit>
-<trans-unit id="addPermissions" datatype="html">
-<source>Añadir permiso</source>
+<source> Añadir permiso </source>
 <target> Add permission </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">107</context>
-</context-group>
 </trans-unit>
+
+
+<trans-unit id="addModelPermissions" datatype="html">
+  <source>Añadir permiso a nivel de modelo</source>
+  <target>Add model-level permission</target>
+</trans-unit>
+
+
+
 <trans-unit id="esconderColumna" datatype="html">
 <source>Esconder columna</source>
 <target>Hide column</target>
@@ -1883,6 +1879,18 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Histograma</source>
 <target>Histograma</target>
 </trans-unit>
+
+<trans-unit id="chartTypesDynamicText">
+<source>Texto Dinámico</source>
+<target>Dynamic Text</target>
+</trans-unit>
+<trans-unit id="chartInfoDynamicText">
+<source>Un texto dinámicos requiere de un único valor NO numérico</source>
+<target>A dynamic text requires a single NON-numeric value</target>
+</trans-unit>
+
+
+
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
 <target>Stacked bar chart</target>
@@ -1969,6 +1977,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="dates1">
 <source>AÑO</source>
 <target>YEAR</target>
+</trans-unit>
+<trans-unit id="datesQ">
+<source>TRIMESTRE</source>
+<target>QUARTER</target>
 </trans-unit>
 <trans-unit id="dates2">
 <source>MES</source>
@@ -2755,6 +2767,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <context context-type="linenumber">15</context>
 </context-group>
 </trans-unit>
+
+<trans-unit id="DynamicTextColor" datatype="html">
+<source>       Cambiar Color   </source>
+<target>       Change Color   </target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component.html</context>
+  <context context-type="linenumber">11</context>
+</context-group>
+</trans-unit>
+
 <trans-unit id="kpiGreatSmallEqualH6" datatype="html">
 <source>        Operador       </source>
 <target>        Operator       </target>
@@ -3371,6 +3393,52 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>TABLES</target>
   </trans-unit>
 
+  <trans-unit id="rolesPermisosTabla">
+    <source>Visibilidad de tablas</source>
+    <target>Table visibility</target>
+  </trans-unit>
+  <trans-unit id="rolesPermisosModelo">
+    <source>Visibilidad a nivel de modelo</source>
+    <target>Model-level visibility</target>
+  </trans-unit>
+  <trans-unit id="tablePermissionNO">
+    <source>No tiene permiso para ver esta tabla</source>
+    <target>You do not have permission to view this table</target>
+  </trans-unit>
+  <trans-unit id="tablePpermissionYES">
+    <source>SI tiene permiso para ver esta tabla</source>
+    <target>You have permission to view this table</target>
+  </trans-unit>
+  <trans-unit id="modelPermissionNO">
+    <source>No tiene permiso para ver este modelo</source>
+    <target>You do not have permission to view this model</target>
+  </trans-unit>
+  <trans-unit id="modelPermissionYES">
+    <source>SI tiene permiso para ver este modelo</source>
+    <target>You have permission to view this model</target>
+  </trans-unit>
+  <trans-unit id="anyCanSeeNO">
+    <source>Los usuarios y grupos que pueden ver el modelo son SOLO los definidos explicitamente.</source>
+    <target>The users and groups that can see the model are ONLY those explicitly defined</target>
+  </trans-unit>
+  <trans-unit id="anyCanSeeYES">
+    <source>Cualquier usuario puede ver el modelo. Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+    <target>Any user can see the model. Security filters are defined at the specific table and column level.</target>
+  </trans-unit>
+
+
+
+  <trans-unit id="permisos">
+    <source>PERMISOS</source>
+    <target>PERMISSIONS</target>
+  </trans-unit>
+
+  
+  <trans-unit id="visible">
+    <source>VISIBLE</source>
+    <target>VISIBLE</target>
+  </trans-unit>
+
   <trans-unit id="column">
     <source>COLUMNAS </source>
     <target>COLUMNS</target>
@@ -3563,11 +3631,21 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Show or hide labels on charts</target>
   </trans-unit> 
 
+         <trans-unit id="columnsTooltip">
+    <source>Elige cuantas columnas quieres mostrar</source>
+    <target>Choose how many columns you want to display</target>
+  </trans-unit> 
+
        <trans-unit id="showLabels">
     <source>Mostrar Etiquetas</source>
     <target>Show Tags</target>
   </trans-unit> 
 
+
+       <trans-unit id="histogramColum">
+    <source>Columnas</source>
+    <target>Columns</target>
+  </trans-unit> 
 
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
@@ -3710,6 +3788,28 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>en este rango</source>
     <target>in this range</target>
   </trans-unit> 
+
+
+<trans-unit id="sidebarInform" datatype="html">
+<source>Crear Informe</source>
+<target>Create Inform</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+<context context-type="linenumber">83</context>
+</context-group>
+</trans-unit>
+
+
+<trans-unit id="si">
+<source>Si</source>
+<target>Yes</target>
+</trans-unit>
+
+<trans-unit id="no">
+<source>No</source>
+<target>No</target>
+</trans-unit>
+
 
 </body>
 </file>

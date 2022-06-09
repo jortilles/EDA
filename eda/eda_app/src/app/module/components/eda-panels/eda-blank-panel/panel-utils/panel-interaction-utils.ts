@@ -64,8 +64,14 @@ export const PanelInteractionUtils = {
     if (ebp.panel.content) {
       const fields = ebp.panel.content.query.query.fields;
       for (let i = 0, n = fields.length; i < n; i++) {
-        ebp.currentQuery[i].format = fields[i].format;
-        ebp.currentQuery[i].cumulativeSum = fields[i].cumulativeSum;
+        try{
+          ebp.currentQuery[i].format = fields[i].format;
+          ebp.currentQuery[i].cumulativeSum = fields[i].cumulativeSum;
+        }catch(e){
+          console.log('ERROR handling current query .... handleCurrentQuery.... did you changed the query model?');
+          console.log(e);
+
+        }
       }
     }
   },

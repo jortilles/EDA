@@ -34,7 +34,7 @@ export const PanelOptions = {
 
         if (Object.entries(panelComponent.graficos).length !== 0 && panelComponent.chartData.length !== 0) {
 
-          if (['line', 'area', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline', 'histogram' ].includes(panelComponent.graficos.chartType)) {
+          if (['line', 'area', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline', 'histogram'].includes(panelComponent.graficos.chartType)) {
 
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.chartController = new EdaDialogController({
@@ -75,6 +75,19 @@ export const PanelOptions = {
                 alertLimits: panelComponent.panelChart.componentRef.instance.alertLimits
               },
               close: (event, response) => { panelComponent.onCloseKpiProperties(event, response) }
+            });
+
+          } 
+          else if (panelComponent.graficos.chartType === 'dynamicText') {
+
+            panelComponent.contextMenu.hideContextMenu();
+            panelComponent.dynamicTextController = new EdaDialogController({
+              params: {
+                panelID: _.get(panelComponent.panel, 'id'),
+                panelChart: panelComponent.panelChartConfig,
+                color: panelComponent.panelChart.componentRef.instance.color
+              },
+              close: (event, response) => { panelComponent.onClosedynamicTextProperties(event, response) }
             });
 
           } 
@@ -220,16 +233,11 @@ export const PanelOptions = {
     const menu = [];
     const editmode = panelComponent.getEditMode();
     const type = panelComponent.getChartType();
-
     if(editmode) menu.push(PanelOptions.editQuery(panelComponent));
-
     menu.push(PanelOptions.editChart(panelComponent));
-
-    if(editmode && ![ "crosstable", "kpi"].includes(type) ) menu.push(PanelOptions.linkPanel(panelComponent));
-    
+    if(editmode && ![ "crosstable", "kpi", "dynamicText"].includes(type) ) {menu.push(PanelOptions.linkPanel(panelComponent)); }
     menu.push(PanelOptions.exportExcel(panelComponent));
     menu.push(PanelOptions.duplicatePanel(panelComponent));
-
     if(editmode) menu.push(PanelOptions.deletePanel(panelComponent));
 
     return menu;

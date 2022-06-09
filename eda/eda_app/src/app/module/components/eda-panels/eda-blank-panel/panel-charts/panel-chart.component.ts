@@ -12,6 +12,7 @@ import {
     OnDestroy, Output, EventEmitter, Self, ElementRef, NgZone
 } from '@angular/core';
 import { EdaKpiComponent } from '../../../eda-kpi/eda-kpi.component';
+import { EdadynamicTextComponent } from '../../../eda-dynamicText/eda-dynamicText.component';
 import { EdaTableComponent } from '../../../eda-table/eda-table.component';
 import { PanelChart } from './panel-chart';
 import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/services/service.index';
@@ -23,6 +24,7 @@ import { EdaColumnNumber } from '@eda/components/eda-table/eda-columns/eda-colum
 import { EdaColumnText } from '@eda/components/eda-table/eda-columns/eda-column-text';
 import { EdaTable } from '@eda/components/eda-table/eda-table';
 import { KpiConfig } from './chart-configuration-models/kpi-config';
+import { DynamicTextConfig } from './chart-configuration-models/dynamicText-config';
 import { EdaMapComponent } from '@eda/components/eda-map/eda-map.component';
 import { EdaGeoJsonMapComponent } from '@eda/components/eda-map/eda-geoJsonMap.component';
 
@@ -72,8 +74,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     constructor(public resolver: ComponentFactoryResolver,
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
-        private zone: NgZone,
-        private styleProviderService: StyleProviderService) {
+        public styleProviderService: StyleProviderService) {
 
         this.styleProviderService.panelFontColor.subscribe(color => {
             this.fontColor = color;
@@ -142,6 +143,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
         if (type === 'kpi') {
             this.renderEdaKpi();
+        }
+        if (type === 'dynamicText') {
+            this.renderEdadynamictext();
         }
         if (['geoJsonMap', 'coordinatesMap'].includes(type)) {
             this.renderMap(type);
@@ -231,7 +235,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
 
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, values,
-            dataTypes, dataDescription, isbarline);
+            dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
 
         const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
 
@@ -245,7 +249,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
       
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
-            minMax, styles, cfg.showLabels,  this.props.edaChart);
+            minMax, styles, cfg.showLabels, cfg.numberOfColumns, this.props.edaChart);
 
         /**Add trend datasets*/
         cfg = this.props.config.getConfig();
@@ -391,6 +395,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
+   /**
+   * Renders a dynamicTextComponent
+   */
+    private renderEdadynamictext() {
+        let chartConfig: any = {};
+        let cfg: any = this.props.config.getConfig();
+        chartConfig.value = this.props.data.values[0][0];
+        chartConfig.header = this.props.query[0].display_name.default;
+        chartConfig.color = cfg;
+        this.createEdadynamicTextComponent(chartConfig);
+    }
+
     /**
      * creates a kpiComponent
      * @param inject 
@@ -406,6 +422,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
     }
+
+        /**
+     * creates a dynamicTextComponent
+     * @param inject 
+     */
+         private createEdadynamicTextComponent(inject: any) {
+            this.entry.clear();
+            const factory = this.resolver.resolveComponentFactory(EdadynamicTextComponent);
+            this.componentRef = this.entry.createComponent(factory);
+            this.componentRef.instance.inject = inject;
+            this.componentRef.instance.onNotify.subscribe(data => {
+                const dynamicTextConfig = new DynamicTextConfig(data);
+                (<DynamicTextConfig><unknown>this.props.config.setConfig(dynamicTextConfig));
+            })
+        }
 
     private renderMap(type: string) {
         let inject = new EdaMap();

@@ -164,11 +164,25 @@ export abstract class QueryBuilderService {
         return `SELECT DISTINCT ${columns.join(', ')} \nFROM ${origin}`;
     }
 
-
+    public cleanOriginTable(originTable:string):string {
+        let res = "";
+        if(originTable.slice(0,1)=='`' && originTable.charAt(originTable.length - 1)=='`'){
+            res = originTable.substring(1, originTable.length-1);
+        }else if(originTable.slice(0,1)=='\'' && originTable.charAt(originTable.length - 1)=='\''){
+            res = originTable.substring(1, originTable.length-1);
+        }else if(originTable.slice(0,1)=='"' && originTable.charAt(originTable.length - 1)=='"'){
+            res = originTable.substring(1, originTable.length-1);
+        }else{
+            res = originTable;
+        }
+        return  res;
+    }
     public getPermissions(modelPermissions, modelTables, originTable) {
 
+        originTable = this.cleanOriginTable(originTable);
         const filters = [];
         const permissions = this.getUserPermissions(modelPermissions);
+
         const relatedTables = this.checkRelatedTables(modelTables, originTable);
 
         let found = -1;
@@ -221,6 +235,7 @@ export abstract class QueryBuilderService {
      * @return array with all related tables
      */
     public checkRelatedTables(dbModel, tableName) {
+
         const originTable = dbModel.filter(t => t.table_name === tableName)[0];
         const tablesMap = this.findRelationsRecursive(dbModel, originTable, new Map());
         return Array.from(tablesMap.values());

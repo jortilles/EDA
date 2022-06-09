@@ -7,6 +7,7 @@ export class EdaChart {
     public chartDataset: ChartDataSets[] = [];
     public chartLabels: string[] = [];
     public chartColors: any[] = [];
+    public charcoloms: any[] = [];
     public chartLegend: boolean = false;
     public chartOptions: ChartOptions;
     public chartPlugins: any[] = [];
@@ -14,6 +15,7 @@ export class EdaChart {
     addTrend: boolean;
     addComparative: boolean;
     showLabels:boolean;
+    numberOfColumns: number;
 
     constructor() { }
 }

@@ -1463,24 +1463,18 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">102</context>
 </context-group>
 </trans-unit>
+
+
+<trans-unit id="addModelPermissions" datatype="html">
+  <source> Añadir permiso a nivel de modelo</source>
+  <target> Afegir permís a nivell de model</target>
+</trans-unit>
+
 <trans-unit id="addPermission" datatype="html">
-<source> Añadir permiso
-</source>
-<target> Afegir permís
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">108</context>
-</context-group>
+<source> Añadir permiso</source>
+<target> Afegir permís</target>
 </trans-unit>
-<trans-unit id="addPermissions" datatype="html">
-<source>Añadir permiso</source>
-<target> Afegir permís </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">107</context>
-</context-group>
-</trans-unit>
+
 <trans-unit id="esconderColumna" datatype="html">
 <source>Esconder columna</source>
 <target>Amagar columna</target>
@@ -1895,6 +1889,19 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Histograma</source>
 <target>Histograma</target>
 </trans-unit>
+
+
+<trans-unit id="chartTypesDynamicText">
+<source>Texto Dinámico</source>
+<target>Text Dinàmic</target>
+</trans-unit>
+<trans-unit id="chartInfoDynamicText">
+<source>Un texto dinámicos requiere de un único valor NO numérico</source>
+<target>Un text dinàmic requereix un únic valor NO numèric</target>
+</trans-unit>
+
+
+
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
 <target>Gràfic de barres apilades</target>
@@ -1980,6 +1987,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="dates1">
 <source>AÑO</source>
 <target>ANY</target>
+</trans-unit>
+<trans-unit id="datesQ">
+<source>TRIMESTRE</source>
+<target>TRIMESTRE</target>
 </trans-unit>
 <trans-unit id="dates2">
 <source>MES</source>
@@ -2765,6 +2776,16 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <context context-type="linenumber">15</context>
 </context-group>
 </trans-unit>
+
+<trans-unit id="DynamicTextColor" datatype="html">
+<source>       Cambiar Color   </source>
+<target>       Camviar Color   </target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component.html</context>
+  <context context-type="linenumber">11</context>
+</context-group>
+</trans-unit>
+
 <trans-unit id="kpiGreatSmallEqualH6" datatype="html">
 <source>        Operador       </source>
 <target>        Operador       </target>
@@ -3391,10 +3412,60 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Veure configuració de seguretat</target>
   </trans-unit>
 
+
+
+  <trans-unit id="rolesPermisosTabla">
+    <source>Visibilidad de tablas</source>
+    <target>Visibilitat de taules</target>
+  </trans-unit>
+  <trans-unit id="rolesPermisosModelo">
+    <source>Visibilidad a nivel de modelo</source>
+    <target>Visibilitat a nivell de model</target>
+  </trans-unit>
+  <trans-unit id="tablePermissionNO">
+    <source>No tiene permiso para ver esta tabla</source>
+    <target>No te permís per veure aquesta taula</target>
+  </trans-unit>
+  <trans-unit id="tablePpermissionYES">
+    <source>SI tiene permiso para ver esta tabla</source>
+    <target>SI te permís per veure aquesta taula</target>
+  </trans-unit>
+  <trans-unit id="modelPermissionNO">
+    <source>No tiene permiso para ver este modelo</source>
+    <target>No teniu permís per veure aquest model</target>
+  </trans-unit>
+  <trans-unit id="modelPermissionYES">
+    <source>SI tiene permiso para ver este modelo</source>
+    <target>SI te permís per veure aquest model</target>
+  </trans-unit>
+  <trans-unit id="anyCanSeeNO">
+    <source>Los usuarios y grupos que pueden ver el modelo son SOLO los definidos explicitamente.</source>
+    <target>Els usuaris i grups que poden veure el model són NOMÉS els definits explícitament.</target>
+  </trans-unit>
+  <trans-unit id="anyCanSeeYES">
+    <source>Cualquier usuario puede ver el modelo. Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+    <target>Qualsevol usuari pot veure el model. Els filtres de seguretat es defineixen a nivell de taula i columna concreta.</target>
+  </trans-unit>
+
+
+
   <trans-unit id="tablesd">
     <source>TABLAS</source>
     <target>TAULES</target>
   </trans-unit>
+  
+  <trans-unit id="visible">
+    <source>VISIBLE</source>
+    <target>VISIBLE</target>
+  </trans-unit>
+  
+  <trans-unit id="permisos">
+    <source>PERMISOS</source>
+    <target>PERMISOS</target>
+  </trans-unit>
+
+
+
   
   <trans-unit id="column">
     <source>COLUMNAS </source>
@@ -3590,10 +3661,19 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Mostra Etiquetes</target>
   </trans-unit> 
 
+       <trans-unit id="histogramColum">
+    <source>Columnas</source>
+    <target>Columnes</target>
+  </trans-unit> 
 
      <trans-unit id="showLablesTooltip">
     <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
     <target>Mostrar o amagar les etiquetes sobre els gràfics</target>
+  </trans-unit> 
+
+       <trans-unit id="columnsTooltip">
+    <source>Elige cuantas columnas quieres mostrar</source>
+    <target>Tria quantes columnes vols mostrar</target>
   </trans-unit> 
 
      <trans-unit id="trendTooltip">
@@ -3743,7 +3823,24 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit> 
   
   
+<trans-unit id="sidebarInform" datatype="html">
+<source>Crear Informe</source>
+<target>Crear Informe</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+<context context-type="linenumber">83</context>
+</context-group>
+</trans-unit>
 
+<trans-unit id="si">
+<source>Si</source>
+<target>Si</target>
+</trans-unit>
+
+<trans-unit id="no">
+<source>No</source>
+<target>No</target>
+</trans-unit>
 
 </body>
 </file>

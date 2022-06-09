@@ -1457,23 +1457,15 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="addPermission" datatype="html">
-<source> Añadir permiso
-</source>
-<target> Add permission
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">108</context>
-</context-group>
+<source> Añadir permiso</source>
+<target> Add permission</target>
 </trans-unit>
-<trans-unit id="addPermissions" datatype="html">
-<source>Añadir permiso</source>
-<target> Add permission </target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">107</context>
-</context-group>
+
+<trans-unit id="addModelPermissions" datatype="html">
+  <source>Añadir permiso a nivel de modelo</source>
+  <target>Dodaj uprawnienia na poziomie modelu</target>
 </trans-unit>
+
 <trans-unit id="esconderColumna" datatype="html">
 <source>Esconder columna</source>
 <target>Hide column</target>
@@ -1876,6 +1868,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Histograma</source>
 <target>Histogram</target>
 </trans-unit>
+<trans-unit id="chartTypesDynamicText">
+<source>Texto Dinámico</source>
+<target>Tekst dynamiczny</target>
+</trans-unit>
+<trans-unit id="chartInfoDynamicText">
+<source>Un texto dinámicos requiere de un único valor NO numérico</source>
+<target>Tekst dynamiczny wymaga pojedynczej wartości nienumerycznej</target>
+</trans-unit>
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
 <target>Stacked bar chart</target>
@@ -1962,6 +1962,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="dates1">
 <source>AÑO</source>
 <target>YEAR</target>
+</trans-unit>
+<trans-unit id="datesQ">
+<source>TRIMESTRE</source>
+<target>TRYMESTR</target>
 </trans-unit>
 <trans-unit id="dates2">
 <source>MES</source>
@@ -2744,6 +2748,17 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <context context-type="linenumber">15</context>
 </context-group>
 </trans-unit>
+
+<trans-unit id="DynamicTextColor" datatype="html">
+<source>       Cambiar Color   </source>
+<target>       Change Color  </target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component.html</context>
+  <context context-type="linenumber">11</context>
+</context-group>
+</trans-unit>
+
+
 <trans-unit id="kpiGreatSmallEqualH6" datatype="html">
 <source>        Operador       </source>
 <target>        Operator       </target>
@@ -3357,10 +3372,57 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>View security configuration</target>
   </trans-unit>
 
+  <trans-unit id="rolesPermisosTabla">
+    <source>Visibilidad de tablas</source>
+    <target>Widoczność tabeli</target>
+  </trans-unit>
+  <trans-unit id="rolesPermisosModelo">
+    <source>Visibilidad a nivel de modelo</source>
+    <target>Widoczność na poziomie modelu</target>
+  </trans-unit>
+    <trans-unit id="tablePermissionNO">
+    <source>No tiene permiso para ver esta tabla</source>
+    <target>Nie masz uprawnień do przeglądania tej tabeli</target>
+  </trans-unit>
+  <trans-unit id="tablePpermissionYES">
+    <source>SI tiene permiso para ver esta tabla</source>
+    <target>Masz uprawnień do przeglądania tej tabeli</target>
+  </trans-unit>
+
+  <trans-unit id="modelPermissionNO">
+    <source>No tiene permiso para ver este modelo</source>
+    <target>Nie masz uprawnień do oglądania tego modelu</target>
+  </trans-unit>
+  <trans-unit id="modelPermissionYES">
+    <source>SI tiene permiso para ver este modelo</source>
+    <target>Masz uprawnień do oglądania tego modelu</target>
+  </trans-unit>
+  <trans-unit id="anyCanSeeNO">
+    <source>Los usuarios y grupos que pueden ver el modelo son SOLO los definidos explicitamente.</source>
+    <target>Użytkownicy i grupy, które mogą zobaczyć model, to TYLKO osoby wyraźnie zdefiniowane</target>
+  </trans-unit>
+  <trans-unit id="anyCanSeeYES">
+    <source>Cualquier usuario puede ver el modelo. Los filtros de seguridad se definen a nivel de tabla y columna concreta.</source>
+    <target>Każdy użytkownik może zobaczyć model. Filtry bezpieczeństwa są definiowane na poziomie określonej tabeli i kolumny.</target>
+  </trans-unit>
+
+
   <trans-unit id="tablesd">
     <source>TABLAS</source>
-    <target>TABLES</target>
+    <target>TABLICE</target>
   </trans-unit>
+
+  <trans-unit id="permisos">
+    <source>PERMISOS</source>
+    <target>ZEZWOLENIA</target>
+  </trans-unit>
+
+  
+  <trans-unit id="visible">
+    <source>VISIBLE</source>
+    <target>VISIBLE</target>
+  </trans-unit>
+
 
   <trans-unit id="column">
     <source>COLUMNAS </source>
@@ -3552,10 +3614,20 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Mostrar Etiquetas</source>
     <target>Pokaż tagi</target>
   </trans-unit> 
+ 
+       <trans-unit id="histogramColum">
+    <source>Columnas</source>
+    <target>kolumny</target>
+  </trans-unit> 
 
        <trans-unit id="showLablesTooltip">
     <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
     <target>Pokaż lub ukryj etykiety na wykresach</target>
+  </trans-unit> 
+
+         <trans-unit id="columnsTooltip">
+    <source>Elige cuantas columnas quieres mostrar</source>
+    <target>Wybierz ile kolumn chcesz wyświetlić</target>
   </trans-unit> 
 
      <trans-unit id="trendTooltip">
@@ -3699,6 +3771,18 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>en este rango</source>
     <target>in this range</target>
   </trans-unit> 
+
+
+
+<trans-unit id="si">
+<source>Si</source>
+<target>Tak</target>
+</trans-unit>
+
+<trans-unit id="no">
+<source>No</source>
+<target>Nie</target>
+</trans-unit>
 
 
 </body>

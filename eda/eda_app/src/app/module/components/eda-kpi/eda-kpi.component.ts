@@ -68,7 +68,6 @@ export class EdaKpiComponent implements OnInit {
             result = result / 1.8;
         }
         // Ok.... we are done...
-
         return result.toFixed().toString();
 
     }
@@ -82,7 +81,6 @@ export class EdaKpiComponent implements OnInit {
             this.containerHeight = height  ;
             this.containerWidth = width  ;
         }
-
 
       }
       

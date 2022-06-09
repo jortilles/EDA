@@ -1,9 +1,13 @@
 <eda-dialog [inject]="dialog">
 
   <div body>
+    <h5 i18n="@@rolesPermisos">Roles y permisos de fila</h5>
     <eda-table style="margin-top: 3em;" [inject]="securityTable"></eda-table>
+    <h5 i18n="@@rolesPermisosTabla">Visibilidad de tablas</h5>
+    <eda-table style="margin-top: 3em;" [inject]="securityTableTableLevel"></eda-table>
+    <h5 i18n="@@rolesPermisosModelo">Visibilidad a nivel de modelo</h5>
+    <eda-table style="margin-top: 3em;" [inject]="securityModelTableLevel"></eda-table>
   </div>
-
 
   <div footer>
     <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">

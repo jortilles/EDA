@@ -19,7 +19,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
 
     public form: FormGroup;
-    public table: EdaTable;
+    public permissionsColumn: EdaTable;
+    public permissionTable: EdaTable;
+    public permissionModel: EdaTable;
     public relationsTable: EdaTable;
     public navigationSubscription: any;
     // Properties
@@ -29,6 +31,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public typePanel: string;
     public relationController: EdaDialogController;
     public permissionsController: EdaDialogController;
+    public tablePermissionsController: EdaDialogController;
+    public modelPermissionsController: EdaDialogController;
     public newColController: EdaDialogController;
     public mapController: EdaDialogController;
     public viewController: EdaDialogController;
@@ -55,9 +59,11 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public addRelation:string = $localize`:@@addRelationButton:Añadir relación`;
     public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`; 
     public addPermission:string = $localize`:@@addPermission:Añadir permiso`;
+    public si = $localize`:@@si:Si`;
+    public no = $localize`:@@no:No`;
+  
 
-
-    // Types canvi tonto
+    // Types
     public columnTypes: SelectItem[] = [
         { label: 'text', value: 'text' },
         { label: 'numeric', value: 'numeric' },
@@ -88,8 +94,11 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     ];
     public selectedTipoBD: SelectItem;
 
-    // Permisisons table
+    // table permissions
     public permissions: Array<any>;
+
+    // model permissions
+    public modelPermissions: Array<any>;
 
     constructor(public dataModelService: DataSourceService,
         private alertService: AlertService,
@@ -110,14 +119,16 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.alertService.addError(err);
             }
         );
-        this.table = new EdaTable({
+        
+
+        this.permissionsColumn = new EdaTable({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
                         label: 'ELIMINAR', command: () => {
                          
                         
-                            const elem = this.table.getContextMenuRow()._id.reduce((a, b)=> a + b) ;
+                            const elem = this.permissionsColumn.getContextMenuRow()._id.reduce((a, b)=> a + b) ;
 
                             const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined)
                             .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
@@ -131,8 +142,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
                             this.modelPanel.metadata.model_granted_roles = tmpPermissions;
   
-                            this.updateColumn();
-                            this.table._hideContexMenu();
+                            this.update();
+                            this.permissionsColumn._hideContexMenu();
                         }
                     })
                 ]
@@ -144,6 +155,72 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 new EdaColumnText({ field: 'value', header: $localize`:@@valueTable:VALOR` }),
             ]
         });
+
+
+
+        this.permissionTable = new EdaTable({
+            contextMenu: new EdaContextMenu({
+                contextMenuItems: [
+                    new EdaContextMenuItem({
+                        label: 'ELIMINAR', command: () => {
+                            const elem = this.permissionTable.getContextMenuRow()._id.reduce((a, b)=> a + b) ;
+                            const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined)
+                            .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
+
+                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined)
+                            .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
+
+                            let tmpPermissions = [];
+                            groups.forEach(group => tmpPermissions.push(group));
+                            users.forEach(user => tmpPermissions.push(user));
+
+                            this.modelPanel.metadata.model_granted_roles = tmpPermissions;
+                            this.update();
+                 
+                            this.permissionTable._hideContexMenu();
+                        }
+                    })
+                ]
+            }),
+            cols: [
+                new EdaColumnContextMenu(),
+                new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
+                new EdaColumnText({ field: 'group', header: $localize`:@@groupTable:GRUPO` }),
+                new EdaColumnText({ field: 'permission', header:"permission" }),
+            ]
+        });
+
+
+
+        this.permissionModel = new EdaTable({
+            contextMenu: new EdaContextMenu({
+                contextMenuItems: [
+                    new EdaContextMenuItem({
+                        label: 'ELIMINAR', command: () => {
+                            const elem = this.permissionModel.getContextMenuRow()._id.reduce((a, b)=> a + b) ;
+                            const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined)
+                            .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
+                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined)
+                            .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
+                            let tmpPermissions = [];
+                            groups.forEach(group => tmpPermissions.push(group));
+                            users.forEach(user => tmpPermissions.push(user));
+                            this.modelPanel.metadata.model_granted_roles = tmpPermissions;
+                            this.update();
+                            this.permissionModel._hideContexMenu();
+                        }
+                    })
+                ]
+            }),
+            cols: [
+                
+                new EdaColumnContextMenu(),
+                new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
+                new EdaColumnText({ field: 'group', header: $localize`:@@groupTable:GRUPO` }),
+                new EdaColumnText({ field: 'permission', header:"permission" }),
+            ]
+        });
+
 
         this.relationsTable = new EdaTable({
             contextMenu: new EdaContextMenu({
@@ -210,11 +287,52 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     carregarPanels() {
+        // Modelo
+        this.dataModelService.currentModelPanel.subscribe(
+            modelPanel => {
+                this.modelPanel = modelPanel;
+                this.permissions = this.modelPanel.metadata ? this.modelPanel.metadata.model_granted_roles : [];
+                 // Permisos del model
+                this.permissionModel.value = [];
+                this.permissions.forEach(permission => {
+                    if (  permission.table === "fullModel" && permission.column === "fullModel" ) {
+                        this.permissionModel.value.push(
+                            {
+                                user: permission.usersName,
+                                group: permission.groupsName,
+                                permission: permission.permission?this.si:this.no,
+                                _id: permission.users || permission.groups
+                            }
+                        );
+                    }
+                });
+
+            }, err => {
+                this.alertService.addError(err);
+            }
+        );
+
+        // tabla 
         this.dataModelService.currentTablePanel.subscribe(
             tablePanel => {
                 this.tablePanel = tablePanel;
                 this.tmpRelations = tablePanel.relations.filter(r => r.visible === true);
                 this.relationsTable.value = []
+                this.permissions = this.modelPanel.metadata ? this.modelPanel.metadata.model_granted_roles : [];
+                this.permissionTable.value = [];
+                // permisos de la taula.
+                this.permissions.forEach(permission => {
+                    if (this.tablePanel.technical_name === permission.table&&permission.column === "fullTable") {
+                        this.permissionTable.value.push(
+                            {
+                                user: permission.usersName,
+                                group: permission.groupsName,
+                                permission: permission.permission?this.si:this.no,
+                                _id: permission.users || permission.groups
+                            }
+                        );
+                    }
+                });
                 tablePanel.relations.filter(r => r.visible === true).forEach(relation => {
                     const row = {
                         origin: relation.source_column,
@@ -233,6 +351,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         );
 
+        //Columna
         this.dataModelService.currentColumnPanel.subscribe(
             columnPanel => {
                 this.columnPanel = columnPanel;
@@ -240,13 +359,13 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.selectedAggType = this.columnPanel.aggregation_type;
 
                 this.permissions = this.modelPanel.metadata ? this.modelPanel.metadata.model_granted_roles : [];
-                this.table.value = [];
+                this.permissionsColumn.value = [];
                 this.permissions.forEach(permission => {
 
                     const table = this.dataModelService.getTable(this.columnPanel);
 
-                    if (this.columnPanel.technical_name === permission.column && table.table_name === permission.table) {
-                        this.table.value.push(
+                    if (this.columnPanel.technical_name === permission.column && table.table_name === permission.table && permission.column != "fullTable" ) {
+                        this.permissionsColumn.value.push(
                             {
                                 user: permission.usersName,
                                 group: permission.groupsName,
@@ -256,11 +375,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                         );
                     }
                 });
-
             }, err => {
                 this.alertService.addError(err);
             }
         );
+
+
 
         this.dataModelService.currentTypePanel.subscribe(
             typePanel => {
@@ -274,7 +394,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.selectedTipoBD = this.tiposBD.filter(type => type.value === modelPanel.connection.type)[0];
             }, err => this.alertService.addError(err)
         );
+
     }
+
 
     update() {
         switch (this.typePanel) {
@@ -486,6 +608,33 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         });
     }
+
+    openTablePermissionsDialog() {
+        this.tablePermissionsController = new EdaDialogController({
+            params: { table: this.tablePanel },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addPermission(response);
+                    this.update();
+                }
+                this.tablePermissionsController = undefined;
+            }
+        });
+    }
+
+    openModelPermissionsDialog() {
+        this.modelPermissionsController = new EdaDialogController({
+            params: {   },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addPermission(response);
+                    this.update();
+                }
+                this.modelPermissionsController = undefined;
+            }
+        });
+    }
+
 
     hideAllTables() {
         this.dataModelService.hideAllTables();

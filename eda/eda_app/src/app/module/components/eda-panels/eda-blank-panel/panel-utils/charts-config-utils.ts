@@ -4,6 +4,7 @@ import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 import { ChartJsConfig } from '../panel-charts/chart-configuration-models/chart-js-config';
 import { KpiConfig } from '../panel-charts/chart-configuration-models/kpi-config';
+import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dynamicText-config';
 import { MapConfig } from '../panel-charts/chart-configuration-models/map-config';
 import { SankeyConfig } from '../panel-charts/chart-configuration-models/sankey-config';
 import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.config';
@@ -21,8 +22,7 @@ export const ChartsConfigUtils = {
 
     if (ebp.panelChart.componentRef && ['table', 'crosstable'].includes(ebp.panelChart.props.chartType)) {
       tableRows = ebp.panelChart.componentRef.instance.inject.rows || 10;
-      config =
-      {
+      config = {
         withColTotals: ebp.panelChart.componentRef.instance.inject.withColTotals,
         withColSubTotals: ebp.panelChart.componentRef.instance.inject.withColSubTotals,
         withRowTotals: ebp.panelChart.componentRef.instance.inject.withRowTotals,
@@ -37,16 +37,20 @@ export const ChartsConfigUtils = {
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpi') {
 
-      config =
-      {
+      config = {
         sufix: ebp.panelChart.componentRef.instance.inject.sufix,
         alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits
       }
 
-    } else if (['coordinatesMap', 'geoJsonMap'].includes(ebp.panelChart.props.chartType)) {
+    }else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
 
-      config = 
-      {
+      config = {
+        color: ebp.panelChart.componentRef.instance.inject.color,
+      }
+
+    }else if (['coordinatesMap', 'geoJsonMap'].includes(ebp.panelChart.props.chartType)) {
+
+      config = {
         zoom:ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
         coordinates : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
         logarithmicScale : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
@@ -54,31 +58,23 @@ export const ChartsConfigUtils = {
         color : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
         
       }
-    }
-
-    else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
-
-      config =
-      {
+    }else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
+      config = {
         colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : []
       }
-    }
-
-    else if (ebp.panelChart.props.chartType === 'knob') {
+    }else if (ebp.panelChart.props.chartType === 'knob') {
   
       config = {
         color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.color : ebp.panelChart.props.config.getConfig()['color'],
         limits: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.limits : ebp.panelChart.props.config.getConfig()['limits']
       };
-    }
-
-    else{
-      config = { 
-        colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
-        chartType: ebp.panelChart.props.chartType, 
-        addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
-        addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,
-        showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false
+    } else{
+        config = { 
+          colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
+          chartType: ebp.panelChart.props.chartType, 
+          addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
+          addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,
+          showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false
       };
   }
     return new ChartConfig(config);
@@ -98,7 +94,7 @@ export const ChartsConfigUtils = {
     }
     else if (['bar', 'line','area', 'pie', 'doughnut', 'barline', 'horizontalBar', 'horizontalBar', 'histogram' ].includes(type)) {
 
-      return new ChartJsConfig(null, type, false, false,false);
+      return new ChartJsConfig(null, type, false, false,false,null);
 
     } else if (type === 'parallelSets') {
 
@@ -121,12 +117,15 @@ export const ChartsConfigUtils = {
     else if (type === 'sunburst') {
       return new SunburstConfig([]);
     }
-    else {
+    else if (type === 'kpi'){
       return new KpiConfig('', []);
+    }
+    else if (type === 'dynamicText'){
+      return new DynamicTextConfig(null);
     }
   },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | KnobConfig | FunnelConfig | SunburstConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | KnobConfig | FunnelConfig | SunburstConfig) => {
 
     return new ChartConfig(config);
 

@@ -1,0 +1,73 @@
+<eda-dialog [inject]="dialog">
+  <div body>
+
+    <div class="p-grid">
+
+        <div style="margin-left: 1em;" class="p-col-12">
+          <div class="anyoneCanSeeStyle" i18n="@@anyCanSeeNO" *ngIf="!anyoneCanSee">Los usuarios y grupos que pueden ver el modelo son SOLO los definidos explicitamente.</div>
+          <div class="anyoneCanSeeStyle" i18n="@@anyCanSeeYES" *ngIf="anyoneCanSee">Cualquier usuario puede ver el modelo. Los filtros de seguridad se definen a nivel de tabla y columna concreta.</div>
+          <p-inputSwitch [(ngModel)]="anyoneCanSee"></p-inputSwitch>
+        </div> 
+
+
+
+
+       <div  *ngIf="!anyoneCanSee" class="p-col-12">
+          <div style="margin: 1em;">
+            <p-radioButton name="groupname" value="users" [label]="usersLabel" [(ngModel)]="type"
+              (onClick)="resetValues()">
+            </p-radioButton>
+          </div>
+          <div style="margin: 1em;">
+            <p-radioButton name="groupname" value="groups" [label]="groupsLabel" [(ngModel)]="type"
+              (onClick)="resetValues()"></p-radioButton>
+          </div>
+
+          <!-- USERS -->
+
+          <div *ngIf="type==='users'" class="p-col-12">
+            <p-multiSelect [options]="users" [(ngModel)]="selectedUsers" [virtualScroll]="true" itemSize="30"
+              [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }"
+              [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" [defaultLabel]="usersDefaultLabel">
+            </p-multiSelect>
+          </div>
+
+          <!-- GROUPS -->
+          <div *ngIf="type==='groups'" class="p-col-12">
+            <p-multiSelect [options]="roles" [(ngModel)]="selectedRoles" [virtualScroll]="true" itemSize="30"
+              [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }"
+              [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" [defaultLabel]="groupsDefaultLabel">
+            </p-multiSelect>
+          </div>
+
+
+
+          <div style="margin-left: 1em;" class="p-col-12">
+            <div i18n="@@modelPermissionNO" *ngIf="!permission">No tiene permiso para ver este modelo</div>
+            <div i18n="@@modelPermissionYES" *ngIf="permission">SI tiene permiso para ver este modelo</div>
+            <p-inputSwitch [(ngModel)]="permission"></p-inputSwitch>
+          </div>
+
+  
+        </div>
+
+  
+
+    </div>
+
+  </div>
+
+  <div footer>
+
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+      <button type="button" pButton (click)="savePermission()"
+        [disabled]="(  selectedUsers.length < 1 && selectedRoles.length < 1  && anyoneCanSee==false )"
+        class="ui-button" icon="fa fa-check" i18n-label="@@guardarBtn" label="Confirmar"
+        id="eda_column_permission_confirmar"></button>
+      <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
+        label="Cerrar"></button>
+    </div>
+
+
+  </div>
+</eda-dialog>

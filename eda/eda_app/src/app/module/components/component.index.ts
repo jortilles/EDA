@@ -1,4 +1,3 @@
-
 // Eda Chart
 export { EdaChartComponent } from './eda-chart/eda-chart.component';
 
@@ -18,6 +17,9 @@ export * from './eda-funnel/eda-funnel.component';
 
 // Eda KPI
 export { EdaKpiComponent } from './eda-kpi/eda-kpi.component';
+
+// Eda dynamicText
+export { EdadynamicTextComponent } from './eda-dynamicText/eda-dynamicText.component';
 
 // Eda map
 export { EdaMapComponent } from './eda-map/eda-map.component';
@@ -41,6 +43,7 @@ export { AlertDialogComponent } from './eda-panels/eda-blank-panel/alert-dialog/
 export {CumSumAlertDialogComponent} from './eda-panels/eda-blank-panel/cumulativeSum-alert/cumsum-alert-dialog.component';
 export { MapEditDialogComponent } from './eda-panels/eda-blank-panel/maps-dialog/mapedit-dialog.component';
 export { KpiEditDialogComponent } from './eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component';
+export { dynamicTextDialogComponent } from './eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component';
 export { SankeyDialog } from './eda-panels/eda-blank-panel/sankey-dialog/sankey-dialog.component';
 export { TreeMapDialog } from './eda-panels/eda-blank-panel/treeMapDialog/treeMap-dialog.component';
 export { ScatterPlotDialog } from './eda-panels/eda-blank-panel/scatterPlotDialog/scatterPlot-dialog.component';
