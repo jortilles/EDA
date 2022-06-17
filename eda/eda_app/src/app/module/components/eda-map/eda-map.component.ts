@@ -42,8 +42,6 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
         validData.push(this.inject.data[i]);
       }
     }  
-
-
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {
         //center: [41.38879, 2.15899],

@@ -216,7 +216,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
         this.cols = this.myPanelChartComponent.componentRef.instance.inject.cols.filter(col => col.type === "EdaColumnNumber" || col.type === "EdaColumnPercentage");
       }
     } else {
-
+      // El codigo de color solo aplica a un nivel de crosstab
       this.cols = [];
 
       let series = this.myPanelChartComponent.componentRef.instance.inject.series;
@@ -240,7 +240,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
       /**Remove trend col */
       this.cols = this.cols.filter(col => col.header !== undefined);
-
 
       if (this.onlyPercentages) this.cols = [];
     }

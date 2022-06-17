@@ -445,11 +445,32 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.labels = this.props.query.map(field => field.display_name.default);
         inject.maps = this.props.maps;
         inject.query = this.props.query;
-        inject.coordinates = this.props.config['config']['coordinates'] ? this.props.config['config']['coordinates'] : null;
-        inject.zoom = this.props.config['config']['zoom'] ? this.props.config['config']['zoom'] : null;
-        inject.color = this.props.config['config']['color'] ? this.props.config['config']['color'] : '#006400';
-        inject.logarithmicScale = this.props.config['config']['logarithmicScale'] ? this.props.config['config']['logarithmicScale'] : false;
-        inject.legendPosition = this.props.config['config']['legendPosition'] ? this.props.config['config']['legendPosition'] : 'bottomleft';
+        try{
+            inject.coordinates = this.props.config['config']['coordinates'];
+        }catch{
+            inject.coordinates = null ;
+        }
+        try{
+            inject.zoom = this.props.config['config']['zoom'];
+        }catch{
+            inject.zoom =  null ;
+        }
+        try{
+            inject.color = this.props.config['config']['color']  ;
+        }catch{
+            inject.color =  '#006400';
+        }
+        try{
+            inject.logarithmicScale = this.props.config['config']['logarithmicScale']  ;
+        }catch{
+            inject.logarithmicScale =  false;
+        }
+        try{
+            inject.legendPosition = this.props.config['config']['legendPosition']  ;
+        }catch{
+            inject.legendPosition =  'bottomleft';
+        }
+        
         inject.linkedDashboard = this.props.linkedDashboardProps;
         if (type === 'coordinatesMap') {
             this.createMapComponent(inject)

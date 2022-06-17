@@ -3268,7 +3268,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Percentages</target>
   </trans-unit>
   <trans-unit id="addStyles">
-    <source>Còdigo de color</source>
+    <source>Código de color</source>
     <target>Color code</target>
   </trans-unit>
   <trans-unit id="tableTitleDialog">

@@ -29,10 +29,12 @@ export class MapUtilsService extends ApiService {
     }
 
     makeMarkers = (map: L.Map, data: Array<any>, labels: Array<any>, linkedDashboardProps: LinkedDashboardProps): void => {
-
-        const maxValue = Math.max(...data.map(x => x[3]), 0);
+        //Puede tener categoría o no  por lo que el set de datos es longitud, latitutd, [Categoria] , valor.
+        // por eso se pone el numericValue como un valor relativo.
+        const numericValue=data[0].length-1;
+        const maxValue = Math.max(...data.map(x => x[numericValue]), 0);
         for (const d of data) {
-            const radius = typeof d[3] === 'number' ? MapUtilsService.scaledRadius(d[3], maxValue) : 20;
+            const radius = typeof d[numericValue] === 'number' ? MapUtilsService.scaledRadius(d[numericValue], maxValue) : 20;
             const color = this.getColor(radius);
             const lat = parseFloat(d[0]);// / 1000000 / 2;
             const lon = parseFloat(d[1]); // / 10000;

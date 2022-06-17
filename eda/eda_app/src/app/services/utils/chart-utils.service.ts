@@ -267,10 +267,13 @@ export class ChartUtilsService {
                 num_cols=50;
             }
 
+
             //No me llega el numero de columnas fijo el numero de columnas
-            if(!isNaN(numberOfColumns)){
+            if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
                 num_cols=numberOfColumns;
-            }
+            } 
+
+
            if( this.esEntero(distinctNumbers)){
                 salto =  Math.ceil( max/num_cols )  ;
             }else{  
@@ -278,16 +281,14 @@ export class ChartUtilsService {
                 salto =   Math.ceil( max/num_cols * 10) / 10 ;
             }
            
-
-
             if(salto == 1 ){
                 new_data = this.generateNewDataOneForHistogram(allNumbers,num_cols,min,max , salto);
                 grupos =   this.generateGruposOneForHistogram( num_cols,min ); 
             }
             else{
-                if(!isNaN(numberOfColumns)){
+                if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
                     num_cols=numberOfColumns;
-                }
+                } 
                 new_data = this.generateNewDataRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto);
                                                                                                                             /** array de un único elemento. Cuando tenga mas ya veré lo que hago */
                 grupos =   this.generateGruposRangeForHistogram( num_cols,min,max , salto,  this.esEntero(distinctNumbers) , dataDescription.query[0].minimumFractionDigits    );
@@ -301,8 +302,9 @@ export class ChartUtilsService {
                     data: new_data,
                     label:  this.histoGramRangesTxt + ' - '  + dataDescription.numericColumns[0].name
                 }];
-            output =  _output;
+ 
 
+            output =  _output;
         }
 
         return output;

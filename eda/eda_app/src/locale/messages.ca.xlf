@@ -3311,7 +3311,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="addStyles">
-    <source>Còdigo de color</source>
+    <source>Código de color</source>
     <target>Codi de color</target>
   </trans-unit>
 
