@@ -43,6 +43,7 @@ then
         a2enmod proxy_balancer
         a2enmod proxy_connect
         a2enmod proxy_html
+        a2dismod -f autoindex
 
 
         cd /eda/eda_app/
