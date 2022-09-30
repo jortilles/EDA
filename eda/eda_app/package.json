@@ -34,7 +34,7 @@
     "chart.js": "^2.9.4",
     "chartjs-plugin-datalabels": "~0.7.0",
     "core-js": "^2.6.11",
-    "d3": "^6.2.0",
+    "d3": "^7.6.1",
     "d3-sankey": "^0.12.3",
     "dom-to-image": "^2.6.0",
     "font-awesome": "^4.7.0",
