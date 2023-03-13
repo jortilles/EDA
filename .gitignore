@@ -19,3 +19,12 @@ eda/eda_api/lib/module/uploads/users
 eda/eda_api/chromium_dependencies.txt
 
 
+
+#APP
+
+eda/eda_app/.angular
+eda/eda_app/.vscode
+eda/eda_app/node_modules
+eda/eda_app/dist
+eda/eda_app/AddEdaCharInstructions.txt
+eda/eda_app/package-lock.json
