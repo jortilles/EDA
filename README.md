@@ -15,7 +15,7 @@ git clone github.com/jortilles/EDA.git
 
 ```
 module.exports = {
-    url: "mongodb://localhost:27017/EDA"
+    url: "mongodb://127.0.0.1:27017/EDA"
 };
 
 ```
@@ -81,3 +81,5 @@ To see the technical documentation click [here](docs/technical-docs.md)
 
 ## User Documentation
 We just created documentation site http://edadoc.jortilles.com/en/index.html#/
+
+
