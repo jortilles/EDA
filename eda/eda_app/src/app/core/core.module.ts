@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { PrimengModule } from './primeng.module';
-import { ChartsModule } from 'ng2-charts';
+import { NgChartsModule } from 'ng2-charts';
 
 @NgModule({
     imports: [
@@ -19,7 +19,7 @@ import { ChartsModule } from 'ng2-charts';
         ReactiveFormsModule,
         HttpClientModule,
         PrimengModule,
-        ChartsModule,
+        NgChartsModule,
     ],
 })
 

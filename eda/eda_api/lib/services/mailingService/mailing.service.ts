@@ -16,6 +16,7 @@ export class MailingService {
 
   static async mailingService() {
 
+    console.log('Maler');
     const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
     const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
 
@@ -110,6 +111,9 @@ export class MailingService {
           shouldUpdate = SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated);
 
         }
+
+        console.log('Forzando el envio........');
+        shouldUpdate = false;
 
         if (shouldUpdate) {
 

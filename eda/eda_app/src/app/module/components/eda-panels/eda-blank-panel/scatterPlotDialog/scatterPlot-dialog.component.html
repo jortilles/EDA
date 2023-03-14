@@ -1,7 +1,7 @@
 <eda-dialog [inject]="dialog">
 
-  <div body class="p-grid">
-    <div class="p-col-8">
+  <div body class="grid">
+    <div class="col-8">
       <div class="eda-chart-panel" class="eda-chart-panel" style="margin-left: 6em; margin-top: 2em; background-color: var(--panel-color);">
     
           <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig"  style="height: 70%; width: 70%; display:block;  margin-top:5em; margin-left: 3em;">
@@ -12,7 +12,7 @@
 
 
 
-    <div class="p-col-4">
+    <div class="col-4">
 
       <h6 i18n="@@colorsChartH6" class="custom-border-b1">
         Colores

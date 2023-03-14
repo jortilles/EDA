@@ -19,6 +19,7 @@ import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/servi
 
 import { Column } from '@eda/models/model.index';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { EdaColumnDate } from '@eda/components/eda-table/eda-columns/eda-column-date';
 import { EdaColumnNumber } from '@eda/components/eda-table/eda-columns/eda-column-number';
 import { EdaColumnText } from '@eda/components/eda-table/eda-columns/eda-column-text';
@@ -32,11 +33,10 @@ import * as _ from 'lodash';
 import { EdaMap } from '@eda/components/eda-map/eda-map';
 import { EdaD3 } from '@eda/components/eda-d3/eda-d3';
 import { EdaFunnelComponent } from '@eda/components/eda-funnel/eda-funnel.component';
+import { EdaBarchartComponent } from '@eda/components/eda-d3-barchart/eda-barchart.component';
 import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
-
-
 
 
 @Component({
@@ -44,14 +44,13 @@ import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
     templateUrl: './panel-chart.component.html',
     styleUrls: []
 })
+
 export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     ngOnDestroy(): void {
         this.destroyComponent();
     }
-
     @Input() props: PanelChart;
     @Output() configUpdated: EventEmitter<any> = new EventEmitter<any>(null);
-
     @ViewChild('chartComponent', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
 
 
@@ -78,17 +77,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         this.styleProviderService.panelFontColor.subscribe(color => {
             this.fontColor = color;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'barchart'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
 
         this.styleProviderService.panelFontFamily.subscribe(family => {
             this.fontFamily = family;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'barchart'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
 
         this.styleProviderService.panelFontSize.subscribe(size => {
             this.fontSize = size;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram', 'barchart'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
     }
 
@@ -165,6 +164,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (type === 'funnel') {
             this.renderFunnel();
         }
+        if (type === 'barchart') {
+            this.renderBarchart();
+        }
         if (type === 'sunburst') {
             this.renderSunburst();
         }
@@ -202,7 +204,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
-            // Si es un histogram faig aixó....
+            // Si es un histogram faig aixó....        
         if (  (['histogram'].includes(this.props.edaChart))
             && this.props.query.length === 1
             && this.props.query.filter(field => field.column_type === 'numeric').length == 1
@@ -234,8 +236,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
 
 
-        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, values,
-            dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
+        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
 
         const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
 
@@ -251,6 +252,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
             minMax, styles, cfg.showLabels, cfg.numberOfColumns, this.props.edaChart);
 
+
         /**Add trend datasets*/
         cfg = this.props.config.getConfig();
         if (cfg.addTrend && (cfg.chartType === 'line')) {
@@ -265,20 +267,35 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         let chartConfig: any = {};
         chartConfig.chartType = this.props.chartType;
         chartConfig.edaChart = this.props.edaChart;
+
         chartConfig.chartLabels = chartData[0];
+        chartConfig.chartDataset = chartData[1];
 
-
-        if (type === 'doughnut' || type === 'polarArea') {
-            chartConfig.chartData = chartData[1];
-        } else {
-            chartConfig.chartDataset = chartData[1];
-        }
-
+        chartConfig.chartDataset = chartData[1];
         chartConfig.chartOptions = config.chartOptions;
         chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
 
-        chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
 
+        
+
+        if(!chartData[1][0].backgroundColor){
+            chartData[1].forEach(( e,i) => {
+                try{
+                    e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
+                    e.borderColor = chartConfig.chartColors[i].borderColor;
+                }catch(err){
+                    // si tinc una tendencia no tinc color per aquesta grafica. No hauria de ser aixi.....
+                        console.log('Recuperando color...');
+                        console.log(this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor);
+                        e.backgroundColor =   this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor;
+                        e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
+                }
+
+                });
+           
+        }
+
+        chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
         this.createEdaChartComponent(chartConfig);
     }
 
@@ -289,8 +306,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private createEdaChartComponent(inject: any) {
         this.currentConfig = inject;
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaChartComponent);
-        this.componentRef = this.entry.createComponent(factory);
+        /** Deprecado en angular 13 */
+        //const factory = this.resolver.resolveComponentFactory(EdaChartComponent);
+        /** JUANJO MIRA ESTO*/
+        this.componentRef = this.entry.createComponent(EdaChartComponent);
         this.componentRef.instance.inject = inject;
         this.configUpdated.emit();
     }
@@ -395,6 +414,22 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
+    /**
+     * creates a kpiComponent
+     * @param inject 
+     */
+     private createEdaKpiComponent(inject: any) {
+
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaKpiComponent);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onNotify.subscribe(data => {
+            const kpiConfig = new KpiConfig(data.sufix, inject.alertLimits);
+            (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
+        })
+    }
+
    /**
    * Renders a dynamicTextComponent
    */
@@ -408,22 +443,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * creates a kpiComponent
-     * @param inject 
-     */
-    private createEdaKpiComponent(inject: any) {
-
-        this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaKpiComponent);
-        this.componentRef = this.entry.createComponent(factory);
-        this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onNotify.subscribe(data => {
-            const kpiConfig = new KpiConfig(data.sufix, inject.alertLimits);
-            (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
-        })
-    }
-
-        /**
      * creates a dynamicTextComponent
      * @param inject 
      */
@@ -433,7 +452,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.componentRef = this.entry.createComponent(factory);
             this.componentRef.instance.inject = inject;
             this.componentRef.instance.onNotify.subscribe(data => {
-                const dynamicTextConfig = new DynamicTextConfig(data);
+                const dynamicTextConfig = new DynamicTextConfig(data.color);
                 (<DynamicTextConfig><unknown>this.props.config.setConfig(dynamicTextConfig));
             })
         }
@@ -531,9 +550,34 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.createFunnelComponent(inject);
     }
 
+
+
     private createFunnelComponent(inject: any) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaFunnelComponent);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+
+    }
+
+    private renderBarchart() {
+
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+
+        let inject: EdaD3 = new EdaD3;
+        inject.size = this.props.size;
+        inject.id = this.randomID();
+        inject.data = this.props.data;
+        inject.dataDescription = dataDescription;
+        inject.colors = this.props.config.getConfig()['colors'];
+        inject.linkedDashboard = this.props.linkedDashboardProps;
+
+        this.createBarchartComponent(inject);
+    }
+    
+    private createBarchartComponent(inject: any) {
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaBarchartComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
 
@@ -638,19 +682,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             const r: Column = this.props.query[i];
 
             if (_.isEqual(r.column_type, 'date')) {
-                // No em surt aixoooo
+
                 tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label, description: r.description.default }));
             } else if (_.isEqual(r.column_type, 'numeric')) {
-                // No em surt aixoooo
+
                 tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default , decimals: r.minimumFractionDigits}))
             } else if (_.isEqual(r.column_type, 'text')) {
-                // No em surt aixoooo
                 tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
-            } else if (_.isEqual(r.column_type, 'text')) {
-                // No em surt aixoooo
-                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
-            }
-            else if (_.isEqual(r.column_type, 'coordinate')) {
+            } else if (_.isEqual(r.column_type, 'coordinate')) {
                 tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
             }
         }

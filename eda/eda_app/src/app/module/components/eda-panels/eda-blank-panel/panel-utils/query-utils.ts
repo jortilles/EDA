@@ -16,7 +16,6 @@ export const QueryUtils = {
   createColumn: (columnName: string, columnType: string, sqlOriginTable: any): any => {
 
     const column = {
-
       table_id: sqlOriginTable.value,
       column_name: columnName,
       column_type: columnType,
@@ -29,11 +28,8 @@ export const QueryUtils = {
       ordenation_type: 'No',
       tableCount: 0,
       visible: true
-
     }
-
     return column;
-
   },
 
 
@@ -44,19 +40,14 @@ export const QueryUtils = {
    * 
    */
   switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
-
     if (!ebp.modeSQL) {
-
       const response = await ebp.dashboardService.executeQuery(query).toPromise();
       return response;
-
     } else {
-
       const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
       const numFields = response[0].length;
       const types = new Array(numFields);
       types.fill(null);
-
       for (let row = 0; row < response[1].length; row++) {
         response[1][row].forEach((field, i) => {
           if (types[i] === null) {
@@ -71,29 +62,26 @@ export const QueryUtils = {
           break;
         }
       }
-
       ebp.currentQuery = [];
       types.forEach((type, i) => {
         ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
       });
-
       return response;
     }
   },
 
 
   getQueryFromServer: async (ebp: EdaBlankPanelComponent, query: Query): Promise<string> => {
-
     const serverquery = await ebp.dashboardService.getBuildedQuery(query).toPromise();
     return serverquery;
-
   },
+
+
 
   /**
  * Runs a query and sets panel chart
  * @param globalFilters flag to apply when runQuery() is called from dashboard component.
  */
-
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
 
     ebp.display_v.disablePreview = false;
@@ -215,9 +203,7 @@ export const QueryUtils = {
    * Builds a query object
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
-
     const config = ChartsConfigUtils.setConfig(ebp);
-
     const params = {
       table: '',
       dataSource: ebp.inject.dataSource._id,
@@ -227,7 +213,6 @@ export const QueryUtils = {
       config: config.getConfig(),
       queryLimit: ebp.queryLimit
     };
-
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params);
   },
 
@@ -236,7 +221,6 @@ export const QueryUtils = {
    * Builds a query object
    */
   initSqlQuery: (ebp: EdaBlankPanelComponent): Query => {
-
     const config = ChartsConfigUtils.setConfig(ebp);
     const params = {
       table: '',
@@ -246,7 +230,6 @@ export const QueryUtils = {
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
       config: config.getConfig()
     };
-
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, true, ebp.currentSQLQuery);
 
   }

@@ -2,7 +2,7 @@
 import { DataSourceService } from './../../../services/api/datasource.service';
 import { SelectItem } from 'primeng/api';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AlertService, DashboardService, SidebarService } from '@eda/services/service.index';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -40,8 +40,8 @@ export class ModelSettingsComponent implements OnInit {
   public downloadDashboard : string  = $localize`:@@downloadDashboard:Descargar informe`;
 
   //FORMS
-  public exportModelForm: FormGroup;
-  public dashBoardForm: FormGroup;
+  public exportModelForm: UntypedFormGroup;
+  public dashBoardForm: UntypedFormGroup;
 
   //
   public dataSources: Array<SelectItem> = [];
@@ -57,7 +57,7 @@ export class ModelSettingsComponent implements OnInit {
 
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private sidebarService: SidebarService,
     private dataSourceService: DataSourceService,
     private dashboardService: DashboardService,
@@ -86,7 +86,11 @@ export class ModelSettingsComponent implements OnInit {
       data => {
         this.dataSources = data.map(elem => {
           return { label: elem.model_name, value: elem._id }
-        });
+        }).sort((a, b) => {
+          let va = a.label.toLowerCase();
+          let vb = b.label.toLowerCase();
+          return va < vb ?  -1 : va > vb ? 1 : 0
+      });
       },
       err => this.alertService.addError(err)
     );
@@ -99,7 +103,12 @@ export class ModelSettingsComponent implements OnInit {
       this.dashboards = dashboards.map(d => {
 
         return { label: d.config.title, value: d }
-      })
+      });
+      this.dashboards = this.dashboards.sort((a, b) => {
+        let va = a.label.toLowerCase();
+        let vb = b.label.toLowerCase();
+        return va < vb ?  -1 : va > vb ? 1 : 0
+    });
     })
   }
 

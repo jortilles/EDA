@@ -22,6 +22,8 @@ router.get('/refresh-token', authGuard, UserController.refreshToken);
 
 router.get('/is-admin/:id', authGuard, UserController.getIsAdmin);
 
+router.get('/is-datasource-creator/:id', authGuard, UserController.getIsDataSourceCreator);
+
 router.post('', authGuard, UserController.create);
 
 // Role Guard

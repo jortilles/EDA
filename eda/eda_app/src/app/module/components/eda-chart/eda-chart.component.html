@@ -6,11 +6,11 @@
             [data]="inject.chartData"
             [datasets]="inject.chartDataset"
             [labels]="inject.chartLabels"
-            [chartType]="inject.chartType"
+            [type]="inject.chartType"
+            [plugins]="chartPlugins"
             [options]="inject.chartOptions"
             [colors]="inject.chartColors"
             [legend]="inject.chartLegend"
-            [plugins]="inject.chartPlugins"
             (chartClick)="chartClicked($event)"
             (chartHover)="chartHovered($event)"
     >

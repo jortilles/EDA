@@ -1,4 +1,4 @@
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
 import {  DataSourceService } from '@eda/services/service.index';
@@ -16,7 +16,7 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
 
   public dialog: EdaDialog;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public fields: SelectItem[];
   public selectedField: string;
   public tables: SelectItem[];
@@ -29,7 +29,7 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
   // public selectedMap : string;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private dataSourceService: DataSourceService) {
     super();
     this.dialog = new EdaDialog({

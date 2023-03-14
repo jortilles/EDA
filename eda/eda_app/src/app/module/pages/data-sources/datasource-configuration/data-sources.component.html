@@ -2,15 +2,15 @@
 
   <form [formGroup]="form" (ngSubmit)="addDataSource()">
 
-    <div class="p-grid">
-      <div class="p-col-12 ui-md-6">
+    <div class="grid">
+      <div class="col-12 ui-md-6">
         <div class="form-group">
           <label i18n="@@inputNombre">NOMBRE *</label>
           <input type="text" class="form-control" formControlName="name" id="eda_ds_name" pInputText>
         </div>
       </div>
 
-      <div class="p-col-12 ui-md-6">
+      <div class="col-12 ui-md-6">
         <div class="form-group">
           <label i18n="@@inputTipo">TIPO *</label>
           <p-dropdown [options]="dbTypes" formControlName="type" id="eda_ds_type"
@@ -20,14 +20,14 @@
         </div>
       </div>
 
-      <div  *ngIf="form.value.type && form.value.type.value ==='oracle'" class="p-col-6 ui-md-2">
+      <div  *ngIf="form.value.type && form.value.type.value ==='oracle'" class="col-6 ui-md-2">
         <div class="form-group">
           <label i18n="@@inputServidor">SERVIDOR *</label>
           <input type="text" class="form-control" formControlName="host" id="eda_ds_host" pInputText>
         </div>
       </div>
 
-      <div *ngIf="!form.value.type || form.value.type.value !=='oracle'"  class="p-col-6 ui-md-3">
+      <div *ngIf="!form.value.type || form.value.type.value !=='oracle'"  class="col-6 ui-md-3">
         <div class="form-group">
           <label i18n="@@inputServidor">SERVIDOR *</label>
           <input type="text" class="form-control" formControlName="host" id="eda_ds_host" pInputText>
@@ -36,7 +36,7 @@
 
 
 
-      <div *ngIf="form.value.type && form.value.type.value ==='oracle'" class="p-col-6 ui-md-2">
+      <div *ngIf="form.value.type && form.value.type.value ==='oracle'" class="col-6 ui-md-2">
         <div class="form-group">
           <label i18n="@@inputServidor">SID?</label>
           <p-dropdown [options]="sidOpts" formControlName="sid" placeholder='SID/SERVICE_NAME' optionLabel="name"
@@ -44,14 +44,14 @@
         </div>
       </div>
 
-      <div *ngIf="form.value.type && form.value.type.value ==='oracle'"  class="p-col-6 ui-md-2">
+      <div *ngIf="form.value.type && form.value.type.value ==='oracle'"  class="col-6 ui-md-2">
         <div class="form-group">
           <label i18n="@@inputNombreDb">BASE DE DATOS *</label>
           <input type="text" class="form-control" formControlName="db" id="eda_ds_db" pInputText>
         </div>
       </div>
 
-      <div *ngIf="!form.value.type || form.value.type.value !=='oracle'"  class="p-col-6 ui-md-3">
+      <div *ngIf="!form.value.type || form.value.type.value !=='oracle'"  class="col-6 ui-md-3">
         <div class="form-group">
           <label i18n="@@inputNombreDb2">BASE DE DATOS *</label>
           <input type="text" class="form-control" formControlName="db" id="eda_ds_db" pInputText>
@@ -59,28 +59,28 @@
       </div>
       
 
-      <div class="p-col-6 ui-md-3">
+      <div class="col-6 ui-md-3">
         <div class="form-group">
           <label i18n="@@inputNombreEsquema">ESQUEMA</label>
           <input type="text" class="form-control" formControlName="schema" id="eda_ds_schema" pInputText>
         </div>
       </div>
 
-      <div class="p-col-6 ui-md-3">
+      <div class="col-6 ui-md-3">
         <div class="form-group">
           <label i18n="@@inputPort">PUERTO *</label>
           <input type="number" class="form-control" formControlName="port" id="eda_ds_port" pInputText>
         </div>
       </div>
 
-      <div class="p-col-12 ui-md-6">
+      <div class="col-12 ui-md-6">
         <div class="form-group">
           <label i18n="@@inputUsuario">USUARIO *</label>
           <input type="text" class="form-control" formControlName="user" id="eda_ds_user" pInputText>
         </div>
       </div>
 
-      <div class="p-col-12 ui-md-6">
+      <div class="col-12 ui-md-6">
         <div class="form-group">
           <label i18n="@@inputPassword">CONTRASEÑA *</label>
           <input type="password" class="form-control" formControlName="password" id="eda_ds_password" pInputText>
@@ -97,7 +97,7 @@
 
 
   </form>
-  <div class="p-col-12 ui-md-6">
+  <div class="col-12 ui-md-6">
     <p-checkbox [(ngModel)]="optimize" label="Optimizar consultas" [binary]="true"></p-checkbox>
   </div>
 

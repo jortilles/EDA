@@ -5,8 +5,8 @@
             <!-- <p-header i18n="@@aplyToAllPanelsH5">
                 ¿Aplica a todos los paneles?
             </p-header> -->
-            <div class="p-grid">
-                <div class="p-col-12">
+            <div class="grid">
+                <div class="col-12">
                     <p-inputSwitch id="applyToAllFiltersButton" [disabled]="applyToAllCheck()"
                         [(ngModel)]="switchChecked">
                     </p-inputSwitch>
@@ -17,13 +17,13 @@
         <div style="margin: 1rem;"></div>
 
         <p-card *ngIf="!switchChecked" [header]="header2">
-            <div class="p-grid">
-                <div class="p-col-12">
+            <div class="grid">
+                <div class="col-12">
                     <!-- <h5 i18n="@@panelsToAplyH5">
                         Paneles para los que aplica el filtro:
                     </h5> -->
 
-                    <div class="p-col-12">
+                    <div class="col-12">
 
                         <button *ngFor="let panel of panelsToDisplay" type="button" pButton class="ui-button" style="margin-right: 0.5rem;"
                             [ngClass]="{'ui-button-selected': panel.active, 'ui-button-unselected':!panel.active, 'ui-button-unvaliable':!panel.avaliable}"
@@ -47,16 +47,16 @@
 
         <div style="margin: 1rem;"></div>
         <p-card [header]="header3" id="anywhereClick">
-            <div class="p-grid">
-                <div class="p-col-12">
+            <div class="grid">
+                <div class="col-12">
                     <!-- <h5 i18n="@@filterForH5" id="anywhereClick">
                         Filtrar por:
                     </h5> -->
                     <br>
 
-                    <div class="p-grid">
+                    <div class="grid">
 
-                        <div class="p-col-4">
+                        <div class="col-4">
                             <p-dropdown id="selectFilerTable" [options]="targetTables" [(ngModel)]="targetTable"
                                 filter="true" optionLabel="label" [style]="{'width': '100%'}"
                                 i18n-placeholder="@@placeholderTables" placeholder="Entidades"
@@ -64,7 +64,7 @@
                             </p-dropdown>
                         </div>
 
-                        <div class="p-col-4">
+                        <div class="col-4">
                             <p-dropdown id="selectFilterColumn" [options]="targetCols" [(ngModel)]="targetCol"
                                 filter="true" optionLabel="label" [style]="{'width': '100%'}"
                                 i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
@@ -72,7 +72,7 @@
                             </p-dropdown>
                         </div>
 
-                        <div class="p-col-4">
+                        <div class="col-4">
                             <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
                                 *ngIf=" targetCol && targetCol.value.column_type !== 'date'" [options]="targetValues"
                                 [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30" display="chip"

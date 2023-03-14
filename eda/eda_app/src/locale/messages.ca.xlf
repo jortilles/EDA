@@ -1431,12 +1431,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="inputTipoColumna" datatype="html">
-<source>
-                Tipo de columna
-</source>
-<target>
-                Tipus de columna
-</target>
+<source>Tipo de columna</source>
+<target>Tipus de columna</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">80</context>
@@ -1474,6 +1470,12 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Añadir permiso</source>
 <target> Afegir permís</target>
 </trans-unit>
+<trans-unit id="addValueList" datatype="html">
+<source> Añadir lista de valores posibles</source>
+<target> Afegir llista de valors possibless</target>
+</trans-unit>
+
+
 
 <trans-unit id="esconderColumna" datatype="html">
 <source>Esconder columna</source>
@@ -1571,6 +1573,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
 <context context-type="linenumber">19</context>
 </context-group>
+</trans-unit>
+<trans-unit id="placeholderTargetColumnDesc" datatype="html">
+<source>Columna con la descripción </source>
+<target>Columna amb la descripció</target>
 </trans-unit>
 <trans-unit id="crearGrupoLabel" datatype="html">
 <source>Crear grupo</source>
@@ -2177,7 +2183,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 
-<trans-unit id="AñadirPermiso" datatype="html">
+<trans-unit id="AddPermiso" datatype="html">
 <source>Añadir permiso</source>
 <target>Afegir permís</target>
 <context-group purpose="location">
@@ -2185,6 +2191,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <context context-type="linenumber">3</context>
 </context-group>
 </trans-unit>
+
+<trans-unit id="AddValueList" datatype="html">
+<source>Definir un listado de valores posibles</source>
+<target>Definir un llistat de valors possibles</target>
+</trans-unit>
+
+
+
 
 <trans-unit id="columnaCalculada" datatype="html">
 <source> Nueva columna calculada </source>
@@ -2424,8 +2438,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="IncorrectQueryAgg">
-<source>Debes incluir la agregación (sum, max, min, etc)</source>
-<target>Has d'incloure l'agregació (sum, max, min, etc)</target>
+<source>Debes incluir la agregación (distinct, sum, max, min, etc)</source>
+<target>Has d'incloure l'agregació (distinct, sum, max, min, etc)</target>
 </trans-unit>
 
 <trans-unit id="EstablishedConnections">
@@ -3528,6 +3542,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Un histograma requereix una única columna de valors numèrics dels quals es calcularà la freqüència </target>
   </trans-unit>
 
+  <trans-unit id="chartInfoFunnel">
+    <source>Un embudo necesitar una categoría y un valor numérico </source>
+    <target>Un embut necessitar una categoria i un valor numèric</target>
+  </trans-unit>
 
    <trans-unit id="mailConfOk">
     <source>Credenciales  correctas </source>

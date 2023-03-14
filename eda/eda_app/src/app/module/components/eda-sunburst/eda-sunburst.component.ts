@@ -55,8 +55,8 @@ export class EdaSunburstComponent implements AfterViewInit {
 
   draw () {
     const svg = this.svg
-    const width = this.svgContainer.nativeElement.clientWidth - 20
-    const height = this.svgContainer.nativeElement.clientHeight - 20
+    const width = this.svgContainer.nativeElement.clientWidth - 40
+    //const height = this.svgContainer.nativeElement.clientHeight - 20
     let radius = width / 2
     /** copio els objectes del d3  */
     let partition = data =>
@@ -214,10 +214,16 @@ export class EdaSunburstComponent implements AfterViewInit {
           path = path + '|+-+|' + row[col.index]
         }
       })
-      path = path.slice(5)
-      element.push(path)
-      element.push(row[this.metricIndex])
-      result.push(element)
+      path = path.slice(5);
+      if( row[this.metricIndex] !== null &&  !isNaN(row[this.metricIndex])){
+        element.push(path);
+        element.push(row[this.metricIndex]);
+      }else{
+        console.log('Sunbrust Format Data. HERE SHOULD NOT BE NULL DATA ');
+      }
+
+
+      result.push(element);
     })
     return result
   }
@@ -263,13 +269,13 @@ export class EdaSunburstComponent implements AfterViewInit {
   }
 
   /** copio les funcions del d3 */
-  private buildHierarchy (csv) {
-    // Helper function that transforms the given CSV into a hierarchical format.
+  private buildHierarchy (data) {
+    // Helper function that transforms the given data into a hierarchical format.
     const root = { name: 'root', children: [] }
-    for (let i = 0; i < csv.length; i++) {
-      const sequence = csv[i][0]
-      const size = +csv[i][1]
-      if (isNaN(size)) {
+    for (let i = 0; i < data.length; i++) {
+      const sequence = data[i][0]
+      const size = +data[i][1]
+      if (isNaN(size) || size === null ) {
         // e.g. if this is a header row
         continue
       }
@@ -297,8 +303,14 @@ export class EdaSunburstComponent implements AfterViewInit {
           currentNode = childNode
         } else {
           // Reached the end of the sequence; create a leaf node.
-          childNode = { name: nodeName, value: size }
-          children.push(childNode)
+          // IF THRE ARE NOT NULL VALUES
+          if(size !== null){
+            childNode = { name: nodeName, value: size }
+            children.push(childNode)
+          }else{
+            console.log('Here should not be null values ;) ');
+          }
+
         }
       }
     }

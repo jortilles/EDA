@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SidebarService, DataSourceService, SpinnerService, AlertService, StyleProviderService } from '@eda/services/service.index';
 import Swal from 'sweetalert2';
@@ -29,7 +29,7 @@ export class DsConfigWrapperComponent implements OnInit {
     { name: 'SID', value: 1 },
     { name: 'SERVICE_NAME', value: 0 }];
 
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public type: any;
   public name: string;
   public header: string = $localize`:@@DataModelHeader:Configurar nuevo orígen de datos`;
@@ -43,7 +43,7 @@ export class DsConfigWrapperComponent implements OnInit {
 
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private sidebarService: SidebarService,
     private dataSourceService: DataSourceService,
     private spinnerService: SpinnerService,
@@ -184,6 +184,9 @@ export class DsConfigWrapperComponent implements OnInit {
     switch (type) {
       case 'postgres':
         this.form.patchValue({ port: 5432 });
+        break;
+      case 'vertica':
+        this.form.patchValue({ port: 5433 });
         break;
       case 'sqlserver':
         this.form.patchValue({ port: 1433 });

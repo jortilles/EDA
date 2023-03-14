@@ -9,6 +9,7 @@ import BigQueryConfig from './model/BigQueryConfig.model';
 import CachedQuery, { ICachedQuery } from '../../services/cache-service/cached-query.model';
 import { QueryOptions } from 'mongoose';
 import { upperCase } from 'lodash';
+import Group from '../../module/admin/groups/model/group.model';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -34,6 +35,25 @@ export class DataSourceController {
         }
     }
 
+    static async GetDataSourceById(req: Request, res: Response, next: NextFunction) {
+        try {
+            DataSource.findById({ _id: req.params.id }, (err, dataSource) => {
+                if (err) {
+                    return next(new HttpException(404, 'Datasouce not found'));
+                }
+                // ocultem el password
+                dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
+                dataSource.ds.connection.password = '__-(··)-__';
+                
+
+                return res.status(200).json({ ok: true, dataSource });
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+/** aQUSTA FUNCIÓ RETORNA TOTS ELS DATASOURCES */
     static async GetDataSourcesNames(req: Request, res: Response, next: NextFunction) {
         let options:QueryOptions = {};
         DataSource.find({}, '_id ds.metadata.model_name ds.security', options, (err, ds) => {
@@ -55,23 +75,7 @@ export class DataSourceController {
         });
     }
 
-    static async GetDataSourceById(req: Request, res: Response, next: NextFunction) {
-        try {
-            DataSource.findById({ _id: req.params.id }, (err, dataSource) => {
-                if (err) {
-                    return next(new HttpException(404, 'Datasouce not found'));
-                }
-                // ocultem el password
-                dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
-                dataSource.ds.connection.password = '__-(··)-__';
-                
 
-                return res.status(200).json({ ok: true, dataSource });
-            });
-        } catch (err) {
-            next(err);
-        }
-    }
 
     /* Aquesta funció retorna els datasources disponibles per fer un dashboard.
     Un cop filtrats els permisos de grup i de usuari. */
@@ -92,12 +96,13 @@ export class DataSourceController {
                     const userID = req.user._id;
                     const users = [];
                     const roles = [];
+                    let allCanSee = 'false';
                     //Get users with permission
                     e.ds.metadata.model_granted_roles.forEach(permission => {
                         switch(permission.type){
                             case 'anyoneCanSee':
                                 if( permission.permission === true ){
-                                     output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                                    allCanSee = 'true';
                                 }
                             break;
                             case 'users':
@@ -114,7 +119,7 @@ export class DataSourceController {
                         }
                     });
 
-                    if (users.includes(userID) || roles.length > 0) {
+                    if (users.includes(userID) || roles.length > 0 || allCanSee == 'true') {
                         output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
                     }
 
@@ -129,6 +134,56 @@ export class DataSourceController {
                                     ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
             return res.status(200).json({ ok: true, ds: output });
         });
+    }
+
+
+    /* Aquesta funció retorna els datasources disponibles per editar al llistat de l'esquerra.
+   Aquesta funció sustitueix GetDataSourcesNames en la nova versió on cada usuari por afegir i editar models de dades */
+    static async GetDataSourcesNamesForEdit(req: Request, res: Response, next: NextFunction) {
+
+        const groups = await Group.find({users: {$in: req.user._id}}).exec();
+        const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
+        const output = [];
+        let options:QueryOptions = {};
+        // Si l'usuari es admin retorna tots els ds.
+        if(isAdmin){
+            DataSource.find({}, '_id ds.metadata.model_name ds.security', options, (err, ds) => {
+                if (!ds) {
+                    return next(new HttpException(500, 'Error loading DataSources'));
+                }
+                const names = JSON.parse(JSON.stringify(ds));
+                for (let i = 0, n = names.length; i < n; i += 1) {
+                    const e = names[i];
+                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                }
+                output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : 
+                ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
+                return res.status(200).json({ ok: true, ds: output });
+            });
+            
+        }else{
+            // Si l'usuari NO es admin retorna els seus.
+            DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_owner',options, (err, ds) => {
+            if (!ds) {
+                return next(new HttpException(500, 'Error loading DataSources'));
+            }
+            const names = JSON.parse(JSON.stringify(ds));
+  
+            for (let i = 0, n = names.length; i < n; i += 1) {
+                const e = names[i];
+                // Si tenim  propietari....
+                if (e.ds.metadata.model_owner ) {
+                    // Si el model es meu....
+                    if (req.user._id  == e.ds.metadata.model_owner ) {
+                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                    } 
+
+                } 
+            }
+            output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
+            return res.status(200).json({ ok: true, ds: output });
+            });
+        }
     }
 
 
@@ -150,7 +205,6 @@ export class DataSourceController {
                     console.log('Importing new datasource');
                    // return next(new HttpException(400, 'DataSource not exist with id'));
                    ds = new DataSource(body);
-                   console.log(body);
                 }else{
                     console.log('Importing existing datasource');
                     body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
@@ -166,6 +220,35 @@ export class DataSourceController {
                     t.relations = t.relations.filter(r => r.visible !== false)
                 });
                 
+                /** Comprobacionde la reciprocidad de las relaciones */
+                ds.ds.model.tables.forEach(tabla => {
+                tabla.relations.forEach(relacion=> {
+                        const tablas_dstino_array =  ds.ds.model.tables.filter( t=> t.table_name == relacion.target_table ) ;
+                        tablas_dstino_array.forEach( t=> {
+                        const r = t.relations.filter(r =>    r.source_table == relacion.target_table && 
+                                JSON.stringify( r.source_column) == JSON.stringify(  relacion.target_column) &&
+                                r.target_table == relacion.source_table  && 
+                                JSON.stringify( r.target_column) == JSON.stringify( relacion.source_column ));
+                                if(r.length == 0){
+                                        // si la relacion no se encuentra la meto
+                                    const mi_relacion = {
+                                        source_table: relacion.target_table,
+                                        source_column: relacion.target_column,
+                                        target_table: relacion.source_table,
+                                        target_column: relacion.source_column,
+                                        visible: true
+                                    }
+                                    t.relations.push(mi_relacion);
+                                    ds.ds.model.tables =  JSON.parse(JSON.stringify(ds.ds.model.tables.filter(item => item.table_name !==   t.table_name)));  
+                                    ds.ds.model.tables.push( t );
+                                }
+                            }  )
+                        })
+                 });
+
+
+
+
                 const iDataSource = new DataSource(ds);
 
 
@@ -326,7 +409,6 @@ export class DataSourceController {
     }
 
     static async GenerateDataModelSql(req: Request, res: Response, next: NextFunction) {
-      
         try {
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database,
                 req.body.password, req.body.port, req.body.type, req.body.schema, req.body.sid,  req.qs.warehouse);
@@ -355,7 +437,8 @@ export class DataSourceController {
                         model_granted_roles: [],
                         optimized: req.params.optimize === '1',
                         cache_config :CC,
-                        filter:req.body.filter
+                        filter:req.body.filter,
+                        model_owner: req.user._id
                     },
                     model: {
                         tables: tables

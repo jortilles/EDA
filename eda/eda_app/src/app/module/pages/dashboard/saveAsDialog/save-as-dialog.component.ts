@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { AlertService, GroupService, IGroup } from "@eda/services/service.index";
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { SelectItem } from "primeng/api";
@@ -13,7 +13,7 @@ import { SelectItem } from "primeng/api";
 export class SaveAsDialogComponent extends EdaDialogAbstract {
 
   public dialog: EdaDialog;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public grups: IGroup[] = [];
   public visibleTypes: SelectItem[] = [];
   public display = {
@@ -21,7 +21,7 @@ export class SaveAsDialogComponent extends EdaDialogAbstract {
   };
 
   constructor(
-    private formBuilder: FormBuilder, 
+    private formBuilder: UntypedFormBuilder, 
     private groupService: GroupService,
     private alertService: AlertService) {
     super();

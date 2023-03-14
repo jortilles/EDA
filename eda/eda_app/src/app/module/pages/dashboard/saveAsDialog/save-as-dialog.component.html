@@ -2,8 +2,8 @@
   <div body>
 
       <form [formGroup]="form" class="form-horizontal form-material" (ngSubmit)="true" style="margin-top: 2em;">
-          <div class="p-grid">
-              <div class="p-col-12  mt-2">
+          <div class="grid">
+              <div class="col-12  mt-2">
                   <span class="p-float-label">
                       <input id="float-dash" formControlName="name" type="text" pInputText required style="width: 100%;">
                       <label i18n="@@labelDameNombre" for="float-dash">Dame un nombre *</label>
@@ -15,7 +15,7 @@
                       (onChange)="handleSelectedBtn($event)"></p-selectButton>
               </div>
 
-              <div class="p-col-12 " *ngIf="display.groups">
+              <div class="col-12 " *ngIf="display.groups">
                   <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false"
                       optionLabel="name" defaultLabel="Selecciona un grupo *"></p-multiSelect>
               </div>

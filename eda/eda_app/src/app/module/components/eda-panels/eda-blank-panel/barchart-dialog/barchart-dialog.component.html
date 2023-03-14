@@ -1,0 +1,56 @@
+<eda-dialog [inject]="dialog">
+
+  <div body class="grid">
+    <div class="col-8"  style="height: 90%;" >
+      <div class="eda-chart-panel" style="height: 90%; margin-top: 5em; margin-left: 2em ; background-color: var(--panel-color);">
+        <div >
+          <panel-chart *ngIf="!!display"  #PanelChartComponent [props]="panelChartConfig"  style="height:100%;" >
+          </panel-chart>
+        </div>
+
+      </div>
+    </div>
+
+
+    <div class="col-3" style="margin-left: 3em;">
+
+      <h6 i18n="@@colorsChartH6" class="custom-border-b1">
+        Colores
+      </h6>
+
+      <div class="grid  chart-color-selection">
+
+        <ng-container *ngFor="let label of labels; let i = index">
+
+          <div class="col-6">
+
+            <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor()" format="hex" appendTo="body">
+            </p-colorPicker>
+
+            <input type="text" pInputText class="eda-color-pick" [(ngModel)]="colors[i]"
+              (input)="handleInputColor(label)" minlength="7">
+
+          </div>
+
+        </ng-container>
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <div footer>
+
+    <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
+      class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
+      id="eda_chart_dialog_confirmar">
+    </button>
+    <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
+      class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
+    </button>
+
+  </div>
+
+</eda-dialog>

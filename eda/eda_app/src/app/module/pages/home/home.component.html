@@ -1,6 +1,6 @@
-<div class="p-grid animated fadeIn">
+<div class="grid animated fadeIn">
 
-    <div *ngIf="!isObserver" class="p-col-12"  id="div_new_dashboard">
+    <div *ngIf="!isObserver" class="col-12"  id="div_new_dashboard">
         <eda-dashboard-panel class="pointer" >
 
             <div id="home_new_dashboard" class="d-flex justify-content-center" (click)="initDialog()">
@@ -15,7 +15,7 @@
 
 
 
-    <div class="p-col-12 " *ngIf="tags.length !== 2" style="margin-top: 2em;">
+    <div class="col-12 " *ngIf="tags.length !== 2" style="margin-top: 2em;">
         <p-toolbar class="tag-container" >
             <span class="tag-label"> Tags: </span>
             <span
@@ -27,7 +27,7 @@
 
 
     <!-- Buscador -->
-    <div class="p-col-12 ml-3"  *ngIf="filteringByName==true ||  (visibleDashboards.publics.length >3 || visibleDashboards.grups.length >3 || visibleDashboards.grups.length >3 || visibleDashboards.privats.length >3 )" style="margin-top: 0em;">
+    <div class="col-12 ml-3"  *ngIf="filteringByName==true ||  (visibleDashboards.publics.length >3 || visibleDashboards.grups.length >3 || visibleDashboards.grups.length >3 || visibleDashboards.privats.length >3 )" style="margin-top: 0em;">
         <p-toolbar class="tag-container" >
             <p-toolbar class="tag-container" >
                 <i class="fa fa-search" style="font-size: 16px"></i>
@@ -38,12 +38,12 @@
 
 
     <!-- PUBLICS -->
-    <div class="p-col-12 p-lg-3" id="public-list">
+    <div class="col-12 lg:col-3" id="public-list">
         <h4 i18n="@@tituloGrupoPublicos" class="visibility-segment">
             PUBLICOS
         </h4>
 
-        <div *ngFor="let dashboard of visibleDashboards.shared" class="p-col-12 p-md-12 mb-2" style="padding: 0px;">
+        <div *ngFor="let dashboard of visibleDashboards.shared" class="col-12 md:col-12 mb-2" style="padding: 0px;">
 
             <eda-dashboard-panel>
                 <div class="d-flex justify-content-between align-items-end">
@@ -63,12 +63,12 @@
         </div>
     </div>
     <!-- COMUN -->
-    <div class="p-col-12 p-lg-3"   id="common-list">
+    <div class="col-12 lg:col-3"   id="common-list">
         <h4 i18n="@@tituloGrupoComunes" class="visibility-segment">
             COMUNES
         </h4>
 
-        <div *ngFor="let dashboard of visibleDashboards.publics" class="p-col-12 p-md-12 mb-2" style="padding: 0px;">
+        <div *ngFor="let dashboard of visibleDashboards.publics" class="col-12 md:col-12 mb-2" style="padding: 0px;">
 
             <eda-dashboard-panel>
                 <div class="d-flex justify-content-between align-items-end">
@@ -87,15 +87,15 @@
         </div>
     </div>
     <!-- GROUPS -->
-    <div class="p-col-12 p-lg-3"  id="group-list">
+    <div class="col-12 lg:col-3"  id="group-list">
         <h4 i18n="@@tituloGrupoMisGrupos" class="visibility-segment">
             MIS GRUPOS
         </h4>
 
-        <div *ngFor="let group of groups" class="p-col-12" style="padding: 0px;">
+        <div *ngFor="let group of groups" class="col-12" style="padding: 0px;">
             <!-- <h6>{{group.name}}:</h6> -->
 
-            <div *ngFor="let dashboard of visibleDashboards.grups | ids:'group':group" class="p-col-12 p-md-12 mb-2"
+            <div *ngFor="let dashboard of visibleDashboards.grups | ids:'group':group" class="col-12 md:col-12 mb-2"
                 style="padding: 0px;">
                 <ng-container>
                     <eda-dashboard-panel>
@@ -117,12 +117,12 @@
         </div>
     </div>
     <!-- PRIVATES -->
-    <div class="p-col-12 p-lg-3" id="private-list">
+    <div class="col-12 lg:col-3" id="private-list">
         <h4 i18n="@@tituloGrupoPersonales" class="visibility-segment">
             PRIVADOS
         </h4>
 
-        <div *ngFor="let dashboard of visibleDashboards.privats" class="p-col-12 p-md-12 mb-2" style="padding: 0px;">
+        <div *ngFor="let dashboard of visibleDashboards.privats" class="col-12 md:col-12 mb-2" style="padding: 0px;">
 
             <ng-container *ngIf="!isAdmin">
                 <eda-dashboard-panel>

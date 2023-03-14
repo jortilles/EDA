@@ -3,6 +3,7 @@ import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 import { OracleBuilderService } from '../../query-builder/qb-systems/oracle-builder.service';
 import oracledb from 'oracledb';
+import { parse } from 'path';
 
 
 /**
@@ -85,15 +86,15 @@ export class OracleConnection extends AbstractConnection {
            * Set filter for tables if exists
            */
             const filters = filter ? filter.split(',') : []
-            let filter_str = filter ? `AND ( OBJECT_NAME LIKE '%${filters[0].trim()}%'` : ``;
+            let filter_str = filter ? `AND ( OBJECT_NAME LIKE '${filters[0].trim()}'` : ``;
             for (let i = 1; i < filters.length; i++) {
-                filter_str += ` OR OBJECT_NAME LIKE '%${filters[i].trim()}%'`;
+                filter_str += ` OR OBJECT_NAME LIKE '${filters[i].trim()}'`;
             }
             if (filter) filter_str += ' )';
 
-            let v_filter_str = filter ? `AND ( VIEW_NAME LIKE '%${filters[0].trim()}%'` : ``;
+            let v_filter_str = filter ? `AND ( VIEW_NAME LIKE '${filters[0].trim()}'` : ``;
             for (let i = 1; i < filters.length; i++) {
-                v_filter_str += ` OR VIEW_NAME LIKE '%${filters[i].trim()}%'`;
+                v_filter_str += ` OR VIEW_NAME LIKE '${filters[i].trim()}'`;
             }
             if (filter) v_filter_str += ' )';
 
@@ -175,55 +176,25 @@ export class OracleConnection extends AbstractConnection {
             const result = await client.execute(query);
             const labels = result.metaData.map(x => x.name);
             const parsedResults = [];
-            result.rows.forEach(row => {
-                const r = {};
-                for (let j = 0; j < labels.length; j++) {
-                    r[labels[j]] =  row[j] ;
-                }
-                parsedResults.push(r);
-            })
-           
-            return parsedResults;
-        } catch (err) {
-            console.log(err);
-            throw err;
-        } finally {
-            if (client) {
-                try {
-                  await client.close();
-                } catch (err) {
-                  console.error(err);
-                }
-              }
-
-        }
-    }
-
-
-
-/* a les consultes sql cal fer-lis un tractament especial per saber su son numeriques o text*/
-    async execSqlQuery(query: string): Promise<any> {
-        let client: oracledbTypes.Connection;
-        try {
-            client = await this.getclient();
-            await client.execute(`alter session set current_schema = ${this.config.schema} `)
-            const result = await client.execute(query);
-            
-            const labels = result.metaData.map(x => x.name);
-            const parsedResults = [];
             const unparsedResults = [];
             const types = [];
             const FALSEnumericColumns =[];
-            
             try{
                 result.rows.forEach(row => {
                     const r = {};
                     const runparsed = {};
                     const rowTypes = [];
                     for (let j = 0; j < labels.length; j++) {
-                        r[labels[j]] = ( isNaN( row[j].replace(',', '.') ) || ( row[j].length>1 && row[j].indexOf('0')==0  ) ) ? row[j]:parseFloat(row[j].replace(',', '.') )  ;
-                        runparsed[labels[j]] =   row[j];
-                        rowTypes[j] =   ( isNaN( row[j].replace(',', '.') ) || ( row[j].length>1 && row[j].indexOf('0')==0  ) )  ;
+                        if( row[j] !== null ){ 
+                            r[labels[j]] = ( isNaN( row[j].replace(',', '.') ) || ( row[j].length>1 && row[j].indexOf('0')==0  ) ) ? row[j]:parseFloat(row[j].replace(',', '.') )  ;
+                            runparsed[labels[j]] =   row[j];
+                            rowTypes[j] =   ( isNaN( row[j].replace(',', '.') ) || ( row[j].length>1 && row[j].indexOf('0')==0  ) )  ;
+                        }else{
+                            // els nulls sempre van a la seva...
+                            r[labels[j]] = 'null'  ;
+                            runparsed[labels[j]] =   'null';
+                            rowTypes[j] =   true  ;
+                        }
                     }
                     parsedResults.push(r);
                     unparsedResults.push(runparsed);
@@ -262,6 +233,93 @@ export class OracleConnection extends AbstractConnection {
                 console.log('The query returned null');
                 console.log(result);
             }
+            return parsedResults;
+
+
+
+        } catch (err) {
+            console.log(err);
+            throw err;
+        } finally {
+            if (client) {
+                try {
+                  await client.close();
+                } catch (err) {
+                  console.error(err);
+                }
+              }
+
+        }
+    }
+
+
+
+/* a les consultes sql cal fer-lis un tractament especial per saber su son numeriques o text*/
+    async execSqlQuery(query: string): Promise<any> {
+        let client: oracledbTypes.Connection;
+        try {
+            client = await this.getclient();
+            await client.execute(`alter session set current_schema = ${this.config.schema} `)
+            const result = await client.execute(query);
+            
+            const labels = result.metaData.map(x => x.name);
+            const parsedResults = [];
+            const unparsedResults = [];
+            const types = [];
+            const FALSEnumericColumns =[];
+            
+            try{
+                result.rows.forEach(row => {
+                    const r = {};
+                    const runparsed = {};
+                    const rowTypes = [];
+                    for (let j = 0; j < labels.length; j++) {
+                        if( row[j] !== null ){
+                            r[labels[j]] = ( isNaN( row[j].replace(',', '.') ) || ( row[j].length>1 && row[j].indexOf('0')==0  ) ) ? row[j]:parseFloat(row[j].replace(',', '.') )  ;
+                            runparsed[labels[j]] =   row[j];
+                            rowTypes[j] =   ( isNaN( row[j].replace(',', '.') ) || ( row[j].length>1 && row[j].indexOf('0')==0  ) )  ;
+                        }else{
+                            // els nulls sempre van a la seva...
+                            r[labels[j]] = 'null'  ;
+                            runparsed[labels[j]] =   'null';
+                            rowTypes[j] =   true  ;
+                        }
+                    }
+                    parsedResults.push(r);
+                    unparsedResults.push(runparsed);
+                    types.push(rowTypes);
+                })
+                /** Tot això es fa per que oracle te un bug i ho retorna tot com a text. Aixó que s'ha de mirar cada columna si tots els valors son numerics i aleshoraes convertir-ho a numeric */
+                for(let p=0; p< types.length; p++){
+                    for(let y=0; y< types[p].length; y++){
+                        if( p  < types.length-1 ){
+                            if(types[p][y] ===false && types[p][y] !== types[p+1][y]   ){
+                                FALSEnumericColumns.push(y);
+                            }
+                        }else{
+                            if(p>0){
+                                if(types[p][y] ===false && types[p][y] !== types[p-1][y]   ){
+                                    FALSEnumericColumns.push(y);
+                                }
+                            }
+                        }
+                    }
+                }
+            
+                /* si tinc columnes que aparentment son números pero de cop i volta surt un string el torno a posar com a string */
+                if(FALSEnumericColumns.length>0){
+                    for(let e=0; e< FALSEnumericColumns.length; e++){
+                        for(let q=0; q< parsedResults.length; q++){
+                        parsedResults[q][labels[FALSEnumericColumns[e]]] =unparsedResults[q][labels[FALSEnumericColumns[e]]];                 
+                        }
+                    }
+                }   
+            }catch(e){
+                console.log(e);
+                console.log('The query returned null');
+                console.log(result);
+            }
+
             return parsedResults;
 
         } catch (err) {

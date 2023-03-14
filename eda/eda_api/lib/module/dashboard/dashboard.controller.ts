@@ -12,7 +12,6 @@ import ServerLogService from '../../services/server-log/server-log.service'
 const cache_config = require('../../../config/cache.config')
 
 export class DashboardController {
-
   static async getDashboards (req: Request, res: Response, next: NextFunction) {
     try {
       let admin,
@@ -22,6 +21,7 @@ export class DashboardController {
         shared = []
       const groups = await Group.find({ users: { $in: req.user._id } }).exec()
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0
+      const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0
 
       if (isAdmin) {
         admin = await DashboardController.getAllDashboardToAdmin()
@@ -35,16 +35,15 @@ export class DashboardController {
         publics = await DashboardController.getPublicsDashboards()
         shared = await DashboardController.getSharedDashboards()
       }
-      return res
-        .status(200)
-        .json({
-          ok: true,
-          dashboards: privates,
-          group,
-          publics,
-          shared,
-          isAdmin
-        })
+      return res.status(200).json({
+        ok: true,
+        dashboards: privates,
+        group,
+        publics,
+        shared,
+        isAdmin,
+        isDataSourceCreator
+      })
     } catch (err) {
       console.log(err)
       next(new HttpException(400, 'Some error ocurred loading dashboards'))
@@ -203,7 +202,7 @@ export class DashboardController {
           dashboard.config.visible
         )
         const roleCheck =
-          !userRoles.includes('ADMIN') &&
+          !userRoles.includes('EDA_ADMIN') &&
           userGroupDashboards.length === 0 &&
           dashboard.user.toString() !== user
 
@@ -229,60 +228,84 @@ export class DashboardController {
             if (!datasource) {
               return next(new HttpException(400, 'Datasouce not found with id'))
             }
-            let toJson = JSON.parse(JSON.stringify(datasource));
+            let toJson = JSON.parse(JSON.stringify(datasource))
 
+            // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
+            // Per si de cas es fa servir a una relació.
+            const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+              toJson,
+              userGroups,
+              req.user._id
+            )
 
-
-        // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
-        // Per si de cas es fa servir a una relació.
-        const uniquesForbiddenTables = DashboardController.getForbiddenTables( toJson, userGroups, req.user._id);
-
-
-
-
-            try{
+            try {
+              // Poso taules prohivides a false
+              if (uniquesForbiddenTables.length > 0) {
                 // Poso taules prohivides a false
-                if(uniquesForbiddenTables.length > 0){
-                    // Poso taules prohivides a false
-                    for(let x=0;x<toJson.ds.model.tables.length;x++){
-                        try{
-                            if( uniquesForbiddenTables.includes(toJson.ds.model.tables[x].table_name )){
-                                   toJson.ds.model.tables[x].visible=false;       
-                            }
-                        }catch(e){
-                            console.log('Error evaluating role permission');
-                            console.log(e);
-                        }
+                for (let x = 0; x < toJson.ds.model.tables.length; x++) {
+                  try {
+                    if (
+                      uniquesForbiddenTables.includes(
+                        toJson.ds.model.tables[x].table_name
+                      )
+                    ) {
+                      toJson.ds.model.tables[x].visible = false
                     }
-
-
-                    // Oculto columnes als panells
-                    for(let i=0;i<dashboard.config.panel.length ;i++){
-                        if(dashboard.config.panel[i].content!=undefined){
-                            let MyFields = [] ;
-                            let notAllowedColumns = [];
-                            for (let c = 0; c < dashboard.config.panel[i].content.query.query.fields.length; c++) {
-                                if (uniquesForbiddenTables.includes(dashboard.config.panel[i].content.query.query.fields[c].table_id)) {
-                                    notAllowedColumns.push(dashboard.config.panel[i].content.query.query.fields[c]);
-                                }
-                                else {
-                                    MyFields.push(dashboard.config.panel[i].content.query.query.fields[c]);
-                                }
-                            }
-                            if(notAllowedColumns.length > 0){
-                                dashboard.config.panel[i].content.query.query.fields = MyFields;
-                            } 
-                        }  
-                    }
+                  } catch (e) {
+                    console.log('Error evaluating role permission')
+                    console.log(e)
+                  }
                 }
 
-            }catch(error){
-                console.log("no pannels in dashboard");
-
+                // Oculto columnes als panells
+                for (let i = 0; i < dashboard.config.panel.length; i++) {
+                  if (dashboard.config.panel[i].content != undefined) {
+                    let MyFields = []
+                    let notAllowedColumns = []
+                    for (
+                      let c = 0;
+                      c <
+                      dashboard.config.panel[i].content.query.query.fields
+                        .length;
+                      c++
+                    ) {
+                      if (
+                        uniquesForbiddenTables.includes(
+                          dashboard.config.panel[i].content.query.query.fields[
+                            c
+                          ].table_id
+                        )
+                      ) {
+                        notAllowedColumns.push(
+                          dashboard.config.panel[i].content.query.query.fields[
+                            c
+                          ]
+                        )
+                      } else {
+                        MyFields.push(
+                          dashboard.config.panel[i].content.query.query.fields[
+                            c
+                          ]
+                        )
+                      }
+                    }
+                    if (notAllowedColumns.length > 0) {
+                      dashboard.config.panel[
+                        i
+                      ].content.query.query.fields = MyFields
+                    }
+                  }
+                }
+              }
+            } catch (error) {
+              console.log('no pannels in dashboard')
             }
 
-        
-            const ds = { _id: datasource._id, model: toJson.ds.model, name: toJson.ds.metadata.model_name };
+            const ds = {
+              _id: datasource._id,
+              model: toJson.ds.model,
+              name: toJson.ds.metadata.model_name
+            }
 
             insertServerLog(
               req,
@@ -300,10 +323,6 @@ export class DashboardController {
     }
   }
 
-
-
- 
-
   static async create (req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body
@@ -317,6 +336,8 @@ export class DashboardController {
         dashboard.group = body.group
       }
 
+      /**avoid dashboards without name */
+      if(dashboard.config.title === null){ dashboard.config.title='-'};
       //Save dashboard in db
       dashboard.save((err, dashboard) => {
         if (err) {
@@ -352,6 +373,8 @@ export class DashboardController {
 
         dashboard.config = body.config
         dashboard.group = body.group
+        /**avoid dashboards without name */
+        if(dashboard.config.title === null){ dashboard.config.title='-'};
 
         dashboard.save((err, dashboard) => {
           if (err) {
@@ -390,14 +413,18 @@ export class DashboardController {
   /**
    *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario.
    */
- static getForbiddenTables(dataModelObject:any, userGroups:Array<String>, user:string){
-    let forbiddenTables = [];
-    const allTables= [];
-    let allowedTablesBySecurityForOthers = [];
-    let allowedTablesBySecurityForMe = [];
+  static getForbiddenTables (
+    dataModelObject: any,
+    userGroups: Array<String>,
+    user: string
+  ) {
+    let forbiddenTables = []
+    const allTables = []
+    let allowedTablesBySecurityForOthers = []
+    let allowedTablesBySecurityForMe = []
     dataModelObject.ds.model.tables.forEach(e => {
-      allTables.push(e.table_name);
-    });
+      allTables.push(e.table_name)
+    })
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (
         var i = 0;
@@ -453,8 +480,7 @@ export class DashboardController {
             for (
               var j = 0;
               j <
-              dataModelObject.ds.metadata.model_granted_roles[i].groups
-                .length;
+              dataModelObject.ds.metadata.model_granted_roles[i].groups.length;
               j++
             ) {
               if (
@@ -482,8 +508,7 @@ export class DashboardController {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column ===
             'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission ===
-            true
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true
         ) {
           if (
             dataModelObject.ds.metadata.model_granted_roles[i].users !==
@@ -502,7 +527,7 @@ export class DashboardController {
                 allowedTablesBySecurityForOthers.push(
                   dataModelObject.ds.metadata.model_granted_roles[i].table
                 )
-              }else{
+              } else {
                 allowedTablesBySecurityForMe.push(
                   dataModelObject.ds.metadata.model_granted_roles[i].table
                 )
@@ -513,69 +538,78 @@ export class DashboardController {
       }
     }
 
-  /** TAULES PERMESES PER EL GRUP */
-  if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-    for (
-      var i = 0;
-      i < dataModelObject.ds.metadata.model_granted_roles.length;
-      i++
-    ) {
-      if (
-        dataModelObject.ds.metadata.model_granted_roles[i].column ===
-          'fullTable' &&
-        dataModelObject.ds.metadata.model_granted_roles[i].permission ===
-          true
+    /** TAULES PERMESES PER EL GRUP */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (
+        var i = 0;
+        i < dataModelObject.ds.metadata.model_granted_roles.length;
+        i++
       ) {
         if (
-          dataModelObject.ds.metadata.model_granted_roles[i].groups !==
-          undefined
+          dataModelObject.ds.metadata.model_granted_roles[i].column ===
+            'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true
         ) {
-          for (
-            var j = 0;
-            j <
-            dataModelObject.ds.metadata.model_granted_roles[i].groups
-              .length;
-            j++
+          if (
+            dataModelObject.ds.metadata.model_granted_roles[i].groups !==
+            undefined
           ) {
-            if (
-              !userGroups.includes(
-                dataModelObject.ds.metadata.model_granted_roles[i].groups[j]
-              )
+            for (
+              var j = 0;
+              j <
+              dataModelObject.ds.metadata.model_granted_roles[i].groups.length;
+              j++
+            ) {
+              if (
+                !userGroups.includes(
+                  dataModelObject.ds.metadata.model_granted_roles[i].groups[j]
+                )
               ) {
                 allowedTablesBySecurityForOthers.push(
                   dataModelObject.ds.metadata.model_granted_roles[i].table
                 )
-              }else{
+              } else {
                 allowedTablesBySecurityForMe.push(
                   dataModelObject.ds.metadata.model_granted_roles[i].table
                 )
               }
+            }
           }
         }
       }
     }
-  }
-
 
     const unique = (value, index, self) => {
       return self.indexOf(value) === index
     }
-    let uniquesForbiddenTables = forbiddenTables.filter(unique);
-    allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(unique);
-    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(unique);
-    allowedTablesBySecurityForMe.forEach(e=>{ allowedTablesBySecurityForOthers =  allowedTablesBySecurityForOthers.filter(item => item !=e) });
-    uniquesForbiddenTables= uniquesForbiddenTables.concat(allowedTablesBySecurityForOthers);
-    uniquesForbiddenTables = uniquesForbiddenTables.filter(unique);
-    return uniquesForbiddenTables;
- }
+    let uniquesForbiddenTables = forbiddenTables.filter(unique)
+    allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(
+      unique
+    )
+    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(unique)
+    allowedTablesBySecurityForMe.forEach(e => {
+      allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(
+        item => item != e
+      )
+    })
+    uniquesForbiddenTables = uniquesForbiddenTables.concat(
+      allowedTablesBySecurityForOthers
+    )
+    uniquesForbiddenTables = uniquesForbiddenTables.filter(unique)
+    return uniquesForbiddenTables
+  }
 
-
+  /**
+   * Executa una consulta EDA per un dashboard
+   */
   static async execQuery (req: Request, res: Response, next: NextFunction) {
+
+
     try {
       const connection = await ManagerConnectionService.getConnection(
         req.body.model_id
-      );
-      const dataModel = await connection.getDataSource(req.body.model_id);
+      )
+      const dataModel = await connection.getDataSource(req.body.model_id)
       /**--------------------------------------------------------------------------------------------------------- */
       /**Security check */
       const allowed = DashboardController.securityCheck(dataModel, req.user)
@@ -587,43 +621,45 @@ export class DashboardController {
           )
         )
       }
-      const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+      const dataModelObject = JSON.parse(JSON.stringify(dataModel))
       /** Forbidden tables  */
-      const uniquesForbiddenTables = DashboardController.getForbiddenTables( dataModelObject, req['user'].role, req.user._id);
-
+      const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+        dataModelObject,
+        req['user'].role,
+        req.user._id
+      )
       let mylabels = []
       let myQuery: any
       if (uniquesForbiddenTables.length > 0) {
         myQuery = { fields: [], filters: [] }
-        mylabels = [];
-        let notAllowedColumns = [];
-
+        mylabels = []
+        let notAllowedColumns = []
         for (let c = 0; c < req.body.query.fields.length; c++) {
-            if (uniquesForbiddenTables.includes(req.body.query.fields[c].table_id)) {
-              notAllowedColumns.push(req.body.query.fields[c])
-            } else {
-                mylabels.push(req.body.query.fields[c].column_name);
-                myQuery.fields.push(req.body.query.fields[c]);
-            }
+          if (
+            uniquesForbiddenTables.includes(req.body.query.fields[c].table_id)
+          ) {
+            notAllowedColumns.push(req.body.query.fields[c])
+          } else {
+            mylabels.push(req.body.query.fields[c].column_name)
+            myQuery.fields.push(req.body.query.fields[c])
           }
-    
-          if (uniquesForbiddenTables.length > 0) {
-            for (let i = 0; i < myQuery.fields.length; i++) {
-              myQuery.fields[i].order = i
-            }
-            myQuery.filters = req.body.query.filters;
+        }
+        if (uniquesForbiddenTables.length > 0) {
+          for (let i = 0; i < myQuery.fields.length; i++) {
+            myQuery.fields[i].order = i
           }
+          myQuery.filters = req.body.query.filters
+        }
       } else {
-        // las etiquetas son el nombre técnico... 
-        myQuery = JSON.parse(JSON.stringify(req.body.query));        
+        // las etiquetas son el nombre técnico...
+        myQuery = JSON.parse(JSON.stringify(req.body.query))
         for (let c = 0; c < req.body.query.fields.length; c++) {
-            mylabels.push(req.body.query.fields[c].column_name);
-          }
-
+          mylabels.push(req.body.query.fields[c].column_name)
+        }
       }
-      
-      myQuery.simple = req.body.query.simple;
-      myQuery.queryLimit = req.body.query.queryLimit;
+
+      myQuery.simple = req.body.query.simple
+      myQuery.queryLimit = req.body.query.queryLimit
 
       if (myQuery.fields.length == 0) {
         console.log('you cannot see any data')
@@ -644,8 +680,10 @@ export class DashboardController {
           req.user._id
         },  at: ${formatDate(new Date())} `
       )
-      console.log(query);
-      console.log( '-------------------------------------------------------------------------------');
+      console.log(query)
+      console.log(
+        '\n-------------------------------------------------------------------------------\n'
+      )
 
       /**cached query */
       let cacheEnabled =
@@ -656,8 +694,8 @@ export class DashboardController {
         : null
 
       if (!cachedQuery) {
-        connection.client = await connection.getclient();
-        const getResults = await connection.execQuery(query);
+        connection.client = await connection.getclient()
+        const getResults = await connection.execQuery(query)
 
         let numerics = []
         /** si es oracle   o alguns mysql  haig de fer una merda per tornar els numeros normals. */
@@ -692,15 +730,28 @@ export class DashboardController {
                   return res
                 }
               } else {
-                return r[i]
+                //això es per evitar els null trec els nulls i els canvio per '' dels lavels
+                if( r[i] == null == null){
+                  return ''
+                }else{
+                  return r[i]
+                }
               }
             } else {
-              return r[i]
+              // trec els nulls i els canvio per '' dels lavels
+              if (numerics[ind] != 'true' &&  r[i] == null) {
+                return ''
+              }else{
+                return r[i];
+              }
+
+              
             }
+
           })
           results.push(output)
         }
-        // las etiquetas son el nombre técnico... 
+        // las etiquetas son el nombre técnico...
         const output = [mylabels, results]
 
         if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
@@ -720,8 +771,6 @@ export class DashboardController {
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
 
-        //console.log('Devuelvo');
-        //console.log(output);
         return res.status(200).json(output)
 
         /**
@@ -751,199 +800,231 @@ export class DashboardController {
     }
   }
 
+
+  /**
+   * Executa una consulta SQL  per un dashboard
+   */
   static async execSqlQuery (req: Request, res: Response, next: NextFunction) {
     try {
-        const connection = await ManagerConnectionService.getConnection(
-            req.body.model_id
+      const connection = await ManagerConnectionService.getConnection(
+        req.body.model_id
+      )
+      const dataModel = await connection.getDataSource(req.body.model_id)
+
+      /**Security check */
+      const allowed = DashboardController.securityCheck(dataModel, req.user)
+      if (!allowed) {
+        return next(
+          new HttpException(
+            500,
+            `Sorry, you are not allowed here, contact your administrator`
+          )
         )
-        const dataModel = await connection.getDataSource(req.body.model_id)
+      }
 
-        /**Security check */
-        const allowed = DashboardController.securityCheck(dataModel, req.user)
-        if (!allowed) {
-            return next(
+      const dataModelObject = JSON.parse(JSON.stringify(dataModel))
+
+      /** Forbidden tables  */
+      const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+        dataModelObject,
+        req['user'].role,
+        req.user._id
+      )
+      let notAllowedQuery = false
+      uniquesForbiddenTables.forEach(table => {
+        if (req.body.query.SQLexpression.indexOf(table) >= 0) {
+          notAllowedQuery = true
+        }
+      })
+      if (notAllowedQuery) {
+        console.log('Not allowed table in query')
+        return res.status(200).json("[['noData'],[]]")
+      } else {
+        const query = connection.BuildSqlQuery(
+          req.body.query,
+          dataModelObject,
+          req.user
+        )
+
+        /**If query is in format select foo from a, b queryBuilder returns null */
+        if (!query) {
+          return next(
             new HttpException(
-                500,
-                `Sorry, you are not allowed here, contact your administrator`
+              500,
+              'Queries in format "select x from A, B" are not suported'
             )
-            )
+          )
         }
 
-        const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+        console.log(
+          '\x1b[32m%s\x1b[0m',
+          `QUERY for user ${req.user.name}, with ID: ${
+            req.user._id
+          },  at: ${formatDate(new Date())} `
+        )
+        console.log(query)
+        console.log(
+          '\n-------------------------------------------------------------------------------\n'
+        )
 
-        /** Forbidden tables  */
-        const uniquesForbiddenTables = DashboardController.getForbiddenTables( dataModelObject, req['user'].role, req.user._id);
-        let notAllowedQuery = false;
-        uniquesForbiddenTables.forEach( table=>{
-                if( req.body.query.SQLexpression.indexOf(table)>= 0 ){
-                    notAllowedQuery = true;
-                }
-        } );
-        if(notAllowedQuery){
-            console.log('Not allowed table in query');
-            return res.status(200).json("[['noData'],[]]");
-        }else{
+        /**cached query */
+        let cacheEnabled =
+          dataModelObject.ds.metadata.cache_config &&
+          dataModelObject.ds.metadata.cache_config.enabled
+        const cachedQuery = cacheEnabled
+          ? await CachedQueryService.checkQuery(req.body.model_id, query)
+          : null
 
+        if (!cachedQuery) {
+          connection.client = await connection.getclient()
+          const getResults = await connection.execSqlQuery(query)
+          let results = []
+          const resultsRollback = []
+          const oracleDataTypes = []
+          let oracleEval: Boolean = true
+          let labels: Array<string>
+          if (getResults.length > 0) {
+            labels = Object.keys(getResults[0]).map(i => i)
+          } else {
+            labels = ['NoData']
+          }
+          // Normalize data
 
-            const query = connection.BuildSqlQuery(
-                req.body.query,
-                dataModelObject,
-                req.user
-            )
-
-            /**If query is in format select foo from a, b queryBuilder returns null */
-            if (!query) {
-                return next(
-                new HttpException(
-                    500,
-                    'Queries in format "select x from A, B" are not suported'
-                )
-                )
-            }
-
-            console.log(
-                '\x1b[32m%s\x1b[0m',
-                `QUERY for user ${req.user.name}, with ID: ${
-                req.user._id
-                },  at: ${formatDate(new Date())} `
-            );
-            console.log(query);
-            console.log(
-                '\n-------------------------------------------------------------------------------\n'
-            )
-
-            /**cached query */
-            let cacheEnabled =
-                dataModelObject.ds.metadata.cache_config &&
-                dataModelObject.ds.metadata.cache_config.enabled
-            const cachedQuery = cacheEnabled
-                ? await CachedQueryService.checkQuery(req.body.model_id, query)
-                : null
-
-            if (!cachedQuery) {
-                connection.client = await connection.getclient()
-                const getResults = await connection.execSqlQuery(query)
-                let results = []
-                const resultsRollback = []
-                const oracleDataTypes = []
-                let oracleEval: Boolean = true
-                let labels: Array<string>
-                if (getResults.length > 0) {
-                labels = Object.keys(getResults[0]).map(i => i)
+          for (let i = 0, n = getResults.length; i < n; i++) {
+            const r = getResults[i]
+            /** si es oracle  o alguns mysql haig de fer una merda per tornar els numeros normals. */
+            /** poso els resultats al resultat i faig una matriu de tipus de numero. també faig una copia de seguretat */
+            if (
+              dataModel.ds.connection.type == 'oracle' ||
+              dataModel.ds.connection.type == 'mysql'
+            ) {
+              const output = Object.keys(r).map(i => r[i])
+              resultsRollback.push([...output])
+              const tmpArray = []
+              output.forEach((val, index) => {
+                if (DashboardController.isNotNumeric(val) ) {
+                  tmpArray.push('NaN')
                 } else {
-                labels = ['NoData']
+                  tmpArray.push('int')
+                  output[index] = parseFloat(val)
                 }
-                // Normalize data
-
-                for (let i = 0, n = getResults.length; i < n; i++) {
-                const r = getResults[i]
-                /** si es oracle  o alguns mysql haig de fer una merda per tornar els numeros normals. */
-                /** poso els resultats al resultat i faig una matriu de tipus de numero. també faig una copia de seguretat */
-                if (
-                    dataModel.ds.connection.type == 'oracle' ||
-                    dataModel.ds.connection.type == 'mysql'
-                ) {
-                    const output = Object.keys(r).map(i => r[i])
-                    resultsRollback.push([...output])
-                    const tmpArray = []
-                    output.forEach((val, index) => {
-                    if (isNaN(val)) {
-                        tmpArray.push('NaN')
-                    } else {
-                        tmpArray.push('int')
-                        output[index] = parseFloat(val)
-                    }
-                    })
-                    oracleDataTypes.push(tmpArray)
-                    results.push(output)
-                } else {
-                    const output = Object.keys(r).map(i => r[i])
-                    results.push(output)
-                    resultsRollback.push(output)
-                }
-                }
-
-                /** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats. 
-                 * miro cada  valor amb el seguent per baix de la matriu. */
-                if (oracleDataTypes.length > 1) {
-                for (var i = 0; i < oracleDataTypes.length - 1; i++) {
-                    var e = oracleDataTypes[i]
-                    for (var j = 0; j < e.length; j++) {
-                    if (oracleDataTypes[i][j] != oracleDataTypes[i + 1][j]) {
-                        oracleEval = false
-                    }
-                    }
-                }
-                }
-
-                /** si tinc numeros barrejats. Poso el rollback */
-                if (oracleEval !== true) {
-                results = resultsRollback
-                }
-                const output = [labels, results]
-
-                if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
-                CachedQueryService.storeQuery(req.body.model_id, query, output)
-                }
-
-                console.log(
-                '\x1b[32m%s\x1b[0m',
-                `Date: ${formatDate(new Date())} Dashboard:${
-                    req.body.dashboard.dashboard_id
-                } Panel:${req.body.dashboard.panel_id} DONE\n`
-                )
-                return res.status(200).json(output)
+              })
+              oracleDataTypes.push(tmpArray)
+              results.push(output)
             } else {
-                console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾')
-                console.log(
-                '\x1b[32m%s\x1b[0m',
-                `Date: ${formatDate(new Date())} Dashboard:${
-                    req.body.dashboard.dashboard_id
-                } Panel:${req.body.dashboard.panel_id} DONE\n`
-                )
-                //console.log(cachedQuery.cachedQuery.response);
-                return res.status(200).json(cachedQuery.cachedQuery.response)
+              const output = Object.keys(r).map(i => r[i])
+              results.push(output)
+              resultsRollback.push(output)
             }
+          }
+
+          
+
+
+          /** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats.
+           * miro cada  valor amb el seguent per baix de la matriu. */
+          if (oracleDataTypes.length > 1) {
+            for (var i = 0; i < oracleDataTypes.length - 1; i++) {
+              var e = oracleDataTypes[i]
+              for (var j = 0; j < e.length; j++) {
+                if (oracleDataTypes[i][j] != oracleDataTypes[i + 1][j]) {
+                  oracleEval = false
+                }
+              }
+            }
+          }
+
+          /** si tinc numeros barrejats. Poso el rollback */
+          if (oracleEval !== true) {
+            results = resultsRollback
+          }
+          const output = [labels, results]
+
+          if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
+            CachedQueryService.storeQuery(req.body.model_id, query, output)
+          }
+
+          console.log(
+            '\x1b[32m%s\x1b[0m',
+            `Date: ${formatDate(new Date())} Dashboard:${
+              req.body.dashboard.dashboard_id
+            } Panel:${req.body.dashboard.panel_id} DONE\n`
+          )
+          //console.log('Query output');
+          console.log(output);
+          return res.status(200).json(output)
+        } else {
+          console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾')
+          console.log(
+            '\x1b[32m%s\x1b[0m',
+            `Date: ${formatDate(new Date())} Dashboard:${
+              req.body.dashboard.dashboard_id
+            } Panel:${req.body.dashboard.panel_id} DONE\n`
+          )
+          console.log(cachedQuery.cachedQuery.response);
+          return res.status(200).json(cachedQuery.cachedQuery.response)
         }
+      }
     } catch (err) {
-        console.log(err)
-        next(new HttpException(500, 'Error quering database'))
+      console.log(err)
+      next(new HttpException(500, 'Error quering database'))
     }
-    
   }
+
+
+/*
+Check if a value is not numeric
+*/
+static isNotNumeric(val){
+
+  let isNotNumeric = false;
+  try{
+    if(  
+     isNaN(val) ||  val.toString().indexOf('-')>=0 ||  val.toString().indexOf('/')>=0 ||  
+    val.toString().indexOf('|')>=0 ||  val.toString().indexOf(':')>=0 || val.toString().indexOf('T')>=0 || 
+    val.toString().indexOf('Z')>=0 || val.toString().indexOf('Z')>=0 )
+    {
+      isNotNumeric = true;
+    }
+  }catch(e){
+    // Null values are...NULL
+  }
+
+  return isNotNumeric;
+
+}
 
   /**Check if an user can or not see a data model. */
   static securityCheck (dataModel: any, user: any) {
-    
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {
-      const users = [];
-      const roles = [];
-      let anyOne = 'false' ;
+      const users = []
+      const roles = []
+      let anyOne = 'false'
 
       //Get users with permission
       dataModel.ds.metadata.model_granted_roles.forEach(permission => {
         switch (permission.type) {
-            case 'anyoneCanSee':
-                if( permission.permission === true ){
-                  anyOne =  'true';
-                }
-            break;
+          case 'anyoneCanSee':
+            if (permission.permission === true) {
+              anyOne = 'true'
+            }
+            break
           case 'users':
             permission.users.forEach(user => {
-              if (!users.includes(user)) users.push(user);
+              if (!users.includes(user)) users.push(user)
             })
-            break;
+            break
           case 'groups':
             user.role.forEach(role => {
               if (permission.groups.includes(role)) {
-                if (!roles.includes(role)) roles.push(role);
+                if (!roles.includes(role)) roles.push(role)
               }
             })
         }
-      });
-      if( anyOne === 'true'){
+      })
+      if (anyOne === 'true') {
         // anyone can see this model.
-        return true;
+        return true
       }
       if (!users.includes(user._id) && roles.length < 1) {
         return false

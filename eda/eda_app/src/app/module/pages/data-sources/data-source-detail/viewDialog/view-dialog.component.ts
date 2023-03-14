@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AlertService, SpinnerService, DashboardService } from '@eda/services/service.index';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 
@@ -12,12 +12,12 @@ import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/c
 export class ViewDialogComponent extends EdaDialogAbstract {
 
   public dialog: EdaDialog;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public table: any;
   public ok: boolean = false;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private alertService: AlertService,
     private dashboardService: DashboardService,
     private spinnerService: SpinnerService,

@@ -1,0 +1,11 @@
+#svg-content path.domain {
+  visibility: hidden;
+}
+
+.edaD3Tooltip{
+  font-weight: bolder !important;
+  background-color: brown !important;
+  color: greenyellow;
+}
+
+

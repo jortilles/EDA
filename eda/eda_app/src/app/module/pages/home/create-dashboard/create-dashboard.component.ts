@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AlertService, DashboardService, GroupService, IGroup, StyleProviderService } from '@eda/services/service.index';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract } from '@eda/shared/components/shared-components.index';
 import { SelectItem } from 'primeng/api';
@@ -11,7 +11,7 @@ import * as _ from 'lodash';
 
 export class CreateDashboardComponent extends EdaDialogAbstract {
     public dialog: EdaDialog;
-    public form: FormGroup;
+    public form: UntypedFormGroup;
     public dss: any[] = [];
     public grups: IGroup[] = [];
     public visibleTypes: SelectItem[] = [];
@@ -22,7 +22,7 @@ export class CreateDashboardComponent extends EdaDialogAbstract {
     constructor(
         private dashboardService: DashboardService,
         private groupService: GroupService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private alertService: AlertService,
         private stylesProviderService: StyleProviderService
     ) {

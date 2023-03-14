@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { AlertService} from '@eda/services/service.index';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 
 
 @Component({
@@ -13,10 +13,10 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
 
   public dialog: EdaDialog;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private alertService: AlertService
   ) {
     super();

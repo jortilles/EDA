@@ -150,6 +150,12 @@
             <eda-table [inject]="permissionsColumn"></eda-table>
         </div>
 
+
+        <button *ngIf="columnPanel.computed_column === 'no'" pButton type="button" icon="pi pi-plus"
+        [label]="addValueList" class="p-button-secondary" (click)="openValueListDialog()"
+        style="margin-bottom: 1px;"> </button>
+
+
         <button *ngIf="columnPanel.computed_column === 'no'" pButton type="button" icon="pi pi-plus"
             [label]="addPermission" class="p-button-secondary" (click)="openPermissionsRelationDialog()"
             style="margin-bottom: 1px;"> </button>
@@ -182,27 +188,27 @@
 <div *ngIf="typePanel==='root' && modelPanel.metadata" class="tp-container">
 
     <p-card i18n-header="@@editModelHeaders" header="Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}">
-        <div class="p-grid">
-            <div style="margin-bottom: 1rem;" class="p-col-12">
+        <div class="grid">
+            <div style="margin-bottom: 1rem;" class="col-12">
 
                 <p-header style="font-size: 18px;">
                 </p-header>
-                <div class="p-grid">
-                    <h4 class="p-col-12" i18n="@@metadata" style="border-bottom: 1px solid #d4d4d4;">
+                <div class="grid">
+                    <h4 class="col-12" i18n="@@metadata" style="border-bottom: 1px solid #d4d4d4;">
                         Metadata
                     </h4>
 
-                    <div class="p-col-12  p-xl-4">
+                    <div class="col-12  xl:col-4">
                         <h5 class="title-datamodel" i18n="@@inputNombre">
                             Nombre
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.metadata.model_name" (keyup)="update()">
                     </div>
 
-                    <h4 class="p-col-12" i18n="@@conexionh4" style="border-bottom: 1px solid #d4d4d4;">
+                    <h4 class="col-12" i18n="@@conexionh4" style="border-bottom: 1px solid #d4d4d4;">
                         Conexión
                     </h4>
-                    <div class="p-col-12  p-xl-4">
+                    <div class="col-12  xl:col-4">
                         <h5 class="title-datamodel" i18n="@@inputTipoDatamodel">
                             Tipo
                         </h5>
@@ -213,56 +219,56 @@
                         </p-dropdown>
                     </div>
 
-                    <div class="p-col-12  p-xl-4" *ngIf="  selectedTipoBD.value !== 'bigquery' && selectedTipoBD.value !== 'snowflake'">
+                    <div class="col-12  xl:col-4" *ngIf="  selectedTipoBD.value !== 'bigquery' && selectedTipoBD.value !== 'snowflake'">
                         <h5 class="title-datamodel" i18n="@@inputHost">
                             Host
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
                     </div>
 
-                    <div class="p-col-12  p-xl-4" *ngIf="selectedTipoBD.value === 'snowflake'">
+                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value === 'snowflake'">
                         <h5 class="title-datamodel" i18n="@@inputCuentaEdit">
                             Cuenta
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.host" (keyup)="update()">
                     </div>
 
-                    <div class="p-col-12  p-xl-4">
+                    <div class="col-12  xl:col-4">
                         <h5 class="title-datamodel" i18n="@@inputNombreDB">
                             Base de datos
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.database" (keyup)="update()">
                     </div>
 
-                    <div class="p-col-12  p-xl-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
+                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <h5 class="title-datamodel" i18n="@@inputPuerto">
                             Puerto
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.port" (keyup)="update()">
                     </div>
 
-                    <div class="p-col-12  p-xl-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
+                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <h5 class="title-datamodel" i18n="@@inputNombreEsquemaModel">
                             Esquema
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.schema" (keyup)="update()">
                     </div>
 
-                    <div class="p-col-12  p-xl-4" *ngIf="selectedTipoBD.value === 'snowflake'">
+                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value === 'snowflake'">
                         <h5 class="title-datamodel" >
                             Warehouse
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.warehouse" (keyup)="update()">
                     </div>
 
-                    <div class="p-col-12  p-xl-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
+                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <h5 class="title-datamodel" i18n="@@inputNombreUsuario">
                             Usuario
                         </h5>
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.user" (keyup)="update()">
                     </div>
 
-                    <div class="p-col-12  p-xl-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
+                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <h5 class="title-datamodel" i18n="password@@inputPassword">
                             Password
                         </h5>
@@ -270,7 +276,7 @@
                             (keyup)="update()" autocomplete="new-password">
                     </div>
 
-                    <div class="p-col-12  p-xl-4">
+                    <div class="col-12  xl:col-4">
                         <h5 class="title-datamodel" i18n="@@inputFilter">
                             Filtros
                         </h5>
@@ -278,13 +284,13 @@
                     </div>
 
 
-                    <div class="p-col-12 " *ngIf="selectedTipoBD.value !== 'bigquery'">
+                    <div class="col-12 " *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <button type="button" pButton (click)="checkConection()" class="ui-button-success ml-2"
                             i18n-label='@@checkConnection' label="Comprobar conexión"></button>
                     </div>
                 </div>
             </div>
-            <div style="margin-bottom: 1rem;" class="p-col-12">
+            <div style="margin-bottom: 1rem;" class="col-12">
 
                 <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;"> {{functionalities}} </h4>
 
@@ -298,7 +304,7 @@
                         (click)="openCSVDialog()" style="margin-bottom: 1px;"> </button>
                 </span>
             </div>
-            <div style="margin-bottom: 1rem;" class="p-col-12">
+            <div style="margin-bottom: 1rem;" class="col-12">
                 <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;"> {{utilities}} </h4>
 
                 <span class="p-buttonset">
@@ -316,7 +322,7 @@
 
             </div>
 
-            <div style="margin-bottom: 1rem;" class="p-col-12">
+            <div style="margin-bottom: 1rem;" class="col-12">
                 <h4 style="margin-bottom: 4px; border-bottom: 1px solid #d4d4d4;" i18n="@@rolesPermisosModelo">Visibilidad a nivel de modelo</h4>
                 <eda-table [inject]="permissionModel"></eda-table>
 
@@ -330,6 +336,7 @@
 
 
 <app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
+<app-column-value-list-dialog *ngIf="valueListController" [controller]="valueListController"></app-column-value-list-dialog>
 <app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController"></app-column-permission-dialog>
 <app-table-permission-dialog *ngIf="tablePermissionsController" [controller]="tablePermissionsController"></app-table-permission-dialog>
 <app-model-permission-dialog *ngIf="modelPermissionsController" [controller]="modelPermissionsController"></app-model-permission-dialog>

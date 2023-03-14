@@ -16,6 +16,7 @@ export class UserService extends ApiService {
 
     public user: User;
     public isAdmin: boolean;
+    public isDataSourceCreator: boolean;
     public token: string;
 
     constructor( protected http: HttpClient,
@@ -24,6 +25,7 @@ export class UserService extends ApiService {
                  private alertService: AlertService) {
         super(http);
         this.loadStorage();
+
     }
 
     getUsers(): Observable<any> {
@@ -36,6 +38,10 @@ export class UserService extends ApiService {
 
     getIsAdminUser(id: string): Observable<any> {
         return this.get(`${this.route}/is-admin/${id}`);
+    }
+
+    getIsDataSourceCreator(id: string): Observable<any> {
+        return this.get(`${this.route}/is-datasource-creator/${id}`);
     }
 
     searchUser(param: string) {
@@ -86,6 +92,12 @@ export class UserService extends ApiService {
             (value: any) => this.isAdmin = value.isAdmin,
             (err) => this.alertService.addError(err)
         );
+        this.getIsDataSourceCreator(this.user._id).subscribe(
+            (value: any) => { this.isDataSourceCreator = value.isDataSourceCreator  }, 
+            (err) => this.alertService.addError(err)
+        );
+
+        
     }
 
     /** Login user into app */
@@ -136,6 +148,13 @@ export class UserService extends ApiService {
                 (value: any) => this.isAdmin = value.isAdmin,
                 (err) => this.alertService.addError(err)
             );
+            this.getIsDataSourceCreator(this.user._id).subscribe(
+                (value: any) => {this.isDataSourceCreator = value.isDataSourceCreator }, 
+                (err) => this.alertService.addError(err)
+            );
+            
+            
+
         } else {
             this.token = '';
             this.user = null;

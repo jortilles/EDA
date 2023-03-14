@@ -2,36 +2,36 @@
 
 
 
-  <div body class='p-grid'>
+  <div body class='grid'>
 
-    <div *ngIf="!noCache" class="p-col-4" >
+    <div *ngIf="!noCache" class="col-4" >
 
-      <div class="p-col-12">
+      <div class="col-12">
         <h6 i18n="@@RefreshCacheTitle"> Actualizar los datos del modelo cada: </h6>
       </div>
 
-      <div class="p-col-12">
+      <div class="col-12">
         <p-inputNumber [(ngModel)]="quantity" [disabled]="noCache"></p-inputNumber>
       </div>
-      <div class="p-col-12">
+      <div class="col-12">
         <p-radioButton name="groupname" value="days" [label]="daysSTR" [(ngModel)]="units" [disabled]="noCache">
         </p-radioButton>
       </div>
-      <div class="p-col-12" *ngIf="units==='days'">
+      <div class="col-12" *ngIf="units==='days'">
         <span> A las </span>
         <p-calendar [timeOnly]="true" [(ngModel)]="hours"></p-calendar>
       </div>
-      <div class="p-col-12">
+      <div class="col-12">
         <p-radioButton name="groupname" value="hours" [label]="hoursSTR" [(ngModel)]="units" [disabled]="noCache">
         </p-radioButton>
       </div>
     </div>
 
-    <div class="p-col-4">
+    <div class="col-4">
 
-      <div class="p-col-12">
+      <div class="col-12">
         <h6 i18n="@@noCache">Sin cache</h6>
-        <p-inputSwitch id="switchCache" class="p-col-1" [(ngModel)]="noCache" tooltipPosition="left">
+        <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="noCache" tooltipPosition="left">
         </p-inputSwitch>
       </div>
 
@@ -39,8 +39,8 @@
 
     </div>
 
-    <div class="p-col-4">
-      <div class='p-col-12'>
+    <div class="col-4">
+      <div class='col-12'>
 
         <!-- <h6 i18n="@@deleteCache">Borrar cache del modelo</h6> -->
         <button type="button" pButton (click)="deleteCache()" class="ui-button-success ml-2" i18n-label='@@deleteCache'

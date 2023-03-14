@@ -47,8 +47,47 @@ export abstract class QueryBuilderService {
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
         const origin = this.queryTODO.fields.find(x => x.order === 0).table_id;
         const dest = [];
-        const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
+        const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
+        /** Check dels permisos de columna, si hi ha permisos es posen als filtres */
+        this.permissions = this.getPermissions(modelPermissions, this.tables, origin);
+
+         /** ............................................................................. */
+        /** ..........................PER ELS VALUE LISTS................................ */
+        /** si es una consulta de llista de valors es retorna la llista de valors possibles */
+        /** ............................................................................. */
+        if( this.queryTODO.fields.length == 1 && this.queryTODO.fields[0].valueListSource   && this.permissions.length == 0){
+            this.query = this.valueListQuery( );
+            return this.query;
+        }
+
+        /** Reviso si cap columna de la  consulta es un multivalueliest..... */
+        this.queryTODO.fields.forEach( e=>{
+                if( e.valueListSource ){
+                    valueListList.push( JSON.parse(JSON.stringify(e)) );
+                        e.table_id =  e.valueListSource.target_table;
+                        e.column_name = e.valueListSource.target_description_column;
+                    if (!dest.includes( e.valueListSource.target_table) &&  e.valueListSource.target_table !== origin) {
+                        dest.push( e.valueListSource.target_table);
+                    }
+                }
+        })
+        /** revisió dels filtres per si hi ha un multivaluelist */
+        if( valueListList.length > 0 && this.queryTODO.filters ){
+            this.queryTODO.filters.forEach(f=>{
+                valueListList.forEach(v=>{
+                    if(f.filter_table == v.table_id && f.filter_column == v.column_name  ){
+                        f.filter_table =  v.valueListSource.target_table;
+                        f.filter_column =  v.valueListSource.target_description_column;
+
+                    }
+                })
+            })
+        }
+        /** ..........................PER ELS VALUE LISTS................................ */
+
+
+        const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
         // Afegim a dest les taules dels filtres
         filterTables.forEach(table => {
@@ -57,8 +96,7 @@ export abstract class QueryBuilderService {
             }
         });
 
-        /** Check dels permisos de columna, si hi ha permisos es posen als filtres */
-        this.permissions = this.getPermissions(modelPermissions, this.tables, origin);
+
 
         if (this.permissions.length > 0) {
             this.permissions.forEach(permission => {
@@ -68,13 +106,17 @@ export abstract class QueryBuilderService {
             });
         }
 
+        
         /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
         const separedCols = this.getSeparedColumns(origin, dest);
         const columns = separedCols[0];
         const grouping = separedCols[1];
 
+
         /** ARBRE DELS JOINS A FER */
         const joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
+        
+        
 
         if (this.queryTODO.simple) {
             this.query = this.simpleQuery(columns, origin);
@@ -155,7 +197,18 @@ export abstract class QueryBuilderService {
         return (v);
     }
 
+    
+    public valueListQuery( ) {
+        const schema = this.dataModel.ds.connection.schema;
+        let table = this.queryTODO.fields[0].valueListSource.target_table
+        if (schema) {
+            table = `${schema}.${this.queryTODO.fields[0].valueListSource.target_table}`;
+        }
+        return `SELECT DISTINCT ${this.queryTODO.fields[0].valueListSource.target_description_column} \nFROM ${table}`;
+    }
+
     public simpleQuery(columns: string[], origin: string) {
+    
 
         const schema = this.dataModel.ds.connection.schema;
         if (schema) {
@@ -552,13 +605,11 @@ export abstract class QueryBuilderService {
 
     public checkFormat = (expression) => {
 
-        //console.log(expression)
         const words = expression.split(/\s+/);
         let currentOperand = '';
         for (let i = 0; i < words.length; i++) {
 
             let word = words[i].toUpperCase();
-            //console.log(word);
             if (
                 word === 'FROM'
                 || word === 'SELECT'

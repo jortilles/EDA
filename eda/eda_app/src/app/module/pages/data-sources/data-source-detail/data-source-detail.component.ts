@@ -1,7 +1,7 @@
 import { EdaTable, EdaColumnText, EdaColumnContextMenu } from '@eda/components/component.index';
 import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
 import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
 import { EditTablePanel, EditColumnPanel, EditModelPanel } from '@eda/models/data-source-model/data-source-models';
@@ -18,7 +18,7 @@ import * as _ from 'lodash';
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
     @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
 
-    public form: FormGroup;
+    public form: UntypedFormGroup;
     public permissionsColumn: EdaTable;
     public permissionTable: EdaTable;
     public permissionModel: EdaTable;
@@ -30,6 +30,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public modelPanel: EditModelPanel;
     public typePanel: string;
     public relationController: EdaDialogController;
+    public valueListController: EdaDialogController;
     public permissionsController: EdaDialogController;
     public tablePermissionsController: EdaDialogController;
     public modelPermissionsController: EdaDialogController;
@@ -59,6 +60,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public addRelation:string = $localize`:@@addRelationButton:Añadir relación`;
     public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`; 
     public addPermission:string = $localize`:@@addPermission:Añadir permiso`;
+    public addValueList:string = $localize`:@@addValueList:Añadir lista de valores posibles`;
     public si = $localize`:@@si:Si`;
     public no = $localize`:@@no:No`;
   
@@ -157,6 +159,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         });
 
 
+        
 
         this.permissionTable = new EdaTable({
             contextMenu: new EdaContextMenu({
@@ -473,11 +476,11 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.spinnerService.on();
         const table = this.dataModelService.getTable(columnPanel);
         const column = table.columns.filter(col => col.column_name === columnPanel.technical_name)[0];
-        const agg = ['sum', 'max', 'min', 'avg', 'count'];
+        const agg = ['sum', 'max', 'min', 'avg', 'count', 'distinct'];
         let exists = 0;
         agg.forEach(e => { if (column.SQLexpression.toString().toLowerCase().indexOf(e) >= 0) { exists = 1; } });
         if (exists == 0) {
-            this.alertService.addError($localize`:@@IncorrectQueryAgg:Debes incluir la agregación (sum, max, min, etc)`);
+            this.alertService.addError($localize`:@@IncorrectQueryAgg:Debes incluir la agregación (distinct, sum, max, min, etc)`);
             this.spinnerService.off()
         } else {
             const queryParams: QueryParams = {
@@ -594,6 +597,21 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         })
     }
 
+    openValueListDialog() {
+        const table = this.dataModelService.getTable(this.columnPanel);
+        this.valueListController = new EdaDialogController({
+            params: { column: this.columnPanel, table: table },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addValueListSource(response);
+                    this.updateColumn();
+                }
+
+                this.valueListController = undefined;
+            }
+        });
+    }
+    
     openPermissionsRelationDialog() {
         const table = this.dataModelService.getTable(this.columnPanel);
         this.permissionsController = new EdaDialogController({
@@ -608,6 +626,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         });
     }
+
 
     openTablePermissionsDialog() {
         this.tablePermissionsController = new EdaDialogController({

@@ -50,7 +50,7 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@AñadirPermiso:Añadir permiso`
+            title: $localize`:@@AddPermiso:Añadir permiso`
         });
 
         this.dialog.style = { width: '40%', height:'65%', top:"-4em", left:'1em'};
@@ -125,6 +125,19 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
     resetValues(){
         if(this.type === 'users') this.selectedRoles = [];
         else this.selectedUsers = [];
+    }
+
+    syncronizeAllNoneValuesNone(){
+        if(this.none === true ){
+            this.all = false;
+        }
+    }
+
+
+    syncronizeAllNoneValuesAll(){
+        if(this.all === true ){
+            this.none = false;
+        }
     }
 
     closeDialog() {

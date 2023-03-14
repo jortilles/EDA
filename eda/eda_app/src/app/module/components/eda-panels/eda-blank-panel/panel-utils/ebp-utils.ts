@@ -32,7 +32,8 @@ export const EbpUtils = {
         str = $localize`:@@chartInfo6:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
-      case 'bar':
+      case 'bar': 
+      case 'barchart':
         str = $localize`:@@chartInfo7:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
@@ -75,6 +76,10 @@ export const EbpUtils = {
           break;
       case 'histogram':
         str = $localize`:@@chartInfoHistogram:Un histograma requiere una única columna de valores numericos de los que se calculará la frecuencia`;
+        description += `\n${str}`;
+        break;
+      case 'funnel':
+        str = $localize`:@@chartInfoFunnel:Un embudo necesitar una categoría y un valor numérico`;
         description += `\n${str}`;
         break;
       default:

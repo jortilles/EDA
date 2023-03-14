@@ -44,6 +44,7 @@ export class EditColumnPanel {
     SQLexpression: any;
     computed_column:string;
     minimumFractionDigits:number;
+    valueListSource:ValueListSource;
 }
 
 export class EditModelPanel {
@@ -62,4 +63,12 @@ export class Relation {
     target_table: string;
     target_column: Array<any>;
     visible: boolean;
+}
+
+export class ValueListSource {
+    source_table: string;
+    source_column: string;
+    target_table: string;
+    target_id_column: string;
+    target_description_column: string;
 }

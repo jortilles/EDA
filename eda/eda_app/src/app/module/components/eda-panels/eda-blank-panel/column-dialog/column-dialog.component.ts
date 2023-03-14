@@ -313,6 +313,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                     return column.column_name === c.column_name && column.table_id === c.table_id;
                 }).aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
                 return;
+            }else{
+                this.aggregationsTypes = JSON.parse(JSON.stringify(this.controller.params.selectedColumn.aggregation_type));
             }
         } else {
             const found = this.controller.params.currentQuery.find(c => c.column_name === column.column_name);

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { EdaChart } from './eda-chart';
-import { BaseChartDirective, Color } from 'ng2-charts';
+import { BaseChartDirective } from 'ng2-charts';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { ChartsColors } from '@eda/configs/index';
 
 @Component({
@@ -14,10 +15,9 @@ export class EdaChartComponent implements OnInit {
     @Input() inject: EdaChart;
 
     public update: boolean;
-
-    public static defaultChartColors: Color[] = EdaChartComponent.generateChartColors();
-
-    public static defaultPieColors: Color[] = EdaChartComponent.generatePiecolors();
+    public chartPlugins = [  ChartDataLabels  ];
+    public static defaultChartColors: any[] = EdaChartComponent.generateChartColors();
+    public static defaultPieColors: any[] = EdaChartComponent.generatePiecolors();
 
     public static generateChartColors(iterations?: number) {
         let MAX_ITERATIONS = 200;

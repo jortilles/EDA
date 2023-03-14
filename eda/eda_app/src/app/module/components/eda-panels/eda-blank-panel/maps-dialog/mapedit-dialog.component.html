@@ -1,7 +1,7 @@
 <eda-dialog [inject]="dialog">
 
-  <div body class="p-grid">
-    <div class="p-col-8">
+  <div body class="grid">
+    <div class="col-8">
 
         <div class="eda-chart-panel" style="margin-left: 6em; margin-top: 2em; width: 60%; background-color: var(--panel-color);">
           <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig"  style="height: 90%; width: 90%; display:block;  margin-top:5em">
@@ -11,7 +11,7 @@
     </div>
 
 
-    <div class="p-col-4">
+    <div class="col-4">
 
 
       <h6 i18n="@@colorsChartH6" class="custom-border-b1">
@@ -39,24 +39,24 @@
         Posición de la leyenda
       </h6>
 
-      <div class="p-col-3" style="border: 1px solid #fbfbfb; border-radius: 10px; background-color: #f2f3f5;">
-        <div class="p-grid">
-          <div class="p-col-6" style="text-align: left;">
+      <div class="col-3" style="border: 1px solid #fbfbfb; border-radius: 10px; background-color: #f2f3f5;">
+        <div class="grid">
+          <div class="col-6" style="text-align: left;">
             <p-radioButton name="groupname" value="topleft" [(ngModel)]="legendPosition" (onClick)="changeLegend()">
             </p-radioButton>
           </div>
-          <div class="p-col-6" style="text-align: right;">
+          <div class="col-6" style="text-align: right;">
             <p-radioButton name="groupname" value="topright" [(ngModel)]="legendPosition" (onClick)="changeLegend()">
             </p-radioButton>
           </div>
         </div>
 
-        <div class="p-grid">
-          <div class="p-col-6" style="text-align: left;">
+        <div class="grid">
+          <div class="col-6" style="text-align: left;">
             <p-radioButton name="groupname" value="bottomleft" [(ngModel)]="legendPosition" (onClick)="changeLegend()">
             </p-radioButton>
           </div>
-          <div class="p-col-6" style="text-align: right">
+          <div class="col-6" style="text-align: right">
             <p-radioButton name="groupname" value="bottomright" [(ngModel)]="legendPosition" (onClick)="changeLegend()">
             </p-radioButton>
           </div>

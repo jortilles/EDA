@@ -1,7 +1,7 @@
 // Eda Chart
 export { EdaChartComponent } from './eda-chart/eda-chart.component';
 
-// Eda Table
+
 export * from './eda-table/eda-table';
 export * from './eda-table/eda-table.component';
 export * from './eda-table/eda-columns/eda-column-text';
@@ -12,6 +12,7 @@ export * from './eda-table/eda-column-filter/eda-column-filter-multiselect';
 export * from './eda-map/eda-map.component';
 export * from './eda-map/eda-geoJsonMap.component';
 export * from './eda-funnel/eda-funnel.component';
+export * from './eda-d3-barchart/eda-barchart.component';
 
  // export * from './eda-d3/eda-d3.component';
 
@@ -36,11 +37,11 @@ export { TableDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/
 export { TableGradientDialogComponent } from './eda-panels/eda-blank-panel/table-dialog/gradient-dialog/gradient-dialog.component';
 export { EdaDashboardPanelComponent } from './eda-panels/eda-dashboard-panel/eda-dashboard-panel.component';
 export { EdaTitlePanelComponent } from './eda-panels/eda-title-panel/eda-title-panel.component';
-export {SafeHtmlPipe} from './eda-panels/eda-title-panel/htmlSanitizer.pipe'
-export {SafeUrlPipe} from './eda-panels/eda-title-panel/urlSanitizer.pipe'
+export { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe'
+export { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe'
 export { TitleDialogComponent } from './eda-panels/eda-title-panel/edit-title/quill-editor.component'
 export { AlertDialogComponent } from './eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component';
-export {CumSumAlertDialogComponent} from './eda-panels/eda-blank-panel/cumulativeSum-alert/cumsum-alert-dialog.component';
+export { CumSumAlertDialogComponent } from './eda-panels/eda-blank-panel/cumulativeSum-alert/cumsum-alert-dialog.component';
 export { MapEditDialogComponent } from './eda-panels/eda-blank-panel/maps-dialog/mapedit-dialog.component';
 export { KpiEditDialogComponent } from './eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component';
 export { dynamicTextDialogComponent } from './eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component';
@@ -52,7 +53,8 @@ export { LinkDashboardsComponent } from './eda-panels/eda-blank-panel/link-dashb
 export { EdaTreeMap} from './eda-treemap/eda-treemap.component';
 export { EdaKnobComponent } from './eda-knob/eda-knob.component';
 export { KnobDialogComponent } from './eda-panels/eda-blank-panel/knob-dialog/knob-dialog.component';
-export {Knob} from './eda-knob/primengKnob/knob';
-export {FunnelDialog} from './eda-panels/eda-blank-panel/funnel-dialog/funnel-dialog.component';
-export {EdaSunburstComponent} from './eda-sunburst/eda-sunburst.component';
-export {SunburstDialogComponent} from './eda-panels/eda-blank-panel/sunbrust-dialog/sunburst-dialog.component';
+export { Knob } from './eda-knob/primengKnob/knob';
+export { FunnelDialog } from './eda-panels/eda-blank-panel/funnel-dialog/funnel-dialog.component';
+export { BarchartDialog } from './eda-panels/eda-blank-panel/barchart-dialog/barchart-dialog.component';
+export { EdaSunburstComponent } from './eda-sunburst/eda-sunburst.component';
+export { SunburstDialogComponent } from './eda-panels/eda-blank-panel/sunbrust-dialog/sunburst-dialog.component';

@@ -38,7 +38,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public drops = {
         pointStyles: [],
         pointSizes: [],
-        gridLines: [],
+        grid: [],
         direction: [],
         stacked: []
     };
@@ -71,7 +71,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             { label: 'Linia', value: 'line' }
         ];
 
-        this.drops.gridLines = [
+        this.drops.grid = [
             { label: 'Mostrar', value: true },
             { label: 'Ocultar', value: false }
         ];
@@ -139,17 +139,17 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             const dataset = this.chart.chartDataset;
             for (let i = 0, n = dataset.length; i < n; i += 1) {
                 if (dataset[i].label === event.label) {
-                    dataset[i].pointBackgroundColor = this.hex2rgb(event.bg, 90);
-                    dataset[i].pointBorderColor = 'rgb(255,255,255)';
+                    //dataset[i].hoverBackgroundColor = this.hex2rgb(event.bg, 90);
+                    //dataset[i].hoverBorderColor = 'rgb(255,255,255)'; 
                     dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
                     dataset[i].borderColor = this.hex2rgb(event.bg, 100);
-                    this.chart.chartColors[i] = _.pick(dataset[i], ['pointBackgroundColor', 'pointBorderColor', 'backgroundColor', 'borderColor']);
+                    this.chart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
                 } else {
-                    dataset[i].pointBackgroundColor = this.chart.chartColors[i].backgroundColor;
-                    dataset[i].pointBorderColor = 'rgb(255,255,255)';
+                    //dataset[i].hoverBackgroundColor = this.chart.chartColors[i].backgroundColor;
+                    //dataset[i].hoverBorderColor = 'rgb(255,255,255)';
                     dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
                     dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
-                    this.chart.chartColors[i] = _.pick(dataset[i], ['pointBackgroundColor', 'pointBorderColor', 'backgroundColor', 'borderColor']);
+                    this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
                 }
                 newDatasets.push(dataset[i]);
             }
@@ -288,11 +288,11 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             const dataset = this.chart.chartDataset;
             for (let i = 0, n = dataset.length; i < n; i += 1) {
 
-                dataset[i].pointBackgroundColor = this.chart.chartColors[i].backgroundColor;
-                dataset[i].pointBorderColor = 'rgb(255,255,255)';
+               // dataset[i].hoverBackgroundColor = this.chart.chartColors[i].backgroundColor;
+                //dataset[i].hoverBorderColor = 'rgb(255,255,255)';
                 dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
                 dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
-                this.chart.chartColors[i] = _.pick(dataset[i], ['pointBackgroundColor', 'pointBorderColor', 'backgroundColor', 'borderColor']);
+                this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
 
                 newDatasets.push(dataset[i]);
             }

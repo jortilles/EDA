@@ -198,7 +198,8 @@ body .ui-accordion .ui-accordion-header a {
     border-radius: 4px;
     min-height: 40px;
     background: #1b69822e;
-    overflow: hidden;
+   /*  overflow: visible; */
+    overflow-wrap: anywhere;
     margin-top: 0.5em;
 }
 
@@ -211,7 +212,7 @@ body .ui-accordion .ui-accordion-header a {
     border-radius: 4px;
     min-height: 40px;
     background: #6f9c672e;
-    overflow: hidden;
+    overflow-wrap: anywhere;
     margin-top: 0.5em;
 }
 

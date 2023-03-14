@@ -26,10 +26,17 @@ export class EdadynamicTextComponent implements OnInit {
 
     getStyle():any{
         let color;
-        if(this.inject.color["color"]!==undefined){
-            color = this.inject.color["color"];
-        }else {
-            color = this.inject.color;
+        try{
+            if(this.inject.color["color"]!==undefined){
+                color = this.inject.color["color"];
+            }else {   
+                color = this.inject.color;
+            }
+        }catch( e ){
+            console.log("error getting color for dynamic text component");
+            console.log(e);
+            console.log(this.inject);
+            color =null;
         }
         return {'font-weight': 'bold',  'font-size': this.getFontSize()  +'px' , display: 'inline','color': color}
     }
@@ -42,12 +49,19 @@ export class EdadynamicTextComponent implements OnInit {
         if( result*4 > this.containerWidth){
             result =  this.containerWidth/4;
         }
-
+        // But maybe the string lenght is too long... lets check 
+        let strlen =  this.inject.value.toString().length;
+        if( strlen * result > this.containerWidth*1.5 ){
+            result = result / 1.5;
+        }
         // Ok.... we are done...
         return result.toFixed().toString();
 
 
     }
+
+
+
 
     ngAfterViewInit() {
         const width = this.dynamicTextContainer.nativeElement.offsetWidth;

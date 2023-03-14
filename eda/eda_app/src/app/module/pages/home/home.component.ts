@@ -32,6 +32,7 @@ export class HomeComponent implements OnInit {
 
     public groups: IGroup[] = [];
     public isAdmin: boolean;
+    public IsDataSourceCreator: boolean;
     public toLitle: boolean = false;
     public tags: Array<any> = [];
     public grups: Array<any> = [];
@@ -78,7 +79,7 @@ export class HomeComponent implements OnInit {
                 const user = sessionStorage.getItem('user');
                 const userID = JSON.parse(user)._id;
                 this.grups = res;
-                this.isObserver = this.grups.filter(group => group.name === 'RO' && group.users.includes(userID)).length !== 0
+                this.isObserver = this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
             },
             (err) => this.alertService.addError(err)
         );
@@ -88,7 +89,7 @@ export class HomeComponent implements OnInit {
         const user = sessionStorage.getItem('user');
         const userName = JSON.parse(user).name;
 
-        if (userName === 'edaanonim' || userName === 'RO') {
+        if (userName === 'edaanonim' || userName === 'EDA_RO') {
             this.router.navigate(['/login']);
         }
     }
@@ -110,6 +111,7 @@ export class HomeComponent implements OnInit {
                 this.groups = _.map(_.uniqBy(res.group, 'group._id'), 'group');
 
                 this.isAdmin = res.isAdmin;
+                this.IsDataSourceCreator = res.isDataSourceCreator;
 
                 /**Get unique tags */
                 this.tags = Array.from(new Set([].concat.apply([], [...this.dashboards.privats, this.dashboards.publics, this.dashboards.grups, this.dashboards.shared])

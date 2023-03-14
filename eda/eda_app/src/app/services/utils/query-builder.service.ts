@@ -91,6 +91,7 @@ export class QueryBuilderService extends ApiService {
             col.tableCount = select[i].tableCount;
             col.minimumFractionDigits = select[i].minimumFractionDigits;
             col.cumulativeSum = select[i].cumulativeSum;
+            col.valueListSource = select[i].valueListSource;
             queryColumns.push(col);
             labels.push(select[i].column_name);
 

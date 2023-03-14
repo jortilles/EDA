@@ -2,7 +2,7 @@
     <!-- ============================================================== -->
     <!-- TITLE  -->
     <!-- ============================================================== -->
-    <div class="p-col-12" style="padding:2px">
+    <div class="col-12" style="padding:2px">
         <eda-dashboard-panel class="pointer" (click)="setTitle()">
             <div class="d-flex justify-title-content">
                 <h3 *ngIf="!titleClick" class="eda-title"> {{title}} </h3>
@@ -34,7 +34,7 @@
         display="chip"
         class="customMultiselect filters-size" 
         [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}" 
-        [onShow]="adjustSize(filter)" 
+        [Show]="adjustSize(filter)" 
         (onChange)="applyGlobalFilter(filter)" >
 
             <p-footer>
@@ -132,7 +132,12 @@
 <!-- ============================================================== -->
 <!-- Right sidebar -->
 <!-- ============================================================== -->
-<p-sidebar [(visible)]="display_v.rightSidebar" position="right" [baseZIndex]="10000" blockScroll="true" [showCloseIcon]="false" [style]="{width:'21em', overflow: 'auto'}">
+<p-sidebar [(visible)]="display_v.rightSidebar" 
+            position="right" 
+            [baseZIndex]="10000" 
+            blockScroll="true" 
+            [showCloseIcon]="false" 
+            [style]="{width:'21em', overflow: 'auto'}"  >
 
     <div>
 
@@ -215,7 +220,7 @@
 
             </div>
             <div  *ngIf="display_v.groups">
-                <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false"
+                <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="true"
                  optionLabel="name" defaultLabel="Elige grupos *" [style]="{ width: '100%' }" itemSize="30" overflow="visible" 
                  >
                 </p-multiSelect>
@@ -234,7 +239,7 @@
             Edición privada:  
         </div>
         <div class="canIeditClassLabel"  [pTooltip]="canIeditTooltip" tooltipPosition="above"  >
-            <p-inputSwitch id="onlyIcanEdit" class="p-col-1 sql-switch" [(ngModel)]="onlyIcanEdit"
+            <p-inputSwitch id="onlyIcanEdit" class="col-1 sql-switch" [(ngModel)]="onlyIcanEdit"
             tooltipPosition="top"   >
             </p-inputSwitch>
         </div>

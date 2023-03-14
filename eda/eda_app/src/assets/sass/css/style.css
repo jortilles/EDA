@@ -1165,6 +1165,33 @@ pre {
     width: inherit;
 }
 
+/* JJ Puesto para quitar el overlay que no se borra*/
+.p-component-overlay-enter {
+    animation: p-component-overlay-enter-animation 150ms forwards;
+  }
+  
+  .p-component-overlay-leave {
+    animation: p-component-overlay-leave-animation 150ms forwards;
+  }
+  
+  @keyframes p-component-overlay-enter-animation {
+    from {
+      background-color: transparent;
+    }
+    to {
+      background-color: var(--maskbg);
+    }
+  }
+  @keyframes p-component-overlay-leave-animation {
+    from {
+      background-color: var(--maskbg);
+    }
+    to {
+      background-color: transparent;
+    }
+  }
+
+
 
 /* puesto por JJ para quitar el horrible overflow de la tabla */
 .ui-table-auto-layout > .ui-table-wrapper {

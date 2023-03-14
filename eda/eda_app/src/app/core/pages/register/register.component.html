@@ -2,9 +2,9 @@
 <!-- Main wrapper - style you can find in pages.scss -->
 <!-- ============================================================== -->
 
-<div class="p-grid login-register login-sidebar" style="background-image:url(assets/images/background/data-bg.png);">
+<div class="grid login-register login-sidebar" style="background-image:url(assets/images/background/data-bg.png);">
 	<div class="ui-lg-8 ui-xl-9" style="background: none;"></div>
-	<div class="p-col-10 p-col-offset-1 ui-md-6 ui-md-offset-3 ui-lg-4 ui-lg-offset-0 ui-xl-3 login-box"
+	<div class="col-10 col-offset-1 ui-md-6 ui-md-offset-3 ui-lg-4 ui-lg-offset-0 ui-xl-3 login-box"
 		style="background: none;">
 
 		<div class="card-login">
@@ -18,25 +18,25 @@
 				<h3 class="box-title mt-2">Registrate ahora</h3>
 				<small> Crea una cuenta y disfruta</small>
 				<div class="form-group mt-2">
-					<div class="p-col-12">
+					<div class="col-12">
 						<input pInputText formControlName="name" class="w-100" type="text" placeholder="Nombre"
 							required />
 					</div>
-					<div class="p-col-12">
+					<div class="col-12">
 						<input pInputText formControlName="email" class="w-100" type="email" placeholder="Correo"
 							required />
 					</div>
-					<div class="p-col-12">
+					<div class="col-12">
 						<input pInputText formControlName="password" class="w-100" type="password"
 						i18n-placeholder placeholder="Contraseña" autocomplete="new-password" required />
 					</div>
-					<div class="p-col-12">
+					<div class="col-12">
 						<input pInputText formControlName="password2" class="w-100" type="password"
 						i18n-placeholder	placeholder="Confirma contraseña" required />
 					</div>
 				</div>
-				<div class="form-group p-grid">
-					<div class="p-col-12">
+				<div class="form-group grid">
+					<div class="col-12">
 						<div class="checkbox checkbox-primary pt-0">
 							<input id="checkbox-signup" type="checkbox" formControlName="terminos" />
 							<label i18n="@@terms1" for="checkbox-signup"> Estoy de acuerdo con los <a
@@ -45,12 +45,12 @@
 					</div>
 				</div>
 				<div class="form-group text-center mt-2">
-					<div class="p-col-12">
+					<div class="col-12">
 						<button pButton type="submit" label="Registrarme" class="ui-button-rounded w-100"></button>
 					</div>
 				</div>
 				<div class="form-group mb-0">
-					<div class="p-col-12 text-center">
+					<div class="col-12 text-center">
 						<p i18n="@@haveAccount">
 							¿Tienes una cuenta? <a [routerLink]="['/login']" class="text-info ml-2">
 								<b>Ingresa ahora</b></a>

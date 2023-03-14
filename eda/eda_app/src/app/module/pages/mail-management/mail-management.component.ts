@@ -1,7 +1,7 @@
 import { AlertService } from './../../../services/alerts/alert.service';
 import { MailService } from './../../../services/api/mail.service';
 import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { DashboardService, SpinnerService } from '@eda/services/service.index';
 import { EdaColumnContextMenu, EdaColumnText, EdaTable } from '@eda/components/component.index';
 import { Router } from '@angular/router';
@@ -16,7 +16,7 @@ export class MailManagementComponent implements OnInit {
 
   /** Mail configuration*/
   public header: string = $localize`:@@mailmanagementHeader:Gestión de correo`;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
 
   /**Alerts */
   public dashboards: Array<any> = [];
@@ -30,7 +30,7 @@ export class MailManagementComponent implements OnInit {
   public dashboardsHeader: string = $localize`:@@dashbaordsMailingHeader:Envio de informes por email`;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private mailService: MailService,
     private alertService: AlertService,
     private spinnerService: SpinnerService,

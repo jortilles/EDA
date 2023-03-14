@@ -7,22 +7,22 @@
 
     <!-- CASE chart + edaquery -->
 
-    <div class="p-grid"
+    <div class="grid"
       *ngIf="controller.params.charttype !== 'table' && controller.params.charttype !== 'parallelSets'  && !controller.params.modeSQL">
-      <div class="p-col-6">
-        <h6 class="p-col-12" i18n="@@csvField" class="custom-border-b1">
+      <div class="col-6">
+        <h6 class="col-12" i18n="@@csvField" class="custom-border-b1">
           Campo
         </h6>
-        <div class="p-col-12">
+        <div class="col-12">
           <h6>{{column}}</h6>
         </div>
       </div>
 
-      <div class="p-col-6">
-        <h6 class="p-col-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
+      <div class="col-6">
+        <h6 class="col-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
           Informe a vincular
         </h6>
-        <div class="p-col-12">
+        <div class="col-12">
           <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard" [disabled]="noLink"></p-dropdown>
         </div>
       </div>
@@ -32,23 +32,23 @@
 
     <!-- CASE table + edaquery -->
 
-    <div class="p-grid"
+    <div class="grid"
       *ngIf="(controller.params.charttype === 'table' || controller.params.charttype === 'parallelSets') && !controller.params.modeSQL">
-      <div class="p-col-6">
-        <h6 class="p-col-12" i18n="@@csvField" class="custom-border-b1">
+      <div class="col-6">
+        <h6 class="col-12" i18n="@@csvField" class="custom-border-b1">
           Campo
         </h6>
-        <div class="p-col-12">
+        <div class="col-12">
           <p-dropdown [options]="columns" placeholder="Column" [(ngModel)]="selectedColumn" [disabled]="noLink"
             (onChange)="initDashboards(selectedColumn)" optionLabel="colname"></p-dropdown>
         </div>
       </div>
 
-      <div class="p-col-6">
-        <h6 class="p-col-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
+      <div class="col-6">
+        <h6 class="col-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
           Informe a vincular
         </h6>
-        <div class="p-col-12">
+        <div class="col-12">
           <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard" [disabled]="noLink"></p-dropdown>
         </div>
 
@@ -56,32 +56,32 @@
     </div>
 
     <!-- CASE chart + sqlquery -->
-    <div *ngIf="controller.params.modeSQL" class="p-grid">
-      <div class="p-col-12">
-        <h6 class="p-col-12" i18n="@@csvField" class="custom-border-b1">
+    <div *ngIf="controller.params.modeSQL" class="grid">
+      <div class="col-12">
+        <h6 class="col-12" i18n="@@csvField" class="custom-border-b1">
           Campo
         </h6>
-        <div class="p-col-12">
+        <div class="col-12">
           <p-dropdown [options]="columns" placeholder="Column" [(ngModel)]="selectedColumn" [disabled]="noLink"
             (onChange)="initDashboards(selectedColumn)" optionLabel="colname"></p-dropdown>
         </div>
       </div>
 
-      <div class="p-col-6">
-        <h6 class="p-col-12" i18n="@@LinkDashboardDbFilter" class="custom-border-b1">
+      <div class="col-6">
+        <h6 class="col-12" i18n="@@LinkDashboardDbFilter" class="custom-border-b1">
           Campo del informe
         </h6>
-        <div class="p-col-12">
+        <div class="col-12">
           <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard" placeholder="Dashboard" [disabled]="noLink"
             (onChange)="filterFilters()"></p-dropdown>
         </div>
       </div>
 
-      <div class="p-col-6">
-        <h6 class="p-col-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
+      <div class="col-6">
+        <h6 class="col-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
           Informe a vincular
         </h6>
-        <div class="p-col-12">
+        <div class="col-12">
           <p-dropdown [options]="filters" [(ngModel)]="selectedFilter" optionLabel="colname" placeholder="Column"
             [disabled]="noLink" (onChange)="handleTargetColumn()"></p-dropdown>
         </div>
@@ -91,10 +91,10 @@
 
 
 
-    <div *ngIf=" this.oldLinked " class="p-col-6">
+    <div *ngIf=" this.oldLinked " class="col-6">
 
       <h6>{{unLinkString}} {{oldLinked}} </h6>
-      <p-inputSwitch id="switchQueryMode" class="p-col-1 sql-switch" #switchMode [(ngModel)]="noLink"
+      <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" #switchMode [(ngModel)]="noLink"
         tooltipPosition="left">
       </p-inputSwitch>
 

@@ -3,32 +3,32 @@
 
 
         <form [formGroup]="form">
-            <div class="p-grid">
-                <div class="p-col-12 p-lg-6">
+            <div class="grid">
+                <div class="col-12 lg:col-6">
                     <label i18n="@@inputNombre">Nombre *</label>
                     <input pInputText formControlName="name" class="w-100" type="text" i18n-placeholder="@@inputNombre"
                         placeholder="Nombre" required />
                 </div>
-                <div class="p-col-12 p-lg-6">
+                <div class="col-12 lg:col-6">
                     <label i18n="@@inputEmail">Correo *</label>
                     <input pInputText formControlName="email" class="w-100" type="email" i18n-placeholder="@@inputEmail"
                         placeholder="Correo" autocomplete="username" required />
                 </div>
-                <div class="p-col-12 p-lg-6">
+                <div class="col-12 lg:col-6">
                     <label i18n="@@inputPassword">Contraseña *</label>
                     <input pInputText formControlName="password" class="w-100" type="password"
                         i18n-placeholder="@@inputPassword" placeholder="Contraseña" autocomplete="new-password"
                         required />
                 </div>
-                <div class="p-col-12 p-lg-6">
+                <div class="col-12 lg:col-6">
                     <label i18n="@@inputSeguridad">Seguridad *</label>
                     <input pInputText formControlName="rpassword" class="w-100" type="password"
                         i18n-placeholder="@@inputRepitePassword" i18n-placeholder="@@newPassPlaceholderUsers"
                         placeholder="Repite la contraseña" autocomplete="new-password" required />
                 </div>
-                <div *ngIf="controller.params.id" class="p-col-12 p-lg-6">
+                <div *ngIf="controller.params.id" class="col-12 lg:col-6">
                 </div>
-                <div class="p-col-12">
+                <div class="col-12">
                     <label i18n="@@inputGrupo">Grupo *</label>
                     <div>
                         <p-selectButton [options]="roles" formControlName="role" optionLabel="name" multiple="multiple">

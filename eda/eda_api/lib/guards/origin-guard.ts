@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 export const originGuard = async function (req: Request, res: Response, next: NextFunction) {
 
-  console.log(req.params);
+  //console.log(req.params);
 
   jwt.verify(req.params.token, SEED, (err, decoded) => {
 

@@ -12,7 +12,7 @@ export const roleGuard = async function (req: Request, res: Response, next: Next
     if ( !_.isNil(userID) ) {
         
         const groups = await Group.find({users: {$in: userID}}).exec();
-
+        
         const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
 
         if (!isAdmin) {

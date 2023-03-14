@@ -1,18 +1,18 @@
 <div class="container" style="min-width: 85%; padding: 5rem;">
   <!-- MODELS -->
-  <div class="p-grid">
+  <div class="grid">
 
-    <div class="p-col-12">
+    <div class="col-12">
 
       <p-card [header]="header1">
-        <div class="p-grid">
+        <div class="grid">
 
-          <div class="p-col-12 p-md-6">
+          <div class="col-12 md:col-6">
             <h5> {{exportModelS}}</h5>
             <hr>
             <form [formGroup]="exportModelForm">
-              <div class="form-group p-col-12">
-                <p-dropdown [options]="dataSources" formControlName="model" [placeholder]="header1"
+              <div class="form-group col-12">
+                <p-dropdown [options]="dataSources" formControlName="model" [placeholder]="header1"  [filter]="true" [filterBy]="'label'" 
                   [style]="{width:'50%', padding:'.35rem .75rem'}" (onChange)="exportModel()"> </p-dropdown>
               </div>
               <div *ngIf="exportModelForm.value.model!=null" class="download-container">
@@ -22,15 +22,15 @@
             </form>
           </div>
 
-          <div class="p-col-12 p-md-6">
+          <div class="col-12 md:col-6">
             <h5> {{importModelS}}</h5>
             <hr>
 
-            <div class="p-col-12 p-md-6">
+            <div class="col-12 md:col-6">
               <input type="file" #file style="display: none" (change)="onModelFilesAdded()" />
               <button pButton pRipple type="button" (click)="loadFile()" icon="fa fa-upload" iconPos="center" class="p-button-rounded p-button-outlined"> </button>
               <ul *ngIf="loadedDM!==null">
-                <div class="p-col-12" id="dashboardWrapper">
+                <div class="col-12" id="dashboardWrapper">
                   <li>
                     {{loadedDM.ds.metadata.model_name}}
                   </li>
@@ -38,13 +38,13 @@
               </ul>
             </div>
 
-            <div *ngIf="!isInconsistentDM" class="p-col-12 ui-md-6">
+            <div *ngIf="!isInconsistentDM" class="col-12 ui-md-6">
               <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
               <h6> {{modelInconsistenciesS}} </h6>
               <li *ngFor="let item of modelInconsistencies"> {{item}} </li>
             </div>
 
-            <div class="p-col-12">
+            <div class="col-12">
               <button pButton pRipple type="button" class="btn-sm p-button-secondary p-button-raised" [disabled]="!loadedDM"  [label]="import"
                 (click)="importModel()"></button>
             </div>
@@ -57,16 +57,16 @@
 
 
     <!-- DASHBOARDS -->
-    <div class="p-col-12">
+    <div class="col-12">
       <p-card [header]="header2">
-        <div class="p-grid">
+        <div class="grid">
 
-          <div class="p-col-12 p-md-6">
+          <div class="col-12 md:col-6">
             <h5> {{exportDBS}}</h5>
             <hr>
             <form [formGroup]="dashBoardForm">
-              <div class="form-group p-col-12">
-                <p-dropdown [options]="dashboards" formControlName="dashboard" [placeholder]="header2"
+              <div class="form-group col-12">
+                <p-dropdown [options]="dashboards" formControlName="dashboard" [placeholder]="header2"  [filter]="true" [filterBy]="'label'" 
                   [style]="{width:'50%', padding:'.35rem .75rem'}" (onChange)="exportDashboard()"> </p-dropdown>
               </div>
               <div *ngIf="dashBoardForm.value.dashboard!=null" class="download-container">
@@ -77,15 +77,15 @@
             </form>
           </div>
 
-          <div class="p-col-12 p-md-6">
+          <div class="col-12 md:col-6">
             <h5> {{importDBS}}</h5>
             <hr>
 
-            <div class="p-col-12 p-md-6">
+            <div class="col-12 md:col-6">
               <input type="file" #file2 style="display: none" (change)="onDashboardFilesAdded()" />
               <button pButton pRipple type="button" (click)="loadDBFile()" icon="fa fa-upload" iconPos="center" class="p-button-rounded p-button-outlined"> </button>
               <ul *ngIf="loadedDashboard!==null">
-                <div class="p-col-12" id="dashboardWrapper">
+                <div class="col-12" id="dashboardWrapper">
                   <li>
                     {{loadedDashboard.config.title}}
                   </li>
@@ -93,13 +93,13 @@
               </ul>
             </div>
 
-            <div *ngIf="!isConsistentDB" class="p-col-12 p-md-6">
+            <div *ngIf="!isConsistentDB" class="col-12 md:col-6">
               <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
               <h6> {{DBInconsistenciesS}} </h6>
               <li *ngFor="let item of DBInconsistencies"> {{item}} </li>
             </div>
 
-            <div class="p-col-12">
+            <div class="col-12">
               <button pButton pRipple type="button"class="btn-sm p-button-secondary p-button-raised" [label]="import" [disabled]="!loadedDashboard"
                 (click)="importDashboard()"> </button>
             </div>

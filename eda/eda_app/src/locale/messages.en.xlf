@@ -1467,6 +1467,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Añadir permiso </source>
 <target> Add permission </target>
 </trans-unit>
+<trans-unit id="addValueList" datatype="html">
+<source> Añadir lista de valores posibles</source>
+<target> Add list of possible values</target>
+</trans-unit>
 
 
 <trans-unit id="addModelPermissions" datatype="html">
@@ -1572,6 +1576,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
 <context context-type="linenumber">19</context>
 </context-group>
+</trans-unit>
+<trans-unit id="placeholderTargetColumnId" datatype="html">
+<source>Columna con el id </source>
+<target>Column with the id</target>
+</trans-unit>
+<trans-unit id="placeholderTargetColumnDesc" datatype="html">
+<source>Columna con la descripción </source>
+<target>Column with the description</target>
 </trans-unit>
 <trans-unit id="crearGrupoLabel" datatype="html">
 <source>Crear grupo</source>
@@ -2169,7 +2181,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 
-<trans-unit id="AñadirPermiso" datatype="html">
+<trans-unit id="AddPermiso" datatype="html">
 <source>Añadir permiso</source>
 <target>Add permission</target>
 <context-group purpose="location">
@@ -2177,6 +2189,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <context context-type="linenumber">3</context>
 </context-group>
 </trans-unit>
+
+
+<trans-unit id="AddValueList" datatype="html">
+<source>Definir un listado de valores posibles</source>
+<target>Define a list of possible values</target>
+</trans-unit>
+
+
 
 <trans-unit id="columnaCalculada" datatype="html">
 <source> Nueva columna calculada </source>
@@ -2416,8 +2436,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="IncorrectQueryAgg">
-<source>Debes incluir la agregación (sum, max, min, etc)</source>
-<target>You must include the aggregation (sum, max, min, etc)</target>
+<source>Debes incluir la agregación (distinct, sum, max, min, etc)</source>
+<target>You must include the aggregation (distinct, sum, max, min, etc)</target>
 </trans-unit>
 
 <trans-unit id="EstablishedConnections">
@@ -3498,6 +3518,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
      <trans-unit id="chartInfoHistogram">
     <source>Un histograma requiere una única columna de valores numericos de los que se calculará la frecuencia </source>
     <target>A histogram requires a single column of numeric values from which the frequency is calculated</target>
+  </trans-unit>
+
+  <trans-unit id="chartInfoFunnel">
+    <source>Un embudo necesitar una categoría y un valor numérico </source>
+    <target>A funnel will need a category and a numeric value</target>
   </trans-unit>
 
    <trans-unit id="mailConfOk">

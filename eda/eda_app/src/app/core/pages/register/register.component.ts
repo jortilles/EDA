@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms';
 import { UserService, AlertService } from '@eda/services/service.index';
 import { EdaDialogController } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-controller';
 import { User } from '@eda/models/model.index';
@@ -15,7 +15,7 @@ declare function init_plugins();
 })
 export class RegisterComponent implements OnInit {
 
-    form: FormGroup;
+    form: UntypedFormGroup;
     conditions: EdaDialogController;
 
     constructor(
@@ -23,12 +23,12 @@ export class RegisterComponent implements OnInit {
         private router: Router,
         private alertService: AlertService
     ) {
-        this.form = new FormGroup({
-            name: new FormControl(null, Validators.required),
-            email: new FormControl(null, [Validators.required, Validators.email]),
-            password: new FormControl(null, Validators.required),
-            password2: new FormControl(null, Validators.required),
-            terminos: new FormControl(false),
+        this.form = new UntypedFormGroup({
+            name: new UntypedFormControl(null, Validators.required),
+            email: new UntypedFormControl(null, [Validators.required, Validators.email]),
+            password: new UntypedFormControl(null, Validators.required),
+            password2: new UntypedFormControl(null, Validators.required),
+            terminos: new UntypedFormControl(false),
         }, { validators: this.isMatch('password', 'password2') });
     }
 
@@ -38,7 +38,7 @@ export class RegisterComponent implements OnInit {
 
     isMatch(value1: string, value2: string) {
 
-        return (group: FormGroup) => {
+        return (group: UntypedFormGroup) => {
 
             const pass1 = group.controls[value1].value;
             const pass2 = group.controls[value2].value;

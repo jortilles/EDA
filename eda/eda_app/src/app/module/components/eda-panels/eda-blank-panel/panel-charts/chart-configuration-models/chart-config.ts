@@ -9,20 +9,21 @@ import { SankeyConfig } from './sankey-config';
 import { ScatterConfig } from './scatter-config';
 import { KnobConfig } from './knob-config';
 import { SunburstConfig } from './sunburst-config';
+import { BarchartConfig } from './barchart.config';
 
 
 
 export class ChartConfig {
-  private config: ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig| MapConfig | SankeyConfig | TreeMapConfig | ScatterConfig | KnobConfig | FunnelConfig | SunburstConfig
+  private config: ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig| MapConfig | SankeyConfig | TreeMapConfig | ScatterConfig | KnobConfig | FunnelConfig | BarchartConfig |SunburstConfig
 
-  constructor(config: ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | SankeyConfig | TreeMapConfig | ScatterConfig | KnobConfig | FunnelConfig | SunburstConfig) {
+  constructor(config: ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | SankeyConfig | TreeMapConfig | ScatterConfig | KnobConfig | FunnelConfig | BarchartConfig  | SunburstConfig) {
      this.config = config;
   }
   
-  getConfig(): ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | SankeyConfig | TreeMapConfig | ScatterConfig | KnobConfig | FunnelConfig  | SunburstConfig{
+  getConfig(): ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | SankeyConfig | TreeMapConfig | ScatterConfig | KnobConfig | FunnelConfig | BarchartConfig  | SunburstConfig{
     return this.config;
   }
-  setConfig(config: ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | SankeyConfig | TreeMapConfig | ScatterConfig | KnobConfig | FunnelConfig | SunburstConfig):void{
+  setConfig(config: ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | SankeyConfig | TreeMapConfig | ScatterConfig | KnobConfig | FunnelConfig | BarchartConfig | SunburstConfig):void{
     this.config = config;
   }
 }

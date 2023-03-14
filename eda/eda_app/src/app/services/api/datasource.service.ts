@@ -312,7 +312,6 @@ export class DataSourceService extends ApiService implements OnDestroy {
         // Update source table
         const srcTableIndex = this._databaseModel.getValue().findIndex((table: { table_name: string; }) => table.table_name === rel.source_table);
         const relIndex = this.getRelationIndex(rel, srcTableIndex);
-
         const tmp_model = this._databaseModel.getValue();
         if (relIndex < 0) {
             tmp_model[srcTableIndex].relations.push(rel);
@@ -338,6 +337,14 @@ export class DataSourceService extends ApiService implements OnDestroy {
         }
 
         this._databaseModel.next(tmp_model);
+    }
+
+    /** add a value list as the source of a column */
+    addValueListSource(ValueListSource: any) {
+       const tmp_panel = this._columnPanel.getValue();
+       tmp_panel.valueListSource = ValueListSource;
+       this._columnPanel.next(tmp_panel);
+       this.updateDataModel(tmp_panel);
     }
 
     addPermission(permission: any) {
@@ -376,6 +383,8 @@ export class DataSourceService extends ApiService implements OnDestroy {
             this._databaseModel.next(tmp_model);
 
         } else if (panel.type === 'columna') {
+
+
             const tableIndex = this._databaseModel.getValue().findIndex((table: { display_name: { default: any; }; }) => table.display_name.default === panel.parent);
             const columnindex = this._databaseModel.getValue()[tableIndex].columns.findIndex((col: { column_name: any; }) => col.column_name === panel.technical_name);
             const tmp_model = this._databaseModel.getValue();
@@ -395,6 +404,10 @@ export class DataSourceService extends ApiService implements OnDestroy {
             tmp_model[tableIndex].columns[columnindex].row_granted_roles = panel.row_granted_roles;
             tmp_model[tableIndex].columns[columnindex].visible = panel.visible;
 
+            if( panel.valueListSource  ){
+                tmp_model[tableIndex].columns[columnindex].valueListSource = panel.valueListSource;
+            }
+            
             this._databaseModel.next(tmp_model);
 
         } else if (panel.type === 'root') {

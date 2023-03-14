@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { AlertService, SidebarService, SpinnerService, DataSourceService } from '@eda/services/service.index';
 import Swal from 'sweetalert2';
 
@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 })
 export class DataSourcesComponent {
     // Page Variables
-    public form: FormGroup;
+    public form: UntypedFormGroup;
     public optimize : boolean= true;
     public sidOpts : any[] = [
         { name: 'SID', value: 1 },
@@ -24,7 +24,7 @@ export class DataSourcesComponent {
         { name: 'Oracle', value: 'oracle' }
     ];
 
-    constructor(private formBuilder: FormBuilder,
+    constructor(private formBuilder: UntypedFormBuilder,
         private sidebarService: SidebarService,
         private dataSourceService: DataSourceService,
         private spinnerService: SpinnerService,
@@ -97,6 +97,9 @@ export class DataSourcesComponent {
         switch (type) {
             case 'postgres':
                 this.form.patchValue({ port: 5432 });
+                break;
+            case 'vertica':
+                this.form.patchValue({ port: 5433 });
                 break;
             case 'sqlserver':
                 this.form.patchValue({ port: 1433 });

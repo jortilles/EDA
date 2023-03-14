@@ -5,11 +5,11 @@
     (onSelect)="clearRange()" appendTo="body">
     <!-- [style]="{'width':'10%', 'height':'10%', 'min-width':'0px'}" [inputStyle]="{'width':'100px'}"> -->
     <p-footer>
-      <div class="p-col-10">
+      <div class="col-10">
         <p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder"
           (onChange)="getRange()"></p-dropdown>
       </div>
-      <div class="p-col-2" *ngIf="autoRemove">
+      <div class="col-2" *ngIf="autoRemove">
         <button pButton pRipple type="button" (click)="remove()" icon="fa fa-trash" class="p-button-danger p-button-rounded  p-button-outlined"></button>
       </div>
     </p-footer>

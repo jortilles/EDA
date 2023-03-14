@@ -1,6 +1,6 @@
 <eda-dialog [inject]="dialog">
-  <div body class="p-grid">
-    <div class="p-col-8">
+  <div body class="grid">
+    <div class="col-8">
       <div class="eda-chart-panel" style="margin-top: 5em; margin-left: 2em; background-color: var(--panel-color);">
         <div style="height: 70%; margin-top: 2em;">
           <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig">
@@ -11,13 +11,13 @@
     </div>
 
 
-    <div class="p-col-4">
+    <div class="col-4">
 
       <h6 i18n="@@colorsChartH6" class="custom-border-b1">
         Colores
       </h6>
 
-      <div class="p-grid chart-color-selection" id="sankeyColorWrapper">
+      <div class="grid chart-color-selection" id="sankeyColorWrapper">
         <div *ngFor="let label of labels; let i = index">
 
           <div class="p-col">

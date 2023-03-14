@@ -1,4 +1,4 @@
-<div class="p-col-12 ui-md-12">
+<div class="col-12 ui-md-12">
 
   <input type="file" #file style="display: none" (change)="onFilesAdded()" multiple />
   <div>
@@ -9,13 +9,13 @@
       style="margin:0.2em"></button>
       
       <ul>
-        <div class="p-col-4 ui-md-4" id="wrapper">
+        <div class="col-4 ui-md-4" id="wrapper">
           <li *ngFor="let item of files">
             &nbsp;&nbsp; {{item.name}}
           </li>
         </div>
       </ul>
-      <div class="p-col-12 ui-md-12" style="padding: 5px;">
+      <div class="col-12 ui-md-12" style="padding: 5px;">
         <p-progressBar *ngIf="progressBar" mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
 import { Component, Input, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDrag } from '@angular/cdk/drag-drop';
 import { Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 import {
@@ -65,6 +65,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public sankeyController: EdaDialogController;
     public treeMapController: EdaDialogController;
     public funnelController:EdaDialogController;
+    public barchartController:EdaDialogController;
     public linkDashboardController: EdaDialogController;
     public scatterPlotController: EdaDialogController;
     public knobController: EdaDialogController;
@@ -101,7 +102,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public index: number;
     public description: string;
-    public chartForm: FormGroup;
+    public chartForm: UntypedFormGroup;
     public userSelectedTable: string;
 
     /**Strings */
@@ -154,7 +155,7 @@ export class EdaBlankPanelComponent implements OnInit {
     constructor(
         public queryBuilder: QueryBuilderService,
         public fileUtiles: FileUtiles,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         public dashboardService: DashboardService,
         public chartUtils: ChartUtilsService,
         public alertService: AlertService,
@@ -349,7 +350,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content = { query, chart, edaChart };
 
             /**This is to repaint on panel redimension */
-            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel', 'sunburst'].includes(chart)) {
+            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','barchart', 'sunburst'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
 
@@ -700,6 +701,20 @@ export class EdaBlankPanelComponent implements OnInit {
         this.funnelController = undefined;
     }
 
+    public onCloseBarchartProperties(event, response): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            this.panel.content.query.output.config.colors = response.colors;
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService._notSaved.next(true);
+        }
+        this.barchartController = undefined;
+    }
+
+
+    
+
+
     public onCloseScatterProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
@@ -786,6 +801,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     || content.chart === 'funnel'
                     || content.chart === 'knob'
                     || content.chart === 'sunburst' 
+                    || content.chart === 'barchart' 
                     || content.chart === 'dynamicText')
             ) {
 

@@ -1,10 +1,12 @@
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
-import { ChartType, ChartDataSets, ChartOptions } from 'chart.js';
+import { ChartType, ChartDataset, ChartOptions } from 'chart.js';
+
+
 
 export class EdaChart {
-    public chartType: ChartType;
+    public chartType: ChartType | "horizontalBar";
     public chartData: any[] = [];
-    public chartDataset: ChartDataSets[] = [];
+    public chartDataset: ChartDataset[] = [];
     public chartLabels: string[] = [];
     public chartColors: any[] = [];
     public charcoloms: any[] = [];

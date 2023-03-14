@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent} from '@eda/shared/components/shared-components.index';
 import {AlertService, GroupService, UserService} from '@eda/services/service.index';
 import {Group} from '@eda/models/user-models/group-model';
@@ -14,7 +14,7 @@ import * as _ from 'lodash';
 export class GroupDetailComponent extends EdaDialogAbstract {
     public dialog: EdaDialog;
     public group: Group;
-    public form: FormGroup;
+    public form: UntypedFormGroup;
     public lists = {
         avaibles: [],
         selecteds: []
@@ -34,14 +34,14 @@ export class GroupDetailComponent extends EdaDialogAbstract {
             title: 'CREAR NUEVO GRUPO'
         });
 
-        this.form = new FormGroup({
-            name: new FormControl(null, Validators.required),
-            role: new FormControl(null, Validators.required),
-            img: new FormControl(null),
-            users: new FormControl(null),
+        this.form = new UntypedFormGroup({
+            name: new UntypedFormControl(null, Validators.required),
+            role: new UntypedFormControl(null, Validators.required),
+            img: new UntypedFormControl(null),
+            users: new UntypedFormControl(null),
         });
 
-        this.roles = [{label: 'USER', value: 'USER_ROLE'}, {label: 'ADMIN', value: 'ADMIN_ROLE'}];
+        this.roles = [{label: 'USER', value: 'USER_ROLE'}, {label: 'EDA_ADMIN', value: 'ADMIN_ROLE'}];
         this.lists.avaibles = [];
         this.lists.selecteds = [];
     }

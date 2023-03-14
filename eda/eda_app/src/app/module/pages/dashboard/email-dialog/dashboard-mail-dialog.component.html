@@ -2,30 +2,30 @@
 
 <div body>
   
-  <div class="p-grid" >
-    <div class="p-col-3">
+  <div class="grid" >
+    <div class="col-3">
 
 
       <h6 i18n="@@SendMailEvery"> Enviar mail de alerta cada: </h6>
 
-      <div class="p-col-12" style="margin-top: -0.4em;">
+      <div class="col-12" style="margin-top: -0.4em;">
         <p-inputNumber [(ngModel)]="quantity"></p-inputNumber>
       </div>
-      <div class="p-col-12">
+      <div class="col-12">
         <p-radioButton name="groupname" value="days" [label]="daysSTR" [(ngModel)]="units">
         </p-radioButton>
       </div>
-      <div class="p-col-12" *ngIf="units==='days'">
+      <div class="col-12" *ngIf="units==='days'">
         <p i18n="@@at"> A las </p>
         <p-calendar [timeOnly]="true" [(ngModel)]="hours"></p-calendar>
       </div>
-      <div class="p-col-12">
+      <div class="col-12">
         <p-radioButton name="groupname" value="hours" [label]="hoursSTR" [(ngModel)]="units">
         </p-radioButton>
       </div>
     </div>
 
-    <div class="p-col-5">
+    <div class="col-5">
 
 
       <h6 i18n="@@SendMailWho"> Destinatarios </h6>
@@ -36,7 +36,7 @@
 
     </div>
 
-    <div class="p-col-4">
+    <div class="col-4">
 
       <h6 i18n="@@SendMailWhat"> Contenido del mail: </h6>
 
@@ -46,9 +46,9 @@
 
   </div>
 
-  <div class="p-col-12">
+  <div class="col-12">
     <h6 i18n="@@noMail">Sin alertas de correo</h6>
-    <p-inputSwitch id="switchCache" class="p-col-1" [(ngModel)]="disabled" tooltipPosition="left">
+    <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="disabled" tooltipPosition="left">
     </p-inputSwitch>
   </div>
 

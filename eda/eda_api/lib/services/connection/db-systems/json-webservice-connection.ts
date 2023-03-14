@@ -218,7 +218,6 @@ export class JSONWebServiceConnection extends AbstractConnection {
       if (response.length == 0) {
         let doit = 0
         fields.forEach(field => {
-          console.log(field)
           if (
             field.column_type == 'numeric' &&
             (field.aggregation_type == 'count' ||

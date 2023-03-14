@@ -39,9 +39,9 @@ export class BigQueryConnection extends AbstractConnection {
       * Set filter for tables if exists
       */
       const filters = filter ? filter.split(',') : []
-      let filter_str = filter ? `where ( table_name LIKE '%${filters[0].trim()}%'` : ``;
+      let filter_str = filter ? `where ( table_name LIKE '${filters[0].trim()}'` : ``;
       for (let i = 1; i < filters.length; i++) {
-        filter_str += ` OR table_name LIKE '%${filters[i].trim()}%'`;
+        filter_str += ` OR table_name LIKE '${filters[i].trim()}'`;
       }
       if (filter) filter_str += ' )';
 

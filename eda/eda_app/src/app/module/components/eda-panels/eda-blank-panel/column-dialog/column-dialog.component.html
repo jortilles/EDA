@@ -1,8 +1,8 @@
 <eda-dialog [inject]="dialog">
 
-    <div body class="p-grid mb-0 pb-0">
+    <div body class="grid mb-0 pb-0">
 
-        <div class="p-col-12 p-lg-2">
+        <div class="col-12 lg:col-2">
 
             <h4 i18n="@@agregacionesH4">
                 Agregaciones
@@ -22,7 +22,7 @@
         </div>
 
         <!-- Ordernacion -->
-        <div class="p-col-12 p-lg-2">
+        <div class="col-12 lg:col-2">
 
             <h4 i18n="@@ordenacionH4">
                 Ordenación
@@ -42,16 +42,16 @@
         </div>
 
         <!-- Filtros -->
-        <div class="p-col-8">
+        <div class="col-8">
 
             <h4 i18n="@@filtrarH4">
                 Filtrar
             </h4>
             <hr>
 
-            <div class="p-grid mt-2">
+            <div class="grid mt-2">
 
-                <div class="p-col-12 mt-1" [ngClass]="{ 'p-md-6': (!display.between && !display.calendar ) || (!!display.calendar )}">
+                <div class="col-12 mt-1" [ngClass]="{ 'md:col-6': (!display.between && !display.calendar ) || (!!display.calendar )}">
 
                     <span class="p-float-label">
                         <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
@@ -69,7 +69,7 @@
 
                 <ng-container *ngIf="!display.between">
 
-                    <div class="p-col-12 p-md-6">
+                    <div class="col-12 md:col-6">
 
                         <ng-container *ngIf="!!display.calendar && !filter.switch">
 
@@ -130,7 +130,7 @@
 
                     <ng-container *ngIf="!!display.calendar && !filter.switch">
 
-                        <div class="p-col-6 mt-3">
+                        <div class="col-6 mt-3">
 
                             <div style="margin-top: -0.8em;">
 
@@ -145,7 +145,7 @@
 
                         </div>
 
-                        <!-- <div class="p-col-6 mt-3">
+                        <!-- <div class="col-6 mt-3">
 
                             <div class="form-group mb-0">
 
@@ -164,7 +164,7 @@
 
                     <ng-container *ngIf="!display.calendar && !filter.switch">
 
-                        <div class="p-col-6 mt-3">
+                        <div class="col-6 mt-3">
 
                             <span class="p-float-label">
 
@@ -180,7 +180,7 @@
 
                         </div>
 
-                        <div class="p-col-6 mt-3">
+                        <div class="col-6 mt-3">
 
                             <span class="p-float-label">
 
@@ -200,7 +200,7 @@
 
                     <ng-container *ngIf="filter.switch">
 
-                        <div class="p-col-6 mt-3">
+                        <div class="col-6 mt-3">
 
                             <div class="form-group mb-0">
 
@@ -220,7 +220,7 @@
 
                         </div>
 
-                        <div class="p-col-6 mt-3">
+                        <div class="col-6 mt-3">
 
                             <div class="form-group mb-0">
 
@@ -245,12 +245,12 @@
                 </ng-container>
 
                 <ng-container>
-                    <div class="p-col-12">
+                    <div class="col-12">
 
 
-                        <div class="p-grid">
+                        <div class="grid">
 
-                            <div class="p-col-1">
+                            <div class="col-1">
 
                                 <label i18n="@@optionsLabel" for="filter_options">
                                     Opciones
@@ -268,7 +268,7 @@
 
                             </div>
 
-                            <div class="p-col-3" style="margin-left: 25px; padding: 25px;">
+                            <div class="col-3" style="margin-left: 25px; padding: 25px;">
 
                                 <p-button (onClick)="addFilter()" [disabled]="display.filterButton"
                                     i18n-label="@@addFilterBtn" label="Añadir filtro"></p-button>
@@ -282,10 +282,10 @@
             </div>
 
         </div>
-        <div class="p-col-12">
+        <div class="col-12">
 
-            <div class="p-grid">
-                <div class="p-col-12 p-lg-2">
+            <div class="grid">
+                <div class="col-12 lg:col-2">
 
                     <ng-container *ngIf="selectedColumn">
 
@@ -321,13 +321,13 @@
 
                 </div>
 
-                <div class="p-col-9 ">
+                <div class="col-9 ">
                     <h4 i18n="@@FiltersH4">
                         Filtros
                     </h4>
                     <hr>
 
-                    <div *ngIf="filter.forDisplay.length !== 0" class="p-col-12 foot-card">
+                    <div *ngIf="filter.forDisplay.length !== 0" class="col-12 foot-card">
 
                         <p-scrollPanel [style]="{width: '100%', height: '120px'}" styleClass="custombar1">
 

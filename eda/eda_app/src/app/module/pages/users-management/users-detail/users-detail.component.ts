@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, FormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import { AlertService, GroupService, UserService } from '@eda/services/service.index';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import Swal from 'sweetalert2';
@@ -14,7 +14,7 @@ import * as _ from 'lodash';
 export class UsersFitxaComponent extends EdaDialogAbstract {
     private iam: boolean;
     public dialog: EdaDialog;
-    public form: FormGroup;
+    public form: UntypedFormGroup;
     public user: any = {};
     public roles: any[] = [];
     public btnLabel: string;
@@ -22,7 +22,7 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
     constructor( private userService: UserService,
                  private groupService: GroupService,
                  private alertService: AlertService,
-                 private fb: FormBuilder) {
+                 private fb: UntypedFormBuilder) {
         super();
 
         this.dialog = new EdaDialog({

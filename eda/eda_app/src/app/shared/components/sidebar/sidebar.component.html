@@ -78,9 +78,13 @@
                     </a>
                 </li>
 
-                <li *ngIf="userService.isAdmin" class="nav-devider"></li>
 
-                <li *ngIf="userService.isAdmin" class="user-profile">
+
+
+
+                <li   *ngIf="userService.isDataSourceCreator||userService.isAdmin"  class="nav-devider"></li>
+
+                <li *ngIf="userService.isDataSourceCreator||userService.isAdmin" class="user-profile">
                     <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false" id="edaNewDataSource">
                         <i class="mdi mdi-database"></i>
                         <span class="hide-menu ml-2" i18n="@@sidebarDataFonts">Fuente de Datos</span>
@@ -105,6 +109,8 @@
                         </li>
                     </ul>
                 </li>
+
+
                 <li class="nav-devider"></li>
                 <li  >
                     <a class="has-arrow waves-effect waves-dark">

@@ -115,8 +115,8 @@ export const PanelOptions = {
             });
 
           }
-          else if (panelComponent.graficos.chartType === 'funnel') {
 
+          else if (panelComponent.graficos.chartType === 'funnel') {
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.funnelController = new EdaDialogController({
               params: {
@@ -127,8 +127,19 @@ export const PanelOptions = {
             });
 
           }
-          else if(panelComponent.graficos.chartType === 'scatterPlot'){
+          else if (panelComponent.graficos.chartType === 'barchart') {
+            panelComponent.contextMenu.hideContextMenu();
+            panelComponent.barchartController = new EdaDialogController({
+              params: {
+                panelID: _.get(panelComponent.panel, 'id'),
+                panelChart: panelComponent.panelChartConfig
+              },
+              close: (event, response) => { panelComponent.onCloseBarchartProperties(event, response) }
+            });
 
+          }
+
+          else if(panelComponent.graficos.chartType === 'scatterPlot'){
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.scatterPlotController = new EdaDialogController({
               params: {

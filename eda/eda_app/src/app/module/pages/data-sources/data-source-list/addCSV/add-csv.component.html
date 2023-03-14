@@ -1,21 +1,21 @@
 <eda-dialog [inject]="dialog">
-  <div body class="p-grid">
+  <div body class="grid">
 
-    <div class="p-col-12 p-md-2 " style="margin-top: 1em;">
-      <div style="margin-bottom: 10px" class="p-col-12">
+    <div class="col-12 md:col-2 " style="margin-top: 1em;">
+      <div style="margin-bottom: 10px" class="col-12">
         <span class="p-float-label">
           <input id="tablename" type="text" pInputText [(ngModel)]="tableName">
           <label i18n="@@placeholderTableName" for="tablename">Nombre de la tabla</label>
         </span>
       </div>
-      <div style="margin-bottom: 10px" class="p-col-12">
+      <div style="margin-bottom: 10px" class="col-12">
         <span class="p-float-label">
           <input id="separator" type="text" pInputText [(ngModel)]="delimiter">
           <label i18n="@@placeholderInputSeparator" for="separator">Separador</label>
         </span>
       </div>
 
-      <div style="margin-bottom: 10px" class="p-col-12 ">
+      <div style="margin-bottom: 10px" class="col-12 ">
         <h6 i18n="@@addFile">Subir archivo</h6>
         <input type="file" #file style="display: none" (change)="onFilesAdded()" />
         <button pButton pRipple type="button" icon="fa fa-upload" class="p-button-rounded p-button-outlined"
@@ -25,7 +25,7 @@
 
     </div>
 
-    <div class="p-col-12 p-md-10  " style="margin-top: 1em;">
+    <div class="col-12 md:col-10  " style="margin-top: 1em;">
       <p-table [value]="csvColumns" styleClass="p-datatable-sm">
         <ng-template pTemplate="header">
           <tr>

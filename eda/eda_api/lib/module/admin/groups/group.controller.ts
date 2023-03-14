@@ -99,12 +99,12 @@ export class GroupController {
     });
 
 
-    if (  groupsToDelete.indexOf('ADMIN') > -1) {
-      groupsToDelete.splice(groupsToDelete.indexOf('ADMIN'), 1);
+    if (  groupsToDelete.indexOf('EDA_ADMIN') > -1) {
+      groupsToDelete.splice(groupsToDelete.indexOf('EDA_ADMIN'), 1);
     }
     // ADMIN Y READ ONLY S'HA DE DEIXAR...
-    groupsToDelete = groupsToDelete.filter(item => item !== 'ADMIN');
-    groupsToDelete = groupsToDelete.filter(item => item !== 'RO');
+    groupsToDelete = groupsToDelete.filter(item => item !== 'EDA_ADMIN');
+    groupsToDelete = groupsToDelete.filter(item => item !== 'EDA_RO');
 
     for (const g  of groupsToDelete) {
       const grp =  await  this.deleteGroupFromAD( g );

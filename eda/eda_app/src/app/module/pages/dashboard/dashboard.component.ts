@@ -1,7 +1,7 @@
 import { DateUtils } from './../../../services/utils/date-utils.service';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
 import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dashboard, EdaPanel, EdaTitlePanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { EdaDialogController, EdaDialogCloseEvent, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
@@ -34,7 +34,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Dashboard Page Variables
     public id: string;
     public title: string = $localize`:@@loading:Cargando informe...`;
-    public form: FormGroup;
+    public form: UntypedFormGroup;
     public titleClick: boolean;
     public dataSource: any;
     public dashboard: Dashboard;
@@ -112,7 +112,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         private spinnerService: SpinnerService,
         private alertService: AlertService,
         private fileUtiles: FileUtiles,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private route: ActivatedRoute,
         private router: Router,
         private dateUtilsService: DateUtils,
@@ -304,10 +304,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.groupService.getGroupsByUser().subscribe(
             res => {
-                this.grups = res;
+                this.grups = res.sort((a, b) => {
+                    let va = a.name.toLowerCase();
+                    let vb = b.name.toLowerCase();
+                    return va < vb ?  -1 : va > vb ? 1 : 0
+                });
                 if (this.grups.length === 0) {
                     this.visibleTypes.splice(1, 1);
                 }
+
+
+
+                
                 // pot ser que no estinguin disponibles encara els grups... per això  es crida des de els dos llocs
                 // i es crida també des de aqui.... a mes a mes des de la inicilialització del dashboard
                 // per estar segurn que es tenen disponibles.
@@ -499,7 +507,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             dataSource: this.dataSource,
             dashboard_id: this.dashboard.id,
             applyToAllfilter: this.applyToAllfilter,
-            isObserver: this.grups.filter(group => group.name === 'RO' && group.users.includes(userID)).length !== 0
+            isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
         }
     }
 
@@ -546,7 +554,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const user = sessionStorage.getItem('user');
         const userName = JSON.parse(user).name;
         const userID = JSON.parse(user)._id;
-        this.display_v.edit_mode = (userName !== 'edaanonim') && !(this.grups.filter(group => group.name === 'RO' && group.users.includes(userID)).length !== 0)
+        this.display_v.edit_mode = (userName !== 'edaanonim') && !(this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0)
         this.display_v.anonimous_mode = (userName !== 'edaanonim');
     }
 
@@ -1090,11 +1098,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
 
+
     public onResetWidgets(): void {
+            // Get the queries in the dashboard for delete it from cache
+            const queries = [];
+            this.panels.forEach( p=> {
+                    if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
+                        queries.push( p.content.query.query );
+                    }
+                });
             let body =
             {
                 model_id: this.dataSource._id,
-                queries: this.panels.filter( panel=>panel.content ).map(panel =>{ panel.content.query.query})
+                queries: queries
             }
 
             this.dashboardService.cleanCache(body).subscribe(
@@ -1291,7 +1307,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             found
             && panel.content
             && !found.panelChart.NO_DATA
-            && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel', 'sunburst'].includes(panel.content.chart))
+            && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','barchart', 'sunburst'].includes(panel.content.chart))
             && !$event.isNew) {
             found.savePanel();
         }// found.onGridsterResize($event);

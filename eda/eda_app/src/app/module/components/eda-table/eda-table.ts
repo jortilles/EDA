@@ -252,7 +252,7 @@ export class EdaTable {
 
     rowTotals() {
         if (this.pivot === true) {
-
+            // 
             const colNames = this.cols.map(col => col.field);
 
             //get unique names for same metric in each sub-set -> columns : A-income, B-income, A-amount, B-amount -> returns:  [income, amount]
@@ -297,14 +297,14 @@ export class EdaTable {
                 numericCols.forEach(key => {
                     valuesKeys.forEach(valueKey => {
                         if (key.includes(valueKey)) {     
-                            let decimalplaces =  0;  /** esta mierda se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
+                            let decimalplaces =  0;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
                             try{
                                 if(  row[key].toString().split(".")[1].length > 0){
                                     decimalplaces =  row[key].toString().split(".")[1].length;
                                 }
                             }catch(e){ }
                             totals[valueKey] = parseFloat(totals[valueKey]) + parseFloat(row[key]);
-                            totals[valueKey] = totals[valueKey].toFixed(decimalplaces );
+                            totals[valueKey] = parseFloat(totals[valueKey].toFixed(decimalplaces ));
 
                         }
                     });
@@ -313,7 +313,9 @@ export class EdaTable {
                     row[pair[0]] = pair[1];
                 });
             });
+
         }
+
     }
 
     rowTrend() {

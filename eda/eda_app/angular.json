@@ -1,5 +1,8 @@
 {
     "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "cli": {
+      "analytics": "46e9bbd8-c110-4966-971a-36882e37582f"
+    },
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
@@ -24,7 +27,6 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "aot": true,
                         "localize": true,
                         "outputPath": "dist/app-eda",
                         "index": "src/index.html",
@@ -47,9 +49,14 @@
 
                         ],
                         "scripts": [
-                            "node_modules/chart.js/dist/Chart.bundle.js",
                             "node_modules/quill/dist/quill.js"
-                        ]
+                        ],
+                        "vendorChunk": true,
+                        "extractLicenses": false,
+                        "buildOptimizer": false,
+                        "sourceMap": true,
+                        "optimization": false,
+                        "namedChunks": true
                     },
                     "configurations": {
                         "en": {
@@ -73,7 +80,6 @@
                             "outputHashing": "all",
                             "sourceMap": false,
                             "namedChunks": false,
-                            "aot": true,
                             "extractLicenses": true,
                             "vendorChunk": false,
                             "buildOptimizer": true,
@@ -89,7 +95,8 @@
                                 }
                             ]
                         }
-                    }
+                    },
+                    "defaultConfiguration": ""
                 },
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
@@ -130,18 +137,6 @@
                             "src/assets"
                         ]
                     }
-                },
-                "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
-                    "options": {
-                        "tsConfig": [
-                            "src/tsconfig.app.json",
-                            "src/tsconfig.spec.json"
-                        ],
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
-                    }
                 }
             }
         },
@@ -161,18 +156,8 @@
                             "devServerTarget": "app-eda:serve:production"
                         }
                     }
-                },
-                "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
-                    "options": {
-                        "tsConfig": "e2e/tsconfig.e2e.json",
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
-                    }
                 }
             }
         }
-    },
-    "defaultProject": "app-eda"
+    }
 }

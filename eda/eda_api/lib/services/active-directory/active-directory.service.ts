@@ -15,7 +15,6 @@ export class ActiveDirectoryService {
     password: string
   ): Promise<UserActiveDirectoryModel> {
     await ActiveDirectoryService.verifyAdConfig()
-
     const ad = new ActiveDirectory(adconfig)
     return new Promise((resolve, reject) => {
       ad.authenticate(
@@ -35,8 +34,12 @@ export class ActiveDirectoryService {
               }
               resolve(response)
             } else {
-              const response: any = {}
-              response.err = `This user does not have EDA_USER_ROLE`
+              console.log('PUES NO TENGO ROLES... Y NO TENGO EDA_USER_ROLE SEGURAMENTE LOS ROLES ESTÁN EN UNA RUTA INNACESIBLE DESDE ESTE baseDN ');
+              const response: any = {
+                                  code: 401,
+                                  message: 'This user does not have EDA_USER_ROLE CHECK THE BASEDN ALLOWS TO GET TO THIS ROLE.'
+                                }
+              response.err = `This user does not have EDA_USER_ROLE  CHECK THE BASEDN ALLOWS TO GET TO THIS ROLE.`
               reject(response)
             }
           } else {
@@ -90,14 +93,17 @@ export class ActiveDirectoryService {
     if(adconfig.querysAMAccountName == "true"){
 
       await ActiveDirectoryService.verifyAdConfig()
-      const ad = new ActiveDirectory(adconfig)
+      const ad = new ActiveDirectory(adconfig);
   
       return new Promise((resolve, reject) => {
         ad.findUser( username, (err: any, user: any) => {
           if (user) {
+            //console.log(user);
             const response =  user.userPrincipalName;
-              resolve(response);
+            console.log(response);
+            resolve(response);
           } else {
+            console.log('Error demanent el usuari al ldap');
             console.log(err);
             const response: any = {}
   

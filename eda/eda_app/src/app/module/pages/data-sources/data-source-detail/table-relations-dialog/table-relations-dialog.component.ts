@@ -3,7 +3,7 @@ import {SelectItem} from 'primeng/api';
 import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract} from '@eda/shared/components/shared-components.index';
 import {Relation} from '@eda/models/data-source-model/data-source-models';
 import {DataSourceService} from '@eda/services/api/datasource.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { AlertService } from '@eda/services/service.index';
 
 @Component({
@@ -28,11 +28,11 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
 
     public showTargetTables = false;
 
-    public form: FormGroup;
+    public form: UntypedFormGroup;
 
     constructor(
         private dataModelService: DataSourceService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private alertService: AlertService) {
         super();
 

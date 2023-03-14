@@ -8,11 +8,14 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { QueryOptions } from 'mongoose';
 import { GroupController } from '../groups/group.controller';
-import { createNoSubstitutionTemplateLiteral } from 'typescript';
+
+
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
+const crypto = require('crypto');
+
 
 export class UserController {
 
@@ -29,96 +32,105 @@ export class UserController {
             const ldapPath = path.resolve(__dirname, `../../../../config/activedirectory.json`);
 
             if (fs.existsSync(ldapPath)) {
-                // Si el troba, login amb activedirectory
-                // Obtenim informacio del activedirectory
-                
-                
-                const myUser = await ActiveDirectoryService.getUserName(body.email);                
-                
-                const userAD = await ActiveDirectoryService.login(myUser, body.password);
-
-
-
-                // em porto tots els grups del AD per sincronitzar.....
-                const groupsAD = await ActiveDirectoryService.getADGroups( );
-                GroupController.syncroGroupsFromAD(groupsAD) ;
-                const adGroupsInMongo = await GroupController.getLocalGroupsIds(userAD.groups);
-                //Si es admin.... el fico al meu admin
-                
-                if (userAD.adminRole) {
-                    // EL GRUPO ADMIN DE EDA ES FIJO.
-                    adGroupsInMongo.push("135792467811111111111110");
-                }
-
-
-                // Busquem si l'usuari ja el tenim registrat al mongo
-                const userEda = await UserController.getUserInfoByEmail(userAD.username, true);
-
-    
-
-                if (!userEda) {
-                    // Si no esta registrat, l'afegim
-                    const userToSave: IUser = new User({
-                        name: userAD.displayName,
-                        email: userAD.username,
-                        password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
-                        img: body.img,
-                        role: adGroupsInMongo
-                    });
-
-                    userToSave.save(async (err, userSaved) => {
-                        if (err) {
-                            return next(new HttpException(400, 'Some error ocurred while creating the User'));
-                        }
-
-                        Object.assign(user, userSaved);
-                        user.password = ':)';
-                        token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
-
-                        // Borrem de tots els grups el usuari actualitzat
-                        await Group.updateMany({}, { $pull: { users: userSaved._id } });
-                        // Introduim de nou els grups seleccionat al usuari actualitzat
-                        await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: userSaved._id } }).exec();
-                        return res.status(200).json({ user, token: token, id: user._id });
-                    });
-                } else {
-                    // Si esta registrat, actualitzem algunes dades
-                    userEda.name = userAD.displayName;
-                    userEda.email = userAD.username;
-                    userEda.password = userEda.password;
-                    userEda.role = adGroupsInMongo;
-                    userEda.save(async (err, userSaved) => {
-                        if (err) {
-                            return next(new HttpException(400, 'Some error ocurred while creating the User'));
-                        }
-
-                        Object.assign(user, userSaved);
-                        user.password = ':)';
-                        token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
-
-                        // Borrem de tots els grups el usuari actualitzat
-                        await Group.updateMany({}, { $pull: { users: userSaved._id } });
-                        // Introduim de nou els grups seleccionat al usuari actualitzat
-                        await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: userSaved._id } }).exec();
-                        return res.status(200).json({ user, token: token, id: user._id });
-                    });
+                    // Si el troba, login amb activedirectory
+                    // Obtenim informacio del activedirectory
                     
-                }
+                    const myUser = await ActiveDirectoryService.getUserName(body.email);                
+                    const userAD = await ActiveDirectoryService.login(myUser, body.password);
+
+                    // em porto tots els grups del AD per sincronitzar.....
+                    const groupsAD = await ActiveDirectoryService.getADGroups( );
+                    GroupController.syncroGroupsFromAD(groupsAD) ;
+                    const adGroupsInMongo = await GroupController.getLocalGroupsIds(userAD.groups);
+                    //Si es admin.... el fico al meu admin
+                    
+                    if (userAD.adminRole) {
+                        // EL GRUPO ADMIN DE EDA ES FIJO.
+                        adGroupsInMongo.push("135792467811111111111110");
+                    }
+                    // Busquem si l'usuari ja el tenim registrat al mongo
+                    const userEda = await UserController.getUserInfoByEmail(userAD.username, true);
+
+                    if (!userEda) {
+                        // Si no esta registrat, l'afegim
+                        const userToSave: IUser = new User({
+                            name: userAD.displayName,
+                            email: userAD.username,
+                            password: bcrypt.hashSync('no_serveix_de_re_pero_no_pot_ser_null', 10),
+                            img: body.img,
+                            role: adGroupsInMongo
+                        });
+                        userToSave.save(async (err, userSaved) => {
+                            if (err) {
+                                return next(new HttpException(400, 'Some error ocurred while creating the User'));
+                            }
+                            Object.assign(user, userSaved);
+                            user.password = ':)';
+                            token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
+                            // Borrem de tots els grups el usuari actualitzat
+                            await Group.updateMany({}, { $pull: { users: userSaved._id } });
+                            // Introduim de nou els grups seleccionat al usuari actualitzat
+                            await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: userSaved._id } }).exec();
+                            return res.status(200).json({ user, token: token, id: user._id });
+                        });
+                    } else {
+                        // Si esta registrat, actualitzem algunes dades
+                        userEda.name = userAD.displayName;
+                        userEda.email = userAD.username;
+                        userEda.password = userEda.password;
+                        userEda.role = adGroupsInMongo;
+                        userEda.save(async (err, userSaved) => {
+                            if (err) {
+                                return next(new HttpException(400, 'Some error ocurred while creating the User'));
+                            }
+
+                            Object.assign(user, userSaved);
+                            user.password = ':)';
+                            token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
+
+                            // Borrem de tots els grups el usuari actualitzat
+                            await Group.updateMany({}, { $pull: { users: userSaved._id } });
+                            // Introduim de nou els grups seleccionat al usuari actualitzat
+                            await Group.updateMany({ _id: { $in: adGroupsInMongo } }, { $push: { users: userSaved._id } }).exec();
+                            return res.status(200).json({ user, token: token, id: user._id });
+                        });
+                        
+                    }
             } else {
                 // Si no ho troba, login amb mongo
                 const userEda = await UserController.getUserInfoByEmail(body.email, false);
 
                 if (! await bcrypt.compareSync(body.password, userEda.password)) {
-                    return next(new HttpException(400, 'Incorrect credentials - password'));
+                    // Això cal revisar-ho amb el Pau.
+                    // Introduit arrel de SinergiaCRM
+                    // Comprobem també MD5 i GlassFis
+                    // Busca artxiu de configuracio de Sinergia
+                    const scrm = path.resolve(__dirname, `../../../../config/SCRM`);
+                    if (fs.existsSync(scrm)) {
+                        const hash = crypto.createHash('md5').update(body.password).digest("hex");
+                        if(hash.toString() !== userEda.password.toString()){
+                                //Si no es un md5 directe 
+                                const hash2 =  userEda.password.toString().replace(/^\$2y(.+)$/i, '$2a$1');
+                                await bcrypt.compare( hash , hash2).then(function(res){
+                                    if( res == false){
+                                        return next(new HttpException(400, 'Incorrect credentials - password'));
+                                     }
+                                });
+                        }
+                    }else{
+                            return next(new HttpException(400, 'Incorrect credentials - password'));
+                    }
+                    
                 }
 
-                Object.assign(user, userEda);
-                user.password = ':)';
-                token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
+                    Object.assign(user, userEda);
+                    user.password = ':)';
+                    token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
 
-                insertServerLog(req, 'info', 'newLogin', body.email, 'login');
+                    insertServerLog(req, 'info', 'newLogin', body.email, 'login');
 
-                return res.status(200).json({ user, token: token, id: user._id });
+                    return res.status(200).json({ user, token: token, id: user._id });
+                
             }
         } catch (err) {
             next(err);
@@ -221,6 +233,8 @@ export class UserController {
                     }
 
                     users = isAdmin ? users : UserController.filterUsersByGroup(req.user, users);
+                    
+                    console.log(users);
 
                     return res.status(200).json(users);
                 });
@@ -291,6 +305,28 @@ export class UserController {
                     const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
 
                     return res.status(200).json({ isAdmin });
+                });
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    static async getIsDataSourceCreator(req: Request, res: Response, next: NextFunction) {
+        try {
+            User.findById({ _id: req.params.id }, (err, user) => {
+
+                if (err) {
+                    return next(new HttpException(500, 'User not found with this id'));
+                }
+                let options:QueryOptions = {};
+                Group.find({ _id: { $in: user.role } }, 'name role',options, (err, groups) => {
+                    if (err) {
+                        return next(new HttpException(500, 'Error waiting for user groups'));
+                    }
+                    const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
+                    //console.log(isDataSourceCrator);
+                    return res.status(200).json({ isDataSourceCreator });
                 });
             });
         } catch (err) {

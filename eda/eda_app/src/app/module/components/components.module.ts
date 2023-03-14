@@ -40,6 +40,8 @@ import {
     TableGradientDialogComponent,
     EdaFunnelComponent,
     FunnelDialog,
+    EdaBarchartComponent,
+    BarchartDialog,
     CumSumAlertDialogComponent,
     EdaSunburstComponent,
     SunburstDialogComponent
@@ -53,7 +55,7 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
     imports: [
         CoreModule,
         SharedModule,
-        DragDropModule 
+        DragDropModule
     ],
     declarations: [
         EdaBlankPanelComponent,
@@ -91,6 +93,8 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         TableGradientDialogComponent,
         EdaFunnelComponent,
         FunnelDialog,
+        EdaBarchartComponent,
+        BarchartDialog,
         EdaSunburstComponent,
         SunburstDialogComponent
     ],
@@ -109,6 +113,7 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         EdaGeoJsonMapComponent,
         EdaD3Component,
         EdaFunnelComponent,
+        EdaBarchartComponent,
         LinkDashboardsComponent,
         TitleDialogComponent,
         EdaTreeMap,
@@ -118,11 +123,10 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         KnobDialogComponent,
         TableGradientDialogComponent,
         FunnelDialog,
+        BarchartDialog,
         EdaSunburstComponent,
         SunburstDialogComponent
     ],
-    entryComponents: [EdaChartComponent, EdaKpiComponent, EdadynamicTextComponent,,EdaTableComponent, EdaMapComponent, EdaD3Component, EdaTreeMap, 
-                        EdaScatter, EdaKnobComponent, Knob, EdaFunnelComponent,EdaSunburstComponent],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA ]
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ComponentsModule { }

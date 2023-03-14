@@ -12,6 +12,7 @@ import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.
 import { TableConfig } from '../panel-charts/chart-configuration-models/table-config';
 import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
 import { SunburstConfig } from '../panel-charts/chart-configuration-models/sunburst-config';
+import { BarchartConfig } from '../panel-charts/chart-configuration-models/barchart.config';
 
 export const ChartsConfigUtils = {
 
@@ -43,11 +44,9 @@ export const ChartsConfigUtils = {
       }
 
     }else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
-
       config = {
-        color: ebp.panelChart.componentRef.instance.inject.color,
+        color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : ebp.panelChart.props.config.getConfig()['color']
       }
-
     }else if (['coordinatesMap', 'geoJsonMap'].includes(ebp.panelChart.props.chartType)) {
 
       config = {
@@ -58,7 +57,7 @@ export const ChartsConfigUtils = {
         color : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
         
       }
-    }else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
+    }else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "barchart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
       config = {
         colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : []
       }
@@ -92,7 +91,7 @@ export const ChartsConfigUtils = {
       return new TableConfig(false, false, 10, false, false, false, false, null, null, null);
 
     }
-    else if (['bar', 'line','area', 'pie', 'doughnut', 'barline', 'horizontalBar', 'horizontalBar', 'histogram' ].includes(type)) {
+    else if (['bar', 'line','area', 'pie', 'doughnut','polarArea', 'barline', 'horizontalBar', 'horizontalBar', 'histogram' ].includes(type)) {
 
       return new ChartJsConfig(null, type, false, false,false,null);
 
@@ -110,6 +109,9 @@ export const ChartsConfigUtils = {
     else if (type === 'funnel') {
       return new FunnelConfig([]);
     }
+    else if (type === 'barchart') {
+      return new BarchartConfig([]);
+    }
     else if (type === 'knob') {
 
       return new KnobConfig(null, null);
@@ -125,7 +127,7 @@ export const ChartsConfigUtils = {
     }
   },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | KnobConfig | FunnelConfig | SunburstConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | KnobConfig | FunnelConfig | BarchartConfig |SunburstConfig) => {
 
     return new ChartConfig(config);
 

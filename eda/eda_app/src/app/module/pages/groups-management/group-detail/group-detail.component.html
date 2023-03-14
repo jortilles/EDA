@@ -3,15 +3,15 @@
 
 
         <form [formGroup]="form">
-            <div class="p-grid">
-                <div class="p-col-12">
+            <div class="grid">
+                <div class="col-12">
                     <div class="form-group">
                         <label i18n="@@inputNombre">NOMBRE *</label>
                         <input type="text" class="form-control" formControlName="name" pInputText>
                     </div>
                 </div>
 
-                <div class="p-col-12">
+                <div class="col-12">
                     <p-card header="Usuarios" >
                         <p-pickList [source]="lists.avaibles" [target]="lists.selecteds" [responsive]="true"
                             sourceHeader="Disponibles" targetHeader="Seleccionados" [sourceStyle]="{width: '100%'}"

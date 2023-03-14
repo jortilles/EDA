@@ -1,23 +1,23 @@
 <eda-dialog [inject]="dialog">
   
-  <div body class=p-grid>
+  <div body class=grid>
 
-    <div class="p-col-12" style=" background-color: var(--panel-color); margin: 2em; width: 90%; height: 15vh;">
+    <div class="col-12" style=" background-color: var(--panel-color); margin: 2em; width: 90%; height: 15vh;">
       <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig">
       </panel-chart>
     </div>
 
 
 
-    <div class="p-col-12">
+    <div class="col-12">
       <h6 i18n="@@DynamicTextColor" class="custom-border-b1">
        Cambiar Color
       </h6>
       <!--asdasdasda-->
 
-      <div class="p-grid">
+      <div class="grid">
 
-        <div class="p-col-2">
+        <div class="col-2">
           <h6 i18n="@@colorKpiH6">
             Color
           </h6>
