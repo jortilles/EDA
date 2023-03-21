@@ -3,11 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { TreeNode } from 'primeng/api';
 import { ApiService } from './api.service';
-import { EditModelPanel, EditColumnPanel, EditTablePanel, Relation } from '@eda/models/data-source-model/data-source-models';
+import { EditModelPanel, EditColumnPanel, EditTablePanel, Relation, ValueListSource } from '@eda/models/data-source-model/data-source-models';
 import { AlertService } from '../alerts/alert.service';
 import { aggTypes } from '../../config/aggretation-types';
-
-
 
 
 @Injectable()
@@ -242,9 +240,13 @@ export class DataSourceService extends ApiService implements OnDestroy {
         columnPanel.minimumFractionDigits = parseInt(column.minimumFractionDigits);
         columnPanel.visible = column.visible;
         columnPanel.parent = node.parent.label;
+        if(column.valueListSource){
+            columnPanel.valueListSource =column.valueListSource;
+        }
         this._columnPanel.next(columnPanel);
         this._typePanel.next('columna');
     }
+  
 
     // Aux functions
     getTableByName(tableName: string): Array<Relation> {
@@ -510,11 +512,27 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name, columnPanel.parent));
 
     }
+
+
+
+    deleteValuesList(columnPanel: EditColumnPanel) {
+        const tmp_model = this._databaseModel.getValue();
+        const tableIndex = this._databaseModel.getValue().findIndex((table: any) => table.display_name.default === columnPanel.parent);
+        const colIndex  =  tmp_model[tableIndex].columns.findIndex((column: any) => column.column_name === columnPanel.technical_name);
+        tmp_model[tableIndex].columns[colIndex].valueListSource = null;
+        this._databaseModel.next(tmp_model);
+        this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name, columnPanel.parent));
+
+    }
+
     deleteView(tableName : string){
         const tmp_model = this._databaseModel.getValue().filter((table: any) => table.table_name !== tableName);
         this._databaseModel.next(tmp_model);
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
     }
+
+
+
 
     getTable(columnPanel: EditColumnPanel) {
         const model = this._databaseModel.getValue();

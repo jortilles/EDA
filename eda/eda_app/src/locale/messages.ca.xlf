@@ -1470,10 +1470,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Añadir permiso</source>
 <target> Afegir permís</target>
 </trans-unit>
-<trans-unit id="addValueList" datatype="html">
-<source> Añadir lista de valores posibles</source>
-<target> Afegir llista de valors possibless</target>
-</trans-unit>
 
 
 
@@ -2197,6 +2193,46 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Definir un llistat de valors possibles</target>
 </trans-unit>
 
+<trans-unit id="possibleValuesList" datatype="html">
+<source>Tabla y columna asociadas</source>
+<target>Taula i columna associades</target>
+</trans-unit>
+
+<trans-unit id="possibleValuesListTable" datatype="html">
+<source>Tabla:</source>
+<target>Taula:</target>
+</trans-unit>
+
+
+<trans-unit id="valueListSourceHeader" datatype="html">
+<source>Tabla que contiene los valores posibles para el filtro asociado a esta columna</source>
+<target>Taula que conté els valors possibles per al filtre associat a aquesta columna</target>
+</trans-unit>
+
+<trans-unit id="valueListSourceTabla" datatype="html">
+<source>Tabla relacionada</source>
+<target>Taula relacionada</target>
+</trans-unit>
+
+<trans-unit id="valueListSourceID" datatype="html">
+<source>Id de la columna relacionada</source>
+<target>Id de la columna relacionada</target>
+</trans-unit>
+
+<trans-unit id="possibleValuesListID" datatype="html">
+<source>Id Columna:</source>
+<target>Id Columna:</target>
+</trans-unit>
+
+<trans-unit id="valueListSourceDescripcion" datatype="html">
+<source>Descripción de la columna relacionada</source>
+<target>Descripció de la columna relacionada</target>
+</trans-unit>
+
+<trans-unit id="possibleValuesListDescription" datatype="html">
+<source>Columna descripción:</source>
+<target>Columna descripció:</target>
+</trans-unit>
 
 
 

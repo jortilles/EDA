@@ -145,6 +145,21 @@
             </div>
         </div>
 
+
+        <div *ngIf="columnPanel.valueListSource" style="margin-bottom: 1em; margin-top: 0.5em;">
+            <h5 class="title-datamodel" i18n="@@possibleValuesList"  [pTooltip]="valueListSourceHeader">
+                Valores para filtro: 
+            </h5>
+            <div class="valuesListList">
+                <p> <b  [pTooltip]="valueListSourceTabla" i18n="@@possibleValuesListTable" >Tabla:</b>  {{columnPanel.valueListSource.target_table}}</p> 
+                <p> <b  [pTooltip]="valueListSourceID" i18n="@@possibleValuesListID">Columna id:</b>  {{columnPanel.valueListSource.target_id_column}} </p> 
+                <p> <b  [pTooltip]="valueListSourceDescripcion" i18n="@@possibleValuesListDescription">Columna descripción:</b>   {{columnPanel.valueListSource.target_description_column}}</p>
+            </div>
+            <div class="deleteRelation">
+                <i class="fa fa-trash btn pl-1" (click)="deleteValuesList(columnPanel)"></i>
+            </div>
+        </div>
+
         <div *ngIf="columnPanel.computed_column === 'no'">
             <h5 class="title-datamodel" i18n="@@rolesPermisos">Roles y permisos de fila</h5>
             <eda-table [inject]="permissionsColumn"></eda-table>
