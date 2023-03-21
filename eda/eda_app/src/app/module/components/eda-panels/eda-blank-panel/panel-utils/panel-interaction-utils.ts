@@ -49,15 +49,19 @@ export const PanelInteractionUtils = {
     filterList: Array<any>,
     query: Array<any>
   ): void => {
-
-    filterList.forEach(filter => {
-      const table = ebp.tables.filter(table => table.table_name === filter.filter_table)[0];
-      const column = table.columns.filter(column => column.column_name === filter.filter_column)[0];
-      const columnInQuery = query.filter(col => col.column_name === filter.filter_column).length > 0;
-      if (!filter.isGlobal && !columnInQuery) {
-        ebp.filtredColumns.push(column);
-      }
-    });
+    try{
+      filterList.forEach(filter => {
+        const table = ebp.tables.filter(table => table.table_name === filter.filter_table)[0];
+        const column = table.columns? table.columns.filter(column => column.column_name === filter.filter_column)[0] : [];
+        const columnInQuery = query.filter(col => col.column_name === filter.filter_column).length > 0;
+        if (!filter.isGlobal && !columnInQuery) {
+          ebp.filtredColumns.push(column);
+        }
+      });
+    }catch(e){
+        console.log('Error loading filters');
+        console.log(e);
+    }
   },
 
   handleCurrentQuery: (ebp: EdaBlankPanelComponent): void => {
