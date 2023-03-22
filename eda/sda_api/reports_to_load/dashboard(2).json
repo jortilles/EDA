@@ -1,0 +1,133 @@
+{
+    "group": [],
+    "_id": "63ea4af12accbe368892e592",
+    "config": {
+        "title": "2",
+        "panel": [
+            {
+                "dragAndDrop": true,
+                "resizable": true,
+                "tamanyMobil": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 0,
+                    "h": 0
+                },
+                "tamanyMig": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 0,
+                    "h": 0
+                },
+                "linkedDashboard": false,
+                "id": "80edf4d6-0959-4be0-b992-435c66442181",
+                "title": "Nou Panell",
+                "type": 0,
+                "w": 20,
+                "h": 10,
+                "x": 0,
+                "y": 0,
+                "content": {
+                    "query": {
+                        "id": "1",
+                        "model_id": "111111111111111111111111",
+                        "user": {
+                            "user_id": "135792467811111111111111",
+                            "user_roles": [
+                                "USER_ROLE"
+                            ]
+                        },
+                        "dashboard": {
+                            "dashboard_id": "63ea4af12accbe368892e59b",
+                            "panel_id": "80edf4d6-0959-4be0-b992-435c66442181"
+                        },
+                        "query": {
+                            "fields": [
+                                {
+                                    "table_id": "sda_stic_sepe_actions",
+                                    "column_name": "id",
+                                    "display_name": "ID",
+                                    "column_type": "text",
+                                    "aggregation_type": "none",
+                                    "ordenation_type": "No",
+                                    "order": 0,
+                                    "column_granted_roles": [],
+                                    "row_granted_roles": [],
+                                    "tableCount": 0,
+                                    "minimumFractionDigits": 0
+                                }
+                            ],
+                            "filters": [],
+                            "simple": false,
+                            "queryLimit": 10
+                        },
+                        "output": {
+                            "labels": [
+                                "id"
+                            ],
+                            "data": [],
+                            "config": {
+                                "withColTotals": false,
+                                "withColSubTotals": false,
+                                "withRowTotals": false,
+                                "withTrend": false,
+                                "resultAsPecentage": false,
+                                "onlyPercentages": false,
+                                "visibleRows": 10,
+                                "sortedSerie": null,
+                                "sortedColumn": null,
+                                "styles": null
+                            }
+                        }
+                    },
+                    "chart": "table",
+                    "edaChart": "table"
+                }
+            }
+        ],
+        "ds": {
+            "_id": "111111111111111111111111"
+        },
+        "filters": [],
+        "applyToAllfilter": {
+            "present": false,
+            "refferenceTable": null,
+            "id": null
+        },
+        "visible": "private",
+        "tag": null,
+        "refreshTime": null,
+        "mailingAlertsEnabled": false,
+        "sendViaMailConfig": {
+            "enabled": false
+        },
+        "styles": {
+            "backgroundColor": "#f1f0f0",
+            "panelColor": "#ffffff",
+            "titleAlign": "center",
+            "panelTitleAlign": "left",
+            "title": {
+                "fontFamily": "Questrial",
+                "fontSize": 0,
+                "fontColor": "#455a64"
+            },
+            "filters": {
+                "fontFamily": "Questrial",
+                "fontSize": 0,
+                "fontColor": "#455a64"
+            },
+            "panelTitle": {
+                "fontFamily": "Questrial",
+                "fontSize": 0,
+                "fontColor": "#455a64"
+            },
+            "panelContent": {
+                "fontFamily": "Questrial",
+                "fontSize": 0,
+                "fontColor": "#455a64"
+            }
+        }
+    },
+    "user": "135792467811111111111111",
+    "__v": 0
+}
