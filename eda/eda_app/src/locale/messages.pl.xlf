@@ -1460,10 +1460,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Añadir permiso</source>
 <target> Add permission</target>
 </trans-unit>
-<trans-unit id="addValueList" datatype="html">
-<source> Añadir lista de valores posibles</source>
-<target> Dodaj listę możliwych wartości</target>
-</trans-unit>
+
 
 <trans-unit id="addModelPermissions" datatype="html">
   <source>Añadir permiso a nivel de modelo</source>
@@ -2179,6 +2176,46 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="AddValueList" datatype="html">
 <source>Definir un listado de valores posibles</source>
 <target>Zdefiniuj listę możliwych wartości</target>
+</trans-unit>
+
+<trans-unit id="possibleValuesList" datatype="html">
+<source>Tabla y columna asociadas</source>
+<target>Powiązana tabela i kolumna</target>
+</trans-unit>
+
+<trans-unit id="possibleValuesListTable" datatype="html">
+<source>Tabla:</source>
+<target>Tablica:</target>
+</trans-unit>
+
+<trans-unit id="valueListSourceHeader" datatype="html">
+<source>Tabla que contiene los valores posibles para el filtro asociado a esta columna</source>
+<target>Tabela zawierająca możliwe wartości dla filtra powiązanego z tą kolumną</target>
+</trans-unit>
+
+<trans-unit id="valueListSourceTabla" datatype="html">
+<source>Tabla relacionada</source>
+<target>powiązana tabela</target>
+</trans-unit>
+
+<trans-unit id="valueListSourceID" datatype="html">
+<source>Id de la columna relacionada</source>
+<target>Identyfikator powiązanej kolumny</target>
+</trans-unit>
+
+<trans-unit id="possibleValuesListID" datatype="html">
+<source>Id Columna</source>
+<target>kolumna identyfikatora</target>
+</trans-unit>
+
+<trans-unit id="valueListSourceDescripcion" datatype="html">
+<source>Descripción de la columna relacionada</source>
+<target>Powiązany opis kolumny</target>
+</trans-unit>
+
+<trans-unit id="possibleValuesListDescription" datatype="html">
+<source>Columna descripción</source>
+<target>Opis kolumny</target>
 </trans-unit>
 
 <trans-unit id="columnaCalculada" datatype="html">

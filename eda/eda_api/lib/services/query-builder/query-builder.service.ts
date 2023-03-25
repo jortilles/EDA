@@ -17,6 +17,7 @@ export abstract class QueryBuilderService {
     public tables: any[];
     public queryTODO: any;
     public user: string;
+    public usercode: string;
     public groups: Array<string> = [];
     public permissions: any[];
 
@@ -25,6 +26,7 @@ export abstract class QueryBuilderService {
         this.queryTODO = queryTODO;
         this.dataModel = dataModel;
         this.user = user._id;
+        this.usercode = user.email;
         this.groups = user.role;
         this.tables = dataModel.ds.model.tables;
 
@@ -243,6 +245,10 @@ export abstract class QueryBuilderService {
             permissions.forEach(permission => {
                 found = relatedTables.findIndex((t: any) => t.table_name === permission.table);
                 if (found >= 0) {
+                    if(permission.dynamic){
+                            permission.value[0] =  permission.value[0].toString().replace("EDA_USER", this.usercode) 
+                           
+                    }
                     let filter = {
                         filter_table: permission.table,
                         filter_column: permission.column,

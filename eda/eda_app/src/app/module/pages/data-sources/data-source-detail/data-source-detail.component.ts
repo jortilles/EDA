@@ -4,7 +4,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
 import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
-import { EditTablePanel, EditColumnPanel, EditModelPanel } from '@eda/models/data-source-model/data-source-models';
+import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
 import { aggTypes } from 'app/config/aggretation-types';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
@@ -63,7 +63,14 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public addValueList:string = $localize`:@@addValueList:Añadir lista de valores posibles`;
     public si = $localize`:@@si:Si`;
     public no = $localize`:@@no:No`;
-  
+    public valueListSourceHeader = $localize`:@@valueListSourceHeader:Tabla que contiene los valores posibles para el filtro asociado a esta columna`;
+    public valueListSourceTabla = $localize`:@@valueListSourceTabla:Tabla relacionada`;
+    public valueListSourceID = $localize`:@@valueListSourceID:Id de la columna relacionada`;
+    public valueListSourceDescripcion = $localize`:@@valueListSourceDescripcion:Descripción dfe la columna relacionada`;
+    public possibleValueList = $localize`@@possibleValuesList: Tabla y columna asociadas `
+    public possibleValueListTable = $localize`@@possibleValuesListTable: Tabla `
+    public possibleValuesListID =  $localize`@@possibleValuesListID: Id de la columna`
+    public possibleValuesListDescription = $localize`@@possibleValuesListDescription: Descripción de la columna`
 
     // Types
     public columnTypes: SelectItem[] = [
@@ -357,6 +364,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         //Columna
         this.dataModelService.currentColumnPanel.subscribe(
             columnPanel => {
+
+                console.log(columnPanel);
+
                 this.columnPanel = columnPanel;
                 this.selectedcolumnType = this.columnPanel.column_type;
                 this.selectedAggType = this.columnPanel.aggregation_type;
@@ -471,6 +481,15 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.typePanel = 'root';
         this.update();
     }
+
+
+    deleteValuesList(columnPanel: EditColumnPanel){
+        this.columnPanel.valueListSource = null;
+        this.dataModelService.deleteValuesList(columnPanel);
+        this.update();
+    }
+
+
 
     checkCalculatedColumn(columnPanel: EditColumnPanel) {
         this.spinnerService.on();

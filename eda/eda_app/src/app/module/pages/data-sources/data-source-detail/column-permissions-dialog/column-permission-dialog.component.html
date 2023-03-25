@@ -51,7 +51,17 @@
         <h6 i18n="@@NoneTags">Ninguno</h6>
         <p-inputSwitch [(ngModel)]="none"  (onChange)="syncronizeAllNoneValuesNone()"></p-inputSwitch>
       </div>
-     
+
+      <!--- DINAMICO:    -->
+      <div style="margin-left: 1em;" *ngIf="type" class="col-12">
+        <h6 i18n="@@DynamicTags">Dinámico</h6>
+        <p-inputSwitch [(ngModel)]="dynamic"  (onChange)="syncronizeAllNoneValuesDynamic()"></p-inputSwitch>
+      </div>
+
+      <div  *ngIf="dynamic">
+        <h5 class="title-datamodel" i18n="@@inputConsultaDinamica">Consulta dinámica</h5>
+        <p><input pInputText type="text" size="40" [(ngModel)]="dynamicQuery" ></p>
+      </div>
     </div>
 
   </div>
@@ -60,7 +70,7 @@
 
     <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
       <button type="button" pButton (click)="savePermission()"
-        [disabled]="(selectedUsers.length < 1 && selectedRoles.length < 1) || (selectedValues.length < 1 && !all && !none)"
+        [disabled]="( (selectedUsers.length < 1 && selectedRoles.length < 1) || (selectedValues.length < 1 && !all && !none   ) )  && !dynamic "
         class="ui-button" icon="fa fa-check" i18n-label="@@guardarBtn" label="Confirmar"
         id="eda_column_permission_confirmar"></button>
       <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
