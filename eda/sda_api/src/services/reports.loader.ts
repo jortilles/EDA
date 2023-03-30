@@ -12,12 +12,12 @@ export class reportLoader {
         
         // read a dashboard file from local source
         //leemos del directorio fuente 
-        let files = fs.readdir('C:\\Proyectos\\SinergiaCRM\\sinergiacrm\\orquestador\\reports_to_load', async (err, files) => {
+        let files = fs.readdir('./reports_to_load', async (err, files) => {
             if (err) throw err
             //por cada archivo le aplicamos la lógica
             files.forEach(async file => {
 
-                const dashBoardData = fs.readFileSync('C:\\Proyectos\\SinergiaCRM\\sinergiacrm\\orquestador\\reports_to_load\\' + file).toString()
+                const dashBoardData = fs.readFileSync('./reports_to_load/' + file).toString()
                 const dashBoardDataJSON = JSON.parse(dashBoardData)
 
 
@@ -67,8 +67,8 @@ export class reportLoader {
     public static async syncroInforms(req: Request, res: Response) {
 
         let reqParams = {       
-            mongodb: /* introduce mongo uri*/  + req.query.mongodb.toString(),
-            mongodestiny: /* introduce mongo uri*/  + req.query.mongodb.toString(),
+            mongodb:  req.query.mongodb.toString(),
+            mongodestiny: req.query.mongodb.toString(),
             informe: req.query.informe.toString()
         }       
    
@@ -89,7 +89,7 @@ export class reportLoader {
 
                 if (found) {
                     mongoose.set('strictQuery', false)
-                    let con = /* introduce mongo uri*/  + req.query.mongodb.toString() 
+                    let con =   req.query.mongodb.toString() 
                     await mongoose.connect(con, {})
                         .then(() => console.log("conectado a mongo"))
                         .catch(err => console.log(err))

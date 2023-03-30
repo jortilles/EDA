@@ -12,7 +12,7 @@ export class Connections {
       database: req.query.database,
       user: req.query.user,
       password: req.query.password,
-      mongodb: /* introduce mongo uri*/  + req.query.mongodb.toString(),
+      mongodb:  req.query.mongodb.toString(),
       connectionLimit: 10 ,
       waitForConnections: true,
       queueLimit: 0
