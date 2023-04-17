@@ -156,58 +156,64 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
     try {
 
-      const res = await this.dashboardService.getDashboards().toPromise();
+      const dashboardInfo = await this.dashboardService.getDashboards().toPromise();
       const dashboards =
-        [].concat.apply([], [res.dashboards, res.group, res.publics, res.shared])
+        [].concat.apply([], [dashboardInfo.dashboards, dashboardInfo.group, dashboardInfo.publics, dashboardInfo.shared])
           .filter(d => d._id !== this.controller.params.dashboard_id);
+          
 
       const filters = [];
 
 
       for (let i = 0; i < dashboards.length; i++) {
+        let res;
+        try {
+          res = await this.dashboardService.getDashboard(dashboards[i]._id).toPromise();
+        } catch (err) {
+        }
+    
+        if (res) {
+          /** If datasources are equal and dashboar has filters */
+          if (res.dashboard.config.ds._id === this.controller.params.datasource && res.dashboard.config?.filters?.length > 0) {
 
-        const res = await this.dashboardService.getDashboard(dashboards[i]._id).toPromise();
+            let disable = true;
 
-        /** If datasources are equal and dashboar has filters */
-        if (res.dashboard.config.ds._id === this.controller.params.datasource && res.dashboard.config.filters.length > 0) {
+            if (!this.controller.params.modeSQL) {
 
-          let disable = true;
+              res.dashboard.config.filters.forEach(filter => {
 
-          if (!this.controller.params.modeSQL) {
+                if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
+                  disable = false;
+                }
 
-            res.dashboard.config.filters.forEach(filter => {
+                this.targetColumn = column.col;
+                this.targetTable = column.table;
 
-              if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
-                disable = false;
+                this.sourceColumn = column.col;
+                this.sourceTable = column.table;
+
+              });
+
+              if (!disable) {
+                this.dasboards.push({ label: dashboards[i].config.title, value: dashboards[i]._id });
               }
 
-              this.targetColumn = column.col;
-              this.targetTable = column.table;
+            } else {
 
               this.sourceColumn = column.col;
               this.sourceTable = column.table;
 
-            });
+              res.dashboard.config.filters.forEach(filter => {
 
-            if (!disable) {
+                filters.push({ colname: filter.column.value.column_name, dashboardID: dashboards[i]._id, table: filter.table.value });
+
+              });
+
               this.dasboards.push({ label: dashboards[i].config.title, value: dashboards[i]._id });
+
             }
 
-          } else {
-
-            this.sourceColumn = column.col;
-            this.sourceTable = column.table;
-
-            res.dashboard.config.filters.forEach(filter => {
-
-              filters.push({ colname: filter.column.value.column_name, dashboardID: dashboards[i]._id, table: filter.table.value });
-
-            });
-
-            this.dasboards.push({ label: dashboards[i].config.title, value: dashboards[i]._id });
-
           }
-
         }
 
       }
