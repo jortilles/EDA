@@ -29,3 +29,4 @@ eda/eda_app/dist
 eda/eda_app/AddEdaCharInstructions.txt
 eda/eda_app/package-lock.json
 eda/eda_app/src/app/config/
+eda/eda_api/config/database.config.js
