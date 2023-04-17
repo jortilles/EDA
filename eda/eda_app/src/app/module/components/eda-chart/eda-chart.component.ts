@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, AfterViewInit } from '@angular/core';
 import { EdaChart } from './eda-chart';
 import { BaseChartDirective } from 'ng2-charts';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -10,7 +10,7 @@ import { ChartsColors } from '@eda/configs/index';
     styleUrls: []
 })
 
-export class EdaChartComponent implements OnInit {
+export class EdaChartComponent implements OnInit, AfterViewInit {
     @ViewChild('edaChart') edaChart: BaseChartDirective;
     @Input() inject: EdaChart;
 
@@ -64,34 +64,52 @@ export class EdaChartComponent implements OnInit {
         this.update = true;
     }
 
-    ngOnInit(): void {
+    ngOnInit(): void { }
 
-    }
+    public ngAfterViewInit(): void {
+        this.edaChart.chart.options.onClick = (evt, activeEls, chart) => {
+            if (activeEls.length === 0 || chart.getElementsAtEventForMode(<any>evt, 'nearest', { intersect: true }, true).length === 0) {
+                return;
+            }
 
-    chartClicked(e: any): void {
-        if (e.active.length > 0) {
-            const chart = e.active[0]._chart;
-            const activePoints = chart.getElementAtEvent(e.event);
-
-            if (activePoints.length > 0) {
-                // get the internal index of slice in pie chart
-                const clickedElementIndex = activePoints[0]._index;
-
-                let value: string;
-                value = chart.data.labels[clickedElementIndex];
+            activeEls.forEach(point => {
+                const filterBy = chart.data.datasets[point.datasetIndex].label;
+                const label = chart.data.labels[point.index];
+                const value = chart.data.datasets[point.datasetIndex].data[point.index];
+                // this.onClick.emit({ inx: point.index, label, value, filterBy })
 
                 if (this.inject.linkedDashboardProps) {
                     const props = this.inject.linkedDashboardProps;
-                    const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+                    const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${label}`
                     window.open(url, "_blank");
                 }
-            }
+            })
         }
     }
 
-    chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
-        
-    }
+    // Deprecated
+    // chartClicked(e: any): void {
+    //     if (e.active.length > 0) {
+    //         const chart = e.active[0]._chart;
+    //         const activePoints = chart.getElementAtEvent(e.event);
+
+    //         if (activePoints.length > 0) {
+    //             // get the internal index of slice in pie chart
+    //             const clickedElementIndex = activePoints[0]._index;
+
+    //             let value: string;
+    //             value = chart.data.labels[clickedElementIndex];
+
+    //             if (this.inject.linkedDashboardProps) {
+    //                 const props = this.inject.linkedDashboardProps;
+    //                 const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+    //                 window.open(url, "_blank");
+    //             }
+    //         }
+    //     }
+    // }
+
+    chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void { }
 
     updateChartOptions(options: any) {
         this.update = false;

@@ -1040,8 +1040,11 @@ export class ChartUtilsService {
                                 size:  edaFontSize  ,
                                 },
                                 padding: 6,
-                                formatter: (value) => {
-                                    return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                formatter: (value,ctx) => {
+                                    const datapoints = ctx.chart.data.datasets[0].data
+                                    const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
+                                    const percentage = value / total * 100
+                                    return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
                                 }
 
                             }
@@ -1051,37 +1054,40 @@ export class ChartUtilsService {
                 options.chartOptions = {
                     animation: {
                         duration: 2000,
-                        animateScale: true
+                        animateScale: true,
+                        animateRotate: true
                     },
+                    
                     responsive: true,
                     maintainAspectRatio: false,
                     devicePixelRatio: 2,
-                    tooltips: {
-                        mode: 'label',
-                        callbacks: {
-                            title: (tooltipItem, data) => {
-                                return `${labelColum[0].name}`
-                            },
-                            label: (tooltipItem, data) => {
-                                if (data && tooltipItem) {
-                                    const realData = data.datasets[0].data;
-                                    const total = realData.reduce((a, b) => {
-                                        return a + b;
-                                    }, 0);
-                                    const elem = data.datasets[0].data[tooltipItem.index];
-                                    const percentage = elem / total * 100;
-                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
-                                }
-
-                            },
-                            footer: () => { return linked },
-                            afterLabel: (t, d) => { }
-                        }
-                    },
+                   
 
                    
                     plugins: {
-                        datalabels: dataLabelsObjt,
+                        datalabels: dataLabelsObjt, 
+                        tooltip: {
+                            callbacks: {
+                                title: (context) => {
+                                    return  context[0].dataset.label;
+                                },
+                                label: (context) => {
+                                    console.log('label');
+                                    console.log(context);
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += parseFloat(context.raw).toLocaleString('de-DE', { maximumFractionDigits: 6 }) ;
+                                    const total = context.dataset.data.reduce((total, datapoint) => total + datapoint, 0)
+                                    const percentage = context.raw / total * 100;
+                                    label += ' ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %' ;
+                                    return label;
+                                },
+                                footer: () => { return linked },
+                                afterLabel: (t, d) => {  }
+                            }
+                        },
                         legend: edaPieLegend
                     },
 

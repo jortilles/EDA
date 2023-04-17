@@ -1,5 +1,6 @@
 
 #API
+eda/eda_api/config/
 eda/eda_api/.vscode/
 eda/eda_api/node_modules/
 eda/eda_api/dist/
@@ -18,7 +19,6 @@ eda/eda_api/lib/module/uploads/users
 eda/eda_api/chromium_dependencies.txt
 
 
-
 #APP
 
 eda/eda_app/.angular
@@ -27,7 +27,10 @@ eda/eda_app/node_modules
 eda/eda_app/dist
 eda/eda_app/AddEdaCharInstructions.txt
 eda/eda_app/package-lock.json
+eda/eda_app/src/app/config/
+eda/eda_api/config/database.config.js
 eda/sda_api/dist
 eda/sda_api/src/config/seed.js
 eda/sda_api/src/views/postform.html
 eda/sda_api/package-lock.json
+
