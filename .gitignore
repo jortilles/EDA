@@ -8,7 +8,6 @@ eda/eda_api/logs/
 eda/eda_api/package-lock.json
 eda/eda_api/config/custom
 eda/eda_api/config/database.config.js
-eda/eda_api/config/database.config-dist.js
 eda/eda_api/config/oracle-config.js
 eda/eda_api/config/oracle-config.docker.js
 eda/eda_api/config/seed.js
