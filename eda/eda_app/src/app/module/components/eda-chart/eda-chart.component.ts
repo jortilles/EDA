@@ -14,6 +14,7 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
     @ViewChild('edaChart') edaChart: BaseChartDirective;
     @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
     @Input() inject: EdaChart;
+    @Output() onClick: EventEmitter<any> = new EventEmitter();
 
     public update: boolean;
     public chartPlugins = [  ChartDataLabels  ];
@@ -73,17 +74,30 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
                 return;
             }
 
+<<<<<<< HEAD
+=======
+    ngAfterViewInit(): void {
+        this.edaChart.chart.options.onClick = (evt, activeEls, chart) => {
+            if (activeEls.length === 0 || chart.getElementsAtEventForMode(<any>evt, 'nearest', { intersect: true }, true).length === 0) {
+                return;
+            }
+
+>>>>>>> 6bff99f (chartClick - no refresh data)
             activeEls.forEach(point => {
                 const filterBy = chart.data.datasets[point.datasetIndex].label;
                 const label = chart.data.labels[point.index];
                 const value = chart.data.datasets[point.datasetIndex].data[point.index];
                 this.onClick.emit({ inx: point.index, label, value, filterBy })
+<<<<<<< HEAD
 
                 if (this.inject.linkedDashboardProps) {
                     const props = this.inject.linkedDashboardProps;
                     const url = window.location.href.substr( 0, window.location.href.indexOf('/dashboard')) +`/dashboard/${props.dashboardID}?${props.table}.${props.col}=${label}`
                     window.open(url, "_blank");
                 }
+=======
+                console.log('onCLick');
+>>>>>>> 6bff99f (chartClick - no refresh data)
             })
         }
     }
@@ -120,7 +134,10 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
     }
 
     updateChart() {
+        console.log(this.edaChart);
         this.edaChart.chart.update();
+        if (this.edaChart.chart) {
+        }
     }
 
 }

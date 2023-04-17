@@ -83,6 +83,7 @@ export const QueryUtils = {
  * @param globalFilters flag to apply when runQuery() is called from dashboard component.
  */
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
+<<<<<<< HEAD
 
     /** gestiona las columnas duplicadas. Si tengo dos columnas con el mismo nombre le añado el sufijo _1, _2, _3.... etc */
     let dup = [];
@@ -97,6 +98,8 @@ export const QueryUtils = {
       }  
      })
 
+=======
+>>>>>>> 6bff99f (chartClick - no refresh data)
     ebp.display_v.disablePreview = false;
 
     if (!globalFilters) {
@@ -107,10 +110,11 @@ export const QueryUtils = {
       ebp.panelChart.NO_DATA = false;
       ebp.display_v.minispinner = true;
     }
+    console.log(ebp);
 
     try {
 
-      if (ebp.panelChart) ebp.panelChart.destroyComponent();
+      // if (ebp.panelChart) ebp.panelChart.destroyComponent();
 
       const query = ebp.switchAndBuildQuery();
       /**Add fake column if SQL mode and there isn't fields yet */
@@ -136,15 +140,13 @@ export const QueryUtils = {
         ebp.spinnerService.off();
 
       } else {
-
         ebp.reloadContent();
         ebp.display_v.minispinner = false;
-
       }
 
+      ebp.spinnerService.off();
       ebp.index = 1;
       ebp.display_v.saved_panel = true;
-
     } catch (err) {
 
       ebp.alertService.addError(err);

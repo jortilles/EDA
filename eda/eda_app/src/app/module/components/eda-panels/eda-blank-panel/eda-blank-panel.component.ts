@@ -53,7 +53,11 @@ export class EdaBlankPanelComponent implements OnInit {
     @Input() inject: InjectEdaPanel;
     @Output() remove: EventEmitter<any> = new EventEmitter();
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
+<<<<<<< HEAD
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
+=======
+    @Output() action: EventEmitter<IPanelAction> = new EventEmitter();
+>>>>>>> 6bff99f (chartClick - no refresh data)
 
     /** propietats que s'injecten al dialog amb les propietats específiques de cada gràfic. */
     public configController: EdaDialogController;
@@ -407,6 +411,7 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = output.styles ? new ChartConfig(output.styles) : new ChartConfig(output.config);
         this.changeChartType(content.chart, content.edaChart, config);
         this.chartForm.patchValue({ chart: this.chartUtils.chartTypes.find(o => o.subValue === content.edaChart) });
+        console.log('Reload content', this.display_v.saved_panel);
     }
 
     /**
@@ -448,12 +453,22 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Chart click event
+    */
+>>>>>>> 6bff99f (chartClick - no refresh data)
     public onChartClick(event: any): void {
         const config = this.panelChart.getCurrentConfig();
         if (config?.chartType == 'doughnut') {
             this.action.emit({ code: 'ADDFILTER', data: {...event, panel: this.panel} });
         }
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6bff99f (chartClick - no refresh data)
 
     /**
      * Changes chart type 
@@ -470,7 +485,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
-            this.panelChart.destroyComponent();
+            // this.panelChart.destroyComponent();
             const _config = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }

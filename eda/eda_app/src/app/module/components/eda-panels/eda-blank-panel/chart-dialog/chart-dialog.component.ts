@@ -144,6 +144,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             const newDatasets = [];
             const dataset = this.chart.chartDataset;
             
+<<<<<<< HEAD
 
             for (let i = 0, n = dataset.length; i < n; i += 1) {
                 if (dataset[i].label === event.label) {
@@ -173,6 +174,32 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             }
 
             this.chart.chartDataset = newDatasets;
+=======
+            let inx = this.chart.chartLabels.findIndex((label: string) => event.label === label);
+            if (inx >= 0) {
+                for (let i = 0, n = dataset.length; i < n; i += 1) {
+                    if (dataset[i].label === event.label) {
+                        //dataset[i].hoverBackgroundColor = this.hex2rgb(event.bg, 90);
+                        //dataset[i].hoverBorderColor = 'rgb(255,255,255)'; 
+                        dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
+                        dataset[i].borderColor = this.hex2rgb(event.bg, 100);
+                        this.chart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
+                    } else if (dataset[i].data[inx]) {
+                        dataset[i].backgroundColor[inx] = this.hex2rgb(event.bg, 90);
+                        dataset[i].borderColor[inx] = this.hex2rgb(event.bg, 100);
+                        this.chart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
+                    } else {
+                        //dataset[i].hoverBackgroundColor = this.chart.chartColors[i].backgroundColor;
+                        //dataset[i].hoverBorderColor = 'rgb(255,255,255)';
+                        dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
+                        dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
+                        this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
+                    }
+                    newDatasets.push(dataset[i]);
+                }
+                this.chart.chartDataset = newDatasets;
+            }
+>>>>>>> 6bff99f (chartClick - no refresh data)
         } else {
             if (this.chart.chartLabels) {
                 const labels = this.chart.chartLabels;
