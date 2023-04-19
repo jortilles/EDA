@@ -183,7 +183,7 @@ export class model {
       }
 
      
-    await new Connections().mongoEdaDisconnect().catch(e => { if (e) throw e })
+    //await new Connections().mongoEdaDisconnect().catch(e => { if (e) throw e })
       
   }
 
