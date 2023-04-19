@@ -96,7 +96,7 @@ export class userAndGroupsToMongo {
         }
 
       //borramos todos los que estan en el objeto, los usuarios de jortilles y los que tienen asignado el 0 en activo
-      if (existe && line.email !== "eda@jortilles.com" && line.email !== "edaanonim@jortilles.com" && active==false) {
+      if (existe && line.email !== "eda@sinergiada.org" && line.email !== "edaanonim@jortilles.com" && active==false) {
         userModel.deleteOne({ email: line.email }, function (err, res) {
           if (err) console.log(err);
           console.log(line.email + ' borrado ');
@@ -125,10 +125,13 @@ export class userAndGroupsToMongo {
       //actualizamos tanto el array de usuarios como el el de grupos, ojo con este método apuntador!!!
       let user =   users.find(i => i.email === line.user_name);
       let group =  roles.find(i => i.name === line.name);
-   
-      user.role.push(group._id); 
-      group.users.push(user._id);
-      
+      try{
+        user.role.push(group._id);
+        group.users.push(user._id);
+      }catch(e){
+        console.log("Error recreating " +  user +  " role  "  +  group)
+      }
+
 
     })
 
