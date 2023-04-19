@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 export class ColumnUtilsService {
     constructor( private fileUtiles: FileUtiles ) { }
 
-    public addFilter(obj: any, table: string, column: string, type: string, selectedRange:string): object {
+    public addFilter(obj: any, table: string, column: string, type: string, selectedRange:string, valueListSource?:{}): object {
         const values = Object.keys(obj).map((key) => {
             if (!_.isNil(Object.values(obj[key]))) {
                 //transform single values to array _-(··)-_  
@@ -18,6 +18,20 @@ export class ColumnUtilsService {
             }
         });
 
+
+        if (typeof valueListSource !== 'undefined') {
+            return {
+                filter_id: this.fileUtiles.generateUUID(),
+                filter_table: table,
+                filter_column: column,
+                filter_type: type,
+                filter_elements: values,
+                selectedRange:selectedRange,
+                isGlobal : false
+            };
+        }
+
+
         return {
             filter_id: this.fileUtiles.generateUUID(),
             filter_table: table,
@@ -25,10 +39,12 @@ export class ColumnUtilsService {
             filter_type: type,
             filter_elements: values,
             selectedRange:selectedRange,
+            valueListSource: valueListSource?valueListSource:null,
             isGlobal : false
         };
     }
 
+    
     public handleInputTypes(type: string) {
         let inputType;
         switch (type) {
