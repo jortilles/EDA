@@ -77,10 +77,16 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const column = this.selectedColumn.column_name;
         const type = this.filterSelected.value;
         const range = this.filter.range;
+        if(this.selectedColumn.valueListSource){
+            this.filter.selecteds.push(
+                this.columnUtils.addFilter(this.filterValue, table, column, type, range, this.selectedColumn.valueListSource)
+            );
+        }else{
+            this.filter.selecteds.push(
+                this.columnUtils.addFilter(this.filterValue, table, column, type, range)
+            );
+        }
 
-        this.filter.selecteds.push(   
-            this.columnUtils.addFilter(this.filterValue, table, column, type, range)
-        );
         
         this.carregarFilters();
 

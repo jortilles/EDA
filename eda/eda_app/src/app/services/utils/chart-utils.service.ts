@@ -1044,7 +1044,8 @@ export class ChartUtilsService {
                                     const datapoints = ctx.chart.data.datasets[0].data
                                     const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
                                     const percentage = value / total * 100
-                                    return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                    return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                    //return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
                                 }
 
                             }

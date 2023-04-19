@@ -54,15 +54,16 @@ export abstract class QueryBuilderService {
         /** Check dels permisos de columna, si hi ha permisos es posen als filtres */
         this.permissions = this.getPermissions(modelPermissions, this.tables, origin);
 
-         /** ............................................................................. */
-        /** ..........................PER ELS VALUE LISTS................................ */
+
+
+        /** ............................................................................... */
+        /** ............................PER ELS VALUE LISTS................................ */
         /** si es una consulta de llista de valors es retorna la llista de valors possibles */
-        /** ............................................................................. */
-        if( this.queryTODO.fields.length == 1 && this.queryTODO.fields[0].valueListSource   && this.permissions.length == 0){
+        /** ............................................................................... */
+        if( this.queryTODO.fields.length == 1 && this.queryTODO.fields[0].valueListSource   && this.permissions.length == 0&& this.queryTODO.filters.length == 0){
             this.query = this.valueListQuery( );
             return this.query;
         }
-
         /** Reviso si cap columna de la  consulta es un multivalueliest..... */
         this.queryTODO.fields.forEach( e=>{
                 if( e.valueListSource ){
@@ -74,6 +75,19 @@ export abstract class QueryBuilderService {
                     }
                 }
         })
+
+        /** Reviso si cap FILTRE de la  consulta es un multivalueliest.....  */
+        this.queryTODO.filters.forEach( e=>{
+            if( e.valueListSource ){
+                e.table_id =  e.filter_table;
+                e.column_name = e.filter_column;
+                valueListList.push( JSON.parse(JSON.stringify(e)) );
+                if (!dest.includes( e.valueListSource.target_table) &&  e.valueListSource.target_table !== origin) {
+                    dest.push( e.valueListSource.target_table);
+                }
+            }
+    })
+   
         /** revisió dels filtres per si hi ha un multivaluelist */
         if( valueListList.length > 0 && this.queryTODO.filters ){
             this.queryTODO.filters.forEach(f=>{
@@ -81,7 +95,6 @@ export abstract class QueryBuilderService {
                     if(f.filter_table == v.table_id && f.filter_column == v.column_name  ){
                         f.filter_table =  v.valueListSource.target_table;
                         f.filter_column =  v.valueListSource.target_description_column;
-
                     }
                 })
             })
@@ -97,8 +110,6 @@ export abstract class QueryBuilderService {
                 dest.push(table);
             }
         });
-
-
 
         if (this.permissions.length > 0) {
             this.permissions.forEach(permission => {
