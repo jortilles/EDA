@@ -113,8 +113,12 @@ export class userAndGroupsToMongo {
       if (line.name !== 'EDA_ADMIN') {
         let user =  users.find(i => i.email === line.user_name);
         let group = roles.find(i => i.name === line.name);
-        user.role = [];
-        group.users = [];
+        try{
+          user.role = [];
+          group.users = [];
+        }catch(e){
+          console.log("Error initializating " +  user +  " role  "  +  group)
+        }
       }
 
     })
