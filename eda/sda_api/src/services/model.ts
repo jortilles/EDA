@@ -33,10 +33,10 @@ export class model {
 
     const connector = new Connections().connector(req);
     connection = await mariadb.createPool(connector);
-
+    const md =  new Connections();
 
     try {
-      await new Connections().mongoEdaConnect(req)
+     await md.mongoEdaConnect(req)
     } catch (err) {
       if (err) throw err
       console.log("no conectado")
@@ -183,7 +183,7 @@ export class model {
       }
 
      
-    //await new Connections().mongoEdaDisconnect().catch(e => { if (e) throw e })
+      md.mongoEdaDisconnect().catch(e => { if (e) throw e })
       
   }
 

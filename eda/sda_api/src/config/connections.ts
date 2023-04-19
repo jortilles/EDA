@@ -4,6 +4,7 @@ import mongoose from "mongoose"
 
 export class Connections {
 
+  private conn ;
 
   //conector por url
   public connector(req: Request)  {
@@ -27,12 +28,12 @@ export class Connections {
   mongoose.set('strictQuery', false)
   let con = this.connector(req).mongodb
   await mongoose.connect(con, {})
-      .then(() => console.log("conectado a mongo"))
+      .then((c) =>{ this.conn=c; console.log("conectado a mongo")})
       .catch(err => console.log(err)) 
   }
 
   public async mongoEdaDisconnect() {
-    await mongoose.disconnect().then(()=> console.log("Desconectado de mongo"))
+    await this.conn.disconnect().then(()=> console.log("Desconectado de mongo"))
   }
 
 }
