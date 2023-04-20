@@ -27,6 +27,7 @@ export class ColumnUtilsService {
                 filter_type: type,
                 filter_elements: values,
                 selectedRange:selectedRange,
+                valueListSource: valueListSource ,
                 isGlobal : false
             };
         }
@@ -39,7 +40,6 @@ export class ColumnUtilsService {
             filter_type: type,
             filter_elements: values,
             selectedRange:selectedRange,
-            valueListSource: valueListSource?valueListSource:null,
             isGlobal : false
         };
     }
