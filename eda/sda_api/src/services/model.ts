@@ -487,7 +487,9 @@ export class model {
         
 
       let group_name : String = " '" +  line.group + "' "
-      let valueAt: String = "select record_id from sda_def_security_group_records where `group` = " + group_name
+      let table_name : String = " '" +  line.table + "' "
+      let valueAt: String = "select record_id from sda_def_security_group_records" +
+                            " where `group` = " + group_name  +  ' and `table` = ' + table_name
 
       gr4 = {
 
