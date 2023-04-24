@@ -183,7 +183,8 @@ export class model {
       }
 
      
-      md.mongoEdaDisconnect().catch(e => { if (e) throw e })
+      // se comenta porque si no peta y no publica el modelo.
+      //md.mongoEdaDisconnect().catch(e => { if (e) throw e })
       
   }
 
