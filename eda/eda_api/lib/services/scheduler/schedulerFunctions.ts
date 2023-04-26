@@ -28,36 +28,56 @@ export class SchedulerFunctions {
 
     let now = this.totLocalISOTime(new Date());
     let date = new Date(Date.parse(now));
-    const timelapse = date.setDate(date.getDate() - quantity);
 
-    const time_lapse_date = new Date(timelapse);
-    // 
-
-
-    const tl_hourToInt = this.hoursToInt(new Date(timelapse));
-    const lu_hourToInt = parseInt(`${hours}${minutes}`);
-
-    const hourCheck = tl_hourToInt >= lu_hourToInt;
-
+    date.setHours( parseInt(hours));
+    date.setMinutes(0);
     let lastUpdated = new Date(Date.parse(currLastUpdated));
+    //console.log('Ultima actualizacion');
+    //console.log(lastUpdated);
+    //console.log('Fecha de referencia');
+    //console.log(date);
     
-    time_lapse_date.setHours(0, 0, 0, 0);
-    lastUpdated.setHours(0, 0, 0, 0);
+    if(lastUpdated > date){
+      //Se ha recargado hoy...
+      //console.log('se ha recargado despues No');
+      //console.log(lastUpdated);
+      //console.log(date);
+      return false;
+    }else{
+ 
+      lastUpdated.setDate(lastUpdated.getDate() + quantity);
+      //console.log('se ha recargado antes  ');
+      //console.log(lastUpdated);
+      //console.log(date);
+         
+      if(lastUpdated < date){
+        //console.log( 'Last update mas pequeño....');
+   
+     
+        let difference = lastUpdated.getTime() -  date.getTime() ;
+        let TotalDays = (difference / (1000 * 3600 * 24));
+        //console.log( 'Han pasado dias' + TotalDays );
+        if( quantity <= TotalDays ){
+          //console.log('No han pasado suficientes dias no actualizo');
+          return false;
+        }else{
+          //console.log('Si han pasado suficientes dias actualizo');
+          return true;
+        }
 
-    return time_lapse_date >= lastUpdated && hourCheck;
+      }else{
+        //console.log( 'Mismo dia hora atraas. Actualizo');
+        return true;
+      }
+
+    }
+    
+
+   
+
 
   }
 
-  static hoursToInt(date: Date) {
-
-    let hour = date.getHours();
-    let hourStr = hour < 10 ? `0${hour}` : `${hour}`;
-    let minutes = date.getMinutes();
-    let minutesStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
-    const hourToInt = parseInt(`${hourStr}${minutesStr}`);
-    return hourToInt;
-
-  }
 
   static totLocalISOTime = (date:Date) => {
 
