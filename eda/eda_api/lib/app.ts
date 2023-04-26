@@ -1,5 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import fileUpload from 'express-fileupload';
 import { NextFunction, Request, Response } from 'express';
@@ -35,8 +34,8 @@ class App {
         this.app.set('view engine', 'pug');
 
         // Body Parser
-        this.app.use(bodyParser.json({ limit: '50mb' }));
-        this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 1000000 }));
+        this.app.use(express.json({ limit: '50mb' }));
+        this.app.use(express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 1000000 }));
 
         // Cors
         this.app.use(cors());
