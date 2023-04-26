@@ -127,7 +127,7 @@ export class GroupController {
  static  async createGroupFromAD (GroupName: string ):Promise<string> {
     const group: IGroup = new Group({
       name: GroupName,
-      role:  GroupName=='EDA_ADMIN_ROLE'?'EDA_ADMIN_ROLE':'EDA_USER_ROLE' ,
+      role:  GroupName=='EDA_ADMIN'?'EDA_ADMIN_ROLE':'EDA_USER_ROLE' ,
       users: []  
     })
     await  group.save();
