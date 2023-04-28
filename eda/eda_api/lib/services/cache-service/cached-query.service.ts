@@ -154,6 +154,7 @@ export class CachedQueryService {
                 'cachedQuery.response': updatedValues
               }
             ).exec()
+            console.log( SchedulerFunctions.totLocalISOTime( new Date()) + ' Updated query ' +  query._id );
           } catch (err) {
             CachedQueryService.deleteQuery( query.cachedQuery.hashedQuery)
             console.log('Error updating query' + query.cachedQuery.hashedQuery + ' Query has been deleted ') ;
