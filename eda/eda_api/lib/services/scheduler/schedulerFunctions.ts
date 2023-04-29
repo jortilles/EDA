@@ -28,23 +28,28 @@ export class SchedulerFunctions {
 
     let now = this.totLocalISOTime(new Date());
     let date = new Date(Date.parse(now));
+    console.log('Ahora mismo son las : ' + date );
+
 
     date.setHours( parseInt(hours));
     date.setMinutes(0);
+    console.log('Se debe actualizar a las  : ' + date );
+
+
     let lastUpdated = new Date(Date.parse(currLastUpdated));
-    //console.log('Ultima actualizacion');
-    //console.log(lastUpdated);
+    console.log('Ultima actualizacion');
+    console.log(lastUpdated);
     //console.log('Fecha de referencia');
     //console.log(date);
     
     if(lastUpdated > date){
       //Se ha recargado hoy...
-      //console.log('se ha recargado despues No');
+      console.log('recargado más recientemente... No actualizo');
       //console.log(lastUpdated);
       //console.log(date);
       return false;
     }else{
- 
+      
       lastUpdated.setDate(lastUpdated.getDate() + quantity);
       //console.log('se ha recargado antes  ');
       //console.log(lastUpdated);
@@ -58,15 +63,15 @@ export class SchedulerFunctions {
         let TotalDays = (difference / (1000 * 3600 * 24));
         //console.log( 'Han pasado dias' + TotalDays );
         if( quantity <= TotalDays ){
-          //console.log('No han pasado suficientes dias no actualizo');
+          console.log('No han pasado suficientes dias no actualizo');
           return false;
         }else{
-          //console.log('Si han pasado suficientes dias actualizo');
+          console.log('Si han pasado suficientes dias actualizo');
           return true;
         }
 
       }else{
-        //console.log( 'Mismo dia hora atraas. Actualizo');
+       console.log( 'Mismo dia hora atraas. Actualizo');
         return true;
       }
 
