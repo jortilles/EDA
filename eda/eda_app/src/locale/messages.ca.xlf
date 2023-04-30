@@ -3725,6 +3725,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Mostrar o amagar les etiquetes sobre els gràfics</target>
   </trans-unit> 
 
+  <trans-unit id="showLablesPercentTooltip">
+    <source>Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos</source>
+    <target>Mostrar o amagar les etiquetes en percentatge sobre els gràfics</target>
+  </trans-unit> 
+
+
+
+
        <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
     <target>Tria quantes columnes vols mostrar</target>

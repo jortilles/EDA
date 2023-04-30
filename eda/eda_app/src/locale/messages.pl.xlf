@@ -3685,6 +3685,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Pokaż lub ukryj etykiety na wykresach</target>
   </trans-unit> 
 
+  <trans-unit id="showLablesTooltip">
+    <source>Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos</source>
+    <target>Pokaż lub ukryj etykiety procentowe na wykresach</target>
+  </trans-unit> 
+
          <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
     <target>Wybierz ile kolumn chcesz wyświetlić</target>

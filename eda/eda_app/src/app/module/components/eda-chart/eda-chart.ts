@@ -17,6 +17,7 @@ export class EdaChart {
     addTrend: boolean;
     addComparative: boolean;
     showLabels:boolean;
+    showLabelsPercent:boolean;
     numberOfColumns: number;
 
     constructor() { }
