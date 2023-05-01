@@ -30,11 +30,9 @@ export class SchedulerFunctions {
     let date = new Date(Date.parse(now));
     console.log('Ahora mismo son las : ' + date );
 
-
     date.setHours( parseInt(hours));
     date.setMinutes(0);
     console.log('Se debe actualizar a las  : ' + date );
-
 
     let lastUpdated = new Date(Date.parse(currLastUpdated));
     console.log('Ultima actualizacion');
@@ -50,19 +48,13 @@ export class SchedulerFunctions {
       return false;
     }else{
       
+    
       lastUpdated.setDate(lastUpdated.getDate() + quantity);
-      //console.log('se ha recargado antes  ');
-      //console.log(lastUpdated);
-      //console.log(date);
-         
-      if(lastUpdated < date){
-        //console.log( 'Last update mas pequeño....');
-   
      
         let difference = lastUpdated.getTime() -  date.getTime() ;
         let TotalDays = (difference / (1000 * 3600 * 24));
-        //console.log( 'Han pasado dias' + TotalDays );
-        if( quantity <= TotalDays ){
+        console.log( 'Han pasado dias' + TotalDays );
+        if( quantity < 0  ){
           console.log('No han pasado suficientes dias no actualizo');
           return false;
         }else{
@@ -70,10 +62,9 @@ export class SchedulerFunctions {
           return true;
         }
 
-      }else{
-       console.log( 'Mismo dia hora atraas. Actualizo');
-        return true;
-      }
+
+
+
 
     }
     
