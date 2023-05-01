@@ -3674,6 +3674,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Mostrar Etiquetas</source>
     <target>Pokaż tagi</target>
   </trans-unit> 
+             <trans-unit id="showLabelsPercent">
+    <source>Mostrar Etiquetas en Porcentaje</source>
+    <target>Pokaż tagi w procentach</target>
+  </trans-unit> 
  
        <trans-unit id="histogramColum">
     <source>Columnas</source>

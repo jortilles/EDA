@@ -3714,6 +3714,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Mostrar Etiquetas</source>
     <target>Mostra Etiquetes</target>
   </trans-unit> 
+         <trans-unit id="showLabelsPercent">
+    <source>Mostrar Etiquetas</source>
+    <target>Mostra Etiquetes en Percentatges</target>
+  </trans-unit> 
 
        <trans-unit id="histogramColum">
     <source>Columnas</source>
@@ -3729,9 +3733,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos</source>
     <target>Mostrar o amagar les etiquetes en percentatge sobre els gràfics</target>
   </trans-unit> 
-
-
-
 
        <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
