@@ -103,7 +103,7 @@ export class model {
                       where bridge_table   != ''
               union 
                SELECT bridge_table  , source_bridge,
-                        source_table , source_column  
+                        source_table , source_bridge as source_column 
                       FROM sda_def_enumerations 
                       where bridge_table != ''
               union 
