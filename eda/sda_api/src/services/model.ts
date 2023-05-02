@@ -9,7 +9,7 @@ import { ExportMongoData } from '../database/export.mongoGroups';
 import { pushModelToMongo } from '../database/push.Model.to.Mongo';
 import { ColumnCheck } from '../database/services/sinergiaCRM.column.check';
 
-import { deploy } from './deploy';
+//import { deploy } from './deploy';
 
 import { userAndGroupsToMongo } from './usersAndGroupsToMongo';
 import { Enumerations } from './enumerations';
@@ -97,7 +97,7 @@ export class model {
                       FROM sda_def_enumerations 
                       where bridge_table is null or bridge_table = ''
               union 
-               SELECT source_table , source_column  , 
+               SELECT source_table , source_bridge as source_column   , 
                       bridge_table  , source_bridge
                       FROM sda_def_enumerations 
                       where bridge_table   != ''
