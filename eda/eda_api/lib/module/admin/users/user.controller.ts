@@ -19,6 +19,7 @@ const crypto = require('crypto');
 
 export class UserController {
 
+
     static async login(req: Request, res: Response, next: NextFunction) {
 
         try {
@@ -34,6 +35,21 @@ export class UserController {
             if (fs.existsSync(ldapPath)) {
                     // Si el troba, login amb activedirectory
                     // Obtenim informacio del activedirectory
+
+                    if(body.email.toString()=='edaanonim@jortilles.com'){
+                        //anonymous login does not search the user in ldap.
+                                    const userEda = await UserController.getUserInfoByEmail(body.email, false);
+
+                                    if (! await bcrypt.compareSync(body.password, userEda.password)) {
+                                                return next(new HttpException(400, 'Incorrect credentials - password'));                                   
+                                    }
+                                    Object.assign(user, userEda);
+                                    user.password = ':)';
+                                    token = await jwt.sign({ user }, SEED, { expiresIn: 14400 }); // 4 hours
+                                    insertServerLog(req, 'info', 'newLogin', body.email, 'login');
+                                    return res.status(200).json({ user, token: token, id: user._id });
+
+                    } 
                     
                     const myUser = await ActiveDirectoryService.getUserName(body.email);                
                     const userAD = await ActiveDirectoryService.login(myUser, body.password);
@@ -136,7 +152,6 @@ export class UserController {
             next(err);
         }
     }
-    
 
 
     static async singleSingnOn(req:Request, res:Response, next:NextFunction){

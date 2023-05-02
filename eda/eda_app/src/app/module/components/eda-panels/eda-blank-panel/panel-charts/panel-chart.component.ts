@@ -250,7 +250,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
       
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
-            minMax, styles, cfg.showLabels, cfg.numberOfColumns, this.props.edaChart);
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart);
 
 
         /**Add trend datasets*/
@@ -285,8 +285,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     e.borderColor = chartConfig.chartColors[i].borderColor;
                 }catch(err){
                     // si tinc una tendencia no tinc color per aquesta grafica. No hauria de ser aixi.....
-                        console.log('Recuperando color...');
-                        console.log(this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor);
+                       //console.log('Recuperando color...');
+                        //console.log(this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor);
                         e.backgroundColor =   this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor;
                         e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
                 }

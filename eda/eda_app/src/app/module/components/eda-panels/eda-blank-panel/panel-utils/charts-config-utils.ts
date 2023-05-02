@@ -73,7 +73,8 @@ export const ChartsConfigUtils = {
           chartType: ebp.panelChart.props.chartType, 
           addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
           addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,
-          showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false
+          showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false,
+          showLabelsPercent: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabelsPercent'] : false
       };
   }
     return new ChartConfig(config);
@@ -93,7 +94,7 @@ export const ChartsConfigUtils = {
     }
     else if (['bar', 'line','area', 'pie', 'doughnut','polarArea', 'barline', 'horizontalBar', 'horizontalBar', 'histogram' ].includes(type)) {
 
-      return new ChartJsConfig(null, type, false, false,false,null);
+      return new ChartJsConfig(null, type, false, false,false,false,null);
 
     } else if (type === 'parallelSets') {
 

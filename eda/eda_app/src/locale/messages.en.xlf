@@ -3687,10 +3687,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Private edition:  </target>
   </trans-unit> 
 
-       <trans-unit id="showLablesTooltip">
+  <trans-unit id="showLablesTooltip">
     <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
     <target>Show or hide labels on charts</target>
   </trans-unit> 
+
+  <trans-unit id="showLablesPercentTooltip">
+    <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
+    <target>Show or hide labels in percent on charts</target>
+  </trans-unit> 
+
 
          <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
@@ -3700,6 +3706,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
        <trans-unit id="showLabels">
     <source>Mostrar Etiquetas</source>
     <target>Show Tags</target>
+  </trans-unit> 
+           <trans-unit id="showLabelsPercent">
+    <source>Mostrar Etiquetas en Porcentaje</source>
+    <target>Show Tags in Percent</target>
   </trans-unit> 
 
 

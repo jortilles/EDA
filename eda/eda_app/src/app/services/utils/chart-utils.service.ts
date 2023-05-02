@@ -13,9 +13,6 @@ import { Injectable } from '@angular/core';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
-import { ColumnPermissionDialogComponent } from 'app/module/pages/data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component';
-import { json } from 'd3';
-
 
 export interface EdaChartType {
     label: string;
@@ -952,7 +949,7 @@ export class ChartUtilsService {
     public initChartOptions(type: string, numericColumn: string,
         labelColum: any[], manySeries: boolean, stacked: boolean, size: any,
         linkedDashboard: LinkedDashboardProps, minMax: { min: number, max: number }
-        , styles: StyleConfig, showLabels:boolean,numberOfColumns:number, chartSubType:string): { chartOptions: any } {
+        , styles: StyleConfig, showLabels:boolean, showLabelsPercent:boolean, numberOfColumns:number, chartSubType:string): { chartOptions: any } {
 
         const t = $localize`:@@linkedTo:Vinculado con`;
         const linked = linkedDashboard ? `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
@@ -1011,7 +1008,7 @@ export class ChartUtilsService {
         switch (type) {
             case 'doughnut':
             case 'polarArea':
-                  if(showLabels){
+                  if(showLabels || showLabelsPercent ){
                             dataLabelsObjt =  {
                                 backgroundColor: function(context) {
                                 return context.dataset.backgroundColor;
@@ -1028,7 +1025,7 @@ export class ChartUtilsService {
                                     }, 0);
                                     const elem = realData[context.dataIndex];
                                     const percentage = elem / total * 100;
-                                    console.log( percentage > 10 );
+                                    //console.log( percentage > 10 );
                                     if( chartWidth < 200){
                                         return  percentage > 8 ;
                                     }else{
@@ -1041,11 +1038,18 @@ export class ChartUtilsService {
                                 },
                                 padding: 6,
                                 formatter: (value,ctx) => {
-                                    const datapoints = ctx.chart.data.datasets[0].data
+                                    const datapoints = ctx.dataset.data.map( x => x===''?0:x);
                                     const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
                                     const percentage = value / total * 100
-                                    return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
-                                    //return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                    let res = '';
+                                    if( showLabels && showLabelsPercent){
+                                        res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                    }else if(showLabels && !showLabelsPercent){
+                                        res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                    }else if(!showLabels && showLabelsPercent){
+                                        res = percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'   ;
+                                    }
+                                    return   res;
                                 }
 
                             }
@@ -1073,8 +1077,6 @@ export class ChartUtilsService {
                                     return  context[0].dataset.label;
                                 },
                                 label: (context) => {
-                                    console.log('label');
-                                    console.log(context);
                                     let label = context.label || '';
                                     if (label) {
                                         label += ': ';
@@ -1099,7 +1101,7 @@ export class ChartUtilsService {
                 break;
             case 'bar':
                 if(chartSubType!=='horizontalBar'){
-                    if(showLabels){ /** si mostro els datalabels els configuro */
+                    if(showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
                         dataLabelsObjt =  {
                             anchor: 'end',
                             align: 'top',
@@ -1112,9 +1114,22 @@ export class ChartUtilsService {
                             size:  edaFontSize  ,
                             },
                             padding: 10,
-                            formatter: (value) => {
-                                return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+
+                            formatter: (value,ctx) => {
+                                const datapoints = ctx.dataset.data.map( x => x===''?0:x);
+                                const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
+                                const percentage = value / total * 100
+                                let res = '';
+                                if( showLabels && showLabelsPercent){
+                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                }else if(showLabels && !showLabelsPercent){
+                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                }else if(!showLabels && showLabelsPercent){
+                                    res = percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'   ;
+                                }
+                                return   res;
                             }
+
                         }
                     }else{
                             dataLabelsObjt =   { display: false }
@@ -1215,7 +1230,7 @@ export class ChartUtilsService {
                     };
                 }else{
                     // horizontalBar Since chart.js 3 there is no more horizontal bar. Its just  barchart with horizonal axis
-                    if(showLabels){
+                    if(showLabels || showLabelsPercent ){
                         /** si haig de mostrar les etiquetes ho configuro */
                         dataLabelsObjt =  {
                             anchor: 'end',
@@ -1243,10 +1258,19 @@ export class ChartUtilsService {
                                 weight: 'bold',
                                 size:  edaFontSize  
                             },
-    
-                        
-                            formatter: (value) => {
-                                return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                            formatter: (value,ctx) => {
+                                const datapoints = ctx.dataset.data.map( x => x===''?0:x);
+                                const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
+                                const percentage = value / total * 100
+                                let res = '';
+                                if( showLabels && showLabelsPercent){
+                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                }else if(showLabels && !showLabelsPercent){
+                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                }else if(!showLabels && showLabelsPercent){
+                                    res = percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'   ;
+                                }
+                                return   res;
                             }
                         }
                     }else{
@@ -1344,7 +1368,7 @@ export class ChartUtilsService {
 
 
             case 'line':
-                if(showLabels){
+                if(showLabels || showLabelsPercent ){
 
                     dataLabelsObjt = {
                         backgroundColor: function(context) {
@@ -1373,8 +1397,19 @@ export class ChartUtilsService {
                           weight: 'bold',
                           size:  edaFontSize-2  
                         },
-                        formatter: (value) => {
-                            return   parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                        formatter: (value,ctx) => {
+                            const datapoints = ctx.dataset.data.map( x => x===''?0:x);
+                            const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
+                            const percentage = value / total * 100
+                            let res = '';
+                            if( showLabels && showLabelsPercent){
+                                res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                            }else if(showLabels && !showLabelsPercent){
+                                res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                            }else if(!showLabels && showLabelsPercent){
+                                res = percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'   ;
+                            }
+                            return   res;
                         }
 
                       }
