@@ -461,18 +461,18 @@ export class model {
     permissions.forEach(line => {
 
       const found = usersFound.find(i=> i.email == line.name )
-
-        gr3 = {
-        users: [ found._doc._id ],
-        usersName: [ line.name ],
-        none: false,
-        table: line.table,
-        column: "fullTable",
-        global: true,
-        permission: true,
-        type: "users"
-        }
-       
+        if(found){
+          gr3 = {
+          users: [ found._doc._id ],
+          usersName: [ line.name ],
+          none: false,
+          table: line.table,
+          column: "fullTable",
+          global: true,
+          permission: true,
+          type: "users"
+          }
+        } 
       destGrantedRoles.push(gr3)
 
       })
