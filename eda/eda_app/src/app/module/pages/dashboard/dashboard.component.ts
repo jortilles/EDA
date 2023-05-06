@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Dashboard, EdaPanel, EdaTitlePanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { EdaDialogController, EdaDialogCloseEvent, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
 import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupService, IGroup, SpinnerService, UserService, StyleProviderService, DashboardStyles, GlobalFiltersService } from '@eda/services/service.index';
-import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { SelectItem } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import domtoimage from 'dom-to-image';
@@ -701,7 +701,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         if (response.filterList.column.value.column_type === 'date' && response.filterList.selectedItems.length > 0) {
                             this.loadDatesFromFilter(response.filterList);
                         } else {
-                            this.loadGlobalFiltersData(response);
+                            this.loadGlobalFiltersData(response?.filterList, response?.targetTable);
                         }
                         // If default values are selected filter is applied
                         if (response.filterList.selectedItems.length > 0) {
@@ -786,11 +786,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.updateApplyToAllFilterInPanels();
         }
     
-        console.log(this.edaPanels);
-    
         //not saved alert message
         this.dashboardService._notSaved.next(true);
-        this.reloadPanels()
+        // this.reloadPanels()
     }
 
     public saveAs() {
@@ -887,12 +885,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         })
     }
 
-    /** Loads columns by given table */
-    private loadGlobalFiltersData(params: any, targetTable?: string): void {
-        const filter = params.filterList;
-
+    private async loadGlobalFiltersData(filterList: any, targetTable: string): Promise<void> {
+        const filter = filterList;
         const queryParams = {
-            table: params.targetTable,
+            table: targetTable,
             dataSource: this.dataSource._id,
             dashboard: '',
             panel: '',
@@ -900,16 +896,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         };
 
         filter.column.value.ordenation_type = 'ASC';
-
-        this.dashboardService
-            .executeQuery(this.queryBuilderService.normalQuery([filter.column.value], queryParams))
-            .subscribe(
-                res => {
-                    filter.data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
-                }, err => {
-                    this.alertService.addError(err);
-                }
-            );
+        try {
+            let query = this.queryBuilderService.normalQuery([filter.column.value], queryParams);
+            const res = await this.dashboardService.executeQuery(query).toPromise();
+            filter.data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
+        } catch (err) {
+            this.alertService.addError(err);
+            throw err;
+        }
     }
 
     private findGlobalFilterByUrlParams(urlParams: any): void {
@@ -1066,12 +1060,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         for (let i = 0, n = this.filtersList.length; i < n; i += 1) {
             const filter = this.filtersList[i];
 
-            const params = { filterList: filter, targetTable: filter.table.value };
-
             if (filter.column.value.column_type === 'date') {
                 this.loadDatesFromFilter(filter)
             } else {
-                this.loadGlobalFiltersData(params);
+                this.loadGlobalFiltersData(filter, filter.table.value);
             }
         }
     }

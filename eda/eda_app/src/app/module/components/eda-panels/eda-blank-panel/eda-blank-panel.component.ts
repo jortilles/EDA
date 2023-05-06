@@ -29,7 +29,10 @@ import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 
-
+export interface IPanelAction {
+    code: string;
+    data: any;
+}
 
 @Component({
     selector: 'eda-blank-panel',
@@ -50,7 +53,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @Input() inject: InjectEdaPanel;
     @Output() remove: EventEmitter<any> = new EventEmitter();
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
-    @Output() action: EventEmitter<any> = new EventEmitter<any>();
+    @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
 
     /** propietats que s'injecten al dialog amb les propietats específiques de cada gràfic. */
     public configController: EdaDialogController;
