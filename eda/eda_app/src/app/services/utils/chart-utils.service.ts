@@ -65,7 +65,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes13:TreeMap`, value: 'treeMap', subValue: 'treeMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes14:ScatterPlot`, value: 'scatterPlot', subValue: 'scatterPlot', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes16:Funnel`, value: 'funnel', subValue: 'funnel', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
-    //    { label: $localize`:@@chartTypesBarchart:Barchart`, value: 'barchart', subValue: 'barchart', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
+    //  { label: $localize`:@@chartTypesBarchart:Barchart`, value: 'barchart', subValue: 'barchart', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
 
