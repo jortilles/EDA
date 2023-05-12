@@ -17,7 +17,7 @@ export const updateModelGuard = async function (req: Request, res: Response, nex
     let token = dia.getFullYear( ) +  SEED +  dia.getDay()  + dia.getHours();
     token = MD5(token);
     // aqui tenemos que implemetar una validación
-    if ( updateToken == 'x1' ) {
+    if ( updateToken == token ) {
             next();
     } else {
         return next(new HttpException(403, 'valid authentication required'));
