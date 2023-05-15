@@ -10,7 +10,7 @@ import { pushModelToMongo } from './service/push.Model.to.Mongo';
 import fs from "fs";
 
 const mariadb = require('mariadb');
-const sinergiaDatabase = require('../../../config/sinergia.config');
+const sinergiaDatabase = require('../../../config/sinergiacrm.config');
 
 
 export class updateModel {
