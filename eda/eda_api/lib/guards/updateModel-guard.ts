@@ -14,7 +14,7 @@ export const updateModelGuard = async function (req: Request, res: Response, nex
     }
 
     const dia =  new Date();
-    let token = dia.getFullYear( ) +  SEED +  dia.getDay()  + dia.getHours();    
+    let token = dia.getUTCFullYear( ) +  SEED +  dia.getUTCDate()  + dia.getUTCHours();    
     token = MD5(token);
     console.log('Update token: ' +  token );
     // aqui tenemos que implemetar una validación
