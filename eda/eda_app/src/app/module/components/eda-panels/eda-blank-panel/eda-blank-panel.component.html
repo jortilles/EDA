@@ -16,7 +16,7 @@
 <!-- Body of Panel -->
 <div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner === true}">
     <div *ngIf="display_v.saved_panel" class="p-1" style="height: 100%">
-        <panel-chart class="component" #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties()"
+        <panel-chart class="component" #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties()" (onChartClick)="onChartClick($event)"
             style="height: 100%; width: 100%; display:block">
         </panel-chart>
     </div>
