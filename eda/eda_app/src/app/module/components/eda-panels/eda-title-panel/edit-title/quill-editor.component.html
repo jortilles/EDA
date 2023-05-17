@@ -1,86 +1,88 @@
 <eda-dialog [inject]="dialog">
-  <div body class="grid">
-    <div class="col-12">
+	<div body class="grid">
+		<div class="col-12">
 
-      <p-editor #Editor [(ngModel)]="title" [style]="{'height':'100%'}">
-
-        <p-header>
-          <span class="ql-formats">
-            <!-- <select class="ql-font"></select> -->
-            <select class="ql-size"></select>
-          </span>
-          <span class="ql-formats">
-            <button class="ql-bold"></button>
-            <button class="ql-italic"></button>
-            <button class="ql-underline"></button>
-            <button class="ql-strike"></button>
-          </span>
-          <span class="ql-formats">
-            <select class="ql-color"></select>
-            <select class="ql-background"></select>
-          </span>
-          <span class="ql-formats">
-            <button class="ql-script" value="sub"></button>
-            <button class="ql-script" value="super"></button>
-          </span>
-          <span class="ql-formats">
-            <button class="ql-header" value="1"></button>
-            <button class="ql-header" value="2"></button>
-            <button class="ql-blockquote"></button>
-            <!-- <button class="ql-code-block"></button> -->
-          </span>
-          <span class="ql-formats">
-            <button class="ql-list" value="ordered"></button>
-            <button class="ql-list" value="bullet"></button>
-            <!-- <button class="ql-indent" value="-1"></button>
+			<p-editor #Editor [(ngModel)]="title" [style]="{'height':'100%'}">
+				<p-header>
+					<span class="ql-formats">
+						<!-- <select class="ql-font"></select> -->
+						<select class="ql-size"></select>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-bold"></button>
+						<button class="ql-italic"></button>
+						<button class="ql-underline"></button>
+						<button class="ql-strike"></button>
+					</span>
+					<span class="ql-formats">
+						<select class="ql-color"></select>
+						<select class="ql-background"></select>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-script" value="sub"></button>
+						<button class="ql-script" value="super"></button>
+					</span>
+					<span class="ql-formats">
+						<button class="ql-header" value="1"></button>
+						<button class="ql-header" value="2"></button>
+						<button class="ql-blockquote"></button>
+						<!-- <button class="ql-code-block"></button> -->
+					</span>
+					<span class="ql-formats">
+						<button class="ql-list" value="ordered"></button>
+						<button class="ql-list" value="bullet"></button>
+						<!-- <button class="ql-indent" value="-1"></button>
         <button class="ql-indent" value="+1"></button> -->
-          </span>
-         <span class="ql-formats">
-          <button type="button" class="ql-align" value="" inputId="i1" > 
-            <svg viewBox="0 0 18 18"> 
-              <line class="ql-stroke" x1="3" x2="15" y1="9" y2="9"></line>
-              <line class="ql-stroke" x1="3" x2="13" y1="14" y2="14"></line>
-              <line class="ql-stroke" x1="3" x2="9" y1="4" y2="4"></line>
-            </svg>
-          </button>
-          <button type="button" class="ql-align" value="center" inputId="i2">
-            <svg viewBox="0 0 18 18">
-              <line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
-              <line class="ql-stroke" x1="14" x2="4" y1="14" y2="14"></line>
-              <line class="ql-stroke" x1="12" x2="6" y1="4" y2="4"></line>
-            </svg>
-          </button>
-          <button type="button" class="ql-align" value="right" inputId="i3">
-            <svg viewBox="0 0 18 18"> 
-              <line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
-              <line class="ql-stroke" x1="15" x2="5" y1="14" y2="14"></line>
-              <line class="ql-stroke" x1="15" x2="9" y1="4" y2="4"></line>
-            </svg>
-          </button>
-        
-      </span> 
-          <span class="ql-formats">
-            <button class="ql-link"></button>
-            <button class="ql-image"></button>
-            <button class="ql-video"></button>
-            <!-- <button class="ql-formula"></button> -->
-          </span>
-          <span class="ql-formats">
-            <button class="ql-clean"></button>
-          </span>
-        </p-header>
-      </p-editor>
-    </div>
-  </div>
-  <div footer>
-    <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
-        class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
-        id="eda_chart_dialog_confirmar">
-      </button>
-      <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
-        class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
-      </button>
-    </div>
-  </div>
+					</span>
+					<span class="ql-formats">
+						<button type="button" class="ql-align" value="" inputId="i1">
+							<svg viewBox="0 0 18 18">
+								<line class="ql-stroke" x1="3" x2="15" y1="9" y2="9"></line>
+								<line class="ql-stroke" x1="3" x2="13" y1="14" y2="14"></line>
+								<line class="ql-stroke" x1="3" x2="9" y1="4" y2="4"></line>
+							</svg>
+						</button>
+						<button type="button" class="ql-align" value="center" inputId="i2">
+							<svg viewBox="0 0 18 18">
+								<line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
+								<line class="ql-stroke" x1="14" x2="4" y1="14" y2="14"></line>
+								<line class="ql-stroke" x1="12" x2="6" y1="4" y2="4"></line>
+							</svg>
+						</button>
+						<button type="button" class="ql-align" value="right" inputId="i3">
+							<svg viewBox="0 0 18 18">
+								<line class="ql-stroke" x1="15" x2="3" y1="9" y2="9"></line>
+								<line class="ql-stroke" x1="15" x2="5" y1="14" y2="14"></line>
+								<line class="ql-stroke" x1="15" x2="9" y1="4" y2="4"></line>
+							</svg>
+						</button>
+
+					</span>
+					<span class="ql-formats">
+						<button class="ql-link"></button>
+						<button class="ql-image"></button>
+						<button class="ql-video"></button>
+						<button id="qlUrlImage">Url</button>
+						<!-- < class="ql-video"></> -->
+						<!-- <button class="ql-formula"></button> -->
+					</span>
+					<span class="ql-formats">
+						<button class="ql-clean"></button>
+					</span>
+				</p-header>
+			</p-editor>
+		</div>
+	</div>
+
+	<div footer>
+		<div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
+			<button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
+				class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
+				id="eda_chart_dialog_confirmar">
+			</button>
+			<button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
+				class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
+			</button>
+		</div>
+	</div>
 </eda-dialog>
