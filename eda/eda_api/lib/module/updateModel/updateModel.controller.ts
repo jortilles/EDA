@@ -520,12 +520,13 @@ console.log(sinergiaDatabase);
 
     //le damos formato json a nuestras tablas
     let main_model = await JSON.parse(fs.readFileSync('config/base_datamodel.json', 'utf-8'));
-    main_model.ds.connection.host = sinergiaDatabase.sinergiaConn.host
-    main_model.ds.connection.database = sinergiaDatabase.sinergiaConn.database
-    main_model.ds.connection.user = sinergiaDatabase.sinergiaConn.user
-    main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password)
+    main_model.ds.connection.host = sinergiaDatabase.sinergiaConn.host;
+    main_model.ds.connection.database = sinergiaDatabase.sinergiaConn.database;
+    main_model.ds.connection.user = sinergiaDatabase.sinergiaConn.port;
+    main_model.ds.connection.user = sinergiaDatabase.sinergiaConn.user;
+    main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password);
     main_model.ds.model.tables = tables; //añadimos el parámetro en la columna adecuada
-    main_model.ds.metadata.model_granted_roles = await grantedRoles
+    main_model.ds.metadata.model_granted_roles = await grantedRoles;
     
     await new pushModelToMongo().pushModel(main_model);
 
