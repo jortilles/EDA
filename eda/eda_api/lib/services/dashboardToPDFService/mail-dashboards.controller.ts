@@ -7,8 +7,6 @@ export class MailDashboardsController {
   static sendDashboard = async (dashboard: string, userMail: string, transporter: any, message: string, token: string) => {
 
     try {
-      console.log('Send Dashboard token');
-      console.log(token);
       const browser = await puppeteer.launch({ headless: true , args: ['--no-sandbox'] });
       const loginPage = await browser.newPage();
       // Configure the navigation timeout
@@ -21,26 +19,21 @@ export class MailDashboardsController {
       await loginPage.on('response', async (response) => {
 
         try {
-          const res = await response.json();
-
-          console.log(res.user, res.token)
-          
+          const res = await response.json();          
           const browser = await puppeteer.launch({ headless: true,  args: ['--no-sandbox'] });
           const page = await browser.newPage();
-
           await page.setViewport({
             width: 1366,
             height: 768
           });
 
 
-          await page.goto(`${serverConfig.server_baseURL}`)
+          await page.goto(`${serverConfig.server_baseURL}`);
           await page.evaluate((res) => {
-            localStorage.setItem('token', res.token);
-            localStorage.setItem('user', JSON.stringify(res.user));
-            localStorage.setItem('id', res.user._id)
+            sessionStorage.setItem('token', res.token);
+            sessionStorage.setItem('user', JSON.stringify(res.user));
+            sessionStorage.setItem('id', res.user._id);
           }, res);
-
 
           await page.goto(`${serverConfig.server_baseURL}/#/dashboard/${dashboard}`);
           await wait(40000);
@@ -58,7 +51,9 @@ export class MailDashboardsController {
 
             });
           await browser.close();
-          const link = `${serverConfig.server_baseURL}/#/dashboard/${dashboard}`
+          console.log("post ===============================");
+          const link = `${serverConfig.server_baseURL}/#/dashboard/${dashboard}`;
+          console.log("link===============================", link);
           MailingService.mailDashboardSending(userMail, filename, filepath, transporter, message, link);
 
         } catch (err) {
