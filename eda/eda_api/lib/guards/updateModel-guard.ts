@@ -16,7 +16,7 @@ export const updateModelGuard = async function (req: Request, res: Response, nex
     let token = dia.getUTCFullYear( ) +  SEED +  dia.getUTCDate()  + dia.getUTCHours();    
     console.log('Origin token: ' +  token );
     
-	token = crypto.createHash('md5').update(token).digest("hex");
+    token = crypto.createHash('md5').update(token).digest("hex");
     console.log('MD5 token: ' +  token );
     
     if ( updateToken == token ) {
