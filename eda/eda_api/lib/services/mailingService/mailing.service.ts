@@ -108,10 +108,9 @@ export class MailingService {
         }
 
         console.log('Forzando el envio........');
-        shouldUpdate = false;
+        shouldUpdate = true;
 
         if (shouldUpdate) {
-
           userMails.forEach(mail => {
             MailDashboardsController.sendDashboard(dashboardID, mail, transporter, dashboard.config.sendViaMailConfig.mailMessage, token);
           });
