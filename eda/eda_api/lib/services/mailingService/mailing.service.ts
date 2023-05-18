@@ -17,7 +17,7 @@ export class MailingService {
   static async mailingService() {
 
     console.log('Maler');
-    const newDate = SchedulerFunctions.totLocalISOTime(new Date());
+    const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
     const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
 
     const transporter = nodemailer.createTransport(config);
@@ -31,6 +31,8 @@ export class MailingService {
 
         this.alertSending(newDate, transporter);
         this.dashboardSending(newDate, transporter);
+
+
       }
     });
 
@@ -80,6 +82,9 @@ export class MailingService {
     } catch (err) {
       throw err;
     }
+
+
+
   }
 
   static async dashboardSending(newDate: string, transporter: any) {
@@ -108,10 +113,11 @@ export class MailingService {
         }
 
         console.log('Forzando el envio........');
-        shouldUpdate = true;
+        shouldUpdate = false;
 
         if (shouldUpdate) {
-          userMails.forEach(mail => {
+
+          userMails.forEach( mail => {
             MailDashboardsController.sendDashboard(dashboardID, mail, transporter, dashboard.config.sendViaMailConfig.mailMessage, token);
           });
 
@@ -124,8 +130,8 @@ export class MailingService {
         }
       });
 
-      /**Update dashbaords */
-      dashboardsToUpdate.forEach(d => {
+       /**Update dashbaords */
+       dashboardsToUpdate.forEach(d => {
         Dashboard.replaceOne({ _id: d._id }, d).exec()
       });
 
@@ -191,14 +197,14 @@ export class MailingService {
           if (error) {
             console.log(error);
           } else {
-            console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${SchedulerFunctions.totLocalISOTime(new Date())}`);
+            console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${SchedulerFunctions.totLocalISOTime(new Date()) }`);
           }
         });
       }
     })
   }
 
-  static mailDashboardSending(userMail: string, filename: string, filepath: string, transporter: any, message: string, link: string) {
+  static mailDashboardSending(userMail:string, filename:string, filepath:string, transporter:any, message:string, link:string){
 
     let text = `${message}\n-------------------------------------------- \n\n`;
     text += link;
@@ -219,13 +225,13 @@ export class MailingService {
       if (error) {
         console.log(error);
       } else {
-        console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${SchedulerFunctions.totLocalISOTime(new Date())}`);
+        console.log('Email sent: ' + info.response + `Email sent: ${info.response} from: ${info.envelope.from} to: ${info.envelope.to} at ${SchedulerFunctions.totLocalISOTime(new Date()) }`);
       }
 
       /**Remove file */
-      try {
+      try{
         fs.unlinkSync(`${filepath}/${filename}`);
-      } catch (err) {
+      }catch(err){
         throw err
       }
 

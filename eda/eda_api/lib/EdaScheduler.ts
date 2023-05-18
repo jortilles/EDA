@@ -18,4 +18,4 @@ export const initJobs = ()=> {
 }
 
 console.log('NOT Sending mails at the beggining');
-MailingService.mailingService() ;
+//MailingService.mailingService() ;
