@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { HttpException } from '../module/global/model/index';
-import { MD5 } from 'object-hash';
 const SEED = require('../../config/seed').SEED;
-
+import crypto from 'crypto';
 
 export const updateModelGuard = async function (req: Request, res: Response, next: NextFunction) {
     let updateToken:String = 'xx';
@@ -15,9 +14,11 @@ export const updateModelGuard = async function (req: Request, res: Response, nex
 
     const dia =  new Date();
     let token = dia.getUTCFullYear( ) +  SEED +  dia.getUTCDate()  + dia.getUTCHours();    
-    token = MD5(token);
-    console.log('Update token: ' +  token );
-    // aqui tenemos que implemetar una validación
+    console.log('Origin token: ' +  token );
+    
+	token = crypto.createHash('md5').update(token).digest("hex");
+    console.log('MD5 token: ' +  token );
+    
     if ( updateToken == token ) {
             next();
     } else {
