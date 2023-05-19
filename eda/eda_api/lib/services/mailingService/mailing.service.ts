@@ -112,8 +112,6 @@ export class MailingService {
 
         }
 
-        console.log('Forzando el envio........');
-        shouldUpdate = false;
 
         if (shouldUpdate) {
 
