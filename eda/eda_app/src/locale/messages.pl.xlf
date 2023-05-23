@@ -2922,6 +2922,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
       <context context-type="linenumber">131</context>
     </context-group>
   </trans-unit>
+    <trans-unit id="joinTypeH4" datatype="html">
+    <source> Tipo de intersección:  </source>
+    <target> rodzaj skrzyżowania:  </target>
+  </trans-unit>
+
 
   <trans-unit id="addCSV" datatype="html">
     <source>Añadir tabla desde CSV</source>

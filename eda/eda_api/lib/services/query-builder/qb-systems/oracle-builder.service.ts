@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 export class OracleBuilderService extends QueryBuilderService {
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string) {
 
     let o = tables.filter(table => table.name === origin)
       .map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
@@ -25,7 +25,7 @@ export class OracleBuilderService extends QueryBuilderService {
     });
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables);
+    const joinString = this.getJoins(joinTree, dest, tables, joinType);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -153,7 +153,7 @@ export class OracleBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string) {
 
     let joins = [];
     let joined = [];
@@ -181,12 +181,12 @@ export class OracleBuilderService extends QueryBuilderService {
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
 
-            joinString.push(`inner join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+            joinString.push(` ${joinType} join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
 
           }
           else {
 
-            let join = `inner join ${t} on`;
+            let join = ` ${joinType} join ${t} on`;
 
             joinColumns[0].forEach((_, x) => {
 

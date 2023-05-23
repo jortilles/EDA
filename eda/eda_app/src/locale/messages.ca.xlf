@@ -2944,6 +2944,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     </context-group>
   </trans-unit>
 
+    <trans-unit id="joinTypeH4" datatype="html">
+    <source> Tipo de intersección:  </source>
+    <target> Tipus d'intersecció:  </target>
+  </trans-unit>
+
+
+
+
   <trans-unit id="addCSV" datatype="html">
     <source>Añadir tabla desde CSV</source>
     <target>Afegir taula des de CSV</target>

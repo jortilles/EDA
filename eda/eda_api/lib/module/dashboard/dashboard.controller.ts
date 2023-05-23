@@ -658,8 +658,11 @@ export class DashboardController {
         }
       }
 
-      myQuery.simple = req.body.query.simple
-      myQuery.queryLimit = req.body.query.queryLimit
+      myQuery.simple = req.body.query.simple;
+      myQuery.queryLimit = req.body.query.queryLimit;
+      myQuery.joinType = req.body.query.joinType?req.body.query.joinType:'inner';
+
+
 
       if (myQuery.fields.length == 0) {
         console.log('you cannot see any data')
