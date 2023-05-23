@@ -383,44 +383,37 @@ export class updateModel {
     
       }
     
+      static getAggretations(aggregations: string){
+        const aggArray = aggregations.split(',');
+        const agg = [     ];
+        if( aggArray.indexOf("sum")>0){
+          agg.push(  {  "value": "sum",    "display_name": "Suma"   } );
+        }
+        if( aggArray.indexOf("avg")>0){
+          agg.push(  {  "value": "avg",    "display_name": "Media"   } );
+        }
+        if( aggArray.indexOf("max")>0){
+          agg.push(  {  "value": "max",    "display_name": "Máximo"   } );
+        }
+        if( aggArray.indexOf("min")>0){
+          agg.push(  {  "value": "min",    "display_name": "Mínimo"   } );
+        }
+        if( aggArray.indexOf("count")>0){
+          agg.push(  {  "value": "count",    "display_name": "Cuenta Valores"   } );
+        }
+        if( aggArray.indexOf("count_distinct")>0){
+          agg.push(  {  "value": "count_distinct",    "display_name": "Valores Distintos"   } );
+        }
+          agg.push(  {  "value": "none",    "display_name": "No"   } );
+        return agg;
+      }
+
       /** recupera las columnas de una tabla */
       static getColumnsForTable(table: string, columns: any, ennumeration: any) {
-    
-    
-        const destColumns = [];
-        
-    
-        const agg_num = [
-          {
-            "value": "sum",
-            "display_name": "Suma"
-          },
-          {
-            "value": "avg",
-            "display_name": "Media"
-          },
-          {
-            "value": "max",
-            "display_name": "Máximo"
-          },
-          {
-            "value": "min",
-            "display_name": "Mínimo"
-          },
-          {
-            "value": "count",
-            "display_name": "Cuenta Valores"
-          },
-          {
-            "value": "count_distinct",
-            "display_name": "Valores Distintos"
-          },
-          {
-            "value": "none",
-            "display_name": "no"
-          }
-        ]
-        const agg_none = [{
+  
+       const destColumns = [];
+
+       const agg_none = [{
           "value": "none",
           "display_name": "no"
         }]
@@ -436,7 +429,7 @@ export class updateModel {
     
           //diferenciamos los agregadores por los tipos de las columnas
           if (columns[i].type === "numeric") {
-            agg_used = agg_num
+            agg_used = this.getAggretations( columns[i].aggregations);
           } else {
             agg_used = agg_none
           }
