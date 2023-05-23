@@ -91,8 +91,8 @@ export class EdaTableComponent implements OnInit {
     }
 
     public applyStyles(styles: Array<any>) {
-        console.log('Los estilos que me llegan son ');
-        console.log(styles.toString())
+        //console.log('Los estilos que me llegan son ');
+        //console.log(styles.toString())
 
         const fields = styles.map(style => style.col);
         const limits = {};
@@ -112,7 +112,7 @@ export class EdaTableComponent implements OnInit {
             });
 
         });
-        console.log(limits);
+        //console.log(limits);
 
         //Set ranges
         fields.forEach(field => {
@@ -131,7 +131,7 @@ export class EdaTableComponent implements OnInit {
             const colors = this.generateColor(styles[i].max, styles[i].min, 5);
   
             colors.forEach((color, i) => {
-                let name = key.replace('%', 'percent').replace(/ /g, '') ;
+                let name = key.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9 ]/g, '') ;
                 this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color} `);
                 this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
                 {
@@ -150,8 +150,8 @@ export class EdaTableComponent implements OnInit {
     }
 
     applyPivotSyles(styles){
-        console.log('Los estilos que me llegan son ');
-        console.log(styles.toString());
+        //console.log('Los estilos que me llegan son ');
+        //console.log(styles.toString());
 
         const fields = styles.map(style => style.col);
         const limits = {};
@@ -194,7 +194,7 @@ export class EdaTableComponent implements OnInit {
             const colors = this.generateColor(styles[i].max, styles[i].min, 5);
   
             colors.forEach((color, i) => {
-                let name = key.replace('%', 'percent').replace(/ /g, '');
+                let name = key.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9 ]/g, '') ;
                 this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color}`);
                 this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
                 {
