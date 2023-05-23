@@ -90,7 +90,7 @@
                 <ng-container *ngFor="let serie of series; let i = index">
 
                     <div class=" col-6 ">
-                        <input type="text" pInputText style="width: 40%" [value]="serie.label"
+                        <input type="text" pInputText style="width: 40%" [value]="serie.label" disabled="true" 
                             [style.border-color]="serie.border" />
 
                         <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex"
