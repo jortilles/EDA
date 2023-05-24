@@ -254,6 +254,10 @@ export class PgBuilderService extends QueryBuilderService {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'IYYY-IW') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+              }else if (_.isEqual(el.format, 'day_hour')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH') as "${el.display_name}"`);
+              }else if (_.isEqual(el.format, 'day_hour_minute')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI') as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'timestamp')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI:SS') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week_day')) {
@@ -283,7 +287,10 @@ export class PgBuilderService extends QueryBuilderService {
             }
             else if (_.isEqual(el.format, 'day')) {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD')`);
-
+            }else if (_.isEqual(el.format, 'day_hour')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH')  `);
+            }else if (_.isEqual(el.format, 'day_hour_minute')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI')  `);
             }else if (_.isEqual(el.format, 'timestamp')) {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI:SS')`);
 

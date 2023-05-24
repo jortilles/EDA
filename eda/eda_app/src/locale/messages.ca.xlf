@@ -2018,6 +2018,15 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>FECHA COMPLETA</source>
 <target>DATA COMPLETA</target>
 </trans-unit>
+<trans-unit id="dates8">
+<source>DIA HORA</source>
+<target>DIA HORA</target>
+</trans-unit>
+<trans-unit id="dates9">
+<source>DIA HORA MINUTO</source>
+<target>DIA HORA MINUT</target>
+</trans-unit>
+
 <trans-unit id="ChartProps">
 <source>PROPIEDADES DEL gráfico</source>
 <target>PROPIETATS DEL GRÀFIC</target>

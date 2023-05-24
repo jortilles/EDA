@@ -2016,6 +2016,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>FECHA COMPLETA</source>
 <target>TIMESTAMP</target>
 </trans-unit>
+<trans-unit id="dates8">
+<source>DIA HORA</source>
+<target>DAY HOUR</target>
+</trans-unit>
+<trans-unit id="dates9">
+<source>DIA HORA MINUTO</source>
+<target>DAY HOUR MINUTE</target>
+</trans-unit>
 
 <trans-unit id="ChartProps">
 <source>PROPIEDADES DEL gráfico</source>

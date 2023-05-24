@@ -248,6 +248,10 @@ export class SQLserviceBuilderService extends QueryBuilderService {
                 columns.push(`DATEPART(weekday, CAST("${el.table_id}"."${el.column_name}" AS DATE) ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+              }  else if (_.isEqual(el.format, 'day_hour')) {
+                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH' ) as "${el.display_name}"`);
+              }  else if (_.isEqual(el.format, 'day_hour_minute')) {
+                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm' ) as "${el.display_name}"`);
               }  else if (_.isEqual(el.format, 'timestamp')) {
                 columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm:ss' ) as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'No')) {
@@ -274,7 +278,11 @@ export class SQLserviceBuilderService extends QueryBuilderService {
               grouping.push(`DATEPART(weekday, CAST("${el.table_id}"."${el.column_name}" AS DATE))`);
             } else if (_.isEqual(el.format, 'day')) {
               grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' )`);
-            }else if (_.isEqual(el.format, 'timestamp')) {
+            }  else if (_.isEqual(el.format, 'day_hour')) {
+              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH' ) `);
+            }  else if (_.isEqual(el.format, 'day_hour_minute')) {
+              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm' ) `);
+            }  else if (_.isEqual(el.format, 'timestamp')) {
               grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm:ss' )`);
             } else if (_.isEqual(el.format, 'No')) {
               grouping.push(`"${el.table_id}"."${el.column_name}"`);

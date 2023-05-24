@@ -247,7 +247,11 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
                 columns.push(`DAYOFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE) ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'timestamp')) {
+              } else if (_.isEqual(el.format, 'day_hour')) {
+                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24' ) as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'day_hour_minute')) {
+                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI' ) as "${el.display_name}"`);
+              }  else if (_.isEqual(el.format, 'timestamp')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI:SS' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'No')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
@@ -273,7 +277,11 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
               grouping.push(`DAYOFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE))`);
             } else if (_.isEqual(el.format, 'day')) {
               grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' )`);
-            } else if (_.isEqual(el.format, 'timestamp')) {
+            } else if (_.isEqual(el.format, 'day_hour')) {
+              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24' ) `);
+            } else if (_.isEqual(el.format, 'day_hour_minute')) {
+              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI' ) `);
+            }else if (_.isEqual(el.format, 'timestamp')) {
               grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI:SS' )`);
             }  else if (_.isEqual(el.format, 'No')) {
               grouping.push(`"${el.table_id}"."${el.column_name}"`);

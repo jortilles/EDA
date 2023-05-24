@@ -248,9 +248,13 @@ export class OracleBuilderService extends QueryBuilderService {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'D') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+              }else if (_.isEqual(el.format, 'day_hour')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH24') as "${el.display_name}"`);
+              }else if (_.isEqual(el.format, 'day_hour_minute')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH24:MI') as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'timestamp')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH24:MI:SS') as "${el.display_name}"`);
-              }  else if (_.isEqual(el.format, 'No')) {
+              }    else if (_.isEqual(el.format, 'No')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
               }
             } else {
@@ -273,6 +277,10 @@ export class OracleBuilderService extends QueryBuilderService {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'D')`);
             } else if (_.isEqual(el.format, 'day')) {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD')`);
+            }else if (_.isEqual(el.format, 'day_hour')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH24') `);
+            }else if (_.isEqual(el.format, 'day_hour_minute')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH24:MI')  `);
             } else if (_.isEqual(el.format, 'timestamp')) {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH24:MI:SS')`);
             } else if (_.isEqual(el.format, 'No')) {

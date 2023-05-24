@@ -269,6 +269,12 @@ export class BigQueryBuilderService extends QueryBuilderService {
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`FORMAT_DATETIME( '%Y-%m-%d',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
 
+              }else if (_.isEqual(el.format, 'day_hour')) {
+                columns.push(`FORMAT_DATETIME( '%Y-%m-%d %H',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
+
+              }else if (_.isEqual(el.format, 'day_hour_minute')) {
+                columns.push(`FORMAT_DATETIME( '%Y-%m-%d %H:%i',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
+
               }else if (_.isEqual(el.format, 'timestamp')) {
                 columns.push(`FORMAT_DATETIME( '%Y-%m-%d %H:%i:%s',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
 
