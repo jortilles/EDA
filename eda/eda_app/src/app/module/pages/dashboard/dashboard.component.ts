@@ -15,7 +15,6 @@ import jspdf from 'jspdf';
 import * as _ from 'lodash';
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
 
-
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
@@ -725,7 +724,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         if (event.code === 'ADDFILTER') {
             const data = event?.data;
             const panel = event?.data?.panel;
-            if (data?.inx) {
+            if (!_.isNil(data?.inx)) {
                 const column = event.data.query.find((query: any) => query?.display_name?.default === data.filterBy);
                 const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
     
@@ -741,7 +740,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         column: { label: column.display_name.default, value: column },
                         selectedItems: [data.label]
                     };
-    
+
                     await this.onAddGlobalFilter(globalFilter, table.table_name);
     
                 }
@@ -762,8 +761,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     
     private async onAddGlobalFilter(filter: any, targetTable: string): Promise<void> {
         let existFilter = this.filtersList.find((f) => f.id === `${targetTable}_${filter.column.value?.column_name}`); 
+
         if (existFilter) {
-            existFilter = filter;
+            existFilter.selectedItems = filter.selectedItems;
         } else {
             this.filtersList.push(filter);
         }
@@ -788,7 +788,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     
         //not saved alert message
         this.dashboardService._notSaved.next(true);
-        // this.reloadPanels()
+
+        // Simula el click en el btn
+        setTimeout(() => {
+            let btn = document.getElementById('dashFilterBtn');
+            btn.click();
+        });
     }
 
     public saveAs() {

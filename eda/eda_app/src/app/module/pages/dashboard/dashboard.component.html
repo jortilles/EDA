@@ -16,7 +16,7 @@
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
     <div *ngIf="filtersList.length  > 0" style="margin: 0.5em;">
-        <button pButton pRipple type="button" (click)="reloadPanelsWithTimeOut()" style="margin-right: 0.3em;" class="p-button-raised p-button-outlined filters-size" icon="pi pi-filter" [label]="filtrar">
+        <button id="dashFilterBtn" pButton pRipple type="button" (click)="reloadPanelsWithTimeOut()" style="margin-right: 0.3em;" class="p-button-raised p-button-outlined filters-size" icon="pi pi-filter" [label]="filtrar">
             <!-- <i id="applyFilterButton" class="pi pi-filter fiter-icon"></i> {{filtrar}} -->
         </button>
         <span  class="filter-set" *ngFor="let filter of filtersList">
