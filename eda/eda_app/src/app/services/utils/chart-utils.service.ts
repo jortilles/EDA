@@ -1515,7 +1515,7 @@ export class ChartUtilsService {
                         
                     },
                     elements: {
-                        point: { radius: 2, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
+                        point: { radius: 0, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
                         line: { 
                                 borderWidth: 1.5, 
                                 fill:  chartSubType=='area'?true:false, 
