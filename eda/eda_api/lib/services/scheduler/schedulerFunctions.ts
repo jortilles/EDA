@@ -1,3 +1,5 @@
+import { toInteger } from "lodash";
+
 export class SchedulerFunctions {
 
   /**
@@ -24,6 +26,7 @@ export class SchedulerFunctions {
    * @param minutes 
    * @param currLastUpdated 
    */
+
   static checkScheduleDays(quantity: number, hours: string, minutes: string, currLastUpdated: string) {
 
     let now = this.totLocalISOTime(new Date());
@@ -33,22 +36,31 @@ export class SchedulerFunctions {
     date.setMinutes(0);
 
     let lastUpdated = new Date(Date.parse(currLastUpdated));
+    console.log('Ultima actualizacion');
+    console.log(lastUpdated);
+    //console.log('Fecha de referencia');
+    //console.log(date);
+
+    let min = lastUpdated.getMinutes() + parseInt(minutes);
+    let hour = lastUpdated.getHours() + parseInt(hours);
+    let day = lastUpdated.setDate(lastUpdated.getDate() + quantity);
+    let month = lastUpdated.setMonth(lastUpdated.getMonth());
+    let year = lastUpdated.setFullYear(lastUpdated.getFullYear(),month, day);
+
+    let nextUpdate = new Date(year, month, day, hour, min)
     
-    if(lastUpdated > date){
-      return false;
+    if(nextUpdate >= date){
+      //Se ha recargado hoy...
+      console.log('Actualizando caché a las : ' + date)
+      //console.log(lastUpdated);
+      //console.log(date);
+      return true;
     }else{
-      lastUpdated.setDate(lastUpdated.getDate() + quantity);
-      let difference = lastUpdated.getTime() -  date.getTime() ;
-      let TotalDays = (difference / (1000 * 3600 * 24));
-      if( quantity < 0  ){
-        return false;
-      }else{
-        return true;
+      console.log('No se ha actualizado la caché');
+      return false;
       }
-    }
-
+      
   }
-
 
   static totLocalISOTime = (date:Date) => {
 
