@@ -2188,7 +2188,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 
-<trans-unit id="AddValueList" datatype="html">
+<trans-unit id="AddValueListOptions" datatype="html">
 <source>Definir un listado de valores posibles</source>
 <target>Define a list of possible values</target>
 </trans-unit>
