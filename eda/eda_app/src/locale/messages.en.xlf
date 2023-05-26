@@ -2016,6 +2016,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>FECHA COMPLETA</source>
 <target>TIMESTAMP</target>
 </trans-unit>
+<trans-unit id="dates8">
+<source>DIA HORA</source>
+<target>DAY HOUR</target>
+</trans-unit>
+<trans-unit id="dates9">
+<source>DIA HORA MINUTO</source>
+<target>DAY HOUR MINUTE</target>
+</trans-unit>
 
 <trans-unit id="ChartProps">
 <source>PROPIEDADES DEL gráfico</source>
@@ -2940,6 +2948,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
       <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
       <context context-type="linenumber">131</context>
     </context-group>
+  </trans-unit>
+
+    <trans-unit id="joinTypeH4" datatype="html">
+    <source> Tipo de intersección:  </source>
+    <target> Join type:  </target>
   </trans-unit>
 
   <trans-unit id="addCSV" datatype="html">

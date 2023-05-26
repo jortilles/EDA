@@ -28,6 +28,7 @@ import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
+import { SelectButtonModule } from 'primeng/selectbutton';
 
 
 
@@ -90,6 +91,7 @@ export class EdaBlankPanelComponent implements OnInit {
         calendar: false, // calendars inputs
         between: false, // between inputs
         filterValue: true,
+        joinType:true,
         filterButton: true,
         minispinner: false, // mini spinner panel
         responsive: false, // responsive option
@@ -125,6 +127,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
     public queryLimit: number;
+    public joinType: string = 'inner';
 
     public modeSQL: boolean;
     public sqlOriginTables: {}[];
@@ -147,6 +150,14 @@ export class EdaBlankPanelComponent implements OnInit {
     public colorsDeepCopy: any = {};
 
     public queryFromServer: string = '';
+
+    // join types 
+    joinTypeOptions: any[] = [
+        { icon: 'pi pi-align-left', joinType: 'left' },
+        { icon: 'pi pi-align-center', joinType: 'inner' },
+        { icon: 'pi pi-align-right', joinType: 'right' }
+        //,         { icon: 'pi pi-align-justify', joinType: 'full outer' }
+    ];
 
 
     /**panel chart component configuration */
@@ -580,6 +591,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     onTopChange() {
         this.display_v.btnSave = true;
+    }
+
+
+    onJoinTypeChange(){
+        this.display_v.joinType = true;
     }
 
     public openEditarConsulta(): void {

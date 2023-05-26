@@ -99,6 +99,8 @@ export class ChartUtilsService {
         { display_name: $localize`:@@dates5:SEMANA`, value: 'week', selected: false },
         { display_name: $localize`:@@dates3:DIA`, value: 'day', selected: false },
         { display_name: $localize`:@@dates6:DIA DE LA SEMANA`, value: 'week_day', selected: false },
+        { display_name: $localize`:@@dates8:DIA HORA`, value: 'day_hour', selected: false },
+        { display_name: $localize`:@@dates9:DIA HORA MINUTO`, value: 'day_hour_minute', selected: false },
         { display_name: $localize`:@@dates7:FECHA COMPLETA`, value: 'timestamp', selected: false },
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
@@ -1515,7 +1517,7 @@ export class ChartUtilsService {
                         
                     },
                     elements: {
-                        point: { radius: 2, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
+                        point: { radius: 0, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
                         line: { 
                                 borderWidth: 1.5, 
                                 fill:  chartSubType=='area'?true:false, 

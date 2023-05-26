@@ -16,8 +16,10 @@ export interface Query {
         filters: any[],
         simple: boolean,
         modeSQL: boolean,
-        SQLexpression : string
-        queryLimit : number
+        SQLexpression : string,
+        queryLimit : number,
+        joinType: string
+
     };
     output: {
         labels: any[],

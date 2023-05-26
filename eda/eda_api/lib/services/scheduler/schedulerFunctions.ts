@@ -31,11 +31,9 @@ export class SchedulerFunctions {
 
     let now = this.totLocalISOTime(new Date());
     let date = new Date(Date.parse(now));
-    console.log('Ahora mismo son las : ' + date );
 
     date.setHours( parseInt(hours));
     date.setMinutes(0);
-    console.log('Se debe actualizar a las  : ' + date );
 
     let lastUpdated = new Date(Date.parse(currLastUpdated));
     console.log('Ultima actualizacion');
