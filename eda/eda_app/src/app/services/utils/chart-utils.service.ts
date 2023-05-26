@@ -631,7 +631,7 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
         }
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
-        if (dataSize < 5000) {
+        if (dataSize < 100000) {
             notAllowed.splice(notAllowed.indexOf('line'), 1);
             notAllowed.splice(notAllowed.indexOf('area'), 1);
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
