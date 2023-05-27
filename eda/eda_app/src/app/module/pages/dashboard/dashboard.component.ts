@@ -7,13 +7,14 @@ import { Dashboard, EdaPanel, EdaTitlePanel, EdaPanelType, InjectEdaPanel } from
 import { EdaDialogController, EdaDialogCloseEvent, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
 import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupService, IGroup, SpinnerService, UserService, StyleProviderService, DashboardStyles, GlobalFiltersService } from '@eda/services/service.index';
 import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
+import { environment } from 'environments/environment';
 import { SelectItem } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import domtoimage from 'dom-to-image';
 import Swal from 'sweetalert2';
 import jspdf from 'jspdf';
 import * as _ from 'lodash';
-import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
 
 @Component({
     selector: 'app-dashboard',
@@ -1380,7 +1381,29 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','barchart', 'sunburst'].includes(panel.content.chart))
             && !$event.isNew) {
             found.savePanel();
-        }// found.onGridsterResize($event);
+        }
+        
+        // found.onGridsterResize($event);
+        if (panel.type === 1) {
+            let elements = document.querySelectorAll(`.eda-text-panel`);
+            elements.forEach((element) => {
+                this.setPanelSize(element);
+            });
+        }
+    }
+
+    public setPanelSize(element): void {
+        let parentElement = element?.parentNode;
+        if (parentElement) {
+            let parentWidth = parentElement.offsetWidth;
+            let parentHeight = parentElement.offsetHeight;
+            const imgs = element.querySelectorAll('img');
+
+            imgs.forEach((img) => {
+                img.style.maxHeight = `${parentHeight}px`;
+                img.style.maxWidth = `${parentWidth}px`;
+            })
+        }
     }
 
     public selectTag() {

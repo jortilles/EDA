@@ -76,7 +76,7 @@
             <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)" >
             </eda-blank-panel>
 
-            <eda-title-panel *ngSwitchCase="1" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)"  (duplicate)="onDuplicatePanel($event)" >
+            <eda-title-panel *ngSwitchCase="1" #edaPanel [id]="panel.id" [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
             </eda-title-panel>
 
         </ng-container>

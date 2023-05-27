@@ -15,9 +15,11 @@ import * as _ from 'lodash';
 })
 
 export class EdaTitlePanelComponent implements OnInit {
+    @Input() id: string;
     @Input() panel: EdaTitlePanel;
     @Input() inject: InjectEdaPanel;
     @Output() remove: EventEmitter<any> = new EventEmitter();
+
     titleClick: boolean = false;
     contextMenu: EdaContextMenu;
     editTittleController: EdaDialogController;
@@ -36,7 +38,7 @@ export class EdaTitlePanelComponent implements OnInit {
         this.setEditMode();
     }
 
-    setTitle(): void {
+    public setTitle(): void {
         this.titleClick = !this.titleClick;
 
         this.dashboardService._notSaved.next(true);
@@ -45,13 +47,13 @@ export class EdaTitlePanelComponent implements OnInit {
         }
     }
 
-    setEditMode(): void {
+    public setEditMode(): void {
         const user = sessionStorage.getItem('user');
         const userName = JSON.parse(user).name;
         this.display.editMode = (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 
-    initContextMenu(): void {
+    public initContextMenu(): void {
         this.contextMenu = new EdaContextMenu({
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: [
@@ -88,7 +90,7 @@ export class EdaTitlePanelComponent implements OnInit {
 
     }
     
-    removePanel(): void {
+    public removePanel(): void {
         this.remove.emit(this.panel.id);
     }
 }
