@@ -1395,8 +1395,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public setPanelSize(element): void {
         let parentElement = element?.parentNode;
         if (parentElement) {
-            let parentWidth = parentElement.offsetWidth;
-            let parentHeight = parentElement.offsetHeight;
+            let parentWidth = parentElement.offsetWidth - 20;
+            let parentHeight = parentElement.offsetHeight - 20;
             const imgs = element.querySelectorAll('img');
 
             imgs.forEach((img) => {

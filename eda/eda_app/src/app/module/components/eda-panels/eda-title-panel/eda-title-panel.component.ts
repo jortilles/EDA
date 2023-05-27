@@ -6,6 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser'
 import {SafeHtmlPipe} from './htmlSanitizer.pipe'
 import {SafeUrlPipe} from './urlSanitizer.pipe'
 import * as _ from 'lodash';
+import { environment } from 'environments/environment';
 
 @Component({
     selector: 'eda-title-panel',
@@ -76,11 +77,12 @@ export class EdaTitlePanelComponent implements OnInit {
                             params: { title: this.panel.title },
                             close: (event, response) => {
                                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
-                                    
                                     this.panel.title = response.title;
+                                    this.setPanelSize()
                                     this.dashboardService._notSaved.next(true);
                                 }
                                 this.editTittleController = null;
+                                // this.setPanelSize()
                             }
                           });
                     }
@@ -92,5 +94,26 @@ export class EdaTitlePanelComponent implements OnInit {
     
     public removePanel(): void {
         this.remove.emit(this.panel.id);
+    }
+
+    public setPanelSize(): void {
+        let element: any;
+        if (environment.production) {
+            element = document.querySelector(`[id^=${this.panel.id.substring(0,30)}]`);
+        } else {
+            element = document.querySelector(`[ng-reflect-id^=${this.panel.id.substring(0,30)}]`);
+        }
+
+        let parentElement: any = element?.parentNode;
+        
+        if (parentElement) {
+            let parentWidth = parentElement.offsetWidth - 20;
+            let parentHeight = parentElement.offsetHeight - 20;
+            
+            
+            if (this.panel.title.includes('img')) {
+                this.panel.title = this.panel.title.replace('<img', `<img style="max-height: ${parentHeight}px; max-width: ${parentWidth}px;"`);
+            }
+        }
     }
 }
