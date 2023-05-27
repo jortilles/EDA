@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { EdaChart } from './eda-chart';
 import { BaseChartDirective } from 'ng2-charts';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -12,6 +12,7 @@ import { ChartsColors } from '@eda/configs/index';
 
 export class EdaChartComponent implements OnInit, AfterViewInit {
     @ViewChild('edaChart') edaChart: BaseChartDirective;
+    @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
     @Input() inject: EdaChart;
 
     public update: boolean;
@@ -76,7 +77,7 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
                 const filterBy = chart.data.datasets[point.datasetIndex].label;
                 const label = chart.data.labels[point.index];
                 const value = chart.data.datasets[point.datasetIndex].data[point.index];
-                // this.onClick.emit({ inx: point.index, label, value, filterBy })
+                this.onClick.emit({ inx: point.index, label, value, filterBy })
 
                 if (this.inject.linkedDashboardProps) {
                     const props = this.inject.linkedDashboardProps;

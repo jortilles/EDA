@@ -30,7 +30,10 @@ import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 import { SelectButtonModule } from 'primeng/selectbutton';
 
-
+export interface IPanelAction {
+    code: string;
+    data: any;
+}
 
 @Component({
     selector: 'eda-blank-panel',
@@ -51,7 +54,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @Input() inject: InjectEdaPanel;
     @Output() remove: EventEmitter<any> = new EventEmitter();
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
-
+    @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
 
     /** propietats que s'injecten al dialog amb les propietats específiques de cada gràfic. */
     public configController: EdaDialogController;
@@ -434,6 +437,12 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
+    public onChartClick(event: any): void {
+        const config = this.panelChart.getCurrentConfig();
+        if (config?.chartType == 'doughnut') {
+            this.action.emit({ code: 'ADDFILTER', data: {...event, panel: this.panel} });
+        }
+    }
 
     /**
      * Changes chart type 
