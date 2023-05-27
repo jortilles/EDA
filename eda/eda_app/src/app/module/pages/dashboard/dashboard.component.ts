@@ -1310,7 +1310,29 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','barchart', 'sunburst'].includes(panel.content.chart))
             && !$event.isNew) {
             found.savePanel();
-        }// found.onGridsterResize($event);
+        }
+        
+        // found.onGridsterResize($event);
+        if (panel.type === 1) {
+            let elements = document.querySelectorAll(`.eda-text-panel`);
+            elements.forEach((element) => {
+                this.setPanelSize(element);
+            });
+        }
+    }
+
+    public setPanelSize(element): void {
+        let parentElement = element?.parentNode;
+        if (parentElement) {
+            let parentWidth = parentElement.offsetWidth;
+            let parentHeight = parentElement.offsetHeight;
+            const imgs = element.querySelectorAll('img');
+
+            imgs.forEach((img) => {
+                img.style.maxHeight = `${parentHeight}px`;
+                img.style.maxWidth = `${parentWidth}px`;
+            })
+        }
     }
 
     public selectTag() {
