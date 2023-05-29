@@ -5,10 +5,13 @@ import * as _ from 'lodash';
 export class PgBuilderService extends QueryBuilderService {
 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string, schema: string) {
+    if (schema === 'null' || schema === '') {
+      schema = 'public';
+    }
 
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
-    let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
+    let myQuery = `SELECT ${columns.join(', ')} \nFROM "${schema}"."${o}"`;
 
     //to WHERE CLAUSE
     const filters = this.queryTODO.filters.filter(f => {
@@ -27,7 +30,7 @@ export class PgBuilderService extends QueryBuilderService {
     });
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType);
+    const joinString = this.getJoins(joinTree, dest, tables, joinType, schema);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -161,7 +164,10 @@ export class PgBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType: string) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType: string, schema: string) {
+    if (schema === 'null' || schema === '') {
+      schema = 'public';
+    }
 
     let joins = [];
     let joined = [];
@@ -189,15 +195,15 @@ export class PgBuilderService extends QueryBuilderService {
 
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
-            joinString.push(` ${joinType} join "${t}" on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+            joinString.push(` ${joinType} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
           }
           else {
 
-            let join = ` ${joinType} join "${t}" on`;
+            let join = ` ${joinType} join "${schema}"."${t}" on`;
 
             joinColumns[0].forEach((_, x) => {
 
-              join += ` "${e[j]}"."${joinColumns[1][x]}" = "${e[i]}"."${joinColumns[0][x]}" and`
+              join += `  "${schema}"."${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
 
             });
 
