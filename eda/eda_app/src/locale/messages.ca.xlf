@@ -2792,6 +2792,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 7 días </source>
 <target>Últims 7 dies </target>
 </trans-unit>
+<trans-unit id="DatePickerLast3">
+<source> Últimos 3 días </source>
+<target>Últims 3 dies </target>
+</trans-unit>
 <trans-unit id="DatePickerLast15">
 <source> Últimos 15 días </source>
 <target>Últims 15 dies </target>
