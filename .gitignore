@@ -35,3 +35,14 @@ eda/sda_api/src/views/postform.html
 eda/sda_api/package-lock.json
 
 eda/eda_api/config/SCRM
+eda/eda_api/config/oracle-config.js
+eda/eda_api/config/database.config.js.dist
+eda/eda_api/config/database.config.js
+eda/eda_app/src/app/config/config.ts
+eda/eda_api/config/seed.js
+eda/eda_app/src/app/module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-js-config.ts
+eda/eda_api/config
+eda/eda_app/src/app/config/config.ts
+eda/eda_app/src/app/module/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/chart-js-config.ts
+eda/eda_app/src/app/shared/components/eda-dialogs/eda-page-dialog/eda-page-dialog.component.ts
+eda/eda_app/src/app/shared/components/eda-dialogs/eda-page-dialog/eda-page-dialog.ts
