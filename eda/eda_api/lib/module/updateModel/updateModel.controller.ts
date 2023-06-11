@@ -386,19 +386,19 @@ export class updateModel {
       static getAggretations(aggregations: string){
         const aggArray = aggregations.split(',');
         const agg = [     ];
-        if( aggArray.indexOf("sum")>0){
+        if( aggArray.indexOf("sum")>=0){
           agg.push(  {  "value": "sum",    "display_name": "Suma"   } );
         }
-        if( aggArray.indexOf("avg")>0){
+        if( aggArray.indexOf("avg")>=0){
           agg.push(  {  "value": "avg",    "display_name": "Media"   } );
         }
-        if( aggArray.indexOf("max")>0){
+        if( aggArray.indexOf("max")>=0){
           agg.push(  {  "value": "max",    "display_name": "Máximo"   } );
         }
-        if( aggArray.indexOf("min")>0){
+        if( aggArray.indexOf("min")>=0){
           agg.push(  {  "value": "min",    "display_name": "Mínimo"   } );
         }
-        if( aggArray.indexOf("count")>0){
+        if( aggArray.indexOf("count")>=0){
           agg.push(  {  "value": "count",    "display_name": "Cuenta Valores"   } );
         }
         if( aggArray.indexOf("count_distinct")>0){
