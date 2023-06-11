@@ -2018,6 +2018,15 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>FECHA COMPLETA</source>
 <target>DATA COMPLETA</target>
 </trans-unit>
+<trans-unit id="dates8">
+<source>DIA HORA</source>
+<target>DIA HORA</target>
+</trans-unit>
+<trans-unit id="dates9">
+<source>DIA HORA MINUTO</source>
+<target>DIA HORA MINUT</target>
+</trans-unit>
+
 <trans-unit id="ChartProps">
 <source>PROPIEDADES DEL gráfico</source>
 <target>PROPIETATS DEL GRÀFIC</target>
@@ -2188,7 +2197,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 
-<trans-unit id="AddValueList" datatype="html">
+<trans-unit id="AddValueListOptions" datatype="html">
 <source>Definir un listado de valores posibles</source>
 <target>Definir un llistat de valors possibles</target>
 </trans-unit>
@@ -2783,6 +2792,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 7 días </source>
 <target>Últims 7 dies </target>
 </trans-unit>
+<trans-unit id="DatePickerLast3">
+<source> Últimos 3 días </source>
+<target>Últims 3 dies </target>
+</trans-unit>
 <trans-unit id="DatePickerLast15">
 <source> Últimos 15 días </source>
 <target>Últims 15 dies </target>
@@ -2943,6 +2956,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
       <context context-type="linenumber">131</context>
     </context-group>
   </trans-unit>
+
+    <trans-unit id="joinTypeH4" datatype="html">
+    <source> Tipo de intersección:  </source>
+    <target> Tipus d'intersecció:  </target>
+  </trans-unit>
+
+
+
 
   <trans-unit id="addCSV" datatype="html">
     <source>Añadir tabla desde CSV</source>

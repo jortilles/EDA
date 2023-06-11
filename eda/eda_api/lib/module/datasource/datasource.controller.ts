@@ -211,10 +211,16 @@ export class DataSourceController {
                 }else{
                     console.log('Importing existing datasource');
                     body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
-                    dataSource.ds = body.ds;
+                    //console.log(body.ds);
+                    let cadena = JSON.stringify(body.ds);
+                    cadena = cadena.split('$oid').join('id');
+                    JSON.parse(cadena.toString());
+                    dataSource.ds =   JSON.parse(cadena.toString());
+                    //dataSource.ds = body.ds;
                     ds = dataSource;
-                }            
+                }       
 
+                
                 //aparto las relaciones ocultas para optimizar el modelo.
                 ds.ds.model.tables.forEach(t => {
                     t.no_relations = t.relations.filter(r => r.visible == false)
@@ -222,7 +228,6 @@ export class DataSourceController {
                 ds.ds.model.tables.forEach(t => {
                     t.relations = t.relations.filter(r => r.visible !== false)
                 });
-                
                 /** Comprobacionde la reciprocidad de las relaciones */
                 ds.ds.model.tables.forEach(tabla => {
                 tabla.relations.forEach(relacion=> {
@@ -250,16 +255,13 @@ export class DataSourceController {
                  });
 
 
-
-
                 const iDataSource = new DataSource(ds);
-
-
-                //console.log(dataSource.ds.model.tables);
 
                 iDataSource.save((err, dataSource) => {
                     if (err) {
+                        console.log(err);
                         next(new HttpException(500, 'Error updating dataSource'));
+
                     }
 
                     return res.status(200).json({ ok: true, message: 'Modelo actualizado correctamente' });

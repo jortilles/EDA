@@ -4,7 +4,7 @@
 
     <ng-container *ngIf="_isEdaInputText(inject)">
 
-        <input #reference #in="ngModel" [id]="inject.id" [name]="inject.name" [(ngModel)]="inject.ngModel"
+        <input #reference #in="ngModel" [attr.id]="inject.id ? inject.id : null" [name]="inject.name" [(ngModel)]="inject.ngModel"
             [class]="inject.inputClass" [disabled]="inject.disabled" [required]="inject.required"
             [readonly]="inject.readonly" (change)="inject.onChange($event)" (keyup)="inject.onKeyUp($event)" (focusout)="inject.onFocusOut($event)">
 

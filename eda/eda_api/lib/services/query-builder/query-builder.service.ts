@@ -38,7 +38,7 @@ export abstract class QueryBuilderService {
     abstract filterToString(filterObject: any, type: string);
     abstract processFilter(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
-        grouping: any[], tables: Array<any>, limit: number, Schema?: string, database?: string);
+        grouping: any[], tables: Array<any>, limit: number, joinType: string, Schema?: string, database?: string);
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
     abstract parseSchema(tables: string[], schema?: string, database?: string);
@@ -144,7 +144,7 @@ export abstract class QueryBuilderService {
             let tables = this.dataModel.ds.model.tables
                 .map(table => { return { name: table.table_name, query: table.query } });
             this.query = this.normalQuery(columns, origin, dest, joinTree, grouping, tables,
-                this.queryTODO.queryLimit, this.dataModel.ds.connection.schema, this.dataModel.ds.connection.database);
+                this.queryTODO.queryLimit,   this.queryTODO.joinType, this.dataModel.ds.connection.schema, this.dataModel.ds.connection.database);
 
             // if(this.queryTODO.queryLimit) this.query += `\nlimit ${this.queryTODO.queryLimit}`;
             return this.query;

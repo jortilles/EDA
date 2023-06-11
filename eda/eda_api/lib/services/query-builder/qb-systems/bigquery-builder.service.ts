@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 export class BigQueryBuilderService extends QueryBuilderService {
 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, schema: string) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string, schema: string) {
 
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = '';
@@ -36,7 +36,7 @@ export class BigQueryBuilderService extends QueryBuilderService {
     });
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, schema);
+    const joinString = this.getJoins(joinTree, dest, tables, schema, joinType);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -164,7 +164,7 @@ export class BigQueryBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema: string) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema: string, joinType: string) {
 
     let joins = [];
     let joined = [];
@@ -193,11 +193,11 @@ export class BigQueryBuilderService extends QueryBuilderService {
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
 
-            joinString.push(`inner join ${schema}.${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
+            joinString.push(` ${joinType} join ${schema}.${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
 
           } else {
 
-            let join = `inner join ${schema}.${t} on`;
+            let join = ` ${joinType} join ${schema}.${t} on`;
 
             joinColumns[0].forEach((_, x) => {
 
@@ -268,6 +268,12 @@ export class BigQueryBuilderService extends QueryBuilderService {
 
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`FORMAT_DATETIME( '%Y-%m-%d',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
+
+              }else if (_.isEqual(el.format, 'day_hour')) {
+                columns.push(`FORMAT_DATETIME( '%Y-%m-%d %H',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
+
+              }else if (_.isEqual(el.format, 'day_hour_minute')) {
+                columns.push(`FORMAT_DATETIME( '%Y-%m-%d %H:%i',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
 
               }else if (_.isEqual(el.format, 'timestamp')) {
                 columns.push(`FORMAT_DATETIME( '%Y-%m-%d %H:%i:%s',\`${el.table_id}\`.\`${el.column_name}\`) as \`${el.display_name}\``);
