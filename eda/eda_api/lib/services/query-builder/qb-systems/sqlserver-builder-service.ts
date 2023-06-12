@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 export class SQLserviceBuilderService extends QueryBuilderService {
 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, schema: string) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string, schema: string) {
 
     let SCHEMA = `${schema}`;
 
@@ -36,7 +36,7 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     });
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, SCHEMA);
+    const joinString = this.getJoins(joinTree, dest, tables, SCHEMA, joinType);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -158,7 +158,7 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema: string) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema: string, joinType:string) {
 
     let joins = [];
     let joined = [];
@@ -185,11 +185,11 @@ export class SQLserviceBuilderService extends QueryBuilderService {
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
 
-            joinString.push(`inner join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+            joinString.push(` ${joinType} join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
 
           } else {
 
-            let join = `inner join ${t} on`;
+            let join = ` ${joinType} join ${t} on`;
 
             joinColumns[0].forEach((_, x) => {
 
@@ -248,6 +248,10 @@ export class SQLserviceBuilderService extends QueryBuilderService {
                 columns.push(`DATEPART(weekday, CAST("${el.table_id}"."${el.column_name}" AS DATE) ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+              }  else if (_.isEqual(el.format, 'day_hour')) {
+                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH' ) as "${el.display_name}"`);
+              }  else if (_.isEqual(el.format, 'day_hour_minute')) {
+                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm' ) as "${el.display_name}"`);
               }  else if (_.isEqual(el.format, 'timestamp')) {
                 columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm:ss' ) as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'No')) {
@@ -274,7 +278,11 @@ export class SQLserviceBuilderService extends QueryBuilderService {
               grouping.push(`DATEPART(weekday, CAST("${el.table_id}"."${el.column_name}" AS DATE))`);
             } else if (_.isEqual(el.format, 'day')) {
               grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' )`);
-            }else if (_.isEqual(el.format, 'timestamp')) {
+            }  else if (_.isEqual(el.format, 'day_hour')) {
+              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH' ) `);
+            }  else if (_.isEqual(el.format, 'day_hour_minute')) {
+              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm' ) `);
+            }  else if (_.isEqual(el.format, 'timestamp')) {
               grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm:ss' )`);
             } else if (_.isEqual(el.format, 'No')) {
               grouping.push(`"${el.table_id}"."${el.column_name}"`);

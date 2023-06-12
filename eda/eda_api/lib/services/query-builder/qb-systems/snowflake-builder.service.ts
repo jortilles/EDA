@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 export class SnowFlakeBuilderService extends QueryBuilderService {
 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, schema: string) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>,  limit: number, joinType: string, schema: string) {
 
     let SCHEMA = `${schema}`;
 
@@ -36,7 +36,7 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     });
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, SCHEMA);
+    const joinString = this.getJoins(joinTree, dest, tables, SCHEMA, joinType);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -158,7 +158,7 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema: string) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema: string, joinType:string) {
 
     let joins = [];
     let joined = [];
@@ -185,11 +185,11 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
 
-            joinString.push(`inner join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+            joinString.push(` ${joinType} join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
 
           } else {
 
-            let join = `inner join ${t} on`;
+            let join = ` ${joinType} join ${t} on`;
 
             joinColumns[0].forEach((_, x) => {
 
@@ -247,7 +247,11 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
                 columns.push(`DAYOFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE) ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
-              } else if (_.isEqual(el.format, 'timestamp')) {
+              } else if (_.isEqual(el.format, 'day_hour')) {
+                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24' ) as "${el.display_name}"`);
+              } else if (_.isEqual(el.format, 'day_hour_minute')) {
+                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI' ) as "${el.display_name}"`);
+              }  else if (_.isEqual(el.format, 'timestamp')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI:SS' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'No')) {
                 columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
@@ -273,7 +277,11 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
               grouping.push(`DAYOFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE))`);
             } else if (_.isEqual(el.format, 'day')) {
               grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' )`);
-            } else if (_.isEqual(el.format, 'timestamp')) {
+            } else if (_.isEqual(el.format, 'day_hour')) {
+              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24' ) `);
+            } else if (_.isEqual(el.format, 'day_hour_minute')) {
+              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI' ) `);
+            }else if (_.isEqual(el.format, 'timestamp')) {
               grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI:SS' )`);
             }  else if (_.isEqual(el.format, 'No')) {
               grouping.push(`"${el.table_id}"."${el.column_name}"`);

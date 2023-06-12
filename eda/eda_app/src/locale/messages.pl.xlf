@@ -2002,6 +2002,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>TIMESTAMP</target>
 </trans-unit>
 
+<trans-unit id="dates8">
+<source>DIA HORA</source>
+<target>DIA HORA</target>
+</trans-unit>
+<trans-unit id="dates9">
+<source>DIA HORA MINUTO</source>
+<target>DAY HOUR MINUTE</target>
+</trans-unit>
 <trans-unit id="ChartProps">
 <source>PROPIEDADES DEL gráfico</source>
 <target>CHART PROPERTIES</target>
@@ -2173,7 +2181,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 
-<trans-unit id="AddValueList" datatype="html">
+<trans-unit id="AddValueListOptions" datatype="html">
 <source>Definir un listado de valores posibles</source>
 <target>Zdefiniuj listę możliwych wartości</target>
 </trans-unit>
@@ -2760,6 +2768,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 7 días </source>
 <target>Last 7 days </target>
 </trans-unit>
+<trans-unit id="DatePickerLast3">
+<source> Últimos 3 días </source>
+<target>Last 3 days </target>
+</trans-unit>
 <trans-unit id="DatePickerLast15">
 <source> Últimos 15 días </source>
 <target>Last 15 days </target>
@@ -2922,6 +2934,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
       <context context-type="linenumber">131</context>
     </context-group>
   </trans-unit>
+    <trans-unit id="joinTypeH4" datatype="html">
+    <source> Tipo de intersección:  </source>
+    <target> rodzaj skrzyżowania:  </target>
+  </trans-unit>
+
 
   <trans-unit id="addCSV" datatype="html">
     <source>Añadir tabla desde CSV</source>

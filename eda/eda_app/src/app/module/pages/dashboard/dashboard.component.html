@@ -16,7 +16,7 @@
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
     <div *ngIf="filtersList.length  > 0" style="margin: 0.5em;">
-        <button pButton pRipple type="button" (click)="reloadPanelsWithTimeOut()" style="margin-right: 0.3em;" class="p-button-raised p-button-outlined filters-size" icon="pi pi-filter" [label]="filtrar">
+        <button id="dashFilterBtn" pButton pRipple type="button" (click)="reloadPanelsWithTimeOut()" style="margin-right: 0.3em;" class="p-button-raised p-button-outlined filters-size" icon="pi pi-filter" [label]="filtrar">
             <!-- <i id="applyFilterButton" class="pi pi-filter fiter-icon"></i> {{filtrar}} -->
         </button>
         <span  class="filter-set" *ngFor="let filter of filtersList">
@@ -24,87 +24,64 @@
                 {{filter.column.label}}:
             </span>
 
-        <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'" 
-        [options]="filter.data" 
-        [(ngModel)]="filter.selectedItems" 
-        [virtualScroll]="true" 
-        itemSize="30" 
-        [maxSelectedLabels]="3" 
-        defaultLabel="{{filter.column.label}}" 
-        display="chip"
-        class="customMultiselect filters-size" 
-        [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}" 
-        [Show]="adjustSize(filter)" 
-        (onChange)="applyGlobalFilter(filter)" >
+            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'" 
+                [options]="filter.data" 
+                [(ngModel)]="filter.selectedItems" 
+                [virtualScroll]="true" 
+                itemSize="30" 
+                [maxSelectedLabels]="3" 
+                defaultLabel="{{filter.column.label}}" 
+                display="chip"
+                class="customMultiselect filters-size" 
+                [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}" 
+                [Show]="adjustSize(filter)" 
+                (onChange)="applyGlobalFilter(filter)">
 
-            <p-footer>
-                <button pButton pRipple type="button" (click)="removeGlobalFilter(filter)" icon="pi pi-trash" class="p-button-danger p-button-rounded  p-button-outlined" style="margin: 0.2em;"></button>
-            </p-footer>
-        </p-multiSelect>
+                <p-footer>
+                    <button pButton pRipple type="button" (click)="removeGlobalFilter(filter)" icon="pi pi-trash" class="p-button-danger p-button-rounded  p-button-outlined" style="margin: 0.2em;"></button>
+                </p-footer>
+            </p-multiSelect>
 
-
-
-        <eda-date-picker *ngIf="filter.column.value.column_type === 'date'" [inject]="datePickerConfigs[filter.id]" (onDatesChanges)="processPickerEvent($event, filter)" (onRemove)="removeGlobalFilter(filter)" [autoRemove]="true"></eda-date-picker>
+            <eda-date-picker *ngIf="filter.column.value.column_type === 'date'" [inject]="datePickerConfigs[filter.id]" (onDatesChanges)="processPickerEvent($event, filter)" (onRemove)="removeGlobalFilter(filter)" [autoRemove]="true"></eda-date-picker>
         </span>
     </div>
-
-
 
     <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions" #gridster1 >
         <!-- Normal Size -->
         <ng-container *ngIf="!toLitle && !toMedium" >
             <ngx-gridster-item *ngFor="let panel of panels"  [options]="itemOptions" [dragAndDrop]="true" [resizable]="panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y" (change)="itemChange($event, panel)">
-
-                <ng-container [ngSwitch]="panel.type">
-
-                    <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)"  (duplicate)="onDuplicatePanel($event)" >
-                    </eda-blank-panel >
-
-                    <eda-title-panel *ngSwitchCase="1" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)"  (duplicate)="onDuplicatePanel($event)" >
-                    </eda-title-panel>
-
-                </ng-container>
-
+                <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
             </ngx-gridster-item>
         </ng-container>
 
         <!-- Mid  Size -->
         <ng-container *ngIf="toMedium">
             <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop" [resizable]="panel.resizable" [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h" [(x)]="panel.tamanyMig.x" [(y)]="panel.tamanyMig.y" (change)="itemChange($event, panel)">
-
-                <ng-container [ngSwitch]="panel.type">
-
-                    <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)"  (duplicate)="onDuplicatePanel($event)" >
-                    </eda-blank-panel>
-
-                    <eda-title-panel *ngSwitchCase="1" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)"  (duplicate)="onDuplicatePanel($event)" >
-                    </eda-title-panel>
-
-                </ng-container>
-
+                <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
             </ngx-gridster-item>
         </ng-container>
 
         <!-- Mobile Size -->
         <ng-container *ngIf="toLitle">
             <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop" [resizable]="panel.resizable" [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h" [(x)]="panel.tamanyMobil.x" [(y)]="panel.tamanyMobil.y" (change)="itemChange($event, panel)">
-
-                <ng-container [ngSwitch]="panel.type">
-
-                    <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)"  (duplicate)="onDuplicatePanel($event)" >
-                    </eda-blank-panel>
-
-                    <eda-title-panel *ngSwitchCase="1" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)"  (duplicate)="onDuplicatePanel($event)" >
-                    </eda-title-panel>
-
-                </ng-container>
-
+                <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
             </ngx-gridster-item>
         </ng-container>
 
-
-
     </ngx-gridster>
+
+    <ng-template #panelTemplate let-panel>
+        <ng-container [ngSwitch]="panel.type">
+
+            <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)" >
+            </eda-blank-panel>
+
+            <eda-title-panel *ngSwitchCase="1" #edaPanel [id]="panel.id" [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
+            </eda-title-panel>
+
+        </ng-container>
+    </ng-template>
+
 
 </div>
 

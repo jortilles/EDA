@@ -5,10 +5,13 @@ import * as _ from 'lodash';
 export class PgBuilderService extends QueryBuilderService {
 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string, schema: string) {
+    if (schema === 'null' || schema === '') {
+      schema = 'public';
+    }
 
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
-    let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
+    let myQuery = `SELECT ${columns.join(', ')} \nFROM "${schema}"."${o}"`;
 
     //to WHERE CLAUSE
     const filters = this.queryTODO.filters.filter(f => {
@@ -27,7 +30,7 @@ export class PgBuilderService extends QueryBuilderService {
     });
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables);
+    const joinString = this.getJoins(joinTree, dest, tables, joinType, schema);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -161,7 +164,10 @@ export class PgBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType: string, schema: string) {
+    if (schema === 'null' || schema === '') {
+      schema = 'public';
+    }
 
     let joins = [];
     let joined = [];
@@ -189,15 +195,15 @@ export class PgBuilderService extends QueryBuilderService {
 
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
-            joinString.push(`inner join "${t}" on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+            joinString.push(` ${joinType} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
           }
           else {
 
-            let join = `inner join "${t}" on`;
+            let join = ` ${joinType} join "${schema}"."${t}" on`;
 
             joinColumns[0].forEach((_, x) => {
 
-              join += ` "${e[j]}"."${joinColumns[1][x]}" = "${e[i]}"."${joinColumns[0][x]}" and`
+              join += `  "${schema}"."${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
 
             });
 
@@ -254,6 +260,10 @@ export class PgBuilderService extends QueryBuilderService {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'IYYY-IW') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+              }else if (_.isEqual(el.format, 'day_hour')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH') as "${el.display_name}"`);
+              }else if (_.isEqual(el.format, 'day_hour_minute')) {
+                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI') as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'timestamp')) {
                 columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI:SS') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week_day')) {
@@ -283,7 +293,10 @@ export class PgBuilderService extends QueryBuilderService {
             }
             else if (_.isEqual(el.format, 'day')) {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD')`);
-
+            }else if (_.isEqual(el.format, 'day_hour')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH')  `);
+            }else if (_.isEqual(el.format, 'day_hour_minute')) {
+              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI')  `);
             }else if (_.isEqual(el.format, 'timestamp')) {
               grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI:SS')`);
 

@@ -26,6 +26,7 @@ export class DateUtils {
             case 'monthFullPreviousYear': return this.setMonthFullPreviousYear();
             case 'yearStart': return this.setYearStart();
             case 'yearStartPreviousYear': return this.setYearStartPreviousYear();
+            case 'last3': return this.setLast3();
             case 'last7': return this.setLast7();
             case 'last15': return this.setLast15();
             case 'last30': return this.setLast30();
@@ -163,12 +164,18 @@ export class DateUtils {
         return [yearStart, today];
     }
 
+    public setLast3(): Array<Date> {
+        const today = new Date();
+        const last3 = new Date(today.getTime() - (2 * 24 * 60 * 60 * 1000));
+        return [last3, today];
+    }
+
     public setLast7(): Array<Date> {
         const today = new Date();
         const last7 = new Date(today.getTime() - (6 * 24 * 60 * 60 * 1000));
         return [last7, today];
     }
-
+    
     public setLast15(): Array<Date> {
         const today = new Date();
         const last15 = new Date(today.getTime() - (14 * 24 * 60 * 60 * 1000));
