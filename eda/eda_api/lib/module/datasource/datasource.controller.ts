@@ -194,12 +194,16 @@ export class DataSourceController {
             const psswd = body.ds.connection.password;
             let ds: IDataSource;
             let id = req.body._id;
+    
             if(  typeof id == 'object' ){
-                id = id.$oid;                
+                id = id.$oid;
+                body._id = id;                
             }
 
-
-            DataSource.findById(id, (err, dataSource: IDataSource) => {
+                        
+            DataSource.findById(id, (err, dataSource : IDataSource): void => {
+                
+                
                 if (err) {
                     console.log(err);
                     return next(new HttpException(500, 'Datasouce not found'));
