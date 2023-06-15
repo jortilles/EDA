@@ -84,7 +84,7 @@ export class EdaBlankPanelComponent implements OnInit {
     // public actualSize : {litle:boolean, medium:boolean}
 
     /** Page variables */
-    public title: string = 'Blank Panel';
+    public title: string = '';
     // Display variables
     public display_v = {
         page_dialog: false, // page dialog
@@ -353,6 +353,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public savePanel() {
 
         this.panel.title = this.pdialog.getTitle();
+
+
         if (!_.isEmpty(this.graficos) || this.modeSQL) {
 
             this.display_v.saved_panel = true;
@@ -372,6 +374,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.display_v.saved_panel = false;
         }
         this.display_v.page_dialog = false;
+
 
         //not saved alert message
         this.dashboardService._notSaved.next(true);
