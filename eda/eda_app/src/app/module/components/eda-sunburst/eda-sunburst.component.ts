@@ -205,13 +205,16 @@ export class EdaSunburstComponent implements AfterViewInit {
   }
 
   formatData (data, dataDescription) {
-    let result = []
+    let result = [];
+    console.log(data);
     data.values.forEach(row => {
       let path = ''
       let element = [];
       dataDescription.otherColumns.forEach(col => {
         if (!!row[col.index]) {
           path = path + '|+-+|' + row[col.index]
+        }else{
+          path = path + '|+-+|';
         }
       })
       path = path.slice(5);
