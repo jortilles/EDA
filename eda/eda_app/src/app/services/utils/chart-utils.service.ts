@@ -1182,18 +1182,9 @@ export class ChartUtilsService {
                                 
                                 ticks: {
                                     callback: function(val, index) {
-                                        
+                                        if (this.getLabelForValue(val))
                                         return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
-                                        // Hide every 2nd tick label
-                                        return index % 2 === 0 ? this.getLabelForValue(val) : '';
                                     },
-                                    /*
-                                    callback: (value) => {
-                                        console.log(value);
-                                        if (value)
-                                            return value.length > 30 ? (value.substr(0, 17) + '...') : value;
-                                    },
-                                    */
                                     fontSize: edaFontSize, fontStyle: edafontStyle,
                                     fontFamily: styles.fontFamily,
                                     fontColor: styles.fontColor,
@@ -1467,10 +1458,8 @@ export class ChartUtilsService {
                                 maxRotation: 30,
                                 minRotation: 30,
                                 callback: function(val, index) {
-                                    
-                                    return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
-                                    // Hide every 2nd tick label
-                                    return index % 2 === 0 ? this.getLabelForValue(val) : '';
+                                    if (this.getLabelForValue(val))
+                                        return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
                                   },
                                 autoSkip: true,
                                 maxTicksLimit: maxTicksLimit,
