@@ -37,6 +37,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public sortedColumn;
   public cols: Array<any> = [];
   public styles = [];
+  public noRepetitions : boolean = false;
 
   /**Strings */
   public addTotals: string = $localize`:@@addTotals:Totales`;
@@ -53,6 +54,9 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public addValuesPercentages: string = $localize`:@@addValuesPercentages:Valores y Porcentajes`;
   public addTrend: string = $localize`:@@addtrend:Tendencia`;
   public removeTrend: string = $localize`:@@removetrend:Quitar tendencia`;
+  public seeRepetitions: string = $localize`:@@seeRepetitions: ver/ocultar valores repetidos`;
+  public withRepetitions: string = $localize`:@@seeRepetitions: ver valores repetidos`;
+  public withNoRepetitions: string = $localize`:@@seeRepetitions: ocultar valores repetidos`;
 
   public tableTitleDialog = $localize`:@@tableTitleDialog:Propiedades de la tabla`;
 
@@ -87,9 +91,10 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
       this.trend = config.withTrend;
       this.sortedSerie = config.sortedSerie;
       this.sortedColumn = config.sortedColumn;
+      this.noRepetitions = config.noRepetitions;
     } else {
       this.panelChartConfig.config = new ChartConfig(
-        new TableConfig(false, false, 5, false, false, false, false, null, null, null)
+        new TableConfig(false, false, 5, false, false, false, false, null, null, null, false)
       )
     }
 
@@ -137,6 +142,17 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.col_totals = currentConfig.withColTotals;
 
+    this.setItems();
+  }
+
+  private noRepeat() {
+
+    const currentConfig = this.myPanelChartComponent.currentConfig;
+    currentConfig.noRepetitions = !currentConfig.noRepetitions;
+    this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
+    this.noRepetitions = currentConfig.noRepetitions;
+
+    
     this.setItems();
   }
 
@@ -259,7 +275,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     const styles = this.styles;
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
-      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles);
+      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, this.noRepetitions);
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }
@@ -340,11 +356,20 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
               command: () => this.setStyle(col)
             }
           })
+        },
+        {
+          label: this.seeRepetitions,
+          icon: "pi pi-list",
+          items: [
+            {
+              label: this.noRepetitions !== true ? this.withNoRepetitions : this.withRepetitions,
+              command: () => this.noRepeat()
+            }
+          ]
         }
       ]
     } else {
       this.items = [
-
         {
           label: this.addTotals,
           icon: "pi pi-list",

@@ -12,6 +12,9 @@ import { EdaColumnPercentage } from './eda-columns/eda-column-percentage';
 import { Output, EventEmitter, Component } from '@angular/core';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
 import { ToastModule } from 'primeng/toast';
+import { Key } from 'protractor';
+import { FindValueSubscriber } from 'rxjs/internal/operators/find';
+import { values } from 'd3';
 
 interface PivotTableSerieParams {
     mainCol: any,
@@ -33,7 +36,8 @@ export class EdaTable {
     public onSortColEvent: EventEmitter<any> = new EventEmitter();
 
     public _value: any[] = [];
-
+    public _value_copy: any[] = [];
+    
     public cols: EdaColumn[] = [];
     public rows: number = 10;
     public initRows: number = 10;
@@ -64,7 +68,7 @@ export class EdaTable {
     public resultAsPecentage: boolean = false;
     public onlyPercentages: boolean = false;
     public percentageColumns: Array<any> = [];
-
+    public noRepetitions: boolean = false; 
     public autolayout: boolean = true;
     public sortedSerie: any = null;
     public sortedColumn: any = { field: null, order: null };
@@ -104,6 +108,7 @@ export class EdaTable {
         if (this.sortedSerie) {
             this.loadSort();
         }
+
     }
 
     public clear() {
@@ -215,6 +220,12 @@ export class EdaTable {
         }
         if (this.withColSubTotals) {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
+        } 
+        if (this.noRepetitions) {
+            this.noRepeatedRows();
+        }
+        if (!this.noRepetitions) {
+            this.withRepeatedRows();
         }
 
     }
@@ -496,6 +507,75 @@ export class EdaTable {
             }
         }
         return row;
+    }
+
+    makeCopy(val) : void {
+        this._value_copy = val;
+    }
+    
+    getCopy() {
+        return this._value_copy;
+    }
+
+    withRepeatedRows() {
+        const val = this.getCopy();
+       
+        if (_.isEmpty(val) == true) {
+            return this._value;
+        } else {
+            this._value = val;
+            return this._value;
+        }
+    }
+
+    noRepeatedRows() {
+        
+        let val = this._value;
+        this.makeCopy(val);
+        //separamos valores de claves
+        let values = [];
+        for (let i=0; i<val.length;i++) {
+            values.push(Object.values(val[i]));
+        }
+        
+        //tomamos claves que serán el cabecero
+        let labels = [];      
+        let labels2 = [];
+        labels.push(Object.keys(val[0]));
+        labels.forEach(e => {
+            e.forEach(function(key,val) {
+                labels2.push(key)
+            })
+        })
+        labels = labels2;
+
+        let output = [];
+
+            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
+            let first  = _.cloneDeep(values[0]);
+            for (let i = 0; i < values.length; i += 1) {
+                const obj = [];
+                if(i == 0){   
+                    for (let e = 0; e < values[i].length; e += 1) {
+                            obj[labels[e]] = values[i][e];
+                        }
+                }else{
+                    for (let e = 0; e < values[i].length; e += 1) {
+                        if (values[i][e] === first[e]    &&  isNaN(values[i][e]) ) {
+                            obj[labels[e]] = "";   // AQUI SE SUSTITUYEN LOS REPETIDOS POR UNA CADENA EN BLANCO
+                        } else {
+                            obj[labels[e]] = values[i][e];
+                        }
+                        first[e]  =  values[i][e]; //AQUI SE SUTITUYE EL PRIMER VALOR
+                        }
+                }
+                output.push(obj);   
+            }
+
+            this._value = output;        
+
+        return this._value;
+       
     }
 
     colsPercentages() {
