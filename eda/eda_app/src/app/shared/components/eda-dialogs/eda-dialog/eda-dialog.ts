@@ -11,6 +11,7 @@ export class EdaDialog {
     title: string;
     dialog: Dialog;
     closable: boolean = false;
+    draggable: boolean = true;
     style: any = {width: '80%', height: '70%', top: '93px', left: '205px'};
     show: () => void = () => {};
     hide: () => void = () => {};

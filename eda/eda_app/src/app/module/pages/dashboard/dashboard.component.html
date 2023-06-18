@@ -15,15 +15,20 @@
     <!-- ============================================================== -->
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
-    <div *ngIf="filtersList.length  > 0" style="margin: 0.5em;">
-        <button id="dashFilterBtn" pButton pRipple type="button" (click)="reloadPanelsWithTimeOut()" style="margin-right: 0.3em;" class="p-button-raised p-button-outlined filters-size" icon="pi pi-filter" [label]="filtrar">
-            <!-- <i id="applyFilterButton" class="pi pi-filter fiter-icon"></i> {{filtrar}} -->
+    <div *ngIf="filtersList.length > 0" class="d-flex align-items-end" style="margin: 0.5em; gap: 10px;">
+        
+        <button id="dashFilterBtn"
+            [label]="filtrar"
+            pButton pRipple type="button"
+            icon="pi pi-filter"
+            style="height: 36px;"
+            (click)="reloadPanelsWithTimeOut()"
+            class="p-button-raised p-button-outlined filters-size">
         </button>
-        <span  class="filter-set" *ngFor="let filter of filtersList">
-            <span class="filter-name filters-size">
-                {{filter.column.label}}:
-            </span>
 
+        
+        <div *ngFor="let filter of filtersList" class="filter-set d-flex align-items-center">
+            <span class="filter-name filters-size"> {{filter.column.label}}: </span>
             <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'" 
                 [options]="filter.data" 
                 [(ngModel)]="filter.selectedItems" 
@@ -38,12 +43,40 @@
                 (onChange)="applyGlobalFilter(filter)">
 
                 <p-footer>
-                    <button pButton pRipple type="button" (click)="removeGlobalFilter(filter)" icon="pi pi-trash" class="p-button-danger p-button-rounded  p-button-outlined" style="margin: 0.2em;"></button>
+                    <button id="dashFilterConf"
+                        pButton pRipple type="button"
+                        icon="pi pi-cog"
+                        (click)="onFilterConfig(false, filter)"
+                        class="p-button-rounded p-button-outlined filters-size">
+                    </button>
+
+                    <button *ngIf="autoClear"
+                        pButton pRipple type="button"
+                        icon="pi pi-undo"
+                        (click)="clearRangeDates();emitChanges();"
+                        class="p-button-rounded p-button-outlined">
+                    </button>
                 </p-footer>
             </p-multiSelect>
 
-            <eda-date-picker *ngIf="filter.column.value.column_type === 'date'" [inject]="datePickerConfigs[filter.id]" (onDatesChanges)="processPickerEvent($event, filter)" (onRemove)="removeGlobalFilter(filter)" [autoRemove]="true"></eda-date-picker>
-        </span>
+            <eda-date-picker
+                *ngIf="filter.column.value.column_type === 'date'"
+                [autoClear]="true"
+                [inject]="datePickerConfigs[filter.id]"
+                (onRemove)="removeGlobalFilter(filter)"
+                (onDatesChanges)="processPickerEvent($event, filter)">
+
+                <ng-container footer>
+                    <button id="dashFilterConf"
+                        pButton pRipple type="button"
+                        icon="pi pi-cog"
+                        (click)="onFilterConfig(false, filter)"
+                        class="p-button-rounded p-button-outlined filters-size">
+                    </button>
+                </ng-container>
+            </eda-date-picker>
+        </div>
+
     </div>
 
     <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions" #gridster1 >

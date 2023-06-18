@@ -1,16 +1,31 @@
+<p-calendar class='eda-filter-multiselect' [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd.mm.yy"
+	selectionMode="range" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030"
+	[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" (onClickOutside)="emitChanges()"
+	(onClose)="emitChanges()" (onFocus)="activate()" (onSelect)="clearRange()" appendTo="body">
+	<!-- [style]="{'width':'10%', 'height':'10%', 'min-width':'0px'}" [inputStyle]="{'width':'100px'}"> -->
+	<p-footer>
+		<div class="col-10">
+			<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder" (onChange)="getRange()"></p-dropdown>
+		</div>
 
-  <p-calendar class='eda-filter-multiselect' [locale]="locale" [(ngModel)]="rangeDates" dateFormat="dd.mm.yy" selectionMode="range"
-    [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030" [firstDayOfWeek]="firstDayOfWeek"
-    [placeholder]="rangePlaceholder" (onClickOutside)="emitChanges()" (onClose)="emitChanges()" (onFocus)="activate()"
-    (onSelect)="clearRange()" appendTo="body">
-    <!-- [style]="{'width':'10%', 'height':'10%', 'min-width':'0px'}" [inputStyle]="{'width':'100px'}"> -->
-    <p-footer>
-      <div class="col-10">
-        <p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder"
-          (onChange)="getRange()"></p-dropdown>
-      </div>
-      <div class="col-2" *ngIf="autoRemove">
-        <button pButton pRipple type="button" (click)="remove()" icon="fa fa-trash" class="p-button-danger p-button-rounded  p-button-outlined"></button>
-      </div>
-    </p-footer>
-  </p-calendar>
+
+		<div *ngIf="autoRemove || autoClear" class="d-flex" style="gap: 10px;">
+			<ng-content select="[footer]"></ng-content>
+
+			<button *ngIf="autoRemove"
+				pButton pRipple type="button"
+				icon="fa fa-trash"
+				(click)="remove()"
+				class="p-button-danger p-button-rounded p-button-outlined">
+			</button>
+			
+			<button *ngIf="autoClear"
+				pButton pRipple type="button"
+				label="Clean" icon="pi pi-undo"
+				(click)="clearRangeDates()"
+				class="p-button-rounded p-button-outlined">
+			</button>
+
+		</div>
+	</p-footer>
+</p-calendar>
