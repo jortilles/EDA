@@ -530,8 +530,8 @@ export class EdaTable {
 
     noRepeatedRows() {
         
+        this.makeCopy(this._value); //hacemos una copia del valor original que nos entra, por si tenemos que reutilizarlo en la vista opuesta
         let val = this._value;
-        this.makeCopy(val);
         //separamos valores de claves
         let values = [];
         for (let i=0; i<val.length;i++) {
@@ -540,14 +540,15 @@ export class EdaTable {
         
         //tomamos claves que serán el cabecero
         let labels = [];      
-        let labels2 = [];
-        labels.push(Object.keys(val[0]));
+        labels.push(Object.keys(val[0])); //insertamos el primer objeto con el cabecero para iterar y extraer los datos
         labels.forEach(e => {
             e.forEach(function(key,val) {
-                labels2.push(key)
+                labels.push(key);
+                
             })
+        
         })
-        labels = labels2;
+        labels.shift(); //borramos el primer objeto.
 
         let output = [];
 
