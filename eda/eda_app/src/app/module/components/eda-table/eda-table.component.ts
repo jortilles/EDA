@@ -32,6 +32,7 @@ export class EdaTableComponent implements OnInit {
     }
     ngOnInit(): void {
         
+        
         if(this.inject.styles && !this.inject.pivot){
             this.applyStyles(this.inject.styles)
         }else if(this.inject.styles && this.inject.pivot){
@@ -96,6 +97,7 @@ export class EdaTableComponent implements OnInit {
         const fields = styles.map(style => style.col);
         const limits = {};
 
+        
         //Initialize 
         fields.forEach(field => {
             limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: []};

@@ -9,6 +9,7 @@ export class TableConfig {
   sortedSerie : any;
   sortedColumn : any;
   styles : Array<any>;
+  noRepetitions: boolean;
 
   constructor(
     onlyPercentages: Boolean, 
@@ -20,7 +21,8 @@ export class TableConfig {
     withTrend:Boolean,
     sortedSerie :any,
     sortedColumn : any,
-    styles : Array<any>
+    styles : Array<any>,
+    noRepetitions: boolean
     ) {
       this.onlyPercentages = onlyPercentages;
       this.resultAsPecentage = resultAsPecentage;
@@ -32,6 +34,7 @@ export class TableConfig {
       this.sortedSerie = sortedSerie;
       this.sortedColumn = sortedColumn;
       this.styles = styles;
+      this.noRepetitions = noRepetitions;
   }
 
 }

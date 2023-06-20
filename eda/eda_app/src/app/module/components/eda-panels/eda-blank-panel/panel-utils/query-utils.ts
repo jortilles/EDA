@@ -204,6 +204,7 @@ export const QueryUtils = {
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);
+    
     const params = {
       table: '',
       dataSource: ebp.inject.dataSource._id,
