@@ -687,38 +687,34 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 confirmButtonText: $localize`:@@AddFiltersWarningButton:Entendido`
             });
         } else {
-            const params = {
-                panels: this.panels,
-                dataSource: this.dataSource
-            };
-            this.display_v.rightSidebar = false;
-            this.filterController = new EdaDialogController({
-                params,
-                close: (event, response) => {
-                    if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-
-                        this.filtersList.push(response.filterList);
-                        if (response.filterList.column.value.column_type === 'date' && response.filterList.selectedItems.length > 0) {
-                            this.loadDatesFromFilter(response.filterList);
-                        } else {
-                            this.loadGlobalFiltersData(response?.filterList, response?.targetTable);
-                        }
-                        // If default values are selected filter is applied
-                        if (response.filterList.selectedItems.length > 0) {
-                            this.applyGlobalFilter(response.filterList);
-                        }
-                        // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
-                        if (response.filterList.applyToAll && (this.applyToAllfilter.present === false)) {
-                            this.applyToAllfilter = { present: true, refferenceTable: response.targetTable, id: response.filterList.id };
-                            this.updateApplyToAllFilterInPanels();
-                        }
-                        //not saved alert message
-                        this.dashboardService._notSaved.next(true);
-                    }
-                    this.filterController = undefined;
-                }
-            });
+            this.onFilterConfig(true);
         }
+    }
+
+    public onFilterConfig(isnew: boolean, filter?: any): void {
+        this.display_v.rightSidebar = false;
+        this.filterController = new EdaDialogController({
+            params: {
+                panels: this.panels,
+                dataSource: this.dataSource,
+                filtersList: this.filtersList,
+                filter,
+                isnew
+            },
+            close: (event, response) => {
+                if (_.isEqual(event, EdaDialogCloseEvent.NEW)) {
+                    this.onAddGlobalFilter(response.filterList, response.targetTable);
+                } else if (_.isEqual(event, EdaDialogCloseEvent.UPDATE)) {
+                    this.filtersList = [];
+                    for (let filter of response.filterList) {
+                        this.onAddGlobalFilter(filter, filter.table?.value);
+                        // this.filtersList.push(filter);
+                    }
+                }
+
+                this.filterController = undefined;
+            }
+        });
     }
 
     public async onPanelAction(event: IPanelAction): Promise<void> {
@@ -1114,10 +1110,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
             filter.selectedItems = stringRange;
             filter.selectedRange = event.range;
-            this.loadDatesFromFilter(filter)
-            this.applyGlobalFilter(filter);
+            this.loadDatesFromFilter(filter);
+        }
+        
+        if (!event.dates) {
+            filter.selectedItems = [];
         }
 
+        if (!event.range) {
+            filter.selectedRange = null;
+        }
+
+        this.applyGlobalFilter(filter);
     }
 
     // Sidebar functions
@@ -1447,6 +1451,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }, 2000)
 
     }
+
     public canIedit() {
         let result: boolean = false;
         result = this.userService.isAdmin;
