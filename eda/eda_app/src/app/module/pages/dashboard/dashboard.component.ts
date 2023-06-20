@@ -15,6 +15,7 @@ import domtoimage from 'dom-to-image';
 import Swal from 'sweetalert2';
 import jspdf from 'jspdf';
 import * as _ from 'lodash';
+import { ValueListSource } from '@eda/models/data-source-model/data-source-models';
 
 @Component({
     selector: 'app-dashboard',
@@ -975,7 +976,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 ]
                 : [{ value1: filter.selectedItems }],
             isGlobal: true,
-            applyToAll: filter.applyToAll
+            applyToAll: filter.applyToAll,  
+            valueListSource: filter.column.value.valueListSource
         }
 
         return formatedFilter;
