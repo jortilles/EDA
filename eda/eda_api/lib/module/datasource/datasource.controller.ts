@@ -194,14 +194,14 @@ export class DataSourceController {
             const psswd = body.ds.connection.password;
             let ds: IDataSource;
             let id = req.body._id;
-    
+            if( id === undefined ){
+                id = req.params.id;
+            }
             if(  typeof id == 'object' ){
                 id = id.$oid;
                 body._id = id;                
             }
-
-                        
-            DataSource.findById(id, (err, dataSource : IDataSource): void => {
+            DataSource.findById(id, (err, dataSource : IDataSource) => {
                 
                 
                 if (err) {
