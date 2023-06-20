@@ -1074,12 +1074,14 @@ export class ChartUtilsService {
                                 },
                                 padding: 6,
                                 formatter: (value,ctx) => {
-                                    const datapoints = ctx.dataset.data.map( x => x===''?0:x);
+                                    const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
                                     const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
                                     const percentage = value / total * 100
                                     let res = '';
                                     if( showLabels && showLabelsPercent){
-                                        res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                        res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                        if(res == 'NaN'){ res = '';}
+                                        res = res  + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
                                     }else if(showLabels && !showLabelsPercent){
                                         res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
                                     }else if(!showLabels && showLabelsPercent){
@@ -1152,14 +1154,19 @@ export class ChartUtilsService {
                             padding: 10,
 
                             formatter: (value,ctx) => {
-                                const datapoints = ctx.dataset.data.map( x => x===''?0:x);
-                                const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
-                                const percentage = value / total * 100
+                                
+                                const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
+                                const total = datapoints.reduce((total, datapoint) => total +  datapoint , 0);
+
+                                const percentage =  isNaN(value)?0:value  / total * 100
                                 let res = '';
                                 if( showLabels && showLabelsPercent){
-                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                    if(res == 'NaN'){ res = '';}
+                                    res = res  + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
                                 }else if(showLabels && !showLabelsPercent){
                                     res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                    if(res == 'NaN'){ res = '';}
                                 }else if(!showLabels && showLabelsPercent){
                                     res = percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'   ;
                                 }
@@ -1286,12 +1293,14 @@ export class ChartUtilsService {
                                 size:  edaFontSize  
                             },
                             formatter: (value,ctx) => {
-                                const datapoints = ctx.dataset.data.map( x => x===''?0:x);
+                                const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
                                 const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
                                 const percentage = value / total * 100
                                 let res = '';
                                 if( showLabels && showLabelsPercent){
-                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                    if(res == 'NaN'){ res = '';}
+                                    res = res  + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
                                 }else if(showLabels && !showLabelsPercent){
                                     res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
                                 }else if(!showLabels && showLabelsPercent){
@@ -1425,12 +1434,14 @@ export class ChartUtilsService {
                           size:  edaFontSize-2  
                         },
                         formatter: (value,ctx) => {
-                            const datapoints = ctx.dataset.data.map( x => x===''?0:x);
+                            const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
                             const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
                             const percentage = value / total * 100
                             let res = '';
                             if( showLabels && showLabelsPercent){
-                                res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                if(res == 'NaN'){ res = '';}
+                                res = res  + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
                             }else if(showLabels && !showLabelsPercent){
                                 res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
                             }else if(!showLabels && showLabelsPercent){
