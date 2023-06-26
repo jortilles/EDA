@@ -46,6 +46,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     public ordenationTypes: OrdenationType[];
     public formatDates: FormatDates[];
+    public formatDate: FormatDates;
     public aggregationsTypes: any[] = [];
     public inputType: string;
     public dropDownFields: SelectItem[];
@@ -200,13 +201,18 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         ).ordenation_type = this.selectedColumn.ordenation_type;
     }
 
-    addFormatDate(format: FormatDates) {
+    addFormatDate() {
         const select = this.controller.params.currentQuery;
 
-        _.find(this.formatDates, o => o.value === format.value).selected = true;
+        let find = _.find(this.formatDates, o => o.value === this.formatDate.value);
+        find.selected = true;
+
+        if (!this.formatDate.display_name || this.formatDate.display_name == '') {
+            this.formatDate = find;
+        }
 
         _.forEach(this.formatDates, o => {
-            if (o.selected === true && format.value !== o.value) {
+            if (o.selected === true && this.formatDate.value !== o.value) {
                 o.selected = false;
             }
         });
@@ -214,14 +220,14 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         _.find(select, c =>
             this.selectedColumn.column_name === c.column_name &&
             this.selectedColumn.table_id === c.table_id
-        ).format = format.value;
+        ).format = this.formatDate.value;
 
         // Introduim l'agregació a la Select
         const column: Column = this.controller.params.currentQuery.find(c => {
             return this.selectedColumn.column_name === c.column_name &&
                 this.selectedColumn.table_id === c.table_id;
         });
-        column.format = format.value;
+        column.format = this.formatDate.value;
 
         if (!this.cumulativeSumAllowed()) {
             this.cumulativeSum = false;
@@ -347,7 +353,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 .find(c => c.column_name === column.column_name)
                 .format;
             if (found) {
-                this.addFormatDate({ display_name: '', value: found, selected: true });
+                this.formatDate = { display_name: '', value: found, selected: true };
+                this.addFormatDate();
                 this.controller.params.currentQuery.find(c => {
                     return column.column_name === c.column_name && column.table_id === c.table_id;
                 }).format = found;
@@ -361,7 +368,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 } else {
                     tmpDateFormat = 'No';
                 }
-                this.addFormatDate({ display_name: '', value: tmpDateFormat, selected: true })
+
+                this.formatDate = { display_name: '', value: tmpDateFormat, selected: true };
+                this.addFormatDate()
                 this.controller.params.currentQuery.find(c => {
                     return column.column_name === c.column_name && column.table_id === c.table_id;
                 }).format = tmpDateFormat;
@@ -372,10 +381,12 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             let tmpDateFormat = '';
             if (!found || !found.format) {
                 tmpDateFormat = 'No';
-                this.addFormatDate({ display_name: '', value: 'No', selected: true });
+                this.formatDate = { display_name: '', value: 'No', selected: true };
+                this.addFormatDate();
             } else {
                 tmpDateFormat = found.format;
-                this.addFormatDate({ display_name: '', value: tmpDateFormat, selected: true });
+                this.formatDate = { display_name: '', value: tmpDateFormat, selected: true };
+                this.addFormatDate();
             }
             this.controller.params.currentQuery.find(c => {
                 return column.column_name === c.column_name && column.table_id === c.table_id;
