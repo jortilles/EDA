@@ -198,25 +198,34 @@ export class DataSourceController {
             const body = req.body;
             const psswd = body.ds.connection.password;
             let ds: IDataSource;
-
-            DataSource.findById(req.params.id, (err, dataSource: IDataSource) => {
+            let id = req.body._id;
+            if( id === undefined ){
+                id = req.params.id;
+            }
+            if(  typeof id == 'object' ){
+                id = id.$oid;
+                body._id = id;                
+            }
+            DataSource.findById(id, (err, dataSource : IDataSource) => {
+                
+                
                 if (err) {
+                    console.log(err);
                     return next(new HttpException(500, 'Datasouce not found'));
                 }
 
                 if (!dataSource) {
-                    console.log('Importing new datasource');
-                   // return next(new HttpException(400, 'DataSource not exist with id'));
-                   ds = new DataSource(body);
+                   console.log('Importing new datasource');
+                   let cadena = JSON.stringify(body);
+                   cadena = cadena.split('$oid').join('id');
+                   ds = new DataSource( JSON.parse(cadena.toString()));
+
                 }else{
                     console.log('Importing existing datasource');
                     body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
-                    //console.log(body.ds);
                     let cadena = JSON.stringify(body.ds);
                     cadena = cadena.split('$oid').join('id');
-                    JSON.parse(cadena.toString());
                     dataSource.ds =   JSON.parse(cadena.toString());
-                    //dataSource.ds = body.ds;
                     ds = dataSource;
                 }       
 

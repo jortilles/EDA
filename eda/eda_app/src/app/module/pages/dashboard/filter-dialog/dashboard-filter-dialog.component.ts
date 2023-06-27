@@ -7,7 +7,8 @@ import {
     QueryBuilderService
 } from '@eda/services/service.index';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
-
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
 
 @Component({
     selector: 'dashboard-filter-dialog',
@@ -21,7 +22,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
 
     public dialog: EdaDialog;
-    public dashboard: any;
+    public params: any = {};
 
     public panelsToDisplay: Array<{ title, id, active, avaliable }>;
     public panelstoFilter: Array<{ title, id, active, avaliable }>;
@@ -35,10 +36,12 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public selectedValues: any = [];
     public applyToAll: boolean = true;
     public switchChecked: boolean = false;
-
+    
     public rangeDates: Date[];
     public selectedRange : string = null;
-
+    public selectedFilter: any;
+    public datePickerConfigs: any = {};
+    
     // Global filters vars
     public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll }> = [];
 
@@ -50,7 +53,8 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public reddot :string =$localize`:@@reddot:Paneles no relacionados`;
     public unselecteddot :string = $localize`:@@unselecteddot:Paneles no filtrados`;
 
-    constructor(private globalFiltersService: GlobalFiltersService,
+    constructor(
+        private globalFiltersService: GlobalFiltersService,
         private dashboardService: DashboardService,
         private queryBuilderService: QueryBuilderService,
         private fileUtils: FileUtiles,
@@ -58,9 +62,10 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         super();
 
         this.dialog = new EdaDialog({
+            draggable: false,
+            title: $localize`:@@DashboardFilters:FILTROS DEL INFORME`,
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@DashboardFilters:FILTROS DEL INFORME`,
         });
         this.dialog.style= {width: '70%'};
         
@@ -68,14 +73,21 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     onShow() {
-        this.dashboard = this.controller.params;
-        this.selectPanelToFilter(this.dashboard.panels.filter(p => p.content)[0]);
+        this.params = this.controller.params;
+        if (this.params.filtersList) {
+            for (let filter of this.params.filtersList) {
+                this.filtersList.push(filter);
+            }
+        }
+        this.selectPanelToFilter(this.params.panels.filter(p => p.content)[0]);
+        if (this.params.filter) this.onEditFilter(this.params.filter);
+        console.log(this.params.filter);
     }
 
 
     selectPanelToFilter(panel) {
-        const newPanel = this.dashboard.panels.find(p => p.id === panel.id);
-        const panels = this.globalFiltersService.panelsToDisplay(this.dashboard.dataSource.model.tables, this.dashboard.panels, newPanel);
+        const newPanel = this.params.panels.find(p => p.id === panel.id);
+        const panels = this.globalFiltersService.panelsToDisplay(this.params.dataSource.model.tables, this.params.panels, newPanel);
         const sortByTittle = (a, b) => {
             if (a.title < b.title) { return -1; }
             if (a.title > b.title) { return 1; }
@@ -92,9 +104,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         let notVisibleTables = [];
         this.targetTables = [];
 
-        notVisibleTables = this.dashboard.dataSource.model.tables.filter(t => t.visible === false).map(t => t.table_name);
+        notVisibleTables = this.params.dataSource.model.tables.filter(t => t.visible === false).map(t => t.table_name);
         this.panelstoFilter.forEach(panel => {
-            const tmpPanel = this.dashboard.panels.find(p => p.id === panel.id);
+            const tmpPanel = this.params.panels.find(p => p.id === panel.id);
             tmpPanel.content.query.query.fields.forEach(field => {
                 if (!tables.includes(field.table_id)) {
                     tables.push(field.table_id);
@@ -102,7 +114,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             });
         });
 
-        const fMap = this.globalFiltersService.relatedTables(tables, this.dashboard.dataSource.model.tables);
+        const fMap = this.globalFiltersService.relatedTables(tables, this.params.dataSource.model.tables);
         fMap.forEach((value: any, key: string) => {
             if (!notVisibleTables.includes(key)) {
                 this.targetTables.push({ label: value.display_name.default, value: key });
@@ -125,9 +137,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         }
     }
 
-    getColumnsByTable() {
+    public getColumnsByTable() {
         this.targetCols = [];
-        const table = this.dashboard.dataSource.model.tables.filter(t => t.display_name.default === this.targetTable.label);
+        const table = this.params.dataSource.model.tables.filter(t => t.display_name.default === this.targetTable.label);
 
         table[0].columns.filter(col => col.visible === true).forEach(col => {
             this.targetCols.push({ label: col.display_name.default, value: col });
@@ -137,31 +149,59 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.targetCols.sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0);
     }
 
-    saveGlobalFilter() {
+    public saveGlobalFilter() {
+        let response: any;
+        if (this.params?.isnew) {
+            if (this.panelstoFilter.length === 0 || !this.targetTable || !this.targetCol) {
+                return this.alertService.addWarning($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
+            }
+    
+            this.filtersList.push({
+                id: this.fileUtils.generateUUID(),
+                table: this.targetTable,
+                column: this.targetCol,
+                panelList: this.panelstoFilter.map(p => p.id),
+                data: null,
+                selectedItems: this.selectedValues,
+                selectedRange:this.selectedRange,
+                isGlobal: true,
+                applyToAll: !this.applyToAll
+            });
+    
+            // this.loadGLobalFiltersData(this.filtersList[this.filtersList.length - 1]);
+            response = {
+                filterList: this.filtersList[this.filtersList.length - 1],
+                targetTable: this.targetTable.value
+            };
 
-        if (this.panelstoFilter.length === 0 || !this.targetTable || !this.targetCol) {
-            return this.alertService.addWarning($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
+            this.onClose(EdaDialogCloseEvent.NEW, response);
+        } else {
+            if (this.selectedFilter) {
+                this.selectedFilter.table = this.targetTable;
+                this.selectedFilter.column = this.targetCol;
+                this.selectedFilter.panelList = this.panelstoFilter.map(p => p.id);
+                this.selectedFilter.selectedItems = this.selectedValues;
+                this.selectedFilter.selectedRange =this.selectedRange;
+                this.selectedFilter.applyToAll = !this.applyToAll;
+
+                for (let filter of this.filtersList) {
+                    if (filter.id === this.selectedFilter.id) {
+                        Object.assign(filter, this.selectedFilter);
+                    }
+                }
+                this.selectedFilter = null;
+            }
+            response = { filterList: this.filtersList };
+            this.onClose(EdaDialogCloseEvent.UPDATE, response);
         }
 
-        this.filtersList.push({
-            table: this.targetTable, column: this.targetCol,
-            panelList: this.panelstoFilter.map(p => p.id), data: null, selectedItems: this.selectedValues, selectedRange:this.selectedRange, id: this.fileUtils.generateUUID(),
-            isGlobal: true, applyToAll: !this.applyToAll
-        });
-
-        // this.loadGLobalFiltersData(this.filtersList[this.filtersList.length - 1]);
-        const response = {
-            filterList: this.filtersList[this.filtersList.length - 1],
-            targetTable: this.targetTable.value
-        };
-        this.onClose(EdaDialogCloseEvent.NEW, response);
     }
 
-    loadGlobalFiltersData() {
+    public loadGlobalFiltersData() {
         const params = {
             table: this.targetTable.value,
-            dataSource: this.dashboard.dataSource._id,
-            dashboard: this.dashboard.id,
+            dataSource: this.params.dataSource._id,
+            dashboard: this.params.id,
             panel: '',
             filters: []
         };
@@ -202,16 +242,53 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         return this.applyToAll;
     }
 
-
     resetSelectedValues() {
         this.selectedValues = [];
     }
 
-    closeDialog() {
+    public removeFilter(filter: any): void {
+        this.filtersList.splice(this.filtersList.indexOf(filter), 1);
+    }
+
+    public onReorderFilter(event: CdkDragDrop<string[]>): void {
+        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    }
+
+    public onEditFilter(filter: any): void {
+        this.targetTable = filter.table;
+        this.getColumnsByTable();
+        this.targetCol = this.targetCols.find((col) => col.value?.column_name === filter.column.value?.column_name);
+        this.loadGlobalFiltersData();
+        this.selectedValues = filter.selectedItems;
+        this.selectedRange = filter.selectedRange;
+        this.selectedFilter = filter;
+
+        if (filter.column.value.column_type === 'date') {
+            this.loadDatesFromFilter(filter)
+        }
+    }
+
+    private loadDatesFromFilter(filter) {
+        this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
+        const config = this.datePickerConfigs[filter.id];
+        config.dateRange = [];
+        config.range = filter.selectedRange;
+        config.filter = filter;
+        if (filter.selectedItems.length > 0) {
+            if (!filter.selectedRange) {
+                let firstDate = filter.selectedItems[0];
+                let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
+                config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
+                config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
+            }
+        }
+    }
+
+    public closeDialog() {
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 
-    onClose(event: EdaDialogCloseEvent, response?: any): void {
+    public onClose(event: EdaDialogCloseEvent, response?: any): void {
         return this.controller.close(event, response);
     }
 

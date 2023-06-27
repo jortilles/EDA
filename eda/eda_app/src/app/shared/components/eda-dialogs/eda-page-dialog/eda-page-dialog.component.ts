@@ -15,8 +15,12 @@ export class EdaPageDialogComponent implements OnInit {
     constructor() {
     }
 
-    ngOnInit(): void {
-        this.newText = this.inject.title;
+    ngOnInit(): void {  
+        if(this.inject.title== ''){
+            this.newText = '?';
+        }else{
+            this.newText = this.inject.title; 
+        }
     }
 
     setTitle() {
@@ -24,7 +28,13 @@ export class EdaPageDialogComponent implements OnInit {
     }
 
     getTitle() {
-        return this.newText;
+        if( this.newText != '?' && this.newText.length  > 0  ){
+            return this.newText;
+        }else {
+            this.newText = '?';
+            return  '';
+        }
+        
     }
 
 }
