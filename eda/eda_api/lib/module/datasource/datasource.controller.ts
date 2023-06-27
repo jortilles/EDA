@@ -198,23 +198,38 @@ export class DataSourceController {
             const body = req.body;
             const psswd = body.ds.connection.password;
             let ds: IDataSource;
-
-            DataSource.findById(req.params.id, (err, dataSource: IDataSource) => {
+            let id = req.body._id;
+            if( id === undefined ){
+                id = req.params.id;
+            }
+            if(  typeof id == 'object' ){
+                id = id.$oid;
+                body._id = id;                
+            }
+            DataSource.findById(id, (err, dataSource : IDataSource) => {
+                
+                
                 if (err) {
+                    console.log(err);
                     return next(new HttpException(500, 'Datasouce not found'));
                 }
 
                 if (!dataSource) {
-                    console.log('Importing new datasource');
-                   // return next(new HttpException(400, 'DataSource not exist with id'));
-                   ds = new DataSource(body);
+                   console.log('Importing new datasource');
+                   let cadena = JSON.stringify(body);
+                   cadena = cadena.split('$oid').join('id');
+                   ds = new DataSource( JSON.parse(cadena.toString()));
+
                 }else{
                     console.log('Importing existing datasource');
                     body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
-                    dataSource.ds = body.ds;
+                    let cadena = JSON.stringify(body.ds);
+                    cadena = cadena.split('$oid').join('id');
+                    dataSource.ds =   JSON.parse(cadena.toString());
                     ds = dataSource;
-                }            
+                }       
 
+                
                 //aparto las relaciones ocultas para optimizar el modelo.
                 ds.ds.model.tables.forEach(t => {
                     t.no_relations = t.relations.filter(r => r.visible == false)
@@ -222,7 +237,6 @@ export class DataSourceController {
                 ds.ds.model.tables.forEach(t => {
                     t.relations = t.relations.filter(r => r.visible !== false)
                 });
-                
                 /** Comprobacionde la reciprocidad de las relaciones */
                 ds.ds.model.tables.forEach(tabla => {
                 tabla.relations.forEach(relacion=> {
@@ -250,16 +264,13 @@ export class DataSourceController {
                  });
 
 
-
-
                 const iDataSource = new DataSource(ds);
-
-
-                //console.log(dataSource.ds.model.tables);
 
                 iDataSource.save((err, dataSource) => {
                     if (err) {
+                        console.log(err);
                         next(new HttpException(500, 'Error updating dataSource'));
+
                     }
 
                     return res.status(200).json({ ok: true, message: 'Modelo actualizado correctamente' });

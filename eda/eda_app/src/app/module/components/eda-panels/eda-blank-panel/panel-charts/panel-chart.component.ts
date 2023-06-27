@@ -51,6 +51,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
     @Input() props: PanelChart;
     @Output() configUpdated: EventEmitter<any> = new EventEmitter<any>(null);
+    @Output() onChartClick: EventEmitter<any> = new EventEmitter<any>();
     @ViewChild('chartComponent', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
 
 
@@ -311,6 +312,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         /** JUANJO MIRA ESTO*/
         this.componentRef = this.entry.createComponent(EdaChartComponent);
         this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
         this.configUpdated.emit();
     }
 
@@ -325,7 +327,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaTableComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = this.initializeTable(type, this.props.config.getConfig());
-        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.props.data.labels, this.props.data.values);
+        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.componentRef.instance.inject.noRepetitions, this.props.data.labels, this.props.data.values);
         const config = this.props.config.getConfig();
 
         if (config) {
@@ -357,6 +359,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.checkTotals(null, config.visibleRows);
         this.componentRef.instance.inject.sortedSerie = config.sortedSerie;
         this.componentRef.instance.inject.sortedColumn = config.sortedColumn;
+        this.componentRef.instance.inject.noRepetitions = config.noRepetitions;
         this.configUpdated.emit();
     }
 
@@ -446,16 +449,16 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * creates a dynamicTextComponent
      * @param inject 
      */
-         private createEdadynamicTextComponent(inject: any) {
-            this.entry.clear();
-            const factory = this.resolver.resolveComponentFactory(EdadynamicTextComponent);
-            this.componentRef = this.entry.createComponent(factory);
-            this.componentRef.instance.inject = inject;
-            this.componentRef.instance.onNotify.subscribe(data => {
-                const dynamicTextConfig = new DynamicTextConfig(data.color);
-                (<DynamicTextConfig><unknown>this.props.config.setConfig(dynamicTextConfig));
-            })
-        }
+    private createEdadynamicTextComponent(inject: any) {
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdadynamicTextComponent);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onNotify.subscribe(data => {
+            const dynamicTextConfig = new DynamicTextConfig(data.color);
+            (<DynamicTextConfig><unknown>this.props.config.setConfig(dynamicTextConfig));
+        })
+    }
 
     private renderMap(type: string) {
         let inject = new EdaMap();
@@ -549,8 +552,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         this.createFunnelComponent(inject);
     }
-
-
 
     private createFunnelComponent(inject: any) {
         this.entry.clear();
@@ -707,6 +708,4 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public getCurrentConfig() {
         return this.currentConfig;
     }
-
-
 }

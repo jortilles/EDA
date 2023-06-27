@@ -13,6 +13,7 @@ export class PanelChart {
   public size : {x:number, y:number};
   public  linkedDashboardProps : LinkedDashboardProps;
   public addTrend: boolean;
+  public noRepetitions: boolean;
 
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);

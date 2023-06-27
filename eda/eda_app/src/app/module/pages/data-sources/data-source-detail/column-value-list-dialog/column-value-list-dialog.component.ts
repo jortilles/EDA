@@ -46,7 +46,7 @@ export class ColumnValueListDialogComponent extends EdaDialogAbstract {
         this.dialog = new EdaDialog({
             show: () => this.onShow(),
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@AddValueList:Definir un listado de valores posibles`
+            title: $localize`:@@AddValueListOptions:Definir un listado de valores posibles`
         });
         this.dialog.style = { width: '40%', height: '50%', top:"-4em", left:'1em' };
 

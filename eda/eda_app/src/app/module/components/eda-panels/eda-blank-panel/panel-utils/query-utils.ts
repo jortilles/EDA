@@ -204,6 +204,7 @@ export const QueryUtils = {
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);
+    
     const params = {
       table: '',
       dataSource: ebp.inject.dataSource._id,
@@ -211,7 +212,8 @@ export const QueryUtils = {
       dashboard: ebp.inject.dashboard_id,
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
       config: config.getConfig(),
-      queryLimit: ebp.queryLimit
+      queryLimit: ebp.queryLimit,
+      joinType: ebp.joinType
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params);
   },

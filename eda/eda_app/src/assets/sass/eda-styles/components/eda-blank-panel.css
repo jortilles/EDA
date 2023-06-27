@@ -53,6 +53,9 @@ h2 {
 .infoFiltres{
     margin-top:10px;
 }
+.infoJoin{
+    margin-top:20px;
+}
 .question{
     margin-left: 5px;
     vertical-align: middle;
@@ -192,7 +195,7 @@ body .ui-accordion .ui-accordion-header a {
 .select-list {
     display: flex;
     flex-direction: row;
-
+    flex-wrap: wrap;
     padding: 2px;
     /* border: solid 1px #ccc; */
     border-radius: 4px;
@@ -206,7 +209,7 @@ body .ui-accordion .ui-accordion-header a {
 .filter-list {
     display: flex;
     flex-direction: row;
-
+    flex-wrap: wrap;
     padding: 2px;
     /* border: solid 1px #ccc; */
     border-radius: 4px;

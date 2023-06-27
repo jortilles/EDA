@@ -1,96 +1,13 @@
-<eda-dialog [inject]="dialog" >
+<eda-dialog [inject]="dialog">
 
-    <div body >
-        <p-card [header]="header1">
-            <!-- <p-header i18n="@@aplyToAllPanelsH5">
-                ¿Aplica a todos los paneles?
-            </p-header> -->
-            <div class="grid">
-                <div class="col-12">
-                    <p-inputSwitch id="applyToAllFiltersButton" [disabled]="applyToAllCheck()"
-                        [(ngModel)]="switchChecked">
-                    </p-inputSwitch>
-                </div>
-            </div>
-        </p-card>
-
-        <div style="margin: 1rem;"></div>
-
-        <p-card *ngIf="!switchChecked" [header]="header2">
-            <div class="grid">
-                <div class="col-12">
-                    <!-- <h5 i18n="@@panelsToAplyH5">
-                        Paneles para los que aplica el filtro:
-                    </h5> -->
-
-                    <div class="col-12">
-
-                        <button *ngFor="let panel of panelsToDisplay" type="button" pButton class="ui-button" style="margin-right: 0.5rem;"
-                            [ngClass]="{'ui-button-selected': panel.active, 'ui-button-unselected':!panel.active, 'ui-button-unvaliable':!panel.avaliable}"
-                            (click)="addPanelToFilter(panel)" label={{panel.title}}>
-
-                        </button>
-
-                        <div style="margin-top: 1rem;">
-                            <span style="margin: 0.5rem;" class="dotgreen"></span><span style="margin-right: 2rem;">
-                                {{greendot}}</span>
-                            <span style="margin: 0.5rem;" class="dotred"></span><span style="margin-right: 2rem;">
-                                {{reddot}} </span>
-                            <span style="margin: 0.5rem;" class="dotunselected"> </span> <span
-                                style="margin-right: 2rem;">{{unselecteddot}} </span>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </p-card>
-
-        <div style="margin: 1rem;"></div>
-        <p-card [header]="header3" id="anywhereClick">
-            <div class="grid">
-                <div class="col-12">
-                    <!-- <h5 i18n="@@filterForH5" id="anywhereClick">
-                        Filtrar por:
-                    </h5> -->
-                    <br>
-
-                    <div class="grid">
-
-                        <div class="col-4">
-                            <p-dropdown id="selectFilerTable" [options]="targetTables" [(ngModel)]="targetTable"
-                                filter="true" optionLabel="label" [style]="{'width': '100%'}"
-                                i18n-placeholder="@@placeholderTables" placeholder="Entidades"
-                                (onChange)="getColumnsByTable()" (onChange)=resetSelectedValues() appendTo="body">
-                            </p-dropdown>
-                        </div>
-
-                        <div class="col-4">
-                            <p-dropdown id="selectFilterColumn" [options]="targetCols" [(ngModel)]="targetCol"
-                                filter="true" optionLabel="label" [style]="{'width': '100%'}"
-                                i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
-                                (onChange)="loadGlobalFiltersData()" (onChange)=resetSelectedValues() appendTo="body">
-                            </p-dropdown>
-                        </div>
-
-                        <div class="col-4">
-                            <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
-                                *ngIf=" targetCol && targetCol.value.column_type !== 'date'" [options]="targetValues"
-                                [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30" display="chip"
-                                [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
-                                [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto" appendTo="body">
-                            </p-multiSelect>
-                            <eda-date-picker #myCalendar *ngIf="targetCol && targetCol.value.column_type === 'date'"
-                                (onDatesChanges)="processPickerEvent($event)">
-                            </eda-date-picker>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-        </p-card>
+    <div body>
+        <ng-container *ngIf="params?.isnew">
+            <ng-container *ngTemplateOutlet="filterTemplate;"></ng-container>
+        </ng-container>
+        <ng-container *ngIf="!params?.isnew">
+            <ng-container *ngTemplateOutlet="filtersTemplate;"></ng-container>
+        </ng-container>
     </div>
-
 
 
     <div footer>
@@ -102,3 +19,111 @@
         </div>
     </div>
 </eda-dialog>
+
+
+<ng-template #filterTemplate>
+    <p-card [header]="header1">
+        <!-- <p-header i18n="@@aplyToAllPanelsH5">
+            ¿Aplica a todos los paneles?
+        </p-header> -->
+        <div class="grid">
+            <div class="col-12">
+                <p-inputSwitch id="applyToAllFiltersButton" [disabled]="applyToAllCheck()" [(ngModel)]="switchChecked"> </p-inputSwitch>
+            </div>
+        </div>
+    </p-card>
+
+    <div style="margin: 1rem;"></div>
+
+    <p-card *ngIf="!switchChecked" [header]="header2">
+        <div class="grid">
+            <div class="col-12">
+                <button *ngFor="let panel of panelsToDisplay" type="button" pButton class="ui-button" style="margin-right: 0.5rem;"
+                [ngClass]="{'ui-button-selected': panel.active, 'ui-button-unselected':!panel.active, 'ui-button-unvaliable':!panel.avaliable}"
+                (click)="addPanelToFilter(panel)" label={{panel.title}}>
+
+            </button>
+
+            <div style="margin-top: 1rem;">
+                <span style="margin: 0.5rem;" class="dotgreen"></span>
+                <span style="margin-right: 2rem;">{{greendot}}</span>
+
+                <span style="margin: 0.5rem;" class="dotred"></span>
+                <span style="margin-right: 2rem;">{{reddot}}</span>
+
+                <span style="margin: 0.5rem;" class="dotunselected"></span>
+                <span style="margin-right: 2rem;">{{unselecteddot}}</span>
+            </div>
+
+            </div>
+        </div>
+    </p-card>
+
+    <div style="margin: 1rem;"></div>
+    <p-card [header]="header3" id="anywhereClick">
+        <div class="grid">
+            <div class="col-12">
+                <br>
+
+                <div class="grid">
+
+                    <div class="col-4">
+                        <p-dropdown id="selectFilerTable" [options]="targetTables" [(ngModel)]="targetTable"
+                            filter="true" optionLabel="label" [style]="{'width': '100%'}"
+                            i18n-placeholder="@@placeholderTables" placeholder="Entidades"
+                            (onChange)="getColumnsByTable()" (onChange)="resetSelectedValues()" appendTo="body">
+                        </p-dropdown>
+                    </div>
+
+                    <div class="col-4">
+                        <p-dropdown id="selectFilterColumn" [options]="targetCols" [(ngModel)]="targetCol"
+                            filter="true" optionLabel="label" [style]="{'width': '100%'}"
+                            i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
+                            (onChange)="loadGlobalFiltersData()" (onChange)="resetSelectedValues()" appendTo="body">
+                        </p-dropdown>
+                    </div>
+
+                    <div class="col-4">
+                        <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
+                            *ngIf=" targetCol && targetCol.value.column_type !== 'date'" [options]="targetValues"
+                            [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30" display="chip"
+                            [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
+                            [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto" appendTo="body">
+                        </p-multiSelect>
+
+                        <eda-date-picker #myCalendar
+                            *ngIf="targetCol && targetCol.value.column_type === 'date'"
+                            [autoClear]="true"
+                            [inject]="datePickerConfigs[selectedFilter?.id]"
+                            (onDatesChanges)="processPickerEvent($event)">
+                        </eda-date-picker>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </p-card>
+</ng-template>
+
+<ng-template #filtersTemplate>
+    <div class="col-12 pl-2">
+        <div cdkDropList cdkDropListOrientation="horizontal" class="select-list" [cdkDropListData]="filtersList" (cdkDropListDropped)="onReorderFilter($event)">
+            <ng-container *ngFor="let filter of filtersList">
+                <div class="select-box col-3 col-md-2 p-1" cdkDrag>
+                    <span class="close-thin pointer" (click)="removeFilter(filter, 'select')"></span>
+        
+                    <span class="text-center">
+                        {{filter.column.label}}
+                    </span>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+
+    <ng-container *ngIf="selectedFilter">
+        <p-card [header]="selectedFilter.table?.label + ' -' + selectedFilter.column?.label">
+            <ng-container *ngTemplateOutlet="filterTemplate;"></ng-container>
+        </p-card>
+    </ng-container>
+</ng-template>

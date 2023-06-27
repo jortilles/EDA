@@ -32,6 +32,7 @@ export class EdaTableComponent implements OnInit {
     }
     ngOnInit(): void {
         
+        
         if(this.inject.styles && !this.inject.pivot){
             this.applyStyles(this.inject.styles)
         }else if(this.inject.styles && this.inject.pivot){
@@ -41,17 +42,6 @@ export class EdaTableComponent implements OnInit {
 
 
     _tableFilter(table: Table, value: any, col: any) {
-        // if (_.isNil(FilterUtils['between'])) {
-        //     FilterUtils['between'] = (value: any, filter: any): boolean => {
-        //         if (_.isNil(filter) || (filter[0] === 0 && filter[1] === 0)) {
-        //             return true;
-        //         }
-        //         if (_.isNil(value) || value === '') {
-        //             return false;
-        //         }
-        //         return value >= filter[0] && value <= filter[1];
-        //     };
-        // }
         return table.filter(value, col.field, col.filter.comparationMethod);
     }
 
@@ -101,10 +91,13 @@ export class EdaTableComponent implements OnInit {
     }
 
     public applyStyles(styles: Array<any>) {
+        //console.log('Los estilos que me llegan son ');
+        //console.log(styles.toString())
 
         const fields = styles.map(style => style.col);
         const limits = {};
 
+        
         //Initialize 
         fields.forEach(field => {
             limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: []};
@@ -119,6 +112,7 @@ export class EdaTableComponent implements OnInit {
             });
 
         });
+        //console.log(limits);
 
         //Set ranges
         fields.forEach(field => {
@@ -137,15 +131,15 @@ export class EdaTableComponent implements OnInit {
             const colors = this.generateColor(styles[i].max, styles[i].min, 5);
   
             colors.forEach((color, i) => {
-                let name = key.replace('%', 'percent').replace(/ /g, '') ;
-                this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color}`);
+                let name = key.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9 ]/g, '') ;
+                this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color} `);
                 this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
                 {
                     // color:'',
                     borderWidth: '1px ',
                     borderStyle: 'solid ',
                     borderColor: 'white ',
-                    backgroundColor:`var(--table-gradient-bg-color-${name}-${i})`,
+                    backgroundColor:`var(--table-gradient-bg-color-${name}-${i}) `,
                 });
             });
 
@@ -156,10 +150,12 @@ export class EdaTableComponent implements OnInit {
     }
 
     applyPivotSyles(styles){
+        //console.log('Los estilos que me llegan son ');
+        //console.log(styles.toString());
 
         const fields = styles.map(style => style.col);
         const limits = {};
-
+        console.log(fields);
         //Initialize 
         fields.forEach(field => {
             limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: [], cols:styles.filter(s => s.col === field)[0].cols  };
@@ -198,7 +194,7 @@ export class EdaTableComponent implements OnInit {
             const colors = this.generateColor(styles[i].max, styles[i].min, 5);
   
             colors.forEach((color, i) => {
-                let name = key.replace('%', 'percent').replace(/ /g, '');
+                let name = key.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9 ]/g, '') ;
                 this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color}`);
                 this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
                 {

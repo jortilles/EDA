@@ -9,7 +9,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     return tables;
   }
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number): any {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string): any {
 
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
@@ -31,7 +31,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     });
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables);
+    const joinString = this.getJoins(joinTree, dest, tables, joinType);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -166,7 +166,7 @@ export class MySqlBuilderService extends QueryBuilderService {
   }
 
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>): any {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string): any {
 
     let joins = [];
     let joined = [];
@@ -194,11 +194,11 @@ export class MySqlBuilderService extends QueryBuilderService {
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
 
-            joinString.push(`inner join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
+            joinString.push(` ${joinType} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
 
           } else {
 
-            let join = `inner join ${t} on`;
+            let join = ` ${joinType} join ${t} on`;
 
             joinColumns[0].forEach((_, x) => {
 
@@ -267,10 +267,16 @@ export class MySqlBuilderService extends QueryBuilderService {
               } else if (_.isEqual(el.format, 'week_day')) {
                 columns.push(`WEEKDAY(\`${el.table_id}\`.\`${el.column_name}\`) + 1 as \`${el.display_name}\``);
 
+              }else if (_.isEqual(el.format, 'day_hour')) {
+                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H') as \`${el.display_name}\``);
+
+              }else if (_.isEqual(el.format, 'day_hour_minute')) {
+                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i') as \`${el.display_name}\``);
+
               }else if (_.isEqual(el.format, 'timestamp')) {
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i:%s') as \`${el.display_name}\``);
 
-              }  else {
+              } else {
                 columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d') as \`${el.display_name}\``);
               }
             } else {
@@ -299,6 +305,12 @@ export class MySqlBuilderService extends QueryBuilderService {
 
             } else if (_.isEqual(el.format, 'day')) {
               grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d')`);
+
+            }else if (_.isEqual(el.format, 'day_hour')) {
+              columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H')  `);
+
+            }else if (_.isEqual(el.format, 'day_hour_minute')) {
+              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i')  `);
 
             }else if (_.isEqual(el.format, 'timestamp')) {
               grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i:%s')`);

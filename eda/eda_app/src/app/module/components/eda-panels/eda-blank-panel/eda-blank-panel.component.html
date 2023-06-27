@@ -16,7 +16,7 @@
 <!-- Body of Panel -->
 <div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner === true}">
     <div *ngIf="display_v.saved_panel" class="p-1" style="height: 100%">
-        <panel-chart class="component" #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties()"
+        <panel-chart class="component" #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties()" (onChartClick)="onChartClick($event)"
             style="height: 100%; width: 100%; display:block">
         </panel-chart>
     </div>
@@ -30,7 +30,7 @@
 </div>
 
 <!-- Page Dialog -->
-<eda-page-dialog #pdialog [inject]="{display: this.display_v.page_dialog, title: panel.title}">
+<eda-page-dialog  #pdialog [inject]="{display: this.display_v.page_dialog, title:  this.panel.title.trim().length  > 0  ? panel.title : '?'  }">
     <div (window:resize)="onResize($event)" class="grid">
 
         <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)" class="col-11 ">
@@ -160,11 +160,27 @@
                         </div>
                         
                         <div class="grid">
-                            <div class="col-12 md:col-12 infoFiltres">
+                            <div class="col-4 md:col-12 infoFiltres">
                                 <span i18n="@@topQueryH4">
                                     Mostrar Top: &nbsp;
                                     <p-inputNumber [(ngModel)]="queryLimit" (onInput)="onTopChange()"></p-inputNumber>
                                 </span>
+
+
+                            </div>
+                            <div class="col-6 md:col-12  flex infoJoin">
+                                <span i18n="@@joinTypeH4">
+                                    Tipo de intersección: &nbsp;
+                                </span>
+                                    <p-selectButton [options]="joinTypeOptions" [(ngModel)]="joinType"  (onChange)="onJoinTypeChange()"  optionLabel="icon" optionValue="joinType" >
+                                        <ng-template let-item>
+                                            <i [class]="item.icon"></i>
+
+                                        </ng-template>
+                                    </p-selectButton>
+
+
+                                
 
 
                             </div>

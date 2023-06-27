@@ -99,6 +99,8 @@ export class ChartUtilsService {
         { display_name: $localize`:@@dates5:SEMANA`, value: 'week', selected: false },
         { display_name: $localize`:@@dates3:DIA`, value: 'day', selected: false },
         { display_name: $localize`:@@dates6:DIA DE LA SEMANA`, value: 'week_day', selected: false },
+        { display_name: $localize`:@@dates8:DIA HORA`, value: 'day_hour', selected: false },
+        { display_name: $localize`:@@dates9:DIA HORA MINUTO`, value: 'day_hour_minute', selected: false },
         { display_name: $localize`:@@dates7:FECHA COMPLETA`, value: 'timestamp', selected: false },
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
@@ -446,18 +448,52 @@ export class ChartUtilsService {
         return uniqueLabels;
     }
 
-    public transformDataQueryForTable(labels: any[], values: any[]) {
-        const output = [];
-        values = values.filter(row => !row.every(element => element === null));
-        // Load the Table for a preview
-        for (let i = 0; i < values.length; i += 1) {
-            const obj = {};
-            for (let e = 0; e < values[i].length; e += 1) {
-                obj[labels[e]] = values[i][e];
+    public transformDataQueryForTable(noRepetitions: boolean, labels: any[], values: any[]) {
+        
+        if (noRepetitions !== true) {
+
+            const output = [];
+            values = values.filter(row => !row.every(element => element === null));
+            // Load the Table for a preview
+            for (let i = 0; i < values.length; i += 1) {
+                const obj = {};
+                for (let e = 0; e < values[i].length; e += 1) {
+                    obj[labels[e]] = values[i][e];
+                }
+                output.push(obj);
             }
-            output.push(obj);
+            return output;
+
+        } else {
+
+            const output = [];
+            values = values.filter(row => !row.every(element => element === null));
+            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
+            let first  = _.cloneDeep(values[0]);
+            for (let i = 0; i < values.length; i += 1) {
+                const obj = [];
+                if(i == 0){   
+                    for (let e = 0; e < values[i].length; e += 1) {
+                            obj[labels[e]] = values[i][e];
+                        }
+                }else{
+                    for (let e = 0; e < values[i].length; e += 1) {
+                        if (values[i][e] === first[e]    &&  isNaN(values[i][e]) ) {
+                            obj[labels[e]] = "";   // AQUI SE SUSTITUYEN LOS REPETIDOS POR UNA CADENA EN BLANCO
+                        } else {
+                            obj[labels[e]] = values[i][e];
+                        }
+                        first[e]  =  values[i][e]; //AQUI SE SUTITUYE EL PRIMER VALOR
+                        }
+                }
+                output.push(obj);   
+            }
+                
+            return output;
+
         }
-        return output;
+        
+        
     }
 
     /**
@@ -629,7 +665,7 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
         }
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
-        if (dataSize < 5000) {
+        if (dataSize < 100000) {
             notAllowed.splice(notAllowed.indexOf('line'), 1);
             notAllowed.splice(notAllowed.indexOf('area'), 1);
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
@@ -1038,12 +1074,14 @@ export class ChartUtilsService {
                                 },
                                 padding: 6,
                                 formatter: (value,ctx) => {
-                                    const datapoints = ctx.dataset.data.map( x => x===''?0:x);
+                                    const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
                                     const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
                                     const percentage = value / total * 100
                                     let res = '';
                                     if( showLabels && showLabelsPercent){
-                                        res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                        res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                        if(res == 'NaN'){ res = '';}
+                                        res = res  + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
                                     }else if(showLabels && !showLabelsPercent){
                                         res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
                                     }else if(!showLabels && showLabelsPercent){
@@ -1116,14 +1154,19 @@ export class ChartUtilsService {
                             padding: 10,
 
                             formatter: (value,ctx) => {
-                                const datapoints = ctx.dataset.data.map( x => x===''?0:x);
-                                const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
-                                const percentage = value / total * 100
+                                
+                                const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
+                                const total = datapoints.reduce((total, datapoint) => total +  datapoint , 0);
+
+                                const percentage =  isNaN(value)?0:value  / total * 100
                                 let res = '';
                                 if( showLabels && showLabelsPercent){
-                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                    if(res == 'NaN'){ res = '';}
+                                    res = res  + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
                                 }else if(showLabels && !showLabelsPercent){
                                     res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                    if(res == 'NaN'){ res = '';}
                                 }else if(!showLabels && showLabelsPercent){
                                     res = percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'   ;
                                 }
@@ -1180,18 +1223,9 @@ export class ChartUtilsService {
                                 
                                 ticks: {
                                     callback: function(val, index) {
-                                        
+                                        if (this.getLabelForValue(val))
                                         return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
-                                        // Hide every 2nd tick label
-                                        return index % 2 === 0 ? this.getLabelForValue(val) : '';
                                     },
-                                    /*
-                                    callback: (value) => {
-                                        console.log(value);
-                                        if (value)
-                                            return value.length > 30 ? (value.substr(0, 17) + '...') : value;
-                                    },
-                                    */
                                     fontSize: edaFontSize, fontStyle: edafontStyle,
                                     fontFamily: styles.fontFamily,
                                     fontColor: styles.fontColor,
@@ -1259,12 +1293,14 @@ export class ChartUtilsService {
                                 size:  edaFontSize  
                             },
                             formatter: (value,ctx) => {
-                                const datapoints = ctx.dataset.data.map( x => x===''?0:x);
+                                const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
                                 const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
                                 const percentage = value / total * 100
                                 let res = '';
                                 if( showLabels && showLabelsPercent){
-                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                    if(res == 'NaN'){ res = '';}
+                                    res = res  + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
                                 }else if(showLabels && !showLabelsPercent){
                                     res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
                                 }else if(!showLabels && showLabelsPercent){
@@ -1398,12 +1434,14 @@ export class ChartUtilsService {
                           size:  edaFontSize-2  
                         },
                         formatter: (value,ctx) => {
-                            const datapoints = ctx.dataset.data.map( x => x===''?0:x);
+                            const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
                             const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
                             const percentage = value / total * 100
                             let res = '';
                             if( showLabels && showLabelsPercent){
-                                res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 }) + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                if(res == 'NaN'){ res = '';}
+                                res = res  + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
                             }else if(showLabels && !showLabelsPercent){
                                 res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
                             }else if(!showLabels && showLabelsPercent){
@@ -1465,10 +1503,8 @@ export class ChartUtilsService {
                                 maxRotation: 30,
                                 minRotation: 30,
                                 callback: function(val, index) {
-                                    
-                                    return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
-                                    // Hide every 2nd tick label
-                                    return index % 2 === 0 ? this.getLabelForValue(val) : '';
+                                    if (this.getLabelForValue(val))
+                                        return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
                                   },
                                 autoSkip: true,
                                 maxTicksLimit: maxTicksLimit,
@@ -1515,7 +1551,7 @@ export class ChartUtilsService {
                         
                     },
                     elements: {
-                        point: { radius: 2, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
+                        point: { radius: 0, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
                         line: { 
                                 borderWidth: 1.5, 
                                 fill:  chartSubType=='area'?true:false, 

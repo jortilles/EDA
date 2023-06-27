@@ -33,7 +33,7 @@ export const PanelOptions = {
       command: () => {
 
         if (Object.entries(panelComponent.graficos).length !== 0 && panelComponent.chartData.length !== 0) {
-
+          
           if (['line', 'area', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline', 'histogram'].includes(panelComponent.graficos.chartType)) {
 
             panelComponent.contextMenu.hideContextMenu();
@@ -45,7 +45,6 @@ export const PanelOptions = {
           } else if (['table', 'crosstable'].includes(panelComponent.graficos.chartType)) {
 
             panelComponent.contextMenu.hideContextMenu();
-  
             panelComponent.tableController = new EdaDialogController({
               params: { panelId: _.get(panelComponent.panel, 'id'), panelChart: panelComponent.panelChartConfig },
               close: (event, response) => panelComponent.onCloseTableProperties(event, response)
@@ -230,7 +229,7 @@ export const PanelOptions = {
     if (!panelComponent.panel.content) {
         return panelComponent.alertService.addError(`No tienes contenido para exportar`);
     }
-    const cols = panelComponent.chartUtils.transformDataQueryForTable(panelComponent.chartLabels, panelComponent.chartData);
+    const cols = panelComponent.chartUtils.transformDataQueryForTable(panelComponent.panelChartConfig.noRepetitions, panelComponent.chartLabels, panelComponent.chartData);
     const headers = panelComponent.currentQuery.map(o => o.display_name.default);
 
     if (_.isEqual(fileType, 'excel')) {
