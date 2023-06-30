@@ -235,6 +235,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.stylesProviderService.setPanelContentFontSize(size);
         });
 
+        this.stylesProviderService.customCss.subscribe((css) => {
+           this.stylesProviderService.setCustomCss(css); 
+        });
+
 
     }
 
@@ -363,7 +367,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                     me.sendViaMailConfig = config.sendViaMailConfig || this.sendViaMailConfig;
                     me.styles = config.styles || this.stylesProviderService.generateDefaultStyles();
-
                     this.stylesProviderService.setStyles(me.styles);
 
                     // pot ser que no estinguin disponibles encara els grups... per això de vegades es perd
