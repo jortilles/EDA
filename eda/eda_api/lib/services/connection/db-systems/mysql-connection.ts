@@ -1,8 +1,8 @@
-import {  createConnection, Connection as SqlConnection } from 'mysql2';
+import { createConnection, createPool, Connection as SqlConnection } from 'mysql2';
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
-import DataSource from '../../../module/datasource/model/datasource.model';
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
+import { ConnectionOptions, PoolOptions } from 'mysql2/typings/mysql';
 const util = require('util');
 
 
@@ -14,8 +14,31 @@ export class MysqlConnection extends AbstractConnection {
     private AggTypes: AggregationTypes;
 
     async getclient() {
-        const mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
-        return createConnection(mySqlConn);
+        if (this.config.poolLimit && this.config.poolLimit > 0) {
+            const mySqlConn: PoolOptions = {
+                host: this.config.host,
+                port: this.config.port,
+                user: this.config.user,
+                password: this.config.password,
+                database: this.config.database,
+                waitForConnections: true,
+                connectionLimit: this.config.poolLimit,
+                queueLimit: 0,
+                enableKeepAlive: true,
+                keepAliveInitialDelay: 0
+            };
+            return createPool(mySqlConn);
+        } else {
+            const mySqlConn: ConnectionOptions = {
+                host: this.config.host,
+                port: this.config.port,
+                database: this.config.database,
+                user: this.config.user,
+                password: this.config.password
+            };
+            return createConnection(mySqlConn);
+        }
+
     }
 
     async tryConnection(): Promise<any> {
@@ -61,9 +84,9 @@ export class MysqlConnection extends AbstractConnection {
 
 
             const query = `
-            SELECT *  FROM information_schema.tables   
-            WHERE table_type in ( 'BASE TABLE', 'VIEW', 'base table', 'view')  
-            and TABLE_SCHEMA = '${schema}' ${filter_str};
+                SELECT *  FROM information_schema.tables   
+                WHERE table_type in ( 'BASE TABLE', 'VIEW', 'base table', 'view')  
+                and TABLE_SCHEMA = '${schema}' ${filter_str};
             `;
 
             const getResults = await this.execQuery(query);
