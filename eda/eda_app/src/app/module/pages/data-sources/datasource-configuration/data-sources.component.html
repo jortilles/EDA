@@ -58,6 +58,12 @@
         </div>
       </div>
       
+      <div *ngIf="form.value.type && form.value.type.value ==='mysql'"  class="col-6 ui-md-2">
+        <div class="form-group">
+          <label i18n="@@inputPoolDb">Pool Limit</label>
+          <input type="number" class="form-control" formControlName="poolLimit" id="eda_ds_pool" pInputText>
+        </div>
+      </div>
 
       <div class="col-6 ui-md-3">
         <div class="form-group">
