@@ -190,6 +190,7 @@ export const PanelOptions = {
             datasource : panelComponent.inject.dataSource._id,
             charttype : panelComponent.panelChart.props.chartType,
             modeSQL : panelComponent.panel.content.query.query.modeSQL,
+            hiddenColumn: panelComponent.hiddenColumn,
             dashboard_id : panelComponent.inject.dashboard_id,
             linkedDashboard : panelComponent.panel.linkedDashboardProps
           },
