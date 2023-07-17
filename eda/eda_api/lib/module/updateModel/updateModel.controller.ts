@@ -249,7 +249,6 @@ export class updateModel {
 
             }
             //Evitar duplicados
-
             let found = false;
             try {
                 found = destGrantedRoles.find(e => e.table === line.table && e.groupsName[0] === "EDA_ADMIN")
@@ -513,6 +512,7 @@ console.log(sinergiaDatabase);
     main_model.ds.connection.database = sinergiaDatabase.sinergiaConn.database;
     main_model.ds.connection.port = sinergiaDatabase.sinergiaConn.port;
     main_model.ds.connection.user = sinergiaDatabase.sinergiaConn.user;
+    main_model.ds.connection.poolLimit = sinergiaDatabase.sinergiaConn.connectionLimit;
     main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password);
     main_model.ds.model.tables = tables; //añadimos el parámetro en la columna adecuada
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
