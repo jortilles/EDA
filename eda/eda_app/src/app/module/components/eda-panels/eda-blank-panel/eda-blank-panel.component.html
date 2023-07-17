@@ -89,7 +89,7 @@
                                     (mouseout)="description= ''" cdkDrag
                                     (cdkDragDropped)="searchRelations(column, $event)"
                                     (cdkDragDropped)="openColumnDialog(column)" (click)="openColumnDialog(column)"
-                                    [ngStyle]=" column.hidden && {'opacity': '0.5'} "
+                                    [ngStyle]=" column.hidden && {'opacity': '0.5'} " 
                                     >
 
 
@@ -108,7 +108,9 @@
                                     *ngIf='column.column_type != "numeric" && column.column_type !="date"'
                                     (click)="moveItem(column)" (mouseover)="showDescription(column)"
                                     (mouseout)="description= ''" cdkDrag
-                                    (cdkDragDropped)="searchRelations(column, $event)">
+                                    (cdkDragDropped)="searchRelations(column, $event)"
+                                    [ngStyle]=" column.hidden && {'opacity': '0.5'} " 
+                                    >
 
 
                                     <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical"
