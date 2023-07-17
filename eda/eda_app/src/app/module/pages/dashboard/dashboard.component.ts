@@ -51,6 +51,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public datasourceName: string;
     public group: string = '';
     public onlyIcanEdit: boolean = false;
+    public queryParams: any = {};
 
     // Grid Global Variables
     public inject: InjectEdaPanel;
@@ -84,7 +85,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         shared: false, //if shared copy url is displayed
         edit_mode: true, //editable dashboard
         anonimous_mode: false,
-        notSaved: false
+        notSaved: false,
+        dashboardOptions: true // dashboard config options (rudeta)
     };
 
     //Date filter ranges Dropdown
@@ -341,6 +343,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             err => me.alertService.addError(err)
         );
 
+        // Check url for filters in params
+        this.getUrlParams();
+
         if (me.id) {
             me.dashboardService.getDashboard(me.id).subscribe(
                 res => {
@@ -382,9 +387,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         me.panels.push(
                             new EdaPanel({ id: me.fileUtiles.generateUUID(), title: $localize`:@@newPanelTitle:Nuevo Panel`, type: EdaPanelType.BLANK, w: 20, h: 10, dragAndDrop: true, resizable: true })
                         );
-
+                        
                         // Check url for filters in params
-                        this.getUrlParams();
+                        this.findGlobalFilterByUrlParams(this.queryParams);
                         this.fillFiltersData();
 
                         me.dashboard = new Dashboard({
@@ -396,7 +401,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         // Si te panels els carrega
                         me.panels = config.panel;
                         // Check url for filters in params
-                        this.getUrlParams();
+                        this.findGlobalFilterByUrlParams(this.queryParams);
                         this.fillFiltersData();
 
                         me.dashboard = new Dashboard({
@@ -498,7 +503,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private getUrlParams(): void {
         this.route.queryParams.subscribe(params => {
-            this.findGlobalFilterByUrlParams(params);
+            this.queryParams = params;
+            this.display_v.dashboardOptions = params['nowheel'] ? false : true;
         });
     }
 

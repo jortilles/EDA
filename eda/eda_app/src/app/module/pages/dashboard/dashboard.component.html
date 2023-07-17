@@ -291,7 +291,7 @@
 <div>
     <span i18n="@@notSavedChanges" class="div-cambios " *ngIf="display_v.notSaved" style="color: var(--panel-font-color);"> Hay cambios sin guardar... </span>
 
-    <button (click)="display_v.rightSidebar = true" class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
+    <button *ngIf="display_v.dashboardOptions" (click)="display_v.rightSidebar = true" class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
         <i id="gearButton" class="fa fa-cog text-white" style="font-size: 14px;"></i>
     </button>
 
