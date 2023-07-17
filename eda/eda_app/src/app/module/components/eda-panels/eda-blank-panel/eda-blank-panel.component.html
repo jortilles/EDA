@@ -30,7 +30,7 @@
 </div>
 
 <!-- Page Dialog -->
-<eda-page-dialog  #pdialog [inject]="{display: this.display_v.page_dialog, title:  this.panel.title.trim().length  > 0  ? panel.title : '?'  }">
+<eda-page-dialog  #pdialog [inject]="{display: this.display_v.page_dialog, title:  this.panel.title.trim().length  > 0  ? panel.title : '\uD83D\uDD89'  }">
     <div (window:resize)="onResize($event)" class="grid">
 
         <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)" class="col-11 ">
