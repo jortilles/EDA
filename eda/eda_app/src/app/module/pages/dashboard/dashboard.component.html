@@ -63,7 +63,7 @@
                 *ngIf="filter.column.value.column_type === 'date'"
                 [autoClear]="true"
                 [inject]="datePickerConfigs[filter.id]"
-                (onRemove)="removeGlobalFilter(filter)"
+                (onRemove)="removeGlobalFilter(filter, true)"
                 (onDatesChanges)="processPickerEvent($event, filter)">
 
                 <ng-container footer>
