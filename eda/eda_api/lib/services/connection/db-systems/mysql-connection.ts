@@ -2,7 +2,7 @@ import { createConnection, createPool, Connection as SqlConnection } from 'mysql
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
-import { ConnectionOptions, PoolOptions } from 'mysql2/typings/mysql';
+import { ConnectionOptions, PoolOptions, Pool } from 'mysql2/typings/mysql';
 const util = require('util');
 
 
@@ -12,22 +12,27 @@ export class MysqlConnection extends AbstractConnection {
     }
     private queryBuilder: MySqlBuilderService;
     private AggTypes: AggregationTypes;
+    private pool: Pool;
 
     async getclient() {
         if (this.config.poolLimit && this.config.poolLimit > 0) {
-            const mySqlConn: PoolOptions = {
-                host: this.config.host,
-                port: this.config.port,
-                user: this.config.user,
-                password: this.config.password,
-                database: this.config.database,
-                waitForConnections: true,
-                connectionLimit: this.config.poolLimit,
-                queueLimit: 0,
-                enableKeepAlive: true,
-                keepAliveInitialDelay: 0
-            };
-            return createPool(mySqlConn);
+            if (!this.pool) {
+                const mySqlConn: PoolOptions = {
+                    host: this.config.host,
+                    port: this.config.port,
+                    user: this.config.user,
+                    password: this.config.password,
+                    database: this.config.database,
+                    waitForConnections: true,
+                    connectionLimit: this.config.poolLimit,
+                    queueLimit: 0,
+                    enableKeepAlive: true,
+                    keepAliveInitialDelay: 0
+                };
+                this.pool = createPool(mySqlConn);
+            }
+
+            return this.pool;
         } else {
             const mySqlConn: ConnectionOptions = {
                 host: this.config.host,
@@ -38,7 +43,6 @@ export class MysqlConnection extends AbstractConnection {
             };
             return createConnection(mySqlConn);
         }
-
     }
 
     async tryConnection(): Promise<any> {
