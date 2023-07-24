@@ -86,7 +86,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         edit_mode: true, //editable dashboard
         anonimous_mode: false,
         notSaved: false,
-        dashboardOptions: true // dashboard config options (rudeta)
+        hideWheel: false // dashboard config options (mostrar la rodeta o no)
     };
 
     //Date filter ranges Dropdown
@@ -504,7 +504,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private getUrlParams(): void {
         this.route.queryParams.subscribe(params => {
             this.queryParams = params;
-            this.display_v.dashboardOptions = params['nowheel'] ? false : true;
+            try{
+                    if(params['hideWheel'] == 'true'){
+                        this.display_v.hideWheel =true;
+                    }
+            }catch(e){
+            }
+
+            console.log(params);
+            console.log(this.display_v);
         });
     }
 
