@@ -15,13 +15,13 @@
     <!-- ============================================================== -->
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
-    <div *ngIf="filtersList.length > 0" class="d-flex align-items-end" style="margin: 0.5em; gap: 10px;">
+    <div *ngIf="filtersList.length > 0" class="d-flex align-items-end" style="margin: 0.5em; gap: 10px; flex-wrap: wrap;">
         
         <button id="dashFilterBtn"
             [label]="filtrar"
             pButton pRipple type="button"
             icon="pi pi-filter"
-            style="height: 36px;"
+            style="height: 36px; min-width: 80px;"
             (click)="reloadPanelsWithTimeOut()"
             class="p-button-raised p-button-outlined filters-size">
         </button>
