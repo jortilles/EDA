@@ -606,9 +606,7 @@ export class DashboardController {
 
 
     try {
-      const connection = await ManagerConnectionService.getConnection(
-        req.body.model_id
-      )
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
       /**--------------------------------------------------------------------------------------------------------- */
       /**Security check */
