@@ -6,6 +6,8 @@ import DataSourceRouter from './module/datasource/datasource.router';
 import UploadsRouter from './module/uploads/uploads.router';
 import MailRouter from './module/mail/mail.router';
 
+import updateModelRouter from './module/updateModel/updateModel.router';
+
 const router = express.Router();
 
 router.use('/admin', AdminRouter);
@@ -19,5 +21,9 @@ router.use('/global/upload', UploadsRouter);
 router.use('/addTable', AddTableRouter );
 
 router.use('/mail', MailRouter);
+
+//Router para update model de SinergiaTIC
+router.use('/updatemodel', updateModelRouter);
+
 
 export default router;
