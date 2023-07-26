@@ -2,32 +2,38 @@ import { createConnection, createPool, Connection as SqlConnection } from 'mysql
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
-import { ConnectionOptions, PoolOptions } from 'mysql2/typings/mysql';
+import { ConnectionOptions, PoolOptions, Pool } from 'mysql2/typings/mysql';
 const util = require('util');
 
 
 export class MysqlConnection extends AbstractConnection {
-    GetDefaultSchema(): string {
-        return null;
-    }
+    private static instance: MysqlConnection;
     private queryBuilder: MySqlBuilderService;
     private AggTypes: AggregationTypes;
+    private pool: Pool;
 
-    async getclient() {
-        if (this.config.poolLimit && this.config.poolLimit > 0) {
-            const mySqlConn: PoolOptions = {
-                host: this.config.host,
-                port: this.config.port,
-                user: this.config.user,
-                password: this.config.password,
-                database: this.config.database,
-                waitForConnections: true,
-                connectionLimit: this.config.poolLimit,
-                queueLimit: 0,
-                enableKeepAlive: true,
-                keepAliveInitialDelay: 0
-            };
-            return createPool(mySqlConn);
+    public GetDefaultSchema(): string { return null; }
+
+    public async getclient() {
+        if (this.config.poolLimit) {
+            if (!this.pool) {
+                const mySqlConn: PoolOptions = {
+                    host: this.config.host,
+                    port: this.config.port,
+                    user: this.config.user,
+                    password: this.config.password,
+                    database: this.config.database,
+                    waitForConnections: true,
+                    connectionLimit: this.config.poolLimit,
+                    queueLimit: 0,
+                    enableKeepAlive: true,
+                    keepAliveInitialDelay: 0
+                };
+
+                this.pool = createPool(mySqlConn);
+            }
+
+            return this.pool;
         } else {
             const mySqlConn: ConnectionOptions = {
                 host: this.config.host,
@@ -38,10 +44,16 @@ export class MysqlConnection extends AbstractConnection {
             };
             return createConnection(mySqlConn);
         }
-
     }
 
-    async tryConnection(): Promise<any> {
+    public static getInstance(config: any): MysqlConnection {
+        if (!MysqlConnection.instance) {
+            MysqlConnection.instance = new MysqlConnection(config);
+        }
+        return MysqlConnection.instance;
+    }
+
+    public async tryConnection(): Promise<any> {
         try {
             return new Promise((resolve, reject) => {
                 const mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
@@ -64,7 +76,7 @@ export class MysqlConnection extends AbstractConnection {
         }
     }
 
-    async generateDataModel(optimize:number, filter:string): Promise<any> {
+    public async generateDataModel(optimize:number, filter:string): Promise<any> {
         try {
             const tableNames = [];
             this.client = await this.getclient();
@@ -126,7 +138,8 @@ export class MysqlConnection extends AbstractConnection {
                     tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
-            this.client.end();
+            console.log(this.client.itsConnected());
+            if (!this.pool && this.client.itsConnected()) this.client.end();
             
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
             if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
@@ -137,11 +150,12 @@ export class MysqlConnection extends AbstractConnection {
         }
     }
 
-    async execQuery(query: string): Promise<any> {
+    public async execQuery(query: string): Promise<any> {
         try {
             this.client.query = util.promisify(this.client.query);
             const rows = await this.client.query(query);
-            this.client.end();
+            console.log(this.client.itsConnected());
+            if (!this.pool && this.client.itsConnected() ) this.client.end();
             return rows;
         } catch (err) {
             console.log(err);
@@ -150,12 +164,11 @@ export class MysqlConnection extends AbstractConnection {
 
     }
 
-    async execSqlQuery(query: string): Promise<any> {
+    public async execSqlQuery(query: string): Promise<any> {
         return this.execQuery(query);
     }
 
-
-    async getQueryBuilded(queryData: any, dataModel: any, user: any) {
+    public async getQueryBuilded(queryData: any, dataModel: any, user: any) {
         this.queryBuilder = new MySqlBuilderService(queryData, dataModel, user);
         return this.queryBuilder.builder();
     }

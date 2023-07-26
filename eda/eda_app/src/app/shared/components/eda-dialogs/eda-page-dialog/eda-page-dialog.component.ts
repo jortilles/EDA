@@ -17,7 +17,7 @@ export class EdaPageDialogComponent implements OnInit {
 
     ngOnInit(): void {  
         if(this.inject.title== ''){
-            this.newText = '?';
+            this.newText = '\uD83D\uDD89';
         }else{
             this.newText = this.inject.title; 
         }
@@ -28,10 +28,10 @@ export class EdaPageDialogComponent implements OnInit {
     }
 
     getTitle() {
-        if( this.newText != '?' && this.newText.length  > 0  ){
+        if( this.newText != '\uD83D\uDD89' && this.newText.length  > 0  ){
             return this.newText;
         }else {
-            this.newText = '?';
+            this.newText = '\uD83D\uDD89';
             return  '';
         }
         
