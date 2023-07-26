@@ -155,6 +155,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public colorsDeepCopy: any = {};
 
     public queryFromServer: string = '';
+    public showHiddId: boolean;
 
     // join types 
     joinTypeOptions: any[] = [
@@ -189,7 +190,8 @@ export class EdaBlankPanelComponent implements OnInit {
         this.index = 0;
         this.modeSQL = false;
         this.hiddenColumn = true;
-
+        
+        this.showIdForHiddenMode()
         this.setTablesData();
         
         /**If panel comes from server */
@@ -310,7 +312,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * Sets configuration dialog and chart
      * @param panelContent panel content to build configuration .
      */
-    buildGlobalconfiguration(panelContent: any) {
+    buildGlobalconfiguration(panelContent: any) { 
 
         if (!panelContent.query.query.modeSQL) {
 
@@ -328,12 +330,18 @@ export class EdaBlankPanelComponent implements OnInit {
         }
 
         this.queryLimit = panelContent.query.query.queryLimit;
-        PanelInteractionUtils.handleFilters(this, panelContent.query.query);
-        PanelInteractionUtils.handleFilterColumns(
-            this,
-            panelContent.query.query.filters,
-            panelContent.query.query.fields
-        );
+
+        try {
+            PanelInteractionUtils.handleFilters(this, panelContent.query.query);
+            PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters,panelContent.query.query.fields);
+ 
+        }catch(e){
+            console.log('Error loading filters to define query in blank panel compoment........ Do you have deleted any column?????');
+            console.log(e);
+        }
+       
+
+
         PanelInteractionUtils.handleCurrentQuery(this);
 
         this.chartForm.patchValue({
@@ -969,5 +977,15 @@ export class EdaBlankPanelComponent implements OnInit {
     /** This funciton return the display name for a given table. Its used for the query resumen      */
     public getNiceTableName(  table ){
          return this.tables.find( t => t.table_name === table).display_name.default;
+    }
+
+    public showIdForHiddenMode() {
+        
+        if (this.inject.dataSource._id == "111111111111111111111111") {
+            this.showHiddId = true;
+        } else {
+            this.showHiddId = false;
+        }
+     
     }
 }

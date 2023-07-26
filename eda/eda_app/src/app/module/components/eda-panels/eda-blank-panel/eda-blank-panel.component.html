@@ -67,7 +67,7 @@
                                 title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
                                 Atributos
                             </h4>
-                            <div *ngIf="userService.isAdmin">
+                            <div *ngIf="userService.isAdmin && showHiddId">
                                 <span class="pointer icon-hover" (click)="hiddenColumn = !hiddenColumn" (click)="changeHiddenMode()">
                                     Atributos ocultos
                                     <i *ngIf="!hiddenColumn" class="pi pi-eye" style="font-size: 1.25rem"></i>
