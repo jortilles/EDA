@@ -138,7 +138,8 @@ export class MysqlConnection extends AbstractConnection {
                     tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
-            if (!this.pool) this.client.end();
+            console.log(this.client.itsConnected());
+            if (!this.pool && this.client.itsConnected()) this.client.end();
             
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
             if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
@@ -153,7 +154,8 @@ export class MysqlConnection extends AbstractConnection {
         try {
             this.client.query = util.promisify(this.client.query);
             const rows = await this.client.query(query);
-            if (!this.pool) this.client.end();
+            console.log(this.client.itsConnected());
+            if (!this.pool && this.client.itsConnected() ) this.client.end();
             return rows;
         } catch (err) {
             console.log(err);
