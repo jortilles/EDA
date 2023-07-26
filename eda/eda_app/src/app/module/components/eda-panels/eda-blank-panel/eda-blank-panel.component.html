@@ -1,4 +1,3 @@
-
 <!-- Panel Header -->
 <div class="panel-heading d-flex justify-content-between">
     <div style="width: 100%;">
@@ -16,7 +15,8 @@
 <!-- Body of Panel -->
 <div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner === true}">
     <div *ngIf="display_v.saved_panel" class="p-1" style="height: 100%">
-        <panel-chart class="component" #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties()" (onChartClick)="onChartClick($event)"
+        <panel-chart class="component" #PanelChartComponent [props]="panelChartConfig"
+            (configUpdated)="setChartProperties()" (onChartClick)="onChartClick($event)"
             style="height: 100%; width: 100%; display:block">
         </panel-chart>
     </div>
@@ -42,7 +42,8 @@
                 <div *ngIf="!modeSQL" class="grid">
 
                     <div class="col-6 md:col-2 pl-2 pr-2">
-                        <h4 i18n="@@entidadesH4"  i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos." >
+                        <h4 i18n="@@entidadesH4" i18n-title="@@entidadesTitle"
+                            title="Clique sobre un entidad para ver sus atributos.">
                             Entidades
                         </h4>
                         <hr class="mb-0">
@@ -79,39 +80,60 @@
                         <hr class="mb-0" style="margin-top: 0.5rem!important;">
 
                         <eda-input [inject]="inputs.findColumn"></eda-input>
-                            
+
                         <div class="column-list" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
                             [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
                             [cdkDropListEnterPredicate]="isAllowed">
                             <div *ngFor="let column of columns">
-                                <div class="column-box"  *ngIf='column.column_type === "numeric" || column.column_type === "date"' (click)="moveItem(column)" (mouseover)="showDescription(column)" (mouseout)="description= ''" cdkDrag
-                                (cdkDragDropped)="searchRelations(column, $event)" (cdkDragDropped)="openColumnDialog(column)" (click)="openColumnDialog(column)">  
-                                   
-   
-                                   <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                   <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
-                                   <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
-                                   <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">                        
-                                       {{column.display_name.default}} 
-                                   </span>
-                               </div> 
-                               <div  class="column-box" *ngIf='column.column_type != "numeric" && column.column_type !="date"' (click)="moveItem(column)" (mouseover)="showDescription(column)" (mouseout)="description= ''" cdkDrag
-                               (cdkDragDropped)="searchRelations(column, $event)">  
-                                  
-   
-                                  <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                  <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
-                                  <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
-                                  <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">                        
-                                      {{column.display_name.default}} 
-                                  </span>
-                              </div> 
-                               </div>
+                                <div class="column-box"
+                                    *ngIf='column.column_type === "numeric" || column.column_type === "date"'
+                                    (click)="moveItem(column)" (mouseover)="showDescription(column)"
+                                    (mouseout)="description= ''" cdkDrag
+                                    (cdkDragDropped)="searchRelations(column, $event)"
+                                    (cdkDragDropped)="openColumnDialog(column)" (click)="openColumnDialog(column)"
+                                    [ngStyle]=" column.hidden && {'opacity': '0.5'} " 
+                                    >
+
+
+                                    <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical"
+                                        style="margin-right:4px;"></span>
+                                    <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text"
+                                        style="margin-right:4px;"></span>
+                                    <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric"
+                                        style="margin-right:4px;"></span>
+                                    <span class="text-left" title="{{column.description.default}}"
+                                        class="eda-col-class-{{column.column_type}}">
+                                        {{column.display_name.default}}
+                                    </span>
+                                </div>
+                                <div class="column-box"
+                                    *ngIf='column.column_type != "numeric" && column.column_type !="date"'
+                                    (click)="moveItem(column)" (mouseover)="showDescription(column)"
+                                    (mouseout)="description= ''" cdkDrag
+                                    (cdkDragDropped)="searchRelations(column, $event)"
+                                    [ngStyle]=" column.hidden && {'opacity': '0.5'} " 
+                                    >
+
+
+                                    <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical"
+                                        style="margin-right:4px;"></span>
+                                    <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text"
+                                        style="margin-right:4px;"></span>
+                                    <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric"
+                                        style="margin-right:4px;"></span>
+                                    <span class="text-left" title="{{column.description.default}}"
+                                        class="eda-col-class-{{column.column_type}}">
+                                        {{column.display_name.default}}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
 
                     <div class="col-12 md:col-8 pl-2">
-                        <h4 i18n="@@seleccionH4" i18n-title="@@seleccionTitle" title="Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.">
+                        <h4 i18n="@@seleccionH4" i18n-title="@@seleccionTitle"
+                            title="Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.">
                             Mostrar los siguientes atributos:
                         </h4>
                         <hr class="mb-0">
@@ -129,11 +151,15 @@
                                 <span class="close-thin pointer" (click)="removeColumn( item, 'select' )"></span>
 
 
-                                <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
-                                <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
+                                <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical"
+                                    style="margin-right:4px;"></span>
+                                <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text"
+                                    style="margin-right:4px;"></span>
+                                <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric"
+                                    style="margin-right:4px;"></span>
 
-                                <span    class=" text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
+                                <span class=" text-center eda-col-class-{{item.column_type}}"
+                                    title="{{item.description.default}}">
                                     {{item.display_name.default}}
                                 </span>
 
@@ -142,7 +168,7 @@
                         </div>
 
                         <h4 class="mt-4" i18n="@@filtrosH4">
-                            Filtrar los resultados por: 
+                            Filtrar los resultados por:
                         </h4>
                         <hr class="mb-0">
 
@@ -159,18 +185,22 @@
                                 <span class="close-thin pointer" (click)="removeColumn( item, 'filter' )"></span>
 
 
-                                <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
-                                <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
+                                <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical"
+                                    style="margin-right:4px;"></span>
+                                <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text"
+                                    style="margin-right:4px;"></span>
+                                <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric"
+                                    style="margin-right:4px;"></span>
 
-                                
-                                <span  class=" text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
+
+                                <span class=" text-center eda-col-class-{{item.column_type}}"
+                                    title="{{item.description.default}}">
                                     {{item.display_name.default}}
                                 </span>
                             </div>
 
                         </div>
-                        
+
                         <div class="grid">
                             <div class="col-4 md:col-12 infoFiltres">
                                 <span i18n="@@topQueryH4">
@@ -184,15 +214,16 @@
                                 <span i18n="@@joinTypeH4">
                                     Tipo de intersección: &nbsp;
                                 </span>
-                                    <p-selectButton [options]="joinTypeOptions" [(ngModel)]="joinType"  (onChange)="onJoinTypeChange()"  optionLabel="icon" optionValue="joinType" >
-                                        <ng-template let-item>
-                                            <i [class]="item.icon"></i>
+                                <p-selectButton [options]="joinTypeOptions" [(ngModel)]="joinType"
+                                    (onChange)="onJoinTypeChange()" optionLabel="icon" optionValue="joinType">
+                                    <ng-template let-item>
+                                        <i [class]="item.icon"></i>
 
-                                        </ng-template>
-                                    </p-selectButton>
+                                    </ng-template>
+                                </p-selectButton>
 
 
-                                
+
 
 
                             </div>
@@ -245,7 +276,8 @@
                                         </h5>
 
                                         <div *ngFor='let column of this.currentQuery'>
-                                            <span> {{ getNiceTableName( column.table_id )  }} - {{column.display_name.default}}</span>
+                                            <span> {{ getNiceTableName( column.table_id ) }} -
+                                                {{column.display_name.default}}</span>
 
                                             <span *ngFor='let aggregation of column.aggregation_type'>
                                                 <span
