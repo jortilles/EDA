@@ -76,6 +76,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public sunburstController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
+    public hiddenColumn: boolean;
 
 
     public inputs: any = {};
@@ -134,7 +135,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public joinType: string = 'inner';
 
     public modeSQL: boolean;
-    public hiddenColumn: boolean; 
     public sqlOriginTables: {}[];
     public sqlOriginTable: any;
 
