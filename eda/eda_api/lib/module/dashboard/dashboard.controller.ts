@@ -156,6 +156,15 @@ export class DashboardController {
               { _id: dashboard.user },
               'name'
             ).exec()
+            if (dashboard.user == null) {dashboard.user = new User(
+              {
+                name: 'N/A', 
+                email: '',
+                password: '',
+                img: '',
+                role: '',
+                active: ''
+            })};
             privates.push(dashboard)
             break
           case 'group':
@@ -614,9 +623,7 @@ export class DashboardController {
 
 
     try {
-      const connection = await ManagerConnectionService.getConnection(
-        req.body.model_id
-      )
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
       /**--------------------------------------------------------------------------------------------------------- */
       /**Security check */
