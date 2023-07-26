@@ -8,6 +8,7 @@ import { Enumerations } from './service/enumerations';
 import { pushModelToMongo } from './service/push.Model.to.Mongo';
 
 import fs from "fs";
+import { CleanModel } from './service/cleanModel';
 
 const mariadb = require('mariadb');
 const sinergiaDatabase = require('../../../config/sinergiacrm.config');
@@ -318,7 +319,7 @@ export class updateModel {
             }
 
         })
-
+        
         return destGrantedRoles;
     }
 
@@ -492,6 +493,7 @@ export class updateModel {
               "visible": true
             }
             destRelations.push(rr);
+            
           }
         }
     
@@ -516,6 +518,9 @@ console.log(sinergiaDatabase);
     main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password);
     main_model.ds.model.tables = tables; //añadimos el parámetro en la columna adecuada
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
+
+    const cleanM = new CleanModel;
+    main_model = cleanM.cleanModel(main_model);
     
     await new pushModelToMongo().pushModel(main_model);
 
