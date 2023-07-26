@@ -27,8 +27,7 @@ export const QueryUtils = {
       row_granted_roles: [],
       ordenation_type: 'No',
       tableCount: 0,
-      visible: true,
-      hidden: false
+      visible: true
     }
     return column;
   },

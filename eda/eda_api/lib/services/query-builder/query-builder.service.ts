@@ -54,12 +54,6 @@ export abstract class QueryBuilderService {
         /** Check dels permisos de columna, si hi ha permisos es posen als filtres */
         this.permissions = this.getPermissions(modelPermissions, this.tables, origin);
 
-    //Si es el usuario anonimo... que sabemos que es este...... no se le aplican permisos.
-    if( this.user == '135792467811111111111112'){
-        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-        this.permissions = [];
-    }
-
 
 
         /** ............................................................................... */
