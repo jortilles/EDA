@@ -156,6 +156,15 @@ export class DashboardController {
               { _id: dashboard.user },
               'name'
             ).exec()
+            if (dashboard.user == null) {dashboard.user = new User(
+              {
+                name: 'N/A', 
+                email: '',
+                password: '',
+                img: '',
+                role: '',
+                active: ''
+            })};
             privates.push(dashboard)
             break
           case 'group':
