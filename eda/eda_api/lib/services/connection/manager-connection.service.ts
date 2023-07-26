@@ -34,7 +34,7 @@ export class ManagerConnectionService {
             case MS_CONNECTION:
             // return new MsConnection(config, secondary);
             case MY_CONNECTION:
-                return MysqlConnection.getInstance(config);
+                return new MysqlConnection(config);
             case PG_CONNECTION:
                 return new PgConnection(config);
             case VE_CONNECTION:
