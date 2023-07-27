@@ -32,3 +32,5 @@ eda/eda_app/package-lock.json
 eda/eda_api/config/database.config.js
 eda/eda_api/config/seed.js
 eda/eda_api/config/sinergiacrm.config.js
+eda/eda_app/src/app/config/config.ts.jortilles
+eda/eda_app/src/app/config/config.ts
