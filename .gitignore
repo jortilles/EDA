@@ -18,8 +18,8 @@ eda/eda_api/chromium_dependencies.txt
 eda/eda_api/config/database.config.js
 eda/sda_api/dist
 eda/sda_api/src/config/seed.js
-eda/sda_api/src/views/postform.html
 eda/sda_api/package-lock.json
+
 
 #APP
 
@@ -29,9 +29,6 @@ eda/eda_app/node_modules
 eda/eda_app/dist
 eda/eda_app/AddEdaCharInstructions.txt
 eda/eda_app/package-lock.json
-eda/eda_app/src/app/config/
-
-eda/eda_app/src/app/config/config.ts
 eda/eda_api/config/database.config.js
 eda/eda_api/config/seed.js
 eda/eda_api/config/sinergiacrm.config.js
