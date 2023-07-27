@@ -1,59 +1,24 @@
-import { createConnection, createPool, Connection as SqlConnection } from 'mysql2';
+import {  createConnection, Connection as SqlConnection } from 'mysql2';
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
+import DataSource from '../../../module/datasource/model/datasource.model';
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
-import { ConnectionOptions, PoolOptions, Pool } from 'mysql2/typings/mysql';
 const util = require('util');
 
 
 export class MysqlConnection extends AbstractConnection {
-    private static instance: MysqlConnection;
+    GetDefaultSchema(): string {
+        return null;
+    }
     private queryBuilder: MySqlBuilderService;
     private AggTypes: AggregationTypes;
-    private pool: Pool;
 
-    public GetDefaultSchema(): string { return null; }
-
-    public async getclient() {
-        if (this.config.poolLimit) {
-            if (!this.pool) {
-                const mySqlConn: PoolOptions = {
-                    host: this.config.host,
-                    port: this.config.port,
-                    user: this.config.user,
-                    password: this.config.password,
-                    database: this.config.database,
-                    waitForConnections: true,
-                    connectionLimit: this.config.poolLimit,
-                    queueLimit: 0,
-                    enableKeepAlive: true,
-                    keepAliveInitialDelay: 0
-                };
-
-                this.pool = createPool(mySqlConn);
-            }
-
-            return this.pool;
-        } else {
-            const mySqlConn: ConnectionOptions = {
-                host: this.config.host,
-                port: this.config.port,
-                database: this.config.database,
-                user: this.config.user,
-                password: this.config.password
-            };
-            return createConnection(mySqlConn);
-        }
+    async getclient() {
+        const mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
+        return createConnection(mySqlConn);
     }
 
-    public static getInstance(config: any): MysqlConnection {
-        if (!MysqlConnection.instance) {
-            MysqlConnection.instance = new MysqlConnection(config);
-        }
-        return MysqlConnection.instance;
-    }
-
-    public async tryConnection(): Promise<any> {
+    async tryConnection(): Promise<any> {
         try {
             return new Promise((resolve, reject) => {
                 const mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
@@ -76,7 +41,7 @@ export class MysqlConnection extends AbstractConnection {
         }
     }
 
-    public async generateDataModel(optimize:number, filter:string): Promise<any> {
+    async generateDataModel(optimize:number, filter:string): Promise<any> {
         try {
             const tableNames = [];
             this.client = await this.getclient();
@@ -96,9 +61,9 @@ export class MysqlConnection extends AbstractConnection {
 
 
             const query = `
-                SELECT *  FROM information_schema.tables   
-                WHERE table_type in ( 'BASE TABLE', 'VIEW', 'base table', 'view')  
-                and TABLE_SCHEMA = '${schema}' ${filter_str};
+            SELECT *  FROM information_schema.tables   
+            WHERE table_type in ( 'BASE TABLE', 'VIEW', 'base table', 'view')  
+            and TABLE_SCHEMA = '${schema}' ${filter_str};
             `;
 
             const getResults = await this.execQuery(query);
@@ -138,8 +103,7 @@ export class MysqlConnection extends AbstractConnection {
                     tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
-            console.log(this.client.itsConnected());
-            if (!this.pool && this.client.itsConnected()) this.client.end();
+            this.client.end();
             
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
             if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
@@ -150,12 +114,11 @@ export class MysqlConnection extends AbstractConnection {
         }
     }
 
-    public async execQuery(query: string): Promise<any> {
+    async execQuery(query: string): Promise<any> {
         try {
             this.client.query = util.promisify(this.client.query);
             const rows = await this.client.query(query);
-            console.log(this.client.itsConnected());
-            if (!this.pool && this.client.itsConnected() ) this.client.end();
+            this.client.end();
             return rows;
         } catch (err) {
             console.log(err);
@@ -164,11 +127,12 @@ export class MysqlConnection extends AbstractConnection {
 
     }
 
-    public async execSqlQuery(query: string): Promise<any> {
+    async execSqlQuery(query: string): Promise<any> {
         return this.execQuery(query);
     }
 
-    public async getQueryBuilded(queryData: any, dataModel: any, user: any) {
+
+    async getQueryBuilded(queryData: any, dataModel: any, user: any) {
         this.queryBuilder = new MySqlBuilderService(queryData, dataModel, user);
         return this.queryBuilder.builder();
     }

@@ -26,7 +26,8 @@ export class AnonymousLoginComponent implements OnInit {
         const dashboardID = params.get('dashboardID');
         const user = new User(null, 'edaanonim@jortilles.com', '_-(··)-_edanonymous_-(··)-_');
         this.userService.login(user, false).subscribe(
-          () => this.router.navigate([`/dashboard/${dashboardID}`]),
+          () => this.router.navigate([`/dashboard/${dashboardID}`],
+          { queryParams:  Object.assign({}, this.route.snapshot.queryParams) }),
            err => Swal.fire('Error al iniciar sesión', err.text, 'error')
         );
       },
