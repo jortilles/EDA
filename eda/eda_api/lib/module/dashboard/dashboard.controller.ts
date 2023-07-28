@@ -672,8 +672,8 @@ export class DashboardController {
 
 
       if (myQuery.fields.length == 0) {
-        console.log('you cannot see any data')
-        return res.status(200).json("[['noData'],[]]")
+        console.log('you cannot see any data');
+        return res.status(200).json([['noData'],[[]]]);
       }
 
       const query = await connection.getQueryBuilded(
