@@ -56,12 +56,8 @@ export abstract class QueryBuilderService {
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         /** Check dels permisos de columna, si hi ha permisos es posen als filtres */
         this.permissions = this.getPermissions(modelPermissions, this.tables, origin);
-
         /** joins per els value list */
         const valueListJoins = [];
-
-
-
 
 
         /** ............................................................................... */
