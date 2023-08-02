@@ -53,8 +53,6 @@ export abstract class QueryBuilderService {
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         /** Check dels permisos de columna, si hi ha permisos es posen als filtres */
         this.permissions = this.getPermissions(modelPermissions, this.tables, origin);
-        /** joins per els value list */
-        const valueListJoins = [];
 
     //Si es el usuario anonimo... que sabemos que es este...... no se le aplican permisos.
     if( this.user == '135792467811111111111112'){
@@ -113,17 +111,7 @@ export abstract class QueryBuilderService {
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
         // Afegim a dest les taules dels filtres
-        filterTables.forEa        /** Ajusto els joins per que siguin left join en cas els value list*/
-        if( valueListList.length > 0   ){
-                valueListList.forEach(v=>{
-                    valueListJoins.push(v.valueListSource.target_table);
-                });
-        }        /** Ajusto els joins per que siguin left join en cas els value list*/
-        if( valueListList.length > 0   ){
-                valueListList.forEach(v=>{
-                    valueListJoins.push(v.valueListSource.target_table);
-                });
-        }ch(table => {
+        filterTables.forEach(table => {
             if (!dest.includes(table) && table !== origin) {
                 dest.push(table);
             }
