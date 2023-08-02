@@ -94,7 +94,7 @@ export class MysqlConnection extends AbstractConnection {
                 }
                 new_table.tableCount = count;
                 tables.push(new_table);
-                if(i> 500){
+                if(i> 750){
                     console.log('Un datasource no puede tener más de 500 tablas ');
                     i = tableNames.length + 1;
                 }
