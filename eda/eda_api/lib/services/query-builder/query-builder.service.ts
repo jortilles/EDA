@@ -33,17 +33,20 @@ export abstract class QueryBuilderService {
     }
 
     abstract getFilters(filters, type: string);
-    abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema?: string, database?: string);
+    abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, 
+        joinType:string, valueListJoins:Array<any>, schema?: string, database?: string);
     abstract getSeparedColumns(origin: string, dest: string[]);
     abstract filterToString(filterObject: any, type: string);
     abstract processFilter(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
-        grouping: any[], tables: Array<any>, limit: number, joinType: string, Schema?: string, database?: string);
+        grouping: any[], tables: Array<any>, limit: number, 
+        joinType: string,valueListJoins:any[], Schema?: string, database?: string);
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
     abstract parseSchema(tables: string[], schema?: string, database?: string);
 
     public builder() {
+
         const graph = this.buildGraph();
 
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
@@ -55,13 +58,6 @@ export abstract class QueryBuilderService {
         this.permissions = this.getPermissions(modelPermissions, this.tables, origin);
         /** joins per els value list */
         const valueListJoins = [];
-
-    //Si es el usuario anonimo... que sabemos que es este...... no se le aplican permisos.
-    if( this.user == '135792467811111111111112'){
-        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-        this.permissions = [];
-    }
-
 
 
         /** ............................................................................... */
@@ -107,23 +103,21 @@ export abstract class QueryBuilderService {
                 })
             })
         }
+
+        /** Ajusto els joins per que siguin left join en cas els value list*/
+        if( valueListList.length > 0   ){
+                valueListList.forEach(v=>{
+                    valueListJoins.push(v.valueListSource.target_table);
+                });
+        }
+
         /** ..........................PER ELS VALUE LISTS................................ */
 
 
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
         // Afegim a dest les taules dels filtres
-        filterTables.forEa        /** Ajusto els joins per que siguin left join en cas els value list*/
-        if( valueListList.length > 0   ){
-                valueListList.forEach(v=>{
-                    valueListJoins.push(v.valueListSource.target_table);
-                });
-        }        /** Ajusto els joins per que siguin left join en cas els value list*/
-        if( valueListList.length > 0   ){
-                valueListList.forEach(v=>{
-                    valueListJoins.push(v.valueListSource.target_table);
-                });
-        }ch(table => {
+        filterTables.forEach(table => {
             if (!dest.includes(table) && table !== origin) {
                 dest.push(table);
             }
@@ -156,9 +150,7 @@ export abstract class QueryBuilderService {
             let tables = this.dataModel.ds.model.tables
                 .map(table => { return { name: table.table_name, query: table.query } });
             this.query = this.normalQuery(columns, origin, dest, joinTree, grouping, tables,
-                this.queryTODO.queryLimit,   this.queryTODO.joinType, this.dataModel.ds.connection.schema, this.dataModel.ds.connection.database);
-
-            // if(this.queryTODO.queryLimit) this.query += `\nlimit ${this.queryTODO.queryLimit}`;
+                this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, this.dataModel.ds.connection.schema, this.dataModel.ds.connection.database);
             return this.query;
         }
     }
@@ -441,6 +433,8 @@ export abstract class QueryBuilderService {
         const dest = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         const permissions = this.getPermissions(modelPermissions, this.tables, origin);
+        const joinType = 'inner'; // es per els permisos. Ha de ser així.
+        const valueListJoins = []; // anulat
 
         let tables = this.dataModel.ds.model.tables
             .map(table => { return { name: table.table_name, query: table.query } });
@@ -453,7 +447,7 @@ export abstract class QueryBuilderService {
             });
 
             const joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
-            const permissionJoins = this.getJoins(joinTree, dest, tables, SCHEMA);
+            const permissionJoins = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, SCHEMA);
 
             let joinsubstitute = '';
             joinsubstitute = this.buildPermissionJoin(origin, permissionJoins, permissions, SCHEMA);

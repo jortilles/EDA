@@ -5,11 +5,12 @@ import * as _ from 'lodash';
 export class PgBuilderService extends QueryBuilderService {
 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string, schema: string) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> , schema: string) {
     if (schema === 'null' || schema === '') {
       schema = 'public';
     }
-
+console.log('tables');
+console.log(tables);
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM "${schema}"."${o}"`;
 
@@ -29,8 +30,18 @@ export class PgBuilderService extends QueryBuilderService {
 
     });
 
+
+    console.log('joins');
+    console.log(joinTree );
+    console.log(  dest );
+    console.log( tables );
+    console.log(  joinType );
+    console.log(  valueListJoins );
+    console.log(  schema);
+
+
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType, schema);
+    const joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -164,7 +175,7 @@ export class PgBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType: string, schema: string) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType: string, valueListJoins:Array<any> , schema: string) {
     if (schema === 'null' || schema === '') {
       schema = 'public';
     }
@@ -172,6 +183,7 @@ export class PgBuilderService extends QueryBuilderService {
     let joins = [];
     let joined = [];
     let joinString = [];
+    let myJoin = joinType;
 
     for (let i = 0; i < dest.length; i++) {
       let elem = joinTree.find(n => n.name === dest[i]);
@@ -192,14 +204,18 @@ export class PgBuilderService extends QueryBuilderService {
 
           /**T can be a table or a custom view, if custom view has a query  */
           let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
-
+          if( valueListJoins.includes(e[j])   ){
+            myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
+          }else{
+            myJoin = joinType; 
+          }
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
-            joinString.push(` ${joinType} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+            joinString.push(` ${myJoin} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
           }
           else {
 
-            let join = ` ${joinType} join "${schema}"."${t}" on`;
+            let join = ` ${myJoin} join "${schema}"."${t}" on`;
 
             joinColumns[0].forEach((_, x) => {
 
@@ -468,7 +484,9 @@ export class PgBuilderService extends QueryBuilderService {
 
   private cleanViewString(query: string) {
     const index = query.lastIndexOf('as');
-    query = query.slice(0, index) + `as "${query.slice(index + 3)}"`;
+    query = query.slice(0, index) + `as ${query.slice(index + 3)} `;
+    console.log('query');
+    console.log(query);
     return query;
   }
 }
