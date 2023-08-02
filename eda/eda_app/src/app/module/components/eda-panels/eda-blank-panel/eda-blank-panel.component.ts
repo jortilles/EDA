@@ -9,7 +9,7 @@ import { Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 import {
     DashboardService, ChartUtilsService, AlertService,
     SpinnerService, FileUtiles, EdaChartType,
-    FilterType, QueryBuilderService, OrdenationType, UserService
+    FilterType, QueryBuilderService, OrdenationType
 } from '@eda/services/service.index';
 import {
     EdaPageDialogComponent, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent
@@ -119,7 +119,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public draggFields: string = $localize`:@@dragFields:Arrastre aquí los atributos que quiera ver en su panel`;
     public draggFilters: string = $localize`:@@draggFilters:Arrastre aquí los atributos sobre los que quiera filtrar`;
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
-    public ptooltipHiddenColumn: string = $localize`:@@hiddenColumn:Al cambiar de modo se verán las columnas marcadas como ocultas`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`
 
     /** Query Variables */
@@ -155,7 +154,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public colorsDeepCopy: any = {};
 
     public queryFromServer: string = '';
-    public showHiddId: boolean;
 
     // join types 
     joinTypeOptions: any[] = [
@@ -177,8 +175,7 @@ export class EdaBlankPanelComponent implements OnInit {
         public chartUtils: ChartUtilsService,
         public alertService: AlertService,
         public spinnerService: SpinnerService,
-        public groupService: GroupService,
-        public userService: UserService
+        public groupService: GroupService
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
@@ -189,16 +186,14 @@ export class EdaBlankPanelComponent implements OnInit {
 
         this.index = 0;
         this.modeSQL = false;
-        this.hiddenColumn = true;
-        
-        this.showIdForHiddenMode()
+
         this.setTablesData();
-        
+
         /**If panel comes from server */
         if (this.panel.content) {
             try{
                 const query = this.panel.content.query;
-                    
+            
                 if (query.query.modeSQL) {
                     this.modeSQL = true;
                     this.currentSQLQuery = query.query.SQLexpression;
@@ -278,7 +273,6 @@ export class EdaBlankPanelComponent implements OnInit {
         this.tables = _.cloneDeep(tables.allTables);
         this.tablesToShow = _.cloneDeep(tables.tablesToShow);
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
-
     }
 
     /**
@@ -312,7 +306,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * Sets configuration dialog and chart
      * @param panelContent panel content to build configuration .
      */
-    buildGlobalconfiguration(panelContent: any) { 
+    buildGlobalconfiguration(panelContent: any) {
 
         if (!panelContent.query.query.modeSQL) {
 
@@ -330,18 +324,12 @@ export class EdaBlankPanelComponent implements OnInit {
         }
 
         this.queryLimit = panelContent.query.query.queryLimit;
-
-        try {
-            PanelInteractionUtils.handleFilters(this, panelContent.query.query);
-            PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters,panelContent.query.query.fields);
- 
-        }catch(e){
-            console.log('Error loading filters to define query in blank panel compoment........ Do you have deleted any column?????');
-            console.log(e);
-        }
-       
-
-
+        PanelInteractionUtils.handleFilters(this, panelContent.query.query);
+        PanelInteractionUtils.handleFilterColumns(
+            this,
+            panelContent.query.query.filters,
+            panelContent.query.query.fields
+        );
         PanelInteractionUtils.handleCurrentQuery(this);
 
         this.chartForm.patchValue({
@@ -870,15 +858,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public searchRelations = (c: Column) => PanelInteractionUtils.searchRelations(this, c);
 
-    public loadColumns (table: any)  {
-        
-        PanelInteractionUtils.loadColumns(this, table); 
-       
-        if (this.hiddenColumn == true) {
-            this.columns = this.columns.filter (c => !c.hidden) 
-        }
-        
-    } 
+    public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
     public removeColumn = (c: Column, list?: string) => PanelInteractionUtils.removeColumn(this, c, list);
 
@@ -965,27 +945,11 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.btnSave = true;
     }
 
-    /** Esta función permite al switch en la columna atributos ver u ocultar las columnas con el atributo hidden */
-    public async changeHiddenMode(): Promise<void> {
-        let table = this.tablesToShow.find(table => table.table_name === this.userSelectedTable)
-        this.loadColumns(table)
-    }
-
     public accopen(e){
 
     }
     /** This funciton return the display name for a given table. Its used for the query resumen      */
     public getNiceTableName(  table ){
          return this.tables.find( t => t.table_name === table).display_name.default;
-    }
-
-    public showIdForHiddenMode() {
-        
-        if (this.inject.dataSource._id == "111111111111111111111111") {
-            this.showHiddId = true;
-        } else {
-            this.showHiddId = false;
-        }
-     
     }
 }
