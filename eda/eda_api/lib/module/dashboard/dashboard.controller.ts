@@ -241,11 +241,19 @@ export class DashboardController {
 
             // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
             // Per si de cas es fa servir a una relació.
-            const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+            let uniquesForbiddenTables = DashboardController.getForbiddenTables(
               toJson,
               userGroups,
               req.user._id
             )
+
+              // Esto se hace para hacer un bypass de la seguridad en caso de que el usuario sea anonimo y por lo tanto
+              // un informe público
+            if(req.user._id == '135792467811111111111112'){
+              console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+              uniquesForbiddenTables = [];
+            }
+
 
             try {
               // Poso taules prohivides a false
@@ -630,11 +638,19 @@ export class DashboardController {
       }
       const dataModelObject = JSON.parse(JSON.stringify(dataModel))
       /** Forbidden tables  */
-      const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+      let uniquesForbiddenTables = DashboardController.getForbiddenTables(
         dataModelObject,
         req['user'].role,
         req.user._id
-      )
+      );
+      
+      if( req.user._id == '135792467811111111111112'){
+        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+        uniquesForbiddenTables = [];
+
+      }
+
+
       let mylabels = []
       let myQuery: any
       if (uniquesForbiddenTables.length > 0) {
@@ -672,8 +688,8 @@ export class DashboardController {
 
 
       if (myQuery.fields.length == 0) {
-        console.log('you cannot see any data');
-        return res.status(200).json([['noData'],[[]]]);
+        console.log('you cannot see any data')
+        return res.status(200).json("[['noData'],[]]")
       }
 
       const query = await connection.getQueryBuilded(
@@ -1006,6 +1022,11 @@ static isNotNumeric(val){
 
   /**Check if an user can or not see a data model. */
   static securityCheck (dataModel: any, user: any) {
+
+    if(user._id== '135792467811111111111112'){
+      console.log('Anonymous access');
+      return true;
+    }
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {
       const users = []
       const roles = []
