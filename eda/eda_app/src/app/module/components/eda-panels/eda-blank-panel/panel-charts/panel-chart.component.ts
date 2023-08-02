@@ -104,13 +104,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
          */
         if (this.props.data && this.props.data.values.length !== 0
             && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
-
             setTimeout(_ => {
                 this.NO_DATA = false;
             });
-
             this.changeChartType();
-
         }
         /**
          * If no data
