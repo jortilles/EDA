@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 export class BigQueryBuilderService extends QueryBuilderService {
 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType:string, valueListJoins:Array<any> , schema: string) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string, schema: string) {
 
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = '';
@@ -36,7 +36,7 @@ export class BigQueryBuilderService extends QueryBuilderService {
     });
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, schema);
+    const joinString = this.getJoins(joinTree, dest, tables, schema, joinType);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -164,12 +164,11 @@ export class BigQueryBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema: string) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, schema: string, joinType: string) {
 
     let joins = [];
     let joined = [];
     let joinString = [];
-    let myJoin = joinType;
 
     for (let i = 0; i < dest.length; i++) {
       let elem = joinTree.find(n => n.name === dest[i]);
@@ -190,19 +189,15 @@ export class BigQueryBuilderService extends QueryBuilderService {
 
           /**T can be a table or a custom view, if custom view has a query  */
           let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? table.query : table.name })[0];
-          if( valueListJoins.includes(e[j])   ){
-            myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
-          }else{
-            myJoin = joinType; 
-          }
+
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
 
-            joinString.push(` ${myJoin} join ${schema}.${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
+            joinString.push(` ${joinType} join ${schema}.${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
 
           } else {
 
-            let join = ` ${myJoin} join ${schema}.${t} on`;
+            let join = ` ${joinType} join ${schema}.${t} on`;
 
             joinColumns[0].forEach((_, x) => {
 

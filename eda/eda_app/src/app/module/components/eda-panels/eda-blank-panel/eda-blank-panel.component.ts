@@ -76,7 +76,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public sunburstController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
-
+    public hiddenColumn: boolean;
 
 
     public inputs: any = {};

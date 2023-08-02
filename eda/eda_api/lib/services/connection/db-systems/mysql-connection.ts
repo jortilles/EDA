@@ -83,9 +83,11 @@ export class MysqlConnection extends AbstractConnection {
 
             this.client = await this.getclient();
             const foreignKeys = await this.execQuery(fkQuery);
+
             this.client = await this.getclient();
             this.client.query = util.promisify(this.client.query);
             for (let i = 0; i < tableNames.length; i++) {
+
                 let new_table = await this.setTable(tableNames[i]);
                 let count = 0;
                 if(optimize === 1){
@@ -94,11 +96,8 @@ export class MysqlConnection extends AbstractConnection {
                 }
                 new_table.tableCount = count;
                 tables.push(new_table);
-                if(i> 500){
-                    console.log('Un datasource no puede tener más de 500 tablas ');
-                    i = tableNames.length + 1;
-                }
             }
+
             for (let i = 0; i < tables.length; i++) {
                 for (let j = 0; j < tables[i].columns.length; j++) {
                     tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);

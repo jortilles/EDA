@@ -70,14 +70,9 @@ export class SnowflakeConnection extends AbstractConnection {
 
       /**set tables */
       for (let i = 0; i < tableNames.length; i++) {
-
         let newTable: any = await this.setTable(tableNames[i].name);
         newTable.tableCount = tableNames[i].count;
-        tables.push(newTable);
-        if(i> 500){
-          console.log('Un datasource no puede tener más de 500 tablas ');
-          i = tableNames.length + 1;
-        }
+        tables.push(newTable)
       }
 
       /**Set columns */

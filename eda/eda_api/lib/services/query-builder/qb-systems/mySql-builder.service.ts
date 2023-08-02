@@ -9,7 +9,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     return tables;
   }
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string, valueListJoins: Array<any>): any {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string): any {
 
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
@@ -31,7 +31,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     });
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins);
+    const joinString = this.getJoins(joinTree, dest, tables, joinType);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -166,12 +166,11 @@ export class MySqlBuilderService extends QueryBuilderService {
   }
 
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>): any {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string): any {
 
     let joins = [];
     let joined = [];
     let joinString = [];
-    let myJoin = joinType;
 
     for (let i = 0; i < dest.length; i++) {
       let elem = joinTree.find(n => n.name === dest[i]);
@@ -192,19 +191,14 @@ export class MySqlBuilderService extends QueryBuilderService {
           let joinColumns = this.findJoinColumns(e[j], e[i]);
           let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? table.query : `\`${table.name}\`` })[0];
 
-          if( valueListJoins.includes(e[j])   ){
-            myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
-          }else{
-            myJoin = joinType; 
-          }
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
 
-            joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
+            joinString.push(` ${joinType} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
 
           } else {
 
-            let join = ` ${myJoin} join ${t} on`;
+            let join = ` ${joinType} join ${t} on`;
 
             joinColumns[0].forEach((_, x) => {
 
