@@ -16,17 +16,23 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     //to WHERE CLAUSE
     const filters = this.queryTODO.filters.filter(f => {
-
       const column = this.findColumn(f.filter_table, f.filter_column);
-      return column.computed_column != 'computed_numeric';
-
+      if(column){
+        return column.computed_column != 'computed_numeric';
+      }else{
+        return false;
+      }
     });
 
     //TO HAVING CLAUSE 
     const havingFilters = this.queryTODO.filters.filter(f => {
-
       const column = this.findColumn(f.filter_table, f.filter_column);
-      return column.computed_column == "computed_numeric";
+      if(column){
+        return column.computed_column == "computed_numeric";
+      }else{
+        return false;
+      }
+      
 
     });
 
@@ -239,8 +245,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       if (!el.hasOwnProperty('minimumFractionDigits')) {
         el.minimumFractionDigits = 0;
       }
-   
-      // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor.
+      // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor. 
       if (el.computed_column === 'computed_numeric') {
         columns.push(` cast( ${el.SQLexpression}  as decimal(32,${el.minimumFractionDigits}) ) as "${el.display_name}"`);
       } else {
@@ -334,8 +339,8 @@ export class MySqlBuilderService extends QueryBuilderService {
         }
       }
     });
+    
     return [columns, grouping];
-
   }
 
   /**

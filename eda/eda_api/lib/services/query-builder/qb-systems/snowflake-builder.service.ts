@@ -23,7 +23,11 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     const filters = this.queryTODO.filters.filter(f => {
 
       const column = this.findColumn(f.filter_table, f.filter_column);
-      return column.computed_column != 'computed_numeric';
+      if(column){
+        return column.computed_column != 'computed_numeric';
+      }else{
+        return false;
+      }
 
     });
 
@@ -31,7 +35,11 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     const havingFilters = this.queryTODO.filters.filter(f => {
 
       const column = this.findColumn(f.filter_table, f.filter_column);
-      return column.computed_column == "computed_numeric";
+      if(column){
+        return column.computed_column == "computed_numeric";
+      }else{
+        return false;
+      }
 
     });
 
