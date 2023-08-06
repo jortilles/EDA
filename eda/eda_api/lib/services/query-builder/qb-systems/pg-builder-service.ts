@@ -9,9 +9,15 @@ export class PgBuilderService extends QueryBuilderService {
     if (schema === 'null' || schema === '') {
       schema = 'public';
     }
-
-    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
-    let myQuery = `SELECT ${columns.join(', ')} \nFROM "${schema}"."${o}"`;
+    let myQuery = `SELECT ${columns.join(', ')} \n`
+    let o = tables.filter(table => table.name === origin).map(table => { return table.query ?   this.cleanViewString(table.query) : table.name })[0];
+    let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];;
+    if( vista ){  // Es una vista. NO la pongo entre comillas
+      myQuery += `FROM ${o}`; 
+    }else{  // Es una tabla. La pongo entre comillas
+      myQuery += `FROM "${schema}"."${o}"`;
+    }
+    
 
     //to WHERE CLAUSE
     const filters = this.queryTODO.filters.filter(f => {
@@ -480,9 +486,10 @@ export class PgBuilderService extends QueryBuilderService {
     return output;
   }
 
+  /* Se pone el alias entre comillas para revitar errores de sintaxis*/
   private cleanViewString(query: string) {
     const index = query.lastIndexOf('as');
-    query = query.slice(0, index) + `as "${query.slice(index + 3)}"`;
+    query = query.slice(0, index) + `as "${query.slice(index + 3)}" `;
     return query;
   }
 }
