@@ -189,7 +189,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         this.index = 0;
         this.modeSQL = false;
-        this.hiddenColumn = true;
+        this.hiddenColumn = false;
         
         this.showIdForHiddenMode()
         this.setTablesData();
@@ -627,6 +627,9 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
+        console.log('pa pe pi po pu');
+        this.hiddenColumn = true;
+        this.columns = this.columns.filter (c => !c.hidden) ;
     }
 
     /**
@@ -871,13 +874,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public searchRelations = (c: Column) => PanelInteractionUtils.searchRelations(this, c);
 
     public loadColumns (table: any)  {
-        
-        PanelInteractionUtils.loadColumns(this, table); 
-       
-        if (this.hiddenColumn == true) {
-            this.columns = this.columns.filter (c => !c.hidden) 
-        }
-        
+        PanelInteractionUtils.loadColumns(this, table);        
     } 
 
     public removeColumn = (c: Column, list?: string) => PanelInteractionUtils.removeColumn(this, c, list);
@@ -968,7 +965,10 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Esta función permite al switch en la columna atributos ver u ocultar las columnas con el atributo hidden */
     public async changeHiddenMode(): Promise<void> {
         let table = this.tablesToShow.find(table => table.table_name === this.userSelectedTable)
-        this.loadColumns(table)
+        this.loadColumns(table);
+        if(this.hiddenColumn){
+            this.columns = this.columns.filter (c => !c.hidden) ;
+        }
     }
 
     public accopen(e){

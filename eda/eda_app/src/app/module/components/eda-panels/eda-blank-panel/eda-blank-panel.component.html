@@ -81,8 +81,16 @@
                             [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
                             [cdkDropListEnterPredicate]="isAllowed">
                             <div *ngFor="let column of columns">
-                                <div class="column-box"  *ngIf='column.column_type === "numeric" || column.column_type === "date"' (click)="moveItem(column)" (mouseover)="showDescription(column)" (mouseout)="description= ''" cdkDrag
-                                (cdkDragDropped)="searchRelations(column, $event)" (cdkDragDropped)="openColumnDialog(column)" (click)="openColumnDialog(column)">  
+                                <div class="column-box"  
+                                *ngIf='column.column_type === "numeric" || column.column_type === "date"' 
+                                (click)="moveItem(column)" 
+                                (mouseover)="showDescription(column)" 
+                                (mouseout)="description= ''" 
+                                cdkDrag
+                                (cdkDragDropped)="searchRelations(column, $event)" 
+                                (cdkDragDropped)="openColumnDialog(column)" 
+                                (click)="openColumnDialog(column)" 
+                                [ngStyle]=" column.hidden && {'opacity': '0.5'} " >  
                                    
    
                                    <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
@@ -92,8 +100,14 @@
                                        {{column.display_name.default}} 
                                    </span>
                                </div> 
-                               <div  class="column-box" *ngIf='column.column_type != "numeric" && column.column_type !="date"' (click)="moveItem(column)" (mouseover)="showDescription(column)" (mouseout)="description= ''" cdkDrag
-                               (cdkDragDropped)="searchRelations(column, $event)">  
+                               <div  class="column-box" 
+                               *ngIf='column.column_type != "numeric" && column.column_type !="date"' 
+                               (click)="moveItem(column)" 
+                               (mouseover)="showDescription(column)" 
+                               (mouseout)="description= ''" 
+                               cdkDrag
+                               (cdkDragDropped)="searchRelations(column, $event)"
+                               [ngStyle]=" column.hidden && {'opacity': '0.5'} " >    
                                   
    
                                   <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
@@ -102,8 +116,8 @@
                                   <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">                        
                                       {{column.display_name.default}} 
                                   </span>
-                              </div> 
-                               </div>
+                                </div> 
+                            </div>
                         </div>
                     </div>
 

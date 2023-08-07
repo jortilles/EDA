@@ -23,6 +23,7 @@ export const PanelInteractionUtils = {
       if (!matcher) {
         ebp.columns.push(c);
       }
+
       ebp.columns = ebp.columns.filter(col => col.visible === true)
         .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
     });
@@ -303,7 +304,13 @@ export const PanelInteractionUtils = {
     // Carregar de nou l'array Columns amb la columna borrada
     PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id));
 
+    // Borro las columnas a posteriori
+    if (ebp.hiddenColumn == true) { 
+      ebp.columns = ebp.columns.filter (c => !c.hidden) 
+    }
+  
 
+    
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
 
