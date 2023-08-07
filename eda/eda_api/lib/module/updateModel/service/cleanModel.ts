@@ -31,6 +31,8 @@ export class CleanModel {
        
         let model_granted_roles = [] ;
         
+
+
         for (let i=0;i<roles.length;i++) {
 
             if (i==0) {
@@ -57,6 +59,7 @@ export class CleanModel {
                 }
             }
             
+            console.log(model_granted_roles);
                                    
             
             main_model.ds.metadata.model_granted_roles = model_granted_roles;
