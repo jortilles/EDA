@@ -108,9 +108,13 @@ export abstract class QueryBuilderService {
         if( valueListList.length > 0   ){
                 valueListList.forEach(v=>{
                     valueListJoins.push(v.valueListSource.target_table);
+                    if(v.valueListSource.bridge_table && v.valueListSource.bridge_table != undefined && v.valueListSource.bridge_table.length >= 1  ){ // les taules pont també han de ser left joins
+                        valueListJoins.push(v.valueListSource.bridge_table );
+                    }
                 });
         }
 
+        
         /** ..........................PER ELS VALUE LISTS................................ */
 
 
@@ -140,8 +144,6 @@ export abstract class QueryBuilderService {
 
         /** ARBRE DELS JOINS A FER */
         const joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
-        
-        
 
         if (this.queryTODO.simple) {
             this.query = this.simpleQuery(columns, origin);

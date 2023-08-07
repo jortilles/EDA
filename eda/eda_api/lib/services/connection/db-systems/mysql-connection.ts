@@ -94,8 +94,8 @@ export class MysqlConnection extends AbstractConnection {
                 }
                 new_table.tableCount = count;
                 tables.push(new_table);
-                if(i> 500){
-                    console.log('Un datasource no puede tener más de 500 tablas ');
+                if(i> 400){
+                    console.log('Un datasource no puede tener más de 400 tablas ');
                     i = tableNames.length + 1;
                 }
             }
@@ -120,6 +120,8 @@ export class MysqlConnection extends AbstractConnection {
             this.client.query = util.promisify(this.client.query);
             const rows = await this.client.query(query);
             this.client.end();
+            console.log('rows');
+            console.log(rows);
             return rows;
         } catch (err) {
             console.log(err);

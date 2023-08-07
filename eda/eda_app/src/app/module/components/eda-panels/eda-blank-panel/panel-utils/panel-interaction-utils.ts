@@ -54,8 +54,12 @@ export const PanelInteractionUtils = {
         const table = ebp.tables.filter(table => table.table_name === filter.filter_table)[0];
         const column = table.columns? table.columns.filter(column => column.column_name === filter.filter_column)[0] : [];
         const columnInQuery = query.filter(col => col.column_name === filter.filter_column).length > 0;
-        if (!filter.isGlobal && !columnInQuery) {
+        if (!filter.isGlobal && !columnInQuery && column != undefined) {
           ebp.filtredColumns.push(column);
+        }
+        if(column == undefined){
+          console.log('WARNING\nWARING. YOU HAVE A COLUMN IN THE FILTERS NOT PRESENT IN THE MODEL!!!!!!!!!!!!\nWARNING');
+          console.log(filter);
         }
       });
     }catch(e){

@@ -9,16 +9,25 @@ export class PgBuilderService extends QueryBuilderService {
     if (schema === 'null' || schema === '') {
       schema = 'public';
     }
-console.log('tables');
-console.log(tables);
-    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
-    let myQuery = `SELECT ${columns.join(', ')} \nFROM "${schema}"."${o}"`;
+    let myQuery = `SELECT ${columns.join(', ')} \n`
+    let o = tables.filter(table => table.name === origin).map(table => { return table.query ?   this.cleanViewString(table.query) : table.name })[0];
+    let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];;
+    if( vista ){  // Es una vista. NO la pongo entre comillas
+      myQuery += `FROM ${o}`; 
+    }else{  // Es una tabla. La pongo entre comillas
+      myQuery += `FROM "${schema}"."${o}"`;
+    }
+    
 
     //to WHERE CLAUSE
     const filters = this.queryTODO.filters.filter(f => {
 
       const column = this.findColumn(f.filter_table, f.filter_column);
-      return column.computed_column != 'computed_numeric';
+      if(column){
+        return column.computed_column != 'computed_numeric';
+      }else{
+        return false;
+      }
 
     });
 
@@ -26,18 +35,13 @@ console.log(tables);
     const havingFilters = this.queryTODO.filters.filter(f => {
 
       const column = this.findColumn(f.filter_table, f.filter_column);
-      return column.computed_column == "computed_numeric";
+      if(column){
+        return column.computed_column == "computed_numeric";
+      }else{
+        return false;
+      }
 
     });
-
-
-    console.log('joins');
-    console.log(joinTree );
-    console.log(  dest );
-    console.log( tables );
-    console.log(  joinType );
-    console.log(  valueListJoins );
-    console.log(  schema);
 
 
     // JOINS
@@ -482,11 +486,10 @@ console.log(tables);
     return output;
   }
 
+  /* Se pone el alias entre comillas para revitar errores de sintaxis*/
   private cleanViewString(query: string) {
     const index = query.lastIndexOf('as');
-    query = query.slice(0, index) + `as ${query.slice(index + 3)} `;
-    console.log('query');
-    console.log(query);
+    query = query.slice(0, index) + `as "${query.slice(index + 3)}" `;
     return query;
   }
 }
