@@ -10,7 +10,7 @@ export const PanelOptions = {
       icon: 'fa fa-cog',
       command: () => {
         if (panelComponent.panel.content) {
-          panelComponent.hiddenColumn = true;
+          panelComponent.hiddenColumn = 0;
           panelComponent.panelDeepCopy = _.cloneDeep(panelComponent.panel.content, true);
           panelComponent.display_v.disablePreview = false;
 

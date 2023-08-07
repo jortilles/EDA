@@ -65,10 +65,10 @@
                                 Atributos
                             </h4>
                             <div *ngIf="userService.isAdmin && showHiddId">
-                                <span class="pointer icon-hover" (click)="hiddenColumn = !hiddenColumn" (click)="changeHiddenMode()">
+                                <span class="pointer icon-hover" (click)="changeHiddenMode()">
                                     Atributos ocultos
-                                    <i *ngIf="!hiddenColumn" class="pi pi-eye" style="font-size: 1.5rem"></i>
-                                    <i *ngIf="hiddenColumn" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
+                                    <i *ngIf="hiddenColumn==0" class="pi pi-eye" style="font-size: 1.5rem"></i>
+                                    <i *ngIf="hiddenColumn==1" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
                                 </span>
                             </div>
                         </div>
@@ -82,7 +82,7 @@
                             [cdkDropListEnterPredicate]="isAllowed">
                             <div *ngFor="let column of columns">
                                 <div class="column-box"  
-                                *ngIf='column.column_type === "numeric" || column.column_type === "date"' 
+                                *ngIf='(column.column_type === "numeric" || column.column_type === "date" ) && ( column.hidden != hiddenColumn || hiddenColumn==0) ' 
                                 (click)="moveItem(column)" 
                                 (mouseover)="showDescription(column)" 
                                 (mouseout)="description= ''" 
@@ -90,31 +90,31 @@
                                 (cdkDragDropped)="searchRelations(column, $event)" 
                                 (cdkDragDropped)="openColumnDialog(column)" 
                                 (click)="openColumnDialog(column)" 
-                                [ngStyle]=" column.hidden && {'opacity': '0.5'} " >  
+                                [ngStyle]=" column.hidden == 1 && {'opacity': '0.5'} " >  
                                    
    
                                    <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                    <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
                                    <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
                                    <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">                        
-                                       {{column.display_name.default}} 
+                                       {{column.display_name.default}}  
                                    </span>
                                </div> 
                                <div  class="column-box" 
-                               *ngIf='column.column_type != "numeric" && column.column_type !="date"' 
+                               *ngIf='(column.column_type != "numeric" && column.column_type !="date" ) && ( column.hidden != hiddenColumn || hiddenColumn==0) ' 
                                (click)="moveItem(column)" 
                                (mouseover)="showDescription(column)" 
                                (mouseout)="description= ''" 
                                cdkDrag
                                (cdkDragDropped)="searchRelations(column, $event)"
-                               [ngStyle]=" column.hidden && {'opacity': '0.5'} " >    
+                               [ngStyle]=" column.hidden == 1  && {'opacity': '0.5'} " >    
                                   
    
                                   <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                   <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
                                   <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
                                   <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">                        
-                                      {{column.display_name.default}} 
+                                      {{column.display_name.default}}  
                                   </span>
                                 </div> 
                             </div>

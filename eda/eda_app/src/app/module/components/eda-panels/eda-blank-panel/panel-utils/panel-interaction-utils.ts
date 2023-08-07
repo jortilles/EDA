@@ -303,14 +303,7 @@ export const PanelInteractionUtils = {
 
     // Carregar de nou l'array Columns amb la columna borrada
     PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id));
-
-    // Borro las columnas a posteriori
-    if (ebp.hiddenColumn == true) { 
-      ebp.columns = ebp.columns.filter (c => !c.hidden) 
-    }
   
-
-    
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
 

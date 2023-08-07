@@ -76,7 +76,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public sunburstController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
-    public hiddenColumn: boolean;
+    public hiddenColumn: number;
 
 
     public inputs: any = {};
@@ -189,7 +189,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         this.index = 0;
         this.modeSQL = false;
-        this.hiddenColumn = false;
+        this.hiddenColumn = 0;
         
         this.showIdForHiddenMode()
         this.setTablesData();
@@ -628,7 +628,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
         console.log('pa pe pi po pu');
-        this.hiddenColumn = true;
+        this.hiddenColumn = 1;
         this.columns = this.columns.filter (c => !c.hidden) ;
     }
 
@@ -964,11 +964,13 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /** Esta función permite al switch en la columna atributos ver u ocultar las columnas con el atributo hidden */
     public async changeHiddenMode(): Promise<void> {
+        if(this.hiddenColumn == 0){
+            this.hiddenColumn = 1 ;
+        }else{
+            this.hiddenColumn = 0;
+        }
         let table = this.tablesToShow.find(table => table.table_name === this.userSelectedTable)
         this.loadColumns(table);
-        if(this.hiddenColumn){
-            this.columns = this.columns.filter (c => !c.hidden) ;
-        }
     }
 
     public accopen(e){
