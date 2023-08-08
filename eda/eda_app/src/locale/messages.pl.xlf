@@ -29,7 +29,7 @@
       </trans-unit>
       <trans-unit id="signinBtn" datatype="html">
         <source>Ingresar</source>
-        <target>Zaloguj sie</target>
+        <target>Zaloguj się</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">41</context>
@@ -71,7 +71,7 @@ Ingresa ahora<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
 </source>
 <target>
-							Have an account? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+							Masz już konto? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
 <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
 Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
@@ -123,7 +123,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="sidebarDataFonts" datatype="html">
 <source>Fuente de Datos</source>
-<target>Źródła danych</target>
+<target>Baza danych</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
 <context context-type="linenumber">77</context>
@@ -131,7 +131,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="sidebarNewDb" datatype="html">
 <source>Nueva Fuente</source>
-<target>Nowe źródło danych</target>
+<target>Nowa baza danych</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
 <context context-type="linenumber">82</context>
@@ -139,7 +139,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="sidebarEditDb" datatype="html">
 <source>Editar Fuente</source>
-<target>Edytuj źródło danych</target>
+<target>Edytuj bazę danych</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
 <context context-type="linenumber">87</context>
@@ -147,7 +147,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="conditionsP1" datatype="html">
 <source>Esta aplicación es una demo.</source>
-<target>This app is a demo.</target>
+<target>Aplikacja jest w wersji demo.</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/core/pages/conditions/conditions.component.html</context>
 <context context-type="linenumber">3</context>
@@ -155,7 +155,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="conditionsP2" datatype="html">
 <source>No ofrece ninguna garantía y no somos responsables del uso que se haga de la misma.</source>
-<target>It does not offer any guarantee and we are not responsible for its use.</target>
+<target>Brak gwarancji. Nie bierzemy odpowiedzialności za użytkowanie.</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/core/pages/conditions/conditions.component.html</context>
 <context context-type="linenumber">4</context>
@@ -163,7 +163,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="conditionsP3" datatype="html">
 <source>Usala bajo tu responsabilidad.</source>
-<target>Use it at your own risk.</target>
+<target>Użyj na własne ryzyko.</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/core/pages/conditions/conditions.component.html</context>
 <context context-type="linenumber">5</context>
@@ -171,7 +171,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="cerrarBtn" datatype="html">
 <source>Cerrar</source>
-<target>Zamknąć</target>
+<target>Zamknij</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/core/pages/conditions/conditions.component.html</context>
 <context context-type="linenumber">10</context>
@@ -262,7 +262,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                     Fecha
 </source>
 <target>
-                                    Data
+                                    Dane
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
@@ -278,7 +278,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                     Valor a filtrar
 </source>
 <target>
-                                    Filter value
+                                    Filtr wartości
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
@@ -302,7 +302,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                     Fecha inicio
 </source>
 <target>
-                                    Start date
+                                    Data rozpoczęcia 
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
@@ -318,7 +318,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                     Fecha final
 </source>
 <target>
-                                   End date
+                                   Data zakończenia
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
@@ -334,7 +334,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                     Valor 1
 </source>
 <target>
-                                    Value 1
+                                    Wartość 1
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
@@ -358,7 +358,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                     Valor 2
 </source>
 <target>
-                                    Value 2
+                                    Wartość 2
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
@@ -382,7 +382,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                 Opciones
 </source>
 <target>
-                                Options
+                                Opcje
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
@@ -395,7 +395,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="addFilterBtn" datatype="html">
 <source>Añadir filtro</source>
-<target>Add filter</target>
+<target> Dodaj filtr</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
 <context context-type="linenumber">273</context>
@@ -415,7 +415,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="guardarButton" datatype="html">
 <source>Confirmar</source>
-<target>Confirm</target>
+<target>Przyjmij</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
 <context context-type="linenumber">364</context>
@@ -438,7 +438,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                         Tipos de filtro
 </source>
 <target>
-                        Filter types
+                        Typy filtrów
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
@@ -447,7 +447,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="addFilterButton" datatype="html">
 <source>Añadir filtro</source>
-<target>Add filter</target>
+<target>Dodaj filtr</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
 <context context-type="linenumber">228</context>
@@ -455,7 +455,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="guardarBtn" datatype="html">
 <source>Confirmar</source>
-<target>Confirm</target>
+<target>Przyjmij</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-dialog/filter-dialog.component.html</context>
 <context context-type="linenumber">292</context>
@@ -510,7 +510,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                 Colores
 </source>
 <target>
-                Colors
+                Kolory
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
@@ -523,7 +523,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="cancelarButton" datatype="html">
 <source>Cancelar</source>
-<target>Cancel</target>
+<target>Odrzuć</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/chart-dialog/chart-dialog.component.html</context>
 <context context-type="linenumber">58</context>
@@ -539,7 +539,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="dangerQuery" datatype="html">
 <source>¡Cuidado!</source>
-<target>Warning!</target>
+<target>Uwaga!</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component.html</context>
 <context context-type="linenumber">3</context>
@@ -549,8 +549,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>La consulta que estás a punto de realizar es potencialmente pesada y puede tardar mas de lo normal en
       ejecutarse.
 </source>
-<target>The query you are about to perform is potentially heavy and may take longer than normal to
-      run.
+<target>Zapytanie, które chcesz wykonać jest potencjalnie duże, przez co realizacja może potrwać dłużej niż zazwyczaj.
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component.html</context>
@@ -559,7 +558,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="dangerQueryText2" datatype="html">
 <source>Puedes añadir filtros o agregaciones para reducir el número de registros</source>
-<target>Try to add filters or aggregations to reduce the number of records</target>
+<target>Spróbuj dodać filtry lub agregacje, aby zmniejszyć ilość zapisów</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component.html</context>
 <context context-type="linenumber">7</context>
@@ -567,7 +566,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="dangerQueryText3" datatype="html">
 <source>¿Deseas continuar?</source>
-<target>Do you want to continue?</target>
+<target>Czy chcesz kontynuować?</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component.html</context>
 <context context-type="linenumber">8</context>
@@ -575,7 +574,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="cancelarBtn" datatype="html">
 <source>Cancelar</source>
-<target>Cancel</target>
+<target>Odrzuć</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/alert-dialog/alert-dialog.component.html</context>
 <context context-type="linenumber">14</context>
@@ -602,7 +601,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                             Entidades
 </source>
 <target>
-                            Entities
+                            Podmioty
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -614,7 +613,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                             Atributos
 </source>
 <target>
-                            Attributes
+                            Atrybuty
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -626,7 +625,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                             Mostrar los siguientes atributos:
 </source>
 <target>
-                            Show the following attributes:
+                            Pokaż następujące atrybuty:
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -638,7 +637,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                             Filtrar los resultados por:
 </source>
 <target>
-                            Filter the results by:
+                            Filtruj wyniki według:
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -650,7 +649,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                 Mi consulta
 </source>
 <target>
-                               My query
+                               Moje zapytanie
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -662,7 +661,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                     Resumen de atributos
 </source>
 <target>
-                                    Attribute summary
+                                    Podsumowanie atrybutów
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -674,7 +673,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                         Resumen de filtros del panel
 </source>
 <target>
-                                        Panel filters summary
+                                        Podsumowanie filtrów panelu
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -686,7 +685,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                         Resumen de filtros del informe
 </source>
 <target>
-                                        Dashboard filters summary
+                                        Podsumowanie filtrów raportu
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -711,7 +710,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="placeholderTables" datatype="html">
 <source>Tablas</source>
-<target>Tables</target>
+<target>Tabele</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">191</context>
@@ -723,7 +722,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="indicaciones" datatype="html">
 <source>Indicaciones</source>
-<target>Indications</target>
+<target>Wskazanie</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">198</context>
@@ -745,7 +744,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="indicaciones2" datatype="html">
 <source> Limitaciones: </source>
-<target> Limitations: </target>
+<target> Ograniczenia: </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">206</context>
@@ -754,8 +753,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="indicaciones3" datatype="html">
 <source>
                                         Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
-</source>
-<target>It is only possible to use the tables of the schema defined in the model (if any).
+</source> 
+<target>Możliwe tylko użycie tabel schematu zdefiniowanych w modelu (jeżeli są).
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -767,7 +766,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                         Debes utilizar alias para todas las tablas de la consulta ( select a,b from tabla t where c )
 </source>
 <target>
-                                        You must use aliases for all tables in the query (select a, b from table t where c)
+                                        Musisz użyć skrótów dla wszystkich tabel w zapytaniu (select a, b from table t where c)
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -790,7 +789,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
  en la cláusula &apos;WHERE&apos; de la consulta donde quieras inyectar el filtro
 </source>
-<target> To do it you just have to add::
+<target> Żeby to zrobić musisz dodać::
 <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
  AND
 <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/>
@@ -887,7 +886,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="indicaciones15" datatype="html">
 <source> Consulta sin filtros vinculados</source>
-<target> Query without linked filters</target>
+<target> Zapytanie bez połączonych filtrów</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">265</context>
@@ -895,7 +894,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="indicaciones16" datatype="html">
 <source> Consulta con filtros vinculados</source>
-<target> Query with linked filters</target>
+<target> Zapytanie z połączonym filtrem</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">271</context>
@@ -915,7 +914,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="vistaPrevia" datatype="html">
 <source>VISTA PREVIA</source>
-<target>PREVIEW</target>
+<target>PODGLĄD</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">291</context>
@@ -923,7 +922,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="ejecutarBtn" datatype="html">
 <source>Ejecutar</source>
-<target>Execute</target>
+<target>Stwórz</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">356</context>
@@ -934,7 +933,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                     CREAR UN NUEVO INFORME
 </source>
 <target>
-                    CREATE A NEW DASHBOARD
+                    STWÓRZ NOWY RAPORT
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -946,7 +945,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                 PUBLICOS
 </source>
 <target>
-                PUBLIC
+                PUBLICZNE
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -966,7 +965,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                 MIS GRUPOS
 </source>
 <target>
-                MY GROUPS
+                MOJE GRUPY 
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -978,7 +977,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                 PRIVADOS
 </source>
 <target>
-                PRIVATE
+                PRYWATNE
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -987,7 +986,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="labelDameNombre" datatype="html">
 <source>Dame un nombre *</source>
-<target>Give me a name *</target>
+<target>Nazwa raportu *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/create-dashboard/create-dashboard.component.html</context>
 <context context-type="linenumber">7</context>
@@ -995,11 +994,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="buscarPorNombre" datatype="html">
 <source>Buscar por nombre del informe</source>
-<target>Search by report name</target>
+<target>  Szukaj po nazwie raportu</target>
 </trans-unit>
 <trans-unit id="selectFuenteDatos" datatype="html">
 <source>Selecciona una fuente de datos *</source>
-<target>Select datasource *</target>
+<target>Wybierz źródło danych *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/create-dashboard/create-dashboard.component.html</context>
 <context context-type="linenumber">11</context>
@@ -1007,7 +1006,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="deleteDates" datatype="html">
 <source> Todas </source>
-<target> All </target>
+<target> Wszystko </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">36</context>
@@ -1015,7 +1014,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="yesterday" datatype="html">
 <source> Ayer </source>
-<target> Yesterday </target>
+<target> Wczoraj </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">38</context>
@@ -1023,7 +1022,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="thisWeek" datatype="html">
 <source> Ésta semana </source>
-<target> This week </target>
+<target> Ten tydzień </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">39</context>
@@ -1031,7 +1030,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="thisMonth" datatype="html">
 <source> Éste mes </source>
-<target> This month </target>
+<target> Ten miesiąc </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">40</context>
@@ -1039,7 +1038,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="thisYear" datatype="html">
 <source> Éste año </source>
-<target> This year </target>
+<target> Ten rok </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">41</context>
@@ -1047,7 +1046,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="opcionPanel" datatype="html">
 <source>NUEVO PANEL</source>
-<target>NEW PANEL</target>
+<target> NOWY PANEL</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">130</context>
@@ -1055,7 +1054,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="opcionTitulo" datatype="html">
 <source>NUEVO TEXTO</source>
-<target>NEW TEXT</target>
+<target>NOWY TEKST</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">137</context>
@@ -1063,7 +1062,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="opcionFiltro" datatype="html">
 <source>NUEVO FILTRO</source>
-<target>NEW FILTER</target>
+<target>NOWY FILTR</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">144</context>
@@ -1071,7 +1070,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="opcionInforme" datatype="html">
 <source>RECARGAR INFORME</source>
-<target>RELOAD DASHBOARD</target>
+<target>ODŚWIEŻ RAPORT</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">153</context>
@@ -1079,7 +1078,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="opcionGuardar" datatype="html">
 <source>GUARDAR</source>
-<target>SAVE</target>
+<target>ZAPSZ</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">160</context>
@@ -1087,7 +1086,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="opcionPdf" datatype="html">
 <source>DESCARGAR PDF</source>
-<target>DOWNLOAD PDF</target>
+<target>POBIERZ PDF</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">167</context>
@@ -1095,7 +1094,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="opcionImagen" datatype="html">
 <source>DESCARGAR IMAGEN</source>
-<target>DOWNLOAD IMAGE</target>
+<target>POBIERZ OBRAZ</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
 <context context-type="linenumber">174</context>
@@ -1103,7 +1102,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="temasColors" datatype="html">
 <source>Temas</source>
-<target>Themes</target>
+<target>Motywy</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/account-settings/account-settings.component.html</context>
 <context context-type="linenumber">5</context>
@@ -1111,7 +1110,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="menuClaro" datatype="html">
 <source>Con el menu claro</source>
-<target>Light theme</target>
+<target>Jasny motyw</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/account-settings/account-settings.component.html</context>
 <context context-type="linenumber">9</context>
@@ -1119,7 +1118,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="menuOscuro" datatype="html">
 <source>Con el menu oscuro</source>
-<target>Dark theme</target>
+<target>Ciemny motyw</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/account-settings/account-settings.component.html</context>
 <context context-type="linenumber">17</context>
@@ -1127,7 +1126,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="tituloPerfilUsuario" datatype="html">
 <source>Perfil del usuario</source>
-<target>User profile</target>
+<target>Profil użytkownika</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
 <context context-type="linenumber">6</context>
@@ -1135,7 +1134,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="labelNombreUsuario" datatype="html">
 <source>Nombre de usuario</source>
-<target>User name</target>
+<target>Nazwa użytkownika</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
 <context context-type="linenumber">10</context>
@@ -1147,7 +1146,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="labelUsuarioEmail" datatype="html">
 <source>Correo de usuario</source>
-<target>User email</target>
+<target>Email użytkownika</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
 <context context-type="linenumber">18</context>
@@ -1161,7 +1160,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>
                     Fotografía del usuario</source>
 <target>
-                    User pic</target>
+                    Zdjęcie</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
 <context context-type="linenumber">48</context>
@@ -1171,7 +1170,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="button" datatype="html">
 <source>Actualizar Foto</source>
-<target>Update pic </target>
+<target>Aktualizuj zdjęcie </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
 <context context-type="linenumber">63</context>
@@ -1181,9 +1180,9 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="nuevoUsuarioBtn" datatype="html">
 <source>Crear usuario</source>
-<target>Create user</target>
+<target>Stwórz użytkwnika</target>
 <source>Crear usuario</source>
-<target>Create user</target>
+<target>Stwórz użytkownika</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-list/users-list.component.html</context>
 <context context-type="linenumber">5</context>
@@ -1191,7 +1190,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputNombre" datatype="html">
 <source>Nombre *</source>
-<target>Name *</target>
+<target>Nazwa *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">4</context>
@@ -1239,7 +1238,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputPassword" datatype="html">
 <source>Contraseña *</source>
-<target>Password *</target>
+<target>Hasło *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">12</context>
@@ -1267,7 +1266,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputRepitePassword" datatype="html">
 <source>Repite la contraseña</source>
-<target>Repeat password</target>
+<target>Wprowadź hasło ponownie</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">17</context>
@@ -1275,7 +1274,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputGrupo" datatype="html">
 <source>Grupo *</source>
-<target>Group *</target>
+<target>Grupa *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">22</context>
@@ -1283,7 +1282,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputTipo" datatype="html">
 <source>TIPO *</source>
-<target>TYPE*</target>
+<target>RODZAJ*</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
 <context context-type="linenumber">15</context>
@@ -1299,7 +1298,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="placholderSelectTipo" datatype="html">
 <source>Selecciona un tipo</source>
-<target>Select type</target>
+<target>Wybierz rodzaj</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
 <context context-type="linenumber">17</context>
@@ -1307,7 +1306,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputServidor" datatype="html">
 <source>SERVIDOR *</source>
-<target>SERVER *</target>
+<target>SERWER *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
 <context context-type="linenumber">25</context>
@@ -1323,7 +1322,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputNombreDb" datatype="html">
 <source>BASE DE DATOS *</source>
-<target>DATABASE *</target>
+<target>BAZA DANYCH *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
 <context context-type="linenumber">49</context>
@@ -1331,7 +1330,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputNombreDb2" datatype="html">
 <source>BASE DE DATOS *</source>
-<target>DATABASE *</target>
+<target>BAZA DANYCH *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
 <context context-type="linenumber">56</context>
@@ -1339,7 +1338,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputNombreEsquema" datatype="html">
 <source>ESQUEMA</source>
-<target>SCHEMA</target>
+<target>SCHEMAT</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
 <context context-type="linenumber">64</context>
@@ -1355,7 +1354,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputUsuario" datatype="html">
 <source>USUARIO *</source>
-<target>USER *</target>
+<target>UŻYTKOWNIK *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-sources.component.html</context>
 <context context-type="linenumber">78</context>
@@ -1363,7 +1362,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="tituloCard" datatype="html">
 <source>Modelo de datos</source>
-<target>Datamodel</target>
+<target>Model danych</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
 <context context-type="linenumber">18</context>
@@ -1373,7 +1372,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputNombreTecnico" datatype="html">
 <source>Nombre técnico</source>
-<target>Technical name</target>
+<target>Nazwa techniczna</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">11</context>
@@ -1385,7 +1384,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputDescripcion" datatype="html">
 <source> Descripción </source>
-<target> Description </target>
+<target> Opis </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">16</context>
@@ -1401,7 +1400,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputEsconderTabla" datatype="html">
 <source>Esconder tabla</source>
-<target>Hide table</target>
+<target>Ukryj tabelę</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">21</context>
@@ -1409,7 +1408,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputTipoTabla" datatype="html">
 <source>Tipo de tabla</source>
-<target>Table type</target>
+<target>Rodzaj tabeli</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">27</context>
@@ -1417,7 +1416,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="addRelation" datatype="html">
 <source>Añadir relación</source>
-<target>Add relation</target>
+<target>Dodaj relacje </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">36</context>
@@ -1428,7 +1427,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                 Tipo de columna
 </source>
 <target>
-                Column type
+                Rodzaj kolumny
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -1441,7 +1440,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </source>
 
 <target>
-                Aggregation
+                Agregacja
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -1458,7 +1457,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="addPermission" datatype="html">
 <source> Añadir permiso</source>
-<target> Add permission</target>
+<target> Dodaj uprawnienie</target>
 </trans-unit>
 
 
@@ -1469,7 +1468,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="esconderColumna" datatype="html">
 <source>Esconder columna</source>
-<target>Hide column</target>
+<target>Ukryj kulumnę</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">112</context>
@@ -1480,7 +1479,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
             Metadata
 </source>
 <target>
-            Metadata
+            Metadane
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -1492,7 +1491,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
             Conexión
 </source>
 <target>
-            Connection
+            Połączenie
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -1516,7 +1515,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                 Base de datos
 </source>
 <target>
-                Database
+                Baza danych
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -1532,7 +1531,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                 Usuario
 </source>
 <target>
-                User
+                Użytkownik
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -1574,7 +1573,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="crearGrupoLabel" datatype="html">
 <source>Crear grupo</source>
-<target>Create group</target>
+<target>Stwórz grupę</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/groups-management/group-list/group-list.component.html</context>
 <context context-type="linenumber">5</context>
@@ -1582,7 +1581,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="0acf4e0f9350f920b529a38364281d337c54edfd" datatype="html">
 <source>Cerrar</source>
-<target>Close</target>
+<target>Zamknij</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/groups-management/group-detail/group-detail.component.html</context>
 <context context-type="linenumber">32</context>
@@ -1593,7 +1592,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>
             ¿Aplica a todos los paneles?
 </source>
-<target>Does it apply to all panels?
+<target>Dotyczy wszytskich paneli?
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
@@ -1604,7 +1603,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>
                 Paneles para los que aplica el filtro
 </source>
-<target> Panels for which the filter applies
+<target> Panele, których dotyczy filtr
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
@@ -1617,7 +1616,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </source>
 
 <target>
-                Filter by
+                Filtruj według
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
@@ -1626,7 +1625,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="placeholderColumns" datatype="html">
 <source>Atributos</source>
-<target>Attributes</target>
+<target>Atrybuty</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
 <context context-type="linenumber">46</context>
@@ -1634,7 +1633,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="tituloPermisosColumna" datatype="html">
 <source>Añadir permiso</source>
-<target>Add permission</target>
+<target>Dodaj uprawnienie</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component.html</context>
 <context context-type="linenumber">3</context>
@@ -1670,7 +1669,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputMapName" datatype="html">
 <source>Nombre del mapa</source>
-<target>Map name</target>
+<target>Nazwa mapy</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
 <context context-type="linenumber">19</context>
@@ -1678,7 +1677,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputx" datatype="html">
 <source> Centro del mapa (Latitud, Longitud)</source>
-<target> Map center (Latitude, Longitude)</target>
+<target> Środek mapy (Latitude, Longitude)</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
 <context context-type="linenumber">26</context>
@@ -1686,7 +1685,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="avaliableMaps" datatype="html">
 <source>Mapas disponibles</source>
-<target>Available maps</target>
+<target>Dostępne mapy</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
 <context context-type="linenumber">33</context>
@@ -1694,7 +1693,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputMapColumnsText" datatype="html">
 <source>Vincular columnas al mapa</source>
-<target>Link colums to the map</target>
+<target>Połącz kolumny z mapą</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
 <context context-type="linenumber">47</context>
@@ -1702,7 +1701,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputMapColumns" datatype="html">
 <source>Columnas</source>
-<target>Columns</target>
+<target>Kolumny</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
 <context context-type="linenumber">57</context>
@@ -1711,7 +1710,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="borrar" datatype="html">
 <source>Borrar</source>
-<target>Delete</target>
+<target>Usuń</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">124</context>
@@ -1719,7 +1718,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="checkConnection" datatype="html">
 <source>Comprobar conexión</source>
-<target>Check connection</target>
+<target>Sprwdź połączenie</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">203</context>
@@ -1727,7 +1726,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="deleteModel" datatype="html">
 <source>Borrar modelo de datos</source>
-<target>Delete datamodel</target>
+<target>Usuń model danych</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
 <context context-type="linenumber">20</context>
@@ -1742,7 +1741,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="saveModel" datatype="html">
-<target>Save datamodel</target>
+<target>Zapisz model danych</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
 <context context-type="linenumber">12</context>
@@ -1750,7 +1749,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="Refresh" datatype="html">
 <source>Refrescar modelo de datos</source>
-<target>Refresh datamodel</target>
+<target>Odśwież model danych</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
 <context context-type="linenumber">9</context>
@@ -1758,11 +1757,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="loading">
 <source>Cargando informe...</source>
-<target>Loading dashboard...</target>
+<target>Ładownie raportu...</target>
 </trans-unit>
 <trans-unit id="addRelationButton" datatype="html">
 <source> Añadir relación </source>
-<target> Add relation </target>
+<target> Dodaj relacje </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">36</context>
@@ -1770,7 +1769,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="addCalculatedCol" datatype="html">
 <source>Añadir columna calculada</source>
-<target>Add calculated column</target>
+<target>Dodaj sklalkulowaną kolumnę</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
 <context context-type="linenumber">41</context>
@@ -1789,18 +1788,18 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="userTable">
 <source>USUARIO</source>
-<target>USER</target>
+<target>UŻYTKOWNIKs</target>
 </trans-unit>
 
 <trans-unit id="valueTable">
 <source>VALOR</source>
-<target>VALUE</target>
+<target>WARTOŚĆ</target>
 </trans-unit>
 
 <trans-unit id="editModelHeaders" datatype="html">
 <source>Editar <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/>
 </source>
-<target>Edit <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/>
+<target>Edytuj <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/>
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
@@ -1817,7 +1816,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="edaMode" datatype="html">
 <source>Modo EDA</source>
-<target>EDA Mode</target>
+<target>Tryb EDA</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">344</context>
@@ -1825,7 +1824,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="sqlMode" datatype="html">
 <source>Modo SQL</source>
-<target>SQL mode</target>
+<target>Tryb SQL</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">345</context>
@@ -1833,45 +1832,45 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="panelOptions1">
 <source>Editar consulta</source>
-<target>Edit query</target>
+<target>Edytuj zapytanie</target>
 </trans-unit>
 
 <trans-unit id="panelOptions2">
 <source>Editar opciones del gráfico</source>
-<target>Editar chart options</target>
+<target>Edytuj opcje wykresu</target>
 </trans-unit>
 
 <trans-unit id="panelOptions3">
 <source>Exportar a Excel</source>
-<target>Excel export</target>
+<target>Eksportuj do Excela</target>
 </trans-unit>
 <trans-unit id="panelOptions4">
 <source>Eliminar panel</source>
-<target>Delete panel</target>
+<target>Usuń panel</target>
 </trans-unit>
 <trans-unit id="panelOptionsDup">
 <source>Duplicar panel</source>
-<target>Duplicate panel</target>
+<target>Duplikuj panel</target>
 </trans-unit>
 <trans-unit id="chartTypes1">
 <source>Tabla de Datos</source>
-<target>Table</target>
+<target>Tabela</target>
 </trans-unit>
 <trans-unit id="chartTypes2">
 <source>Tabla Cruzada</source>
-<target>Crosstable</target>
+<target>Tabela krzyżowa</target>
 </trans-unit>
 <trans-unit id="chartTypes3">
 <source>Gráfico de Pastel</source>
-<target>Pie chart</target>
+<target>Diagram kołowy</target>
 </trans-unit>
 <trans-unit id="chartTypes4">
 <source>Gráfico de Área Polar</source>
-<target>Polar area chart</target>
+<target>Wykres biegunowy</target>
 </trans-unit>
 <trans-unit id="chartTypes5">
 <source>Gráfico de Barras</source>
-<target>Bar chart</target>
+<target>Wykres słupkowy</target>
 </trans-unit>
 <trans-unit id="chartTypesHistograma">
 <source>Histograma</source>
@@ -1887,23 +1886,23 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
-<target>Stacked bar chart</target>
+<target>Skumulowany wykres słupkowy</target>
 </trans-unit>
 <trans-unit id="chartTypes7">
 <source>Gráfico de Barras Horizontales</source>
-<target>Horizontal bar chart</target>
+<target>Poziomy wykres słupkowy</target>
 </trans-unit>
 <trans-unit id="chartTypes8">
 <source>Gráfico de Lineas</source>
-<target>Line chart</target>
+<target>Wykres liniowy</target>
 </trans-unit>
 <trans-unit id="chartTypes18">
 <source>Gráfico de Áreas</source>
-<target>Area chart</target>
+<target>Wykres warstwowy</target>
 </trans-unit>
 <trans-unit id="chartTypes9">
 <source>Mixto: Barras y lineas</source>
-<target>Mixed: Bars and lines</target>
+<target>Mieszany: słupkowy i liniowy</target>
 </trans-unit>
 <trans-unit id="chartTypes10">
 <source>Mapa de coordenadas</source>
@@ -1911,66 +1910,66 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="chartTypes11">
 <source>Mapa de Capas</source>
-<target>Layer Map</target>
+<target>Mapa warstwowa</target>
 </trans-unit>
 
 <trans-unit id="chartTypes15">
 <source>Velocímetro</source>
-<target>Gauge</target>
+<target>Wykres mierników</target>
 </trans-unit>
 
 <trans-unit id="filters1">
 <source>IGUAL A (=)</source>
-<target> EQUAL TO (=)</target>
+<target>RÓWNA SIĘ (=)</target>
 </trans-unit>
 <trans-unit id="filters2">
 <source>NO IGUAL A (!=)</source>
-<target>NOT EQUAL TO (!=)</target>
+<target>NIE RÓWNA SIĘ (!=)</target>
 </trans-unit>
 <trans-unit id="filters3">
 <source>MAYOR A (&gt;)</source>
-<target>GREATER THAN (&gt;) </target>
+<target>WIĘKSZE NIŻ (&gt;) </target>
 </trans-unit>
 <trans-unit id="filters4">
 <source>MENOR A (&lt;) </source>
-<target>SMALLER THAN (&lt;) </target>
+<target>MNIEJSZE NIŻ (&lt;) </target>
 </trans-unit>
 <trans-unit id="filters5">
 <source>MAYOR o IGUAL A (&gt;=) </source>
-<target>BIGGER OR EQUAL TO (&gt;=) </target>
+<target>WIĘKSZE LUB RÓWNE  (&gt;=) </target>
 </trans-unit>
 <trans-unit id="filters6">
 <source>MENOR o IGUAL A (&lt;=) </source>
-<target>SMALLER OR EQUAL TO (&lt;=) </target>
+<target>MNIEJ LUB RÓWNE  (&lt;=) </target>
 </trans-unit>
 <trans-unit id="filters7">
 <source>ENTRE (between) </source>
-<target>BETWEEN </target>
+<target>POMIĘDZY </target>
 </trans-unit>
 <trans-unit id="filters8">
 <source>DENTRO DE (in) </source>
-<target> IN </target>
+<target> TYLKO WYBRANE </target>
 </trans-unit>
 <trans-unit id="filters9">
 <source>FUERA DE (not in) </source>
-<target> NOT IN </target>
+<target> ODRZUCONE </target>
 </trans-unit>
 <trans-unit id="filters10">
 <source>PARECIDO A (like) </source>
-<target>LIKE </target>
+<target>PODOBNE </target>
 </trans-unit>
 <trans-unit id="filters11">
 <source>NO PARECIDO A (not like)</source>
-<target>NOT LIKE </target>
+<target>NIEPODOBNE </target>
 </trans-unit>
 <trans-unit id="filters12">
 <source>VALORES NO NULOS (not null)</source>
-<target>NOT NULL</target>
+<target>WARTOŚĆI NIEZEROWE</target>
 </trans-unit>
 
 <trans-unit id="dates1">
 <source>AÑO</source>
-<target>YEAR</target>
+<target>ROK</target>
 </trans-unit>
 <trans-unit id="datesQ">
 <source>TRIMESTRE</source>
@@ -1978,11 +1977,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="dates2">
 <source>MES</source>
-<target>MONTH</target>
+<target>MIESIĄC</target>
 </trans-unit>
 <trans-unit id="dates3">
 <source>DIA</source>
-<target>DAY</target>
+<target>DZIEŃ</target>
 </trans-unit>
 <trans-unit id="dates4">
 <source>NO</source>
@@ -1994,7 +1993,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="dates6">
 <source>DIA DE LA SEMANA</source>
-<target>DIA DE LA SETMANA</target>
+<target>DZIEŃ TYGODNIA</target>
 </trans-unit>
 
 <trans-unit id="dates7">
@@ -2004,29 +2003,29 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="dates8">
 <source>DIA HORA</source>
-<target>DIA HORA</target>
+<target>DZIEŃ GODZINA</target>
 </trans-unit>
 <trans-unit id="dates9">
 <source>DIA HORA MINUTO</source>
-<target>DAY HOUR MINUTE</target>
+<target>DZIEŃ GODZINA MINUTA</target>
 </trans-unit>
 <trans-unit id="ChartProps">
 <source>PROPIEDADES DEL gráfico</source>
-<target>CHART PROPERTIES</target>
+<target>WŁAŚCIWOŚCI WYKRESU</target>
 </trans-unit>
 
 <trans-unit id="newPanelTitle">
 <source>Nuevo Panel</source>
-<target>New Pannel</target>
+<target>Nowy Panel</target>
 </trans-unit>
 <trans-unit id="newPanelTitle2">
 <source>Nuevo Panel</source>
-<target>New Pannel</target>
+<target>Nowy Panel</target>
 </trans-unit>
 
 <trans-unit id="addMap" datatype="html">
 <source> Mapas</source>
-<target> Maps</target>
+<target> Mapy</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">210</context>
@@ -2034,7 +2033,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputNombreEsquemaModel" datatype="html">
 <source>Esquema</source>
-<target>Schema</target>
+<target>Schemat</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">181</context>
@@ -2043,7 +2042,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="listRelations" datatype="html">
 <source>Relaciones</source>
-<target>Relations</target>
+<target>Relacje</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">33</context>
@@ -2051,7 +2050,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="tituloGrupoComunes" datatype="html">
 <source> COMUNES</source>
-<target> COMMON</target>
+<target> WSPÓLNE</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
   <context context-type="linenumber">44</context>
@@ -2060,7 +2059,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="labelnewPass" datatype="html">
 <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</source>
-<target>New password </target>
+<target>Nowe hasło </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
   <context context-type="linenumber">27</context>
@@ -2068,7 +2067,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="namePass" datatype="html">
 <source>password</source>
-<target>password</target>
+<target>hasło</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
   <context context-type="linenumber">28</context>
@@ -2076,7 +2075,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="labelRepeatPass" datatype="html">
 <source>Repite la nueva contraseña </source>
-<target>Repeat new password </target>
+<target>Potwierdź hasło </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
   <context context-type="linenumber">31</context>
@@ -2084,7 +2083,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="nameNewPass" datatype="html">
 <source>newPassword</source>
-<target>newPassword</target>
+<target>nowe hasło</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
   <context context-type="linenumber">32</context>
@@ -2097,20 +2096,20 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="groups2">
 <source>GRUPOS</source>
-<target>GROUPS</target>
+<target>GRUPY</target>
 </trans-unit>
 <trans-unit id="usersName">
 <source>NOMBRE</source>
-<target>NAME</target>
+<target>NAZWA</target>
 </trans-unit>
 <trans-unit id="usersRole">
 <source>ROLE</source>
-<target>ROLE</target>
+<target>ROLA</target>
 </trans-unit>
 
 <trans-unit id="newPassPlaceholderProfile" datatype="html">
 <source>Repite la contraseña</source>
-<target>Repeat new password</target>
+<target>Potwierdź hasło</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
   <context context-type="linenumber">32</context>
@@ -2128,7 +2127,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="passwordLogin" datatype="html">
 <source>Contraseña</source>
-<target>Password</target>
+<target>Hasło</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
   <context context-type="linenumber">28</context>
@@ -2137,7 +2136,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="informacionGeneral" datatype="html">
 <source>Información general</source>
-<target>General information</target>
+<target>Informacje ogólne</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
   <context context-type="linenumber">202</context>
@@ -2146,7 +2145,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="linkFilters" datatype="html">
 <source>Vincular consulta con los filtros del panel</source>
-<target>Link query and panel filters</target>
+<target>Połącz zapytanie z filtrami panelu </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
   <context context-type="linenumber">221</context>
@@ -2155,7 +2154,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="examples" datatype="html">
 <source>Ejemplos</source>
-<target>Examples</target>
+<target>Przykłady</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
   <context context-type="linenumber">242</context>
@@ -2164,7 +2163,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="newPassPlaceholderUsers" datatype="html">
 <source>Repite la contraseña</source>
-<target>Repeat password</target>
+<target>Powtórz hasło</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
   <context context-type="linenumber">17</context>
@@ -2173,7 +2172,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="AddPermiso" datatype="html">
 <source>Añadir permiso</source>
-<target>Add permission</target>
+<target>Dodaj uprawnienie</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component.html</context>
   <context context-type="linenumber">3</context>
@@ -2228,7 +2227,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="columnaCalculada" datatype="html">
 <source> Nueva columna calculada </source>
-<target> New calculated column </target>
+<target> Nowa skalkulowana kolumna </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/calculatedColumn-dialog/calculated-column-dialog.component.html</context>
   <context context-type="linenumber">3</context>
@@ -2237,7 +2236,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="inputxDescription" datatype="html">
 <source>Si desconoces las coordenadas del centro las calcularemos automáticamente</source>
-<target>If you do not know the coordinates of the center we will calculate them automatically</target>
+<target>Jeżeli nie znasz środkowych współrzędnych, zostaną wykalkulowane automatycznie</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/mapsDialog/maps-dialog.component.html</context>
   <context context-type="linenumber">27</context>
@@ -2246,7 +2245,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="sqlExp" datatype="html">
 <source>Expresión SQL</source>
-<target> SQL  Expression</target>
+<target> Wyrażenie SQL</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">74</context>
@@ -2255,7 +2254,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="sqlExpColumn" datatype="html">
 <source>Expresión SQL (Debe incluir la agregación)</source>
-<target>SQL expression (Must include aggregation)</target>
+<target>Wyrażenia SQL (Musi zawierać agregacje)</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">103</context>
@@ -2266,7 +2265,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="aggTsum">
 <source>Suma</source>
-<target>Sum</target>
+<target>Suma</target>
 </trans-unit>
 <trans-unit id="aggTmean">
 <source>Media</source>
@@ -2282,7 +2281,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="aggTcount">
 <source>Cuenta Valores</source>
-<target>Count</target>
+<target>Licz</target>
 </trans-unit>
 <trans-unit id="aggTcountD">
 <source>Valores Distintos</source>
@@ -2290,99 +2289,99 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="commonPanel">
 <source>Común</source>
-<target>Common</target>
+<target>Wspólny</target>
 </trans-unit>
 <trans-unit id="groupPanel">
 <source>Grupo</source>
-<target>Group</target>
+<target>Grupowy</target>
 </trans-unit>
 <trans-unit id="privatePanel">
 <source>Privado</source>
-<target>Private</target>
+<target>Prywatny</target>
 </trans-unit>
 
 
 <trans-unit id="col">
 <source>Atributo</source>
-<target>Attribute:</target>
+<target>Atrybuty:</target>
 </trans-unit>
 <trans-unit id="table">
 <source>de la entidad</source>
-<target>. Entity: </target>
+<target>. Encja: </target>
 </trans-unit>
 
 <trans-unit id="addCalculatedColTitle">
 <source>Añadir columna calculada a la tabla</source>
-<target>Add calculated column to  table  </target>
+<target>Dodaj kolumnę obliczeniową do tabeli </target>
 </trans-unit>
 <trans-unit id="addRelationTo">
 <source>Añadir relación a la tabla</source>
-<target>Add relation to table</target>
+<target>Dodaj relację do tabeli</target>
 </trans-unit>
 
 <trans-unit id="chartInfo1">
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
-<target>Chart not avaiable with current data.</target>
+<target>Wykres niedostępny dla bieżących danych.</target>
 </trans-unit>
 <trans-unit id="chartInfo2">
 <source>Un KPI necesita un único número.</source>
-<target>To get a KPI only one number is required.</target>
+<target>Do uzyskania wskaźnika KPI wymagana jest tylko jedna liczba.</target>
 </trans-unit>
 <trans-unit id="chartInfo3">
 <source>Un gráfico de barras necesita una o más categorías y una série numéricas.</source>
-<target>Bar  chart needs one or more categories and one numeric serie. If there is also two series numeric data should be aggregated.</target>
+<target>Wykres słupkowy wymaga jednej lub więcej kategorii i jednej serii liczbowej. Jeśli istnieją również dwie serie, dane liczbowe powinny zostać zagregowane.</target>
 </trans-unit>
 <trans-unit id="chartInfo4">
 <source> Un gráfico combinado necesita una categoría y dos séries numéricas.</source>
-<target>Mixed chart needs one category and two or more numeric series.</target>
+<target>Wykres mieszany wymaga jednej kategorii i dwóch, lub więcej serii numerycznych.</target>
 </trans-unit>
 <trans-unit id="chartInfo5">
 <source>Un gráfico de línea necesita una o más categorías y una série numérica.</source>
-<target>Line chart needs one or more categories and one numeric serie. If there is also two series numeric data should be aggregated.</target>
+<target>Wykres liniowy wymaga jednej, lub więcej kategorii i jedną serię numeryczną. Jeżeli są dwie serie numeryczne, dane powinny być zagregowane.</target>
 </trans-unit>
 <trans-unit id="chartInfoArea">
 <source>Un gráfico de areas necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.</source>
-<target>Area chart needs one or more categories and one numeric serie. If there is also two series numeric data should be aggregated.</target>
+<target>Wykres warstwowy wymaga jednej, lub więcej kategorii i jedną serię numeryczną.Jeżeli są dwie serie numeryczne, dane powinny być zagregowane .</target>
 </trans-unit>
 <trans-unit id="chartInfo6">
 <source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
-<target>Bar chart needs one or more categories and one numeric serie. If there is also two series numeric data should be aggregated.</target>
+<target>Wykres słupkowy wymaga jednej, lub więcej kategorii i jedną serię numeryczną. Jeżeli są dwie serie numeryczne, dane powinny być zagregowane.</target>
 </trans-unit>
 <trans-unit id="chartInfo7">
 <source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
-<target>Bar chart needs one or more categories and one numeric serie. If there is also two series numeric data should be aggregated.</target>
+<target>Wykres słupkowy wymaga jednej, lub więcej kategorii i jedną serię numeryczną. Jeżeli są dwie serie numeryczne, dane powinny być zagregowane.</target>
 </trans-unit>
 <trans-unit id="chartInfo8">
 <source>Un gráfico polar necesita una categoría y una série numérica.</source>
-<target>Polar area needs one category and one numeric serie.</target>
+<target>Wykres biegunowy wymaga jednej kategorii i jednej serii numerycznej.</target>
 </trans-unit>
 <trans-unit id="chartInfo9">
 <source>Un gráfico de pastel necesita una categoría y una série numérica.</source>
-<target>Pie chart needs one category and one numeric serie. </target>
+<target>Wykres kołowy wymaga jednej kategorii i jednej serii numerycznej. </target>
 </trans-unit>
 <trans-unit id="chartInfo10">
 <source>Una tabla cruzada necesita dos o más categorías y una série numérica.</source>
-<target>Crosstable needs two or more categories and one numeric serie.</target>
+<target>Tabela krzyżowa wymaga dwóch lub więcej kategorii i jednej serii numerycznej.</target>
 </trans-unit>
 <trans-unit id="chartInfo11">
 <source>Es necesario que los dos primeros campos sean de tipo coordenada.</source>
-<target>First two fields must be coordinates.</target>
+<target>Dwa pierwsze pola muszą być skoordynowane.</target>
 </trans-unit>
 <trans-unit id="chartInfo111">
 <source>Puedes añarir un campo de tipo métrica y uno de tipo etiqueta en este orden o cualquiera de los dos por separado.</source>
-<target>Add a metric field and a label field in this order or either one separately.</target>
+<target>Dodaj pole metryki i pole etykiety w tej kolejności lub każde z nich osobno.</target>
 </trans-unit>
 <trans-unit id="chartInfo12">
 <source>Es necesario un campo vinculado a un archivo GeoJson y un campo de tipo numérico.</source>
-<target>GeoJson linked field and numeric one is needed.</target>
+<target>Potrzebne jest pole połączone GeoJson i pole numeryczne.</target>
 </trans-unit>
 <trans-unit id="chartInfo13">
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
-<target>Chart not avaiable with current data.</target>
+<target>Wykres niedostępny dla bieżących danych.</target>
 </trans-unit>
 <trans-unit id="tooManyValues" datatype="html">
 <source> - Demasiados valores</source>
-<target> - Too many values</target>
+<target> - Za dużo wartości</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
   <context context-type="linenumber">332</context>
@@ -2391,7 +2390,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="notAvaliable" datatype="html">
 <source> - No Disponible</source>
-<target> - Not Available</target>
+<target> - Niedostępne</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
   <context context-type="linenumber">335</context>
@@ -2399,17 +2398,17 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="MapDatamodel">
 <source>Mapas</source>
-<target>Maps</target>
+<target>Mapy</target>
 </trans-unit>
 
 <trans-unit id="tooManyValuestext">
 <source>Hay demasiados valores para este gráfico. Agrega o filtra los datos para poder visualizarlos mejor.</source>
-<target>Too many values for this chart. Add or filter the data to be able to visualize it better.</target>
+<target>Za dużo wartości dla tego wyresu. Zagreguj lub filtruj dane, aby były lepiej widoczne.</target>
 </trans-unit>
 
 <trans-unit id="inputTipoDatamodel" datatype="html">
 <source> Tipo </source>
-<target> Type </target>
+<target> Rodzaj </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">157</context>
@@ -2417,7 +2416,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="MapsDatamodel" datatype="html">
 <source>  Mapas  </source>
-<target>  Maps  </target>
+<target>  Mapy  </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
   <context context-type="linenumber">206</context>
@@ -2426,7 +2425,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="notSavedChanges" datatype="html">
 <source> Hay cambios sin guardar... </source>
-<target> Not saved changes... </target>
+<target> Nie zapisano zmian... </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/dashboard/dashboard.component.html</context>
   <context context-type="linenumber">205</context>
@@ -2435,268 +2434,271 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="dahsboardSaved">
 <source>Informe guardado correctamente</source>
-<target>Dashboard correctly saved</target>
+<target>Raport zapisany prawidłowo</target>
 </trans-unit>
 
 <trans-unit id="DatadourceTitle">
 <source>Fuente de datos: </source>
-<target>Datasource:  </target>
+<target>Źródło danych:  </target>
 </trans-unit>
 
 <trans-unit id="DatadourceText">
 <source>Creada correctamente </source>
-<target>Correctly created</target>
+<target>Stworzono prawidłowo</target>
 </trans-unit>
 
 <trans-unit id="ErrorMessage">
 <source>Ha ocurrido un error </source>
-<target>Some error has occurred</target>
+<target>Wystąpił problem</target>
 </trans-unit>
 
 <trans-unit id="CorrectQuery">
 <source>Consulta correcta </source>
-<target>Correct query</target>
+<target>Zapytanie prawidłowe</target>
 </trans-unit>
 
 <trans-unit id="IncorrectQuery">
 <source>Consulta incorrecta</source>
-<target>Incorrect query</target>
+<target>Zapytanie nieprawidłowe</target>
 </trans-unit>
 
 <trans-unit id="IncorrectQueryAgg">
 <source>Debes incluir la agregación (distinct, sum, max, min, etc)</source>
-<target>You must include the aggregation (distinct, sum, max, min, etc)</target>
+<target>Musi zawierać agregację (distinct, sum, max, min, etc)</target>
 </trans-unit>
 
 <trans-unit id="EstablishedConnections">
 <source>Conexión establecida </source>
-<target>Connection established</target>
+<target>Nawiązano połączenie</target>
 </trans-unit>
 
 <trans-unit id="IncorrectConnectionData">
 <source>Datos de conexión incorrectos</source>
-<target>Incorrect connection details</target>
+<target>Nieprawidłowe dane dotyczące połączenia</target>
 </trans-unit>
 
 <trans-unit id="Sure">
 <source>¿Estás seguro?</source>
-<target>Are you sure?</target>
+<target>Jesteś pewny?</target>
 </trans-unit>
 
 <trans-unit id="SureInfo">
 <source>Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible</source>
-<target>You are about to delete the data model and all associated dashboards, this is irreversible.</target>
+<target>Model danych oraz raporty z nim powiązane zostaną usuniętne nieodwracalnie.</target>
 </trans-unit>
 
 <trans-unit id="ConfirmDeleteModel">
 <source>Si, ¡Eliminalo! </source>
-<target>Yes, delete it!</target>
+<target>Tak, usuń!</target>
 </trans-unit>
 
 <trans-unit id="Deleted">
 <source>¡Eliminado!</source>
-<target>Deleted!</target>
+<target>Usunięto!</target>
 </trans-unit>
 
 <trans-unit id="DeleteSuccess">
 <source>Modelo eliminado correctamente.</source>
-<target>Model deleted correctly.</target>
+<target>Model usunięty prawidłowo.</target>
 </trans-unit>
 
 <trans-unit id="UpdateModelSucess">
 <source>Modelo actualizado correctamente</source>
-<target>Model updated correctly</target>
+<target>Model zaktualizowany prawidłowo</target>
 </trans-unit>
 
 <trans-unit id="DeletedUser">
 <source>Usuario borrado</source>
-<target>User deleted</target>
+<target>Usunięto użytkownika</target>
 </trans-unit>
 
 <trans-unit id="UserDeletedOk">
 <source>El usuario a sido eliminado correctamente</source>
-<target>User has been successfully removed</target>
+<target>Użytkownik został usunięty pomyślnie</target>
 </trans-unit>
 
 <trans-unit id="picUpdated">
 <source>Imagen Actualizada</source>
-<target>Picture updated</target>
+<target>Zaktualizowano zdjęcie</target>
 </trans-unit>
 
 <trans-unit id="NoRecords">
 <source>No se pudo obtener ningún registro</source>
-<target>Could not get any record</target>
+<target>Nie udało się uzyskać żadnego rekordu</target>
 </trans-unit>
 
 <trans-unit id="mandatoryFields">
 <source>Recuerde rellenar los campos obligatorios</source>
-<target>Remember to fill in the required fields </target>
+<target>Pamiętaj, aby wypełnić wymagane pola </target>
 </trans-unit>
 
 <trans-unit id="IncorrectForm">
 <source>Formulario incorrecto. Revise los campos obligatorios.</source>
-<target>Wrong form. Review the required fields.</target>
+<target>Nieprawidłowa forma. Sprawdź wymagane pola.</target>
 </trans-unit>
 
 <trans-unit id="ImportantMessage">
 <source>Importante</source>
-<target>Important</target>
+<target>Ważne</target>
 </trans-unit>
 
 <trans-unit id="AcceptConditions">
 <source>Debe de aceptar las condiciones</source>
-<target>You must accept the conditions</target>
+<target>Musisz zaakceptować warunki</target>
 </trans-unit>
 
 <trans-unit id="UserCreated">
 <source>Usuario creado</source>
-<target>User created</target>
+<target>Stworzono użytkownika</target>
 </trans-unit>
 
 <trans-unit id="RegisterError">
 <source>Error al registrarse</source>
-<target>Registration failed</target>
+<target>Bład rejestracji</target>
 </trans-unit>
 
 <trans-unit id="AddFiltersWarningTittle">
 <source>Solo puedes añadir filtros cuando todos los paneles están configurados</source>
-<target>You can only add filters when all panels are configured</target>
+<target>Możesz dodać filtry tylko wtedy, gdy wszytkkie panele są skofigurowane</target>
 </trans-unit>
 
 <trans-unit id="AddFiltersWarningText">
 <source>Puedes borrar los paneles en blanco o configurarlos</source>
-<target>You can delete the blank panels or configure them</target>
+<target>Możesz usunąć puste panele lub je skofigurować</target>
 </trans-unit>
 
 <trans-unit id="AddFiltersWarningButton">
 <source>Entendido</source>
-<target>Got it!</target>
+<target>OK</target>
 </trans-unit>
 
 <trans-unit id="DeleteGroup">
 <source>ELIMINAR GRUPO</source>
-<target>DELETE GROUP</target>
+<target>UNUŃ GRUPĘ</target>
 </trans-unit>
 
 <trans-unit id="DeleteGroupText">
 <source>Eliminarás todos los elementos relacionados con este grupo, ¿Deseas continuar?</source>
-<target>You are gonna delete all elements related to this group. Do you want to continue?</target>
+<target>Usuniesz wszytskie elementy powiązane z tą grupą. Czy chcesz kontynuować?</target>
 </trans-unit>
 
 <trans-unit id="DeleteGroupButton">
 <source>Si, ¡Eliminalo!</source>
-<target>Yes, delete it!</target>
+<target>Tak, usuń!</target>
 </trans-unit>
 
 <trans-unit id="DeleteGroupCancel">
 <source>Cancelar</source>
-<target>Cancel</target>
+<target>Odrzuć</target>
 </trans-unit>
 
 <trans-unit id="deleteDashboardWarning">
 <source>Estás a punto de borrar el informe: </source>
-<target>You are gonna delete dashboard: </target>
+<target>Raport zostanie usunięty: </target>
 </trans-unit>
 
 <trans-unit id="DashboardDeletedInfo">
 <source>Informe eliminado correctamente. </source>
-<target>Dashboard correctly deleted. </target>
+<target>Raport usunięty prawidłowo. </target>
 </trans-unit>
 
 <trans-unit id="userDetailHeader">
 <source>USUARIO </source>
-<target>USER </target>
+<target>UŻYTKOWNIK </target>
 </trans-unit>
 
 <trans-unit id="userDetailSaveButton">
 <source>GUARDAR </source>
-<target>SAVE </target>
+<target>ZAPISZ </target>
 </trans-unit>
 
 <trans-unit id="UpdatedUser">
 <source>Usuario actualizado </source>
-<target>User updated </target>
+<target>Zaktualizowano użytkowanika </target>
 </trans-unit>
 
 <trans-unit id="PasswordsNotEqual">
 <source>Las contraseñas no coinciden </source>
-<target>Passwords do not match</target>
+<target>Niezgodne hasła</target>
 </trans-unit>
 
 <trans-unit id="CreatedUser">
 <source>Usuario creado </source>
-<target>User created</target>
+<target>Stworzono użytkownika</target>
 </trans-unit>
 
 <trans-unit id="fileNotPicture">
 <source>El archivo seleccionado no es una imagen </source>
-<target>Selected file is not a picture</target>
+<target>Wybrany plik nie jest obrazem</target>
 </trans-unit>
 
 <trans-unit id="cantDeleteUser">
 <source>No se puede borrar el usuario </source>
-<target>Can't delete user</target>
+<target>Nie można usunąć użytkownika</target>
 </trans-unit>
 
 <trans-unit id="cantSelfDelete">
 <source>No se puede borrar a si mismo </source>
-<target>Can't delete himself</target>
+<target>Nie można usunąć samego siebie</target>
 </trans-unit>
 
 <trans-unit id="DeleteUserMessage">
 <source>Estás a punto de borrar el usuario </source>
-<target>You are gonna delete user  </target>
+<target>Użytkownik zostanie usunięty  </target>
 </trans-unit>
 
 <trans-unit id="DeleteUser">
 <source>Si, ¡Bórralo! </source>
-<target>Yes, delete it!</target>
+<target>Tak, usuń!</target>
 </trans-unit>
 
 <trans-unit id="rowOptions">
 <source>OPCIONES DE LA FILA </source>
-<target>ROW OPTIONS</target>
+<target>OPCJE WIERSZY</target>
 </trans-unit>
 
 <trans-unit id="EDITCAP">
 <source>EDITAR </source>
-<target>EDIT</target>
+<target>EDYTUJ</target>
 </trans-unit>
 
 <trans-unit id="deleteCAP">
 <source>ELIMINAR </source>
-<target>DELETE</target>
+<target>USUŃ</target>
 </trans-unit>
 
 <trans-unit id="DashboardFilters">
 <source>FILTROS DEL INFORME </source>
-<target>DASHBOARD FILTERS</target>
+<target>FILTRY RAPORTU</target>
 </trans-unit>
 
 <trans-unit id="newUserTitle">
 <source>CREAR NUEVO USUARIO</source>
-<target>CREATE NEW USER</target>
+<target>STWÓRZ NOWEGO UŻYTKOWNIKA</target>
 </trans-unit>
 
 <trans-unit id="registers1" datatype="html">
 <source>
   <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}"/>
- registros</source>
+ registros
+ </source>
 <target>
-  <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}"/>
- records</target>
-<context-group purpose="location">
+  <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}"/>rekordy
+  </target>
+  <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-table/eda-table.component.html</context>
   <context context-type="linenumber">110</context>
 </context-group>
 </trans-unit>
+
+
 <trans-unit id="registers2" datatype="html">
 <source>
   <x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/>
  registros</source>
 <target>
   <x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/>
- registres</target>
+ rejestry</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-table/eda-table.component.html</context>
   <context context-type="linenumber">112</context>
@@ -2705,92 +2707,92 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="EditQuery">
 <source>EDITAR CONSULTA</source>
-<target>EDIT QUERY</target>
+<target>EDYCJA ZAPYTANIA</target>
 </trans-unit>
 <trans-unit id="EditSQLQuery">
 <source>EDITAR CONSULTA SQL</source>
-<target>EDIT SQL QUERY</target>
+<target>EDYCJA ZAPYTANIA SQL</target>
 </trans-unit>
 
 <trans-unit id="DatePickerAll">
 <source>Todas</source>
-<target>All</target>
+<target>Wszystko</target>
 </trans-unit>
 <trans-unit id="DatePickerYesterday">
 <source>Ayer</source>
-<target>Yesterday</target>
+<target>Wczoraj</target>
 </trans-unit>
 <trans-unit id="DatePickerBeforeYesterday">
 <source>Antes de ayer</source>
-<target>Before Yesterday</target>
+<target>Przed wczoraj</target>
 </trans-unit>
 <trans-unit id="DatePickerWeek">
 <source>Ésta semana</source>
-<target>This week</target>
+<target>Ten tydzień</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeek">
 <source>La semana pasada</source>
-<target>La setmana passada</target>
+<target>Zeszły tydzień</target>
 </trans-unit>
 <trans-unit id="DatePickerLastWeekFull">
 <source>La semana pasada completa</source>
-<target>Tota la setmana passada</target>
+<target>Cały zeszły tydzień</target>
 </trans-unit>
 <trans-unit id="DatePickerMonth">
 <source>Éste mes</source>
-<target>This month</target>
+<target>Ten miesiąc</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonth">
 <source>El mes pasado</source>
-<target>Last month</target>
+<target>Ostatni miesiąc</target>
 </trans-unit>
 <trans-unit id="DatePickerLastMonthFull">
 <source>El mes pasado completo</source>
-<target>All last month</target>
+<target>Wszytsko z zeszłego miesiąca</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYear">
 <source>Éste mes del año pasado</source>
-<target>This month from previous year</target>
+<target>Ten miesiąc w zeszłym roku</target>
 </trans-unit>
 <trans-unit id="DatePickerMonthPreviousYearFull">
 <source>Éste mes al completo del año pasado</source>
-<target>This whole month of last year</target>
+<target>Ten miesiąc w zeszłym roku</target>
 </trans-unit>
 <trans-unit id="DatePickerYear">
 <source>Éste año</source>
-<target>This year</target>
+<target>Ten rok</target>
 </trans-unit>
 <trans-unit id="DatePickerYearPreviousYear">
 <source>El año pasado</source>
-<target>Last year</target>
+<target>Zeszły rok</target>
 </trans-unit>
 <trans-unit id="DatePickerLast7">
 <source> Últimos 7 días </source>
-<target>Last 7 days </target>
+<target>Ostatnie 7 dni </target>
 </trans-unit>
 <trans-unit id="DatePickerLast3">
 <source> Últimos 3 días </source>
-<target>Last 3 days </target>
+<target>Ostatnie 3 dni </target>
 </trans-unit>
 <trans-unit id="DatePickerLast15">
 <source> Últimos 15 días </source>
-<target>Last 15 days </target>
+<target>Ostatnie 15 dni </target>
 </trans-unit>
 <trans-unit id="DatePickerLast30">
 <source> Últimos 30 días </source>
-<target>Last 30 days </target>
+<target>Ostatnie 30 dni </target>
 </trans-unit>
 <trans-unit id="DatePickerLast60">
 <source> Últimos 60 días </source>
-<target>Last 60 days </target>
+<target>Ostatnie 60 dni </target>
 </trans-unit>
 <trans-unit id="DatePickerLast120">
 <source> Últimos 120 días </source>
-<target>Last 120 days </target>
+<target>Ostatnie 120 dni </target>
 </trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
-<target>Select range</target>
+<target>Wybierz zakres</target>
 </trans-unit>
 <trans-unit id="inputPuerto" datatype="html">
 <source>Puerto  </source>
@@ -2803,13 +2805,13 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="filterButtonDashboard">
 <source>Filtrar</source>
-<target>Filter </target>
+<target>Filtr </target>
 </trans-unit>
 
 
 <trans-unit id="kpiAlertH6" datatype="html">
 <source>      Generar alerta    </source>
-<target>      Generate alert   </target>
+<target>      Stwórz komunikat   </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
   <context context-type="linenumber">15</context>
@@ -2818,7 +2820,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="DynamicTextColor" datatype="html">
 <source>       Cambiar Color   </source>
-<target>       Change Color  </target>
+<target>       Zmień kolor  </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component.html</context>
   <context context-type="linenumber">11</context>
@@ -2836,7 +2838,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="colorKpiH6" datatype="html">
 <source>        Color       </source>
-<target>        Color       </target>
+<target>        Kolor       </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
   <context context-type="linenumber">49</context>
@@ -2844,7 +2846,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="kpiAlerts" datatype="html">
 <source>        Alertas      </source>
-<target>        Alerts      </target>
+<target>        Komunikaty     </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
   <context context-type="linenumber">60</context>
@@ -2852,7 +2854,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="addAlert" datatype="html">
 <source> Añadir alerta    </source>
-<target> Add alert    </target>
+<target>Dodaj komunikat    </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component.html</context>
   <context context-type="linenumber">77</context>
@@ -2865,12 +2867,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="alertsInfo">
 <source>Cuando el valor del kpi sea (=, &lt;,&gt;) que el valor definido cambiará el color del texto</source>
-  <target>When the kpi value is (=, &lt;,&gt;) than the defined value, the text color will change  </target>
+  <target>Gdy wartość kpi jest (=, &lt;,&gt;) niż zdefiniowana wartość, kolor tekstu ulegnie zmianie  </target>
   </trans-unit>
 
   <trans-unit id="generateView" datatype="html">
     <source>Generar vista</source>
-    <target>Generate view</target>
+    <target>Generuj widok</target>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/viewDialog/view-dialog.component.html</context>
       <context context-type="linenumber">31</context>
@@ -2880,7 +2882,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="inputQueryView" datatype="html">
     <source> Vista </source>
-    <target> View </target>
+    <target> Widok </target>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
       <context context-type="linenumber">23</context>
@@ -2889,7 +2891,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="ViewsDatamodel" datatype="html">
     <source>  Vistas </source>
-    <target>  Views </target>
+    <target>  Widoki </target>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
       <context context-type="linenumber">246</context>
@@ -2899,7 +2901,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="addView" datatype="html">
     <source> Añadir  vista</source>
-    <target> Add  view</target>
+    <target> Dodaj widok</target>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
       <context context-type="linenumber">250</context>
@@ -2908,12 +2910,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="ViewDatamodel">
     <source>Añadir Vista</source>
-    <target>Add  view </target>
+    <target>Dodaj widok </target>
   </trans-unit>
 
   <trans-unit id="inputBorrarVista" datatype="html">
     <source>Borrar vista</source>
-    <target>Delete view</target>
+    <target>Usuń widok</target>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
       <context context-type="linenumber">54</context>
@@ -2942,7 +2944,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="addCSV" datatype="html">
     <source>Añadir tabla desde CSV</source>
-    <target>Add table from CSV</target>
+    <target>Dodaj tabele z CSV</target>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
       <context context-type="linenumber">26</context>
@@ -2955,7 +2957,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="placeholderTableName" datatype="html">
     <source>Nombre de la tabla</source>
-    <target>Table name</target>
+    <target>Nazwa tabeli</target>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addCSV/add-csv.component.html</context>
       <context context-type="linenumber">5</context>
@@ -2971,7 +2973,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
   <trans-unit id="saveCSV" datatype="html">
     <source>Generar tabla</source>
-    <target>Generate table</target>
+    <target>Stwórz tabele</target>
     <context-group purpose="location">
       <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addCSV/add-csv.component.html</context>
       <context context-type="linenumber">51</context>
@@ -2980,21 +2982,21 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="addTableTitle">
     <source>Añadir Tabla</source>
-    <target>Add Table</target>
+    <target>Dodaj tabele</target>
   </trans-unit>
 
   <trans-unit id="succesAddTable">
     <source>Tabla creada correctamente</source>
-    <target>Table created successfully</target>
+    <target>Tabela utworzona pomyślnie</target>
   </trans-unit>
 
   <trans-unit id="csvField">
     <source>Campo</source>
-    <target>Field</target>
+    <target>Pole</target>
   </trans-unit>
   <trans-unit id="csvType">
     <source>Tipo</source>
-    <target>Type</target>
+    <target>Typ</target>
   </trans-unit>
   <trans-unit id="csvFormat">
     <source>Formato</source>
@@ -3003,324 +3005,324 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="functionalities">
     <source>Extender el model</source>
-    <target>Extend model</target>
+    <target>Rozszerzenie modelu</target>
   </trans-unit>
 
   <trans-unit id="utilities">
     <source>Utilidades</source>
-    <target>Utilities</target>
+    <target>Narzędzia</target>
   </trans-unit>
 
   <trans-unit id="hideTables">
     <source>Ocultar todas las tablas</source>
-    <target>Hide all tables</target>
+    <target>Ukryj wszytskie tabele</target>
   </trans-unit>
   <trans-unit id="hideColumns">
     <source>Ocultar todas las columnas</source>
-    <target>Hide all columns</target>
+    <target>Ukryj wszytskie kolumny</target>
   </trans-unit>
   <trans-unit id="hideAllRelations">
     <source>Ocultar todas las relaciones</source>
-    <target>Hide all relations</target>
+    <target>Ukryj wszytskie relacje </target>
   </trans-unit>
 
   <trans-unit id="addFile">
     <source>Subir archivo</source>
-    <target>Add file </target>
+    <target>Dodaj plik </target>
   </trans-unit>
 
   <trans-unit id="FiltersH4">
     <source>Filtros</source>
-    <target>Filters </target>
+    <target>Filtry </target>
   </trans-unit>
 
   <trans-unit id="dragFields">
     <source>Arrastre aquí los atributos que quiera ver en su panel</source>
-    <target>Drag here the attributes you want to see in your pannel</target>
+    <target>Przeciągnij tutaj atrybuty, które mają być widoczne w panelu.</target>
   </trans-unit>
 
   <trans-unit id="dragFilters">
     <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
-    <target>Drag here the attributes you want to filter on</target>
+    <target>Przeciągnij tutaj atrybuty, według których chcesz filtrować</target>
   </trans-unit>
 
   <trans-unit id="LegendPosition">
     <source>Posición de la leyenda</source>
-    <target>Legend position</target>
+    <target>Pozycja legendy</target>
   </trans-unit>
 
   <trans-unit id="LinkDashboardDbFilter">
     <source> Informe a vincular </source>
-    <target>Dashbaord to link</target>
+    <target>Połacz raport</target>
   </trans-unit>
 
   <trans-unit id="LinkDashboardSelectedDashboard">
     <source> Campo del informe </source>
-    <target>Dashboard field</target>
+    <target>Pole raportu</target>
   </trans-unit>
 
   <trans-unit id="DashboardLink">
     <source> Vincular con un informe </source>
-    <target> Link to dashboard </target>
+    <target> Połącz z rapotrem </target>
   </trans-unit>
 
   <trans-unit id="panelOptions5">
     <source> Vincular con otro informe </source>
-    <target>Link to another dashboard</target>
+    <target>Połącz z innym raportem</target>
   </trans-unit>
 
   <trans-unit id="NoTag">
     <source> Sin Etiqueta  </source>
-    <target>No Tag </target>
+    <target>Bez Tagu </target>
   </trans-unit>
 
   <trans-unit id="newTag">
     <source> Nueva etiqueta   </source>
-    <target>New tag </target>
+    <target>Nowy tag </target>
   </trans-unit>
 
   <trans-unit id="addTag">
     <source>AÑADIR ETIQUETA</source>
-    <target>ADD TAG </target>
+    <target>DODAJ TAG </target>
   </trans-unit>
 
   <trans-unit id="AllTags">
     <source> Todos  </source>
-    <target>All  </target>
+    <target>Wszytsko </target>
   </trans-unit>
 
     
   <trans-unit id="NoneTags">
     <source> Ninguno  </source>
-    <target>Cap </target>
+    <target>Brak </target>
   </trans-unit>
   
 
   <trans-unit id="linkedTo">
     <source> Vinculado con  </source>
-    <target>Linked to   </target>
+    <target>Połączono z    </target>
   </trans-unit>
 
   <trans-unit id="DataModelHeader">
     <source> Configurar nuevo orígen de datos  </source>
-    <target> New datasource  </target>
+    <target> Nowe źródło danych  </target>
   </trans-unit>
 
   <trans-unit id="OptimizeQuery">
     <source> Optimizar consultas  </source>
-    <target> Optimize queries  </target>
+    <target> Optymalizacja zapytań  </target>
   </trans-unit>
 
   <trans-unit id="inputBigQueryKeys">
     <source> Subir archivo de claves (json) *  </source>
-    <target> Upload keys (json) *   </target>
+    <target> Prześlij klucze (json) *   </target>
   </trans-unit>
 
   <trans-unit id="DatasourceText">
     <source> Creada correctamente  </source>
-    <target> Correctly created  </target>
+    <target> Utworzono prawidłowo  </target>
   </trans-unit>
 
   <trans-unit id="panelOptions0">
     <source> OPCIONES DEL PANEL  </source>
-    <target> PANEL OPTIONS </target>
+    <target> OPCJE PANELU </target>
   </trans-unit>
 
   <trans-unit id="greendot">
     <source> Paneles filtrados  </source>
-    <target> Filtered panels </target>
+    <target> Panele filtrowane </target>
   </trans-unit>
 
   <trans-unit id="reddot">
     <source> Paneles no relacionados  </source>
-    <target> Non related panels </target>
+    <target> Panele niepowiązane  </target>
   </trans-unit>
 
   <trans-unit id="unselecteddot">
     <source> Paneles no filtrados  </source>
-    <target> Non filtered panels </target>
+    <target> Panele niefiltrowane </target>
   </trans-unit>
 
   <trans-unit id="seconds_to_refresh">
     <source> Intervalo de recarga </source>
-    <target>Refresh interval </target>
+    <target>Częstotliwość odświeżania </target>
   </trans-unit>
 
   <trans-unit id="sidebarModelsManagement">
     <source> Gestión de modelos </source>
-    <target> Model management </target>
+    <target> Zarządzanie modelami </target>
   </trans-unit>
 
 
   <trans-unit id="Models_ms">
     <source> Modelos </source>
-    <target> Models </target>
+    <target> Modele </target>
   </trans-unit>
 
   <trans-unit id="Dashboards_ms">
     <source> Informes </source>
-    <target> Dashboards </target>
+    <target> Raporty </target>
   </trans-unit>
 
   <trans-unit id="ExportModel">
     <source> Exportar Modelo </source>
-    <target> Export Model </target>
+    <target> Eksportuj Model </target>
   </trans-unit>
 
   <trans-unit id="ExportDashboard">
     <source> Exportar Informe </source>
-    <target> Export Dashboards </target>
+    <target> Eksportuj Raport </target>
   </trans-unit>
 
   <trans-unit id="importModel">
     <source> Importar Modelo </source>
-    <target> Import Model </target>
+    <target> Prześlij Model </target>
   </trans-unit>
 
   <trans-unit id="importDashboard">
     <source> Importar Informe </source>
-    <target> Import Dashboards </target>
+    <target> Prześlij Raport </target>
   </trans-unit>
 
   <trans-unit id="import">
     <source> Importar </source>
-    <target> Import </target>
+    <target> Prześlij </target>
   </trans-unit>
 
   <trans-unit id="DBInconsistencies">
     <source> Se han encontrado inconsistencias en el informe, los siguientes elementos no existen en el modelo: </source>
-    <target> Inconsistencies found in current dashboard, the following items do not exist in the model:   </target>
+    <target> Znaleziono niespójności w bieżacym raporcie, następujące elementy nie isnieją w modelu:   </target>
   </trans-unit>
 
   <trans-unit id="modelInconsistenciesS">
     <source> Se han encontrado inconsistencias en los siguientes informes:  </source>
-    <target> Inconsistencies found in current dashboards:  </target>
+    <target> Znaleziono niespójności w bieżącym raporcie:  </target>
   </trans-unit>
 
   <trans-unit id="ModelSaved">
     <source> Modelo guardado correctamente </source>
-    <target> Model guardat correctament </target>
+    <target> Model zapisany pomyślnie </target>
   </trans-unit>
 
   <trans-unit id="downloadModel">
     <source> Descargar modelo </source>
-    <target> Download model </target>
+    <target> Pobierz model </target>
   </trans-unit>
 
   <trans-unit id="downloadDashboard">
     <source> Descargar Informe </source>
-    <target> Download Dashboard </target>
+    <target> Pobierz raport </target>
   </trans-unit>
 
   <trans-unit id="NotSavedWarning">
     <source> Hay cambios sin guardar. ¿Seguro que quieres salir? </source>
-    <target>  There are unsaved changes, do you want to continue anyway? </target>
+    <target>  Nie zapisano zmian, czy chcesz kontynuować? </target>
   </trans-unit>
 
   <trans-unit id="csvSep">
     <source> Separador Decimal </source>
-    <target>  Decimal separator</target>
+    <target> Separator dziesiętny</target>
   </trans-unit>
 
   <trans-unit id="viewOk">
     <source> Vista generada correctamente</source>
-    <target>  View generated correctly</target>
+    <target>  Widok wygenerowany poprawnie</target>
   </trans-unit>
 
   <trans-unit id="limitRowsInfo">
     <source> Establece un Top n para la consulta</source>
-    <target>  Define Top n for query</target>
+    <target> Zdefiniuj Top n dla zapytania</target>
   </trans-unit>
 
   <trans-unit id="Limits">
     <source> Límites</source>
-    <target>  Boundaries</target>
+    <target>  Ograniczenia</target>
   </trans-unit>
 
   <trans-unit id="usersPermissions">
     <source> Permisos de usuario</source>
-    <target>  User permissions </target>
+    <target>  Uprawnienia użytkownika </target>
   </trans-unit>
 
   <trans-unit id="groupsPersmissions">
     <source> Permisos de grupo</source>
-    <target>  Group permissions</target>
+    <target>  Uprawnienia grupy</target>
   </trans-unit>
 
   <trans-unit id="users">
     <source> Usuarios</source>
-    <target>  Users</target>
+    <target>  Użytkownicy</target>
   </trans-unit>
   <trans-unit id="groups">
     <source> Grupos</source>
-    <target>  Groups</target>
+    <target>  Grupy</target>
   </trans-unit>
 
   <trans-unit id="groupTable">
     <source>GRUPO</source>
-    <target>GROUP</target>
+    <target>GRUPA</target>
   </trans-unit>
 
   <trans-unit id="yourQuerySQL">
     <source>Mi consulta SQL</source>
-    <target>My SQL query</target>
+    <target>Moje zapytanie SQL</target>
   </trans-unit>
 
   <trans-unit id="openSqlMode">
     <source>Abrir en modo SQL</source>
-    <target>Open in SQL mode</target>
+    <target>Otwórz w trybie SQL</target>
   </trans-unit>
 
   <trans-unit id="sqlTooltip">
     <source>Al cambiar de modo perderás la configuración de la consulta actual</source>
-    <target>Changing mode will override current query configuration</target>
+    <target>Zmiana trybu zastąpi bieżącą konfigurację zapytań</target>
   </trans-unit>
 
   <trans-unit id="ptooltipViewQuery">
     <source>Ver consulta SQL</source>
-    <target>View SQL query</target>
+    <target>Wyświetl zapytanie SQL</target>
   </trans-unit>
 
   <trans-unit id="noStyle">
     <source>Sin estilo</source>
-    <target>No style</target>
+    <target>Bez koloru</target>
   </trans-unit>
 
   <trans-unit id="removeRowTotals">
     <source>Quitar totales de columna</source>
-    <target>Delete column totals</target>
+    <target>Usuń wiersz z sumą</target>
   </trans-unit>
   <trans-unit id="removeRowSubtotals">
     <source>Quitar subtotales de columna</source>
-    <target>Delete column subtotals</target>
+    <target>Usuń wiersz z sumą częściową</target>
   </trans-unit>
   <trans-unit id="addRowTotals">
     <source>Totales de fila</source>
-    <target>Row totals</target>
+    <target>Suma</target>
   </trans-unit>
   <trans-unit id="addRowSubtotals">
     <source>Subtotales de fila</source>
-    <target>Row subtotals</target>
+    <target>Suma częściowa</target>
   </trans-unit>
   <trans-unit id="addColTotals">
     <source>Totales de columna</source>
-    <target>Column totals</target>
+    <target>Suma</target>
   </trans-unit>
   <trans-unit id="removeColTotals">
     <source>Quitar totales de columna</source>
-    <target>Delete column totals</target>
+    <target>Usun wiersz z sumą</target>
   </trans-unit>
   <trans-unit id="addOnlyPercentages">
     <source>Sólo porcentajes</source>
-    <target>Only percentages</target>
+    <target>Tylko odsetki</target>
   </trans-unit>
   <trans-unit id="addOnlyValues">
     <source>Sólo valores</source>
-    <target>Only values</target>
+    <target>Tylko wartości</target>
   </trans-unit>
   <trans-unit id="addValuesPercentages">
     <source>Valores y porcentajes</source>
-    <target>Values and Percentages</target>
+    <target>Wartości i odsetki</target>
   </trans-unit>
   <trans-unit id="addtrend">
     <source>Tendencia</source>
@@ -3328,38 +3330,38 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
   <trans-unit id="removetrend">
     <source>Quitar tendencia</source>
-    <target>Delete trend</target>
+    <target>Usuń trend</target>
   </trans-unit>
 
   <trans-unit id="addTotals">
     <source>Totales</source>
-    <target>Totals</target>
+    <target>Suma</target>
   </trans-unit>
   <trans-unit id="addPercentages">
     <source>Porcentajes</source>
-    <target>Percentages</target>
+    <target>Procenty</target>
   </trans-unit>
   <trans-unit id="addStyles">
     <source>Código de color</source>
-    <target>Color code</target>
+    <target>Kolor</target>
   </trans-unit>
   <trans-unit id="tableTitleDialog">
     <source>Propiedades de la tabla</source>
-    <target>Table properties</target>
+    <target>Właściości tabeli</target>
   </trans-unit>
   <trans-unit id="SubTotals">
     <source>SubTotales</source>
-    <target>SubTotals</target>
+    <target>Suma częściowa</target>
   </trans-unit>
 
   <trans-unit id="gradientTitle">
     <source>Código de color para la columna: </source>
-    <target>Color code for column:  </target>
+    <target>Kod koloru dla kolumny:  </target>
   </trans-unit>
 
   <trans-unit id="unlink">
     <source>Desvincular del informe: </source>
-    <target>Unlink dashboard:  </target>
+    <target>Odłącz raport:  </target>
   </trans-unit>
 
   <trans-unit id="adChacheConfig">
@@ -3369,37 +3371,37 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="CacheDeletedOK">
     <source>Caché eliminada correctamente</source>
-    <target>Cache deleted correctly</target>
+    <target>Pamięć podręczna usunięta poprawnie</target>
   </trans-unit>
 
   <trans-unit id="IncorrectCacheDelete">
     <source>No ha sido posible eliminar la caché</source>
-    <target>Error deleting cache</target>
+    <target>Błąd podczas usuwania pamięci podręcznej</target>
   </trans-unit>
   
   <trans-unit id="RefreshCacheTitle">
     <source>Actualizar los datos del modelo cada:</source>
-    <target>Update model data every:  </target>
+    <target>Aktualizuj model danych co:  </target>
   </trans-unit>
 
   <trans-unit id="hours">
     <source>Hora/s</source>
-    <target>Hour/s</target>
+    <target>Godzinę/godziny</target>
   </trans-unit>
 
   <trans-unit id="days">
     <source>Día/s</source>
-    <target>Day/s</target>
+    <target>Dzień/dni</target>
   </trans-unit>
   
   <trans-unit id="noCache">
     <source>Sin caché</source>
-    <target>No caché</target>
+    <target>Brak pamięci podręcznej</target>
   </trans-unit>
 
   <trans-unit id="deleteCache">
     <source>Borrar cache del modelo</source>
-    <target>Delete model's caché</target>
+    <target>Usuń pamięć podręczną modelu</target>
   </trans-unit>
 
   <trans-unit id="MailSending">
@@ -3409,17 +3411,17 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="SendMailEvery">
     <source>Enviar mail de alerta cada:</source>
-    <target>Send mail every:</target>
+    <target>Wysyłaj mail co:</target>
   </trans-unit>
 
   <trans-unit id="SendMailWho">
     <source>Destinatarios </source>
-    <target>Targets </target>
+    <target>Docelowa baza danych </target>
   </trans-unit>
 
   <trans-unit id="SendMailWhat">
     <source>Contenido del mail: </source>
-    <target>Mail body:  </target>
+    <target>Treść wiadomości:  </target>
   </trans-unit>
 
   <trans-unit id="at">
@@ -3436,12 +3438,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="securityConfig">
     <source>Configuración de seguridad</source>
-    <target>Security configuration</target>
+    <target>Ustawienia bezpieczeństwa</target>
   </trans-unit>
   
   <trans-unit id="viewsecurity">
     <source>Ver configuración de seguridad</source>
-    <target>View security configuration</target>
+    <target>Zobacz ustawienia bezpieczeństwa </target>
   </trans-unit>
 
   <trans-unit id="rolesPermisosTabla">
@@ -3458,7 +3460,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
   <trans-unit id="tablePpermissionYES">
     <source>SI tiene permiso para ver esta tabla</source>
-    <target>Masz uprawnień do przeglądania tej tabeli</target>
+    <target>Masz uprawnienia do przeglądania tej tabeli</target>
   </trans-unit>
 
   <trans-unit id="modelPermissionNO">
@@ -3467,7 +3469,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
   <trans-unit id="modelPermissionYES">
     <source>SI tiene permiso para ver este modelo</source>
-    <target>Masz uprawnień do oglądania tego modelu</target>
+    <target>Masz uprawnienia do oglądania tego modelu</target>
   </trans-unit>
   <trans-unit id="anyCanSeeNO">
     <source>Los usuarios y grupos que pueden ver el modelo son SOLO los definidos explicitamente.</source>
@@ -3492,13 +3494,13 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   
   <trans-unit id="visible">
     <source>VISIBLE</source>
-    <target>VISIBLE</target>
+    <target>WIDOCZNY</target>
   </trans-unit>
 
 
   <trans-unit id="column">
     <source>COLUMNAS </source>
-    <target>COLUMNS</target>
+    <target>KOLUMNY</target>
   </trans-unit>
 
 <trans-unit id="sidebarAlertsManagement">
@@ -3509,7 +3511,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="alertTable">
   <source>ALERTAS </source>
-  <target>ALERTS</target>
+  <target>POWIADOMIENIA</target>
 </trans-unit>
 
 <trans-unit id="gotodashboard">
@@ -3519,7 +3521,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="alertsConfigTitle">
   <source>Gestión de alertas </source>
-  <target>Alert management</target>
+  <target>Zarządzanie komunikatami</target>
 </trans-unit>
 
 <trans-unit id="panelTable">
@@ -3529,22 +3531,22 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="dashboardTable">
   <source>INFORME </source>
-  <target>DASHBOARD</target>
+  <target>RAPORT</target>
 </trans-unit>
 
    <trans-unit id="chartInfo14">
     <source>Un Parallel Set necesita dos o más categorias y un campo numérico </source>
-    <target>Parallel Set requires two or more categories and a numeric field </target>
+    <target>Zestaw równoległy wymaga co najmniej dwóch kategorii i pola numerycznego </target>
   </trans-unit>
 
    <trans-unit id="chartInfo15">
     <source>Un Tree Map necesita un campo numérico y una o más categorias </source>
-    <target>Tree Map requires a numeric field and one or more categories</target>
+    <target>Tree Map wymaga pola numerycznego i co najmniej jednej kategorii</target>
   </trans-unit>
 
    <trans-unit id="chartInfo16">
     <source>Un Scatter Plot necesita una categoria y dos o tres campos numéricos </source>
-    <target>Scatter Plot requires one category and two or three numeric fields</target>
+    <target>Scatter Plot wymaga jednej kategorii i dwóch lub trzech pól numerycznych</target>
   </trans-unit>
 
    <trans-unit id="chartInfo17">
@@ -3563,52 +3565,52 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
    <trans-unit id="mailConfOk">
     <source>Credenciales correctas </source>
-    <target> Credencials are oK</target>
+    <target> Prawidłowe dane uwierzytelniające</target>
   </trans-unit>
 
   <trans-unit id="checkCredentials">
     <source> Comprobar credenciales</source>
-    <target>Check credentials</target>
+    <target>Sprawdź dane uwierzytelniające</target>
   </trans-unit>
 
   <trans-unit id="mailmanagementHeader">
     <source>Gestión de correo y envio de mails</source>
-    <target>Email and email sending management</target>
+    <target>Email i wysyłanie wiadomości</target>
   </trans-unit>
 
   <trans-unit id="mailConfSaved">
     <source>Configuración guardada correctamente </source>
-    <target>Configuration saved correctly</target>
+    <target>Ustawienia zapisane pomyślnie</target>
   </trans-unit>
 
   <trans-unit id="allowCache">
     <source>Habilitar caché </source>
-    <target>Allow caché</target>
+    <target>Zezwalaj na pamięć podręczną</target>
   </trans-unit>
 
     <trans-unit id="addCacheConfig">
     <source>Configurar Caché </source>
-    <target>Manage Caché</target>
+    <target>Zarządzanie pamięcią podręczną</target>
   </trans-unit>
 
    <trans-unit id="conexionh3">
     <source>Conexión  </source>
-    <target>Connection</target>
+    <target>Połączenie</target>
   </trans-unit>
 
   <trans-unit id="newDashboardtitle">
     <source>CREA UN NUEVO INFORME</source>
-    <target>YOUR NEW DASHBOARD</target>
+    <target>TWÓJ NOWY RAPORT</target>
   </trans-unit>
   
  <trans-unit id="inputCuenta">
     <source>CUENTA*  </source>
-    <target>ACCOUNT* </target>   
+    <target>KONTO* </target>   
   </trans-unit>
 
    <trans-unit id="inputCuentaEdit">
     <source>CUENTA  </source>
-    <target>Account </target>
+    <target>KONTO </target>
   </trans-unit> 
 
   <trans-unit id="entidadesTitle">
@@ -3628,7 +3630,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
     <trans-unit id="agregacionh5">
     <source>Agregación   </source>
-    <target>Aggregation  </target>
+    <target>Agregacja  </target>
   </trans-unit> 
 
     <trans-unit id="inputFormat">
@@ -3638,17 +3640,17 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
   <trans-unit id="DashboardMailingTitle">
     <source>Configuración del envío por email  </source>
-    <target>Mail sending configuration  </target>
+    <target>Wysyłanie wiadomości email </target>
   </trans-unit> 
 
     <trans-unit id="opcionMail">
     <source>Enviar por email  </source>
-    <target>Send via email  </target>
+    <target>Wyślij email  </target>
   </trans-unit> 
 
    <trans-unit id="noMail">
     <source>Sin alertas de correo </source>
-    <target>No mail alerts  </target>
+    <target>Bez powiadomienia  </target>
   </trans-unit> 
 
     <trans-unit id="dashbaordsMailingHeader">
@@ -3658,18 +3660,18 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
  <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
-    <target>Cumulative sum </target>
+    <target>Łączna suma </target>
   </trans-unit> 
 
     <trans-unit id="ptooltipViewAlerts">
     <source>Configurar alertas</source>
-    <target>Alerts configuration</target>
+    <target>Ustawienia powiadomień</target>
   </trans-unit> 
 
 
   <trans-unit id="inputFilter">
     <source>Filtros</source>
-    <target>Filters</target>
+    <target>Filtery</target>
   </trans-unit> 
 
      <trans-unit id="comparativeTooltip">
@@ -3680,11 +3682,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
      <trans-unit id="canIeditTooltip">
     <source>Si esta opción está seleccionada, sólo el propietario del informe y los administradores podrán guardar los cambios</source>
-    <target>If this option is selected, only the report owner and administrators will be able to save changes</target>
+    <target>Jeśli ta opcja jest zaznaczona, tylko właściciel raportu i administratorzy będą mogli zapisywać zmiany</target>
   </trans-unit> 
      <trans-unit id="onlyIcanEditTag">
     <source>Edición privada:</source>
-    <target>Private edition:  </target>
+    <target>Edycja prywatna:  </target>
   </trans-unit> 
 
        <trans-unit id="showLabels">
@@ -3718,144 +3720,144 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
-    <target>Trend function is only allowed in line charts</target>
+    <target>Funkcja trendu jest dozwolona tylko na wykresach liniowych</target>
   </trans-unit> 
 
      <trans-unit id="filterTooltip">
     <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
-    <target>Could add words separated by commas, which will be applied as LIKE filters when retrieving the tables from your database</target>
+    <target>Można dodać słowa oddzielone przecinkami, które zostaną zastosowane jako filtry LIKE podczas pobierania tabel z bazy danych.</target>
   </trans-unit> 
 
    <trans-unit id="cumulativeSumTooltip">
     <source>Si activas ésta función se calculará la suma acumulativa 
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes o dia.</source>
-    <target>Activating this function the cumulative sum for numeric filelds will be calculated. 
-                                        It can only be activated if date field is aggregated by month, week or day. </target>
+    <target>Aktywacja tej funkcji spowoduje obliczenie sumy skumulowanej dla plików numerycznych. 
+                                        Można go aktywować tylko wtedy, gdy pole danych jest agregowane według miesiąca, tygodnia lub dnia. </target>
   </trans-unit> 
 
    <trans-unit id="cumsumAlertMessage1">
     <source> La suma acumulativa sólo se puede aplicar si se dispone de una única serie no numérica.</source>
-    <target>Cummulative sum can only be applied in one non-numeric serie.</target>
+    <target>Suma kumulatywna może być zastosowana tylko w jednej serii nienumerycznej.</target>
   </trans-unit> 
 
      <trans-unit id="cumsumAlertMessage2">
     <source>Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna no numérica.</source>
-    <target>Disable cummulative function in date field or remove one non-numeric field. </target>
+    <target>Wyłącz funkcję kumulacji w polu danych lub usuń jedno pole nienumeryczne. </target>
   </trans-unit> 
 
    <trans-unit id="SaveAs">
     <source>GUARDAR COMO...</source>
-    <target>SAVE AS...  </target>
+    <target>ZAPISZ JAKO...  </target>
   </trans-unit> 
 
      <trans-unit id="opcionGuardarComo">
     <source>GUARDAR COMO</source>
-    <target>SAVE AS</target>
+    <target>ZAPISZ JAKO</target>
   </trans-unit> 
 
 
    <trans-unit id="editStylesTitle">
     <source>EDITAR ESTILOS DEL INFORME</source>
-    <target>EDIT DASHBOARD STYLES</target>
+    <target>EDYCJA STYLU PANELU</target>
   </trans-unit> 
 
      <trans-unit id="dashboardTitleEdit">
     <source>Título del informe</source>
-    <target>Dashboard title</target>
+    <target>TYTUŁ RAPORTU</target>
   </trans-unit> 
 
      <trans-unit id="filtersEdit">
     <source>Filtros</source>
-    <target>Filters</target>
+    <target>Filtry</target>
   </trans-unit> 
 
      <trans-unit id="panelTitleEdit">
     <source>Título del panel</source>
-    <target>Panel title</target>
+    <target>Tytuł panelu</target>
   </trans-unit> 
 
      <trans-unit id="panelContentEdit">
     <source>Contenido del panel</source>
-    <target>Panel content</target>
+    <target>Treść panelu</target>
   </trans-unit> 
 
      <trans-unit id="ChangeFontFamily">
     <source>Tipo de fuente</source>
-    <target>Font type</target>
+    <target>Typ czcionki</target>
   </trans-unit> 
 
      <trans-unit id="ChangeFontSize">
     <source>Tamaño de fuente</source>
-    <target>Font size</target>
+    <target>Rozmiar czcionki</target>
   </trans-unit> 
 
      <trans-unit id="ChangeFontColor">
     <source>Color de la fuente</source>
-    <target>Font color</target>
+    <target>Kolor czcionki</target>
   </trans-unit> 
 
 
   <trans-unit id="ChangeBackgroundColor">
     <source>Color del fondo</source>
-    <target>Background color </target>
+    <target>Kolor tła </target>
   </trans-unit> 
   
      <trans-unit id="ChangePaneColor">
     <source>Color del panel</source>
-    <target>Panel color</target>
+    <target>Kolor panelu</target>
   </trans-unit> 
 
   <trans-unit id="opcionEditarEstilos">
     <source>EDITAR ESTILOS</source>
-    <target>EDIT STYLES</target>
+    <target>EDYTUJ STYL</target>
   </trans-unit> 
 
     <trans-unit id="left">
     <source>Izquierda</source>
-    <target>Left</target>
+    <target>Lewo</target>
   </trans-unit> 
   <trans-unit id="center">
     <source>Centro</source>
-    <target>Center</target>
+    <target>Po środku</target>
   </trans-unit> 
   <trans-unit id="right">
     <source>Derecha</source>
-    <target>Right</target>
+    <target>Prawo</target>
   </trans-unit> 
 
   <trans-unit id="resetStylesBtn">
     <source>Volver a los valores por defecto</source>
-    <target>Set default values</target>
+    <target>Ustaw domyślnie</target>
   </trans-unit> 
 
     <trans-unit id="samplePanelTitle">
     <source>Previsualización</source>
-    <target>Previsualization</target>
+    <target>Podgląd</target>
   </trans-unit> 
 
    <trans-unit id="samplePanelDBName">
     <source>Título del informe</source>
-    <target>Dashboard title</target>
+    <target>Tytuł raportu</target>
   </trans-unit> 
 
    <trans-unit id="samplePanelName">
     <source>Título del panel</source>
-    <target>Panel title</target>
+    <target>Tytuł raportu</target>
   </trans-unit> 
   
    <trans-unit id="histoGramRangesTxt">
     <source>Rango</source>
-    <target>Range</target>
+    <target>Zakres</target>
   </trans-unit> 
 
   <trans-unit id="histoGramDescTxt">
     <source>Número de</source>
-    <target>Number of</target>
+    <target>Ilość</target>
   </trans-unit> 
 
       <trans-unit id="histoGramDescTxt2">
     <source>en este rango</source>
-    <target>in this range</target>
+    <target>w tym zakresie</target>
   </trans-unit> 
 
 
