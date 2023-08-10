@@ -126,8 +126,10 @@ export class SidebarComponent implements OnInit {
 
     public redirectLocale(lan: string) {
         let baseUrl = window.location.href.split('#')[0];
+
         if (baseUrl.slice(-4) == '/es/' ||
             baseUrl.slice(-4) == '/ca/' ||
+            baseUrl.slice(-4) == '/pl/' ||
             baseUrl.slice(-4) == '/en/') {
             baseUrl = baseUrl.slice(0, baseUrl.length - 3)
         }
@@ -135,6 +137,7 @@ export class SidebarComponent implements OnInit {
             case 'EN': window.location.href = baseUrl + 'en/#/home'; break;
             case 'CAT': window.location.href = baseUrl + 'ca/#/home'; break;
             case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
+            case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
         }
     }
     public checkNotSaved(){
