@@ -19,16 +19,16 @@ fi
 
 if ! $eda_installed
 then
-        mongo --eval 'db.createCollection("users")' EDA
-        mongo --eval 'db.createCollection("groups")' EDA
-        mongo --eval 'db.createCollection("dashboard")' EDA
-        mongo --eval 'db.createCollection("data-source")' EDA
-        mongo --eval 'db.createCollection("files")' EDA
-        mongo --eval 'db.createCollection("features")' EDA
-        mongo --eval 'db.groups.insert( { "_id": ObjectId("135792467811111111111110"), "role": "EDA_ADMIN_ROLE", "name" : "ADMIN",  "users":[ ObjectId("135792467811111111111111")  ] }   )' EDA
-        mongo --eval 'db.groups.insert( { "_id": ObjectId("135792467811111111111113"), "role": "EDA_USER_ROLE", "name" : "RO",  "users":[] } )' EDA
-        mongo --eval 'db.users.insert( { "_id" : ObjectId("135792467811111111111111"), "role" : [ ObjectId("135792467811111111111110") ], "name" : "EDA", "email" : "eda@jortilles.com", "password" : "$2a$10$J48xu5KAqobLzvD8FX1LOem7NZUMuXPHID1uSHzbzTbM.wGFPXjb2" } )' EDA
-        mongo --eval ' db.users.insert( { "_id" : ObjectId("135792467811111111111112"),   "role" : [],    "name" : "edaanonim",    "email" : "edaanonim@jortilles.com",    "password" : "$2a$10$ziukAcgjgTe2XPmjO1xsruKJW1HlX0I2pvCiKZHQ69DdaCzgZA4/2" } ) ' EDA
+        mongosh --eval 'db.createCollection("users")' EDA
+        mongosh --eval 'db.createCollection("groups")' EDA
+        mongosh --eval 'db.createCollection("dashboard")' EDA
+        mongosh --eval 'db.createCollection("data-source")' EDA
+        mongosh --eval 'db.createCollection("files")' EDA
+        mongosh --eval 'db.createCollection("features")' EDA
+        mongosh --eval 'db.groups.insert( { "_id": ObjectId("135792467811111111111110"), "role": "EDA_ADMIN_ROLE", "name" : "ADMIN",  "users":[ ObjectId("135792467811111111111111")  ] }   )' EDA
+        mongosh --eval 'db.groups.insert( { "_id": ObjectId("135792467811111111111113"), "role": "EDA_USER_ROLE", "name" : "RO",  "users":[] } )' EDA
+        mongosh --eval 'db.users.insert( { "_id" : ObjectId("135792467811111111111111"), "role" : [ ObjectId("135792467811111111111110") ], "name" : "EDA", "email" : "eda@jortilles.com", "password" : "$2a$10$J48xu5KAqobLzvD8FX1LOem7NZUMuXPHID1uSHzbzTbM.wGFPXjb2" } )' EDA
+        mongosh --eval ' db.users.insert( { "_id" : ObjectId("135792467811111111111112"),   "role" : [],    "name" : "edaanonim",    "email" : "edaanonim@jortilles.com",    "password" : "$2a$10$ziukAcgjgTe2XPmjO1xsruKJW1HlX0I2pvCiKZHQ69DdaCzgZA4/2" } ) ' EDA
 
         npm install -g forever  forever-monitor nodemon http-server
 
@@ -47,7 +47,7 @@ then
 
 
         cd /eda/eda_app/
-        npm install
+        npm install --legacy-peer-deps
         npm run build:prod
         rm  -rf /var/www/html
         cp -r  /eda/eda_app/dist/app-eda  /var/www/html

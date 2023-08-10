@@ -100,7 +100,7 @@ export class LoginComponent implements OnInit {
         if( baseUrl.substring(-4) ==  '/es/'  || 
             baseUrl.substring(-4) ==  '/ca/'  ||  
             baseUrl.substring(-4) ==  '/en/'   ){
-                baseUrl  = baseUrl.substring(0, baseUrl.length -3)
+                baseUrl  = baseUrl.substring(0, baseUrl.length -5)
             }
         switch(lan){
             case 'EN'  : window.location.href = baseUrl + 'en/#/'; break;

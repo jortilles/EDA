@@ -126,10 +126,10 @@ export class SidebarComponent implements OnInit {
 
     public redirectLocale(lan: string) {
         let baseUrl = window.location.href.split('#')[0];
-        if (baseUrl.substr(-4) == '/es/' ||
-            baseUrl.substr(-4) == '/ca/' ||
-            baseUrl.substr(-4) == '/en/') {
-            baseUrl = baseUrl.substr(0, baseUrl.length - 3)
+        if (baseUrl.substring(-4) == '/es/' ||
+            baseUrl.substring(-4) == '/ca/' ||
+            baseUrl.substring(-4) == '/en/') {
+            baseUrl = baseUrl.substring(0, baseUrl.length - 5)
         }
         switch (lan) {
             case 'EN': window.location.href = baseUrl + 'en/#/home'; break;
