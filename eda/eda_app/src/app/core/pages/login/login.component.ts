@@ -97,10 +97,10 @@ export class LoginComponent implements OnInit {
 
     public redirectLocale(lan:string){
         let baseUrl = window.location.href.split('#')[0];
-        if( baseUrl.substring(-4) ==  '/es/'  || 
-            baseUrl.substring(-4) ==  '/ca/'  ||  
-            baseUrl.substring(-4) ==  '/en/'   ){
-                baseUrl  = baseUrl.substring(0, baseUrl.length -5)
+        if( baseUrl.slice(-4) ==  '/es/'  || 
+            baseUrl.slice(-4) ==  '/ca/'  ||  
+            baseUrl.slice(-4) ==  '/en/'   ){
+                baseUrl  = baseUrl.slice(0, baseUrl.length -3)
             }
         switch(lan){
             case 'EN'  : window.location.href = baseUrl + 'en/#/'; break;
