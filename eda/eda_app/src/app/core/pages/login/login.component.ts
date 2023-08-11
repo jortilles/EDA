@@ -39,7 +39,8 @@ export class LoginComponent implements OnInit {
             [
                 { name: 'Català', code: 'CAT' },
                 { name: 'Español', code: 'ES' },
-                { name: 'English', code: 'EN' }
+                { name: 'English', code: 'EN' },
+                { name: 'Polski', code: 'PL' }
             ]
     }
 
@@ -96,15 +97,17 @@ export class LoginComponent implements OnInit {
 
     public redirectLocale(lan:string){
         let baseUrl = window.location.href.split('#')[0];
-        if( baseUrl.substr(-4) ==  '/es/'  || 
-            baseUrl.substr(-4) ==  '/ca/'  ||  
-            baseUrl.substr(-4) ==  '/en/'   ){
-                baseUrl  = baseUrl.substr(0, baseUrl.length -3)
+        if( baseUrl.slice(-4) ==  '/es/'  || 
+            baseUrl.slice(-4) ==  '/ca/'  ||  
+            baseUrl.slice(-4) ==  '/pl/'  ||  
+            baseUrl.slice(-4) ==  '/en/'   ){
+                baseUrl  = baseUrl.slice(0, baseUrl.length -3)
             }
         switch(lan){
             case 'EN'  : window.location.href = baseUrl + 'en/#/'; break;
             case 'CAT' : window.location.href = baseUrl + 'ca/#/'; break;
             case 'ES'  : window.location.href = baseUrl + 'es/#/'; break;
+            case 'PL'  : window.location.href = baseUrl + 'pl/#/'; break;
         }
     }
 }
