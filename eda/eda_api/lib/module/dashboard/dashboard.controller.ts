@@ -646,16 +646,13 @@ export class DashboardController {
       )
 
 
-      console.log('tablas prohividas');
-      console.log(uniquesForbiddenTables);
-
-
-      const includesAdmin = req['user'].role.includes("135792467811111111111110") //AQUI
+      const includesAdmin = req['user'].role.includes("135792467811111111111110")
       if(includesAdmin){
         // el admin ve todo
        uniquesForbiddenTables = [];
       }
-        let mylabels = []
+      
+      let mylabels = []
       let myQuery: any
       if (uniquesForbiddenTables.length > 0) {
         myQuery = { fields: [], filters: [] }
