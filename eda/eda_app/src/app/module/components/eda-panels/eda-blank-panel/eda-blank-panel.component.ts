@@ -320,7 +320,6 @@ export class EdaBlankPanelComponent implements OnInit {
                 console.log('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
                 console.log(e);
             }
-
         }
 
         this.queryLimit = panelContent.query.query.queryLimit;

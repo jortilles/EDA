@@ -13,16 +13,14 @@ export const PanelInteractionUtils = {
   loadColumns: (ebp: EdaBlankPanelComponent, table: any) => {
     ebp.userSelectedTable = table.table_name;
     ebp.disableBtnSave();
+
     // Clean columns
     ebp.columns = [];
-
     // Reload avaliable columns -> f(table) = this.columns
-    table.columns.forEach(c => {
+    table.columns.forEach((c: Column) => {
       c.table_id = table.table_name;
-      const matcher = _.find(ebp.currentQuery, (x) => c.table_id === x.table_id && c.column_name === x.column_name);
-      if (!matcher) {
-        ebp.columns.push(c);
-      }
+      // const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
+      ebp.columns.push(c);
       ebp.columns = ebp.columns.filter(col => col.visible === true)
         .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
     });
@@ -199,7 +197,7 @@ export const PanelInteractionUtils = {
      * moves given column to [select or filters] in config panel
      * @param c column to move
      */
-  moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
+  old_moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
     ebp.disableBtnSave();
     // Busca index en l'array de columnes
     const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id });
@@ -215,6 +213,39 @@ export const PanelInteractionUtils = {
         ebp,
         ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0]);
     }
+  },
+
+  moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
+    ebp.disableBtnSave();
+
+    const sameColumns = ebp.currentQuery.filter((val: any) => val.column_name === c.column_name && val.table_id === c.table_id);
+    c.display_name.ord = sameColumns.length;
+    
+    ebp.currentQuery.push(_.cloneDeep(c));
+
+    const setColumnOrd = (columns?: any[]) => {
+      const sameColumns = ebp.currentQuery.filter((val: any) => val.column_name === c.column_name && val.table_id === c.table_id);
+      let prop = columns.find((val: any) => val.column_name === c.column_name);
+      
+      if (prop && sameColumns.length > 0) {
+        prop.display_name.ord = sameColumns.length;
+        if (prop.display_name.ord > 1) prop.display_name.default = prop.display_name.default.slice(0, -1);
+        if (prop.display_name.ord > 0) prop.display_name.default += ' ' + prop.display_name.ord;
+      }
+    }
+
+    // setColumnOrd( ebp.columns );
+    setColumnOrd( ebp.tables.find((table: any) => table.table_name === c.table_id)?.columns || [] )
+
+    PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida
+    PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions
+    PanelInteractionUtils.handleOrdTypes(ebp, c);         // Comprovacio ordenacio
+
+    // if (!_.isEqual(ebp.inputs.findColumn.ngModel, '')) {
+    //   ebp.inputs.findColumn.reset();
+    //   console.log('reset?')
+    //   PanelInteractionUtils.loadColumns(ebp,ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0]);
+    // }
   },
 
   /**
@@ -283,23 +314,26 @@ export const PanelInteractionUtils = {
     */
   removeColumn: (ebp: EdaBlankPanelComponent, c: Column, list?: string) => {
     ebp.disableBtnSave();
+    const setColumnOrd = (columns?: any[]) => {
+      const sameColumns = ebp.currentQuery.filter((val: any) => val.column_name === c.column_name && val.table_id === c.table_id);
+      let prop = columns.find((val: any) => val.column_name === c.column_name);
+      if (prop) prop.display_name.ord = sameColumns.length;
+    }
     // Busca de l'array index, la columna a borrar i ho fa
     if (list === 'select') {
 
-      const match = _.findIndex(ebp.currentQuery, { column_name: c.column_name, table_id: c.table_id });
+      const match = _.findIndex(ebp.currentQuery, (o) => o.column_name == c.column_name && o.table_id == c.table_id && o.display_name.ord == c.display_name.ord );
       // Reseting all configs of column removed
       ebp.currentQuery[match].ordenation_type = 'No';
       ebp.currentQuery[match].aggregation_type.forEach(ag => ag.selected = false);
       ebp.currentQuery[match].format = '';
       ebp.currentQuery.splice(match, 1);
-
+      setColumnOrd( ebp.tables.find((table: any) => table.table_name === c.table_id)?.columns || [] )
     } else if (list === 'filter') {
 
       const match = _.findIndex(ebp.filtredColumns, { column_name: c.column_name, table_id: c.table_id });
       ebp.filtredColumns.splice(match, 1);
-
     }
-
     // Carregar de nou l'array Columns amb la columna borrada
     PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id));
 
