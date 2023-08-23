@@ -12,7 +12,7 @@ import ServerLogService from '../../services/server-log/server-log.service'
 const cache_config = require('../../../config/cache.config')
 
 export class DashboardController {
-  static async getDashboards (req: Request, res: Response, next: NextFunction) {
+  static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
       let admin,
         privates,
@@ -50,7 +50,7 @@ export class DashboardController {
     }
   }
 
-  static async getPrivateDashboards (req: Request) {
+  static async getPrivateDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
@@ -68,7 +68,7 @@ export class DashboardController {
     }
   }
 
-  static async getGroupsDashboards (req: Request) {
+  static async getGroupsDashboards(req: Request) {
     try {
       const userGroups = await Group.find({
         users: { $in: req.user._id }
@@ -98,7 +98,7 @@ export class DashboardController {
     }
   }
 
-  static async getPublicsDashboards () {
+  static async getPublicsDashboards() {
     try {
       const dashboards = await Dashboard.find(
         {},
@@ -117,7 +117,7 @@ export class DashboardController {
     }
   }
 
-  static async getSharedDashboards () {
+  static async getSharedDashboards() {
     try {
       const dashboards = await Dashboard.find(
         {},
@@ -135,7 +135,7 @@ export class DashboardController {
     }
   }
 
-  static async getAllDashboardToAdmin () {
+  static async getAllDashboardToAdmin() {
     try {
       const dashboards = await Dashboard.find(
         {},
@@ -156,15 +156,17 @@ export class DashboardController {
               { _id: dashboard.user },
               'name'
             ).exec()
-            if (dashboard.user == null) {dashboard.user = new User(
-              {
-                name: 'N/A', 
-                email: '',
-                password: '',
-                img: '',
-                role: '',
-                active: ''
-            })};
+            if (dashboard.user == null) {
+              dashboard.user = new User(
+                {
+                  name: 'N/A',
+                  email: '',
+                  password: '',
+                  img: '',
+                  role: '',
+                  active: ''
+                })
+            };
             privates.push(dashboard)
             break
           case 'group':
@@ -183,7 +185,7 @@ export class DashboardController {
     }
   }
 
-  static async getDashboard (req: Request, res: Response, next: NextFunction) {
+  static async getDashboard(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req['user']._id
       const userGroups = req['user'].role
@@ -218,9 +220,9 @@ export class DashboardController {
         if (visibilityCheck && roleCheck) {
           console.log(
             "You don't have permission " +
-              user +
-              ' for dashboard ' +
-              req.params.id
+            user +
+            ' for dashboard ' +
+            req.params.id
           )
           return next(new HttpException(500, "You don't have permission"))
         }
@@ -273,50 +275,75 @@ export class DashboardController {
                     console.log(e)
                   }
                 }
+            const includesAdmin = req.user.role.includes("135792467811111111111110")
 
-                // Oculto columnes als panells
-                for (let i = 0; i < dashboard.config.panel.length; i++) {
-                  if (dashboard.config.panel[i].content != undefined) {
-                    let MyFields = []
-                    let notAllowedColumns = []
-                    for (
-                      let c = 0;
-                      c <
-                      dashboard.config.panel[i].content.query.query.fields
-                        .length;
-                      c++
-                    ) {
+            if (!includesAdmin) {
+
+              try {
+                // Poso taules prohivides a false
+                if (uniquesForbiddenTables.length > 0) {
+                  // Poso taules prohivides a false
+                  for (let x = 0; x < toJson.ds.model.tables.length; x++) {
+                    try {
                       if (
                         uniquesForbiddenTables.includes(
-                          dashboard.config.panel[i].content.query.query.fields[
-                            c
-                          ].table_id
+                          toJson.ds.model.tables[x].table_name
                         )
                       ) {
-                        notAllowedColumns.push(
-                          dashboard.config.panel[i].content.query.query.fields[
-                            c
-                          ]
-                        )
-                      } else {
-                        MyFields.push(
-                          dashboard.config.panel[i].content.query.query.fields[
-                            c
-                          ]
-                        )
+                        toJson.ds.model.tables[x].visible = false
                       }
+                    } catch (e) {
+                      console.log('Error evaluating role permission')
+                      console.log(e)
                     }
-                    if (notAllowedColumns.length > 0) {
-                      dashboard.config.panel[
-                        i
-                      ].content.query.query.fields = MyFields
+                  }
+
+                  // Oculto columnes als panells
+                  for (let i = 0; i < dashboard.config.panel.length; i++) {
+                    if (dashboard.config.panel[i].content != undefined) {
+                      let MyFields = []
+                      let notAllowedColumns = []
+                      for (
+                        let c = 0;
+                        c <
+                        dashboard.config.panel[i].content.query.query.fields
+                          .length;
+                        c++
+                      ) {
+                        if (
+                          uniquesForbiddenTables.includes(
+                            dashboard.config.panel[i].content.query.query.fields[
+                              c
+                            ].table_id
+                          )
+                        ) {
+                          notAllowedColumns.push(
+                            dashboard.config.panel[i].content.query.query.fields[
+                            c
+                            ]
+                          )
+                        } else {
+                          MyFields.push(
+                            dashboard.config.panel[i].content.query.query.fields[
+                            c
+                            ]
+                          )
+                        }
+                      }
+                      if (notAllowedColumns.length > 0) {
+                        dashboard.config.panel[
+                          i
+                        ].content.query.query.fields = MyFields
+                      }
                     }
                   }
                 }
+              } catch (error) {
+                console.log('no pannels in dashboard')
               }
-            } catch (error) {
-              console.log('no pannels in dashboard')
+
             }
+
 
             const ds = {
               _id: datasource._id,
@@ -340,7 +367,7 @@ export class DashboardController {
     }
   }
 
-  static async create (req: Request, res: Response, next: NextFunction) {
+  static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body
 
@@ -354,7 +381,7 @@ export class DashboardController {
       }
 
       /**avoid dashboards without name */
-      if(dashboard.config.title === null){ dashboard.config.title='-'};
+      if (dashboard.config.title === null) { dashboard.config.title = '-' };
       //Save dashboard in db
       dashboard.save((err, dashboard) => {
         if (err) {
@@ -373,7 +400,7 @@ export class DashboardController {
     }
   }
 
-  static async update (req: Request, res: Response, next: NextFunction) {
+  static async update(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body
 
@@ -391,7 +418,7 @@ export class DashboardController {
         dashboard.config = body.config
         dashboard.group = body.group
         /**avoid dashboards without name */
-        if(dashboard.config.title === null){ dashboard.config.title='-'};
+        if (dashboard.config.title === null) { dashboard.config.title = '-' };
 
         dashboard.save((err, dashboard) => {
           if (err) {
@@ -406,7 +433,7 @@ export class DashboardController {
     }
   }
 
-  static async delete (req: Request, res: Response, next: NextFunction) {
+  static async delete(req: Request, res: Response, next: NextFunction) {
     let options: QueryOptions = {}
     try {
       Dashboard.findByIdAndDelete(req.params.id, options, (err, dashboard) => {
@@ -430,7 +457,7 @@ export class DashboardController {
   /**
    *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario.
    */
-  static getForbiddenTables (
+  static getForbiddenTables(
     dataModelObject: any,
     userGroups: Array<String>,
     user: string
@@ -450,9 +477,9 @@ export class DashboardController {
       ) {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column ===
-            'fullTable' &&
+          'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission ===
-            false
+          false
         ) {
           if (
             dataModelObject.ds.metadata.model_granted_roles[i].users !==
@@ -486,9 +513,9 @@ export class DashboardController {
       ) {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column ===
-            'fullTable' &&
+          'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission ===
-            false
+          false
         ) {
           if (
             dataModelObject.ds.metadata.model_granted_roles[i].groups !==
@@ -524,7 +551,7 @@ export class DashboardController {
       ) {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column ===
-            'fullTable' &&
+          'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission === true
         ) {
           if (
@@ -564,7 +591,7 @@ export class DashboardController {
       ) {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column ===
-            'fullTable' &&
+          'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission === true
         ) {
           if (
@@ -619,7 +646,7 @@ export class DashboardController {
   /**
    * Executa una consulta EDA per un dashboard
    */
-  static async execQuery (req: Request, res: Response, next: NextFunction) {
+  static async execQuery(req: Request, res: Response, next: NextFunction) {
 
 
     try {
@@ -642,15 +669,15 @@ export class DashboardController {
         dataModelObject,
         req['user'].role,
         req.user._id
-      );
-      
-      if( req.user._id == '135792467811111111111112'){
-        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-        uniquesForbiddenTables = [];
+      )
 
+
+      const includesAdmin = req['user'].role.includes("135792467811111111111110")
+      if(includesAdmin){
+        // el admin ve todo
+       uniquesForbiddenTables = [];
       }
-
-
+      
       let mylabels = []
       let myQuery: any
       if (uniquesForbiddenTables.length > 0) {
@@ -683,13 +710,13 @@ export class DashboardController {
 
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
-      myQuery.joinType = req.body.query.joinType?req.body.query.joinType:'inner';
+      myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
 
 
 
       if (myQuery.fields.length == 0) {
-        console.log('you cannot see any data')
-        return res.status(200).json("[['noData'],[]]")
+        console.log('you cannot see any data');
+        return res.status(200).json([['noData'], [[]]]);
       }
 
       const query = await connection.getQueryBuilded(
@@ -702,8 +729,7 @@ export class DashboardController {
 
       console.log(
         '\x1b[32m%s\x1b[0m',
-        `QUERY for user ${req.user.name}, with ID: ${
-          req.user._id
+        `QUERY for user ${req.user.name}, with ID: ${req.user._id
         },  at: ${formatDate(new Date())} `
       )
       console.log(query)
@@ -757,21 +783,21 @@ export class DashboardController {
                 }
               } else {
                 //això es per evitar els null trec els nulls i els canvio per '' dels lavels
-                if( r[i] == null == null){
+                if (r[i] == null == null) {
                   return ''
-                }else{
+                } else {
                   return r[i]
                 }
               }
             } else {
               // trec els nulls i els canvio per '' dels lavels
-              if (numerics[ind] != 'true' &&  r[i] == null) {
+              if (numerics[ind] != 'true' && r[i] == null) {
                 return ''
-              }else{
+              } else {
                 return r[i];
               }
 
-              
+
             }
 
           })
@@ -792,8 +818,7 @@ export class DashboardController {
 
         console.log(
           '\x1b[32m%s\x1b[0m',
-          `Date: ${formatDate(new Date())} Dashboard:${
-            req.body.dashboard.dashboard_id
+          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
 
@@ -814,8 +839,7 @@ export class DashboardController {
         )
         console.log(
           '\x1b[32m%s\x1b[0m',
-          `Date: ${formatDate(new Date())} Dashboard:${
-            req.body.dashboard.dashboard_id
+          `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
         return res.status(200).json(cachedQuery.cachedQuery.response)
@@ -830,7 +854,7 @@ export class DashboardController {
   /**
    * Executa una consulta SQL  per un dashboard
    */
-  static async execSqlQuery (req: Request, res: Response, next: NextFunction) {
+  static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
     try {
       const connection = await ManagerConnectionService.getConnection(
         req.body.model_id
@@ -884,8 +908,7 @@ export class DashboardController {
 
         console.log(
           '\x1b[32m%s\x1b[0m',
-          `QUERY for user ${req.user.name}, with ID: ${
-            req.user._id
+          `QUERY for user ${req.user.name}, with ID: ${req.user._id
           },  at: ${formatDate(new Date())} `
         )
         console.log(query)
@@ -928,7 +951,7 @@ export class DashboardController {
               resultsRollback.push([...output])
               const tmpArray = []
               output.forEach((val, index) => {
-                if (DashboardController.isNotNumeric(val) ) {
+                if (DashboardController.isNotNumeric(val)) {
                   tmpArray.push('NaN')
                 } else {
                   tmpArray.push('int')
@@ -944,7 +967,7 @@ export class DashboardController {
             }
           }
 
-          
+
 
 
           /** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats.
@@ -972,8 +995,7 @@ export class DashboardController {
 
           console.log(
             '\x1b[32m%s\x1b[0m',
-            `Date: ${formatDate(new Date())} Dashboard:${
-              req.body.dashboard.dashboard_id
+            `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
           //console.log('Query output');
@@ -983,8 +1005,7 @@ export class DashboardController {
           console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾')
           console.log(
             '\x1b[32m%s\x1b[0m',
-            `Date: ${formatDate(new Date())} Dashboard:${
-              req.body.dashboard.dashboard_id
+            `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
           console.log(cachedQuery.cachedQuery.response);
@@ -998,35 +1019,29 @@ export class DashboardController {
   }
 
 
-/*
-Check if a value is not numeric
-*/
-static isNotNumeric(val){
+  /*
+  Check if a value is not numeric
+  */
+  static isNotNumeric(val) {
 
-  let isNotNumeric = false;
-  try{
-    if(  
-     isNaN(val) ||  val.toString().indexOf('-')>=0 ||  val.toString().indexOf('/')>=0 ||  
-    val.toString().indexOf('|')>=0 ||  val.toString().indexOf(':')>=0 || val.toString().indexOf('T')>=0 || 
-    val.toString().indexOf('Z')>=0 || val.toString().indexOf('Z')>=0 )
-    {
-      isNotNumeric = true;
+    let isNotNumeric = false;
+    try {
+      if (
+        isNaN(val) || val.toString().indexOf('-') >= 0 || val.toString().indexOf('/') >= 0 ||
+        val.toString().indexOf('|') >= 0 || val.toString().indexOf(':') >= 0 || val.toString().indexOf('T') >= 0 ||
+        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0) {
+        isNotNumeric = true;
+      }
+    } catch (e) {
+      // Null values are...NULL
     }
-  }catch(e){
-    // Null values are...NULL
+
+    return isNotNumeric;
+
   }
 
-  return isNotNumeric;
-
-}
-
   /**Check if an user can or not see a data model. */
-  static securityCheck (dataModel: any, user: any) {
-
-    if(user._id== '135792467811111111111112'){
-      console.log('Anonymous access');
-      return true;
-    }
+  static securityCheck(dataModel: any, user: any) {
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {
       const users = []
       const roles = []
@@ -1071,7 +1086,7 @@ static isNotNumeric(val){
    * @param res
    * @param next
    */
-  static async getQuery (req: Request, res: Response, next: NextFunction) {
+  static async getQuery(req: Request, res: Response, next: NextFunction) {
     try {
       const connection = await ManagerConnectionService.getConnection(
         req.body.model_id
@@ -1090,7 +1105,7 @@ static isNotNumeric(val){
     }
   }
 
-  static async execView (req: Request, res: Response, next: NextFunction) {
+  static async execView(req: Request, res: Response, next: NextFunction) {
     try {
       const connection = await ManagerConnectionService.getConnection(
         req.body.model_id
@@ -1119,7 +1134,7 @@ static isNotNumeric(val){
     }
   }
 
-  static async cumulativeSum (data, query) {
+  static async cumulativeSum(data, query) {
     let shouldCompare = false
     query.fields.forEach(field => {
       if (
@@ -1174,7 +1189,7 @@ static isNotNumeric(val){
     }
   }
 
-  static async cleanDashboardCache (
+  static async cleanDashboardCache(
     req: Request,
     res: Response,
     next: NextFunction
@@ -1213,7 +1228,7 @@ static isNotNumeric(val){
   }
 }
 
-function insertServerLog (
+function insertServerLog(
   req: Request,
   level: string,
   action: string,

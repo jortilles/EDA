@@ -55,7 +55,7 @@ export const TableUtils = {
 
     let allTables = tables.filter(table => table.visible === true)
       .sort(TableUtils.sortTables);
-
+      
     if (applyToAllfilter.present) {
 
       const originTable = allTables.filter(t => t.table_name === applyToAllfilter.refferenceTable)[0];
@@ -68,6 +68,7 @@ export const TableUtils = {
     });
 
     let tablesToShow = _.cloneDeep(allTables);
+
 
     return { allTables : allTables, sqlOriginTables : sqlOriginTables, tablesToShow : tablesToShow }
 

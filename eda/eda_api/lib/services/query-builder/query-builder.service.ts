@@ -1,3 +1,4 @@
+import { Console } from 'console';
 import * as _ from 'lodash';
 import { filter } from 'lodash';
 
@@ -48,14 +49,21 @@ export abstract class QueryBuilderService {
     public builder() {
 
         const graph = this.buildGraph();
-
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
         const origin = this.queryTODO.fields.find(x => x.order === 0).table_id;
         const dest = [];
         const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
+
+        
         /** Check dels permisos de columna, si hi ha permisos es posen als filtres */
         this.permissions = this.getPermissions(modelPermissions, this.tables, origin);
+        
+        // SI USUARIO ES ADMIN VACIAR EL ARRAY PERMISSIONS
+        
+        if (this.groups.includes("135792467811111111111110")) {
+            this.permissions = [];
+        }
         /** joins per els value list */
         const valueListJoins = [];
 
@@ -257,8 +265,10 @@ export abstract class QueryBuilderService {
     }
     public getPermissions(modelPermissions, modelTables, originTable) {
 
+        console.log(modelPermissions)
+        
         originTable = this.cleanOriginTable(originTable);
-        const filters = [];
+        let filters = [];
         const permissions = this.getUserPermissions(modelPermissions);
 
         const relatedTables = this.checkRelatedTables(modelTables, originTable);
@@ -284,6 +294,10 @@ export abstract class QueryBuilderService {
                 }
             });
         }
+
+        //si es admin devuelvo el array vacio porque puede ejecutar cualquier consulta
+
+        //filters = [];
 
         return filters;
     }
