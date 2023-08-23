@@ -249,19 +249,28 @@ export class DashboardController {
               req.user._id
             )
 
+            // Esto se hace para hacer un bypass de la seguridad en caso de que el usuario sea anonimo y por lo tanto
+              // un informe público
+            if(req.user._id == '135792467811111111111112'){
+              console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+              uniquesForbiddenTables = [];
+            }
+			
             const includesAdmin = req.user.role.includes("135792467811111111111110")
 
             if (!includesAdmin) {
-
               try {
                 // Poso taules prohivides a false
                 if (uniquesForbiddenTables.length > 0) {
                   // Poso taules prohivides a false
                   for (let x = 0; x < toJson.ds.model.tables.length; x++) {
                     try {
+
                       if (
                         uniquesForbiddenTables.includes(
                           toJson.ds.model.tables[x].table_name
+
+
                         )
                       ) {
                         toJson.ds.model.tables[x].visible = false
@@ -309,12 +318,18 @@ export class DashboardController {
                           i
                         ].content.query.query.fields = MyFields
                       }
+
+
+
+
+
                     }
                   }
                 }
               } catch (error) {
                 console.log('no pannels in dashboard')
               }
+
 
             }
 
@@ -651,6 +666,14 @@ export class DashboardController {
         // el admin ve todo
        uniquesForbiddenTables = [];
       }
+	  
+	  if( req.user._id == '135792467811111111111112'){
+        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+        uniquesForbiddenTables = [];
+
+      }
+	  
+	  
       
       let mylabels = []
       let myQuery: any
@@ -704,6 +727,7 @@ export class DashboardController {
       console.log(
         '\x1b[32m%s\x1b[0m',
         `QUERY for user ${req.user.name}, with ID: ${req.user._id
+
         },  at: ${formatDate(new Date())} `
       )
       console.log(query)
@@ -793,6 +817,7 @@ export class DashboardController {
         console.log(
           '\x1b[32m%s\x1b[0m',
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
+
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
 
@@ -814,6 +839,7 @@ export class DashboardController {
         console.log(
           '\x1b[32m%s\x1b[0m',
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
+
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
         return res.status(200).json(cachedQuery.cachedQuery.response)
@@ -883,6 +909,7 @@ export class DashboardController {
         console.log(
           '\x1b[32m%s\x1b[0m',
           `QUERY for user ${req.user.name}, with ID: ${req.user._id
+
           },  at: ${formatDate(new Date())} `
         )
         console.log(query)
@@ -970,6 +997,7 @@ export class DashboardController {
           console.log(
             '\x1b[32m%s\x1b[0m',
             `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
+
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
           //console.log('Query output');
@@ -980,6 +1008,7 @@ export class DashboardController {
           console.log(
             '\x1b[32m%s\x1b[0m',
             `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
+
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
           console.log(cachedQuery.cachedQuery.response);
@@ -1010,12 +1039,23 @@ export class DashboardController {
       // Null values are...NULL
     }
 
+
+
+
     return isNotNumeric;
 
   }
 
   /**Check if an user can or not see a data model. */
   static securityCheck(dataModel: any, user: any) {
+
+    if(user._id== '135792467811111111111112'){
+      console.log('Anonymous access');
+      return true;
+    }
+
+
+
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {
       const users = []
       const roles = []
