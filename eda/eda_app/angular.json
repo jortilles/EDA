@@ -15,9 +15,6 @@
                     },
                     "ca": {
                         "translation": "src/locale/messages.ca.xlf"
-                    },
-                    "pl": {
-                        "translation": "src/locale/messages.pl.xlf"
                     }
                 }
             },
@@ -71,10 +68,6 @@
                             "localize": [
                                 "ca"
                             ]
-                        },"pl": {
-                            "localize": [
-                                "pl"
-                            ]
                         },
                         "production": {
                             "fileReplacements": [
@@ -119,9 +112,6 @@
                         },
                         "ca": {
                             "browserTarget": "app-eda:build:ca"
-                        },
-                        "pl": {
-                            "browserTarget": "app-eda:build:pl"
                         }
                     }
                 },
