@@ -249,32 +249,6 @@ export class DashboardController {
               req.user._id
             )
 
-              // Esto se hace para hacer un bypass de la seguridad en caso de que el usuario sea anonimo y por lo tanto
-              // un informe público
-            if(req.user._id == '135792467811111111111112'){
-              console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-              uniquesForbiddenTables = [];
-            }
-
-
-            try {
-              // Poso taules prohivides a false
-              if (uniquesForbiddenTables.length > 0) {
-                // Poso taules prohivides a false
-                for (let x = 0; x < toJson.ds.model.tables.length; x++) {
-                  try {
-                    if (
-                      uniquesForbiddenTables.includes(
-                        toJson.ds.model.tables[x].table_name
-                      )
-                    ) {
-                      toJson.ds.model.tables[x].visible = false
-                    }
-                  } catch (e) {
-                    console.log('Error evaluating role permission')
-                    console.log(e)
-                  }
-                }
             const includesAdmin = req.user.role.includes("135792467811111111111110")
 
             if (!includesAdmin) {
