@@ -23,9 +23,6 @@
 
 <ng-template #filterTemplate>
     <p-card [header]="header1">
-        <!-- <p-header i18n="@@aplyToAllPanelsH5">
-            ¿Aplica a todos los paneles?
-        </p-header> -->
         <div class="grid">
             <div class="col-12">
                 <p-inputSwitch id="applyToAllFiltersButton" [disabled]="applyToAllCheck()" [(ngModel)]="switchChecked"> </p-inputSwitch>
@@ -110,7 +107,7 @@
     <div class="col-12 pl-2">
         <div cdkDropList cdkDropListOrientation="horizontal" class="select-list" [cdkDropListData]="filtersList" (cdkDropListDropped)="onReorderFilter($event)">
             <ng-container *ngFor="let filter of filtersList">
-                <div class="select-box col-3 col-md-2 p-1" cdkDrag>
+                <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>
                     <span class="close-thin pointer" (click)="removeFilter(filter, 'select')"></span>
         
                     <span class="text-center">
@@ -121,7 +118,7 @@
         </div>
     </div>
 
-    <ng-container *ngIf="selectedFilter">
+    <ng-container *ngIf="selectedFilter && !selectedFilter?.isdeleted">
         <p-card [header]="selectedFilter.table?.label + ' -' + selectedFilter.column?.label">
             <ng-container *ngTemplateOutlet="filterTemplate;"></ng-container>
         </p-card>

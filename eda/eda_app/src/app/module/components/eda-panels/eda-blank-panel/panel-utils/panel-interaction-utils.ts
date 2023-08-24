@@ -23,6 +23,7 @@ export const PanelInteractionUtils = {
       if (!matcher) {
         ebp.columns.push(c);
       }
+
       ebp.columns = ebp.columns.filter(col => col.visible === true)
         .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
     });
@@ -54,8 +55,12 @@ export const PanelInteractionUtils = {
         const table = ebp.tables.filter(table => table.table_name === filter.filter_table)[0];
         const column = table.columns? table.columns.filter(column => column.column_name === filter.filter_column)[0] : [];
         const columnInQuery = query.filter(col => col.column_name === filter.filter_column).length > 0;
-        if (!filter.isGlobal && !columnInQuery) {
+        if (!filter.isGlobal && !columnInQuery && column != undefined) {
           ebp.filtredColumns.push(column);
+        }
+        if(column == undefined){
+          console.log('WARNING\nWARING. YOU HAVE A COLUMN IN THE FILTERS NOT PRESENT IN THE MODEL!!!!!!!!!!!!\nWARNING');
+          console.log(filter);
         }
       });
     }catch(e){
@@ -298,8 +303,7 @@ export const PanelInteractionUtils = {
 
     // Carregar de nou l'array Columns amb la columna borrada
     PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id));
-
-
+  
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
 

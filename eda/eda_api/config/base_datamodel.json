@@ -12,6 +12,7 @@
       "port": XXXXX,
       "schema": "",
       "searchPath": "",
+      "poolLimit": "",
       "sid": 1,
       "warehouse": ""
     },

@@ -139,10 +139,10 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                         
                             const elem = this.permissionsColumn.getContextMenuRow()._id.reduce((a, b)=> a + b) ;
 
-                            const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined)
+                            const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined && r.users.length > 0  )
                             .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
 
-                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined)
+                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined && r.users.length > 0 )
                             .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
 
                             let tmpPermissions = [];
@@ -364,8 +364,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         //Columna
         this.dataModelService.currentColumnPanel.subscribe(
             columnPanel => {
-
-                console.log(columnPanel);
 
                 this.columnPanel = columnPanel;
                 this.selectedcolumnType = this.columnPanel.column_type;

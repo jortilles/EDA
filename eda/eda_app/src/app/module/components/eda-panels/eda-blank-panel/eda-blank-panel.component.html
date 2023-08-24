@@ -30,7 +30,7 @@
 </div>
 
 <!-- Page Dialog -->
-<eda-page-dialog  #pdialog [inject]="{display: this.display_v.page_dialog, title:  this.panel.title.trim().length  > 0  ? panel.title : '?'  }">
+<eda-page-dialog  #pdialog [inject]="{display: this.display_v.page_dialog, title:  this.panel.title.trim().length  > 0  ? panel.title : '\uD83D\uDD89'  }">
     <div (window:resize)="onResize($event)" class="grid">
 
         <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)" class="col-11 ">
@@ -60,11 +60,20 @@
                     </div>
 
                     <div class="col-6 md:col-2 pl-2">
-                        <h4 i18n="@@atributosH4"  i18n-title="@@atributsTitle" title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes" >
-                            Atributos
-                        </h4>
+                        <div class="d-flex justify-content-between">
+                            <h4 i18n="@@atributosH4"  i18n-title="@@atributsTitle" title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes" >
+                                Atributos
+                            </h4>
+                            <div *ngIf="userService.isAdmin && showHiddId">
+                                <span class="pointer icon-hover" (click)="changeHiddenMode()">
+                                    Atributos ocultos
+                                    <i *ngIf="hiddenColumn==0" class="pi pi-eye" style="font-size: 1.5rem"></i>
+                                    <i *ngIf="hiddenColumn==1" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
+                                </span>
+                            </div>
+                        </div>
 
-                        <hr class="mb-0">
+                        <hr class="mb-0" style="margin-top: 0.5rem!important;">
 
                         <eda-input [inject]="inputs.findColumn"></eda-input>
                             
@@ -72,29 +81,43 @@
                             [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
                             [cdkDropListEnterPredicate]="isAllowed">
                             <div *ngFor="let column of columns">
-                                <div class="column-box"  *ngIf='column.column_type === "numeric" || column.column_type === "date"' (click)="moveItem(column)" (mouseover)="showDescription(column)" (mouseout)="description= ''" cdkDrag
-                                (cdkDragDropped)="searchRelations(column, $event)" (cdkDragDropped)="openColumnDialog(column)" (click)="openColumnDialog(column)">  
+                                <div class="column-box"  
+                                *ngIf='(column.column_type === "numeric" || column.column_type === "date" ) && ( column.hidden != hiddenColumn || hiddenColumn==0) ' 
+                                (click)="moveItem(column)" 
+                                (mouseover)="showDescription(column)" 
+                                (mouseout)="description= ''" 
+                                cdkDrag
+                                (cdkDragDropped)="searchRelations(column, $event)" 
+                                (cdkDragDropped)="openColumnDialog(column)" 
+                                (click)="openColumnDialog(column)" 
+                                [ngStyle]=" column.hidden == 1 && {'opacity': '0.5'} " >  
                                    
    
                                    <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                    <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
                                    <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
                                    <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">                        
-                                       {{column.display_name.default}} 
+                                       {{column.display_name.default}}  
                                    </span>
                                </div> 
-                               <div  class="column-box" *ngIf='column.column_type != "numeric" && column.column_type !="date"' (click)="moveItem(column)" (mouseover)="showDescription(column)" (mouseout)="description= ''" cdkDrag
-                               (cdkDragDropped)="searchRelations(column, $event)">  
+                               <div  class="column-box" 
+                               *ngIf='(column.column_type != "numeric" && column.column_type !="date" ) && ( column.hidden != hiddenColumn || hiddenColumn==0) ' 
+                               (click)="moveItem(column)" 
+                               (mouseover)="showDescription(column)" 
+                               (mouseout)="description= ''" 
+                               cdkDrag
+                               (cdkDragDropped)="searchRelations(column, $event)"
+                               [ngStyle]=" column.hidden == 1  && {'opacity': '0.5'} " >    
                                   
    
                                   <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                   <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
                                   <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
                                   <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">                        
-                                      {{column.display_name.default}} 
+                                      {{column.display_name.default}}  
                                   </span>
-                              </div> 
-                               </div>
+                                </div> 
+                            </div>
                         </div>
                     </div>
 

@@ -269,6 +269,14 @@
                         <input pInputText type="text" [(ngModel)]="modelPanel.connection.schema" (keyup)="update()">
                     </div>
 
+                    <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value === 'mysql'">
+                        <h5 class="title-datamodel" >
+                            Pool Limit
+                        </h5>
+                        <input pInputText type="text" [(ngModel)]="modelPanel.connection.poolLimit" (keyup)="update()">
+                    </div>
+
+
                     <div class="col-12  xl:col-4" *ngIf="selectedTipoBD.value === 'snowflake'">
                         <h5 class="title-datamodel" >
                             Warehouse

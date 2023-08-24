@@ -8,6 +8,7 @@ import { Enumerations } from './service/enumerations';
 import { pushModelToMongo } from './service/push.Model.to.Mongo';
 
 import fs from "fs";
+import { CleanModel } from './service/cleanModel';
 
 const mariadb = require('mariadb');
 const sinergiaDatabase = require('../../../config/sinergiacrm.config');
@@ -41,20 +42,20 @@ export class updateModel {
                     if (err1) { console.log("Error getting tables list"); throw err1 }
                     let tables = rows;
                     //seleccionamos columnas
-                    const my_query = " select sdc.`table`, sdc.`column`,`type`,sdc.label, sdc.description, sdc.decimals, sdc.aggregations, sdc.visible, sdc.stic_type " +
+                    const my_query = " select sdc.`table`, sdc.`column`,`type`,sdc.label, sdc.description, sdc.decimals, sdc.aggregations, sdc.visible, sdc.stic_type, sdc.sda_hidden " +
                         " FROM sda_def_columns sdc " +
                         " union " +
-                        " select  master_table  , master_id , 'text', master_id , master_id , 0, 'none', 0 , 'varchar' " +
+                        " select  master_table  , master_id , 'text', master_id , master_id , 0, 'none', 0 , 'varchar', 0 " +
                         " from sda_def_enumerations sde  " +
                         " union " +
-                        " select  master_table  , master_column  , 'text', master_column , master_column , 0, 'none', 0 , 'varchar' " +
+                        " select  master_table  , master_column  , 'text', master_column , master_column , 0, 'none', 0 , 'varchar', 0 " +
                         " from sda_def_enumerations sde  " +
                         " union " +
-                        " select  bridge_table   , source_bridge  , 'text', source_bridge , source_bridge , 0, 'none', 0 , 'varchar' " +
+                        " select  bridge_table   , source_bridge  , 'text', source_bridge , source_bridge , 0, 'none', 0 , 'varchar', 0 " +
                         " from sda_def_enumerations sde  " +
                         " where bridge_table != '' " +
                         " union " +
-                        " select  bridge_table   , target_bridge  , 'text', target_bridge , target_bridge , 0, 'none', 0 , 'varchar' " +
+                        " select  bridge_table   , target_bridge  , 'text', target_bridge , target_bridge , 0, 'none', 0 , 'varchar', 0 " +
                         " from sda_def_enumerations sde  " +
                         " where bridge_table != '' ";
                     await connection.query(my_query).then(async rows => {
@@ -167,24 +168,20 @@ export class updateModel {
                     columns = [...new Set(dataset.map(item => tabla === item.tabla ? item.column : null))].filter(item => item != null);
                     const sql = ' select ' + columns.toString() + ' from ' + tabla + ' limit 1   \n'
                     let nexSql = sql.replace("select ,", "select ").replace(", from", " from ");
+                    console.log(nexSql);
                     await con.query(nexSql).then((ress, errrr) => {
                         if (errrr) throw errrr;
-                        console.count("Query resuelta satisfactoriamente");
+                        //console.log(ress);
+                        console.count("Query resuelta satisfactoriamente" );
                     })
                 });
 
                 ;
-
-
             }
 
             )
 
     }
-
-
-
-
 
     /** Genera los roles  */
     static async grantedRolesToModel(grantedRoles: any, crmTables: any, permissions: any, permissionsColumns: any) {
@@ -253,7 +250,6 @@ export class updateModel {
 
             }
             //Evitar duplicados
-
             let found = false;
             try {
                 found = destGrantedRoles.find(e => e.table === line.table && e.groupsName[0] === "EDA_ADMIN")
@@ -323,11 +319,9 @@ export class updateModel {
             }
 
         })
-
+        
         return destGrantedRoles;
     }
-
-
 
 
     static createModel(tables: any, columns: any, relations: any, grantedRoles: any, ennumeration: any): string[] {
@@ -460,7 +454,8 @@ export class updateModel {
               "column_granted_roles": [],
               "row_granted_roles": [],
               "tableCount": 0,
-              "valueListSource": {}
+              "valueListSource": {},
+              "hidden": columns[i].sda_hidden
             }
             
             //aqui hay que añadir a cada columna su valor valueListSource según la source_table
@@ -474,6 +469,7 @@ export class updateModel {
             })
             //subimos cada objeto columna a nuestro array de columnas
             destColumns.push(c)
+            
           }
         }
         return destColumns;
@@ -497,6 +493,7 @@ export class updateModel {
               "visible": true
             }
             destRelations.push(rr);
+            
           }
         }
     
@@ -515,11 +512,15 @@ console.log(sinergiaDatabase);
     let main_model = await JSON.parse(fs.readFileSync('config/base_datamodel.json', 'utf-8'));
     main_model.ds.connection.host = sinergiaDatabase.sinergiaConn.host;
     main_model.ds.connection.database = sinergiaDatabase.sinergiaConn.database;
-    main_model.ds.connection.user = sinergiaDatabase.sinergiaConn.port;
+    main_model.ds.connection.port = sinergiaDatabase.sinergiaConn.port;
     main_model.ds.connection.user = sinergiaDatabase.sinergiaConn.user;
+    main_model.ds.connection.poolLimit = sinergiaDatabase.sinergiaConn.connectionLimit;
     main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password);
     main_model.ds.model.tables = tables; //añadimos el parámetro en la columna adecuada
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
+
+    const cleanM = new CleanModel;
+    main_model = cleanM.cleanModel(main_model);
     
     await new pushModelToMongo().pushModel(main_model);
 
