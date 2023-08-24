@@ -40,7 +40,8 @@ export class DataSourcesComponent {
             user: [null, Validators.required],
             password: [null, Validators.required],
             schema: [ null],
-            sid:[{ name: 'SID', value: 1 }]
+            sid:[{ name: 'SID', value: 1 }],
+            poolLimit: [null]
         });
 
     }

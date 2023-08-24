@@ -291,21 +291,30 @@
 
                         <ng-container *ngIf="selectedColumn.column_type === 'date'">
 
-                            <h4 i18n="@@dateFormatH4">
-                                Formato
-                            </h4>
+                            <h4 i18n="@@dateFormatH4"> Formato </h4>
 
                             <hr>
 
                             <div class="aggregation-list">
 
-                                <div class="aggregation-box" *ngFor="let format of formatDates"
+                                <p-dropdown
+                                    [(ngModel)]="formatDate"
+                                    [options]="formatDates"
+                                    [optionLabel]="'display_name'"
+                                    [autoDisplayFirst]="false"
+                                    [showClear]="true"
+                                    [style]="{'min-width': '100%'}"
+                                    (onChange)="addFormatDate(format)"
+                                    class="w-100"
+                                    appendTo="body">
+                                </p-dropdown>
+
+                                <!-- <div *ngFor="let format of formatDates"
+                                    class="aggregation-box"
                                     (click)="addFormatDate(format)"
                                     [ngClass]="format.selected === true ? 'aggregation-active' : ''">
-
                                     <span>{{format.display_name | uppercase}}</span>
-
-                                </div>
+                                </div> -->
 
                             </div>
 

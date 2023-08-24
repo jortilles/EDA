@@ -1,255 +1,280 @@
 <eda-dialog [inject]="dialog">
 
-  <div body>
-    <div style="display:flex; flex-direction: row;">
+	<div body>
+		<div style="display:flex; flex-direction: row;">
 
-      <div>
-        <h6 i18n="@@ChangeBackgroundColor" style="margin-bottom: 1em;"> Color del fondo</h6>
-        <p-colorPicker [(ngModel)]="dashBoardStyles.backgroundColor" format="hex" appendTo="body"
-          (onChange)="setSampleGlobalStyle()" >
-        </p-colorPicker>
+			<div>
+				<h6 i18n="@@ChangeBackgroundColor" style="margin-bottom: 1em;"> Color del fondo</h6>
+				<p-colorPicker [(ngModel)]="dashBoardStyles.backgroundColor" format="hex" appendTo="body"
+					(onChange)="setSampleGlobalStyle()">
+				</p-colorPicker>
 
-        <input type="text" pInputText class="eda-color-pick" [(ngModel)]="dashBoardStyles.backgroundColor" minlength="7"
-        (focusout)="setSampleGlobalStyle()">
-      </div>
+				<input type="text" pInputText class="eda-color-pick" [(ngModel)]="dashBoardStyles.backgroundColor"
+					minlength="7" (focusout)="setSampleGlobalStyle()">
+			</div>
 
-      <div>
-        <h6 i18n="@@ChangePaneColor" style="margin-bottom: 1em;"> Color del panel</h6>
-        <p-colorPicker [(ngModel)]="dashBoardStyles.panelColor" format="hex" appendTo="body"
-          (onChange)="setSampleTitleStyle()">
-        </p-colorPicker>
+			<div>
+				<h6 i18n="@@ChangePaneColor" style="margin-bottom: 1em;"> Color del panel</h6>
+				<p-colorPicker [(ngModel)]="dashBoardStyles.panelColor" format="hex" appendTo="body"
+					(onChange)="setSampleTitleStyle()">
+				</p-colorPicker>
 
-        <input type="text" pInputText class="eda-color-pick" [(ngModel)]="dashBoardStyles.panelColor" minlength="7"
-         (focusout)="setSampleGlobalStyle()">
-      </div>
-      <div>
-        
-      </div>
+				<input type="text" pInputText class="eda-color-pick" [(ngModel)]="dashBoardStyles.panelColor"
+					minlength="7" (focusout)="setSampleGlobalStyle()">
+			</div>
+			<div>
 
-    </div>
-    <hr>
-    <div style="display: flex; flex-direction: row;">
+			</div>
 
-      <div class="card-div">
-        <p-card [header]="titleHeader">
-          <div style="display: flex;  flex-direction: column; margin: 1em;" class="div-card-body">
-            <div>
+		</div>
+		
+		<hr>
 
-              <h6 i18n="@@ChangeFontFamily" style="margin-bottom: 1em;"> Tipo de fuente</h6>
-              <p-dropdown id="fonts" [options]="fonts" [(ngModel)]="selectedTitleFont" optionLabel="label"
-                [autoDisplayFirst]="true" [style]="{'width': '100%'}" (onChange)="setSampleTitleStyle()">
-              </p-dropdown>
-            </div>
+		<p-tabView class="col-12">
+            <p-tabPanel header="Properties">
+				<div style="display: flex; flex-direction: row;">
+					<div class="card-div">
+						<p-card [header]="titleHeader">
+							<div style="display: flex;  flex-direction: column; margin: 1em;" class="div-card-body">
+								<div>
+		
+									<h6 i18n="@@ChangeFontFamily" style="margin-bottom: 1em;"> Tipo de fuente</h6>
+									<p-dropdown id="fonts" [options]="fonts" [(ngModel)]="selectedTitleFont" optionLabel="label"
+										[autoDisplayFirst]="true" [style]="{'width': '100%'}"
+										(onChange)="setSampleTitleStyle()">
+									</p-dropdown>
+								</div>
+		
+								<div>
+		
+									<h6 i18n="@@ChangeFontSize" style="margin-top: 1.1em;"> Tamaño de fuente</h6>
+									<p-slider [(ngModel)]="titleFontSize" [min]="-5" [max]="5"
+										(onChange)="setSampleTitleStyle()"></p-slider>
+		
+								</div>
+		
+								<div>
+									<h6 i18n="@@ChangeFontColor" style="margin-top: 1.1em;"> Color de la fuente</h6>
+									<p-colorPicker [(ngModel)]="titleFontColor" format="hex" appendTo="body"
+										(onChange)="setSampleTitleStyle()">
+									</p-colorPicker>
+									<input type="text" pInputText class="eda-color-pick" [(ngModel)]="titleFontColor"
+										minlength="7" (focusout)="setSampleTitleStyle()">
+								</div>
+		
+								<div>
+									<h6 i18n="@@ChangelignTitle" style="margin-top: 1.1em;"> Alineación</h6>
+									<div>
+										<div class="p-field-radiobutton">
+											<p-radioButton name="city" value="flex-start" [(ngModel)]="alignDasboardTitle"
+												inputId="i1" (onClick)="setSampleTitleStyle()">
+											</p-radioButton>
+											<label for="i1">{{left}}</label>
+										</div>
+										<div class="p-field-radiobutton">
+											<p-radioButton name="city" value="center" [(ngModel)]="alignDasboardTitle"
+												inputId="i2" (onClick)="setSampleTitleStyle()">
+											</p-radioButton>
+											<label for="i2">{{center}}</label>
+										</div>
+										<div class="p-field-radiobutton">
+											<p-radioButton name="city" value="flex-end" [(ngModel)]="alignDasboardTitle"
+												inputId="i3" (onClick)="setSampleTitleStyle()">
+											</p-radioButton>
+											<label for="i3">{{right}}</label>
+										</div>
+									</div>
+								</div>
+		
+							</div>
+						</p-card>
+					</div>
+		
+					<div class="card-div">
+						<p-card [header]="filtersHeader">
+							<div style="display: flex;  flex-direction: column; margin: 1em;" class="div-card-body">
+								<div>
+		
+									<h6 i18n="@@ChangeFontFamily" style="margin-bottom: 1em;"> Tipo de fuente</h6>
+									<p-dropdown id="fonts" [options]="fonts" [(ngModel)]="selectedFiltersFont"
+										optionLabel="label" [autoDisplayFirst]="true" [style]="{'width': '100%'}"
+										(onChange)="setSampleFIltersStyle()">
+									</p-dropdown>
+								</div>
+		
+								<div>
+		
+									<h6 i18n="@@ChangeFontSize" style="margin-top: 1.1em;"> Tamaño de fuente</h6>
+									<p-slider [(ngModel)]="filtersFontSize" [min]="-5" [max]="5"
+										(onChange)="setSampleFIltersStyle()">
+									</p-slider>
+		
+								</div>
+		
+								<div>
+									<h6 i18n="@@ChangeFontColor" style="margin-top: 1.1em;"> Color de la fuente</h6>
+									<p-colorPicker [(ngModel)]="filtersFontColor" format="hex" appendTo="body"
+										(onChange)="setSampleFIltersStyle()">
+									</p-colorPicker>
+									<input type="text" pInputText class="eda-color-pick" [(ngModel)]="filtersFontColor"
+										minlength="7" (focusout)="setSampleFIltersStyle()">
+								</div>
+		
+		
+							</div>
+						</p-card>
+					</div>
+		
+					<div class="card-div">
+						<p-card [header]="panelTitleHeader">
+							<div style="display: flex;  flex-direction: column; margin: 1em;" class="div-card-body">
+								<div>
+		
+									<h6 i18n="@@ChangeFontFamily" style="margin-bottom: 1em;"> Tipo de fuente</h6>
+									<p-dropdown id="fonts" [options]="fonts" [(ngModel)]="selectedPanelTitleFont"
+										optionLabel="label" [autoDisplayFirst]="true" [style]="{'width': '100%'}"
+										(onChange)="setPanelTitleStyle()">
+									</p-dropdown>
+								</div>
+		
+								<div>
+		
+									<h6 i18n="@@ChangeFontSize" style="margin-top: 1.1em;"> Tamaño de fuente</h6>
+									<p-slider [(ngModel)]="panelTitleFontSize" [min]="-5" [max]="5"
+										(onChange)="setPanelTitleStyle()"> </p-slider>
+		
+								</div>
+		
+								<div>
+									<h6 i18n="@@ChangeFontColor" style="margin-top: 1.1em;"> Color de la fuente</h6>
+									<p-colorPicker [(ngModel)]="panelTitleFontColor" format="hex" appendTo="body"
+										(onChange)="setPanelTitleStyle()">
+									</p-colorPicker>
+									<input type="text" pInputText class="eda-color-pick" [(ngModel)]="panelTitleFontColor"
+										minlength="7" (focusout)="setPanelTitleStyle()">
+								</div>
+		
+								<div>
+									<h6 i18n="@@ChangelignTitle" style="margin-top: 1.1em;"> Alineación</h6>
+									<div>
+										<div class="p-field-radiobutton">
+											<p-radioButton name="city" value="left" [(ngModel)]="alignPanelTitle" inputId="i1"
+												(click)="setPanelTitleStyle()">
+											</p-radioButton>
+											<label for="city1">{{left}}</label>
+										</div>
+										<div class="p-field-radiobutton">
+											<p-radioButton name="city" value="center" [(ngModel)]="alignPanelTitle" inputId="i2"
+												(click)="setPanelTitleStyle()">
+											</p-radioButton>
+											<label for="city2">{{center}}</label>
+										</div>
+										<div class="p-field-radiobutton">
+											<p-radioButton name="city" value="right" [(ngModel)]="alignPanelTitle" inputId="i3"
+												(click)="setPanelTitleStyle()">
+											</p-radioButton>
+											<label for="city3">{{right}}</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						</p-card>
+					</div>
+		
+		
+					<div class="card-div">
+						<p-card [header]="panelContentHeader">
+							<div style="display: flex;  flex-direction: column; margin: 1em;" class="div-card-body">
+								<div>
+		
+									<h6 i18n="@@ChangeFontFamily" style="margin-bottom: 1em;"> Tipo de fuente</h6>
+									<p-dropdown id="fonts" [options]="fonts" [(ngModel)]="selectedPanelFont" optionLabel="label"
+										[autoDisplayFirst]="true" [style]="{'width': '100%'}"
+										(onChange)="setPanelContentStyle()">
+									</p-dropdown>
+								</div>
+		
+								<div>
+		
+									<h6 i18n="@@ChangeFontSize" style="margin-top: 1.1em;"> Tamaño de fuente</h6>
+									<p-slider [(ngModel)]="panelFontSize" [min]="-5" [max]="5"
+										(onChange)="setPanelContentStyle()"></p-slider>
+		
+								</div>
+		
+								<div>
+									<h6 i18n="@@ChangeFontColor" style="margin-top: 1.1em;"> Color de la fuente</h6>
+									<p-colorPicker [(ngModel)]="panelFontColor" format="hex" appendTo="body"
+										(onChange)="setPanelContentStyle()">
+									</p-colorPicker>
+									<input type="text" pInputText class="eda-color-pick" [(ngModel)]="panelFontColor"
+										minlength="7" (focusout)="setPanelContentStyle()">
+								</div>
+		
+							</div>
+						</p-card>
+					</div>
+		
+					<div class="card-div" style="width: 35%;">
+						<p-card [header]="samplePanelTitle">
+							<div [ngStyle]="sampleGlobalStyle" style=" margin: 1em; padding: 0.5em;" class="div-card-body">
+								<h3 [ngStyle]="sampleTitleStyle">{{samplePanelDBName}}</h3>
+								<div style="margin: 0.5em;">
+									<button [ngStyle]="sampleFiltersStyle" pButton pRipple type="button"
+										style="margin-right: 0.3em;" class="p-button-raised p-button-outlined"
+										icon="pi pi-filter" [label]="filtrar"></button>
+								</div>
+								<div style="display: flex; flex-direction: row;">
+									<div style="margin: 0.5em;" class="card-simulator"
+										[ngStyle]="{'background-color':dashBoardStyles.panelColor}">
+		
+										<div>
+											<h6 [ngStyle]="samplePanelTitleStyle">{{samplePanelName}} </h6>
+											<p [ngStyle]="samplePanelContentStyle">Lorem ipsum dolor sit amet, consectetur
+												adipiscing elit, sed do eiusmod tempor incididunt ut
+												labore
+												et dolore magna aliqua</p>
+										</div>
+		
+									</div>
+									<div style="margin: 0.5em; " class="card-simulator"
+										[ngStyle]="{'background-color':dashBoardStyles.panelColor}">
+		
+										<div>
+											<h6 [ngStyle]="samplePanelTitleStyle">{{samplePanelName}} </h6>
+											<p [ngStyle]="samplePanelContentStyle">Lorem ipsum dolor sit amet, consectetur
+												adipiscing elit, sed do eiusmod tempor incididunt ut
+												labore
+												et dolore magna aliqua</p>
+										</div>
+		
+									</div>
+		
+								</div>
+		
+		
+							</div>
+						</p-card>
+					</div>
+				</div>
+			</p-tabPanel>
+			<p-tabPanel header="CSS">
+				<div>
+					<textarea [(ngModel)]="css" style="width:100%" rows="24"></textarea>
+				</div>
+			</p-tabPanel>
+		</p-tabView>
+	</div>
 
-            <div>
-
-              <h6 i18n="@@ChangeFontSize" style="margin-top: 1.1em;"> Tamaño de fuente</h6>
-              <p-slider [(ngModel)]="titleFontSize" [min]="-5" [max]="5" (onChange)="setSampleTitleStyle()"></p-slider>
-
-            </div>
-
-            <div>
-              <h6 i18n="@@ChangeFontColor" style="margin-top: 1.1em;"> Color de la fuente</h6>
-              <p-colorPicker [(ngModel)]="titleFontColor" format="hex" appendTo="body"
-                (onChange)="setSampleTitleStyle()">
-              </p-colorPicker>
-              <input type="text" pInputText class="eda-color-pick" [(ngModel)]="titleFontColor" minlength="7"
-              (focusout)="setSampleTitleStyle()">
-            </div>
-
-            <div>
-              <h6 i18n="@@ChangelignTitle" style="margin-top: 1.1em;"> Alineación</h6>
-              <div>
-                <div class="p-field-radiobutton">
-                  <p-radioButton name="city" value="flex-start" [(ngModel)]="alignDasboardTitle" inputId="i1"
-                    (onClick)="setSampleTitleStyle()">
-                  </p-radioButton>
-                  <label for="i1">{{left}}</label>
-                </div>
-                <div class="p-field-radiobutton">
-                  <p-radioButton name="city" value="center" [(ngModel)]="alignDasboardTitle" inputId="i2"
-                    (onClick)="setSampleTitleStyle()">
-                  </p-radioButton>
-                  <label for="i2">{{center}}</label>
-                </div>
-                <div class="p-field-radiobutton">
-                  <p-radioButton name="city" value="flex-end" [(ngModel)]="alignDasboardTitle" inputId="i3"
-                    (onClick)="setSampleTitleStyle()">
-                  </p-radioButton>
-                  <label for="i3">{{right}}</label>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </p-card>
-      </div>
-
-      <div class="card-div">
-        <p-card [header]="filtersHeader">
-          <div style="display: flex;  flex-direction: column; margin: 1em;" class="div-card-body">
-            <div>
-
-              <h6 i18n="@@ChangeFontFamily" style="margin-bottom: 1em;"> Tipo de fuente</h6>
-              <p-dropdown id="fonts" [options]="fonts" [(ngModel)]="selectedFiltersFont" optionLabel="label"
-                [autoDisplayFirst]="true" [style]="{'width': '100%'}" (onChange)="setSampleFIltersStyle()">
-              </p-dropdown>
-            </div>
-
-            <div>
-
-              <h6 i18n="@@ChangeFontSize" style="margin-top: 1.1em;"> Tamaño de fuente</h6>
-              <p-slider [(ngModel)]="filtersFontSize" [min]="-5" [max]="5" (onChange)="setSampleFIltersStyle()">
-              </p-slider>
-
-            </div>
-
-            <div>
-              <h6 i18n="@@ChangeFontColor" style="margin-top: 1.1em;"> Color de la fuente</h6>
-              <p-colorPicker [(ngModel)]="filtersFontColor" format="hex" appendTo="body"
-                (onChange)="setSampleFIltersStyle()">
-              </p-colorPicker>
-              <input type="text" pInputText class="eda-color-pick" [(ngModel)]="filtersFontColor" minlength="7"
-              (focusout)="setSampleFIltersStyle()">
-            </div>
-
-
-          </div>
-        </p-card>
-      </div>
-
-      <div class="card-div">
-        <p-card [header]="panelTitleHeader">
-          <div style="display: flex;  flex-direction: column; margin: 1em;" class="div-card-body">
-            <div>
-
-              <h6 i18n="@@ChangeFontFamily" style="margin-bottom: 1em;"> Tipo de fuente</h6>
-              <p-dropdown id="fonts" [options]="fonts" [(ngModel)]="selectedPanelTitleFont" optionLabel="label"
-                [autoDisplayFirst]="true" [style]="{'width': '100%'}" (onChange)="setPanelTitleStyle()">
-              </p-dropdown>
-            </div>
-
-            <div>
-
-              <h6 i18n="@@ChangeFontSize" style="margin-top: 1.1em;"> Tamaño de fuente</h6>
-              <p-slider [(ngModel)]="panelTitleFontSize" [min]="-5" [max]="5" (onChange)="setPanelTitleStyle()"> </p-slider>
-
-            </div>
-
-            <div>
-              <h6 i18n="@@ChangeFontColor" style="margin-top: 1.1em;"> Color de la fuente</h6>
-              <p-colorPicker [(ngModel)]="panelTitleFontColor" format="hex" appendTo="body" (onChange)="setPanelTitleStyle()">
-              </p-colorPicker>
-              <input type="text" pInputText class="eda-color-pick" [(ngModel)]="panelTitleFontColor" minlength="7"
-              (focusout)="setPanelTitleStyle()">
-            </div>
-
-            <div>
-              <h6 i18n="@@ChangelignTitle" style="margin-top: 1.1em;"> Alineación</h6>
-              <div>
-                <div class="p-field-radiobutton">
-                  <p-radioButton name="city" value="left" [(ngModel)]="alignPanelTitle" inputId="i1" (click)="setPanelTitleStyle()">
-                  </p-radioButton>
-                  <label for="city1">{{left}}</label>
-                </div>
-                <div class="p-field-radiobutton">
-                  <p-radioButton name="city" value="center" [(ngModel)]="alignPanelTitle" inputId="i2" (click)="setPanelTitleStyle()">
-                  </p-radioButton>
-                  <label for="city2">{{center}}</label>
-                </div>
-                <div class="p-field-radiobutton">
-                  <p-radioButton name="city" value="right" [(ngModel)]="alignPanelTitle" inputId="i3" (click)="setPanelTitleStyle()">
-                  </p-radioButton>
-                  <label for="city3">{{right}}</label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </p-card>
-      </div>
-
-
-      <div class="card-div">
-        <p-card [header]="panelContentHeader">
-          <div style="display: flex;  flex-direction: column; margin: 1em;" class="div-card-body">
-            <div>
-
-              <h6 i18n="@@ChangeFontFamily" style="margin-bottom: 1em;"> Tipo de fuente</h6>
-              <p-dropdown id="fonts" [options]="fonts" [(ngModel)]="selectedPanelFont" optionLabel="label"
-                [autoDisplayFirst]="true" [style]="{'width': '100%'}" (onChange)="setPanelContentStyle()">
-              </p-dropdown>
-            </div>
-
-            <div>
-
-              <h6 i18n="@@ChangeFontSize" style="margin-top: 1.1em;"> Tamaño de fuente</h6>
-              <p-slider [(ngModel)]="panelFontSize" [min]="-5" [max]="5" (onChange)="setPanelContentStyle()"></p-slider>
-
-            </div>
-
-            <div>
-              <h6 i18n="@@ChangeFontColor" style="margin-top: 1.1em;"> Color de la fuente</h6>
-              <p-colorPicker [(ngModel)]="panelFontColor" format="hex" appendTo="body" (onChange)="setPanelContentStyle()">
-              </p-colorPicker>
-              <input type="text" pInputText class="eda-color-pick" [(ngModel)]="panelFontColor" minlength="7"
-              (focusout)="setPanelContentStyle()">
-            </div>
-
-          </div>
-        </p-card>
-      </div>
-
-      <div class="card-div" style="width: 35%;">
-        <p-card [header]="samplePanelTitle">
-          <div [ngStyle]="sampleGlobalStyle" style=" margin: 1em; padding: 0.5em;" class="div-card-body">
-            <h3 [ngStyle]="sampleTitleStyle">{{samplePanelDBName}}</h3>
-            <div style="margin: 0.5em;">
-              <button [ngStyle]="sampleFiltersStyle" pButton pRipple type="button" style="margin-right: 0.3em;"
-                class="p-button-raised p-button-outlined" icon="pi pi-filter" [label]="filtrar"></button>
-            </div>
-            <div style="display: flex; flex-direction: row;">
-              <div style="margin: 0.5em;" class="card-simulator"  [ngStyle]="{'background-color':dashBoardStyles.panelColor}">
-                
-                  <div>
-                    <h6 [ngStyle]="samplePanelTitleStyle">{{samplePanelName}} </h6>
-                    <p [ngStyle]="samplePanelContentStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                      labore
-                      et dolore magna aliqua</p>
-                  </div>
-              
-              </div>
-              <div style="margin: 0.5em; " class="card-simulator"  [ngStyle]="{'background-color':dashBoardStyles.panelColor}">
-                
-                  <div>
-                    <h6 [ngStyle]="samplePanelTitleStyle">{{samplePanelName}} </h6>
-                    <p [ngStyle]="samplePanelContentStyle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                      labore
-                      et dolore magna aliqua</p>
-                  </div>
-               
-              </div>
-
-            </div>
-
-
-          </div>
-        </p-card>
-      </div>
-    </div>
-
-
-
-
-  </div>
-
-  <div footer>
-    <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-      <button type="submit" pButton icon="fa fa-refresh" i18n-label="@@resetStylesBtn"
-          label="Volver a los valores por defecto" (click)="resetStyles()"></button>
-      <button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Confirmar" icon="fa fa-check"
-        id="eda_add_dashboard_confirmar" (click)="saveConfig()"></button>
-      <button type="button" pButton icon="fa fa-times" (click)="closeDialog()" class="p-button-raised p-button-danger"
-        i18n-label="@@cerrarBtn" label="Cancelar"></button>
-    </div>
-  </div>
+	<div footer>
+		<div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
+			<button type="submit" pButton icon="fa fa-refresh" i18n-label="@@resetStylesBtn"
+				label="Volver a los valores por defecto" (click)="resetStyles()">
+			</button>
+			<button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Confirmar"
+				icon="fa fa-check" id="eda_add_dashboard_confirmar" (click)="saveConfig()"></button>
+			<button type="button" pButton icon="fa fa-times" (click)="closeDialog()"
+				class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn" label="Cancelar"></button>
+		</div>
+	</div>
 </eda-dialog>

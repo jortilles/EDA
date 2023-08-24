@@ -81,7 +81,6 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         }
         this.selectPanelToFilter(this.params.panels.filter(p => p.content)[0]);
         if (this.params.filter) this.onEditFilter(this.params.filter);
-        console.log(this.params.filter);
     }
 
 
@@ -247,7 +246,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     public removeFilter(filter: any): void {
-        this.filtersList.splice(this.filtersList.indexOf(filter), 1);
+        filter.isdeleted = true;
+        this.selectedValues = [];
+        this.filtersList.splice(this.filtersList.indexOf(filter), 0);
     }
 
     public onReorderFilter(event: CdkDragDrop<string[]>): void {

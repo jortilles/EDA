@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 export class OracleBuilderService extends QueryBuilderService {
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string) {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType:string, valueListJoins:Array<any> ) {
 
     let o = tables.filter(table => table.name === origin)
       .map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
@@ -13,19 +13,27 @@ export class OracleBuilderService extends QueryBuilderService {
     const filters = this.queryTODO.filters.filter(f => {
 
       const column = this.findColumn(f.filter_table, f.filter_column);
-      return column.computed_column != 'computed_numeric'
+      if(column){
+        return column.computed_column != "computed_numeric";
+      }else{
+        return false;
+      }
 
     });
 
     const havingFilters = this.queryTODO.filters.filter(f => {
 
       const column = this.findColumn(f.filter_table, f.filter_column);
-      return column.computed_column == "computed_numeric";
+      if(column){
+        return column.computed_column == "computed_numeric";
+      }else{
+        return false;
+      }
 
     });
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType);
+    const joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins);
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -153,11 +161,12 @@ export class OracleBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string) {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>) {
 
     let joins = [];
     let joined = [];
     let joinString = [];
+    let myJoin = joinType;
 
     for (let i = 0; i < dest.length; i++) {
       let elem = joinTree.find(n => n.name === dest[i]);
@@ -177,16 +186,20 @@ export class OracleBuilderService extends QueryBuilderService {
           let joinColumns = this.findJoinColumns(e[j], e[i]);
           let t = tables.filter(table => table.name === e[j])
             .map(table => { return table.query ? this.cleanViewString(table.query) : `"${table.name}"` })[0];
-
+            if( valueListJoins.includes(e[j])   ){
+              myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
+            }else{
+              myJoin = joinType; 
+            }
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
 
-            joinString.push(` ${joinType} join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
+            joinString.push(` ${myJoin} join ${t} on "${e[j]}"."${joinColumns[1]}" = "${e[i]}"."${joinColumns[0]}"`);
 
           }
           else {
 
-            let join = ` ${joinType} join ${t} on`;
+            let join = ` ${myJoin} join ${t} on`;
 
             joinColumns[0].forEach((_, x) => {
 

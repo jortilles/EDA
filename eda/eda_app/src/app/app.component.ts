@@ -67,6 +67,7 @@ export class AppComponent implements OnInit {
         const url = window.location.href;
         let lan_ca = new RegExp('\/ca\/', 'i');
         let lan_es = new RegExp('\/es\/', 'i');
+        let lan_pl = new RegExp('\/pl\/', 'i');
 
         if (lan_ca.test(url)) {
             this.config.setTranslation(
@@ -98,7 +99,22 @@ export class AppComponent implements OnInit {
                 }
             )
         }
+        else if (lan_pl.test(url)) {
+            this.config.setTranslation(
+                {
+                     dayNames: ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"],
+                     dayNamesShort: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sob"],
+                     dayNamesMin: ["Su","Mo", "Ma", "Mi", "Czw", "Vi", "Sa"],
+                     monthNames: ["styczeń", "luty", "marzec", "kwiecień", "maj", "czerwiec", "lipiec", "sierpień", "wrzesień", "październik", "listopad", "grudzień" ],
+                     monthNamesShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ],
+                     today: "Dzisiaj",
+                     clear: "wyczyść",
+                     weekHeader: "Tydzień"
 
+
+                }
+            )
+        }
         else {
 
             this.config.setTranslation(
