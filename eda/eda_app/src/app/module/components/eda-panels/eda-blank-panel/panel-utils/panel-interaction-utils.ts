@@ -220,8 +220,10 @@ export const PanelInteractionUtils = {
 
     const sameColumns = ebp.currentQuery.filter((val: any) => val.column_name === c.column_name && val.table_id === c.table_id);
     c.display_name.ord = sameColumns.length;
-    
+    console.log('clone deep');
+
     ebp.currentQuery.push(_.cloneDeep(c));
+
 
     const setColumnOrd = (columns?: any[]) => {
       const sameColumns = ebp.currentQuery.filter((val: any) => val.column_name === c.column_name && val.table_id === c.table_id);
@@ -234,13 +236,13 @@ export const PanelInteractionUtils = {
       }
     }
 
-    // setColumnOrd( ebp.columns );
+    setColumnOrd( ebp.columns );
     setColumnOrd( ebp.tables.find((table: any) => table.table_name === c.table_id)?.columns || [] )
 
     PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida
     PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions
     PanelInteractionUtils.handleOrdTypes(ebp, c);         // Comprovacio ordenacio
-
+    ebp.columns.splice(1, 0)
     // if (!_.isEqual(ebp.inputs.findColumn.ngModel, '')) {
     //   ebp.inputs.findColumn.reset();
     //   console.log('reset?')
@@ -328,7 +330,8 @@ export const PanelInteractionUtils = {
       ebp.currentQuery[match].aggregation_type.forEach(ag => ag.selected = false);
       ebp.currentQuery[match].format = '';
       ebp.currentQuery.splice(match, 1);
-      setColumnOrd( ebp.tables.find((table: any) => table.table_name === c.table_id)?.columns || [] )
+      setColumnOrd( ebp.tables.find((table: any) => table.table_name === c.table_id)?.columns || [] );
+      setColumnOrd( ebp.columns );
     } else if (list === 'filter') {
 
       const match = _.findIndex(ebp.filtredColumns, { column_name: c.column_name, table_id: c.table_id });
