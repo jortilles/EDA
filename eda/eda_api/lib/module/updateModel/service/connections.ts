@@ -13,8 +13,8 @@ export class Connections {
       database: req.query.database,
       user: req.query.user,
       password: req.query.password,
-      //mongodb: "mongodb://sdauser:lkjukjgvtryyLIYYL@db.sinergiada.org:33219/" + req.query.mongodb  +  "?authSource=admin",
-      mongodb: "mongodb://myUserAdmin:Asaf--2020@dev.executionpro.com/reporting?authSource=admin",
+      mongodb: "mongodb://sdauser:lkjukjgvtryyLIYYL@db.sinergiada.org:33219/" + req.query.mongodb  +  "?authSource=admin",
+      // mongodb: "mongodb://myUserAdmin:Asaf--2020@dev.executionpro.com/reporting?authSource=admin",
       connectionLimit: 10 ,
       waitForConnections: true,
       queueLimit: 0
