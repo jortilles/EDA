@@ -106,7 +106,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             }
         }
         
-        this.panelstoFilter = this.panelsToDisplay.filter(p => p.avaliable === true);
+        this.panelstoFilter = this.panelsToDisplay.filter(p => p.avaliable === true && p.active === true );
 
         // Filter can only apply to all panels if all panels are in display list
         this.applyToAll = (this.panelsToDisplay.length === this.panelstoFilter.length);
@@ -208,6 +208,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 }
                 this.selectedFilter = null;
             }
+
             response = { filterList: this.filtersList };
             this.onClose(EdaDialogCloseEvent.UPDATE, response);
         }
@@ -256,6 +257,10 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     applyToAllCheck() {
+        this.applyToAll = !this.applyToAll;
+        if(this.applyToAll){
+            this.panelstoFilter = this.panelsToDisplay.filter(p => p.avaliable === true   );
+        }
         return this.applyToAll;
     }
 
