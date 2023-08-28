@@ -220,7 +220,6 @@ export const PanelInteractionUtils = {
 
     const sameColumns = ebp.currentQuery.filter((val: any) => val.column_name === c.column_name && val.table_id === c.table_id);
     c.display_name.ord = sameColumns.length;
-    console.log('clone deep');
 
     ebp.currentQuery.push(_.cloneDeep(c));
 

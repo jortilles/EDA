@@ -29,6 +29,10 @@ p.ql-align-right {
 }
 
 
+strong {
+font-weight: bold !important;
+}
+
 
 /*============================================================== 
   For Laptop & above all (1370px) 
