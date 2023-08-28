@@ -1001,7 +1001,7 @@ export class DashboardController {
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
           //console.log('Query output');
-          console.log(output);
+          //console.log(output);
           return res.status(200).json(output)
         } else {
           console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾')

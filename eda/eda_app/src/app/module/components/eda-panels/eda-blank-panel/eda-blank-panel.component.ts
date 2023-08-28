@@ -326,7 +326,6 @@ export class EdaBlankPanelComponent implements OnInit {
                 console.log('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
                 console.log(e);
             }
-
         }
 
         this.queryLimit = panelContent.query.query.queryLimit;
@@ -523,6 +522,9 @@ export class EdaBlankPanelComponent implements OnInit {
         if (event.previousContainer === event.container) {
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
+            const column: any = event.container.data[0];
+            const sameColumns = this.currentQuery.filter((val: any) => val.column_name === column.column_name && val.table_id === column.table_id);
+            if (sameColumns.length > 0) return;
             transferArrayItem(event.previousContainer.data,
                 event.container.data,
                 event.previousIndex,

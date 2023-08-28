@@ -265,7 +265,6 @@ export abstract class QueryBuilderService {
     }
     public getPermissions(modelPermissions, modelTables, originTable) {
 
-        console.log(modelPermissions)
         
         originTable = this.cleanOriginTable(originTable);
         let filters = [];
