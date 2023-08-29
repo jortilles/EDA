@@ -1,8 +1,11 @@
 import _ from "lodash";
+import { Sda_Basic_Group } from "./SDA_BASIC.group";
+import Group, { IGroup } from '../../admin/groups/model/group.model'
+
 
 export class CleanModel {
     
-    public cleanModel(main_model : any) : any {
+    public async cleanModel(main_model : any) : Promise<any> {
 
         const roles = _.cloneDeep(main_model.ds.metadata.model_granted_roles);
         
@@ -53,16 +56,44 @@ export class CleanModel {
                     model = roles[i];
                     if (_.isEmpty(model.table) == false) {model_granted_roles.push(model)} ;
                     
-                    
+
                 }
 
                 }
             }
             
-            console.log(model_granted_roles);
-                                   
+            const usersToPush = []
+            const sdaChecker = new Sda_Basic_Group;
+            const basicGroups =  (await sdaChecker.Checker()); //recuperdamos las tablas SDA_*        
+            
+            basicGroups.forEach( e => {
+
+                let groupGrantedRoles = 
+                {
+                    "groups": [],
+                    "groupsName": [],
+                    "users": [],
+                    "role": "",
+                    "none": false,
+                    "table": "",
+                    "column": "",
+                    "global": true,
+                    "permission": true,
+                    "type": "groups"
+                }
+
+                
+                groupGrantedRoles.groups.push(e._id);
+                groupGrantedRoles.groupsName.push(e.name);
+                groupGrantedRoles.role = e.role;
+                groupGrantedRoles.users = e.users;
+                
+                model_granted_roles.push(groupGrantedRoles);
+            })
             
             main_model.ds.metadata.model_granted_roles = model_granted_roles;
+            
+
             return main_model;
 
         }
