@@ -508,17 +508,17 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     public drop(event: CdkDragDrop<string[]>) {
         if (event.previousContainer === event.container) {
+            //Reordeno
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
-            const column: any = event.container.data[0];
-            const sameColumns = this.currentQuery.filter((val: any) => val.column_name === column.column_name && val.table_id === column.table_id);
-            if (sameColumns.length > 0) return;
             transferArrayItem(event.previousContainer.data,
                 event.container.data,
                 event.previousIndex,
                 event.currentIndex);
         }
     }
+
+
 
     /* Condicions Drag&Drop */
     public isAllowed = (drag?: CdkDrag, drop?) => false;

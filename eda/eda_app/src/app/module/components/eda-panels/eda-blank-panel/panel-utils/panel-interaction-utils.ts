@@ -223,20 +223,20 @@ export const PanelInteractionUtils = {
 
     ebp.currentQuery.push(_.cloneDeep(c));
 
-
     const setColumnOrd = (columns?: any[]) => {
       const sameColumns = ebp.currentQuery.filter((val: any) => val.column_name === c.column_name && val.table_id === c.table_id);
       let prop = columns.find((val: any) => val.column_name === c.column_name);
-      
+
       if (prop && sameColumns.length > 0) {
         prop.display_name.ord = sameColumns.length;
-        if (prop.display_name.ord > 1) prop.display_name.default = prop.display_name.default.slice(0, -1);
+        //if (prop.display_name.ord > 1) prop.display_name.default = prop.display_name.default.slice(0,-1);
         if (prop.display_name.ord > 0) prop.display_name.default += ' ' + prop.display_name.ord;
       }
+
     }
 
     setColumnOrd( ebp.columns );
-    setColumnOrd( ebp.tables.find((table: any) => table.table_name === c.table_id)?.columns || [] )
+   // setColumnOrd( ebp.tables.find((table: any) => table.table_name === c.table_id)?.columns || [] )
 
     PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida
     PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions
