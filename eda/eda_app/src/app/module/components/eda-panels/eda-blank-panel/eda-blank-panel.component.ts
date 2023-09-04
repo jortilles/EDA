@@ -516,6 +516,17 @@ export class EdaBlankPanelComponent implements OnInit {
                 event.previousIndex,
                 event.currentIndex);
         }
+        //Quito duplicados de la lista maestra
+        console.log(this.columns);
+        const unique= [...new Set(this.columns.map(item => item.column_name))]; 
+        if( this.columns.length > unique.length){
+            const lookup = this.columns.reduce((a, e) => {
+                a[e.column_name] = ++a[e.column_name] || 0;
+                return a;
+              }, {});
+              
+              console.log(this.columns.filter(e => lookup[e.column_name]));
+        }
     }
 
 

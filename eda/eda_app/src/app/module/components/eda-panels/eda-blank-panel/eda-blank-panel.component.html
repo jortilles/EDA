@@ -71,7 +71,7 @@
                             <div *ngFor="let column of columns">
                                 <div class="column-box"  *ngIf='column.column_type === "numeric" || column.column_type === "date"' (click)="moveItem(column)" 
                                 (mouseover)="showDescription(column)" (mouseout)="description= ''" cdkDrag [cdkDragData]="column"
-                                (cdkDragDropped)="searchRelations(column, $event)" (cdkDragDropped)="openColumnDialog(column)" (click)="openColumnDialog(column)">  
+                                (cdkDragDropped)="searchRelations(column, $event)" (cdkDragDropped)="openColumnDialog(column)" >  
                                    
    
                                    <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
