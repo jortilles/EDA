@@ -87,9 +87,9 @@
                                 (mouseover)="showDescription(column)" 
                                 (mouseout)="description= ''" 
                                 cdkDrag
+                                [cdkDragData] = "column"
                                 (cdkDragDropped)="searchRelations(column, $event)" 
                                 (cdkDragDropped)="openColumnDialog(column)" 
-                                (click)="openColumnDialog(column)" 
                                 [ngStyle]=" column.hidden == 1 && {'opacity': '0.5'} " >  
                                    
    
