@@ -227,8 +227,6 @@ export const PanelInteractionUtils = {
       if (duplicate ) {
            if(duplicate.duplicate_column){
                 // Recupero los antiguos
-                console.log('veo el antiguo');
-                console.log(JSON.stringify(duplicate));
                 duplicate.duplicate_column.ord =  duplicate.duplicate_column.ord  + 1 ;
                 duplicate.display_name.default =  duplicate.duplicate_column.original_name + ' ' + duplicate.duplicate_column.ord ;
            }else{         
