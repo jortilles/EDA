@@ -22,7 +22,6 @@ export class Sda_Basic_Group {
               )
             
               groupSchema.save()
-
               
         }
 
