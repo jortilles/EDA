@@ -137,7 +137,8 @@
                                 (click)="openColumnDialog(item)"
                                 (mouseover)="showDescription(item)"
                                 (mouseout)="description = ''"
-                                cdkDrag>
+                                cdkDrag 
+                                [cdkDragData]="column">
 
                                 <span class="close-thin pointer" style="z-index: 9999;" (click)="removeColumn( item, 'select' )"></span>
 
