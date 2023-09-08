@@ -19,7 +19,7 @@ export const PanelInteractionUtils = {
     // Reload avaliable columns -> f(table) = this.columns
     table.columns.forEach((c: Column) => {
       c.table_id = table.table_name;
-      // const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
+      //   const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
       ebp.columns.push(c);
       ebp.columns = ebp.columns.filter(col => col.visible === true)
         .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
