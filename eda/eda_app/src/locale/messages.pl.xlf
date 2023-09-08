@@ -3087,8 +3087,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="AllTags">
-    <source> Todos  </source>
-    <target>Wszytsko </target>
+    <source>Todos</source>
+    <target>Wszystko</target>
   </trans-unit>
 
     
