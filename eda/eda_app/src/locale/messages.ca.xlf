@@ -1891,6 +1891,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Histograma</source>
 <target>Histograma</target>
 </trans-unit>
+<trans-unit id="chartTypes17">
+<source>Gráfico Solar</source>
+<target>Gràfic solar</target>
+</trans-unit>
 
 
 <trans-unit id="chartTypesDynamicText">
@@ -1911,6 +1915,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartTypes7">
 <source>Gráfico de Barras Horizontales</source>
 <target>Gràfic de barres horitzontals</target>
+</trans-unit>
+<trans-unit id="chartTypesPyramid">
+<source>Gráfico de Piramide</source>
+<target>Gràfic de Piràmide</target>
 </trans-unit>
 <trans-unit id="chartTypes8">
 <source>Gráfico de Lineas</source>
@@ -3600,8 +3608,13 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="chartInfoFunnel">
-    <source>Un embudo necesitar una categoría y un valor numérico </source>
-    <target>Un embut necessitar una categoria i un valor numèric</target>
+    <source>Un embudo necesita una categoría y un valor numérico </source>
+    <target>Un embut necessita una categoria i un valor numèric</target>
+  </trans-unit>
+
+   <trans-unit id="chartInfoPyramid">
+    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
+    <target>Un gràfic de piràmide necessita dues categories i un valor numèric</target>
   </trans-unit>
 
    <trans-unit id="mailConfOk">

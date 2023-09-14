@@ -93,7 +93,7 @@ export const ChartsConfigUtils = {
       return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false);
 
     }
-    else if (['bar', 'line','area', 'pie', 'doughnut','polarArea', 'barline', 'horizontalBar', 'horizontalBar', 'histogram' ].includes(type)) {
+    else if (['bar', 'line','area', 'pie', 'doughnut','polarArea', 'barline', 'horizontalBar', 'pyramid', 'histogram' ].includes(type)) {
 
       return new ChartJsConfig(null, type, false, false,false,false,null);
 

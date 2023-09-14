@@ -75,13 +75,15 @@ export const EbpUtils = {
           description += `\n${str}`;
           break;
       case 'histogram':
-        str = $localize`:@@chartInfoHistogram:Un histograma requiere una única columna de valores numericos de los que se calculará la frecuencia`;
+        str = $localize`:@@chartInfoHistogram:Un histograma necesita una única columna de valores numericos de los que se calculará la frecuencia`;
         description += `\n${str}`;
         break;
       case 'funnel':
-        str = $localize`:@@chartInfoFunnel:Un embudo necesitar una categoría y un valor numérico`;
+        str = $localize`:@@chartInfoFunnel:Un embudo necesita una categoría y un valor numérico`;
         description += `\n${str}`;
         break;
+      case 'pyramid': 
+        str = $localize`:@@chartInfoPyramid:Un gráfico de piramide necesita de dos categorías y un valor numérico`;
       default:
         description = $localize`:@@chartInfo13:Los datos seleccionados no permiten utilizar este gráfico.`;
         break;
@@ -116,6 +118,9 @@ export const EbpUtils = {
         break
       case 'horizontalBar':
         description = 'notes';
+        break
+      case 'pyramid':
+        description = 'details';
         break
       case 'bar':
         description = 'bar_chart';

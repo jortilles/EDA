@@ -1886,7 +1886,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="chartTypesHistograma">
 <source>Histograma</source>
-<target>Histograma</target>
+<target>Histogram</target>
+</trans-unit>
+<trans-unit id="chartTypes17">
+<source>Gráfico Solar</source>
+<target>Sunburst graph</target>
 </trans-unit>
 
 <trans-unit id="chartTypesDynamicText">
@@ -1907,6 +1911,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartTypes7">
 <source>Gráfico de Barras Horizontales</source>
 <target>Horizontal bar chart</target>
+</trans-unit>
+<trans-unit id="chartTypesPyramid">
+<source>Gráfico de Piramide</source>
+<target>Pyramid chart</target>
 </trans-unit>
 <trans-unit id="chartTypes8">
 <source>Gráfico de Lineas</source>
@@ -3576,6 +3584,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="chartInfoFunnel">
     <source>Un embudo necesitar una categoría y un valor numérico </source>
     <target>A funnel will need a category and a numeric value</target>
+  </trans-unit>
+
+   <trans-unit id="chartInfoPyramid">
+    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
+    <target>A pyramid chart needs two categories and one numeric value</target>
   </trans-unit>
 
    <trans-unit id="mailConfOk">
