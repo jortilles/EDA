@@ -206,7 +206,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 this.loadChartsData(this.panel.content);
             }catch(e){
-                console.log('Error loading panen conent.....');
+                console.error('Error loading panen conent.....');
             }
         }
 
@@ -308,18 +308,28 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param panelContent panel content to build configuration .
      */
     buildGlobalconfiguration(panelContent: any) {
-
         if (!panelContent.query.query.modeSQL) {
 
             try{
+                const queryTables = [...new Set(panelContent.query.query.fields.map((field) => field.table_id))];
+                for (const idTable of queryTables) {
+                    const table = this.tables.find(t => t.table_name === idTable);
+                    PanelInteractionUtils.loadColumns(this, table);
+                }
 
-            panelContent.query.query.fields.forEach(element => {
-                PanelInteractionUtils.loadColumns(this, this.tables.find(t => t.table_name === element.table_id));
-                PanelInteractionUtils.moveItem(this, this.columns.find(c => c.column_name === element.column_name));
-            });
+                panelContent.query.query.fields.forEach((el) => {
+                    const column = this.columns.find(c => c.column_name === el.column_name && c.display_name.default === el.display_name);
+                    if (column) PanelInteractionUtils.moveItem(this, column);
+                    else {
+                        const duplicatedColumn = _.cloneDeep(this.columns.find(c => c.column_name === el.column_name));
+                        duplicatedColumn.display_name.default = el.display_name;
+                        this.currentQuery.push(duplicatedColumn);
+                    }
+                });
+                this.columns = this.columns.filter((c) => !c.isdeleted);
             }catch(e){
-                console.log('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
-                console.log(e);
+                console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
+                console.error(e);
             }
         }
 
@@ -519,37 +529,35 @@ export class EdaBlankPanelComponent implements OnInit {
         }
 
 
-        // Ducplico la columna
-        const duplicate = _.cloneDeep(event.container.data[event.currentIndex]);
-        // Quto el original del modelo 
-        const col: any = event.container.data[event.currentIndex];
-        const table_id = col.table_id;
-        const column_name  = col.column_name;
-        const display_name = col.display_name.default;
-        const match = _.findIndex( this.tables.find((table: any) => table.table_name === table_id)?.columns, (o) => o.display_name.default == display_name );
-        this.tables.find((table: any) => table.table_name === col.table_id)?.columns.splice(match, 1);
+    //     // Ducplico la columna
+    //     const duplicate = _.cloneDeep(event.container.data[event.currentIndex]);
+    //     // Quto el original del modelo 
+    //     const col: any = event.container.data[event.currentIndex];
+    //     const table_id = col.table_id;
+    //     const column_name  = col.column_name;
+    //     const display_name = col.display_name.default;
+    //     const match = _.findIndex( this.tables.find((table: any) => table.table_name === table_id)?.columns, (o) => o.display_name.default == display_name );
+    //     this.tables.find((table: any) => table.table_name === col.table_id)?.columns.splice(match, 1);
 
-        if(duplicate.duplicate_column){
-            // Recupero los antiguos
-            duplicate.duplicate_column.ord =  duplicate.duplicate_column.ord  + 1 ;
-            duplicate.display_name.default =  duplicate.duplicate_column.original_name + ' ' + duplicate.duplicate_column.ord ;
-       }else{         
-            // Si es el primero
-            duplicate.duplicate_column={
-              "original_name" : duplicate.display_name.default,
-              "ord": 1
-            }
-            duplicate.display_name.default += ' 1' ;
-       }
-        // Reseting all configs of column removed
-        duplicate.ordenation_type = 'No';
-        duplicate.aggregation_type.forEach(ag => ag.selected = false);
-        duplicate.format = '';
-        this.tables.find((table: any) => table.table_name === duplicate.table_id)?.columns.push(duplicate);
-        this.inputs.findColumn.reset();
-        PanelInteractionUtils.loadColumns(
-          this,
-          this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0]);
+    //     if(duplicate.duplicate_column){
+    //         // Recupero los antiguos
+    //         duplicate.duplicate_column.ord =  duplicate.duplicate_column.ord  + 1 ;
+    //         duplicate.display_name.default =  duplicate.duplicate_column.original_name + ' ' + duplicate.duplicate_column.ord ;
+    //    }else{         
+    //         // Si es el primero
+    //         duplicate.duplicate_column={
+    //           "original_name" : duplicate.display_name.default,
+    //           "ord": 1
+    //         }
+    //         duplicate.display_name.default += ' 1' ;
+    //    }
+    //     // Reseting all configs of column removed
+    //     duplicate.ordenation_type = 'No';
+    //     duplicate.aggregation_type.forEach(ag => ag.selected = false);
+    //     duplicate.format = '';
+    //     this.tables.find((table: any) => table.table_name === duplicate.table_id)?.columns.push(duplicate);
+    //     this.inputs.findColumn.reset();
+        PanelInteractionUtils.loadColumns(this, this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0]);
     }
 
 
@@ -577,7 +585,9 @@ export class EdaBlankPanelComponent implements OnInit {
             this.configController = new EdaDialogController({
                 params: p,
                 close: (event, response) => {
-                    if (response.length > 0) {
+                    if (response.duplicated) {
+                        this.currentQuery.push(response.column);
+                    } else if (response.length > 0) {
                         response.forEach(f => {
                             if (_.isNil(this.selectedFilters.find(o => o.filter_id === f.filter_id))) {
                                 this.selectedFilters.push(f);
@@ -587,6 +597,7 @@ export class EdaBlankPanelComponent implements OnInit {
                             }
                         });
                     }
+
                     this.configController = undefined;
                 }
             });
