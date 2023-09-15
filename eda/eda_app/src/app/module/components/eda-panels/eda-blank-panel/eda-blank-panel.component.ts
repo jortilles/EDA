@@ -309,21 +309,22 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     buildGlobalconfiguration(panelContent: any) {
         if (!panelContent.query.query.modeSQL) {
-
             try{
                 const queryTables = [...new Set(panelContent.query.query.fields.map((field) => field.table_id))];
                 for (const idTable of queryTables) {
                     const table = this.tables.find(t => t.table_name === idTable);
                     PanelInteractionUtils.loadColumns(this, table);
                 }
-
                 panelContent.query.query.fields.forEach((el) => {
                     const column = this.columns.find(c => c.column_name === el.column_name && c.display_name.default === el.display_name);
                     if (column) PanelInteractionUtils.moveItem(this, column);
                     else {
-                        const duplicatedColumn = _.cloneDeep(this.columns.find(c => c.column_name === el.column_name));
+                        let duplicatedColumn = _.cloneDeep(this.currentQuery.find(c => c.column_name === el.column_name)); // es una columna duplicada que es a la consulta
+                        if(!duplicatedColumn){
+                             duplicatedColumn = _.cloneDeep(  this.columns.find(c => c.column_name === el.column_name )  ); // es una columna duplicada sense original a la consulta
+                        }
                         duplicatedColumn.display_name.default = el.display_name;
-                        this.currentQuery.push(duplicatedColumn);
+                        this.currentQuery.push(duplicatedColumn); // Moc la columna directament perque es una duplicada.... o no....
                     }
                 });
                 this.columns = this.columns.filter((c) => !c.isdeleted);

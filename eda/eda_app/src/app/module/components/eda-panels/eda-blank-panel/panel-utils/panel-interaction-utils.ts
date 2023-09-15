@@ -16,13 +16,10 @@ export const PanelInteractionUtils = {
     ebp.disableBtnSave();
     // Clean columns
     ebp.columns = [];
-    // Reload avaliable columns -> f(table) = this.columns
     table.columns.forEach((c: Column) => {
       c.table_id = table.table_name;
-      const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
-      
+      const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name && c.display_name.default === x.display_name.default );
       if (!matcher) ebp.columns.push(c);
-
       ebp.columns = ebp.columns.filter(col => col.visible === true)
         .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
     });
@@ -182,8 +179,8 @@ export const PanelInteractionUtils = {
 
       ebp.ordenationTypes = [
         { display_name: 'ASC', value: 'Asc', selected: false },
-        { display_name: 'DESC', value: 'Desc', selected: false },
-        { display_name: 'NO', value: 'No', selected: true }
+        { display_name: 'DESC', value: 'Desc', selected: true },
+        { display_name: 'NO', value: 'No', selected:false  }
       ];
 
     } else {
@@ -229,13 +226,19 @@ export const PanelInteractionUtils = {
     // Busca index en l'array de columnes
     // const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id,  });
     const match = _.find(ebp.columns, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
-    if (match) match.isdeleted = true; // Elimina aquella columna de l'array
+    if (match) match.isdeleted = true; // Marco la columna com a borrada
+    
     ebp.currentQuery.push(_.cloneDeep(c));      // Col·loca la nova columna a l'array Select
     PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida a la consulta
     PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions de la nova columna afegida a la consulta
     PanelInteractionUtils.handleOrdTypes(ebp, c);         // Comprovacio ordenacio  de la nova columna afegida a la consulta
+   
 
-
+    ebp.inputs.findColumn.reset();  // resetea las columnas a mostrar
+    PanelInteractionUtils.loadColumns( // Torna a carregar les columnes de la taula
+      ebp, 
+      ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0]);
+  
     // QUE FA AIXO??? ELIMINA LA COLUMNA NOMES PRIMER COP
     // if (!_.isEqual(ebp.inputs.findColumn.ngModel, '')) {
     //   ebp.inputs.findColumn.reset();

@@ -3898,6 +3898,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>No</target>
 </trans-unit>
 
+<trans-unit id="duplicatedColumnNameLabel">
+<source>Nombre columna duplicada:</source>
+<target>Duplicated column name:</target>
+</trans-unit>
+
 
 </body>
 </file>
