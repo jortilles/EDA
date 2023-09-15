@@ -5,8 +5,8 @@ import _ from 'lodash';
 export class Sda_Basic_Group {
 
     public async Checker() {
-
-
+ 
+ 
         const finder = await Group.find({name: {$regex: '^SDA_.*'}}) ;
         
                         
