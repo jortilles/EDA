@@ -27,7 +27,7 @@ router.get('/is-datasource-creator/:id', authGuard, UserController.getIsDataSour
 router.post('', authGuard, UserController.create);
 
 // Role Guard
-router.get('/:id', authGuard, roleGuard, UserController.getUser);
+router.get('/:id', authGuard,  roleGuard,  UserController.getUser);
 
 router.put('/me/:id', authGuard, UserController.update);
 
