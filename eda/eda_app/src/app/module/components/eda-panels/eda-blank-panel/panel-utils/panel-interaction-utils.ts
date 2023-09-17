@@ -16,11 +16,10 @@ export const PanelInteractionUtils = {
     ebp.disableBtnSave();
     // Clean columns
     ebp.columns = [];
-    // Reload avaliable columns -> f(table) = this.columns
     table.columns.forEach((c: Column) => {
       c.table_id = table.table_name;
-      //   const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
-      ebp.columns.push(c);
+      const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name && c.display_name.default === x.display_name.default );
+      if (!matcher) ebp.columns.push(c);
       ebp.columns = ebp.columns.filter(col => col.visible === true)
         .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
     });
@@ -61,8 +60,8 @@ export const PanelInteractionUtils = {
         }
       });
     }catch(e){
-        console.log('Error loading filters');
-        console.log(e);
+        console.error('Error loading filters');
+        console.error(e);
     }
   },
 
@@ -70,12 +69,15 @@ export const PanelInteractionUtils = {
     if (ebp.panel.content) {
       const fields = ebp.panel.content.query.query.fields;
       for (let i = 0, n = fields.length; i < n; i++) {
+        const field = fields[i];
         try{
-          ebp.currentQuery[i].format = fields[i].format;
-          ebp.currentQuery[i].cumulativeSum = fields[i].cumulativeSum;
+          if (field) {
+            ebp.currentQuery[i].format = field.format;
+            ebp.currentQuery[i].cumulativeSum = field.cumulativeSum;
+          }
         }catch(e){
-          console.log('ERROR handling current query .... handleCurrentQuery.... did you changed the query model?');
-          console.log(e);
+          console.error('ERROR handling current query .... handleCurrentQuery.... did you changed the query model?');
+          console.error(e);
 
         }
       }
@@ -177,8 +179,8 @@ export const PanelInteractionUtils = {
 
       ebp.ordenationTypes = [
         { display_name: 'ASC', value: 'Asc', selected: false },
-        { display_name: 'DESC', value: 'Desc', selected: false },
-        { display_name: 'NO', value: 'No', selected: true }
+        { display_name: 'DESC', value: 'Desc', selected: true },
+        { display_name: 'NO', value: 'No', selected:false  }
       ];
 
     } else {
@@ -202,7 +204,9 @@ export const PanelInteractionUtils = {
   old_moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
     ebp.disableBtnSave();
     // Busca index en l'array de columnes
-    const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id });
+    
+    const match = _.find(ebp.columns, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name && c.display_name.default === x.display_name.default);
+    // const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id });
     ebp.columns.splice(match, 1);  // Elimina aquella columna de l'array
     ebp.currentQuery.push(_.cloneDeep(c));      // Col·loca la nova columna a l'array Select
     PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida
@@ -219,44 +223,22 @@ export const PanelInteractionUtils = {
 
   moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
     ebp.disableBtnSave();
-    // Copio la columna en la seleccion
-    const newCol = _.cloneDeep(c);
-    ebp.currentQuery.push(newCol);
-    const setColumnOrd = (columns?: any[]) => {
-      let duplicate = columns.find((val: any) => val.column_name === c.column_name);
-      if (duplicate ) {
-           if(duplicate.duplicate_column){
-                // Recupero los antiguos
-                duplicate.duplicate_column.ord =  duplicate.duplicate_column.ord  + 1 ;
-                duplicate.display_name.default =  duplicate.duplicate_column.original_name + ' ' + duplicate.duplicate_column.ord ;
-           }else{         
-                // Si es el primero
-                duplicate.duplicate_column={
-                  "original_name" : duplicate.display_name.default,
-                  "ord": 1
-                }
-                duplicate.display_name.default += ' 1' ;
-           }
-            // Reseting all configs of column removed
-            duplicate.ordenation_type = 'No';
-            duplicate.aggregation_type.forEach(ag => ag.selected = false);
-            duplicate.format = '';
-        } 
-    }
+    // Busca index en l'array de columnes
+    // const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id,  });
+    const match = _.find(ebp.columns, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
+    if (match) match.isdeleted = true; // Marco la columna com a borrada
+    
+    ebp.currentQuery.push(_.cloneDeep(c));      // Col·loca la nova columna a l'array Select
+    PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida a la consulta
+    PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions de la nova columna afegida a la consulta
+    PanelInteractionUtils.handleOrdTypes(ebp, c);         // Comprovacio ordenacio  de la nova columna afegida a la consulta
+   
 
-    //setColumnOrd( ebp.columns );
-    setColumnOrd( ebp.tables.find((table: any) => table.table_name === c.table_id)?.columns || [] )
-    // Copio la columna en la seleccion
-    PanelInteractionUtils.searchRelations(ebp, newCol);        // Busca les relacions de la nova columna afegida a la consulta
-    PanelInteractionUtils.handleAggregationType(ebp, newCol);  // Comprovacio d'agregacions de la nova columna afegida a la consulta
-    PanelInteractionUtils.handleOrdTypes(ebp, newCol);         // Comprovacio ordenacio  de la nova columna afegida a la consulta
-
-    ebp.inputs.findColumn.reset();
-    PanelInteractionUtils.loadColumns(
-      ebp,
+    ebp.inputs.findColumn.reset();  // resetea las columnas a mostrar
+    PanelInteractionUtils.loadColumns( // Torna a carregar les columnes de la taula
+      ebp, 
       ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0]);
   
-    
   },
 
   /**

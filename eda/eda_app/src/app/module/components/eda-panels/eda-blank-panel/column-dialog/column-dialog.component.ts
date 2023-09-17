@@ -26,13 +26,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     public dialog: EdaDialog;
     public selectedColumn: Column;
+    public duplicatedColumnName: string;
 
     public display = {
         calendar: false, // calendars inputs
         between: false, // between inputs
         filterValue: false,
         filterButton: true,
-        switchButton: true
+        switchButton: true,
+        duplicateColumnInp: false
     };
     public filter = {
         switch: false,
@@ -55,7 +57,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
 
-    constructor(private dashboardService: DashboardService,
+    constructor(
+        private dashboardService: DashboardService,
         private chartUtils: ChartUtilsService,
         private columnUtils: ColumnUtilsService,
         private queryBuilder: QueryBuilderService,
@@ -348,9 +351,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             }
         }
 
-        console.log(this.controller.params.currentQuery.find(c => {
-            return column.column_name === c.column_name && column.table_id === c.table_id    && c.display_name.default === column.display_name.default    ;
-        }));
         this.controller.params.currentQuery.find(c => {
             return column.column_name === c.column_name && column.table_id === c.table_id  && column.display_name.default ===  c.display_name.default   ;
         }).aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
@@ -525,6 +525,21 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.filterValue.value2 = stringRange[1];
             this.display.filterButton = false;
         }
+    }
+
+    public duplicateColumn() {
+        this.display.duplicateColumnInp = true;
+        this.duplicatedColumnName = this.selectedColumn.display_name.default + ' (Copy)';
+    }
+
+    public saveDuplicatedColumn() {
+        if (_.isNil(this.duplicatedColumnName) || _.isEmpty(this.duplicatedColumnName)) return;
+
+        this.display.duplicateColumnInp = false;
+        const newColumn = _.cloneDeep(this.selectedColumn);
+        newColumn.display_name.default = this.duplicatedColumnName;
+
+        this.onClose(EdaDialogCloseEvent.NEW, { duplicated: true, column: newColumn});
     }
 
     /* Close functions */

@@ -3872,6 +3872,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Nie</target>
 </trans-unit>
 
+<trans-unit id="duplicatedColumnNameLabel">
+<source>Nombre columna duplicada:</source>
+<target>Zduplikowana nazwa kolumny:</target>
+</trans-unit>
+
 
 </body>
 </file>
