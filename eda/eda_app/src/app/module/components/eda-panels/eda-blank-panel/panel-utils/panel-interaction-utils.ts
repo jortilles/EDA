@@ -239,11 +239,6 @@ export const PanelInteractionUtils = {
       ebp, 
       ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0]);
   
-    // QUE FA AIXO??? ELIMINA LA COLUMNA NOMES PRIMER COP
-    // if (!_.isEqual(ebp.inputs.findColumn.ngModel, '')) {
-    //   ebp.inputs.findColumn.reset();
-    //   PanelInteractionUtils.loadColumns(ebp, ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0]);
-    // }
   },
 
   /**
