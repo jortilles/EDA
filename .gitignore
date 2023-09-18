@@ -37,3 +37,4 @@ eda/sda_api/package-lock.json
 eda/eda_api/config/SCRM
 eda/eda_api/config
 eda/eda_app/src/app/config
+eda/eda_api/config/base_datamodel.json
