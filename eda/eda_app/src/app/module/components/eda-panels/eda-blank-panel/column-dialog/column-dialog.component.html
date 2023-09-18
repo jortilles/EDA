@@ -398,7 +398,7 @@
                         <input pInputText id="duplicatedColumnName" [(ngModel)]="duplicatedColumnName" type="text"  />
         
                         <button *ngIf="display.duplicateColumnInp" type="button" pButton (click)="saveDuplicatedColumn()" icon="fa fa-check"
-                            class="p-button p-button-raised ml-2" i18n-label="@@guardarBtn" label="Confirmar" id="eda_column_dialog_confirmar">
+                            class="p-button p-button-raised ml-2" i18n-label="@@duplicateColumnButton" label="Confirmar" id="eda_column_dialog_confirmar">
                         </button>
                     </span>
                     <button *ngIf="!display.duplicateColumnInp" type="button" pButton (click)="duplicateColumn()" class="p-button-raised"

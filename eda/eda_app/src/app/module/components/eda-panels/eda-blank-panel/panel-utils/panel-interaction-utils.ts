@@ -201,26 +201,6 @@ export const PanelInteractionUtils = {
      * moves given column to [select or filters] in config panel
      * @param c column to move
      */
-  old_moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
-    ebp.disableBtnSave();
-    // Busca index en l'array de columnes
-    
-    const match = _.find(ebp.columns, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name && c.display_name.default === x.display_name.default);
-    // const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id });
-    ebp.columns.splice(match, 1);  // Elimina aquella columna de l'array
-    ebp.currentQuery.push(_.cloneDeep(c));      // Col·loca la nova columna a l'array Select
-    PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida
-    PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions
-    PanelInteractionUtils.handleOrdTypes(ebp, c);         // Comprovacio ordenacio
-
-    if (!_.isEqual(ebp.inputs.findColumn.ngModel, '')) {
-      ebp.inputs.findColumn.reset();
-      PanelInteractionUtils.loadColumns(
-        ebp,
-        ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0]);
-    }
-  },
-
   moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
     ebp.disableBtnSave();
     // Busca index en l'array de columnes
