@@ -538,7 +538,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.display.duplicateColumnInp = false;
         const newColumn = _.cloneDeep(this.selectedColumn);
         newColumn.display_name.default = this.duplicatedColumnName;
-
         this.onClose(EdaDialogCloseEvent.NEW, { duplicated: true, column: newColumn});
     }
 
