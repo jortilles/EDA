@@ -559,6 +559,8 @@ export class EdaBlankPanelComponent implements OnInit {
                 close: (event, response) => {
                     if (response.duplicated) {
                         this.currentQuery.push(response.column);
+                        this.configController = undefined;
+                        setTimeout(() => this.openColumnDialog(response.column), 100);
                     } else if (response.length > 0) {
                         response.forEach(f => {
                             if (_.isNil(this.selectedFilters.find(o => o.filter_id === f.filter_id))) {
@@ -568,9 +570,14 @@ export class EdaBlankPanelComponent implements OnInit {
                                 this.selectedFilters = _.filter(this.selectedFilters, o => o.filter_id !== f.filter_id);
                             }
                         });
+
+                        this.configController = undefined;
                     }
 
-                    this.configController = undefined;
+                    if (event === EdaDialogCloseEvent.NONE) {
+                        this.configController = undefined;
+                    }
+
                 }
             });
         } else {
