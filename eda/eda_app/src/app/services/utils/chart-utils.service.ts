@@ -58,6 +58,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypesHistograma:Histograma`, value: 'bar', subValue: 'histogram', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes6:Gráfico de Barras Apiladas`, value: 'bar', subValue: 'stackedbar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes7:Gráfico de Barras Horizontales`, value: 'bar', subValue: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesPyramid:Gráfico de Barras Horizontales Contrapuestas`, value: 'bar', subValue: 'pyramid', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes8:Gráfico de Lineas`, value: 'line', subValue: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes18:Gráfico de Áreas`, value: 'line', subValue: 'area', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes9:Mixto: Barras y lineas`, value: 'bar', subValue: 'barline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -68,7 +69,7 @@ export class ChartUtilsService {
     //  { label: $localize`:@@chartTypesBarchart:Barchart`, value: 'barchart', subValue: 'barchart', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
-
+        
     ];
 
     public filterTypes: FilterType[] = [
@@ -135,7 +136,7 @@ export class ChartUtilsService {
         Aquesta funció manipula les dades per donar-los la forma que esperen els grafics ng-chart
         numberOfColumns es el numero de columnes que farem servidr en el histograma
     */
-    public transformDataQuery(type: string, values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
+    public transformDataQuery(type: string, subType: string,  values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
 
         let output = [];
         const idx = { label: null, serie: null, numeric: [] };
@@ -143,7 +144,6 @@ export class ChartUtilsService {
         dataTypes.forEach((e: any, i) => {
             e === 'numeric' ? idx.numeric.push(i) : idx.label != null ? idx.serie = i : idx.label = i;
         });
-        //console.log(dataTypes);
 
         const label_idx = idx.label;
         const serie_idx = idx.serie;
@@ -160,6 +160,49 @@ export class ChartUtilsService {
 
             output =  _output;
             //console.log(JSON.stringify(output));
+
+        } else if (['bar' ].includes(type)  && ['pyramid' ].includes(subType) ) {
+
+            const l = Array.from(new Set(values.map(v => v[label_idx])));
+            const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
+            const _output = [[], []];
+            _output[0] = l;
+
+          //necesitamos dos series de datos y uno numérico para hacer una pirámide
+          if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
+                let series = [];
+                s.forEach((s) => {
+                    _output[1].push({ data: [], label: s });
+                    let serie = values.filter(v => v[serie_idx] === s);
+                    series.push(serie);
+                });
+                l.forEach((l) => {
+                    // let data_point = null;
+                    series.forEach((serie, i) => {
+                        const t = serie.filter(s => s[label_idx] === l).map(e => e[number_idx])[0];
+                        t !== null ? _output[1][i].data.push(t) : _output[1][i].data.push(null);
+                    });
+                });
+
+
+                //If >1 numeric series
+            }                       
+
+            //para el gráfico de pirámide, cogemos los valores del primer segmento y los multiplicamos por -1.
+            let u = _.cloneDeep(_output[1])
+            let inverData = []
+            for (let i=0;i<u.length;i++) {
+                if (i==0) {
+                    u[i].data.filter(a => {
+                       inverData.push(a * -1)
+                    } )
+                    u[i].data = inverData
+                }
+            }
+
+            _output[1] = u
+            output =  _output;
+
 
         } else if (['bar', 'line', 'area', 'horizontalBar', 'barline', 'histogram'  ].includes(type)  &&  dataTypes.length >  1) {
 
@@ -224,7 +267,6 @@ export class ChartUtilsService {
 
             }                        
             output =  _output;
-
 
             /* Histograma  */
         } else if (  ['bar' ].includes(type)    &&  dataTypes.length ==  1 && dataTypes[0]== 'numeric'   ) {
@@ -438,7 +480,7 @@ export class ChartUtilsService {
     public uniqueLabels(labels: Array<string>) {
         const uniqueLabels = [];
         for (let i = 0; i < labels.length; i++) {
-            if (uniqueLabels.includes(labels[i])) {
+            if (uniqueLabels.includes(labels[i])) { 
                 uniqueLabels.push(`${labels[i]}_${i}`);
             } else {
                 uniqueLabels.push(labels[i])
@@ -501,13 +543,16 @@ export class ChartUtilsService {
      * @return [] notAllowed chart types
      */
     public getNotAllowedCharts(dataDescription: any, query: any): any[] {
-
+        
         let notAllowed =
             [
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'area', 'bar', 'histogram',  'funnel', 'barchart', 
-                'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob'
+                'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
+                'pyramid'
             ];
+
+        
         //table (at least one column)
         if (dataDescription.totalColumns > 0) notAllowed.splice(notAllowed.indexOf('table'), 1);
 
@@ -617,6 +662,13 @@ export class ChartUtilsService {
             (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length === 1)
         ) {
             notAllowed.splice(notAllowed.indexOf('knob'), 1);
+        }
+
+        //pyramid
+        if (dataDescription.totalColumns === 3 && dataDescription.numericColumns.length === 1
+            ) {
+            console.log(dataDescription)
+            notAllowed.splice(notAllowed.indexOf('pyramid'), 1);
         }
         return notAllowed;
 
@@ -1138,7 +1190,7 @@ export class ChartUtilsService {
 
                 break;
             case 'bar':
-                if(chartSubType!=='horizontalBar'){
+                if(chartSubType!=='horizontalBar' && chartSubType!=='pyramid'){
                     if(showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
                         dataLabelsObjt =  {
                             anchor: 'end',
@@ -1264,6 +1316,7 @@ export class ChartUtilsService {
                     };
                 }else{
                     // horizontalBar Since chart.js 3 there is no more horizontal bar. Its just  barchart with horizonal axis
+                    // buscar en chart.js las opciones 
                     if(showLabels || showLabelsPercent ){
                         /** si haig de mostrar les etiquetes ho configuro */
                         dataLabelsObjt =  {
@@ -1307,14 +1360,16 @@ export class ChartUtilsService {
                                     res = percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'   ;
                                 }
                                 return   res;
-                            }
+                            },
+
+                            
                         }
                     }else{
                             dataLabelsObjt =   { display: false }
                         
                     }
     
-                    options.chartOptions = {
+                    options.chartOptions  = {
                         animation: {
                             duration: 3000
                         },
@@ -1396,6 +1451,18 @@ export class ChartUtilsService {
                       
                     };
 
+                    if (chartSubType=='pyramid') {
+                        //modificamos los valores del eje x para que sean positivos a la vista
+                        (<any>options.chartOptions).scales.y.stacked = true;
+                        (<any>options.chartOptions).scales.x.ticks.callback = (value, index, ticks) => {
+                            
+                            if  (value < 0)  {
+                                value = value * -1;
+                            }
+
+                            return value;
+                        }
+                    }
                 }
                 break;
 

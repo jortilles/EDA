@@ -1896,6 +1896,14 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Gráfico de Barras Horizontales</source>
 <target>Poziomy wykres słupkowy</target>
 </trans-unit>
+<trans-unit id="chartTypesPyramid">
+<source>Gráfico de Piramide</source>
+<target>Wykres piramidy</target>
+</trans-unit>
+<trans-unit id="chartTypes17">
+<source>Gráfico Solar</source>
+<target>Wykres słońca</target>
+</trans-unit>
 <trans-unit id="chartTypes8">
 <source>Gráfico de Lineas</source>
 <target>Wykres liniowy</target>
@@ -3570,6 +3578,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
    <trans-unit id="mailConfOk">
     <source>Credenciales correctas </source>
     <target> Prawidłowe dane uwierzytelniające</target>
+  </trans-unit>
+
+  <trans-unit id="chartInfoPyramid">
+    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
+    <target>Wykres piramidowy wymaga dwóch kategorii i wartości liczbowej</target>
   </trans-unit>
 
   <trans-unit id="checkCredentials">
