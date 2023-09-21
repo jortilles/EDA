@@ -1863,6 +1863,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Duplicar panel</source>
 <target>Duplicate panel</target>
 </trans-unit>
+<trans-unit id="duplicateColumnButton">
+<source>Duplicar columna</source>
+<target>Duplicate column</target>
+</trans-unit>
 
 <trans-unit id="chartTypes1">
 <source>Tabla de Datos</source>

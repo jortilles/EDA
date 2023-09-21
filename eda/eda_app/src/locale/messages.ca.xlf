@@ -1867,6 +1867,13 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Duplicar panell</target>
 </trans-unit>
 
+
+<trans-unit id="duplicateColumnButton">
+<source>Duplicar columna</source>
+<target>Duplicar columna</target>
+</trans-unit>
+
+
 <trans-unit id="chartTypes1">
 <source>Tabla de Datos</source>
 <target>Taula de dades</target>
