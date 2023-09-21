@@ -15,5 +15,5 @@ export interface Column {
     minimumFractionDigits:number;
     cumulativeSum: boolean;
     valueListSource: {};
-    hidden: boolean;
+    hidden: number;
 }

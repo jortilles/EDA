@@ -319,7 +319,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 const queryTables = [...new Set(panelContent.query.query.fields.map((field) => field.table_id))];
                 for (const idTable of queryTables) {
                     const table = this.tables.find(t => t.table_name === idTable);
-                    PanelInteractionUtils.loadColumns(this, table);
+                    PanelInteractionUtils.loadColumns(this, table,  this.hiddenColumn);
                 }
                 panelContent.query.query.fields.forEach((el) => {
                     const column = this.columns.find(c => c.column_name === el.column_name && c.display_name.default === el.display_name);
@@ -518,7 +518,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onColumnInputKey(event: any) {
         if (!_.isNil(this.userSelectedTable)) {
-            PanelInteractionUtils.loadColumns(this, this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0]);
+            PanelInteractionUtils.loadColumns(this, this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0], this.hiddenColumn);
             if (event.target.value) {
                 this.columns = this.columns
                     .filter(col => col.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
@@ -589,6 +589,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     if (event === EdaDialogCloseEvent.NONE) {
                         this.configController = undefined;
                     }
+                    this.configController = undefined;
 
                 }
             });
@@ -653,7 +654,6 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
-        console.log('pa pe pi po pu');
         this.hiddenColumn = 1;
         this.columns = this.columns.filter (c => !c.hidden) ;
     }
@@ -900,7 +900,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public searchRelations = (c: Column) => PanelInteractionUtils.searchRelations(this, c);
 
     public loadColumns (table: any)  {
-        PanelInteractionUtils.loadColumns(this, table);        
+        PanelInteractionUtils.loadColumns(this, table, this.hiddenColumn);        
     } 
 
     public removeColumn = (c: Column, list?: string) => PanelInteractionUtils.removeColumn(this, c, list);
