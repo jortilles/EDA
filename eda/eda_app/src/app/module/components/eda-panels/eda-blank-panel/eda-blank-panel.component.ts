@@ -314,17 +314,21 @@ export class EdaBlankPanelComponent implements OnInit {
                 for (const idTable of queryTables) {
                     const table = this.tables.find(t => t.table_name === idTable);
                     PanelInteractionUtils.loadColumns(this, table);
-               
                     panelContent.query.query.fields.forEach((el) => {
-                        const column = this.columns.find(c => c.column_name === el.column_name && c.display_name.default === el.display_name);
+                        const column = this.columns.find(c => c.table_id === el.table_id &&  c.column_name === el.column_name && c.display_name.default === el.display_name);
                         if (column) PanelInteractionUtils.moveItem(this, column);
                         else {
-                            let duplicatedColumn = _.cloneDeep(this.currentQuery.find(c => c.column_name === el.column_name)); // es una columna duplicada que es a la consulta
-                            if(!duplicatedColumn){
-                                duplicatedColumn = _.cloneDeep(  this.columns.find(c => c.column_name === el.column_name )  ); // es una columna duplicada sense original a la consulta
+                            if(el.table_id === idTable ){
+                                let duplicatedColumn = _.cloneDeep(  this.currentQuery.find(c =>  c.table_id === el.table_id && c.column_name === el.column_name ) ); // es una columna duplicada que es a la consulta
+                                if(!duplicatedColumn){
+                                    duplicatedColumn = _.cloneDeep(  this.columns.find(c => c.table_id === el.table_id &&  c.column_name === el.column_name )  ); // es una columna duplicada sense original a la consulta
+                                }
+                                if(duplicatedColumn){
+                                    duplicatedColumn.display_name.default = el.display_name;
+                                    this.currentQuery.push(duplicatedColumn); // Moc la columna directament perque es una duplicada.... o no....
+                                }
                             }
-                            duplicatedColumn.display_name.default = el.display_name;
-                            this.currentQuery.push(duplicatedColumn); // Moc la columna directament perque es una duplicada.... o no....
+                            
                         }
                     });
                  } 
