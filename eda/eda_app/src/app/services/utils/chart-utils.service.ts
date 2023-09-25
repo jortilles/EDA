@@ -66,7 +66,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes13:TreeMap`, value: 'treeMap', subValue: 'treeMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes14:ScatterPlot`, value: 'scatterPlot', subValue: 'scatterPlot', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes16:Funnel`, value: 'funnel', subValue: 'funnel', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
-    //  { label: $localize`:@@chartTypesBarchart:Barchart`, value: 'barchart', subValue: 'barchart', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
+        { label: $localize`:@@chartTypesBubblechart:Bubblechart`, value: 'bubblechart', subValue: 'bubblechart', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         
@@ -547,7 +547,7 @@ export class ChartUtilsService {
         let notAllowed =
             [
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
-                'doughnut', 'polarArea', 'line', 'area', 'bar', 'histogram',  'funnel', 'barchart', 
+                'doughnut', 'polarArea', 'line', 'area', 'bar', 'histogram',  'funnel', 'bubblechart', 
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
                 'pyramid'
             ];
@@ -570,23 +570,6 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
         }
-        /* no es filtra per agregació. Pot venir d'una consulta sql 
-        // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
-
-        // AIXÒ ES INTERESSANT DE FER-HO PERO CAL ACTUALITZAR LA DESCRIPCIÓ PER AIXÒ I TENIR EN COMPTE QUE POT VENIR D'UNA CONSULTA SQL
-        let aggregation =
-            query.filter(col => col.column_type === 'numeric')
-            .map(col => col.aggregation_type
-                .filter(agg => agg.selected === true && agg.value !== 'none')
-                .map(agg => agg.selected))
-                .reduce((a, b) => a || b, false)[0];
-        
-        if(aggregation === null ){
-            aggregation = 1; // if there is no aggre
-        }
-        */
-
-
 
         // barchart i horizontalbar  poden ser grafics normals o poden ser histograms....
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
@@ -596,7 +579,6 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('line'), 1);
             notAllowed.splice(notAllowed.indexOf('area'), 1);
             notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
-            notAllowed.splice(notAllowed.indexOf('barchart'), 1);
         }
         // això es per els histogrames.....
         if (dataDescription.numericColumns.length == 1 && dataDescription.totalColumns == 1 ) {
@@ -643,6 +625,11 @@ export class ChartUtilsService {
         //treeMap
         if (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length > 0) {
             notAllowed.splice(notAllowed.indexOf('treeMap'), 1);
+        }
+
+        //BubbleChart
+        if (dataDescription.numericColumns.length === 1 && dataDescription.otherColumns.length == 1) {
+            notAllowed.splice(notAllowed.indexOf('bubblechart'), 1);
         }
 
         //scatterPlot

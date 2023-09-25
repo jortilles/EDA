@@ -1418,7 +1418,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             found
             && panel.content
             && !found.panelChart.NO_DATA
-            && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','barchart', 'sunburst'].includes(panel.content.chart))
+            && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(panel.content.chart))
             && !$event.isNew) {
             found.savePanel();
         }

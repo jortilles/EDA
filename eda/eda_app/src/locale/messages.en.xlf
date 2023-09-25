@@ -2408,6 +2408,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
 <target>Chart not avaiable with current data.</target>
 </trans-unit>
+<trans-unit id="chartInfoBubble">
+<source>Un gráfico de burbujas necesita una categorías y una série numérica.</source>
+<target>A bubble chart needs a category and a numerical series.</target>
+</trans-unit>
+
+
 <trans-unit id="tooManyValues" datatype="html">
 <source> - Demasiados valores</source>
 <target> - Too many values</target>

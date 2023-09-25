@@ -126,14 +126,14 @@ export const PanelOptions = {
             });
 
           }
-          else if (panelComponent.graficos.chartType === 'barchart') {
+          else if (panelComponent.graficos.chartType === 'bubblechart') {
             panelComponent.contextMenu.hideContextMenu();
-            panelComponent.barchartController = new EdaDialogController({
+            panelComponent.bubblechartController = new EdaDialogController({
               params: {
                 panelID: _.get(panelComponent.panel, 'id'),
                 panelChart: panelComponent.panelChartConfig
               },
-              close: (event, response) => { panelComponent.onCloseBarchartProperties(event, response) }
+              close: (event, response) => { panelComponent.onCloseBubblechartProperties(event, response) }
             });
 
           }
