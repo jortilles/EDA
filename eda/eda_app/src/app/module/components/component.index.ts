@@ -12,7 +12,7 @@ export * from './eda-table/eda-column-filter/eda-column-filter-multiselect';
 export * from './eda-map/eda-map.component';
 export * from './eda-map/eda-geoJsonMap.component';
 export * from './eda-funnel/eda-funnel.component';
-export * from './eda-d3-barchart/eda-barchart.component';
+export * from './eda-d3-bubblechart/eda-bubblechart.component';
 
  // export * from './eda-d3/eda-d3.component';
 
@@ -55,6 +55,6 @@ export { EdaKnobComponent } from './eda-knob/eda-knob.component';
 export { KnobDialogComponent } from './eda-panels/eda-blank-panel/knob-dialog/knob-dialog.component';
 export { Knob } from './eda-knob/primengKnob/knob';
 export { FunnelDialog } from './eda-panels/eda-blank-panel/funnel-dialog/funnel-dialog.component';
-export { BarchartDialog } from './eda-panels/eda-blank-panel/barchart-dialog/barchart-dialog.component';
+export { BubblechartDialog } from './eda-panels/eda-blank-panel/bubblechart-dialog/bubblechart-dialog.component';
 export { EdaSunburstComponent } from './eda-sunburst/eda-sunburst.component';
 export { SunburstDialogComponent } from './eda-panels/eda-blank-panel/sunbrust-dialog/sunburst-dialog.component';

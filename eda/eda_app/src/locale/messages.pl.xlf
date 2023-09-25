@@ -2391,6 +2391,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
 <target>Wykres niedostępny dla bieżących danych.</target>
 </trans-unit>
+<trans-unit id="chartInfoBubble">
+<source>Un gráfico de burbujas necesita una categorías y una série numérica.</source>
+<target>Wykres bąbelkowy wymaga jednej kategorii i jednej serii numerycznej.</target>
+</trans-unit>
+
+
 <trans-unit id="tooManyValues" datatype="html">
 <source> - Demasiados valores</source>
 <target> - Za dużo wartości</target>

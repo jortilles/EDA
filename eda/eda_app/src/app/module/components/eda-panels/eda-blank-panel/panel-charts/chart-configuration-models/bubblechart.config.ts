@@ -1,6 +1,6 @@
-export class BarchartConfig {
+export class BubblechartConfig {
   colors: Array<string>;
   constructor(colors: Array<string>) {
-    this.colors = colors;
+    this.colors = colors || [];
   }
 }
