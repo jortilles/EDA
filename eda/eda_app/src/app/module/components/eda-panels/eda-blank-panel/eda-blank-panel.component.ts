@@ -70,7 +70,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public sankeyController: EdaDialogController;
     public treeMapController: EdaDialogController;
     public funnelController:EdaDialogController;
-    public barchartController:EdaDialogController;
+    public bubblechartController:EdaDialogController;
     public linkDashboardController: EdaDialogController;
     public scatterPlotController: EdaDialogController;
     public knobController: EdaDialogController;
@@ -393,7 +393,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content = { query, chart, edaChart };
 
             /**This is to repaint on panel redimension */
-            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','barchart', 'sunburst'].includes(chart)) {
+            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
 
@@ -461,7 +461,7 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = this.panelChart.getCurrentConfig();
         //W T F F!!!!!!!!!!!=)&/=)!/(!&=)&)!=
         if (config 
-            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut'].includes(config.chartType) 
+            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid'].includes(config.chartType) 
             && config.chartType === this.graficos.chartType ) {
             this.graficos = this.panelChart.getCurrentConfig();
         }
@@ -774,14 +774,14 @@ export class EdaBlankPanelComponent implements OnInit {
         this.funnelController = undefined;
     }
 
-    public onCloseBarchartProperties(event, response): void {
+    public onCloseBubblechartProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config.colors = response.colors;
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
         }
-        this.barchartController = undefined;
+        this.bubblechartController = undefined;
     }
 
 
@@ -874,7 +874,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     || content.chart === 'funnel'
                     || content.chart === 'knob'
                     || content.chart === 'sunburst' 
-                    || content.chart === 'barchart' 
+                    || content.chart === 'bubblechart' 
                     || content.chart === 'dynamicText')
             ) {
 

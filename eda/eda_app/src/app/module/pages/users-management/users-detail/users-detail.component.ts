@@ -104,7 +104,9 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
             this.user.name = form.name;
             this.user.email = form.email;
             this.user.role = form.role;
-
+            if(form.password != ':)'){
+                this.user.password = form.password;
+            }
             if (this.controller.params.id) {
                 this.user._id = this.controller.params.id;
                 if (this.iam) {

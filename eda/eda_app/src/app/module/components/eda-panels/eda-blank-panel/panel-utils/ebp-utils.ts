@@ -33,10 +33,14 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       case 'bar': 
-      case 'barchart':
         str = $localize`:@@chartInfo7:Un gráfico de barras necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
         description += `\n${str}`;
         break;
+      case 'bubblechart':
+        str = $localize`:@@chartInfoBubble:Un gráfico de burbujas necesita una categorías y una série numérica.`;
+        description += `\n${str}`;
+        break;
+
       case 'polarArea':
         str = $localize`:@@chartInfo8:Un gráfico polar necesita una categoría y una série numérica`;
         description += `\n${str}`;
@@ -75,13 +79,15 @@ export const EbpUtils = {
           description += `\n${str}`;
           break;
       case 'histogram':
-        str = $localize`:@@chartInfoHistogram:Un histograma requiere una única columna de valores numericos de los que se calculará la frecuencia`;
+        str = $localize`:@@chartInfoHistogram:Un histograma necesita una única columna de valores numericos de los que se calculará la frecuencia`;
         description += `\n${str}`;
         break;
       case 'funnel':
-        str = $localize`:@@chartInfoFunnel:Un embudo necesitar una categoría y un valor numérico`;
+        str = $localize`:@@chartInfoFunnel:Un embudo necesita una categoría y un valor numérico`;
         description += `\n${str}`;
         break;
+      case 'pyramid': 
+        str = $localize`:@@chartInfoPyramid:Un gráfico de piramide necesita de dos categorías y un valor numérico`;
       default:
         description = $localize`:@@chartInfo13:Los datos seleccionados no permiten utilizar este gráfico.`;
         break;
@@ -90,6 +96,7 @@ export const EbpUtils = {
     return description;
   },
 
+  /** ICONOS PARA LOS TIPOS DE GRÁCIFOS  ICON ICONS */
   getOptionIcon: (value: string): string => {
     let description = '';
     switch (value) {
@@ -117,6 +124,9 @@ export const EbpUtils = {
       case 'horizontalBar':
         description = 'notes';
         break
+      case 'pyramid':
+        description = 'details';
+        break
       case 'bar':
         description = 'bar_chart';
         break
@@ -124,7 +134,7 @@ export const EbpUtils = {
         description = 'stacked_bar_chart';
         break
       case 'polarArea':
-        description = 'scatter_plot';
+        description = 'star';
         break
       case 'doughnut':
         description = 'pie_chart';
@@ -136,25 +146,28 @@ export const EbpUtils = {
         description = 'map'
         break;
       case 'parallelSets':
-        description = 'tune'
+        description = 'tune';
         break;
       case 'treeMap':
-        description = 'dashboard'
+        description = 'dashboard';
         break;
       case 'scatterPlot':
-        description = 'scatter_plot'
+        description = 'scatter_plot';
         break;
       case 'knob':
-        description = 'explore'
+        description = 'explore';
         break;
       case 'sunburst':
-        description = 'brightness_high'
+        description = 'brightness_high';
         break;
       case 'funnel':
-        description = 'filter_alt'
+        description = 'filter_alt';
         break;
       case 'histogram':
-        description = 'equalizer'
+        description = 'equalizer';
+        break;
+      case 'bubblechart':
+          description = 'spoke';
     }
 
     return description;

@@ -1,4 +1,4 @@
-import { filter } from 'rxjs/operators';
+ import { filter } from 'rxjs/operators';
 import { EdaKnob } from './../../../eda-knob/edaKnob';
 import { EdaKnobComponent } from './../../../eda-knob/eda-knob.component';
 import { EdaScatter } from './../../../eda-scatter/eda-scatter.component';
@@ -33,7 +33,7 @@ import * as _ from 'lodash';
 import { EdaMap } from '@eda/components/eda-map/eda-map';
 import { EdaD3 } from '@eda/components/eda-d3/eda-d3';
 import { EdaFunnelComponent } from '@eda/components/eda-funnel/eda-funnel.component';
-import { EdaBarchartComponent } from '@eda/components/eda-d3-barchart/eda-barchart.component';
+import { EdaBubblechartComponent } from '@eda/components/eda-d3-bubblechart/eda-bubblechart.component';
 import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
@@ -78,17 +78,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         this.styleProviderService.panelFontColor.subscribe(color => {
             this.fontColor = color;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'barchart'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
 
         this.styleProviderService.panelFontFamily.subscribe(family => {
             this.fontFamily = family;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'barchart'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
 
         this.styleProviderService.panelFontSize.subscribe(size => {
             this.fontSize = size;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram', 'barchart'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram', 'bubblechart','pyramid'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
     }
 
@@ -138,7 +138,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (['table', 'crosstable'].includes(type)) {
             this.renderEdaTable(type);
         }
-        if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ].includes(type)) {
+        if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid'].includes(type)) {
             this.renderEdaChart(type);
         }
         if (type === 'kpi') {
@@ -165,8 +165,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (type === 'funnel') {
             this.renderFunnel();
         }
-        if (type === 'barchart') {
-            this.renderBarchart();
+        if (type === 'bubblechart') {
+            this.renderBubblechart();
         }
         if (type === 'sunburst') {
             this.renderSunburst();
@@ -191,7 +191,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type 
      */
     private renderEdaChart(type: string) {
-        
 
         const isbarline = this.props.edaChart === 'barline';
         const isstacked = this.props.edaChart === 'stackedbar';
@@ -234,10 +233,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
             }
 
-
-
-
-        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
+        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart,  values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
 
         const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
 
@@ -271,14 +267,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         chartConfig.chartLabels = chartData[0];
         chartConfig.chartDataset = chartData[1];
-
         chartConfig.chartDataset = chartData[1];
         chartConfig.chartOptions = config.chartOptions;
         chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
-
-
         
-
         if(!chartData[1][0].backgroundColor){
             chartData[1].forEach(( e,i) => {
                 try{
@@ -561,7 +553,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
-    private renderBarchart() {
+    private renderBubblechart() {
 
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
 
@@ -573,12 +565,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.colors = this.props.config.getConfig()['colors'];
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
-        this.createBarchartComponent(inject);
+        this.createBubblechartComponent(inject);
     }
     
-    private createBarchartComponent(inject: any) {
+    private createBubblechartComponent(inject: any) {
         this.entry.clear();
-        const factory = this.resolver.resolveComponentFactory(EdaBarchartComponent);
+        const factory = this.resolver.resolveComponentFactory(EdaBubblechartComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
 
