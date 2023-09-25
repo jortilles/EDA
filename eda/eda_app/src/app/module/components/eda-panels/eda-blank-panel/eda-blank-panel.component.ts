@@ -320,19 +320,22 @@ export class EdaBlankPanelComponent implements OnInit {
                 for (const idTable of queryTables) {
                     const table = this.tables.find(t => t.table_name === idTable);
                     PanelInteractionUtils.loadColumns(this, table,  this.hiddenColumn);
-                }
-                panelContent.query.query.fields.forEach((el) => {
-                    const column = this.columns.find(c => c.column_name === el.column_name && c.display_name.default === el.display_name);
-                    if (column) PanelInteractionUtils.moveItem(this, column);
-                    else {
-                        let duplicatedColumn = _.cloneDeep(this.currentQuery.find(c => c.column_name === el.column_name)); // es una columna duplicada que es a la consulta
-                        if(!duplicatedColumn){
-                             duplicatedColumn = _.cloneDeep(  this.columns.find(c => c.column_name === el.column_name )  ); // es una columna duplicada sense original a la consulta
+ 
+                    panelContent.query.query.fields.forEach((el) => {
+                        console.log(this.columns)
+                        const column = this.columns.find(c => c.column_name === el.column_name && c.display_name === el.display_name);
+                        
+                        if (column) PanelInteractionUtils.moveItem(this, column);
+                        else {
+                            let duplicatedColumn = _.cloneDeep(this.currentQuery.find(c => c.column_name === el.column_name)); // es una columna duplicada que es a la consulta              
+                            if(!duplicatedColumn){
+                                duplicatedColumn = _.cloneDeep(  this.columns.find(c => c.column_name === el.column_name )  ); // es una columna duplicada sense original a la consulta
+                            }                        
+                            duplicatedColumn.display_name.default = el.display_name;
+                            this.currentQuery.push(duplicatedColumn); // Moc la columna directament perque es una duplicada.... o no....
                         }
-                        duplicatedColumn.display_name.default = el.display_name;
-                        this.currentQuery.push(duplicatedColumn); // Moc la columna directament perque es una duplicada.... o no....
-                    }
-                });
+                    });
+                }
                 this.columns = this.columns.filter((c) => !c.isdeleted);
             }catch(e){
                 console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
