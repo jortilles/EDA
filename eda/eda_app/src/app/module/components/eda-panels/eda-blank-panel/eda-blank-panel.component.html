@@ -69,6 +69,7 @@
                                 </span>
                             </div>
                         </div>
+
                         <hr class="mb-0" style="margin-top: 0.5rem!important;">
                         <eda-input [inject]="inputs.findColumn"></eda-input>
                             
@@ -82,6 +83,7 @@
                                 (mouseover)="showDescription(column)" 
                                 (mouseout)="description= ''" 
                                 cdkDrag
+
                                 [cdkDragData] = "column"
                                 (cdkDragDropped)="searchRelations(column, $event)" 
                                 (cdkDragDropped)="openColumnDialog(column)" 

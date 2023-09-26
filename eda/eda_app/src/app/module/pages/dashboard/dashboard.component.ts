@@ -511,6 +511,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             }catch(e){
             }
 
+
         });
     }
 

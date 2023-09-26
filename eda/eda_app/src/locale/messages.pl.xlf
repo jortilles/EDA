@@ -1895,6 +1895,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartTypes7">
 <source>Gráfico de Barras Horizontales</source>
 <target>Poziomy wykres słupkowy</target>
+
 </trans-unit>
 <trans-unit id="chartTypesPyramid">
 <source>Gráfico de Piramide</source>
@@ -2390,10 +2391,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartInfo13">
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
 <target>Wykres niedostępny dla bieżących danych.</target>
+
 </trans-unit>
 <trans-unit id="chartInfoBubble">
 <source>Un gráfico de burbujas necesita una categorías y una série numérica.</source>
 <target>Wykres bąbelkowy wymaga jednej kategorii i jednej serii numerycznej.</target>
+
 </trans-unit>
 
 
@@ -3105,6 +3108,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="AllTags">
+
     <source>Todos</source>
     <target>Wszystko</target>
   </trans-unit>
@@ -3584,6 +3588,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
    <trans-unit id="mailConfOk">
     <source>Credenciales correctas </source>
     <target> Prawidłowe dane uwierzytelniające</target>
+
   </trans-unit>
 
   <trans-unit id="chartInfoPyramid">

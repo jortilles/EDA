@@ -313,6 +313,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * Sets configuration dialog and chart
      * @param panelContent panel content to build configuration .
      */
+
     buildGlobalconfiguration(panelContent: any) {
         if (!panelContent.query.query.modeSQL) {
             try{
@@ -659,6 +660,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
+
         this.hiddenColumn = 1;
         this.columns = this.columns.filter (c => !c.hidden) ;
     }
@@ -905,6 +907,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public searchRelations = (c: Column) => PanelInteractionUtils.searchRelations(this, c);
 
     public loadColumns (table: any)  {
+
         PanelInteractionUtils.loadColumns(this, table, this.hiddenColumn);        
     } 
 

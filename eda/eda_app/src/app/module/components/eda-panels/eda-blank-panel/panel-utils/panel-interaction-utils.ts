@@ -20,6 +20,7 @@ export const PanelInteractionUtils = {
     ebp.columns = [];
     table.columns.forEach((c: Column) => {
       c.table_id = table.table_name;
+
       const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name && c.display_name.default === x.display_name.default);
       if (!matcher) ebp.columns.push(c);
       
@@ -315,6 +316,7 @@ export const PanelInteractionUtils = {
       ebp.filtredColumns.splice(match, 1);
     }
     // Carregar de nou l'array Columns amb la columna borrada
+
     PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id), ebp.hiddenColumn);
   
     // Buscar relacións per tornar a mostrar totes les taules

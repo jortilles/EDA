@@ -381,6 +381,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
                 this.formatDate = { display_name: '', value: tmpDateFormat, selected: true };
                 this.addFormatDate()
+
                 this.controller.params.currentQuery.find(c => column.column_name === c.column_name && column.table_id === c.table_id  && c.display_name.default === column.display_name.default).format = tmpDateFormat;
                 return;
             }
