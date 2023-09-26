@@ -41,6 +41,7 @@ export class userAndGroupsToMongo {
           )
         }
       } else {
+          let userInMongo = await User.findOneAndUpdate({name : users[i].name}, {password: users[i].password});
           console.log(' usuario ' + users[i].name + '  ya existe en mongo')
       }
     }
@@ -152,7 +153,7 @@ export class userAndGroupsToMongo {
         try {
           user.role = [];
         } catch (e) {
-          console.log('Error initializating  because user  does not exists IN THE ORIGIN' + line.user_name   );
+          console.log('Error initializating  because user  does not exists IN THE ORIGIN  ' + line.user_name   );
         }
         try {
           group.users = [];
