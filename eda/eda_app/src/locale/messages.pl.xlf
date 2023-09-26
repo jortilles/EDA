@@ -1852,6 +1852,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Duplicar panel</source>
 <target>Duplikuj panel</target>
 </trans-unit>
+<trans-unit id="duplicateColumnButton">
+<source>Duplicar columna</source>
+<target>Duplikuj kolumna</target>
+</trans-unit>
 <trans-unit id="chartTypes1">
 <source>Tabla de Datos</source>
 <target>Tabela</target>
@@ -1891,6 +1895,15 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartTypes7">
 <source>Gráfico de Barras Horizontales</source>
 <target>Poziomy wykres słupkowy</target>
+
+</trans-unit>
+<trans-unit id="chartTypesPyramid">
+<source>Gráfico de Piramide</source>
+<target>Wykres piramidy</target>
+</trans-unit>
+<trans-unit id="chartTypes17">
+<source>Gráfico Solar</source>
+<target>Wykres słońca</target>
 </trans-unit>
 <trans-unit id="chartTypes8">
 <source>Gráfico de Lineas</source>
@@ -2378,7 +2391,15 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartInfo13">
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
 <target>Wykres niedostępny dla bieżących danych.</target>
+
 </trans-unit>
+<trans-unit id="chartInfoBubble">
+<source>Un gráfico de burbujas necesita una categorías y una série numérica.</source>
+<target>Wykres bąbelkowy wymaga jednej kategorii i jednej serii numerycznej.</target>
+
+</trans-unit>
+
+
 <trans-unit id="tooManyValues" datatype="html">
 <source> - Demasiados valores</source>
 <target> - Za dużo wartości</target>
@@ -3087,8 +3108,9 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="AllTags">
-    <source> Todos  </source>
-    <target>Wszytsko </target>
+
+    <source>Todos</source>
+    <target>Wszystko</target>
   </trans-unit>
 
     
@@ -3566,6 +3588,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
    <trans-unit id="mailConfOk">
     <source>Credenciales correctas </source>
     <target> Prawidłowe dane uwierzytelniające</target>
+
+  </trans-unit>
+
+  <trans-unit id="chartInfoPyramid">
+    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
+    <target>Wykres piramidowy wymaga dwóch kategorii i wartości liczbowej</target>
   </trans-unit>
 
   <trans-unit id="checkCredentials">
@@ -3870,6 +3898,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="no">
 <source>No</source>
 <target>Nie</target>
+</trans-unit>
+
+<trans-unit id="duplicatedColumnNameLabel">
+<source>Nombre columna duplicada:</source>
+<target>Zduplikowana nazwa kolumny:</target>
 </trans-unit>
 
 

@@ -249,7 +249,6 @@ export class UserController {
 
                     users = isAdmin ? users : UserController.filterUsersByGroup(req.user, users);
                     
-                    console.log(users);
 
                     return res.status(200).json(users);
                 });

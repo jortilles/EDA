@@ -4,7 +4,7 @@
           appendTo="body">
 
     <div class="p-2" (click)="setTitle()">
-        <span *ngIf="!clicked">{{newText}}</span>
+        <span *ngIf="!clicked"  style="cursor: pointer">{{newText}}</span>
 
         <input *ngIf="!!clicked" (focusout)="clicked = false" type="text"  class="w-100" [(ngModel)]="newText" pInputText autofocusOnShow>
     </div>

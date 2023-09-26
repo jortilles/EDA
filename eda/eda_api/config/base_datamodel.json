@@ -1,15 +1,15 @@
 {
   
-  "_id": "XXXXXXX",
+  "_id": "111111111111111111111111",
 
   "ds": {
     "connection": {
-      "type": "XXXXX",
+      "type": "mysql",
       "host": "",
       "database": "",
       "user": "",
       "password": "",
-      "port": XXXXX,
+      "port": "",
       "schema": "",
       "searchPath": "",
       "poolLimit": "",
@@ -17,7 +17,7 @@
       "warehouse": ""
     },
     "metadata": {
-      "model_name": "XXXXXX",
+      "model_name": "SinergiaDA",
       "model_id": "",
       "model_granted_roles": [],
       "optimized": false,

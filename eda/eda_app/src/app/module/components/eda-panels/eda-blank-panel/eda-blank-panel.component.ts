@@ -29,6 +29,7 @@ import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { display } from 'html2canvas/dist/types/css/property-descriptors/display';
 
 export interface IPanelAction {
     code: string;
@@ -69,7 +70,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public sankeyController: EdaDialogController;
     public treeMapController: EdaDialogController;
     public funnelController:EdaDialogController;
-    public barchartController:EdaDialogController;
+    public bubblechartController:EdaDialogController;
     public linkDashboardController: EdaDialogController;
     public scatterPlotController: EdaDialogController;
     public knobController: EdaDialogController;
@@ -210,7 +211,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 this.loadChartsData(this.panel.content);
             }catch(e){
-                console.log('Error loading panen conent.....');
+                console.error('Error loading panen conent.....');
             }
         }
 
@@ -312,21 +313,37 @@ export class EdaBlankPanelComponent implements OnInit {
      * Sets configuration dialog and chart
      * @param panelContent panel content to build configuration .
      */
-    buildGlobalconfiguration(panelContent: any) { 
 
+    buildGlobalconfiguration(panelContent: any) {
         if (!panelContent.query.query.modeSQL) {
-
             try{
-
-            panelContent.query.query.fields.forEach(element => {
-                PanelInteractionUtils.loadColumns(this, this.tables.find(t => t.table_name === element.table_id));
-                PanelInteractionUtils.moveItem(this, this.columns.find(c => c.column_name === element.column_name));
-            });
+                const queryTables = [...new Set(panelContent.query.query.fields.map((field) => field.table_id))];
+                for (const idTable of queryTables) {
+                    const table = this.tables.find(t => t.table_name === idTable);
+                    PanelInteractionUtils.loadColumns(this, table,  this.hiddenColumn);
+                    panelContent.query.query.fields.forEach((el) => {
+                        const column = this.columns.find(c => c.table_id === el.table_id &&  c.column_name === el.column_name && c.display_name.default === el.display_name);
+                        if (column) PanelInteractionUtils.moveItem(this, column);
+                        else {
+                            if(el.table_id === idTable ){
+                                let duplicatedColumn = _.cloneDeep(  this.currentQuery.find(c =>  c.table_id === el.table_id && c.column_name === el.column_name ) ); // es una columna duplicada que es a la consulta
+                                if(!duplicatedColumn){
+                                    duplicatedColumn = _.cloneDeep(  this.columns.find(c => c.table_id === el.table_id &&  c.column_name === el.column_name )  ); // es una columna duplicada sense original a la consulta
+                                }
+                                if(duplicatedColumn){
+                                    duplicatedColumn.display_name.default = el.display_name;
+                                    this.currentQuery.push(duplicatedColumn); // Moc la columna directament perque es una duplicada.... o no....
+                                }
+                            }
+                            
+                        }
+                    });
+                }
+                this.columns = this.columns.filter((c) => !c.isdeleted);
             }catch(e){
-                console.log('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
-                console.log(e);
+                console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
+                console.error(e);
             }
-
         }
 
         this.queryLimit = panelContent.query.query.queryLimit;
@@ -379,7 +396,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content = { query, chart, edaChart };
 
             /**This is to repaint on panel redimension */
-            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','barchart', 'sunburst'].includes(chart)) {
+            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
 
@@ -447,7 +464,7 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = this.panelChart.getCurrentConfig();
         //W T F F!!!!!!!!!!!=)&/=)!/(!&=)&)!=
         if (config 
-            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut'].includes(config.chartType) 
+            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid'].includes(config.chartType) 
             && config.chartType === this.graficos.chartType ) {
             this.graficos = this.panelChart.getCurrentConfig();
         }
@@ -507,7 +524,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onColumnInputKey(event: any) {
         if (!_.isNil(this.userSelectedTable)) {
-            PanelInteractionUtils.loadColumns(this, this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0]);
+            PanelInteractionUtils.loadColumns(this, this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0], this.hiddenColumn);
             if (event.target.value) {
                 this.columns = this.columns
                     .filter(col => col.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
@@ -521,6 +538,7 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     public drop(event: CdkDragDrop<string[]>) {
         if (event.previousContainer === event.container) {
+            //Reordeno
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
             transferArrayItem(event.previousContainer.data,
@@ -528,7 +546,11 @@ export class EdaBlankPanelComponent implements OnInit {
                 event.previousIndex,
                 event.currentIndex);
         }
+
+
     }
+
+
 
     /* Condicions Drag&Drop */
     public isAllowed = (drag?: CdkDrag, drop?) => false;
@@ -553,7 +575,11 @@ export class EdaBlankPanelComponent implements OnInit {
             this.configController = new EdaDialogController({
                 params: p,
                 close: (event, response) => {
-                    if (response.length > 0) {
+                    if (response.duplicated) {
+                        this.currentQuery.push(response.column);
+                        this.configController = undefined;
+                        setTimeout(() => this.openColumnDialog(response.column), 100);
+                    } else if (response.length > 0) {
                         response.forEach(f => {
                             if (_.isNil(this.selectedFilters.find(o => o.filter_id === f.filter_id))) {
                                 this.selectedFilters.push(f);
@@ -562,8 +588,15 @@ export class EdaBlankPanelComponent implements OnInit {
                                 this.selectedFilters = _.filter(this.selectedFilters, o => o.filter_id !== f.filter_id);
                             }
                         });
+
+                        this.configController = undefined;
+                    }
+
+                    if (event === EdaDialogCloseEvent.NONE) {
+                        this.configController = undefined;
                     }
                     this.configController = undefined;
+
                 }
             });
         } else {
@@ -627,7 +660,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.page_dialog = true;
         this.ableBtnSave();
         PanelInteractionUtils.verifyData(this);
-        console.log('pa pe pi po pu');
+
         this.hiddenColumn = 1;
         this.columns = this.columns.filter (c => !c.hidden) ;
     }
@@ -745,14 +778,14 @@ export class EdaBlankPanelComponent implements OnInit {
         this.funnelController = undefined;
     }
 
-    public onCloseBarchartProperties(event, response): void {
+    public onCloseBubblechartProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config.colors = response.colors;
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
         }
-        this.barchartController = undefined;
+        this.bubblechartController = undefined;
     }
 
 
@@ -845,7 +878,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     || content.chart === 'funnel'
                     || content.chart === 'knob'
                     || content.chart === 'sunburst' 
-                    || content.chart === 'barchart' 
+                    || content.chart === 'bubblechart' 
                     || content.chart === 'dynamicText')
             ) {
 
@@ -874,7 +907,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public searchRelations = (c: Column) => PanelInteractionUtils.searchRelations(this, c);
 
     public loadColumns (table: any)  {
-        PanelInteractionUtils.loadColumns(this, table);        
+
+        PanelInteractionUtils.loadColumns(this, table, this.hiddenColumn);        
     } 
 
     public removeColumn = (c: Column, list?: string) => PanelInteractionUtils.removeColumn(this, c, list);

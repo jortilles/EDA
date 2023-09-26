@@ -520,10 +520,10 @@ console.log(sinergiaDatabase);
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
 
     const cleanM = new CleanModel;
-    main_model = cleanM.cleanModel(main_model);
+
+    main_model = await cleanM.cleanModel(main_model);
     
     await new pushModelToMongo().pushModel(main_model);
-
     fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, (err) => { if (err) throw err })
 
   }

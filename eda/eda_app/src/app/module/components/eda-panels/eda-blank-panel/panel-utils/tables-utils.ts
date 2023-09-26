@@ -59,7 +59,7 @@ export const TableUtils = {
     if (applyToAllfilter.present) {
 
       const originTable = allTables.filter(t => t.table_name === applyToAllfilter.refferenceTable)[0];
-      allTables = TableUtils.filterTables(tables, originTable);
+      allTables = TableUtils.filterTables(tables, originTable).filter(table => table.visible === true);
 
     }
 

@@ -9,7 +9,7 @@ import {
 import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
-
+import * as _ from 'lodash';
 @Component({
     selector: 'dashboard-filter-dialog',
     templateUrl: './dashboard-filter-dialog.component.html',
@@ -74,18 +74,20 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
 
     onShow() {
         this.params = this.controller.params;
+        
         if (this.params.filtersList) {
             for (let filter of this.params.filtersList) {
                 this.filtersList.push(filter);
             }
         }
+
         this.selectPanelToFilter(this.params.panels.filter(p => p.content)[0]);
         if (this.params.filter) this.onEditFilter(this.params.filter);
     }
 
 
-    selectPanelToFilter(panel) {
-        const newPanel = this.params.panels.find(p => p.id === panel.id);
+    private selectPanelToFilter(panel: any) {
+        const newPanel = this.params.panels.find((p: any) => p.id === panel.id);
         const panels = this.globalFiltersService.panelsToDisplay(this.params.dataSource.model.tables, this.params.panels, newPanel);
         const sortByTittle = (a, b) => {
             if (a.title < b.title) { return -1; }
@@ -93,8 +95,24 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             return 0;
         };
         this.panelsToDisplay = panels.sort(sortByTittle);
-        this.panelstoFilter = this.panelsToDisplay.filter(p => p.avaliable === true);
-        this.applyToAll = !(this.panelsToDisplay.length === this.panelstoFilter.length); // Filter can only apply to all panels if all panels are in display list
+        
+        if (this.controller.params?.filter?.panelList) {
+            const selectedPanelList = this.controller.params?.filter?.panelList;
+
+            for (let displayPanel of this.panelsToDisplay) {
+                if (!selectedPanelList.some((id: any) => displayPanel.id === id)) {
+                    displayPanel.active = false;
+                }
+            }
+        }
+        
+        this.panelstoFilter = this.panelsToDisplay.filter(p => p.avaliable === true && p.active === true );
+
+        // Filter can only apply to all panels if all panels are in display list
+        this.applyToAll = (this.panelsToDisplay.length === this.panelstoFilter.length);
+
+        if (this.applyToAll) this.switchChecked = true;
+
         this.setTablesAndColumnsToFilter();
     }
 
@@ -190,6 +208,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 }
                 this.selectedFilter = null;
             }
+
             response = { filterList: this.filtersList };
             this.onClose(EdaDialogCloseEvent.UPDATE, response);
         }
@@ -238,6 +257,10 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     applyToAllCheck() {
+        this.applyToAll = !this.applyToAll;
+        if(this.applyToAll){
+            this.panelstoFilter = this.panelsToDisplay.filter(p => p.avaliable === true   );
+        }
         return this.applyToAll;
     }
 

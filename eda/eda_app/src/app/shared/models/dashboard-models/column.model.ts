@@ -1,7 +1,7 @@
 export interface Column {
     table_id: string;
     column_name: string;
-    display_name: {default: string, localizad: any[]};
+    display_name: {default: string, ord: number, localizad: any[]};
     description: {default: string, localizad: any[]};
     column_type: string;
     computed_column: string; // las posibilidades son no, computed_numeric, computed_string
@@ -15,5 +15,5 @@ export interface Column {
     minimumFractionDigits:number;
     cumulativeSum: boolean;
     valueListSource: {};
-    hidden: boolean;
+    hidden: number;
 }

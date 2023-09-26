@@ -85,6 +85,7 @@ export const QueryUtils = {
  */
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
 
+
     ebp.display_v.disablePreview = false;
 
     if (!globalFilters) {
@@ -101,7 +102,6 @@ export const QueryUtils = {
       if (ebp.panelChart) ebp.panelChart.destroyComponent();
 
       const query = ebp.switchAndBuildQuery();
-
       /**Add fake column if SQL mode and there isn't fields yet */
       if (query.query.modeSQL && query.query.fields.length === 0) {
         query.query.fields.push(QueryUtils.createColumn('custom', null, ebp.sqlOriginTable));

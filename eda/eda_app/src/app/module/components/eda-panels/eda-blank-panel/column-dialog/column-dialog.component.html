@@ -2,6 +2,7 @@
 
     <div body class="grid mb-0 pb-0">
 
+        <!-- Agregaciones -->
         <div class="col-12 lg:col-2">
 
             <h4 i18n="@@agregacionesH4">
@@ -282,6 +283,7 @@
             </div>
 
         </div>
+
         <div class="col-12">
 
             <div class="grid">
@@ -384,14 +386,33 @@
             </div>
         </div>
 
+
+
+        <!-- Duplicar columna -->
+        <div class="col-12" style="position: absolute; bottom: 0; right:1.9rem" class="text-right">
+            <span *ngIf="display.duplicateColumnInp">
+                <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName" style="font-size: 18px;margin-right: 1.5rem;">
+                    Nombre columna duplicada
+                </label>
+                <input pInputText id="duplicatedColumnName" [(ngModel)]="duplicatedColumnName" type="text"  />
+
+                <button *ngIf="display.duplicateColumnInp" type="button" pButton (click)="saveDuplicatedColumn()" icon="fa fa-check"
+                    class="p-button p-button-raised ml-2" i18n-label="@@duplicateColumnButton" label="Duplicar columna" id="eda_column_dialog_confirmar">
+                </button>
+            </span>
+            <button *ngIf="!display.duplicateColumnInp" type="button" pButton (click)="duplicateColumn()" class="p-button-raised"
+                i18n-label="@@duplicateColumnButton" label="Duplicar columna">
+            </button>
+        </div>
+
     </div>
 
     <div footer>
-
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
             <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success"
                 i18n-label="@@guardarButton" icon="fa fa-check" label="Confirmar"
-                id="eda_column_dialog_confirmar"></button>
+                id="eda_column_dialog_confirmar">
+            </button>
         </div>
 
     </div>

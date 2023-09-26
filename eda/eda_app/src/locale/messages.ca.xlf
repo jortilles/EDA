@@ -1867,6 +1867,13 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Duplicar panell</target>
 </trans-unit>
 
+
+<trans-unit id="duplicateColumnButton">
+<source>Duplicar columna</source>
+<target>Duplicar columna</target>
+</trans-unit>
+
+
 <trans-unit id="chartTypes1">
 <source>Tabla de Datos</source>
 <target>Taula de dades</target>
@@ -1891,6 +1898,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Histograma</source>
 <target>Histograma</target>
 </trans-unit>
+<trans-unit id="chartTypes17">
+<source>Gráfico Solar</source>
+<target>Gràfic solar</target>
+</trans-unit>
 
 
 <trans-unit id="chartTypesDynamicText">
@@ -1911,6 +1922,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartTypes7">
 <source>Gráfico de Barras Horizontales</source>
 <target>Gràfic de barres horitzontals</target>
+</trans-unit>
+<trans-unit id="chartTypesPyramid">
+<source>Gráfico de Piramide</source>
+<target>Gràfic de Piràmide</target>
 </trans-unit>
 <trans-unit id="chartTypes8">
 <source>Gráfico de Lineas</source>
@@ -2397,6 +2412,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartInfo13">
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
 <target>Les dades seleccionades no permeten utilitzar aquest gràfic.</target>
+</trans-unit>
+<trans-unit id="chartInfoBubble">
+<source>Un gráfico de burbujas necesita una categorías y una série numérica.</source>
+<target>Un gràfic de bombolles necessita una categoria i una sèrie numèrica.</target>
 </trans-unit>
 
 <trans-unit id="tooManyValues" datatype="html">
@@ -3600,8 +3619,13 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="chartInfoFunnel">
-    <source>Un embudo necesitar una categoría y un valor numérico </source>
-    <target>Un embut necessitar una categoria i un valor numèric</target>
+    <source>Un embudo necesita una categoría y un valor numérico </source>
+    <target>Un embut necessita una categoria i un valor numèric</target>
+  </trans-unit>
+
+   <trans-unit id="chartInfoPyramid">
+    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
+    <target>Un gràfic de piràmide necessita dues categories i un valor numèric</target>
   </trans-unit>
 
    <trans-unit id="mailConfOk">
@@ -3924,6 +3948,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="no">
 <source>No</source>
 <target>No</target>
+</trans-unit>
+
+<trans-unit id="duplicatedColumnNameLabel">
+<source>Nombre columna duplicada:</source>
+<target>Nom columna duplicada:</target>
 </trans-unit>
 
 </body>

@@ -99,9 +99,9 @@ export class EdaTitlePanelComponent implements OnInit {
     public setPanelSize(): void {
         let element: any;
         if (environment.production) {
-            element = document.querySelector(`[id^=${this.panel.id.substring(0,30)}]`);
+            element = document.querySelector(`[id^="${this.panel.id.substring(0,30)}"]`);
         } else {
-            element = document.querySelector(`[ng-reflect-id^=${this.panel.id.substring(0,30)}]`);
+            element = document.querySelector(`[ng-reflect-id^="${this.panel.id.substring(0,30)}"]`);
         }
 
         let parentElement: any = element?.parentNode;

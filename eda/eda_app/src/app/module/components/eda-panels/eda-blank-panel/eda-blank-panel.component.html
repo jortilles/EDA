@@ -44,14 +44,11 @@
                             Entidades
                         </h4>
                         <hr class="mb-0">
-
                         <eda-input [inject]="inputs.findTable"></eda-input>
-
                         <div class="column-list">
                             <div class="our-table-box" *ngFor="let table of tablesToShow" (click)="loadColumns(table)"
                                 [className]="table.table_name === userSelectedTable ? 'selected-table-class' : 'our-table-box'"
                                 (mouseover)="showDescription(table)" (mouseout)="description = ''">
-
                                 <span class="text-left" title="{{table.description.default}}">
                                     {{table.display_name.default}}
                                 </span>
@@ -74,12 +71,11 @@
                         </div>
 
                         <hr class="mb-0" style="margin-top: 0.5rem!important;">
-
                         <eda-input [inject]="inputs.findColumn"></eda-input>
                             
                         <div class="column-list" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
                             [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
-                            [cdkDropListEnterPredicate]="isAllowed">
+                            [cdkDropListEnterPredicate]="isAllowed" >
                             <div *ngFor="let column of columns">
                                 <div class="column-box"  
                                 *ngIf='(column.column_type === "numeric" || column.column_type === "date" ) && ( column.hidden != hiddenColumn || hiddenColumn==0) ' 
@@ -87,9 +83,10 @@
                                 (mouseover)="showDescription(column)" 
                                 (mouseout)="description= ''" 
                                 cdkDrag
+
+                                [cdkDragData] = "column"
                                 (cdkDragDropped)="searchRelations(column, $event)" 
                                 (cdkDragDropped)="openColumnDialog(column)" 
-                                (click)="openColumnDialog(column)" 
                                 [ngStyle]=" column.hidden == 1 && {'opacity': '0.5'} " >  
                                    
    
@@ -109,7 +106,6 @@
                                (cdkDragDropped)="searchRelations(column, $event)"
                                [ngStyle]=" column.hidden == 1  && {'opacity': '0.5'} " >    
                                   
-   
                                   <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                   <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
                                   <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
@@ -126,25 +122,23 @@
                             Mostrar los siguientes atributos:
                         </h4>
                         <hr class="mb-0">
-
                         <div class="select-list" cdkDropList cdkDropListOrientation="horizontal"
                             #selectList="cdkDropList" [cdkDropListData]="currentQuery"
-                            [cdkDropListConnectedTo]="[columnsList, filterList]" (cdkDropListDropped)="drop($event)">
-
+                            [cdkDropListConnectedTo]="[columnsList, filterList]" (cdkDropListDropped)="drop($event)" >
                             <p *ngIf="currentQuery.length < 1" class="fieldsInfo">{{draggFields}}</p>
+                            <div *ngFor="let item of currentQuery" 
+                                class="select-box col-3 col-md-2 p-1" 
+                                (click)="openColumnDialog(item)"  
+                                (mouseover)="showDescription(item)"
+                                (mouseout)="description = ''"
+                                cdkDrag 
+                                [cdkDragData]="column">
 
-                            <div class="select-box col-3 col-md-2 p-1" *ngFor="let item of currentQuery"
-                                (click)="openColumnDialog(item)" (mouseover)="showDescription(item)"
-                                (mouseout)="description = ''" cdkDrag>
-
-                                <span class="close-thin pointer" (click)="removeColumn( item, 'select' )"></span>
-
-
+                                <span class="close-thin pointer" style="z-index: 9999;" (click)="removeColumn( item, 'select' )"></span>
                                 <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                 <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
                                 <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
-
-                                <span    class=" text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
+                                <span class="text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
                                     {{item.display_name.default}}
                                 </span>
 
@@ -156,25 +150,17 @@
                             Filtrar los resultados por: 
                         </h4>
                         <hr class="mb-0">
-
                         <div class="filter-list" cdkDropList cdkDropListOrientation="horizontal"
                             #filterList="cdkDropList" [cdkDropListData]="filtredColumns"
-                            [cdkDropListConnectedTo]="[columnsList, selectList]" (cdkDropListDropped)="drop($event)">
-
+                            [cdkDropListConnectedTo]="[columnsList, selectList]" (cdkDropListDropped)="drop($event)" >
                             <p *ngIf="filtredColumns.length < 1" class="fieldsInfo">{{draggFilters}}</p>
-
                             <div class="select-box col-3 col-md-2 p-1" *ngFor="let item of filtredColumns"
                                 (click)="openColumnDialog(item, true)" (mouseover)="showDescription(item)"
-                                (mouseout)="description = ''" cdkDrag>
-
+                                (mouseout)="description = ''" cdkDrag [cdkDragData]="column" >
                                 <span class="close-thin pointer" (click)="removeColumn( item, 'filter' )"></span>
-
-
                                 <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                 <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
                                 <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
-
-                                
                                 <span  class=" text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
                                     {{item.display_name.default}}
                                 </span>
@@ -531,7 +517,7 @@
 
 <app-sankey-dialog *ngIf="sankeyController" [controller]="sankeyController"></app-sankey-dialog>
 
-<app-barchart-dialog *ngIf="barchartController" [controller]="barchartController"></app-barchart-dialog>
+<app-bubblechart-dialog *ngIf="bubblechartController" [controller]="bubblechartController"></app-bubblechart-dialog>
 
 <app-treeMap-dialog *ngIf="treeMapController" [controller]="treeMapController"></app-treeMap-dialog>
 

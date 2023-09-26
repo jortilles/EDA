@@ -1863,6 +1863,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Duplicar panel</source>
 <target>Duplicate panel</target>
 </trans-unit>
+<trans-unit id="duplicateColumnButton">
+<source>Duplicar columna</source>
+<target>Duplicate column</target>
+</trans-unit>
 
 <trans-unit id="chartTypes1">
 <source>Tabla de Datos</source>
@@ -1886,7 +1890,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="chartTypesHistograma">
 <source>Histograma</source>
-<target>Histograma</target>
+<target>Histogram</target>
+</trans-unit>
+<trans-unit id="chartTypes17">
+<source>Gráfico Solar</source>
+<target>Sunburst graph</target>
 </trans-unit>
 
 <trans-unit id="chartTypesDynamicText">
@@ -1907,6 +1915,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartTypes7">
 <source>Gráfico de Barras Horizontales</source>
 <target>Horizontal bar chart</target>
+</trans-unit>
+<trans-unit id="chartTypesPyramid">
+<source>Gráfico de Piramide</source>
+<target>Pyramid chart</target>
 </trans-unit>
 <trans-unit id="chartTypes8">
 <source>Gráfico de Lineas</source>
@@ -2396,6 +2408,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
 <target>Chart not avaiable with current data.</target>
 </trans-unit>
+<trans-unit id="chartInfoBubble">
+<source>Un gráfico de burbujas necesita una categorías y una série numérica.</source>
+<target>A bubble chart needs a category and a numerical series.</target>
+</trans-unit>
+
+
 <trans-unit id="tooManyValues" datatype="html">
 <source> - Demasiados valores</source>
 <target> - Too many values</target>
@@ -3578,6 +3596,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>A funnel will need a category and a numeric value</target>
   </trans-unit>
 
+   <trans-unit id="chartInfoPyramid">
+    <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
+    <target>A pyramid chart needs two categories and one numeric value</target>
+  </trans-unit>
+
    <trans-unit id="mailConfOk">
     <source>Credenciales correctas </source>
     <target> Credencials are oK</target>
@@ -3896,6 +3919,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="no">
 <source>No</source>
 <target>No</target>
+</trans-unit>
+
+<trans-unit id="duplicatedColumnNameLabel">
+<source>Nombre columna duplicada:</source>
+<target>Duplicated column name:</target>
 </trans-unit>
 
 

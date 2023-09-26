@@ -2,16 +2,16 @@ import { Component, ViewChild, AfterViewChecked } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
-import { BarchartConfig } from '../panel-charts/chart-configuration-models/barchart.config';
+import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
  
 
 
 @Component({
-  selector: 'app-barchart-dialog',
-  templateUrl: './barchart-dialog.component.html'
+  selector: 'app-bubblechart-dialog',
+  templateUrl: './bubblechart-dialog.component.html'
 })
 
-export class BarchartDialog extends EdaDialogAbstract implements AfterViewChecked {
+export class BubblechartDialog extends EdaDialogAbstract implements AfterViewChecked {
 
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
@@ -38,7 +38,7 @@ export class BarchartDialog extends EdaDialogAbstract implements AfterViewChecke
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
         this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
-        this.labels = [0, 1];
+        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
       })
     }
 
@@ -63,7 +63,7 @@ export class BarchartDialog extends EdaDialogAbstract implements AfterViewChecke
 
   handleInputColor() {
 
-    this.myPanelChartComponent.props.config.setConfig(new BarchartConfig(this.colors.map(color => this.hex2rgb(color))));
+    this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(this.colors.map(color => this.hex2rgb(color))));
     this.myPanelChartComponent.changeChartType();
 
   }

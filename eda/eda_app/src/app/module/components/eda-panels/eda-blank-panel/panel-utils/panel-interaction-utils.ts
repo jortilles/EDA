@@ -3,6 +3,7 @@ import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-pan
 import { Column } from '@eda/models/model.index';
 import * as _ from 'lodash';
 import { TableUtils } from './tables-utils';
+import { display } from 'html2canvas/dist/types/css/property-descriptors/display';
 
 export const PanelInteractionUtils = {
 
@@ -10,21 +11,25 @@ export const PanelInteractionUtils = {
      * loads columns from table
      * @param table  
      */
-  loadColumns: (ebp: EdaBlankPanelComponent, table: any) => {
+  loadColumns: (ebp: EdaBlankPanelComponent, table: any, hideColumns : number) => {
+
+
     ebp.userSelectedTable = table.table_name;
     ebp.disableBtnSave();
     // Clean columns
     ebp.columns = [];
-
-    // Reload avaliable columns -> f(table) = this.columns
-    table.columns.forEach(c => {
+    table.columns.forEach((c: Column) => {
       c.table_id = table.table_name;
-      const matcher = _.find(ebp.currentQuery, (x) => c.table_id === x.table_id && c.column_name === x.column_name);
-      if (!matcher) {
-        ebp.columns.push(c);
-      }
 
-      ebp.columns = ebp.columns.filter(col => col.visible === true)
+      const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name && c.display_name.default === x.display_name.default);
+      if (!matcher) ebp.columns.push(c);
+      
+
+      if (hideColumns === 1) {
+        ebp.columns = ebp.columns.filter(col =>  col.hidden !== hideColumns)
+      } 
+
+      ebp.columns = ebp.columns.filter(col => col.visible === true )
         .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
     });
 
@@ -64,8 +69,8 @@ export const PanelInteractionUtils = {
         }
       });
     }catch(e){
-        console.log('Error loading filters');
-        console.log(e);
+        console.error('Error loading filters');
+        console.error(e);
     }
   },
 
@@ -73,12 +78,15 @@ export const PanelInteractionUtils = {
     if (ebp.panel.content) {
       const fields = ebp.panel.content.query.query.fields;
       for (let i = 0, n = fields.length; i < n; i++) {
+        const field = fields[i];
         try{
-          ebp.currentQuery[i].format = fields[i].format;
-          ebp.currentQuery[i].cumulativeSum = fields[i].cumulativeSum;
+          if (field) {
+            ebp.currentQuery[i].format = field.format;
+            ebp.currentQuery[i].cumulativeSum = field.cumulativeSum;
+          }
         }catch(e){
-          console.log('ERROR handling current query .... handleCurrentQuery.... did you changed the query model?');
-          console.log(e);
+          console.error('ERROR handling current query .... handleCurrentQuery.... did you changed the query model?');
+          console.error(e);
 
         }
       }
@@ -110,14 +118,16 @@ export const PanelInteractionUtils = {
   
     const voidPanel = ebp.panel.content === undefined;
     const tmpAggTypes = [];
+    const tableId = column.table_id;
     const colName = column.column_name;
+    const displayName = column.display_name.default
     const initializeAgregations = (column, tmpAggTypes) => {
       column.aggregation_type.forEach((agg) => {
-        tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'none' });
+        tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'sum' });
       });
     }
     if (!voidPanel) {
-      const colInCurrentQuery = ebp.currentQuery.find(c => c.column_name === colName).aggregation_type.find(agg => agg.selected === true);
+      const colInCurrentQuery = ebp.currentQuery.find(c => c.table_id === tableId && c.column_name === colName  && c.display_name.default == displayName ).aggregation_type.find(agg => agg.selected === true);
       const queryFromServer = ebp.panel.content.query.query.fields;
       // Column is in currentQuery
       if (colInCurrentQuery) {
@@ -125,7 +135,7 @@ export const PanelInteractionUtils = {
         ebp.aggregationsTypes = tmpAggTypes;
         //Column isn't in currentQuery
       } else {
-        const columnInServer = queryFromServer.filter(c => c.column_name === colName && c.table_id === column.table_id)[0];
+        const columnInServer = queryFromServer.filter(c =>  c.table_id === tableId && c.column_name === colName   && c.display_name.default == displayName )[0];
         // Column is in server's query
         if (columnInServer) {
           const aggregation = columnInServer.aggregation_type;
@@ -143,7 +153,7 @@ export const PanelInteractionUtils = {
       ebp.aggregationsTypes = tmpAggTypes;
     }
     ebp.currentQuery.find(c => {
-      return colName === c.column_name && column.table_id === c.table_id
+      return   c.table_id === tableId && colName === c.column_name   && c.display_name.default == displayName
     }).aggregation_type = _.cloneDeep(ebp.aggregationsTypes);
   },
 
@@ -178,8 +188,8 @@ export const PanelInteractionUtils = {
 
       ebp.ordenationTypes = [
         { display_name: 'ASC', value: 'Asc', selected: false },
-        { display_name: 'DESC', value: 'Desc', selected: false },
-        { display_name: 'NO', value: 'No', selected: true }
+        { display_name: 'DESC', value: 'Desc', selected: true },
+        { display_name: 'NO', value: 'No', selected:false  }
       ];
 
     } else {
@@ -203,19 +213,21 @@ export const PanelInteractionUtils = {
   moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
     ebp.disableBtnSave();
     // Busca index en l'array de columnes
-    const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id });
-    ebp.columns.splice(match, 1);  // Elimina aquella columna de l'array
+    // const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id,  });
+    const match = _.find(ebp.columns, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
+    if (match) match.isdeleted = true; // Marco la columna com a borrada
+    
     ebp.currentQuery.push(_.cloneDeep(c));      // Col·loca la nova columna a l'array Select
-    PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida
-    PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions
-    PanelInteractionUtils.handleOrdTypes(ebp, c);         // Comprovacio ordenacio
+    PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida a la consulta
+    PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions de la nova columna afegida a la consulta
+    PanelInteractionUtils.handleOrdTypes(ebp, c);         // Comprovacio ordenacio  de la nova columna afegida a la consulta
+   
 
-    if (!_.isEqual(ebp.inputs.findColumn.ngModel, '')) {
-      ebp.inputs.findColumn.reset();
-      PanelInteractionUtils.loadColumns(
-        ebp,
-        ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0]);
-    }
+    ebp.inputs.findColumn.reset();  // resetea las columnas a mostrar
+    PanelInteractionUtils.loadColumns( // Torna a carregar les columnes de la taula
+      ebp, 
+      ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0], ebp.hiddenColumn );
+  
   },
 
   /**
@@ -277,6 +289,11 @@ export const PanelInteractionUtils = {
     }
   },
 
+
+
+
+
+
   /**
     * Removes given column from content
     * @param c column to remove
@@ -284,25 +301,23 @@ export const PanelInteractionUtils = {
     */
   removeColumn: (ebp: EdaBlankPanelComponent, c: Column, list?: string) => {
     ebp.disableBtnSave();
+
     // Busca de l'array index, la columna a borrar i ho fa
     if (list === 'select') {
 
-      const match = _.findIndex(ebp.currentQuery, { column_name: c.column_name, table_id: c.table_id });
+      const match = _.findIndex(ebp.currentQuery, (o) => o.column_name == c.column_name && o.table_id == c.table_id && o.display_name == c.display_name );
       // Reseting all configs of column removed
       ebp.currentQuery[match].ordenation_type = 'No';
       ebp.currentQuery[match].aggregation_type.forEach(ag => ag.selected = false);
       ebp.currentQuery[match].format = '';
       ebp.currentQuery.splice(match, 1);
-
     } else if (list === 'filter') {
-
       const match = _.findIndex(ebp.filtredColumns, { column_name: c.column_name, table_id: c.table_id });
       ebp.filtredColumns.splice(match, 1);
-
     }
-
     // Carregar de nou l'array Columns amb la columna borrada
-    PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id));
+
+    PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id), ebp.hiddenColumn);
   
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {

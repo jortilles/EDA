@@ -34,7 +34,7 @@ export const PanelOptions = {
 
         if (Object.entries(panelComponent.graficos).length !== 0 && panelComponent.chartData.length !== 0) {
           
-          if (['line', 'area', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline', 'histogram'].includes(panelComponent.graficos.chartType)) {
+          if (['line', 'area', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid'].includes(panelComponent.graficos.chartType)) {
 
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.chartController = new EdaDialogController({
@@ -126,14 +126,14 @@ export const PanelOptions = {
             });
 
           }
-          else if (panelComponent.graficos.chartType === 'barchart') {
+          else if (panelComponent.graficos.chartType === 'bubblechart') {
             panelComponent.contextMenu.hideContextMenu();
-            panelComponent.barchartController = new EdaDialogController({
+            panelComponent.bubblechartController = new EdaDialogController({
               params: {
                 panelID: _.get(panelComponent.panel, 'id'),
                 panelChart: panelComponent.panelChartConfig
               },
-              close: (event, response) => { panelComponent.onCloseBarchartProperties(event, response) }
+              close: (event, response) => { panelComponent.onCloseBubblechartProperties(event, response) }
             });
 
           }
