@@ -3,6 +3,7 @@ import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builde
 import { AbstractConnection } from "../abstract-connection";
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
 import { ConnectionOptions, PoolOptions, Pool } from 'mysql2/typings/mysql';
+import { PoolManagerConnectionSingleton } from '../pool-manager-connection';
 const util = require('util');
 
 
@@ -16,7 +17,13 @@ export class MysqlConnection extends AbstractConnection {
 
     public async getclient() {
         if (this.config.poolLimit) {
-            if (!this.pool) {
+            const poolManager = PoolManagerConnectionSingleton.getInstance();
+            const existingPool = poolManager.getPool(this.config.database);
+
+            if (existingPool) {
+                console.log('same pool')
+                this.pool = existingPool;
+            } else {
                 const mySqlConn: PoolOptions = {
                     host: this.config.host,
                     port: this.config.port,
@@ -30,20 +37,24 @@ export class MysqlConnection extends AbstractConnection {
                     keepAliveInitialDelay: 0
                 };
 
-                this.pool = createPool(mySqlConn);
+                poolManager.createPool(this.config.database, mySqlConn);
+                this.pool = poolManager.getPool(this.config.database);
+
+                console.log('neew pool');
             }
 
             return this.pool;
-        } else {
-            const mySqlConn: ConnectionOptions = {
-                host: this.config.host,
-                port: this.config.port,
-                database: this.config.database,
-                user: this.config.user,
-                password: this.config.password
-            };
-            return createConnection(mySqlConn);
-        }
+        } 
+
+        const mySqlConn: ConnectionOptions = {
+            host: this.config.host,
+            port: this.config.port,
+            database: this.config.database,
+            user: this.config.user,
+            password: this.config.password
+        };
+
+        return createConnection(mySqlConn);
     }
 
     public static getInstance(config: any): MysqlConnection {
@@ -138,8 +149,8 @@ export class MysqlConnection extends AbstractConnection {
                     tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
-            console.log(this.client.itsConnected());
-            if (!this.pool && this.client.itsConnected()) this.client.end();
+            // console.log(this.client.itsConnected());
+            // if (!this.pool && this.client.itsConnected()) this.client.end();
             
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */
             if(foreignKeys.length > 0) return await this.setForeignKeys(tables, foreignKeys);
@@ -154,8 +165,8 @@ export class MysqlConnection extends AbstractConnection {
         try {
             this.client.query = util.promisify(this.client.query);
             const rows = await this.client.query(query);
-            console.log(this.client.itsConnected());
-            if (!this.pool && this.client.itsConnected() ) this.client.end();
+            // console.log(this.client.itsConnected());
+            // if (!this.pool && this.client.itsConnected() ) this.client.end();
             return rows;
         } catch (err) {
             console.log(err);
