@@ -1166,9 +1166,9 @@ pre {
 }
 
 /* JJ Puesto para quitar el overlay que no se borra*/
-.p-component-overlay-enter {
+/*.p-component-overlay-enter {
     animation: p-component-overlay-enter-animation 150ms forwards;
-  }
+  }*/
   
   .p-component-overlay-leave {
     animation: p-component-overlay-leave-animation 150ms forwards;
