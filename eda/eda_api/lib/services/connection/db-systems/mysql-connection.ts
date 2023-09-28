@@ -120,8 +120,6 @@ export class MysqlConnection extends AbstractConnection {
             this.client.query = util.promisify(this.client.query);
             const rows = await this.client.query(query);
             this.client.end();
-            console.log('rows');
-            console.log(rows);
             return rows;
         } catch (err) {
             console.log(err);
