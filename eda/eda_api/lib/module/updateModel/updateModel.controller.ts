@@ -124,13 +124,30 @@ export class updateModel {
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
                                                                             // montamos el modelo
                                                                             console.log('Recuperando usuarios');
-                                                                            crm_to_eda = await userAndGroupsToMongo.crm_to_eda_UsersAndGroups(users_crm, roles)
+                                                                            try {
+                                                                              crm_to_eda = await userAndGroupsToMongo.crm_to_eda_UsersAndGroups(users_crm, roles)  
+                                                                            } catch (e) {
+                                                                              console.log(e)
+                                                                              res.status(500).json({'status' : 'ko'})
+                                                                            }
+                                                                            
 
                                                                             console.log('Recuperando roles');
+                                                                            try {
                                                                             grantedRolesAt = await updateModel.grantedRolesToModel(grantedRoles, tables, permissions, permissionsColumns)
+                                                                            } catch (e) {
+                                                                              console.log(e)
+                                                                              res.status(500).json({'status' : 'ko'})
+                                                                            }
 
                                                                             console.log('Generando el modelo');
-                                                                            modelToExport = updateModel.createModel(tables, columns, relations, grantedRolesAt, ennumeration);
+                                                                            
+                                                                            try {
+                                                                            modelToExport = updateModel.createModel(tables, columns, relations, grantedRolesAt, ennumeration, res);
+                                                                            } catch (e) {
+                                                                              console.log(e)
+                                                                              res.status(500).json({'status' : 'ko'})
+                                                                            }                                                                      
 
 
                                                                             connection.end()
@@ -142,15 +159,16 @@ export class updateModel {
                                 })
                         })
                     })
-
-                    return res.status(200).json({ 'status': 'ok' });
+                    
+                    // return res.status(200).json({ 'status': 'imported data ok' });
                 })
 
         } catch (e) {
-            console.log('ERROOOR');
+            //res.send(500)
+            console.log('error');
             console.log(e);
         }
-        //return res.status(200).json({  status: "fucking ok" });
+        
     }
 
 
@@ -324,7 +342,7 @@ export class updateModel {
     }
 
 
-    static createModel(tables: any, columns: any, relations: any, grantedRoles: any, ennumeration: any): string[] {
+    static createModel(tables: any, columns: any, relations: any, grantedRoles: any, ennumeration: any, res: any): string[] {
     
         let visible = false ;
         
@@ -370,10 +388,11 @@ export class updateModel {
           destTables.push(tabla);
     
         }
-    
-        //extraemos model json
-        this.extractJsonModelAndPushToMongo(destTables,  grantedRoles, tables)
-        return destTables;
+        
+        this.extractJsonModelAndPushToMongo(destTables,  grantedRoles, res);
+
+      
+      return destTables;    
     
       }
     
@@ -404,7 +423,7 @@ export class updateModel {
 
       /** recupera las columnas de una tabla */
       static getColumnsForTable(table: string, columns: any, ennumeration: any) {
-  
+ 
        const destColumns = [];
 
        const agg_none = [{
@@ -435,7 +454,7 @@ export class updateModel {
           }
     
           if (c.table == table) {
-    
+            
             //damos los valores a cada columna
             c = {
               "column_name": columns[i].column,
@@ -503,7 +522,7 @@ export class updateModel {
     
 
       
-  static async extractJsonModelAndPushToMongo(tables: any,   grantedRoles: any, crmTables: any) {
+  static async extractJsonModelAndPushToMongo(tables: any,   grantedRoles: any, res: any) {
     
 console.log('la base de datos es :================> ');
 console.log(sinergiaDatabase);
@@ -518,14 +537,26 @@ console.log(sinergiaDatabase);
     main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password);
     main_model.ds.model.tables = tables; //añadimos el parámetro en la columna adecuada
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
-
-    const cleanM = new CleanModel;
-
-    main_model = await cleanM.cleanModel(main_model);
     
-    await new pushModelToMongo().pushModel(main_model);
-    fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, (err) => { if (err) throw err })
+    
+    try {
+        const cleanM = new CleanModel; 
+        main_model = await cleanM.cleanModel(main_model);
+        fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, (err) => { if (err) {throw err} else { }})
+        try {
+          await new pushModelToMongo().pushModel(main_model,res)
+          } catch (e) {
+            console.log(e)
+            res.status(500).json({'status' : 'ko'})
+          } finally {
+            res.status(200).json({'status' : 'ok'})
+          }
+        
+        } catch (e) {        
+            console.log(e)
+            res.status(500).json({'status' : 'ko'})
+        }
+      
+    }
 
   }
-
-}
