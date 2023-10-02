@@ -1,7 +1,6 @@
-import {  createConnection, Connection as SqlConnection } from 'mysql2';
+import { createConnection, createPool, Connection as SqlConnection } from 'mysql2';
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
-import DataSource from '../../../module/datasource/model/datasource.model';
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
 import { ConnectionOptions, PoolOptions, Pool } from 'mysql2/typings/mysql';
 import { PoolManagerConnectionSingleton } from '../pool-manager-connection';
@@ -9,11 +8,10 @@ const util = require('util');
 
 
 export class MysqlConnection extends AbstractConnection {
-    GetDefaultSchema(): string {
-        return null;
-    }
+    private static instance: MysqlConnection;
     private queryBuilder: MySqlBuilderService;
     private AggTypes: AggregationTypes;
+    private pool: Pool;
 
     public GetDefaultSchema(): string { return null; }
 
