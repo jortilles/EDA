@@ -4,6 +4,10 @@ export * from './eda-dialogs/eda-dialog/eda-dialog-controller';
 export * from './eda-dialogs/eda-dialog/eda-dialog.component';
 export * from './eda-dialogs/eda-dialog/eda-dialog';
 
+// Eda Dialog 2.0
+export * from './eda-dialogs/eda-dialog2/eda-dialog2.component';
+export * from './eda-dialogs/eda-dialog2/eda-dialog2';
+
 // Eda Page Dialog
 export * from './eda-dialogs/eda-page-dialog/eda-page-dialog.component';
 

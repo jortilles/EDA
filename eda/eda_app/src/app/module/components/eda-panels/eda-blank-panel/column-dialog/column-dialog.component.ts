@@ -34,7 +34,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         filterValue: false,
         filterButton: true,
         switchButton: true,
-        duplicateColumnInp: false
+        duplicateColumn: false
     };
     public filter = {
         switch: false,
@@ -526,15 +526,19 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
     }
 
+    public onCancelDuplicateColumn(): void {
+        this.display.duplicateColumn = false;
+    }
+
     public duplicateColumn() {
-        this.display.duplicateColumnInp = true;
+        this.display.duplicateColumn = true;
         this.duplicatedColumnName = this.selectedColumn.display_name.default + ' (Copy)';
     }
 
     public saveDuplicatedColumn() {
         if (_.isNil(this.duplicatedColumnName) || _.isEmpty(this.duplicatedColumnName)) return;
 
-        this.display.duplicateColumnInp = false;
+        this.display.duplicateColumn = false;
         const newColumn = _.cloneDeep(this.selectedColumn);
         newColumn.display_name.default = this.duplicatedColumnName;
         this.onClose(EdaDialogCloseEvent.NEW, { duplicated: true, column: newColumn});

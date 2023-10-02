@@ -115,7 +115,6 @@ export const PanelInteractionUtils = {
     * @param column 
     */
   handleAggregationType: (ebp: EdaBlankPanelComponent, column: Column): void => {
-  
     const voidPanel = ebp.panel.content === undefined;
     const tmpAggTypes = [];
     const tableId = column.table_id;
@@ -127,7 +126,7 @@ export const PanelInteractionUtils = {
       });
     }
     if (!voidPanel) {
-      const colInCurrentQuery = ebp.currentQuery.find(c => c.table_id === tableId && c.column_name === colName  && c.display_name.default == displayName ).aggregation_type.find(agg => agg.selected === true);
+      const colInCurrentQuery = ebp.currentQuery.find(c => c.table_id === tableId && c.column_name === colName  && c.display_name.default === displayName ).aggregation_type.find(agg => agg.selected === true);
       const queryFromServer = ebp.panel.content.query.query.fields;
       // Column is in currentQuery
       if (colInCurrentQuery) {
@@ -135,7 +134,7 @@ export const PanelInteractionUtils = {
         ebp.aggregationsTypes = tmpAggTypes;
         //Column isn't in currentQuery
       } else {
-        const columnInServer = queryFromServer.filter(c =>  c.table_id === tableId && c.column_name === colName   && c.display_name.default == displayName )[0];
+        const columnInServer = queryFromServer.filter(c =>  c.table_id === tableId && c.column_name === colName   && c.display_name == displayName )[0];
         // Column is in server's query
         if (columnInServer) {
           const aggregation = columnInServer.aggregation_type;
@@ -156,6 +155,32 @@ export const PanelInteractionUtils = {
       return   c.table_id === tableId && colName === c.column_name   && c.display_name.default == displayName
     }).aggregation_type = _.cloneDeep(ebp.aggregationsTypes);
   },
+
+  
+  /**
+    * set aggregation types
+    * @param column 
+    */
+  handleAggregationType4DuplicatedColumns: (ebp: EdaBlankPanelComponent, column: Column): void => {
+    const tableId = column.table_id;
+    const colName = column.column_name;
+    const displayName = column.display_name.default
+    const queryFromServer = ebp.panel.content.query.query.fields;
+    const columnInServer = queryFromServer.filter(c =>  c.table_id === tableId && c.column_name === colName   && c.display_name == displayName )[0];
+    // Column is in server's query
+    if (columnInServer) {
+        const aggregation = columnInServer.aggregation_type;
+        column.aggregation_type.forEach(e => {
+          if(e.value===aggregation){
+              e.selected = true;
+          }else{
+            e.selected = false;
+          }
+        });
+      }
+  
+  },
+
 
   /**
   * Set order types
@@ -216,7 +241,7 @@ export const PanelInteractionUtils = {
     // const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id,  });
     const match = _.find(ebp.columns, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
     if (match) match.isdeleted = true; // Marco la columna com a borrada
-    
+
     ebp.currentQuery.push(_.cloneDeep(c));      // Col·loca la nova columna a l'array Select
     PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida a la consulta
     PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions de la nova columna afegida a la consulta

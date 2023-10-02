@@ -390,18 +390,8 @@
 
         <!-- Duplicar columna -->
         <div class="col-12" style="position: absolute; bottom: 0; right:1.9rem" class="text-right">
-            <span *ngIf="display.duplicateColumnInp">
-                <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName" style="font-size: 18px;margin-right: 1.5rem;">
-                    Nombre columna duplicada
-                </label>
-                <input pInputText id="duplicatedColumnName" [(ngModel)]="duplicatedColumnName" type="text"  />
-
-                <button *ngIf="display.duplicateColumnInp" type="button" pButton (click)="saveDuplicatedColumn()" icon="fa fa-check"
-                    class="p-button p-button-raised ml-2" i18n-label="@@duplicateColumnButton" label="Duplicar columna" id="eda_column_dialog_confirmar">
-                </button>
-            </span>
-            <button *ngIf="!display.duplicateColumnInp" type="button" pButton (click)="duplicateColumn()" class="p-button-raised"
-                i18n-label="@@duplicateColumnButton" label="Duplicar columna">
+            <button type="button" pButton (click)="duplicateColumn()" icon="fa fa-check"
+                class="p-button p-button-raised ml-2" i18n-label="@@duplicateColumnButton" label="Duplicar columna" id="eda_column_dialog_confirmar">
             </button>
         </div>
 
@@ -418,3 +408,24 @@
     </div>
 
 </eda-dialog>
+
+<eda-dialog2 *ngIf="display.duplicateColumn" [display]="display.duplicateColumn" header="Duplicar columna" width="60vw" height= "auto" (close)="onCancelDuplicateColumn()" (apply)="saveDuplicatedColumn()">
+    <div content>
+        <!-- Duplicar columna -->
+        <div class="col-12">
+            <span>
+                <label i18n="@@duplicatedColumnNameLabel" for="duplicatedColumnName" style="font-size: 18px;margin-right: 1.5rem;">
+                    Nombre columna duplicada
+                </label>
+                <input pInputText id="duplicatedColumnName" [(ngModel)]="duplicatedColumnName" type="text"  />
+
+                <!-- <button *ngIf="display.duplicateColumnInp" type="button" pButton (click)="saveDuplicatedColumn()" icon="fa fa-check"
+                    class="p-button p-button-raised ml-2" i18n-label="@@duplicateColumnButton" label="Duplicar columna" id="eda_column_dialog_confirmar">
+                </button> -->
+            </span>
+            <!-- <button *ngIf="!display.duplicateColumnInp" type="button" pButton (click)="duplicateColumn()" class="p-button-raised"
+                i18n-label="@@duplicateColumnButton" label="Duplicar columna">
+            </button> -->
+        </div>
+    </div>
+</eda-dialog2>

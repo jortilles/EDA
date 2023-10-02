@@ -1,0 +1,27 @@
+
+<p-dialog class="eda-dialog2" [header]="header"
+    [(visible)]="display"
+    [modal]="true"
+    [closable]="false"
+    [draggable]="false"
+    [header]="header"
+    [contentStyle]="{height: '100%'}"
+    [style]="{width, height}"
+    appendTo="body">
+
+    <ng-template pTemplate="header" *ngIf="!header">
+        <ng-content select="[header]"></ng-content>
+    </ng-template>
+
+    <ng-template pTemplate="content">
+        <ng-content select="[content]"></ng-content>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <hr>
+        <ng-content select="[footer]"></ng-content>
+        <button *ngIf="ifShowApply " pButton icon="fa fa-check" class="p-button-raised p-button-success" label="Confirmar" i18n-label="@@guardarBtn" (click)="onApply()"></button> 
+        <button *ngIf="ifShowClose" pButton icon="fa fa-times" class="p-button-raised p-button-danger" label="Cancelar" i18n-label="@@cancelarBtn" (click)="onClose()"></button> 
+    </ng-template>
+
+</p-dialog>
