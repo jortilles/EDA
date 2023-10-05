@@ -12,8 +12,12 @@ export const roleGuard = async function (req: Request, res: Response, next: Next
     if ( !_.isNil(userID) ) {
         
         const groups = await Group.find({users: {$in: userID}}).exec();
+        console.log(groups);
         
-        const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE'  || g.role == 'EDA_DATASOURCE_CREATOR' ).length > 0;
+        const isAdmin = groups.filter(g => g.name === 'EDA_ADMIN_ROLE'  || g.name == 'EDA_DATASOURCE_CREATOR' ).length > 0;
+
+        console.log(isAdmin);
+      //  console.log(req);
 
         if (!isAdmin) {
             return next(new HttpException(403, 'You must need to be admin to acces here'));
