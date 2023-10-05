@@ -68,7 +68,7 @@
   left: 2px;
   right: auto;
   background: none;
-  width: 6px;
+  width: 10px;
   /* If using `left`, there shouldn't be a `right`. */
 }
 

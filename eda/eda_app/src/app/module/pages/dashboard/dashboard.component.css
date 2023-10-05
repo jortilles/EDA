@@ -233,7 +233,7 @@ app-dashboard {
 
 
 .customMultiselect >>> ::-webkit-scrollbar {
-        width: 9px;
+        width: 10px;
         height: 9px;
     }
 
