@@ -332,6 +332,7 @@ export class EdaBlankPanelComponent implements OnInit {
                                 }
                                 if(duplicatedColumn){
                                     duplicatedColumn.display_name.default = el.display_name;
+
                                     PanelInteractionUtils.handleAggregationType4DuplicatedColumns( this, duplicatedColumn);
                                     this.currentQuery.push(duplicatedColumn); // Moc la columna directament perque es una duplicada.... o no....
                                 }
