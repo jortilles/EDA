@@ -3926,6 +3926,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Duplicated column name:</target>
 </trans-unit>
 
+<trans-unit id="duplicateError">
+  <source> El nombre de dos o más columnas de la misma tabla son idénticos. Por favor modifica nombres duplicados. </source>
+  <target> The name of two or more columns of the same table are identical. Please modify duplicate names. </target>
+</trans-unit>
 
 </body>
 </file>

@@ -84,6 +84,19 @@ export const QueryUtils = {
  */
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
 
+    let dup = [];
+    
+    ebp.currentQuery.forEach(a=> { 
+      let finder = dup.find(b => b === a.display_name.default);
+      if (finder != null) {
+        a.display_name.default = finder + "_1" ;
+        //ebp.alertService.addError($localize`:@@duplicateError: El nombre de dos o más columnas de la misma tabla son idénticos. Por favor modifica nombres duplicados.`);
+        //ebp.spinnerService.off();
+        //return;
+      } else {
+        dup.push(a.display_name.default);
+      }  
+     })
 
     ebp.display_v.disablePreview = false;
 

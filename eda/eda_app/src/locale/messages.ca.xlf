@@ -3191,7 +3191,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
 
-
   <trans-unit id="sidebarModelsManagement">
     <source>Gestión de modelos </source>
     <target>Gestió de models </target>
@@ -3953,6 +3952,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="duplicatedColumnNameLabel">
 <source>Nombre columna duplicada:</source>
 <target>Nom columna duplicada:</target>
+</trans-unit>
+
+<trans-unit id="duplicateError">
+  <source> El nombre de dos o más columnas de la misma tabla son idénticos. Por favor modifica nombres duplicados. </source>
+  <target> El nom de dos o mes columnes de la mateixa taula son idèntics. Siusplau modifica els noms duplicats. </target>
 </trans-unit>
 
 </body>
