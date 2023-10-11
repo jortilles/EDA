@@ -2,7 +2,7 @@
 
   <app-sidebar></app-sidebar>
 
-  <div id="psl-w" class="page-wrapper eda-page-class" [ngStyle]="{'background-color': backgroundColor}">
+  <div id="psl-w" class="page-wrapper eda-page-class" [ngStyle]="{'background-color': backgroundColor}" [ngClass]="{'noSidebar': panelMode }">
 
     <div class="container-fluid" style="height: 100%;">
 
