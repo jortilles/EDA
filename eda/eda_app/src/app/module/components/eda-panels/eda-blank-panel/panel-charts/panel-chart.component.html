@@ -5,3 +5,9 @@
       <img src="assets/images/nodata.png" style="width: 250px;" alt="no data" />
   </div>
 </ng-container>
+
+<ng-container *ngIf="NO_DATA_ALLOWED">
+  <div class="d-flex justify-content-center">
+    <h2 text-align = "center"  style="position:absolute;top: 50%;" ><span i18n="@@noDataAllowed" class="ml-2">Este panel no está disponible por falta de permisos</span></h2>
+    </div>
+</ng-container>

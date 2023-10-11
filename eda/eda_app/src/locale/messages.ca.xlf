@@ -3955,6 +3955,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Nom columna duplicada:</target>
 </trans-unit>
 
+<trans-unit id="noDataAllowed">
+<source>Este panel no está disponible por falta de permisos</source>
+<target>Aquest panell no està disponible per manca de permisos</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

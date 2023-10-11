@@ -3900,6 +3900,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Zduplikowana nazwa kolumny:</target>
 </trans-unit>
 
+<trans-unit id="noDataAllowed">
+<source>Este panel no está disponible por falta de permisos</source>
+<target>Panel ten nie jest dostępny ze względu na brak uprawnień</target>
+</trans-unit>
 
 </body>
 </file>
