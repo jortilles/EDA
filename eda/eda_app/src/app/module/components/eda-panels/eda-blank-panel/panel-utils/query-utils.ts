@@ -84,15 +84,14 @@ export const QueryUtils = {
  */
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
 
+    /** gestiona las columnas duplicadas. Si tengo dos columnas con el mismo nombre le añado el sufijo _1, _2, _3.... etc */
     let dup = [];
-    
+    let cont = 0;
     ebp.currentQuery.forEach(a=> { 
       let finder = dup.find(b => b === a.display_name.default);
       if (finder != null) {
-        a.display_name.default = finder + "_1" ;
-        //ebp.alertService.addError($localize`:@@duplicateError: El nombre de dos o más columnas de la misma tabla son idénticos. Por favor modifica nombres duplicados.`);
-        //ebp.spinnerService.off();
-        //return;
+        cont = cont + 1
+        a.display_name.default = finder + "_" + cont ;
       } else {
         dup.push(a.display_name.default);
       }  
