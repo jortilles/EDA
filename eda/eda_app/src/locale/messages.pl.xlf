@@ -3883,6 +3883,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>w tym zakresie</target>
   </trans-unit> 
 
+<trans-unit id="duplicateError">
+  <source> El nombre de dos o más columnas de la misma tabla son idénticos. Por favor modifica nombres duplicados. </source>
+  <target> Nazwy dwóch lub więcej kolumn w tej samej tabeli są identyczne. Zmień zduplikowane nazwy. </target>
+</trans-unit>
 
 
 <trans-unit id="si">
