@@ -144,7 +144,7 @@ export class JSONWebServiceConnection extends AbstractConnection {
       },
       aggregation_type:
         type === 'numeric'
-          ? AggregationTypes.getValues()
+          ? AggregationTypes.getValuesForNumbers()
           : [{ value: 'none', display_name: 'no' }],
       column_granted_roles: [],
       row_granted_roles: [],

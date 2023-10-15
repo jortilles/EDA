@@ -28,8 +28,6 @@ import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { display } from 'html2canvas/dist/types/css/property-descriptors/display';
 
 export interface IPanelAction {
     code: string;
