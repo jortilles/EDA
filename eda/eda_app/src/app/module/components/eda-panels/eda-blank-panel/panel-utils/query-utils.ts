@@ -153,7 +153,7 @@ export const QueryUtils = {
       return;
     }
 
-
+    console.log(ebp);
     /**
     * Cumulative sum check 
     */

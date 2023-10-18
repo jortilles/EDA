@@ -182,8 +182,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         );
 
         addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
-
-        console.log(addAggr);
     }
 
     addOrdenation(ord: any) {
@@ -321,37 +319,25 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     /**Gestiona las agregaciones de la columna seleccionada */
     handleAggregationType(column: Column) {
+        const matchingQuery = this.controller.params.currentQuery.find((c: any) =>
+            c.table_id === column.table_id &&
+            c.column_name === column.column_name &&
+            c.display_name.default === column.display_name.default
+        );
 
         if (this.controller.params.panel.content) {
-            console.log('here');
             const tmpAggTypes = [];
-
-            const matchingQuery = this.controller.params.currentQuery.find((c: any) =>
-                c.table_id === column.table_id &&
-                c.column_name === column.column_name &&
-                c.display_name.default === column.display_name.default
-            );
-
-            console.log(matchingQuery);
-                
+            
             const selectedAggregation = matchingQuery
                 ? matchingQuery.aggregation_type.find((agg: any) => agg.selected === true)
                 : undefined;
 
-
-            console.log(selectedAggregation);
             // Si ja s'ha carregat el panell i tenim dades a this.select
             if (selectedAggregation) {
                 tmpAggTypes.push(...column.aggregation_type);
-
-                const matchingQuery = this.controller.params.currentQuery.find((c: any) => 
-                    column.column_name === c.column_name && 
-                    column.table_id === c.table_id && 
-                    column.display_name.default === c.display_name.default
-                );
                   
                 if (matchingQuery) {
-                    matchingQuery.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
+                    this.aggregationsTypes = JSON.parse(JSON.stringify(matchingQuery.aggregation_type));
                 }
 
                 return;
@@ -359,14 +345,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 this.aggregationsTypes = JSON.parse(JSON.stringify(this.controller.params.selectedColumn.aggregation_type));
             }
         } else {
-            console.log('else');
-            const matchingQuery = this.controller.params.currentQuery.find((c: any) =>
-                c.column_name === column.column_name &&
-                c.display_name.default === column.display_name.default
-            );
-
             if (!matchingQuery) {
-
                 const tmpAggTypes = column.aggregation_type.map(agg => ({
                     display_name: agg.display_name,
                     value: agg.value,
@@ -379,16 +358,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             }
         }
 
-        const matchingQuery = this.controller.params.currentQuery.find((c: any) => 
-            column.column_name === c.column_name && 
-            column.table_id === c.table_id && 
-            column.display_name.default === c.display_name.default
-        );
-
         if (matchingQuery) {
             matchingQuery.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
         }
-
     }
 
     handleDataFormatTypes(column: Column) {
