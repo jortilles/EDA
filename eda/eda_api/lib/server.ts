@@ -32,7 +32,7 @@ app.use(function(err: IError, req, res, next) {
 });
 
 app.listen(PORT, () => {
-    console.log('\n\x1b[34m=====\x1b[0m Server start on port \x1b[32m[8666] \x1b[0m \x1b[34m=====\x1b[0m\n');
+    console.log('\n\x1b[34m=====\x1b[0m Server start on port \x1b[32m['+PORT+'] \x1b[0m \x1b[34m=====\x1b[0m\n');
 });
 
 /**
