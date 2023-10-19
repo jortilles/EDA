@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SettingsService, StyleProviderService } from '@eda/services/service.index';
+import { ActivatedRoute, Router } from '@angular/router';
 
 declare function init_plugins();
 
@@ -11,8 +12,12 @@ declare function init_plugins();
 export class PagesComponent implements OnInit {
 
     backgroundColor : string 
+    panelMode: boolean = false;
 
-    constructor(private settingSerive: SettingsService, private styleProviderService : StyleProviderService) {
+    constructor( private router: Router,
+        private route: ActivatedRoute, 
+        private settingSerive: SettingsService, 
+        private styleProviderService : StyleProviderService) {
 
         this.styleProviderService.pageBackground.subscribe((backgroundColor)=>{
             this.backgroundColor = backgroundColor;
@@ -22,7 +27,21 @@ export class PagesComponent implements OnInit {
 
     ngOnInit(): void {
         this.settingSerive.loadingSettings();
+        this.getPanelMode();
         init_plugins();
+    }
+
+        
+    private getPanelMode(): void {
+        
+        this.route.queryParams.subscribe(params => {
+            try{
+                    if(params['panelMode'] == 'true'){
+                        this.panelMode =true; // en mode panel es mostra nomel els panells
+                    }
+            }catch(e){
+            }
+        });
     }
 
 }

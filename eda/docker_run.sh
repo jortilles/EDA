@@ -25,7 +25,7 @@ then
         mongosh --eval 'db.createCollection("data-source")' EDA
         mongosh --eval 'db.createCollection("files")' EDA
         mongosh --eval 'db.createCollection("features")' EDA
-        mongosh --eval 'db.groups.insert( { "_id": ObjectId("135792467811111111111110"), "role": "EDA_ADMIN_ROLE", "name" : "ADMIN",  "users":[ ObjectId("135792467811111111111111")  ] }   )' EDA
+        mongosh --eval 'db.groups.insert( { "_id": ObjectId("135792467811111111111110"), "role": "EDA_ADMIN_ROLE", "name" : "EDA_ADMIN",  "users":[ ObjectId("135792467811111111111111")  ] }   )' EDA
         mongosh --eval 'db.groups.insert( { "_id": ObjectId("135792467811111111111113"), "role": "EDA_USER_ROLE", "name" : "RO",  "users":[] } )' EDA
 
     		mongosh --eval 'db.groups.insert( { "_id": ObjectId("135792467811111111111115"), "role": "EDA_USER_ROLE", "name" : "EDA_DATASOURCE_CREATOR",  "users":[] } )' EDA

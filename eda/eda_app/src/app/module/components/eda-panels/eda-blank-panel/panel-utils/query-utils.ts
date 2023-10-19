@@ -85,6 +85,18 @@ export const QueryUtils = {
  */
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
 
+    /** gestiona las columnas duplicadas. Si tengo dos columnas con el mismo nombre le añado el sufijo _1, _2, _3.... etc */
+    let dup = [];
+    let cont = 0;
+    ebp.currentQuery.forEach(a=> { 
+      let finder = dup.find(b => b === a.display_name.default);
+      if (finder != null) {
+        cont = cont + 1
+        a.display_name.default = finder + "_" + cont ;
+      } else {
+        dup.push(a.display_name.default);
+      }  
+     })
 
     ebp.display_v.disablePreview = false;
 

@@ -1,8 +1,8 @@
-<div class="main-content" (window:resize)="onResize($event)" id='myDashboard'>
+<div class="main-content" (window:resize)="onResize($event)" id='myDashboard' [ngClass]="{'noSidebar': display_v.panelMode }">
     <!-- ============================================================== -->
     <!-- TITLE  -->
     <!-- ============================================================== -->
-    <div class="col-12" style="padding:2px">
+    <div class="col-12" style="padding:2px"  *ngIf="!display_v.panelMode">
         <eda-dashboard-panel class="pointer" (click)="setTitle()">
             <div class="d-flex justify-title-content">
                 <h3 *ngIf="!titleClick" class="eda-title"> {{title}} </h3>
@@ -15,8 +15,9 @@
     <!-- ============================================================== -->
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
-    <div *ngIf="filtersList.length > 0" class="d-flex align-items-end" style="margin: 0.5em; gap: 10px; flex-wrap: wrap;">
-        
+    <div [ngClass]="{'noShow': display_v.panelMode }" > <!--   panel mode es per quan vull mostrat nomes un panell-->
+    <div *ngIf="filtersList.length > 0 " class="d-flex align-items-end" style="margin: 0.5em; gap: 10px; flex-wrap: wrap;" >
+ 
         <button id="dashFilterBtn"
             [label]="filtrar"
             pButton pRipple type="button"
@@ -76,7 +77,7 @@
                 </ng-container>
             </eda-date-picker>
         </div>
-
+    </div> 
     </div>
 
     <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions" #gridster1 >
@@ -295,4 +296,9 @@
         <i id="gearButton" class="fa fa-cog text-white" style="font-size: 14px;"></i>
     </button>
 
+</div>
+
+
+<div  *ngIf="display_v.panelMode" >
+<a href="https://eda.jortilles.com">Enterprise Data Analytics</a>
 </div>
