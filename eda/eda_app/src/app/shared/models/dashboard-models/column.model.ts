@@ -3,6 +3,7 @@ export interface Column {
     column_name: string;
     display_name: {default: string, ord: number, localizad: any[]};
     description: {default: string, localizad: any[]};
+    old_column_type: string;
     column_type: string;
     computed_column: string; // las posibilidades son no, computed_numeric, computed_string
     SQLexpression : string;

@@ -30,6 +30,7 @@ export class QueryBuilderService extends ApiService {
         col.column_name = column.column_name;
         col.display_name = column.display_name.default;
         col.column_type = column.column_type;
+        col.old_column_type = column.old_column_type || column.column_type;
         col.computed_column = column.computed_column;
         col.SQLexpression = column.SQLexpression;
         col.aggregation_type = column.aggregation_type.filter(ag => ag.selected === true);
@@ -40,7 +41,6 @@ export class QueryBuilderService extends ApiService {
         col.order = 0;
         col.column_granted_roles = column.column_granted_roles;
         col.row_granted_roles = column.row_granted_roles;
-
         queryColumns.push(col);
 
         return {
@@ -81,6 +81,7 @@ export class QueryBuilderService extends ApiService {
             col.column_name = select[i].column_name;
             col.display_name = select[i].display_name.default;
             col.column_type = select[i].column_type;
+            col.old_column_type = select[i].old_column_type || select[i].column_type;
             col.computed_column = select[i].computed_column;
             col.SQLexpression = select[i].SQLexpression;
             col.aggregation_type = select[i].aggregation_type.filter(ag => ag.selected === true);
@@ -96,7 +97,6 @@ export class QueryBuilderService extends ApiService {
             col.valueListSource = select[i].valueListSource;
             queryColumns.push(col);
             labels.push(select[i].column_name);
-
         }
 
         return {
