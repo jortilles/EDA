@@ -3,7 +3,7 @@
     <div *ngIf="!isObserver" class="col-12"  id="div_new_dashboard">
         <eda-dashboard-panel class="pointer" >
 
-            <div id="home_new_dashboard" class="d-flex justify-content-center" (click)="initDialog()">
+            <div id="home_new_dashboard" class="d-flex justify-content-center" (click)="createDashboard = true;">
                 <h3 i18n="@@tituloNuevoInforme">
                     CREAR UN NUEVO INFORME
                 </h3>
@@ -164,4 +164,4 @@
 
 
 
-<app-create-dashboard *ngIf="dashController" [controller]="dashController"></app-create-dashboard>
+<app-create-dashboard *ngIf="createDashboard" (close)="onCloseCreateDashboard($event)"></app-create-dashboard>

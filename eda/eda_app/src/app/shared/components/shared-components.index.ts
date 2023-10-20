@@ -26,3 +26,5 @@ export * from './eda-input/eda-input.component';
 export { NavbarComponent } from './navbar/navbar.component';
 export { SidebarComponent } from './sidebar/sidebar.component';
 
+
+export { CreateDashboardComponent } from './create-dashboard/create-dashboard.component';

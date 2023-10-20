@@ -13,15 +13,15 @@ import Swal, { SweetAlertOptions } from 'sweetalert2';
     styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-    user: User;
-    isAdmin: boolean;
-    dataSourceMenu: any[] = [];
-    edit_mode: boolean = true;
-    panelMode: boolean = false; // en mode panel es mostra nomel el panell
-    mobileSize: boolean = false;
-    sideBtn: boolean = false;
-    logoSidebar: string;
-    homeLink = '/home'
+    public user: User;
+    public isAdmin: boolean;
+    public dataSourceMenu: any[] = [];
+    public edit_mode: boolean = true;
+    public mobileSize: boolean = false;
+    public sideBtn: boolean = false;
+    public logoSidebar: string;
+    public homeLink = '/home'
+    public createDashboard: boolean = false;
 
     constructor(
         public router: Router,
@@ -166,22 +166,17 @@ export class SidebarComponent implements OnInit {
             case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
         }
     }
+
     public checkNotSaved(){
 
         this.styleProviderService.setDefaultBackgroundColor();
         let url = window.location.href;
 
-        if(url.includes('data-source'))
-        {
+        if(url.includes('data-source')) {
             this.checkNotSavedDatasource(); 
-        }
-        else if(url.includes('dashboard'))
-        {
-
+        } else if(url.includes('dashboard')) {
             this.checkNotSavedHome()
-        }
-        else
-        {
+        } else {
             this.router.navigate(['/home/']);
         }
         
@@ -230,6 +225,11 @@ export class SidebarComponent implements OnInit {
                 }
             })
         }
+    }
+
+    public onCloseCreateDashboard(event?: any): void {
+        this.createDashboard = false;
+        if (event) this.router.navigate(['/dashboard', event._id]);
     }
 
 }
