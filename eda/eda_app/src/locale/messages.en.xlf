@@ -1003,6 +1003,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Buscar por nombre del informe</source>
 <target>Search by report name</target>
 </trans-unit>
+<trans-unit id="buscar" datatype="html">
+<source>Buscar</source>
+<target>Search</target>
+</trans-unit>
 <trans-unit id="selectFuenteDatos" datatype="html">
 <source>Selecciona una fuente de datos *</source>
 <target>Select datasource *</target>
@@ -3925,7 +3929,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Nombre columna duplicada:</source>
 <target>Duplicated column name:</target>
 </trans-unit>
-
 
 </body>
 </file>

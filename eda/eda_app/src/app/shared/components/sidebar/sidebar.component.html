@@ -1,4 +1,4 @@
-<ng-container *ngIf="mobileSize && sideBtn && edit_mode">
+<ng-container *ngIf="mobileSize && sideBtn && edit_mode && !sidebarService.toggleSideNav " >
     <div>
         <img id="sidebar-btn-toggle" [src]="logoSidebar" (click)="toggleClassSide()" alt="logo icono"
             class="dark-logo" />

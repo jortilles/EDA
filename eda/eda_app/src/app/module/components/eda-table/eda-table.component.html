@@ -6,7 +6,7 @@
         <ng-template pTemplate="caption" *ngIf="inject.search">
             <div class="text-right">
                 <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-                <input type="text" pInputText size="50" placeholder="Cercador" [disabled]="inject.value.length === 0" (input)="table.filterGlobal($event.target.value, 'contains')">
+                <input type="text" pInputText size="50" i18n-placeholder="@@buscar"  placeholder="Buscar" [disabled]="inject.value.length === 0" (input)="table.filterGlobal($event.target.value, 'contains')">
             </div>
         </ng-template>
 
@@ -19,7 +19,7 @@
             </tr>
 
             <tr *ngFor="let serie of inject.series">
-                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan" 
+                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan"
                 (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center">
                     {{label.title}}
                     <p-sortIcon *ngIf="label.sortable"></p-sortIcon>
@@ -29,7 +29,7 @@
 
             <tr *ngIf="!inject.pivot" class="header-title">
                 <ng-container *ngFor="let col of inject.cols">
-                <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)" 
+                <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"
                     [width]="col.width" [attr.rowspan]="col.rowspan">
                         {{col.header}}
                         <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
