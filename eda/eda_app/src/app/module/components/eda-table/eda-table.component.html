@@ -6,7 +6,7 @@
         <ng-template pTemplate="caption" *ngIf="inject.search">
             <div class="text-right">
                 <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-                <input type="text" pInputText size="50" placeholder="Cercador" [disabled]="inject.value.length === 0" (input)="table.filterGlobal($event.target.value, 'contains')">
+                <input type="text" pInputText size="50" i18n-placeholder="@@buscar"  placeholder="Cercador" [disabled]="inject.value.length === 0" (input)="table.filterGlobal($event.target.value, 'contains')">
             </div>
         </ng-template>
 
