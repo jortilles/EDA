@@ -114,8 +114,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="sidebarMyDashboards" datatype="html">
-<source>Mis informes</source>
-<target>Moje raporty</target>
+<source> Mis informes</source>
+<target> Moje raporty</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
 <context context-type="linenumber">68</context>
@@ -929,11 +929,9 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="tituloNuevoInforme" datatype="html">
-<source>
-                    CREAR UN NUEVO INFORME
+<source> CREAR UN NUEVO INFORME
 </source>
-<target>
-                    STWÓRZ NOWY RAPORT
+<target> STWÓRZ NOWY RAPORT
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -995,6 +993,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="buscarPorNombre" datatype="html">
 <source>Buscar por nombre del informe</source>
 <target>  Szukaj po nazwie raportu</target>
+</trans-unit>
+<trans-unit id="buscar" datatype="html">
+<source>Buscar</source>
+<target>Szukaj</target>
 </trans-unit>
 <trans-unit id="selectFuenteDatos" datatype="html">
 <source>Selecciona una fuente de datos *</source>

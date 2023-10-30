@@ -164,6 +164,15 @@ export class HomeComponent implements OnInit {
         }
     }
 
+    public goToDashboard(dashboard): void {
+        if (dashboard) {
+            this.router.navigate(['/dashboard', dashboard._id]);
+        } else {
+            this.alertService.addError($localize`:@@ErrorMessage:Ha ocurrido un error`);
+        }
+    }
+    
+
     public filterTitle(text: any){
         const stringToFind = text.target.value.toString().toUpperCase();
         if(stringToFind.length >  1) {
