@@ -806,7 +806,7 @@ export class DashboardController {
          * Si hay fechas agregadas por mes o dia
          * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numéricos
          */
-        console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾')
+        console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
         DashboardController.cumulativeSum(
           cachedQuery.cachedQuery.response,
           req.body.query
@@ -976,13 +976,12 @@ export class DashboardController {
           //console.log(output);
           return res.status(200).json(output)
         } else {
-          console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾')
+          console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
           console.log(
             '\x1b[32m%s\x1b[0m',
             `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
-          console.log(cachedQuery.cachedQuery.response);
           return res.status(200).json(cachedQuery.cachedQuery.response)
         }
       }
