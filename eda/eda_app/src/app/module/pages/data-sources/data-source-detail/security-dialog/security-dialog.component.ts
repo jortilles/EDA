@@ -87,72 +87,87 @@ export class SecurityDialogComponent extends EdaDialogAbstract {
     this.securityTableTableLevel.value = [];
     this.securityModelTableLevel.value = [];
 
-
     groups.forEach(group => {
-      const table = tables.filter(t => t.table_name === group.table)[0];
-      const table_name = table.display_name.default;
-      const column = table.columns.filter(c => c.column_name === group.column)[0];
-      const column_name = column.display_name.default;
-      //console.log(column);
-      //const permission = "";
-      const permission = group.value.toString();
-      group.groupsName.forEach(name => {
-        this.securityTable.value.push({
-          user:null,
-          group:name,
-          table:table_name,
-          column:column_name,
-          permission:permission
+      try{
+        const table = tables.filter(t => t.table_name === group.table)[0];
+        const table_name = table.display_name.default;
+        const column = table.columns.filter(c => c.column_name === group.column)[0];
+        const column_name = column.display_name.default;
+        const permission = group.value.toString();
+        group.groupsName.forEach(name => {
+          this.securityTable.value.push({
+            user:null,
+            group:name,
+            table:table_name,
+            column:column_name,
+            permission:permission
+          })
         })
-      })
+      }catch(e){
+        console.log('No data for this group at column level. You defined a security group no longer exists');
+        console.log(group);
+      }
     });
     users.forEach(user => {
-      const table = tables.filter(t => t.table_name === user.table)[0];
-      const table_name = table.display_name.default;
-      const column = table.columns.filter(c => c.column_name === user.column)[0];
-      const column_name = column.display_name.default;
-      //console.log(column);
-      //const permission = "";
-      const permission = user.value.toString();
-      user.usersName.forEach(name => {
-        this.securityTable.value.push({
-          user:name,
-          group:null,
-          table:table_name,
-          column:column_name,
-          permission:permission
-        })
-      })
+      try{
+          const table = tables.filter(t => t.table_name === user.table)[0];
+          const table_name = table.display_name.default;
+          const column = table.columns.filter(c => c.column_name === user.column)[0];
+          const column_name = column.display_name.default;
+          const permission = user.value.toString();
+          user.usersName.forEach(name => {
+            this.securityTable.value.push({
+              user:name,
+              group:null,
+              table:table_name,
+              column:column_name,
+              permission:permission
+            })
+          })
+    }catch(e){
+      console.log('No data for this user at column level. You defined a security for an user  no longer exists');
+      console.log(user);
+    }
     });
 
 
     /** table based visibility */
     tableGroups.forEach(group => {
-      const table = tables.filter(t => t.table_name === group.table)[0];
-      const table_name = table.display_name.default;
-      const value = group.permission?this.si:this.no;
-      group.groupsName.forEach(name => {
-        this.securityTableTableLevel.value.push({
-          user:null,
-          group:name,
-          table:table_name,
-          value:value
+      try{
+        const table = tables.filter(t => t.table_name === group.table)[0];
+        const table_name = table.display_name.default;
+        const value = group.permission?this.si:this.no;
+        group.groupsName.forEach(name => {
+          this.securityTableTableLevel.value.push({
+            user:null,
+            group:name,
+            table:table_name,
+            value:value
+          })
         })
-      })
+      }catch(e){
+        console.log('No data for this group at table leve. You defined a security group no longer exists');
+        console.log(group);
+      }
     });
     /** table based visibility */
     tableUsers.forEach(user => {
-      const table = tables.filter(t => t.table_name === user.table)[0];
-      const table_name = table.display_name.default;
-      const value = user.permission?this.si:this.no;
-      user.usersName.forEach(name => {
-        this.securityTableTableLevel.value.push({
-          user:name,
-          group:null,
-          table:table_name,
-          value:value
+      try{
+        const table = tables.filter(t => t.table_name === user.table)[0];
+        const table_name = table.display_name.default;
+        const value = user.permission?this.si:this.no;
+        user.usersName.forEach(name => {
+          this.securityTableTableLevel.value.push({
+            user:name,
+            group:null,
+            table:table_name,
+            value:value
+          })
         })
-      })
+      }catch(e){
+        console.log('No data for this user at table level. You defined a security for an user  no longer exists');
+        console.log(user);
+      }
     });
 
 
@@ -160,25 +175,35 @@ export class SecurityDialogComponent extends EdaDialogAbstract {
 
      /** model based visibility */
      modelGroups.forEach(group => {
-      const value = group.permission?this.si:this.no;
-      group.groupsName.forEach(name => {
-        this.securityModelTableLevel.value.push({
-          user:null,
-          group:name,
-          value:value
+        try{
+        const value = group.permission?this.si:this.no;
+        group.groupsName.forEach(name => {
+          this.securityModelTableLevel.value.push({
+            user:null,
+            group:name,
+            value:value
+          })
         })
-      })
+      }catch(e){
+        console.log('No data for this group at model level. You defined a security group no longer exists');
+        console.log(group);
+    }
     });
     /** model based visibility */
     modelUsers.forEach(user => {
-      const value = user.permission?this.si:this.no;
-      user.usersName.forEach(name => {
-        this.securityModelTableLevel.value.push({
-          user:name,
-          group:null,
-          value:value
+      try{
+        const value = user.permission?this.si:this.no;
+        user.usersName.forEach(name => {
+          this.securityModelTableLevel.value.push({
+            user:name,
+            group:null,
+            value:value
+          })
         })
-      })
+      }catch(e){
+        console.log('No data for this user at model level. You defined a security for an user  no longer exists');
+        console.log(user);
+      }
     });
     /** model based visibility */
     modelAnyoneCanSee.forEach(e => {
