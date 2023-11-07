@@ -142,7 +142,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                             const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined && r.users.length > 0  )
                             .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
 
-                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined && r.users.length > 0 )
+                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined && r.groups.length > 0 )
                             .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
 
                             let tmpPermissions = [];
