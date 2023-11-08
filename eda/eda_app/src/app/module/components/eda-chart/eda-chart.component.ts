@@ -25,7 +25,7 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
         let out = [];
         let col = ChartsColors;
 
-        for (let i = 0; i < MAX_ITERATIONS; i += 50) {
+        for (let i = 0; i < MAX_ITERATIONS; i += 10) {
             for (let j = 0; j < col.length; j++) {
                 out.push(
                     {
