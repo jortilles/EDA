@@ -73,7 +73,6 @@ export abstract class QueryBuilderService {
         /** si es una consulta de llista de valors es retorna la llista de valors possibles */
         /** ............................................................................... */
         if( this.queryTODO.fields.length == 1 && this.queryTODO.fields[0].valueListSource   && this.queryTODO.fields[0].column_type === 'text'   && this.permissions.length == 0&& this.queryTODO.filters.length == 0){
-           console.log('entro aqui')
             this.query = this.valueListQuery( );
             return this.query;
         }
