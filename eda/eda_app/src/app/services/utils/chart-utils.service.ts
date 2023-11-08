@@ -654,7 +654,6 @@ export class ChartUtilsService {
         //pyramid
         if (dataDescription.totalColumns === 3 && dataDescription.numericColumns.length === 1
             ) {
-            console.log(dataDescription)
             notAllowed.splice(notAllowed.indexOf('pyramid'), 1);
         }
         return notAllowed;
