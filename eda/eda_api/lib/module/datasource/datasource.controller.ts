@@ -54,7 +54,16 @@ export class DataSourceController {
         }
     }
 
-/** aQUSTA FUNCIÓ RETORNA TOTS ELS DATASOURCES */
+    static async GetDataSourceMetadata(datasourceId: string): Promise<any> {
+        try {
+            const datasource = await DataSource.findById({ _id: datasourceId }, 'ds.metadata').exec();
+            return datasource?.ds?.metadata;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+/** AQUSTA FUNCIÓ RETORNA TOTS ELS DATASOURCES */
     static async GetDataSourcesNames(req: Request, res: Response, next: NextFunction) {
         let options:QueryOptions = {};
         DataSource.find({}, '_id ds.metadata.model_name ds.security', options, (err, ds) => {

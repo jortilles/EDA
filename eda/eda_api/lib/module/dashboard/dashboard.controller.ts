@@ -9,6 +9,7 @@ import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
+import { DataSourceController } from '../datasource/datasource.controller'
 const cache_config = require('../../../config/cache.config')
 
 export class DashboardController {
@@ -22,7 +23,7 @@ export class DashboardController {
       const groups = await Group.find({ users: { $in: req.user._id } }).exec()
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0
-
+      const user = { id: req.user._id, roles: req.user.role };
       if (isAdmin) {
         admin = await DashboardController.getAllDashboardToAdmin()
         publics = admin[0]
@@ -31,9 +32,9 @@ export class DashboardController {
         shared = admin[3]
       } else {
         privates = await DashboardController.getPrivateDashboards(req)
-        group = await DashboardController.getGroupsDashboards(req)
-        publics = await DashboardController.getPublicsDashboards()
-        shared = await DashboardController.getSharedDashboards()
+        group = await DashboardController.cleanDashboards(await DashboardController.getGroupsDashboards(req), user);
+        publics = await DashboardController.cleanDashboards(await DashboardController.getPublicsDashboards(), user);
+        shared = await DashboardController.cleanDashboards(await DashboardController.getSharedDashboards(), user);
       }
       return res.status(200).json({
         ok: true,
@@ -50,11 +51,135 @@ export class DashboardController {
     }
   }
 
+  static async cleanDashboards(dashboards: any[], user: any) {
+    const allowedDashboards = [];
+    for (const dashboard of dashboards) {
+      const datasourceId = dashboard.config?.ds?._id;
+      const sourceMetadata = await DataSourceController.GetDataSourceMetadata(datasourceId);
+      const modelGrantedRoles = sourceMetadata?.model_granted_roles || [];
+
+      // Inicializamos variable "allowed" por defecto en true
+      user.allowed = true;
+      user.groupAllowed = true;
+      // let main = false;
+
+      // Si modelGrantedRoles esta lleno hay que revisar la query, sino el dashboard es visible
+      if (modelGrantedRoles.length > 0) {
+        const panels = dashboard.config.panel;
+        for (const panel of panels) {
+          const query: any[] = panel.content?.query?.query?.fields;
+
+          if (query?.length > 0) {
+
+            // Aqui almacenaremos las condiciones de la consulta agrupadas por tabla
+            const queryRoles: any = {};
+
+            for (const field of query) {
+              // Por cada columna de la consulta buscamos alguna coincidencia en el modelGrantedRoles para esa columna especifico (podria existir más de una).
+              const columnConditions = modelGrantedRoles.filter((columnCondition: any) => field.table_id === columnCondition.table && field.column_name == columnCondition.column);
+              // Por cada columna de la consulta buscamos alguna coincidencia para la tabla de esa columna (podria existir más de una).
+              const tableConditions = modelGrantedRoles.filter((tableCondition: any) => field.table_id === tableCondition.table && tableCondition.column === 'fullTable'); 
+              
+              // Si hay coincidencias por columna 
+              if (columnConditions?.length > 0) {
+                // Si todavia no existe la tabla dentro del queryRoles, incializamos esa propiedad ([table]: Array vacio)
+                if (!queryRoles[columnConditions[0].table]) {
+                  queryRoles[columnConditions[0].table] = [];
+                }
+
+                // Por cada condicion de columna, lo añadimos dentro del queryRoles[table]
+                for (const condition of columnConditions) {
+                  queryRoles[columnConditions[0].table].push(condition);
+                }
+              }
+              
+              // Si hay coincidencias por tabla
+              if (tableConditions?.length > 0) {
+                // Si todavia no existe la tabla dentro del queryRoles, incializamos esa propiedad ([table]: Array vacio)
+                if (!queryRoles[tableConditions[0].table]) {
+                  queryRoles[tableConditions[0].table] = [];
+                }
+
+                // Por cada condicion de tabla, lo añadimos dentro del queryRoles[table]
+                for (const condition of tableConditions) {
+                  queryRoles[tableConditions[0].table].push(condition);
+                }
+              }
+
+            }
+
+            // Recorremos el objeto queryRoles
+            for (const key of Object.keys(queryRoles)) {
+              const queryRole = queryRoles[key];
+
+              // if (queryRole.length === 1) main = true;
+
+              queryRole.forEach((value: any) => {
+                  // Si el usuario sigue siendo "allowed" && el tipo de condicion es por "users" && el valor "users" existe comprobamos:
+                  // Si existe la propiedad "permission" se trata de una condicion a nivel de tabla
+                  if (user.allowed && value.type === 'users' && value.users) {
+                    // Tabla restringida y usuari NO EXISTE en el Array
+                    if (value.permission && !value.users.includes(user.id)) {
+                      user.allowed = false;
+                    // Tabla con permisos negativos y usuario EXISTE en el Array
+                    } else if(value.permission === false && value.users.includes(user.id)) {
+                      user.allowed = false;
+                     // Columna restringida y usuario NO EXISTE en el Array
+                    } else if (value.none && value.users.includes(user.id)) {
+                      user.allowed = false;
+                    } // Columna con permisos negativos y usuario EXISTE en el Array
+                    else if (value.none === false && !value.users.includes(user.id)) {
+                      user.allowed = false;
+                    }
+                  }
+
+                  // Si el usuario sigue siendo "groupAllowed" && el tipo de condicion es por "groups" && el valor "groups" existe comprobamos:
+                  // Si existe la propiedad "permission" se trata de una condicion a nivel de tabla
+                  if (user.groupAllowed && value.type === 'groups' && value.groups) {
+                    // Tabla restringida por grupo y usuaro NO EXISTE en el grupo
+                    if (value.permission && !value.groups.some((group: any) => user.roles.includes(group))) {
+                      user.groupAllowed = false;
+                      // Tabla con permisos negativos por grupo y usuario EXISTE en el grupo
+                    } else if (value.permission === false && value.groups.some((group: any) => user.roles.includes(group))) {
+                      user.groupAllowed = false;
+                      // Columna restringida por grupo y usuario NO EXISTE en el grupo
+                    } else if (value.none && value.groups.some((group: any) => user.roles.includes(group))) {
+                      user.groupAllowed = false;
+                      // Columna con permisos negativos por grupo y usuario EXISTE en el grupo
+                    } else if (value.none === false && !value.groups.some((group: any) => user.roles.includes(group))) {
+                      user.groupAllowed = false;
+                    }
+                  }
+              })
+            }
+          }
+        }
+      }
+
+      if (user.allowed && user.groupAllowed) {
+        addDashboard(dashboard)
+      }
+
+      // if (!main&& (user.allowed || user.groupAllowed)) {
+      //   addDashboard(dashboard);
+      // } else if (main && ![user.allowed,user.groupAllowed].includes(false)) {
+      //   addDashboard(dashboard);
+      // } 
+    }
+
+    function addDashboard(dashboard: any) {
+      delete dashboard.panel;
+      allowedDashboards.push(dashboard);
+    } 
+
+    return allowedDashboards;
+  }
+
   static async getPrivateDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit'
+        'config.title config.visible config.tag config.onlyIcanEdit config.ds'
       ).exec()
       const privates = []
       for (const dashboard of dashboards) {
@@ -75,7 +200,7 @@ export class DashboardController {
       }).exec()
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit'
+        'config.title config.visible group config.tag config.onlyIcanEdit config.ds config.panel'
       ).exec()
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
@@ -102,7 +227,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit'
+        'config.title config.visible config.tag config.onlyIcanEdit config.ds config.panel'
       ).exec()
       const publics = []
 
@@ -121,7 +246,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit'
+        'config.title config.visible config.tag config.onlyIcanEdit config.ds config.panel'
       ).exec()
       const shared = []
       for (const dashboard of dashboards) {

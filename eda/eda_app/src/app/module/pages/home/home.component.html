@@ -93,7 +93,7 @@
         </h4>
 
         <div *ngFor="let group of groups" class="col-12" style="padding: 0px;">
-            <!-- <h6>{{group.name}}:</h6> -->
+            <!-- <h6>{{group?.name}}:</h6> -->
 
             <div *ngFor="let dashboard of visibleDashboards.grups | ids:'group':group" class="col-12 md:col-12 mb-2"
                 style="padding: 0px;">
@@ -147,7 +147,7 @@
                     </h3>
 
                     <div class="d-flex justify-content-between align-items-end">
-                        <span>{{dashboard.user.name}}</span>
+                        <span>{{dashboard.user?.name}}</span>
 
                         <span *ngIf=" !isObserver   &&  canIEdit(dashboard)  " (click)="deleteDashboard(dashboard)" class="pointer">
                             <i class="fa fa-trash" style="font-size: 16px"></i>
