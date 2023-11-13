@@ -704,7 +704,8 @@ export class DashboardController {
       console.log(
         '\x1b[32m%s\x1b[0m',
         `QUERY for user ${req.user.name}, with ID: ${req.user._id
-        },  at: ${formatDate(new Date())} `
+        },  at: ${formatDate(new Date())}  for Dashboard:${req.body.dashboard.dashboard_id
+        } and Panel:${req.body.dashboard.panel_id}  `
       )
       console.log(query)
       console.log(
