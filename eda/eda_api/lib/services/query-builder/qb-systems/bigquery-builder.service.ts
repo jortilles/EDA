@@ -253,9 +253,9 @@ export class BigQueryBuilderService extends QueryBuilderService {
 
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`ROUND( count( distinct \`${el.table_id}\`.\`${el.column_name}\`), ${el.minimumFractionDigits}) as \`${el.display_name}\``);
+            columns.push(`ROUND( count( distinct \`${el.table_id}\`.\`${el.column_name}\`), ${el.minimumFractionDigits||0}) as \`${el.display_name}\``);
           } else {
-            columns.push(`ROUND(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`), ${el.minimumFractionDigits}) as \`${el.display_name}\``);
+            columns.push(`ROUND(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`), ${el.minimumFractionDigits||0}) as \`${el.display_name}\``);
           }
 
 

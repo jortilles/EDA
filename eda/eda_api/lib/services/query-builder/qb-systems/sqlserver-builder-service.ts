@@ -240,9 +240,9 @@ export class SQLserviceBuilderService extends QueryBuilderService {
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`CAST(count( distinct "${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits}))as "${el.display_name}"`);
+            columns.push(`CAST(count( distinct "${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits||0}))as "${el.display_name}"`);
           } else {
-            columns.push(`CAST(${el.aggregation_type}("${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits})) as "${el.display_name}"`);
+            columns.push(`CAST(${el.aggregation_type}("${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits||0})) as "${el.display_name}"`);
           }
         } else {
           if (el.column_type === 'numeric') {

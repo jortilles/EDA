@@ -490,7 +490,6 @@ export class DataSourceController {
                 return dataSource;
             })
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
@@ -513,7 +512,6 @@ export class DataSourceController {
             }else{
                 tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized,storedDataModel.ds.metadata.filter);
             }
-           
 
             const datasource: IDataSource = new DataSource({
                 ds: {
@@ -582,7 +580,6 @@ export class DataSourceController {
     static async removeCacheFromModel(req: Request, res: Response, next: NextFunction){
         try{
             const queries = await CachedQuery.deleteMany({ 'cachedQuery.model_id':  req.body.id }).exec();
-            console.log(queries);
             return res.status(200).json({ ok: true});
         }catch(err){
             next(err);

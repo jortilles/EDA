@@ -224,10 +224,9 @@ export class DataSourceService extends ApiService implements OnDestroy {
     editColumn(node: TreeNode): void {
         const columnPanel = new EditColumnPanel();
         const column: any = this.getColumnByName(node.parent.label, node.label);
-
         columnPanel.type = node.data;
         columnPanel.name = node.label;
-        columnPanel.column_type = column.column_type === 'text' ? 'text' : column.column_type;
+        columnPanel.column_type = column.column_type;
         columnPanel.technical_name = column.column_name;
         columnPanel.description = column.description.default;
 

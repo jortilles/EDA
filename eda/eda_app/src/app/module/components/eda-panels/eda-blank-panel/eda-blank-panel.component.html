@@ -421,16 +421,19 @@
 
                     <div class="col-3 p-offset-1 p-1 edaChartSelector">
                         <form [formGroup]="chartForm">
-                            <p-dropdown id="chartSelector" [style]="{'width':'100%'}" [options]="chartTypes"
+                            <p-dropdown id="chartSelector" [style]="{'width':'100%'}"
+                                [options]="chartTypes"
                                 formControlName="chart"
-                                (onChange)="changeChartType(chartForm.value.chart.value, 
-                                            chartForm.value.chart.subValue, getChartStyles( chartForm.value.chart.value))" optionLabel="label"
+                                (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles( chartForm.value.chart.value))
+                                "optionLabel="label"
                                 [autoDisplayFirst]="false">
 
                                 <ng-template pTemplate="selectedItem">
                                     <div class="chart-item chart-item-value" *ngIf="chartForm.value.chart">
-                                        <i *ngIf="!!chartForm.value.chart.ngIf" class="{{chartForm.value.chart.icon}}"
-                                            style="color: #eeac57!important;vertical-align:middle;"></i>
+                                        <i *ngIf="!!chartForm.value.chart.ngIf"
+                                            class="{{chartForm.value.chart.icon}}"
+                                            style="color: #eeac57!important;vertical-align:middle;">
+                                        </i>
                                         <span style="vertical-align:middle; margin-left: .5em">
                                             {{chartForm.value.chart.label}}
                                         </span>

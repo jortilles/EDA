@@ -83,6 +83,11 @@ export const PanelInteractionUtils = {
           if (field) {
             ebp.currentQuery[i].format = field.format;
             ebp.currentQuery[i].cumulativeSum = field.cumulativeSum;
+            console.log(ebp.currentQuery[i], field);
+            if (ebp.currentQuery[i].column_type === 'text' && ![null, 'none'].includes(field.aggregation_type)) {
+              ebp.currentQuery[i].column_type = 'numeric';
+              ebp.currentQuery[i].old_column_type = 'text';
+            }
           }
         }catch(e){
           console.error('ERROR handling current query .... handleCurrentQuery.... did you changed the query model?');

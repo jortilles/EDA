@@ -232,7 +232,7 @@ export class MysqlConnection extends AbstractConnection {
         });
     }
 
-    private setColumns(c, tableCount?:number) {
+    private setColumns(c: any, tableCount?:number) {
         let column = c;
         column.display_name = { default: this.normalizeName(column.column_name), localized: [] };
         column.description = { default: this.normalizeName(column.column_name), localized: [] };
@@ -243,9 +243,17 @@ export class MysqlConnection extends AbstractConnection {
         column.minimumFractionDigits = floatOrInt === 'int' &&  column.column_type === 'numeric' ? 0 
         : floatOrInt === 'float' &&  column.column_type === 'numeric' ? 2 : null;
 
-        column.column_type === 'numeric'
-            ? column.aggregation_type = AggregationTypes.getValues()
-            : column.aggregation_type = [{ value: 'none', display_name: 'no' }];
+        if (column.column_type === 'numeric') {
+            column.aggregation_type = AggregationTypes.getValuesForNumbers();
+        } else if (column.column_type === 'text') {
+            column.aggregation_type = AggregationTypes.getValuesForText();
+            if (column.column_name === 'CONTACTFIRSTNAME') {
+                console.log('set text aggregation type')
+                console.log(column);
+            }
+        } else {
+            column.aggregation_type = AggregationTypes.getValuesForOthers();
+        }
 
         column.column_granted_roles = [];
         column.row_granted_roles = [];

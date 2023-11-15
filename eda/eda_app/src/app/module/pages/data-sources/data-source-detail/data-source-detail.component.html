@@ -129,8 +129,7 @@
                 Agregación
             </h5>
             <p>
-                <p-selectButton [options]="aggTypes" [(ngModel)]="selectedAggType" multiple="multiple"
-                    (onChange)=updateAgg()>
+                <p-selectButton [options]="aggTypes" [(ngModel)]="selectedAggType" multiple="multiple" (onChange)="updateAgg()">
                 </p-selectButton>
             </p>
 
