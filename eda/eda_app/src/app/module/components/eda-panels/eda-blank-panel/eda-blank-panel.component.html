@@ -83,13 +83,10 @@
                                 (mouseover)="showDescription(column)" 
                                 (mouseout)="description= ''" 
                                 cdkDrag
-
                                 [cdkDragData] = "column"
                                 (cdkDragDropped)="searchRelations(column, $event)" 
-                                (cdkDragDropped)="openColumnDialog(column)" 
+                                
                                 [ngStyle]=" column.hidden == 1 && {'opacity': '0.5'} " >  
-                                   
-   
                                    <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                    <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
                                    <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
@@ -152,7 +149,8 @@
                         <hr class="mb-0">
                         <div class="filter-list" cdkDropList cdkDropListOrientation="horizontal"
                             #filterList="cdkDropList" [cdkDropListData]="filtredColumns"
-                            [cdkDropListConnectedTo]="[columnsList, selectList]" (cdkDropListDropped)="drop($event)" >
+                            [cdkDropListConnectedTo]="[columnsList, selectList]" (cdkDropListDropped)="drop($event)"
+                            >
                             <p *ngIf="filtredColumns.length < 1" class="fieldsInfo">{{draggFilters}}</p>
                             <div class="select-box col-3 col-md-2 p-1" *ngFor="let item of filtredColumns"
                                 (click)="openColumnDialog(item, true)" (mouseover)="showDescription(item)"

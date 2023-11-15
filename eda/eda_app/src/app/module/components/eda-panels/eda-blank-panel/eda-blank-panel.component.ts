@@ -531,6 +531,13 @@ export class EdaBlankPanelComponent implements OnInit {
                 event.container.data,
                 event.previousIndex,
                 event.currentIndex);
+                
+                //apertura del diálogo de atributos o filtros
+                if(event.container.id == 'cdk-drop-list-1'){                
+                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex] );
+                }else{       
+                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex]  , true);
+                }
         }
 
 
