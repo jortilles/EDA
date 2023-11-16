@@ -180,7 +180,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 dataSource: this.controller.params.inject.dataSource._id,
                 dashboard: this.controller.params.inject.dashboard_id,
                 panel: this.controller.params.panel._id,
-                filters: []
+                filters: [],
+                forSelector: true
             };
             this.selectedColumn.ordenation_type= 'ASC' ;
             this.dashboardService.executeQuery(this.queryBuilder.normalQuery([this.selectedColumn], params)).subscribe(

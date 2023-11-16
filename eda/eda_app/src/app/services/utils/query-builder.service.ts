@@ -12,6 +12,7 @@ export interface QueryParams {
     config?: any;
     queryLimit? : number;
     joinType?:string;
+    forSelector?: boolean
 }
 
 @Injectable()
@@ -117,7 +118,8 @@ export class QueryBuilderService extends ApiService {
                 modeSQL : modeSQL,
                 SQLexpression : SQLexpression,
                 queryLimit : params.queryLimit,
-                joinType: params.joinType
+                joinType: params.joinType,
+                forSelector: params.forSelector
             },
             output: {
                 labels,
