@@ -1,145 +1,222 @@
-<ng-container *ngIf="mobileSize && sideBtn && edit_mode && !sidebarService.toggleSideNav " >
-    <div>
-        <img id="sidebar-btn-toggle" [src]="logoSidebar" (click)="toggleClassSide()" alt="logo icono"
-            class="dark-logo" />
-    </div>
+<ng-container
+  *ngIf="mobileSize && sideBtn && edit_mode && !sidebarService.toggleSideNav"
+>
+  <div>
+    <img
+      id="sidebar-btn-toggle"
+      [src]="logoSidebar"
+      (click)="toggleClassSide()"
+      alt="logo icono"
+      class="dark-logo"
+    />
+  </div>
 </ng-container>
 
-<aside id="sidebar" class="left-sidebar" [ngClass]="{'hidden': sidebarService.toggleSideNav}"
-    (window:resize)="getMobileSize($event)">
+<aside
+  id="sidebar"
+  class="left-sidebar"
+  [ngClass]="{ hidden: sidebarService.toggleSideNav }"
+  (window:resize)="getMobileSize($event)"
+>
+  <ng-container *ngIf="!mobileSize">
+    <li class="user-profile text-center" style="list-style: none">
+      <a style="text-decoration: none" routerLink="/home" aria-expanded="false">
+        <img [src]="logoSidebar" alt="logo icono" class="dark-logo w-75" />
+      </a>
+    </li>
+  </ng-container>
 
-    <ng-container *ngIf="!mobileSize">
-        <li class="user-profile text-center" style="list-style: none;">
-            <a style="text-decoration: none;" routerLink="/home" aria-expanded="false">
-                <img [src]="logoSidebar" alt="logo icono" class="dark-logo w-75" />
-            </a>
+  <ng-container *ngIf="mobileSize && !sideBtn && edit_mode">
+    <li class="user-profile text-center" style="list-style: none">
+      <img
+        [src]="logoSidebar"
+        (click)="toggleClassSide()"
+        alt="logo icono"
+        class="dark-logo"
+      />
+    </li>
+  </ng-container>
+
+  <div class="scroll-sidebar" *ngIf="edit_mode">
+    <nav class="sidebar-nav">
+      <ul id="sidebarnav">
+        <li class="nav-devider"></li>
+
+        <li class="user-profile">
+          <a
+            class="has-arrow waves-effect waves-dark"
+            href="#"
+            aria-expanded="false"
+            (click)="ignoreNotSaved()"
+            ><i class="pi pi-user"></i>
+            <!-- <img [src]="user.img | image" alt="user" /> -->
+            <span class="hide-menu ml-2"> {{ user.name }} </span>
+          </a>
+          <ul aria-expanded="false" class="collapse">
+            <li>
+              <a
+                routerLinkActive="active"
+                routerLink="/profile"
+                (click)="ignoreNotSaved()"
+              >
+                <i class="mdi mdi-account"></i>
+                <span i18n="@@sidebarProfile">Perfil</span>
+              </a>
+            </li>
+            <li *ngIf="userService.isAdmin">
+              <a
+                routerLinkActive="active"
+                routerLink="/users-management"
+                (click)="ignoreNotSaved()"
+              >
+                <i class="mdi mdi-settings"></i>
+                <span i18n="@@sidebarUserManagement">Gestión de Usuarios</span>
+              </a>
+              <a
+                routerLinkActive="active"
+                routerLink="/groups-management"
+                (click)="ignoreNotSaved()"
+              >
+                <i class="mdi mdi-settings"></i>
+                <span i18n="@@sidebarGroupManagement">Gestión de Grupos</span>
+              </a>
+              <a
+                routerLinkActive="active"
+                routerLink="/models-management"
+                (click)="ignoreNotSaved()"
+              >
+                <i class="mdi mdi-settings"></i>
+                <span i18n="@@sidebarModelsManagement">Gestión de Modelos</span>
+              </a>
+              <a
+                routerLinkActive="active"
+                routerLink="/mail-management"
+                (click)="ignoreNotSaved()"
+              >
+                <i class="mdi mdi-settings"></i>
+                <span i18n="@@mailmanagementHeader"
+                  >Gestión de correo y envio de mails</span
+                >
+              </a>
+            </li>
+            <li>
+              <a (click)="logout()" class="pointer" (click)="ignoreNotSaved()">
+                <i class="mdi mdi-logout"></i>
+                <span i18n="@@sidebarLogOut">Cerrar sesión</span>
+              </a>
+            </li>
+          </ul>
         </li>
-    </ng-container>
 
-    <ng-container *ngIf="mobileSize && !sideBtn && edit_mode">
-        <li class="user-profile text-center" style="list-style: none;">
-            <img [src]="logoSidebar" (click)="toggleClassSide()" alt="logo icono" class="dark-logo" />
+        <li class="nav-devider"></li>
+
+        <li class="user-profile">
+          <a
+            class="has-arrow waves-effect waves-dark"
+            (click)="checkNotSaved()"
+            aria-expanded="false"
+          >
+            <i class="mdi mdi-view-dashboard"></i>
+            <span class="hide-menu ml-2" i18n="@@sidebarMyDashboards"
+              >Mis informes</span
+            >
+          </a>
         </li>
-    </ng-container>
 
+        <li
+          *ngIf="userService.isDataSourceCreator || userService.isAdmin"
+          class="nav-devider"
+        ></li>
 
-    <div class="scroll-sidebar" *ngIf="edit_mode">
-
-        <nav class="sidebar-nav">
-
-            <ul id="sidebarnav">
-
-                <li class="nav-devider"></li>
-
-                <li class="user-profile">
-                    <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false" (click)="ignoreNotSaved()">
-                        <img [src]="user.img | image" alt="user" />
-                        <span class="hide-menu ml-2"> {{ user.name }} </span>
-                    </a>
-                    <ul aria-expanded="false" class="collapse">
-                        <li>
-                            <a routerLinkActive="active" routerLink="/profile" (click)="ignoreNotSaved()">
-                                <i class="mdi mdi-account"></i> <span i18n="@@sidebarProfile">Perfil</span>
-                            </a>
-                        </li>
-                        <li *ngIf="userService.isAdmin">
-                            <a routerLinkActive="active" routerLink="/users-management" (click)="ignoreNotSaved()">
-                                <i class="mdi mdi-settings"></i> <span i18n="@@sidebarUserManagement">Gestión de
-                                    Usuarios</span>
-                            </a>
-                            <a routerLinkActive="active" routerLink="/groups-management" (click)="ignoreNotSaved()">
-                                <i class="mdi mdi-settings"></i> <span i18n="@@sidebarGroupManagement">Gestión de
-                                    Grupos</span>
-                            </a>
-                            <a routerLinkActive="active" routerLink="/models-management" (click)="ignoreNotSaved()">
-                                <i class="mdi mdi-settings"></i> <span i18n="@@sidebarModelsManagement">Gestión de
-                                    Modelos</span>
-                            </a>
-                            <a routerLinkActive="active" routerLink="/mail-management" (click)="ignoreNotSaved()">
-                                <i class="mdi mdi-settings"></i> <span i18n="@@mailmanagementHeader">Gestión de
-                                    correo y envio de mails</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a (click)="logout()" class="pointer" (click)="ignoreNotSaved()">
-                                <i class="mdi mdi-logout"></i> <span i18n="@@sidebarLogOut">Cerrar sesión</span>
-                            </a>
-                        </li>
-                        
-                    </ul>
+        <li
+          *ngIf="userService.isDataSourceCreator || userService.isAdmin"
+          class="user-profile"
+        >
+          <a
+            class="has-arrow waves-effect waves-dark"
+            href="#"
+            aria-expanded="false"
+            id="edaNewDataSource"
+          >
+            <i class="mdi mdi-database"></i>
+            <span class="hide-menu ml-2" i18n="@@sidebarDataFonts"
+              >Fuente de Datos</span
+            >
+          </a>
+          <ul aria-expanded="false" class="collapse side-datasource-list">
+            <li>
+              <a routerLinkActive="active" routerLink="/data-source">
+                <i class="mdi mdi-database-plus"></i>
+                <span i18n="@@sidebarNewDb">Nueva Fuente</span>
+              </a>
+            </li>
+            <li>
+              <a
+                class="has-arrow waves-effect waves-dark"
+                href="#"
+                aria-expanded="false"
+              >
+                <i class="mdi mdi-pencil"></i>
+                <span i18n="@@sidebarEditDb">Editar Fuente</span>
+              </a>
+              <ul aria-expanded="false" class="collapse">
+                <li *ngFor="let item of dataSourceMenu" class="pointer">
+                  <a (click)="goToDataSource(item)">
+                    <i class="mdi mdi-database"></i> {{ item.model_name }}
+                  </a>
                 </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
 
-                <li class="nav-devider"></li>
-
-                <li class="user-profile">
-                    <a class="has-arrow waves-effect waves-dark" (click)="checkNotSaved()"  aria-expanded="false">
-                        <i class="mdi mdi-view-dashboard"></i>
-                        <span class="hide-menu ml-2" i18n="@@sidebarMyDashboards">Mis informes</span>
-                    </a>
-                </li>
-
-
-
-
-
-                <li   *ngIf="userService.isDataSourceCreator||userService.isAdmin"  class="nav-devider"></li>
-
-                <li *ngIf="userService.isDataSourceCreator||userService.isAdmin" class="user-profile">
-                    <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false" id="edaNewDataSource">
-                        <i class="mdi mdi-database"></i>
-                        <span class="hide-menu ml-2" i18n="@@sidebarDataFonts">Fuente de Datos</span>
-                    </a>
-                    <ul aria-expanded="false" class="collapse side-datasource-list">
-                        <li>
-                            <a routerLinkActive="active" routerLink="/data-source">
-                                <i class="mdi mdi-database-plus"></i> <span i18n="@@sidebarNewDb">Nueva Fuente</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
-                                <i class="mdi mdi-pencil"></i> <span i18n="@@sidebarEditDb">Editar Fuente</span>
-                            </a>
-                            <ul aria-expanded="false" class="collapse">
-                                <li *ngFor="let item of dataSourceMenu" class="pointer">
-                                    <a (click)="goToDataSource(item)">
-                                        <i class="mdi mdi-database"></i> {{item.model_name}}
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-
-
-                <li class="nav-devider"></li>
-                <li  >
-                    <a class="has-arrow waves-effect waves-dark">
-                        <i class="pi pi-globe"></i>
-                    </a>
-                    <ul aria-expanded="false" class="collapse">
-                        <li>
-                            <a style=" cursor: pointer;"   (click)="redirectLocale('EN')" >English</a>
-                        </li>
-                        <li>
-                            <a style="cursor: pointer;" (click)="redirectLocale('ES')" >Español</a>
-                        </li>
-                        <li>
-                           <a  style="cursor: pointer;" (click)="redirectLocale('CAT')" >Català</a>
-                        </li>
-                        <li>
-                            <a  style="cursor: pointer;" (click)="redirectLocale('GL')" >Galego</a>
-                        </li>
-                        
-                    </ul>
-                </li>
-                <li class="nav-devider"></li>
-            </ul>
-
-        </nav>
-
-    </div>
-
+        <li class="nav-devider"></li>
+        <li>
+          <a class="has-arrow waves-effect waves-dark">
+            <i class="pi pi-globe"></i>
+          </a>
+          <ul aria-expanded="false" class="collapse">
+            <li>
+              <a style="cursor: pointer" (click)="redirectLocale('EN')"
+                >English</a
+              >
+            </li>
+            <li>
+              <a style="cursor: pointer" (click)="redirectLocale('ES')"
+                >Español</a
+              >
+            </li>
+            <li>
+              <a style="cursor: pointer" (click)="redirectLocale('CAT')"
+                >Català</a
+              >
+            </li>
+            <li>
+              <a style="cursor: pointer" (click)="redirectLocale('GL')"
+                >Galego</a
+              >
+            </li>
+          </ul>
+        </li>
+        <li class="nav-devider"></li>
+        <li class="user-profile">
+          <a
+            routerLinkActive="active"
+            routerLink="/about"
+            (click)="ignoreNotSaved()"
+          >
+            <i class="pi pi-info-circle"></i>
+            <span class="hide-menu ml-2" i18n="@@sidebarAbout">Acerca de</span>
+          </a>
+        </li>
+        <li class="nav-devider"></li>
+      </ul>
+    </nav>
+  </div>
 </aside>
 
-<div *ngIf="mobileSize && !sidebarService.toggleSideNav" class="out-sidebar" (click)="toggleClassSide()">
-</div>
+<div
+  *ngIf="mobileSize && !sidebarService.toggleSideNav"
+  class="out-sidebar"
+  (click)="toggleClassSide()"
+></div>
