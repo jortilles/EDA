@@ -51,8 +51,14 @@
 
 .language{
     cursor: pointer;
-    font-size: small;
+    font-size: smaller;
+    
 }
+
+.langoption {
+    text-align: center;
+}
+
 .language:hover{
     color: blue;
 }

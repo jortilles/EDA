@@ -156,7 +156,9 @@ export class SidebarComponent implements OnInit {
         if (baseUrl.slice(-4) == '/es/' ||
             baseUrl.slice(-4) == '/ca/' ||
             baseUrl.slice(-4) == '/pl/' ||
-            baseUrl.slice(-4) == '/en/') {
+            baseUrl.slice(-4) == '/en/' ||
+            baseUrl.slice(-4) == '/gl/' ) 
+            {
             baseUrl = baseUrl.slice(0, baseUrl.length - 3)
         }
         switch (lan) {
@@ -164,6 +166,7 @@ export class SidebarComponent implements OnInit {
             case 'CAT': window.location.href = baseUrl + 'ca/#/home'; break;
             case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
             case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
+            case 'GL'  : window.location.href = baseUrl + 'gl/#/home'; break;
         }
     }
     public checkNotSaved(){

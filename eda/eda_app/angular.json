@@ -8,8 +8,12 @@
     "projects": {
         "app-eda": {
             "i18n": {
-                "sourceLocale": "es",
+                "sourceLocale": "es-ES"
+                ,
                 "locales": {
+                    "es": {
+                        "translation": "src/locale/messages.es.xlf"
+                    },
                     "en": {
                         "translation": "src/locale/messages.en.xlf"
                     },
@@ -18,6 +22,9 @@
                     },
                     "pl": {
                         "translation": "src/locale/messages.pl.xlf"
+                    }, 
+                    "gl": {
+                        "translation": "src/locale/messages.gl.xlf"
                     }
                 }
             },
@@ -67,6 +74,11 @@
                                 "en"
                             ]
                         },
+                        "es": {
+                            "localize": [
+                                "es"
+                            ]
+                        },
                         "ca": {
                             "localize": [
                                 "ca"
@@ -74,6 +86,14 @@
                         },"pl": {
                             "localize": [
                                 "pl"
+                            ]
+                        },"gl": {
+                            "localize": [
+                                "gl"
+                            ]
+                        },"eda": {
+                            "localize": [
+                                "eda"
                             ]
                         },
                         "production": {
@@ -114,7 +134,7 @@
                         "production": {
                             "browserTarget": "app-eda:build:production"
                         },
-                        "es": {
+                        "en": {
                             "browserTarget": "app-eda:build:en"
                         },
                         "ca": {
@@ -122,6 +142,15 @@
                         },
                         "pl": {
                             "browserTarget": "app-eda:build:pl"
+                        },
+                        "gl": {
+                            "browserTarget": "app-eda:build:gl"
+                        },
+                        "es": {
+                            "browserTarget": "app-eda:build:es"
+                        },
+                        "eda": {
+                            "browserTarget": "app-eda:build:eda"
                         }
                     }
                 },
