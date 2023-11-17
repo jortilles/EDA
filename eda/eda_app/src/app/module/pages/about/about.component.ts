@@ -11,11 +11,13 @@ export class AboutComponent implements OnInit {
   sinergiaDaVersion: string = '2.0.1';
   edaVersion: string = '1.4.0';
   lastSyncDate: string = '2023-11-16 15:00:00';
+  lastSyncDateScriptVersion: string = '20231116150000';
 
   constructor() { }
 
   ngOnInit(): void {
     // Aquí puedes cargar los datos reales, por ejemplo, desde un servicio.
+
   }
 
 }

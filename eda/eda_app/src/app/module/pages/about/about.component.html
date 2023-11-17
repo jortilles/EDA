@@ -4,21 +4,55 @@
       <div class="card">
         <div class="card-body">
           <div class="col-12 text-center">
-            <img src="assets/images/logos/full_logo.png" alt="Logotipo de Sinergia Data Analitycs" class="img-fluid">
+            <img
+              src="assets/images/logos/full_logo.png"
+              alt="Logotipo de Sinergia Data Analitycs"
+              class="img-fluid"
+            />
           </div>
           <!-- <h1 class="card-title text-center" i18n="@@aboutPageTitle">Acerca de</h1> -->
           <ul class="list-group">
-            <li i18n="@@aboutPageSinergiaVersion" class="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              i18n="@@aboutPageSinergiaVersion"
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
               Versión de SinergiaDA
-              <span class="badge badge-primary badge-pill">{{ sinergiaDaVersion }}</span>
+              <span class="badge badge-primary badge-pill"
+                >1.0.0{{ sinergiaDaVersion }}</span
+              >
             </li>
-            <li i18n="@@aboutPageEdaVersion" class="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              i18n="@@aboutPageEdaVersion"
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
               Versión de EDA
-              <span class="badge badge-primary badge-pill">{{ edaVersion }}</span>
+              <span class="badge badge-primary badge-pill">{{
+                edaVersion
+              }}</span>
             </li>
-            <li i18n="@@aboutPageLastSync" class="list-group-item d-flex justify-content-between align-items-center">
-              Última Sincronización con SinergiaCRM
-              <span class="badge badge-primary badge-pill">{{ lastSyncDate }}</span>
+            <li
+              i18n="@@aboutPageLastSync"
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              Última sincronización con SinergiaCRM (updateModel)
+              <span class="badge badge-primary badge-pill">{{
+                lastSyncDate
+              }}</span>
+            </li>
+            <li
+              i18n="@@aboutPageSCRMScriptVersion"
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              Versión del fichero de reconstrución de SinergiaCRM
+              <span class="badge badge-primary badge-pill">{{
+                lastSyncDateScriptVersion
+              }}</span>
+            </li>
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              <div i18n="@@SDALicense" class="bold">Licencia</div>
+              Información extendida sobre la licencia de Sinergia DAta Analitycs
             </li>
           </ul>
         </div>
