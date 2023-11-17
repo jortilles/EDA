@@ -1,15 +1,28 @@
-<div class="about-container">
-  <h1>Acerca de</h1>
-  <div class="info-section">
-    <h2>Versión de SinergiaDA</h2>
-    <p>{{ sinergiaDaVersion }}</p>
-  </div>
-  <div class="info-section">
-    <h2>Versión de EDA</h2>
-    <p>{{ edaVersion }}</p>
-  </div>
-  <div class="info-section">
-    <h2>Última Sincronización con SinergiaCRM</h2>
-    <p>{{ lastSyncDate }}</p>
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-lg-8 offset-lg-2">
+      <div class="card">
+        <div class="card-body">
+          <div class="col-12 text-center">
+            <img src="assets/images/logos/full_logo.png" alt="Logotipo de Sinergia Data Analitycs" class="img-fluid">
+          </div>
+          <!-- <h1 class="card-title text-center" i18n="@@aboutPageTitle">Acerca de</h1> -->
+          <ul class="list-group">
+            <li i18n="@@aboutPageSinergiaVersion" class="list-group-item d-flex justify-content-between align-items-center">
+              Versión de SinergiaDA
+              <span class="badge badge-primary badge-pill">{{ sinergiaDaVersion }}</span>
+            </li>
+            <li i18n="@@aboutPageEdaVersion" class="list-group-item d-flex justify-content-between align-items-center">
+              Versión de EDA
+              <span class="badge badge-primary badge-pill">{{ edaVersion }}</span>
+            </li>
+            <li i18n="@@aboutPageLastSync" class="list-group-item d-flex justify-content-between align-items-center">
+              Última Sincronización con SinergiaCRM
+              <span class="badge badge-primary badge-pill">{{ lastSyncDate }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

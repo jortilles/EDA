@@ -4238,6 +4238,24 @@
         <target>Nombre de columna duplicada:</target>
       </trans-unit>
 
+      <trans-unit id="aboutPageTitle" datatype="html">
+        <source>Acerca de</source>
+        <target>Acerca de Sinergia Data Analitycs</target>
+      </trans-unit>
+
+      <trans-unit id="aboutPageSinergiaVersion" datatype="html">
+        <source>Versión de SinergiaDA</source>
+        <target>Versión de SinergiaDA</target>
+      </trans-unit>
+      <trans-unit id="aboutPageEdaVersion" datatype="html">
+        <source>Versión de EDA</source>
+        <target>Versión de EDA</target>
+      </trans-unit>
+
+      <trans-unit id="aboutPageLastSync" datatype="html">
+        <source>Última Sincronización con SinergiaCRM</source>
+        <target>Última Sincronización con SinergiaCRM</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

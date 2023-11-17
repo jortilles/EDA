@@ -4190,6 +4190,22 @@
         <source>Nombre columna duplicada:</source>
         <target>Duplicated column name:</target>
       </trans-unit>
+      <trans-unit id="aboutPageTitle" datatype="html">
+        <source>Acerca de</source>
+        <target>About Sinergia Data Analitycs</target>
+      </trans-unit>
+      <trans-unit id="aboutPageSinergiaVersion" datatype="html">
+        <source>Versión de SinergiaDA</source>
+        <target>SinergiaDA Version</target>
+      </trans-unit>
+      <trans-unit id="aboutPageEdaVersion" datatype="html">
+        <source>Versión de EDA</source>
+        <target>EDA Version</target>
+      </trans-unit>
+      <trans-unit id="aboutPageLastSync" datatype="html">
+        <source>Última Sincronización con SinergiaCRM</source>
+        <target>Last Synchronization with SinergiaCRM</target>
+      </trans-unit>
 
     </body>
   </file>
