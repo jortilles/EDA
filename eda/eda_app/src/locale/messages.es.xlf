@@ -2269,7 +2269,7 @@
       </trans-unit>
       <trans-unit id="tituloGrupoComunes" datatype="html">
         <source> COMUNES</source>
-        <target> COMUNES EN GALLEGO</target>
+        <target> COMUNES</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
           <context context-type="linenumber">44</context>
@@ -2531,7 +2531,7 @@
 
       <trans-unit id="col">
         <source>Atributo</source>
-        <target>Atributo:</target>
+        <target>Columna:</target>
       </trans-unit>
       <trans-unit id="table">
         <source>de la entidad</source>
@@ -4236,6 +4236,11 @@
       <trans-unit id="duplicatedColumnNameLabel">
         <source>Nombre columna duplicada:</source>
         <target>Nombre de columna duplicada:</target>
+      </trans-unit>
+
+      <trans-unit id="@@hiddenAttributes">
+        <source>Atributos ocultos</source>
+        <target>Columnas ocultas</target>
       </trans-unit>
 
     </body>

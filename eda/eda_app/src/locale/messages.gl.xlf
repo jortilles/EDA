@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="gl-ES" datatype="plaintext" original="ng2.template">
+  <file source-language="en_US" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="placeholderInputUsuario" datatype="html">
         <source>Usuario</source>
@@ -12,7 +12,7 @@
       </trans-unit>
       <trans-unit id="placeholderInputPassword" datatype="html">
         <source>Contraseña</source>
-        <target>Contraseña</target>
+        <target>Contrasinal</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">31</context>
@@ -36,7 +36,7 @@
       </trans-unit>
       <trans-unit id="e369e13629132e32dcd958b82261059243f21d58" datatype="html">
         <source>Contraseña</source>
-        <target>Contraseña</target>
+        <target>Contrasinal</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
           <context context-type="linenumber">31</context>
@@ -2269,7 +2269,7 @@
       </trans-unit>
       <trans-unit id="tituloGrupoComunes" datatype="html">
         <source> COMUNES</source>
-        <target> COMUNES EN GALLEGO</target>
+        <target> COMUNES</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
           <context context-type="linenumber">44</context>
@@ -2348,7 +2348,7 @@
 
       <trans-unit id="passwordLogin" datatype="html">
         <source>Contraseña</source>
-        <target>Contraseña</target>
+        <target>Contrasinal</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">28</context>
@@ -4236,6 +4236,11 @@
       <trans-unit id="duplicatedColumnNameLabel">
         <source>Nombre columna duplicada:</source>
         <target>Nombre de columna duplicada:</target>
+      </trans-unit>
+
+      <trans-unit id="@@hiddenAttributes">
+        <source>Atributos ocultos</source>
+        <target>Columnas ocultas</target>
       </trans-unit>
 
     </body>

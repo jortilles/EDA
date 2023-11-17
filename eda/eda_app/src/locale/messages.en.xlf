@@ -2345,7 +2345,7 @@
 
       <trans-unit id="direccionMail" datatype="html">
         <source>Dirección Email</source>
-        <target>Email</target>
+        <target>Username</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">22</context>
@@ -4191,6 +4191,10 @@
         <target>Duplicated column name:</target>
       </trans-unit>
 
+      <trans-unit id="@@hiddenAttributes">
+        <source>Atributos ocultos</source>
+        <target>Hidden columns</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
