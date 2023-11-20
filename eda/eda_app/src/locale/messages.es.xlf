@@ -2497,23 +2497,23 @@
       </trans-unit>
       <trans-unit id="aggTmean">
         <source>Media</source>
-        <target>AVG</target>
+        <target>Media</target>
       </trans-unit>
       <trans-unit id="aggTmax">
         <source>Máximo</source>
-        <target>Máx</target>
+        <target>Máximo</target>
       </trans-unit>
       <trans-unit id="aggTmin">
         <source>Mínimo</source>
-        <target>Min</target>
+        <target>Mínimo</target>
       </trans-unit>
       <trans-unit id="aggTcount">
         <source>Cuenta Valores</source>
-        <target>Count</target>
+        <target>Cuenta valores</target>
       </trans-unit>
       <trans-unit id="aggTcountD">
         <source>Valores Distintos</source>
-        <target>Count Distinct</target>
+        <target>Cuenta valores únicos</target>
       </trans-unit>
       <trans-unit id="commonPanel">
         <source>Común</source>

@@ -2506,7 +2506,7 @@
       </trans-unit>
       <trans-unit id="aggTmean">
         <source>Media</source>
-        <target>AVG</target>
+        <target>Average</target>
       </trans-unit>
       <trans-unit id="aggTmax">
         <source>Màximo</source>
