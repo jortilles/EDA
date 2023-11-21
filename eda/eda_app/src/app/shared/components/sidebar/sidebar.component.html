@@ -1,4 +1,4 @@
-<ng-container *ngIf="mobileSize && sideBtn && edit_mode">
+<ng-container *ngIf="mobileSize && sideBtn && edit_mode && !sidebarService.toggleSideNav " >
     <div>
         <img id="sidebar-btn-toggle" [src]="logoSidebar" (click)="toggleClassSide()" alt="logo icono"
             class="dark-logo" />
@@ -127,8 +127,9 @@
                            <a  style="cursor: pointer;" (click)="redirectLocale('CAT')" >Català</a>
                         </li>
                         <li>
-                            <a  style="cursor: pointer;" (click)="redirectLocale('PL')" >Polski</a>
+                            <a  style="cursor: pointer;" (click)="redirectLocale('GL')" >Galego</a>
                         </li>
+                        
                     </ul>
                 </li>
                 <li class="nav-devider"></li>

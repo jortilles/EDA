@@ -233,7 +233,7 @@ app-dashboard {
 
 
 .customMultiselect >>> ::-webkit-scrollbar {
-        width: 9px;
+        width: 10px;
         height: 9px;
     }
 
@@ -248,3 +248,11 @@ display:table;
     display:table-cell;
     vertical-align:middle;
   }
+
+  .noShow{
+    height:0px !important;
+    visibility: hidden !important;
+  }
+.noSidebar{
+margin-left:1px !important;
+}

@@ -51,8 +51,25 @@
 
 .language{
     cursor: pointer;
-    font-size: small;
+    font-size: smaller;
+    
 }
+
+.langoption {
+    text-align: center;
+}
+
 .language:hover{
     color: blue;
+}
+
+.btn {
+    background-color: #B5BC31;
+    color: #000;
+    border: none;
+}
+
+.login .btn:hover {
+  background-color: #C7CE43;
+  color: #000;
 }

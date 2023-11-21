@@ -28,8 +28,6 @@ import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { display } from 'html2canvas/dist/types/css/property-descriptors/display';
 
 export interface IPanelAction {
     code: string;
@@ -349,24 +347,10 @@ export class EdaBlankPanelComponent implements OnInit {
         }
 
         this.queryLimit = panelContent.query.query.queryLimit;
-
-        try {
-            PanelInteractionUtils.handleFilters(this, panelContent.query.query);
-            PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters,panelContent.query.query.fields);
- 
-        }catch(e){
-            console.log('Error loading filters to define query in blank panel compoment........ Do you have deleted any column?????');
-            console.log(e);
-        }
-       
-
-
+        PanelInteractionUtils.handleFilters(this, panelContent.query.query);
+        PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
         PanelInteractionUtils.handleCurrentQuery(this);
-
-        this.chartForm.patchValue({
-            chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)
-        });
-
+        this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
         PanelInteractionUtils.verifyData(this);
 
         const config = ChartsConfigUtils.recoverConfig(panelContent.chart, panelContent.query.output.config);
@@ -547,6 +531,13 @@ export class EdaBlankPanelComponent implements OnInit {
                 event.container.data,
                 event.previousIndex,
                 event.currentIndex);
+                
+                //apertura del diálogo de atributos o filtros
+                if(event.container.id == 'cdk-drop-list-1'){                
+                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex] );
+                }else{       
+                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex]  , true);
+                }
         }
 
 
@@ -582,16 +573,29 @@ export class EdaBlankPanelComponent implements OnInit {
                         this.configController = undefined;
                         setTimeout(() => this.openColumnDialog(response.column), 100);
                     } else if (response.length > 0) {
-                        response.forEach(f => {
+                        for (const f of response) {
                             if (_.isNil(this.selectedFilters.find(o => o.filter_id === f.filter_id))) {
                                 this.selectedFilters.push(f);
                             }
                             if (f.removed) {
                                 this.selectedFilters = _.filter(this.selectedFilters, o => o.filter_id !== f.filter_id);
                             }
-                        });
-
+                        }
                         this.configController = undefined;
+                    }
+
+                    for (const field of this.currentQuery) {
+                        const aggregationSelected = field.aggregation_type.find((agg: any) => agg.selected)
+                        if (aggregationSelected?.value) {
+                            if (field.column_type === 'text' && aggregationSelected.value !== 'none') {
+                                field.old_column_type = 'text';
+                                field.column_type = 'numeric';
+                            }
+
+                            if (field.old_column_type === 'text' && aggregationSelected.value === 'none') {
+                                field.column_type = 'text';
+                            }
+                        } 
                     }
 
                     if (event === EdaDialogCloseEvent.NONE) {
@@ -931,7 +935,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public switchAndBuildQuery() {
-
         if (!this.modeSQL) return QueryUtils.initEdaQuery(this);
         else return QueryUtils.initSqlQuery(this);
     }

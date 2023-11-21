@@ -11,7 +11,7 @@
         background-position-x: center;
         background-position-y: center;
     }
-    
+
     .login-card {
         max-width: 20rem;
         border-radius: .25rem;
@@ -20,7 +20,7 @@
         -moz-box-shadow: 0px 0px 9px 2px rgba(0,0,0,0.75);
         box-shadow: 0px 0px 9px 2px rgba(0,0,0,0.75);
     }
-    
+
     .inputs-card {
         flex-direction: column;
         box-sizing: border-box;
@@ -28,7 +28,7 @@
         padding: 1.5rem;
         padding-top: 0.5rem;
     }
-    
+
     .form-card {
         margin-bottom: 16px;
         flex-direction: column;
@@ -36,7 +36,7 @@
         display: flex;
         flex: 1 1 auto;
     }
-    
+
     .logo-card {
         flex-direction: column;
         box-sizing: border-box;
@@ -45,5 +45,15 @@
         align-items: center;
         padding: 1.5rem;
         text-align: center;
+    }
+
+    .btn {
+        background-color: #B5BC31;
+        color: #000;
+        border: none;
+        &:hover{
+          background-color: #C7CE43;
+          color: #000;
+        }
     }
 }

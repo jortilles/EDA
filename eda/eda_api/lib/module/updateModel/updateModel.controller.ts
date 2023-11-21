@@ -441,7 +441,7 @@ export class updateModel {
           let c = columns[i];
     
           //diferenciamos los agregadores por los tipos de las columnas
-          if (columns[i].type === "numeric") {
+          if (columns[i].type) {
             agg_used = this.getAggretations( columns[i].aggregations);
           } else {
             agg_used = agg_none

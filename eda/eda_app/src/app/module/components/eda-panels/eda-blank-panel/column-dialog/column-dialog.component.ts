@@ -116,7 +116,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     carregarValidacions() {
-
         this.carregarFilters();
         this.handleAggregationType(this.selectedColumn);
         this.handleOrdTypes(this.selectedColumn);
@@ -163,23 +162,24 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     }
 
-    addAggregation(type) {
+    addAggregation(type: any) {
         _.find(this.aggregationsTypes, ag => ag.value === type.value).selected = true;
 
-        _.forEach(this.aggregationsTypes, ag => {
+        for (let ag of this.aggregationsTypes) {
             if (ag.selected === true && type.value !== ag.value) {
                 ag.selected = false;
             }
-        });
+        }
 
         // Recarguem les agregacions d'aquella columna + la seleccionada
         this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
 
         // Introduim l'agregació a la Select
-        const addAggr: Column = this.controller.params.currentQuery.find(c => {
-            return this.selectedColumn.column_name === c.column_name &&
-                this.selectedColumn.table_id === c.table_id  && c.display_name.default === this.selectedColumn.display_name.default;
-        });
+        const addAggr: Column = this.controller.params.currentQuery.find((c: any) =>
+            this.selectedColumn.column_name === c.column_name &&
+            this.selectedColumn.table_id === c.table_id  &&
+            this.selectedColumn.display_name.default === c.display_name.default
+        );
 
         addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
     }
@@ -291,7 +291,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.filter.switch = handler.switchBtn;
 
             if (handler.switchBtn) {
-                this.loadDropDrownData();
+                this.loadDropDrownData();            
                 this.display.switchButton = true;
             }
 
@@ -316,44 +316,51 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.display.filterButton = this.columnUtils.handleValidForm(event, this.filterValue, validators);
 
     }
+
     /**Gestiona las agregaciones de la columna seleccionada */
     handleAggregationType(column: Column) {
+        const matchingQuery = this.controller.params.currentQuery.find((c: any) =>
+            c.table_id === column.table_id &&
+            c.column_name === column.column_name &&
+            c.display_name.default === column.display_name.default
+        );
 
         if (this.controller.params.panel.content) {
             const tmpAggTypes = [];
-            const found = this.controller.params.currentQuery
-                .find(c => c.table_id === column.table_id  && c.column_name === column.column_name && c.display_name.default == column.display_name.default)
-                .aggregation_type.find(agg => agg.selected === true);
+            
+            const selectedAggregation = matchingQuery
+                ? matchingQuery.aggregation_type.find((agg: any) => agg.selected === true)
+                : undefined;
 
             // Si ja s'ha carregat el panell i tenim dades a this.select
-            if (found) {
-                column.aggregation_type.forEach(agg => {
-                    tmpAggTypes.push(agg);
-                });
-                this.aggregationsTypes = tmpAggTypes;
-                this.controller.params.currentQuery.find(c => {
-                    return column.column_name === c.column_name && column.table_id === c.table_id  && c.display_name.default === column.display_name.default ;
-                }).aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
+            if (selectedAggregation) {
+                tmpAggTypes.push(...column.aggregation_type);
+                  
+                if (matchingQuery) {
+                    this.aggregationsTypes = JSON.parse(JSON.stringify(matchingQuery.aggregation_type));
+                }
+
                 return;
-            }else{
+            } else{
                 this.aggregationsTypes = JSON.parse(JSON.stringify(this.controller.params.selectedColumn.aggregation_type));
             }
         } else {
-            const found = this.controller.params.currentQuery.find(c => c.column_name === column.column_name && c.display_name.default === column.display_name.default );
-            if (!found) {
-                const tmpAggTypes = [];
-                column.aggregation_type.forEach((agg, index) => {
-                    tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'sum' });
-                });
+            if (!matchingQuery) {
+                const tmpAggTypes = column.aggregation_type.map(agg => ({
+                    display_name: agg.display_name,
+                    value: agg.value,
+                    selected: agg.value === 'sum'
+                }));
+
                 this.aggregationsTypes = tmpAggTypes;
             } else {
                 this.aggregationsTypes = JSON.parse(JSON.stringify(column.aggregation_type));
             }
         }
 
-        this.controller.params.currentQuery.find(c => {
-            return column.column_name === c.column_name && column.table_id === c.table_id  && column.display_name.default ===  c.display_name.default   ;
-        }).aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
+        if (matchingQuery) {
+            matchingQuery.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
+        }
     }
 
     handleDataFormatTypes(column: Column) {
@@ -493,7 +500,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 dataSource: this.controller.params.inject.dataSource._id,
                 dashboard: this.controller.params.inject.dashboard_id,
                 panel: this.controller.params.panel._id,
-                filters: []
+                filters: [],
+                forSelector: true
             };
             this.dashboardService.executeQuery(this.queryBuilder.normalQuery([this.selectedColumn], params)).subscribe(
                 res => this.dropDownFields = res[1].map(item => ({ label: item[0], value: item[0] })),

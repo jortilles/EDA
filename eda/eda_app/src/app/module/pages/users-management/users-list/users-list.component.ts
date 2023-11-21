@@ -23,6 +23,7 @@ export class UsersLlistaComponent implements OnInit {
 
         this.table = new EdaTable({
             alertService: this.alertService,
+            search: true,
             contextMenu: new EdaContextMenu({
                 header: $localize`:@@rowOptions:OPCIONES DE LA FILA`,
                 contextMenuItems: [

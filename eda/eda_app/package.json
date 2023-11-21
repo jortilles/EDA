@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve -o --configuration=ca",
     "start:ca": "ng serve  --configuration=ca",
+    "start:es": "ng serve  --configuration=es",
+    "start:gl": "ng serve  --configuration=gl",
     "copy-index": "node scripts/copy-index.js",
     "build:prod": "ng build --configuration production --localize --build-optimizer --vendor-chunk && npm run copy-index",
     "test": "ng test",

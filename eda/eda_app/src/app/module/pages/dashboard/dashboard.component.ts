@@ -86,7 +86,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         edit_mode: true, //editable dashboard
         anonimous_mode: false,
         notSaved: false,
-        hideWheel: false // dashboard config options (mostrar la rodeta o no)
+        hideWheel: false, // dashboard config options (mostrar la rodeta o no)
+        panelMode:false // en mode panel es mostra nomel el panell
     };
 
     //Date filter ranges Dropdown
@@ -508,6 +509,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     if(params['hideWheel'] == 'true'){
                         this.display_v.hideWheel =true;
                     }
+                    if(params['panelMode'] == 'true'){
+                        this.display_v.panelMode =true;
+                        this.display_v.hideWheel =true;
+                    }
             }catch(e){
             }
 
@@ -923,6 +928,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private async loadGlobalFiltersData(filterList: any, targetTable: string): Promise<void> {
         const filter = filterList;
+        
         const queryParams = {
             table: targetTable,
             dataSource: this.dataSource._id,
@@ -934,6 +940,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         filter.column.value.ordenation_type = 'ASC';
         try {
             let query = this.queryBuilderService.normalQuery([filter.column.value], queryParams);
+            query.query.forSelector = true;
             const res = await this.dashboardService.executeQuery(query).toPromise();
             filter.data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
         } catch (err) {

@@ -996,6 +996,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Buscar por nombre del informe</source>
 <target>  Szukaj po nazwie raportu</target>
 </trans-unit>
+<trans-unit id="buscar" datatype="html">
+<source>Buscar</source>
+<target>Szukaj</target>
+</trans-unit>
 <trans-unit id="selectFuenteDatos" datatype="html">
 <source>Selecciona una fuente de datos *</source>
 <target>Wybierz źródło danych *</target>
@@ -3887,7 +3891,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>en este rango</source>
     <target>w tym zakresie</target>
   </trans-unit> 
-
 
 
 <trans-unit id="si">

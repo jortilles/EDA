@@ -6,10 +6,12 @@
         var userLang = navigator.language || navigator.userLanguage;
         if(userLang.indexOf('es') >=0){
                 window.location.href = window.location.href.replace('/index.html','')+'/es';
-        }else if(userLang === 'ca-ES'){
+        }else if(userLang === 'ca'){
                 window.location.href = window.location.href.replace('/index.html','')+'/ca';
         }else if(userLang.indexOf('pl') >=0){
                 window.location.href = window.location.href.replace('/index.html','')+'/pl';
+        }else if(userLang.indexOf('gl') >=0){
+                window.location.href = window.location.href.replace('/index.html','')+'/gl';
         }else{
                 window.location.href = window.location.href.replace('/index.html','')+'/en';
         }

@@ -1,6 +1,6 @@
 import { DashboardService } from './../../../services/api/dashboard.service';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '@eda/models/model.index';
 import { SidebarService, UserService, AlertService, DataSourceService, StyleProviderService } from '@eda/services/service.index';
 import { LogoSidebar } from '@eda/configs/index';
@@ -9,13 +9,15 @@ import Swal, { SweetAlertOptions } from 'sweetalert2';
 
 @Component({
     selector: 'app-sidebar',
-    templateUrl: './sidebar.component.html'
+    templateUrl: './sidebar.component.html',
+    styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
     user: User;
     isAdmin: boolean;
     dataSourceMenu: any[] = [];
     edit_mode: boolean = true;
+    panelMode: boolean = false; // en mode panel es mostra nomel el panell
     mobileSize: boolean = false;
     sideBtn: boolean = false;
     logoSidebar: string;
@@ -23,6 +25,7 @@ export class SidebarComponent implements OnInit {
 
     constructor(
         public router: Router,
+        private route: ActivatedRoute,
         public userService: UserService,
         public sidebarService: SidebarService,
         private alertService: AlertService,
@@ -42,36 +45,59 @@ export class SidebarComponent implements OnInit {
 
     ngOnInit(): void {
         this.user = this.userService.getUserObject();
-        this.setEditMode()
+        this.setEditMode();
+        this.getPanelMode();
         // Ens subscribim a l'observable currentDatasources que ha de tenir el valor actual dels noms dels datasources.
         this.sidebarService.currentDatasources.subscribe(
             data => this.dataSourceMenu = data,
             err => this.alertService.addError(err)
         );
         
+
+        
+    }
+
+    
+    private getPanelMode(): void {
+        
+        this.route.queryParams.subscribe(params => {
+            try{
+                    if(params['panelMode'] == 'true'){
+                        this.panelMode =true; // en mode panel es mostra nomel els panells
+                        this.sidebarService.toggleSideNav = true;
+                
+                    }
+            }catch(e){
+            }
+        });
     }
 
     getMobileSize(event?): void {
-        if (!event) {
-            if (window.innerWidth <= 767) {
-                this.mobileSize = true;
-                this.sideBtn = true;
-                this.sidebarService.toggleSideNav = true;
-            } else if (window.innerWidth > 767) {
-                this.mobileSize = false;
-                this.sidebarService.setManualHideSideNav(false);
+        if(!this.panelMode){
+            if (!event) {
+                if (window.innerWidth <= 767) {
+                    this.mobileSize = true;
+                    this.sideBtn = true;
+                    this.sidebarService.toggleSideNav = true;
+                } else if (window.innerWidth > 767) {
+                    this.mobileSize = false;
+                    
+                        this.sidebarService.setManualHideSideNav(false);
+                    
+                }
+            } else {
+                if (event.target.innerWidth <= 767) {
+                    this.mobileSize = true;
+                    this.sideBtn = true;
+                    this.sidebarService.toggleSideNav = true;
+                } else if (event.target.innerWidth > 767) {
+                    this.mobileSize = false;
+                    this.sidebarService.toggleSideNav = false;
+                        this.sidebarService.setManualHideSideNav(false);
+                    
+                }
             }
-        } else {
-            if (event.target.innerWidth <= 767) {
-                this.mobileSize = true;
-                this.sideBtn = true;
-                this.sidebarService.toggleSideNav = true;
-            } else if (event.target.innerWidth > 767) {
-                this.mobileSize = false;
-                this.sidebarService.toggleSideNav = false;
-                this.sidebarService.setManualHideSideNav(false);
-            }
-        }
+    }
     }
 
     toggleClassSide(): void {
@@ -130,7 +156,9 @@ export class SidebarComponent implements OnInit {
         if (baseUrl.slice(-4) == '/es/' ||
             baseUrl.slice(-4) == '/ca/' ||
             baseUrl.slice(-4) == '/pl/' ||
-            baseUrl.slice(-4) == '/en/') {
+            baseUrl.slice(-4) == '/en/' ||
+            baseUrl.slice(-4) == '/gl/' ) 
+            {
             baseUrl = baseUrl.slice(0, baseUrl.length - 3)
         }
         switch (lan) {
@@ -138,6 +166,7 @@ export class SidebarComponent implements OnInit {
             case 'CAT': window.location.href = baseUrl + 'ca/#/home'; break;
             case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
             case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
+            case 'GL'  : window.location.href = baseUrl + 'gl/#/home'; break;
         }
     }
     public checkNotSaved(){
