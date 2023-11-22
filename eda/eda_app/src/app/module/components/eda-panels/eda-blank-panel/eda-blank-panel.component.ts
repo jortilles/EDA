@@ -77,7 +77,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public lodash: any = _;
     public hiddenColumn: number;
 
-
     public inputs: any = {};
 
     /**Dashbard emitter */
@@ -1028,5 +1027,15 @@ export class EdaBlankPanelComponent implements OnInit {
             this.showHiddId = false;
         }
      
+    }
+
+    public getDisplayName(table) {
+        let tmpTable : any; 
+        this.tablesToShow.filter(a => {
+            if (a.table_name == table) {
+                tmpTable = a;
+            } 
+            })
+        return tmpTable.display_name.default;
     }
 }

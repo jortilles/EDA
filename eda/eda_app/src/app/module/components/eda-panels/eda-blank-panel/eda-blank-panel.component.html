@@ -38,12 +38,11 @@
             <p-tabPanel i18n-header="@@vistaSeleccionador" header="{{!modeSQL ? editQuery : editSQLQuery}}">
 
                 <div *ngIf="!modeSQL" class="grid">
-
-                    <div class="col-6 md:col-2 pl-2 pr-2">
-                        <h4 i18n="@@entidadesH4"  i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos." >
-                            Entidades
+                    <div class="col-6 md:col-2 pl-2 pr-2" >
+                        <h4  i18n="@@entidadesH4"  i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos.">
+                            Entidades 
                         </h4>
-                        <hr class="mb-0">
+                        <h5 style="padding-bottom: 2.6rem;"></h5>
                         <eda-input [inject]="inputs.findTable"></eda-input>
                         <div class="column-list">
                             <div class="our-table-box" *ngFor="let table of tablesToShow" (click)="loadColumns(table)"
@@ -58,8 +57,14 @@
 
                     <div class="col-6 md:col-2 pl-2">
                         <div class="d-flex justify-content-between">
-                            <h4 i18n="@@atributosH4"  i18n-title="@@atributsTitle" title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes" >
+                            <h4 *ngIf="!userSelectedTable" i18n="@@atributosH4"  i18n-title="@@atributsTitle" title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
                                 Atributos
+                            </h4>
+                            <h4 *ngIf="userSelectedTable" i18n="@@atributosH4+" i18n-title="@@atributsTitle+" title="Clique sobre un entidad para ver sus atributos.">
+                                Columnas de: <br>
+                                <h5> 
+                                    {{getDisplayName(userSelectedTable)}} 
+                                </h5>
                             </h4>
                             <div *ngIf="userService.isAdmin && showHiddId">
                                 <span i18n="@@hiddenAttributes" class="pointer icon-hover" (click)="changeHiddenMode()">
@@ -68,10 +73,14 @@
                                     <i *ngIf="hiddenColumn==1" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
                                 </span>
                             </div>
+                    </div>
+                        
+                        <div *ngIf="!userSelectedTable" style="padding-top: 2.5rem;">
+                            <eda-input [inject]="inputs.findColumn"></eda-input>
                         </div>
-
-                        <hr class="mb-0" style="margin-top: 0.5rem!important;">
-                        <eda-input [inject]="inputs.findColumn"></eda-input>
+                        <div *ngIf="userSelectedTable" style="padding-top: 1.2rem;">
+                            <eda-input [inject]="inputs.findColumn"></eda-input>
+                        </div>
                             
                         <div class="column-list" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
                             [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
