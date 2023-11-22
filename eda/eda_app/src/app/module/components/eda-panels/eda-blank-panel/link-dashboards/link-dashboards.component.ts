@@ -168,7 +168,6 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
 
       for (let i = 0; i < dashboards.length; i++) {
-<<<<<<< HEAD
         let res;
         try {
           res = await this.dashboardService.getDashboard(dashboards[i]._id).toPromise();
@@ -218,57 +217,6 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
           }
         }
-=======
-		let res;
-		try {
-			res = await this.dashboardService.getDashboard(dashboards[i]._id).toPromise();
-		} catch (err) {
-      console.log(dashboards[i]._id)
-      console.error(err);
-		}
-
-		if (res) {
-			/** If datasources are equal and dashboar has filters */
-			if (res.dashboard.config.ds._id === this.controller.params.datasource && res.dashboard.config.filters?.length > 0) {
-
-				let disable = true;
-	
-				if (!this.controller.params.modeSQL) {
-	
-				res.dashboard.config.filters.forEach(filter => {
-					if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
-					disable = false;
-					}
-	
-					this.targetColumn = column.col;
-					this.targetTable = column.table;
-	
-					this.sourceColumn = column.col;
-					this.sourceTable = column.table;
-	
-				});
-	
-				if (!disable) {
-					this.dasboards.push({ label: dashboards[i].config.title, value: dashboards[i]._id });
-				}
-	
-				} else {
-	
-				this.sourceColumn = column.col;
-				this.sourceTable = column.table;
-	
-				res.dashboard.config.filters.forEach(filter => {
-	
-					filters.push({ colname: filter.column.value.column_name, dashboardID: dashboards[i]._id, table: filter.table.value });
-	
-				});
-	
-				this.dasboards.push({ label: dashboards[i].config.title, value: dashboards[i]._id });
-	
-				}
-			}
-		}
->>>>>>> 6bff99f (chartClick - no refresh data)
 
       }
 

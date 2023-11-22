@@ -27,7 +27,6 @@
             class="p-button-raised p-button-outlined filters-size">
         </button>
 
-<<<<<<< HEAD
         
         <div *ngFor="let filter of filtersList" class="filter-set d-flex align-items-center">
             <span class="filter-name filters-size"> {{filter.column.label}}: </span>
@@ -43,20 +42,6 @@
                 [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}" 
                 [Show]="adjustSize(filter)" 
                 (onChange)="applyGlobalFilter(filter)">
-=======
-        <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'" 
-            [options]="filter.data" 
-            [(ngModel)]="filter.selectedItems" 
-            [virtualScroll]="true" 
-            itemSize="30" 
-            [maxSelectedLabels]="3" 
-            defaultLabel="{{filter.column.label}}" 
-            display="chip"
-            class="customMultiselect filters-size" 
-            [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}" 
-            [Show]="adjustSize(filter)" 
-            (onChange)="applyGlobalFilter(filter)" >
->>>>>>> 6bff99f (chartClick - no refresh data)
 
                 <p-footer>
                     <button id="dashFilterConf"
@@ -95,10 +80,6 @@
     </div> 
     </div>
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 6bff99f (chartClick - no refresh data)
     <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions" #gridster1 >
         <!-- Normal Size -->
         <ng-container *ngIf="!toLitle && !toMedium" >
@@ -127,24 +108,14 @@
         <ng-container [ngSwitch]="panel.type">
 
             <eda-blank-panel *ngSwitchCase="0" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)" >
-<<<<<<< HEAD
             </eda-blank-panel>
 
             <eda-title-panel *ngSwitchCase="1" #edaPanel [id]="panel.id" [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
-=======
-            </eda-blank-panel >
-
-            <eda-title-panel *ngSwitchCase="1" #edaPanel [panel]="panel" [inject]="inject" (remove)="onRemovePanel($event)"  (duplicate)="onDuplicatePanel($event)" >
->>>>>>> 6bff99f (chartClick - no refresh data)
             </eda-title-panel>
 
         </ng-container>
     </ng-template>
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 6bff99f (chartClick - no refresh data)
 </div>
 
 <!-- ============================================================== -->

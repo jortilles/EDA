@@ -1,7 +1,3 @@
-<<<<<<< HEAD
- import { filter } from 'rxjs/operators';
-=======
->>>>>>> 6bff99f (chartClick - no refresh data)
 import { EdaKnob } from './../../../eda-knob/edaKnob';
 import { EdaKnobComponent } from './../../../eda-knob/eda-knob.component';
 import { EdaScatter } from './../../../eda-scatter/eda-scatter.component';

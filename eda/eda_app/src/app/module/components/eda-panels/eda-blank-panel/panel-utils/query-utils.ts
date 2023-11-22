@@ -83,7 +83,6 @@ export const QueryUtils = {
  * @param globalFilters flag to apply when runQuery() is called from dashboard component.
  */
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
-<<<<<<< HEAD
 
     /** gestiona las columnas duplicadas. Si tengo dos columnas con el mismo nombre le añado el sufijo _1, _2, _3.... etc */
     let dup = [];
@@ -98,8 +97,6 @@ export const QueryUtils = {
       }  
      })
 
-=======
->>>>>>> 6bff99f (chartClick - no refresh data)
     ebp.display_v.disablePreview = false;
 
     if (!globalFilters) {

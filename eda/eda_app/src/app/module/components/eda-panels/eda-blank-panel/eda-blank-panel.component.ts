@@ -53,11 +53,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @Input() inject: InjectEdaPanel;
     @Output() remove: EventEmitter<any> = new EventEmitter();
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
-<<<<<<< HEAD
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
-=======
-    @Output() action: EventEmitter<IPanelAction> = new EventEmitter();
->>>>>>> 6bff99f (chartClick - no refresh data)
 
     /** propietats que s'injecten al dialog amb les propietats específiques de cada gràfic. */
     public configController: EdaDialogController;
@@ -453,22 +449,15 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
-<<<<<<< HEAD
-=======
     /**
      * Chart click event
     */
->>>>>>> 6bff99f (chartClick - no refresh data)
     public onChartClick(event: any): void {
         const config = this.panelChart.getCurrentConfig();
         if (config?.chartType == 'doughnut') {
             this.action.emit({ code: 'ADDFILTER', data: {...event, panel: this.panel} });
         }
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> 6bff99f (chartClick - no refresh data)
 
     /**
      * Changes chart type 

@@ -7,11 +7,8 @@ import { Dashboard, EdaPanel, EdaTitlePanel, EdaPanelType, InjectEdaPanel } from
 import { EdaDialogController, EdaDialogCloseEvent, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
 import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupService, IGroup, SpinnerService, UserService, StyleProviderService, DashboardStyles, GlobalFiltersService } from '@eda/services/service.index';
 import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
-<<<<<<< HEAD
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
 import { environment } from 'environments/environment';
-=======
->>>>>>> 6bff99f (chartClick - no refresh data)
 import { SelectItem } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import domtoimage from 'dom-to-image';
@@ -113,12 +110,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
     constructor(
-<<<<<<< HEAD
         private router: Router,
         private route: ActivatedRoute,
-=======
-        private globalFiltersService: GlobalFiltersService,
->>>>>>> 6bff99f (chartClick - no refresh data)
         private dashboardService: DashboardService,
         private groupService: GroupService,
         private queryBuilderService: QueryBuilderService,
@@ -126,12 +119,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         private alertService: AlertService,
         private fileUtiles: FileUtiles,
         private formBuilder: UntypedFormBuilder,
-<<<<<<< HEAD
-=======
-        private route: ActivatedRoute,
-        private router: Router,
-        private fileUtils: FileUtiles,
->>>>>>> 6bff99f (chartClick - no refresh data)
         private dateUtilsService: DateUtils,
         private userService: UserService,
         private globalFiltersService: GlobalFiltersService,
@@ -725,26 +712,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 confirmButtonText: $localize`:@@AddFiltersWarningButton:Entendido`
             });
         } else {
-<<<<<<< HEAD
             this.onFilterConfig(true);
-=======
-            const params = {
-                panels: this.panels,
-                dataSource: this.dataSource
-            };
-            this.display_v.rightSidebar = false;
-            this.filterController = new EdaDialogController({
-                params,
-                close: (event, response) => {
-                    if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                        this.onAddGlobalFilter(response.filterList, response.targetTable)
-                        //not saved alert message
-                        this.dashboardService._notSaved.next(true);
-                    }
-                    this.filterController = undefined;
-                }
-            });
->>>>>>> 6bff99f (chartClick - no refresh data)
         }
     }
 
@@ -773,6 +741,23 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.filterController = undefined;
             }
         });
+
+        // const params = {
+        //     panels: this.panels,
+        //     dataSource: this.dataSource
+        // };
+        // this.display_v.rightSidebar = false;
+        // this.filterController = new EdaDialogController({
+        //     params,
+        //     close: (event, response) => {
+        //         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        //             this.onAddGlobalFilter(response.filterList, response.targetTable)
+        //             //not saved alert message
+        //             this.dashboardService._notSaved.next(true);
+        //         }
+        //         this.filterController = undefined;
+        //     }
+        // });
     }
 
     private reloadOnGlobalFilter(): void {
@@ -958,14 +943,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.edaPanels.forEach(panel => {
             panel.inject.applyToAllfilter = this.applyToAllfilter;
             panel.reloadTablesData();
-            console.log(panel);
         })
     }
 
-<<<<<<< HEAD
-=======
-    /** Loads columns by given table */
->>>>>>> 6bff99f (chartClick - no refresh data)
     private async loadGlobalFiltersData(filterList: any, targetTable: string): Promise<void> {
         const filter = filterList;
         const queryParams = {
@@ -1248,107 +1228,106 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-
     public onDuplicatePanel(panel): void {
         this.panels.push(panel);
         this.dashboardService._notSaved.next(true);
 
     }
 
-    public async onPanelAction(event: IPanelAction): Promise<void> {
-        if (event.code === 'ADDFILTER') {
-            const data = event?.data;
-            const panel = event?.data?.panel;
-            if (data?.inx) {
-                const column = event.data.query.find((query: any) => query?.display_name?.default === data.filterBy);
-                const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
+    // public async onPanelAction(event: IPanelAction): Promise<void> {
+    //     if (event.code === 'ADDFILTER') {
+    //         const data = event?.data;
+    //         const panel = event?.data?.panel;
+    //         if (data?.inx) {
+    //             const column = event.data.query.find((query: any) => query?.display_name?.default === data.filterBy);
+    //             const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
 
-                if (column && table) {
-                    let config = this.setPanelsToFilter(panel);
+    //             if (column && table) {
+    //                 let config = this.setPanelsToFilter(panel);
                     
-                    let globalFilter = {
-                        id: `${table.table_name}_${column.column_name}`,  //this.fileUtils.generateUUID(),
-                        isGlobal: true,
-                        applyToAll: config.applyToAll,
-                        panelList: config.panelList.map(p => p.id), 
-                        table: { label: table.display_name.default, value: table.table_name },
-                        column: { label: column.display_name.default, value: column },
-                        selectedItems: [data.label]
-                    };
+    //                 let globalFilter = {
+    //                     id: `${table.table_name}_${column.column_name}`,  //this.fileUtils.generateUUID(),
+    //                     isGlobal: true,
+    //                     applyToAll: config.applyToAll,
+    //                     panelList: config.panelList.map(p => p.id), 
+    //                     table: { label: table.display_name.default, value: table.table_name },
+    //                     column: { label: column.display_name.default, value: column },
+    //                     selectedItems: [data.label]
+    //                 };
 
-                    await this.onAddGlobalFilter(globalFilter, table.table_name);
+    //                 await this.onAddGlobalFilter(globalFilter, table.table_name);
 
-                    //not saved alert message
-                    this.dashboardService._notSaved.next(true);
-                    this.reloadPanelsWithTimeOut();
+    //                 //not saved alert message
+    //                 this.dashboardService._notSaved.next(true);
+    //                 this.reloadPanelsWithTimeOut();
 
-                }
-            }
-        }
-    }
+    //             }
+    //         }
+    //     }
+    // }
 
-    private setPanelsToFilter(panel: any): any {
-        const newPanel = this.panels.find(p => p.id === panel.id);
-        const panels = this.globalFiltersService.panelsToDisplay(this.dataSource.model.tables, this.panels, newPanel);
-        const panelsToFilter = panels.filter(p => p.avaliable === true);
+    // private setPanelsToFilter(panel: any): any {
+    //     const newPanel = this.panels.find(p => p.id === panel.id);
+    //     const panels = this.globalFiltersService.panelsToDisplay(this.dataSource.model.tables, this.panels, newPanel);
+    //     const panelsToFilter = panels.filter(p => p.avaliable === true);
 
-        return {
-            panelList: panelsToFilter,
-            applyToAll: (panels.length === panelsToFilter.length)
-        };
-    }
+    //     return {
+    //         panelList: panelsToFilter,
+    //         applyToAll: (panels.length === panelsToFilter.length)
+    //     };
+    // }
 
-    private async onAddGlobalFilter(filter: any, targetTable: string): Promise<void> {
-        let existFilter = this.filtersList.find((f) => f.id === `${targetTable}_${filter.column.value?.column_name}`); 
-        if (existFilter) {
-            existFilter = filter;
-        } else {
-            this.filtersList.push(filter);
-        }
+    // private async onAddGlobalFilter(filter: any, targetTable: string): Promise<void> {
+    //     let existFilter = this.filtersList.find((f) => f.id === `${targetTable}_${filter.column.value?.column_name}`); 
+    //     if (existFilter) {
+    //         existFilter = filter;
+    //     } else {
+    //         this.filtersList.push(filter);
+    //     }
 
-        // Load Filter dropdwons option s
-        if (filter.column.value.column_type === 'date' && filter.selectedItems.length > 0) {
-            await this.loadDatesFromFilter(filter);
-        } else {
-            await this.loadGlobalFiltersData(filter, targetTable);
-        }
+    //     // Load Filter dropdwons option s
+    //     if (filter.column.value.column_type === 'date' && filter.selectedItems.length > 0) {
+    //         await this.loadDatesFromFilter(filter);
+    //     } else {
+    //         await this.loadGlobalFiltersData(filter, targetTable);
+    //     }
 
-        // If default values are selected filter is applied
-        if (filter.selectedItems.length > 0) {
-            await this.applyGlobalFilter(filter);
-        }
+    //     // If default values are selected filter is applied
+    //     if (filter.selectedItems.length > 0) {
+    //         await this.applyGlobalFilter(filter);
+    //     }
 
-        // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
-        if (filter.applyToAll && (this.applyToAllfilter.present === false)) {
-            this.applyToAllfilter = { present: true, refferenceTable: targetTable, id: filter.id };
-            await this.updateApplyToAllFilterInPanels();
-        }
-    }
+    //     // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
+    //     if (filter.applyToAll && (this.applyToAllfilter.present === false)) {
+    //         this.applyToAllfilter = { present: true, refferenceTable: targetTable, id: filter.id };
+    //         await this.updateApplyToAllFilterInPanels();
+    //     }
+    // }
 
 
 
     public onResetWidgets(): void {
             // Get the queries in the dashboard for delete it from cache
-            const queries = [];
-            this.panels.forEach( p=> {
-                    if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
-                        queries.push( p.content.query.query );
-                    }
-                });
-            let body =
-            {
-                model_id: this.dataSource._id,
-                queries: queries
-            }
+        const queries = [];
+        this.panels.forEach( p=> {
+                if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
+                    queries.push( p.content.query.query );
+                }
+            });
+        let body =
+        {
+            model_id: this.dataSource._id,
+            queries: queries
+        }
 
-            this.dashboardService.cleanCache(body).subscribe(
-                res => {
-                    this.initializeDashboard();
-                    this.display_v.rightSidebar = false;
-                    this.dashboardService._notSaved.next(false);
-                },
-                err => console.log(err)
-            )
+        this.dashboardService.cleanCache(body).subscribe(
+            res => {
+                this.initializeDashboard();
+                this.display_v.rightSidebar = false;
+                this.dashboardService._notSaved.next(false);
+            },
+            err => console.log(err)
+        )
     }
 
     public getsharedURL(): string {
