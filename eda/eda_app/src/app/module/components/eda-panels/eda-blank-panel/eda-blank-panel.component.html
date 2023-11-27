@@ -42,7 +42,7 @@
                         <h4  i18n="@@entidadesH4"  i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos.">
                             Entidades 
                         </h4>
-                        <h5 style="padding-bottom: 2.6rem;"></h5>
+                        <h5 style="padding-bottom: 2.5rem;"></h5>
                         <eda-input [inject]="inputs.findTable"></eda-input>
                         <div class="column-list">
                             <div class="our-table-box" *ngFor="let table of tablesToShow" (click)="loadColumns(table)"
@@ -60,12 +60,15 @@
                             <h4 *ngIf="!userSelectedTable" i18n="@@atributosH4"  i18n-title="@@atributsTitle" title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
                                 Atributos
                             </h4>
-                            <h4 *ngIf="userSelectedTable" i18n="@@atributosH4+" i18n-title="@@atributsTitle+" title="Clique sobre un entidad para ver sus atributos.">
-                                Columnas de: <br>
-                                <h5> 
-                                    {{getDisplayName(userSelectedTable)}} 
-                                </h5>
+                            <h4 *ngIf="userSelectedTable" i18n="@@atributosH4+" i18n-title="@@atributsTitle+" title="Clique sobre un entidad para ver sus atributos." > 
+                                Columnas de:
                             </h4>
+                            <div style="position:absolute;  left: 6px; ">
+                                <br>
+                                <h4 *ngIf="userSelectedTable" i18n="@@atributosH4interpolation" i18n-title="@@atributsTitle+" title="Clique sobre un entidad para ver sus atributos." style="text-align: left;"> 
+                                    {{getDisplayName(userSelectedTable)}}
+                                </h4>
+                            </div>
                             <div *ngIf="userService.isAdmin && showHiddId">
                                 <span i18n="@@hiddenAttributes" class="pointer icon-hover" (click)="changeHiddenMode()">
                                     Atributos ocultos
@@ -74,11 +77,7 @@
                                 </span>
                             </div>
                     </div>
-                        
-                        <div *ngIf="!userSelectedTable" style="padding-top: 2.5rem;">
-                            <eda-input [inject]="inputs.findColumn"></eda-input>
-                        </div>
-                        <div *ngIf="userSelectedTable" style="padding-top: 1.2rem;">
+                        <div style="padding-top: 2.4rem;">
                             <eda-input [inject]="inputs.findColumn"></eda-input>
                         </div>
                             
