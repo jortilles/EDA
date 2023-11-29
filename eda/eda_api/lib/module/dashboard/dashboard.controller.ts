@@ -1016,6 +1016,10 @@ export class DashboardController {
 
   /**Check if an user can or not see a data model. */
   static securityCheck(dataModel: any, user: any) {
+    /** un admin  lo ve todo */
+    if( user.role.includes('135792467811111111111110') ){
+      return true;
+    }
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {
       const users = []
       const roles = []
