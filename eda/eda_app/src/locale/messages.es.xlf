@@ -4238,11 +4238,27 @@
         <target>Nombre de columna duplicada:</target>
       </trans-unit>
 
-      <trans-unit id="@@hiddenAttributes">
+      <trans-unit id="hiddenAttributes">
         <source>Atributos ocultos</source>
-        <target>Columnas ocultas</target>
+        <target>Mostrar/ocultar columnas ocultas</target>
       </trans-unit>
 
+      <trans-unit id="atributosH4+" datatype="html">
+        <source>
+          Columnas de:
+        </source>
+        <target>
+          Columnas de:
+        </target>
+      </trans-unit>
+      <trans-unit id="atributosH4interpolation" datatype="html">
+        <source>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </source>
+        <target>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
