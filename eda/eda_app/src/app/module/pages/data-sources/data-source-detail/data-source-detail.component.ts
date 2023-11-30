@@ -145,7 +145,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                             }
                             
                             const dynValue = this.modelPanel.metadata.model_granted_roles.filter(r => r.value !== undefined)
-                            .filter(r => r.value !== "(x  => None)" && r.value !== "(~ => All)")
+                            .filter(r => r.value !== "(x => None)" && r.value !== "(~ => All)")
                             .filter(r => r.value != elem.value );
                             
                             const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined && r.users.length > 0  )

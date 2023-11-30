@@ -369,6 +369,18 @@ export class SQLserviceBuilderService extends QueryBuilderService {
           : columnType === 'numeric' ? value : `'${value.replace(/'/g, "''")}'`;
         str = str + tail + ','
       });
+
+      // En el cas dels filtres de seguretat si l'usuari no pot veure res....
+      filter.forEach(f => {
+        if(f == '(x => None)'){
+          switch (columnType) {
+            case 'text': str = `'(x => None)'  `;   break; 
+            case 'numeric': str =  'null  ';   break; 
+            case 'date': str =  `to_date('4092-01-01','YYYY-MM-DD')  `;   break; 
+          }
+        }
+      });
+
       return str.substring(0, str.length - 1);
     }
   }
