@@ -2345,7 +2345,7 @@
 
       <trans-unit id="direccionMail" datatype="html">
         <source>Dirección Email</source>
-        <target>Email</target>
+        <target>Username</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">22</context>
@@ -2506,7 +2506,7 @@
       </trans-unit>
       <trans-unit id="aggTmean">
         <source>Media</source>
-        <target>AVG</target>
+        <target>Average</target>
       </trans-unit>
       <trans-unit id="aggTmax">
         <source>Màximo</source>
@@ -4205,6 +4205,28 @@
       <trans-unit id="aboutPageLastSync" datatype="html">
         <source>Última Sincronización con SinergiaCRM</source>
         <target>Last Synchronization with SinergiaCRM</target>
+      </trans-unit>
+
+      <trans-unit id="hiddenAttributes">
+        <source>Atributos ocultos</source>
+        <target>Show/hide hidden columns</target>
+      </trans-unit>
+
+      <trans-unit id="atributosH4+" datatype="html">
+        <source>
+          Columnas de:
+        </source>
+        <target>
+          Columns of:
+        </target>
+      </trans-unit>
+      <trans-unit id="atributosH4interpolation" datatype="html">
+        <source>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </source>
+        <target>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </target>
       </trans-unit>
 
     </body>

@@ -2269,7 +2269,7 @@
       </trans-unit>
       <trans-unit id="tituloGrupoComunes" datatype="html">
         <source> COMUNES</source>
-        <target> COMUNES EN GALLEGO</target>
+        <target> COMUNES</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
           <context context-type="linenumber">44</context>
@@ -2497,23 +2497,23 @@
       </trans-unit>
       <trans-unit id="aggTmean">
         <source>Media</source>
-        <target>AVG</target>
+        <target>Media</target>
       </trans-unit>
       <trans-unit id="aggTmax">
         <source>Máximo</source>
-        <target>Máx</target>
+        <target>Máximo</target>
       </trans-unit>
       <trans-unit id="aggTmin">
         <source>Mínimo</source>
-        <target>Min</target>
+        <target>Mínimo</target>
       </trans-unit>
       <trans-unit id="aggTcount">
         <source>Cuenta Valores</source>
-        <target>Count</target>
+        <target>Cuenta valores</target>
       </trans-unit>
       <trans-unit id="aggTcountD">
         <source>Valores Distintos</source>
-        <target>Count Distinct</target>
+        <target>Cuenta valores únicos</target>
       </trans-unit>
       <trans-unit id="commonPanel">
         <source>Común</source>
@@ -2531,7 +2531,7 @@
 
       <trans-unit id="col">
         <source>Atributo</source>
-        <target>Atributo:</target>
+        <target>Columna:</target>
       </trans-unit>
       <trans-unit id="table">
         <source>de la entidad</source>
@@ -4255,6 +4255,28 @@
       <trans-unit id="aboutPageLastSync" datatype="html">
         <source>Última Sincronización con SinergiaCRM</source>
         <target>Última Sincronización con SinergiaCRM</target>
+      </trans-unit>
+
+      <trans-unit id="hiddenAttributes">
+        <source>Atributos ocultos</source>
+        <target>Mostrar/ocultar columnas ocultas</target>
+      </trans-unit>
+
+      <trans-unit id="atributosH4+" datatype="html">
+        <source>
+          Columnas de:
+        </source>
+        <target>
+          Columnas de:
+        </target>
+      </trans-unit>
+      <trans-unit id="atributosH4interpolation" datatype="html">
+        <source>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </source>
+        <target>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </target>
       </trans-unit>
     </body>
   </file>
