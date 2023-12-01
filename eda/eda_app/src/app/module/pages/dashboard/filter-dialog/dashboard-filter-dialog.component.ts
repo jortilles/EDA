@@ -24,8 +24,8 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public dialog: EdaDialog;
     public params: any = {};
 
-    public panelsToDisplay: Array<{ title, id, active, avaliable }>;
-    public panelstoFilter: Array<{ title, id, active, avaliable }>;
+    public panelsToDisplay: Array<{ title, id, active, avaliable, visible }>;
+    public panelstoFilter: Array<{ title, id, active, avaliable, visible }>;
 
     // Dialog  vars
     public targetCols: any[] = [];
@@ -36,6 +36,8 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public selectedValues: any = [];
     public applyToAll: boolean = true;
     public switchChecked: boolean = false;
+    public publicFilter: boolean = true;
+    public switchFilter: boolean = false;
     
     public rangeDates: Date[];
     public selectedRange : string = null;
@@ -43,12 +45,13 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public datePickerConfigs: any = {};
     
     // Global filters vars
-    public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll }> = [];
+    public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll, visible }> = [];
 
     //strings
     public header1 : string = $localize`:@@aplyToAllPanelsH5:¿Aplica a todos los paneles?`;
     public header2 : string = $localize`:@@panelsToAplyH5:Paneles para los que aplica el filtro`;
     public header3 : string = $localize`:@@filterForH5: Filtrar por`;
+    public header4 : string = $localize`:@@canIfilter: El filtro es público?`;
     public greendot :string = $localize`:@@greendot:Paneles filtrados`;
     public reddot :string =$localize`:@@reddot:Paneles no relacionados`;
     public unselecteddot :string = $localize`:@@unselecteddot:Paneles no filtrados`;
@@ -112,6 +115,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.applyToAll = (this.panelsToDisplay.length === this.panelstoFilter.length);
 
         if (this.applyToAll) this.switchChecked = true;
+        if (this.publicFilter) this.switchFilter = true; 
 
         this.setTablesAndColumnsToFilter();
     }
@@ -182,7 +186,8 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 selectedItems: this.selectedValues,
                 selectedRange:this.selectedRange,
                 isGlobal: true,
-                applyToAll: !this.applyToAll
+                applyToAll: !this.applyToAll,
+                visible: this.publicFilter
             });
     
             // this.loadGLobalFiltersData(this.filtersList[this.filtersList.length - 1]);
@@ -200,6 +205,8 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 this.selectedFilter.selectedItems = this.selectedValues;
                 this.selectedFilter.selectedRange =this.selectedRange;
                 this.selectedFilter.applyToAll = !this.applyToAll;
+                this.selectedFilter.visible = this.publicFilter;
+          //      this.selectedFilter.filterMaker = this;
 
                 for (let filter of this.filtersList) {
                     if (filter.id === this.selectedFilter.id) {
@@ -262,6 +269,15 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             this.panelstoFilter = this.panelsToDisplay.filter(p => p.avaliable === true   );
         }
         return this.applyToAll;
+    }
+
+    applyToPublicFilterCheck() {
+        this.publicFilter = !this.publicFilter;
+        if(this.publicFilter){
+            this.panelstoFilter = this.panelsToDisplay.filter(p => p.visible === this.switchFilter  );
+        }
+        return this.panelstoFilter;
+        
     }
 
     resetSelectedValues() {

@@ -30,6 +30,14 @@
         </div>
     </p-card>
 
+    <p-card [header]="header4">
+        <div class="grid">
+            <div class="col-12">
+                <p-inputSwitch id="applyToOneFilterButton" (onChange)="applyToPublicFilterCheck()" [(ngModel)]="switchFilter"> </p-inputSwitch>
+            </div>
+        </div>
+    </p-card>
+
     <div style="margin: 1rem;"></div>
 
     <p-card *ngIf="!switchChecked" [header]="header2">

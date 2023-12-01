@@ -8,7 +8,7 @@ export class GlobalFiltersService {
     public panelsToDisplay(tables, panels, refferencePanel) {
 
         const panelsTables = [];
-        const panelsToDisplay: Array<{title, id, active, avaliable}> = [];
+        const panelsToDisplay: Array<{title, id, active, avaliable, visible}> = [];
         if (refferencePanel.content) {
             refferencePanel.content.query.query.fields.forEach(field => {
                 if (!panelsTables.includes(field.table_id)) {
@@ -23,9 +23,9 @@ export class GlobalFiltersService {
                         if (!firstPanelRelatedTables.has(field.table_id)) inlcludePanel = false;
                     });
                     if (inlcludePanel) {
-                        panelsToDisplay.push({title: panel.title, id: panel.id, active: true, avaliable : true});
+                        panelsToDisplay.push({title: panel.title, id: panel.id, active: true, avaliable : true, visible: true});
                     } else {
-                        panelsToDisplay.push({title: panel.title, id: panel.id, active: false, avaliable: false});
+                        panelsToDisplay.push({title: panel.title, id: panel.id, active: false, avaliable: false, visible: true});
                     }
                 }
             });
