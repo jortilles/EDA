@@ -9,11 +9,15 @@ export class MySqlBuilderService extends QueryBuilderService {
     return tables;
   }
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string, valueListJoins: Array<any>): any {
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>, limit: number, joinType: string, valueListJoins: Array<any>, schema:any, database:any, forSelector: any): any {
 
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
+    if (forSelector === true) {
+      myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
+    }
+ 
     //to WHERE CLAUSE
     const filters = this.queryTODO.filters.filter(f => {
       const column = this.findColumn(f.filter_table, f.filter_column);
@@ -72,6 +76,8 @@ export class MySqlBuilderService extends QueryBuilderService {
     const order_columns_string = orderColumns.join(',');
     if (order_columns_string.length > 0) {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
+    } else if (forSelector === true) {
+      myQuery = `${myQuery}\norder by 1`;
     }
 
     if (limit) myQuery += `\nlimit ${limit}`;

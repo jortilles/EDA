@@ -9,7 +9,7 @@ import { Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
 import {
     DashboardService, ChartUtilsService, AlertService,
     SpinnerService, FileUtiles, EdaChartType,
-    FilterType, QueryBuilderService, OrdenationType
+    FilterType, QueryBuilderService, OrdenationType, UserService
 } from '@eda/services/service.index';
 import {
     EdaPageDialogComponent, EdaDialogController, EdaContextMenu, EdaDialogCloseEvent
@@ -153,6 +153,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public colorsDeepCopy: any = {};
 
     public queryFromServer: string = '';
+    public showHiddId: boolean;
 
     // join types 
     joinTypeOptions: any[] = [
@@ -174,7 +175,8 @@ export class EdaBlankPanelComponent implements OnInit {
         public chartUtils: ChartUtilsService,
         public alertService: AlertService,
         public spinnerService: SpinnerService,
-        public groupService: GroupService
+        public groupService: GroupService,
+        public userService: UserService
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
@@ -192,7 +194,7 @@ export class EdaBlankPanelComponent implements OnInit {
         if (this.panel.content) {
             try{
                 const query = this.panel.content.query;
-            
+                    
                 if (query.query.modeSQL) {
                     this.modeSQL = true;
                     this.currentSQLQuery = query.query.SQLexpression;
@@ -272,6 +274,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.tables = _.cloneDeep(tables.allTables);
         this.tablesToShow = _.cloneDeep(tables.tablesToShow);
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
+
     }
 
     /**
@@ -305,6 +308,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * Sets configuration dialog and chart
      * @param panelContent panel content to build configuration .
      */
+
     buildGlobalconfiguration(panelContent: any) {
         if (!panelContent.query.query.modeSQL) {
             try{
@@ -323,6 +327,7 @@ export class EdaBlankPanelComponent implements OnInit {
                                 }
                                 if(duplicatedColumn){
                                     duplicatedColumn.display_name.default = el.display_name;
+
                                     PanelInteractionUtils.handleAggregationType4DuplicatedColumns( this, duplicatedColumn);
                                     this.currentQuery.push(duplicatedColumn); // Moc la columna directament perque es una duplicada.... o no....
                                 }
@@ -527,6 +532,13 @@ export class EdaBlankPanelComponent implements OnInit {
                 event.container.data,
                 event.previousIndex,
                 event.currentIndex);
+                
+                //apertura del diálogo de atributos o filtros
+                if(event.container.id == 'cdk-drop-list-1'){                
+                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex] );
+                }else{       
+                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex]  , true);
+                }
         }
 
 
@@ -590,6 +602,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     if (event === EdaDialogCloseEvent.NONE) {
                         this.configController = undefined;
                     }
+                    this.configController = undefined;
 
                 }
             });

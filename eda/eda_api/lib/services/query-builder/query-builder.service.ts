@@ -30,7 +30,6 @@ export abstract class QueryBuilderService {
         this.usercode = user.email;
         this.groups = user.role;
         this.tables = dataModel.ds.model.tables;
-
     }
 
     abstract getFilters(filters, type: string);
@@ -41,7 +40,7 @@ export abstract class QueryBuilderService {
     abstract processFilter(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
         grouping: any[], tables: Array<any>, limit: number, 
-        joinType: string,valueListJoins:any[], Schema?: string, database?: string);
+        joinType: string,valueListJoins:any[], Schema?: string, database?: string, forSelector?: any );
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
     abstract parseSchema(tables: string[], schema?: string, database?: string);
@@ -185,7 +184,7 @@ export abstract class QueryBuilderService {
             let tables = this.dataModel.ds.model.tables
                 .map(table => { return { name: table.table_name, query: table.query } });
             this.query = this.normalQuery(columns, origin, dest, joinTree, grouping, tables,
-                this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, this.dataModel.ds.connection.schema, this.dataModel.ds.connection.database);
+                this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, this.dataModel.ds.connection.schema, this.dataModel.ds.connection.database, this.queryTODO.forSelector);
             return this.query;
         }
     }
@@ -276,6 +275,7 @@ export abstract class QueryBuilderService {
         return `SELECT DISTINCT ${this.queryTODO.fields[0].valueListSource.target_description_column} \nFROM ${table}`;
     }
 
+    /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
     public simpleQuery(columns: string[], origin: string) {
     
 
@@ -300,8 +300,7 @@ export abstract class QueryBuilderService {
         return  res;
     }
     public getPermissions(modelPermissions, modelTables, originTable) {
-
-        
+      
         originTable = this.cleanOriginTable(originTable);
         let filters = [];
         const permissions = this.getUserPermissions(modelPermissions);

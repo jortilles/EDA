@@ -517,6 +517,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
             }catch(e){
             }
+
+
         });
     }
 
@@ -948,6 +950,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private async loadGlobalFiltersData(filterList: any, targetTable: string): Promise<void> {
         const filter = filterList;
+        
         const queryParams = {
             table: targetTable,
             dataSource: this.dataSource._id,
@@ -959,6 +962,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         filter.column.value.ordenation_type = 'ASC';
         try {
             let query = this.queryBuilderService.normalQuery([filter.column.value], queryParams);
+            query.query.forSelector = true;
             const res = await this.dashboardService.executeQuery(query).toPromise();
             filter.data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
         } catch (err) {

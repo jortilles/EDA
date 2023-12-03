@@ -18,7 +18,8 @@ export interface Query {
         modeSQL: boolean,
         SQLexpression : string,
         queryLimit : number,
-        joinType: string
+        joinType: string,
+        forSelector?: boolean ;
 
     };
     output: {

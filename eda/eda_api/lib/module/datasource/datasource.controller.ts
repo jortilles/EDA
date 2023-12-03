@@ -7,9 +7,10 @@ import ConnectionModel from './model/connection.model';
 import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import BigQueryConfig from './model/BigQueryConfig.model';
 import CachedQuery, { ICachedQuery } from '../../services/cache-service/cached-query.model';
-import { QueryOptions } from 'mongoose';
+import { Mongoose, QueryOptions } from 'mongoose';
 import { upperCase } from 'lodash';
 import Group from '../../module/admin/groups/model/group.model';
+import { json } from 'body-parser';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -41,7 +42,6 @@ export class DataSourceController {
                 if (err) {
                     return next(new HttpException(404, 'Datasouce not found'));
                 }
-
                 // ocultem el password
                 dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
                 dataSource.ds.connection.password = '__-(··)-__';
@@ -54,7 +54,7 @@ export class DataSourceController {
         }
     }
 
-/** AQUSTA FUNCIÓ RETORNA TOTS ELS DATASOURCES */
+/** aQUSTA FUNCIÓ RETORNA TOTS ELS DATASOURCES */
     static async GetDataSourcesNames(req: Request, res: Response, next: NextFunction) {
         let options:QueryOptions = {};
         DataSource.find({}, '_id ds.metadata.model_name ds.security', options, (err, ds) => {
@@ -169,7 +169,7 @@ export class DataSourceController {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
             const names = JSON.parse(JSON.stringify(ds));
-  
+            
             for (let i = 0, n = names.length; i < n; i += 1) {
                 const e = names[i];
                 // Si tenim  propietari....
@@ -319,10 +319,10 @@ export class DataSourceController {
         } else {
 
             try {
-                const cn = req.qs.type !== 'bigquery' ?
-                    new ConnectionModel(req.qs.user, req.qs.host, req.qs.database, req.qs.password, req.qs.port,
-                        req.qs.type, req.qs.schema, req.body.poolLimit, req.qs.sid, req.qs.warehouse
-                    ) : new BigQueryConfig(req.qs.type, req.qs.database, req.qs.project_id);
+                const cn = req.qs.type !== 'bigquery' ? new ConnectionModel(req.qs.user, req.qs.host, req.qs.database,
+                    req.qs.password, req.qs.port, req.qs.type,
+                    req.body.poolLimit, req.qs.schema, req.qs.sid, req.qs.warehouse)
+                    : new BigQueryConfig(req.qs.type, req.qs.database, req.qs.project_id);
 
                 const manager = await ManagerConnectionService.testConnection(cn);
                 await manager.tryConnection();
@@ -343,10 +343,8 @@ export class DataSourceController {
                 const actualDS = await DataSourceController.getMongoDataSource(req.params.id);
                 const passwd = req.qs.password === '__-(··)-__' ? EnCrypterService.decode(actualDS.ds.connection.password) : req.qs.password;
 
-                const cn = new ConnectionModel(
-                    req.qs.user, req.qs.host, req.qs.database, passwd, req.qs.port,
-                    req.qs.type, req.qs.schema, req.body.poolLimit, req.qs.sidm, req.qs.warehouse
-                );
+                const cn = new ConnectionModel(req.qs.user, req.qs.host, req.qs.database, passwd,
+                    req.qs.port, req.qs.type, req.qs.schema, req.body.poolLimit, req.qs.sidm, req.qs.warehouse);
                 const manager = await ManagerConnectionService.testConnection(cn);
                 await manager.tryConnection();
                 return res.status(200).json({ ok: true });
@@ -422,15 +420,13 @@ export class DataSourceController {
 
     static async GenerateDataModelSql(req: Request, res: Response, next: NextFunction) {
         try {
-            const cn = new ConnectionModel(
-                req.body.user, req.body.host, req.body.database, req.body.password, req.body.port,
-                req.body.type, req.body.schema, req.body.poolLimit, req.body.sid,  req.qs.warehouse
-            );
+            const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database,
+                req.body.password, req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid, req.qs.warehouse);
             const manager = await ManagerConnectionService.testConnection(cn);
             const tables = await manager.generateDataModel(req.body.optimize, req.body.filter, req.body.name);
             const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 
-
+          
             const datasource: IDataSource = new DataSource({
                 ds: {
                     connection: {
@@ -459,18 +455,23 @@ export class DataSourceController {
                         tables: tables
                     }
                 }
-            });
 
+                });           
+                
             datasource.save((err, data_source) => {
+
                 if (err) {
+
+                    
                     console.log(err);
                     return next(new HttpException(500, `Error saving the datasource`));
                 }
 
                 return res.status(201).json({ ok: true, data_source_id: data_source._id });
-            });
+            }); 
 
         } catch (err) {
+            
             next(err);
         }
     }
@@ -495,10 +496,8 @@ export class DataSourceController {
             const actualDS = await DataSourceController.getMongoDataSource(req.params.id);
             const passwd = req.body.password === '__-(··)-__' ? EnCrypterService.decode(actualDS.ds.connection.password) : req.body.password
 
-            const cn = new ConnectionModel(
-                req.body.user, req.body.host, req.body.database, passwd, req.body.port,
-                req.body.type, req.body.schema, req.body.poolLimit, req.body.sid,  req.qs.warehouse
-            );
+            const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database, passwd,
+                req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid,  req.qs.warehouse);
             const manager = await ManagerConnectionService.testConnection(cn);
             const storedDataModel = JSON.parse(JSON.stringify(actualDS));
             let tables = [];
