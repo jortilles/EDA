@@ -690,7 +690,7 @@ export class DashboardController {
 
       if (myQuery.fields.length == 0) {
         console.log('you cannot see any data');
-        return res.status(200).json([['noData'], [[]]]);
+        return res.status(200).json([['noDataAllowed'], [[]]]);
       }
 
       const query = await connection.getQueryBuilded(
@@ -863,7 +863,7 @@ export class DashboardController {
       })
       if (notAllowedQuery) {
         console.log('Not allowed table in query')
-        return res.status(200).json("[['noData'],[]]")
+        return res.status(200).json("[['noDataAllowed'],[]]")
       } else {
         const query = connection.BuildSqlQuery(
           req.body.query,
