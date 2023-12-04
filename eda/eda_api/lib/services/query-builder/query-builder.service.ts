@@ -202,6 +202,8 @@ export abstract class QueryBuilderService {
         return graph;
     }
 
+
+    /** valida relaciones directas */
     public validateJoinTree(joinTree:any, dest:any){
         for (let i = 0; i < dest.length; i++) {
             let elem = joinTree.find(n => n.name === dest[i]);
