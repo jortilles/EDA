@@ -29,8 +29,8 @@
 
 
         <div *ngFor="let filter of filtersList" class="filter-set d-flex align-items-center">
-            <span *ngIf="userService.isAdmin || filter.visible" class="filter-name filters-size"> {{filter.column.label}}: </span>
-            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (userService.isAdmin || filter.visible)"
+            <span *ngIf="userService.isAdmin || filter.visible == 'public' || filter.visible == 'readOnly'" class="filter-name filters-size"> {{filter.column.label}}: </span>
+            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (userService.isAdmin || filter.visible == 'public')"
                 [options]="filter.data"
                 [(ngModel)]="filter.selectedItems"
                 [virtualScroll]="true"
@@ -38,6 +38,37 @@
                 [maxSelectedLabels]="3"
                 defaultLabel="{{filter.column.label}}"
                 display="chip"
+                class="customMultiselect filters-size"
+                [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
+                [Show]="adjustSize(filter)"
+                (onChange)="applyGlobalFilter(filter)">
+
+                <p-footer>
+                    <button id="dashFilterConf"
+                        pButton pRipple type="button"
+                        icon="pi pi-cog"
+                        (click)="onFilterConfig(false, filter)"
+                        class="p-button-rounded p-button-outlined filters-size">
+                    </button>
+
+                    <button *ngIf="autoClear"
+                        pButton pRipple type="button"
+                        icon="pi pi-undo"
+                        (click)="clearRangeDates();emitChanges();"
+                        class="p-button-rounded p-button-outlined">
+                    </button>
+                </p-footer>
+            </p-multiSelect>
+
+            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (filter.visible == 'readOnly' && !userService.isAdmin )"
+                [options]="filter.data"
+                [(ngModel)]="filter.selectedItems"
+                [virtualScroll]="true"
+                itemSize="30"
+                [maxSelectedLabels]="3"
+                defaultLabel="{{filter.column.label}}"
+                display="chip"
+                disabled="true"
                 class="customMultiselect filters-size"
                 [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
                 [Show]="adjustSize(filter)"

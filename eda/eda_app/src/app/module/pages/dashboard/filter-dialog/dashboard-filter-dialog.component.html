@@ -22,21 +22,22 @@
 
 
 <ng-template #filterTemplate>
-    <p-card [header]="header1">
-        <div class="grid">
-            <div class="col-12">
-                <p-inputSwitch id="applyToAllFiltersButton" (onChange)="applyToAllCheck()" [(ngModel)]="switchChecked"> </p-inputSwitch>
-            </div>
+    <div class="grid" style="display: flex; gap: 50px;">
+        <div style="flex: 1">
+            <p-card [header]="header1" >
+                <div class="col-12">
+                    <p-inputSwitch id="applyToAllFiltersButton" (onChange)="applyToAllCheck()" [(ngModel)]="switchChecked"></p-inputSwitch>
+                </div>
+            </p-card>
         </div>
-    </p-card>
-
-    <p-card [header]="header4">
-        <div class="grid">
-            <div class="col-12">
-                <p-inputSwitch id="applyToOneFilterButton" (onChange)="applyToPublicFilterCheck()" [(ngModel)]="switchFilter"> </p-inputSwitch>
-            </div>
+        <div style="flex: 1">
+            <p-card [header]="header4" >
+                <div class="col-12">
+                    <p-dropdown id="applyToOneFilterDropdown" [options]="publicRoHidden" [(ngModel)]="publicRoHiddenOption" (onClick)="applyToPublicFilterCheck(publicRoHiddenOption)" [autoWidth]="false"></p-dropdown>
+                </div>
+            </p-card>
         </div>
-    </p-card>
+    </div>
 
     <div style="margin: 1rem;"></div>
 

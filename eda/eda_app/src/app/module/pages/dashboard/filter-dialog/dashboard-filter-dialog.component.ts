@@ -36,8 +36,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public selectedValues: any = [];
     public applyToAll: boolean = true;
     public switchChecked: boolean = false;
-    public publicFilter: boolean = true;
-    public switchFilter: boolean = false;
+    public switchFilter: any;
+    public publicRoHidden: string[]  = ["public","readOnly","hidden"]; //valors del dropdown
+    public publicRoHiddenOption: any = "public" //valor per defecte del dropdown
     
     public rangeDates: Date[];
     public selectedRange : string = null;
@@ -51,7 +52,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public header1 : string = $localize`:@@aplyToAllPanelsH5:¿Aplica a todos los paneles?`;
     public header2 : string = $localize`:@@panelsToAplyH5:Paneles para los que aplica el filtro`;
     public header3 : string = $localize`:@@filterForH5: Filtrar por`;
-    public header4 : string = $localize`:@@canIfilter: El filtro es público?`;
+    public header4 : string = $localize`:@@canIfilter: Visiblidad del filtro`;
     public greendot :string = $localize`:@@greendot:Paneles filtrados`;
     public reddot :string =$localize`:@@reddot:Paneles no relacionados`;
     public unselecteddot :string = $localize`:@@unselecteddot:Paneles no filtrados`;
@@ -115,7 +116,6 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.applyToAll = (this.panelsToDisplay.length === this.panelstoFilter.length);
 
         if (this.applyToAll) this.switchChecked = true;
-        if (this.publicFilter) this.switchFilter = true; 
 
         this.setTablesAndColumnsToFilter();
     }
@@ -187,7 +187,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 selectedRange:this.selectedRange,
                 isGlobal: true,
                 applyToAll: !this.applyToAll,
-                visible: this.publicFilter
+                visible: this.publicRoHiddenOption
             });
     
             // this.loadGLobalFiltersData(this.filtersList[this.filtersList.length - 1]);
@@ -205,7 +205,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 this.selectedFilter.selectedItems = this.selectedValues;
                 this.selectedFilter.selectedRange =this.selectedRange;
                 this.selectedFilter.applyToAll = !this.applyToAll;
-                this.selectedFilter.visible = this.publicFilter;
+                this.selectedFilter.visible = this.publicRoHiddenOption;
           //      this.selectedFilter.filterMaker = this;
 
                 for (let filter of this.filtersList) {
@@ -271,12 +271,14 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         return this.applyToAll;
     }
 
-    applyToPublicFilterCheck() {
-        this.publicFilter = !this.publicFilter;
-        if(this.publicFilter){
-            this.panelstoFilter = this.panelsToDisplay.filter(p => p.visible === this.switchFilter  );
+    //afegit el dropdown per fer public o privat el filtre 
+    applyToPublicFilterCheck(publicRoHiddenOption) {   
+        if (publicRoHiddenOption) {
+            this.publicRoHiddenOption = publicRoHiddenOption;
+        } else {
+            this.publicRoHiddenOption = "public";
         }
-        return this.panelstoFilter;
+        return this.publicRoHiddenOption;
         
     }
 
