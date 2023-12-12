@@ -1,6 +1,6 @@
 <div class="container mt-5">
   <div class="row">
-    <div class="col-lg-8 offset-lg-2">
+    <div class="col-lg-10">
       <div class="card">
         <div class="card-body">
           <div class="col-12 text-center">
@@ -10,33 +10,44 @@
               class="img-fluid"
             />
           </div>
-          <!-- <h1 class="card-title text-center" i18n="@@aboutPageTitle">Acerca de</h1> -->
-          <ul class="list-group">
+          <h1 class="card-title text-center" i18n="@@aboutPageTitle">Acerca de</h1>
+          <ul class="list-group" id="info-group">
             <li
-              i18n="@@aboutPageSinergiaVersion"
               class="list-group-item d-flex justify-content-between align-items-center"
             >
-              Versión de SinergiaDA
-              <span class="badge badge-primary badge-pill"
-                >1.0.0{{ sinergiaDaVersion }}</span
+              <span i18n="@@aboutPageSinergiaVersion" class="fs-6"
+                >Versión de SinergiaDA</span
+              >
+              <span class="badge badge-primary badge-dark">
+                {{ sinergiaDaVersion }}</span
               >
             </li>
             <li
-              i18n="@@aboutPageEdaVersion"
               class="list-group-item d-flex justify-content-between align-items-center"
             >
-              Versión de EDA
-              <span class="badge badge-primary badge-pill">{{
+              <span i18n="@@aboutPageEdaVersion">Versión de EDA</span>
+              <span class="badge badge-primary badge-dark">{{
                 edaVersion
               }}</span>
             </li>
             <li
-              i18n="@@aboutPageLastSync"
               class="list-group-item d-flex justify-content-between align-items-center"
             >
-              Última sincronización con SinergiaCRM (updateModel)
-              <span class="badge badge-primary badge-pill">{{
+              <span i18n="@@aboutPageLastSync"
+                >Última sincronización con SinergiaCRM (updateModel)</span
+              >
+              <span class="badge badge-dark">{{
                 lastSyncDate
+              }}</span>
+            </li>
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              <span
+                >Base de datos de SinergiaCRM </span
+              >
+              <span class="badge badge-primary badge-dark">{{
+                sinergiaCRMDatabaseName
               }}</span>
             </li>
             <li
@@ -44,15 +55,21 @@
               class="list-group-item d-flex justify-content-between align-items-center"
             >
               Versión del fichero de reconstrución de SinergiaCRM
-              <span class="badge badge-primary badge-pill">{{
+              <span class="badge badge-primary badge-dark">{{
                 lastSyncDateScriptVersion
               }}</span>
             </li>
             <li
-              class="list-group-item d-flex justify-content-between align-items-center"
+              class="list-group-item justify-content-between align-items-center"
             >
-              <div i18n="@@SDALicense" class="bold">Licencia</div>
-              Información extendida sobre la licencia de Sinergia DAta Analitycs
+              <h3 i18n="@@SDALicense" class="bold">Licencia</h3>
+              <div>
+                <p>Sinergia Data Analytics (SinergiaDA) es una iniciativa derivada de <a href="https://github.com/jortilles/EDA">Enterprise Data Analytics (EDA)</a>, originalmente creada por Juanjo Ortilles. Al igual que EDA, SinergiaDA está comprometida con la promoción de la colaboración y el uso compartido de software en el ámbito del análisis de datos.</p>
+                <p>Como proyecto derivado, SinergiaDA mantiene los términos de la <a href="https://www.gnu.org/licenses/agpl-3.0.html">GNU Affero General Public License versión 3</a> (AGPLv3), que fue adoptada por EDA para garantizar la libertad de uso, modificación y distribución del software, así como el acceso al código fuente.</p>
+                <p>Respetamos profundamente los derechos de autor y el espíritu de colaboración inherentes en la AGPLv3, asegurando que cualquier versión modificada de SinergiaDA esté también disponible bajo los mismos términos de licencia.</p>
+                <p>Para más detalles sobre la licencia y los términos de uso, visite los repositorios de GitHub de <a href="https://github.com/SinergiaTIC/SinergiaDA">SinergiaDA</a> y <a href="https://github.com/jortilles/EDA">EDA</a>.</p>
+
+            </div>
             </li>
           </ul>
         </div>
