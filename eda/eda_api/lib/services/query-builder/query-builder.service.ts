@@ -49,8 +49,8 @@ export abstract class QueryBuilderService {
 
         const graph = this.buildGraph();
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
-        const origin = this.queryTODO.fields.find(x => x.order === 0).table_id;
-        const dest = [];
+        let origin = this.queryTODO.fields.find(x => x.order === 0).table_id;
+        let dest = [];
         const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
@@ -150,7 +150,32 @@ export abstract class QueryBuilderService {
 
 
         /** ARBRE DELS JOINS A FER */
-        const joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
+        let joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
+        // Busco relacions directes.
+        if( ! this.validateJoinTree(  joinTree, dest ) ){
+            let exito = false;
+            let new_origin  = '';
+            let new_dest  = [...dest];
+            let new_joinTree:any;
+            for (let d of  dest) {
+                new_origin = d;
+                new_dest =  [...dest].filter(e => e !== d);
+                new_dest.push(origin);
+                new_joinTree = this.dijkstraAlgorithm(graph, new_origin, new_dest.slice(0) );
+                if(  this.validateJoinTree(  new_joinTree, new_dest ) ){
+                    exito = true;
+                    break;
+                }
+            }
+            if(exito){
+                origin = new_origin;
+                dest = [...new_dest];
+                joinTree = new_joinTree;
+            }
+
+        }
+
+
 
         if (this.queryTODO.simple) {
             this.query = this.simpleQuery(columns, origin);
@@ -175,6 +200,17 @@ export abstract class QueryBuilderService {
             graph.push({ name: t.table_name, rel: relations });
         });
         return graph;
+    }
+
+    /** valida relaciones directas */
+    public validateJoinTree(joinTree:any, dest:any){
+        for (let i = 0; i < dest.length; i++) {
+            let elem = joinTree.find(n => n.name === dest[i]);
+            if(elem.dist > 1 ){
+                return false;
+            }
+          }
+        return true;
     }
 
     public dijkstraAlgorithm(graph, origin, dest) {
