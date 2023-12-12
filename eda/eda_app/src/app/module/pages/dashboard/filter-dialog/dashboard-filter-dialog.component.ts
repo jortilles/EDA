@@ -37,7 +37,11 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public applyToAll: boolean = true;
     public switchChecked: boolean = false;
     public switchFilter: any;
-    public publicRoHidden: string[]  = ["public","readOnly","hidden"]; //valors del dropdown
+    public publicRoHidden  = [ //valors del dropdown de filtrat de visiblitat
+        {label: $localize`:@@public:público`, value: `public` }, 
+        {label: $localize`:@@readOnly:deshabilitado`, value: `readOnly` }, 
+        {label: $localize`:@@hidden:privado`, value: `hidden` }
+        ]; 
     public publicRoHiddenOption: any = "public" //valor per defecte del dropdown
     
     public rangeDates: Date[];
@@ -271,7 +275,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         return this.applyToAll;
     }
 
-    //afegit el dropdown per fer public o privat el filtre 
+    //afegit el dropdown per fer  el filtre public, nomes lectura o privat
     applyToPublicFilterCheck(publicRoHiddenOption) {   
         if (publicRoHiddenOption) {
             this.publicRoHiddenOption = publicRoHiddenOption;

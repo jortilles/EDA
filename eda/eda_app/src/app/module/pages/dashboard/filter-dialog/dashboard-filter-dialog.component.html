@@ -9,7 +9,6 @@
         </ng-container>
     </div>
 
-
     <div footer>
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
             <button id="saveFilterButton" type="submit" pButton (click)="saveGlobalFilter()" i18n-label="@@guardarBtn"
@@ -22,22 +21,24 @@
 
 
 <ng-template #filterTemplate>
-    <div class="grid" style="display: flex; gap: 50px;">
-        <div style="flex: 1">
-            <p-card [header]="header1" >
-                <div class="col-12">
-                    <p-inputSwitch id="applyToAllFiltersButton" (onChange)="applyToAllCheck()" [(ngModel)]="switchChecked"></p-inputSwitch>
+    <p-card>
+        <div class="grid">
+            <div class="col-12">
+                <div class="grid">
+                    <div class="col-4">
+                        <div class="filterDialogTitles">{{header1}}</div>
+                        <p-inputSwitch id="applyToAllFiltersButton" (onChange)="applyToAllCheck()" [(ngModel)]="switchChecked"></p-inputSwitch>
+                    </div>
+                    <div class="col-4">
+                    </div>
+                    <div class="col-4">
+                        <div class="filterDialogTitles">{{header4}}</div>
+                        <p-dropdown id="applyToOneFilterDropdown" [options]="publicRoHidden" [(ngModel)]="publicRoHiddenOption" (onClick)="applyToPublicFilterCheck(publicRoHiddenOption)" autoWidth="false"></p-dropdown>
+                    </div>
                 </div>
-            </p-card>
+            </div>
         </div>
-        <div style="flex: 1">
-            <p-card [header]="header4" >
-                <div class="col-12">
-                    <p-dropdown id="applyToOneFilterDropdown" [options]="publicRoHidden" [(ngModel)]="publicRoHiddenOption" (onClick)="applyToPublicFilterCheck(publicRoHiddenOption)" [autoWidth]="false"></p-dropdown>
-                </div>
-            </p-card>
-        </div>
-    </div>
+    </p-card>
 
     <div style="margin: 1rem;"></div>
 

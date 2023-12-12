@@ -4233,6 +4233,23 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
         </target>
       </trans-unit>
+      <trans-unit id="canIfilter">
+        <source>Visiblidad del filtro</source>
+        <target>Visiblitat del filtre</target>
+      </trans-unit>
+       <trans-unit id="public">
+        <source>público</source>
+        <target>public</target>
+      </trans-unit>
+      <trans-unit id="readOnly">
+        <source>deshabilitado</source>
+        <target>deshabilitat</target>
+      </trans-unit>
+      <trans-unit id="hidden">
+        <source>privado</source>
+        <target>privat</target>
+      </trans-unit>
+
 
     </body>
   </file>

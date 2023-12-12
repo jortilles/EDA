@@ -17,8 +17,11 @@
     <!-- ============================================================== -->
     <div [ngClass]="{'noShow': display_v.panelMode }" > <!--   panel mode es per quan vull mostrat nomes un panell-->
     <div *ngIf="filtersList.length > 0" class="d-flex align-items-end" style="margin: 0.5em; gap: 10px; flex-wrap: wrap;" >
-
-        <button id="dashFilterBtn"
+        
+        
+        <button
+            *ngIf="userService.isAdmin || filterButtonVisibility.public "
+            id="dashFilterBtn"
             [label]="filtrar"
             pButton pRipple type="button"
             icon="pi pi-filter"
@@ -27,9 +30,10 @@
             class="p-button-raised p-button-outlined filters-size">
         </button>
 
+       
 
         <div *ngFor="let filter of filtersList" class="filter-set d-flex align-items-center">
-            <span *ngIf="userService.isAdmin || filter.visible == 'public' || filter.visible == 'readOnly'" class="filter-name filters-size"> {{filter.column.label}}: </span>
+            <span *ngIf="userService.isAdmin || filter.visible === 'public' || filter.visible === 'readOnly'" class="filter-name filters-size"> {{filter.column.label}}: </span>
             <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (userService.isAdmin || filter.visible == 'public')"
                 [options]="filter.data"
                 [(ngModel)]="filter.selectedItems"
@@ -60,7 +64,7 @@
                 </p-footer>
             </p-multiSelect>
 
-            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (filter.visible == 'readOnly' && !userService.isAdmin )"
+            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (!userService.isAdmin && filter.visible === 'readOnly')"
                 [options]="filter.data"
                 [(ngModel)]="filter.selectedItems"
                 [virtualScroll]="true"
