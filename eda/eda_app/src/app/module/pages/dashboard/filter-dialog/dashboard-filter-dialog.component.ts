@@ -40,7 +40,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public publicRoHidden  = [ //valors del dropdown de filtrat de visiblitat
         {label: $localize`:@@public:público`, value: `public` }, 
         {label: $localize`:@@readOnly:deshabilitado`, value: `readOnly` }, 
-        {label: $localize`:@@hidden:privado`, value: `hidden` }
+        {label: $localize`:@@hidden:oculto`, value: `hidden` }
         ]; 
     public publicRoHiddenOption: any = "public" //valor per defecte del dropdown
     

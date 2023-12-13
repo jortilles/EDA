@@ -20,7 +20,7 @@
         
         
         <button
-            *ngIf="userService.isAdmin || filterButtonVisibility.public "
+            *ngIf="userService.isAdmin || filterButtonVisibility.public || isDashboardCreator"
             id="dashFilterBtn"
             [label]="filtrar"
             pButton pRipple type="button"
@@ -33,8 +33,8 @@
        
 
         <div *ngFor="let filter of filtersList" class="filter-set d-flex align-items-center">
-            <span *ngIf="userService.isAdmin || filter.visible === 'public' || filter.visible === 'readOnly'" class="filter-name filters-size"> {{filter.column.label}}: </span>
-            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (userService.isAdmin || filter.visible == 'public')"
+            <span *ngIf="userService.isAdmin || filter.visible === 'public' || filter.visible === 'readOnly' || isDashboardCreator" class="filter-name filters-size"> {{filter.column.label}}: </span>
+            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (userService.isAdmin || filter.visible == 'public' || isDashboardCreator) "
                 [options]="filter.data"
                 [(ngModel)]="filter.selectedItems"
                 [virtualScroll]="true"
@@ -64,7 +64,7 @@
                 </p-footer>
             </p-multiSelect>
 
-            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (!userService.isAdmin && filter.visible === 'readOnly')"
+            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (!userService.isAdmin && filter.visible === 'readOnly' && !isDashboardCreator)"
                 [options]="filter.data"
                 [(ngModel)]="filter.selectedItems"
                 [virtualScroll]="true"

@@ -4246,8 +4246,8 @@
         <target>deshabilitat</target>
       </trans-unit>
       <trans-unit id="hidden">
-        <source>privado</source>
-        <target>privat</target>
+        <source>oculto</source>
+        <target>ocult</target>
       </trans-unit>
 
 

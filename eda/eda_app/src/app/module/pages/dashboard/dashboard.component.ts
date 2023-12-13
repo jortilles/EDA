@@ -58,6 +58,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         public : false,
         readOnly : false
         }
+    public isDashboardCreator: boolean = false; 
 
     // Grid Global Variables
     public inject: InjectEdaPanel;
@@ -380,11 +381,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.sendViaMailConfig = config.sendViaMailConfig || this.sendViaMailConfig;
                     me.styles = config.styles || this.stylesProviderService.generateDefaultStyles();
                     this.stylesProviderService.setStyles(me.styles);
-
+                    
                     // pot ser que no estinguin disponibles encara els grups... per això de vegades es perd
                     // i es crida també des de els subscribe del groupcontroller ... a mes a mes des de la inicilialització del dashboard
                     // per estar segurn que es tenen disponibles.
                     let grp = [];
+                    me.setDashboardCreator(res.dashboard);
                     if (config.visible === 'group' && res.dashboard.group) {
                         grp = res.dashboard.group;
                     }
@@ -1536,5 +1538,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             }
 
         })   
-    }       
+    }
+    
+    setDashboardCreator(dashboard : any) : void {
+
+        if (this.userService.user._id === dashboard.user)  {
+            this.isDashboardCreator = true;
+        }
+       
+    }
 }

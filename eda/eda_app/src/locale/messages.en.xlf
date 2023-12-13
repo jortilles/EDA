@@ -4225,8 +4225,8 @@
         <target>read only</target>
       </trans-unit>
       <trans-unit id="hidden">
-        <source>privado</source>
-        <target>private</target>
+        <source>oculto</source>
+        <target>hidden</target>
       </trans-unit>
 
     </body>

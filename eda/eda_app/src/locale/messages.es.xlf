@@ -4272,8 +4272,8 @@
         <target>deshabilitado</target>
       </trans-unit>
       <trans-unit id="hidden">
-        <source>privado</source>
-        <target>privado</target>
+        <source>oculto</source>
+        <target>oculto</target>
       </trans-unit>
     </body>
   </file>
