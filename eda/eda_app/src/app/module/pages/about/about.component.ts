@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { sinergiaConn } from "../../../../../../eda_api/config/sinergiacrm.config.js";
+import { SdaVersion } from   "../../../../../../SdaVersion.js";
 
 @Component({
   selector: "app-about",
@@ -18,5 +19,10 @@ export class AboutComponent implements OnInit {
 
   ngOnInit(): void {
     this.sinergiaCRMDatabaseName = sinergiaConn.database;
+    this.sinergiaDaVersion = SdaVersion;
   }
+
+
+
+
 }
