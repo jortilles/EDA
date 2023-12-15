@@ -687,10 +687,10 @@
       <trans-unit id="atributosH4" datatype="html">
         <source>
           Atributos
-</source>
+        </source>
         <target>
           Atributs
-</target>
+        </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -4213,11 +4213,26 @@
         <target>Nom columna duplicada:</target>
       </trans-unit>
 
-      <trans-unit id="@@hiddenAttributes">
+      <trans-unit id="hiddenAttributes">
         <source>Atributos ocultos</source>
-        <target>Columnes ocultes</target>
+        <target>Mostra/amaga columnes ocultes</target>
       </trans-unit>
-
+      <trans-unit id="atributosH4+" datatype="html">
+        <source>
+          Columnas de:
+        </source>
+        <target>
+          Columnes de:
+        </target>
+      </trans-unit>
+      <trans-unit id="atributosH4interpolation" datatype="html">
+        <source>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </source>
+        <target>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </target>
+      </trans-unit>
 
     </body>
   </file>
