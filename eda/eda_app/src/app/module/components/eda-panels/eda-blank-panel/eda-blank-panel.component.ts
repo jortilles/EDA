@@ -532,12 +532,20 @@ export class EdaBlankPanelComponent implements OnInit {
                 event.container.data,
                 event.previousIndex,
                 event.currentIndex);
-                
-                //apertura del diálogo de atributos o filtros
-                if(event.container.id == 'cdk-drop-list-1'){                
+                //obor dialeg o filre
+                if(event.container.element.nativeElement.className.toString().includes( 'select-list') ) {                
                     this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex] );
                 }else{       
                     this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex]  , true);
+                   // Trec la agregació si puc.
+                    try{
+                        const c:Column = <Column><unknown>event.container.data[event.currentIndex];
+                        c.aggregation_type.forEach( e=> e.selected = false);
+                        c.aggregation_type.map( e=> e.value == 'none'? e.selected = true:true );
+                    }catch(e){
+                        console.log('no llego')
+                    }
+                    
                 }
         }
 

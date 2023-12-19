@@ -622,7 +622,6 @@ export class DashboardController {
    */
   static async execQuery(req: Request, res: Response, next: NextFunction) {
 
-
     try {
       const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
@@ -691,6 +690,11 @@ export class DashboardController {
       if (myQuery.fields.length == 0) {
         console.log('you cannot see any data');
         return res.status(200).json([['noDataAllowed'], [[]]]);
+      }
+      if( req.body.query.hasOwnProperty('forSelector') && req.body.query.forSelector===true ){
+          myQuery.forSelector = true;
+      }else{
+          myQuery.forSelector = false;
       }
 
       const query = await connection.getQueryBuilded(

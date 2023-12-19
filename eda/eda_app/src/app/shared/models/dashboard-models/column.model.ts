@@ -5,7 +5,7 @@ export interface Column {
     description: {default: string, localizad: any[]};
     old_column_type: string;
     column_type: string;
-    computed_column: string; // las posibilidades son no, computed_numeric, computed_string
+    computed_column: string; // las posibilidades son no, computed, 
     SQLexpression : string;
     column_granted_roles: string[];
     row_granted_roles: string[];
