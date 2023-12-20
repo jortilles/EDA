@@ -96,7 +96,7 @@
             </p-multiSelect>
 
             <eda-date-picker
-                *ngIf="filter.column.value.column_type === 'date' && filter.visible === true "
+                *ngIf="filter.column.value.column_type === 'date' && (filter.visible === 'public' || userService.isAdmin || isDashboardCreator) "
                 [autoClear]="true"
                 [inject]="datePickerConfigs[filter.id]"
                 (onRemove)="removeGlobalFilter(filter, true)"

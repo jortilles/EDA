@@ -362,10 +362,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.setEditMode();
                     // Check dashboard owner
                     this.checkVisibility(res.dashboard);
-
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
                     me.filtersList = !_.isNil(config.filters) ? config.filters : []; // Filtres del dashboard
-                    me.setFilterButtonVisibilty(me.filtersList) //crida per ocultar o visiblitzar botó de filtre
+                    me.filtersList = me.setFiltersVisibility(me.filtersList);
+                    me.setFilterButtonVisibilty(me.filtersList); //crida per ocultar o visiblitzar botó de filtre
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.datasourceName = res.datasource.name;
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
@@ -1524,7 +1524,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     //métode per descobrir o amagar el botó de filtrar al dashboard
     public setFilterButtonVisibilty(filtersList: any[]) : void {
-         
         filtersList = filtersList.filter((f) => { 
             return (f.visible != "hidden" && f.visible == "readOnly") ||
                    (f.visible != "hidden" && f.visible == "public")
@@ -1546,5 +1545,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.isDashboardCreator = true;
         }
        
+    }
+
+    setFiltersVisibility(filters : any[]) : Array<any> {
+        filters.forEach(f => {
+            if (!f.hasOwnProperty("visible")) {
+                f.visible = 'public';
+            }
+        })
+
+        return filters;
     }
 }
