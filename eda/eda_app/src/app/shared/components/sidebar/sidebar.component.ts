@@ -230,7 +230,7 @@ export class SidebarComponent implements OnInit {
 
     public onCloseCreateDashboard(event?: any): void {
         this.createDashboard = false;
-        if (event) this.router.navigate(['/dashboard', event._id]);
+        if (event) this.router.navigate(['/dashboard', event._id]).then(() => window.location.reload());
     }
 
 }
