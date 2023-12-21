@@ -231,6 +231,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             table: this.targetTable.value,
             dataSource: this.params.dataSource._id,
             dashboard: this.params.id,
+            forSelector: true,
             panel: '',
             filters: []
         };

@@ -499,6 +499,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 dataSource: this.controller.params.inject.dataSource._id,
                 dashboard: this.controller.params.inject.dashboard_id,
                 panel: this.controller.params.panel._id,
+                forSelector: true,
                 filters: []
             };
             this.dashboardService.executeQuery(this.queryBuilder.normalQuery([this.selectedColumn], params)).subscribe(

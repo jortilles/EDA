@@ -506,7 +506,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         const agg = ['sum', 'max', 'min', 'avg', 'count', 'distinct'];
         let exists = 0;
         agg.forEach(e => { if (column.SQLexpression.toString().toLowerCase().indexOf(e) >= 0) { exists = 1; } });
-        if (exists == 0) {
+
+        if (exists == 0 && column.column_type == 'numeric' ) {
             this.alertService.addError($localize`:@@IncorrectQueryAgg:Debes incluir la agregación (distinct, sum, max, min, etc)`);
             this.spinnerService.off()
         } else {
