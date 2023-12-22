@@ -120,10 +120,7 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
     }
 
     updateChart() {
-        console.log(this.edaChart);
         this.edaChart.chart.update();
-        if (this.edaChart.chart) {
-        }
     }
 
 }

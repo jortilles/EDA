@@ -79,7 +79,6 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
   }
 
   onShow(): void {
-    console.log(this.controller)
     this.oldLinked = this.controller.params.linkedDashboard ? this.controller.params.linkedDashboard.dashboardName : null;
     if ((this.controller.params.charttype === 'parallelSets') && !this.controller.params.modeSQL) {
 
@@ -106,8 +105,6 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
       let column = this.controller.params.query
         .map((col, i) => { return { col: col.column_name, table: col.table_id, colname: col.display_name.default, index:i, column_type:col.column_type } })
         .filter(col => (col.column_type === 'text' || col.column_type === 'date'))[0];
-	
-		console.log(column)
     	this.column = column.index === 0 ?  column.colname : this.noValidColumn;
 
       if(column.index === 0){

@@ -13,7 +13,7 @@
       </trans-unit>
       <trans-unit id="placeholderInputPassword" datatype="html">
         <source>Contraseña</source>
-        <target>Contrassenya</target>
+        <target>Contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">31</context>
@@ -37,7 +37,7 @@
       </trans-unit>
       <trans-unit id="e369e13629132e32dcd958b82261059243f21d58" datatype="html">
         <source>Contraseña</source>
-        <target>Contrassenya</target>
+        <target>Contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
           <context context-type="linenumber">31</context>
@@ -45,7 +45,7 @@
       </trans-unit>
       <trans-unit id="d554461cfe5e5317e9257ceb0f9f96bec13c86c4" datatype="html">
         <source>Confirma contraseña</source>
-        <target>Confirma la contrassenya</target>
+        <target>Confirma la contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
           <context context-type="linenumber">35</context>

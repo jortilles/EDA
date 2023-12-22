@@ -189,13 +189,13 @@ export class MySqlBuilderService extends QueryBuilderService {
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
         }else if(el.column_type=='numeric'){
           columns.push(`cast( ${el.SQLexpression} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
         }else if(el.column_type=='date'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
         }else if(el.column_type=='coordinate'){
-          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+          columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
         }
         // GROUP BY
         if (el.format) {
@@ -416,7 +416,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 public getHavingColname(column: any){
   let colname:String  ;
   if( column.computed_column === 'no'  || ! column.hasOwnProperty('computed_column')   ){
-    colname =  `cast(${column.aggregation_type}("${column.table_id}"."${column.column_name}") as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    colname =  `cast(${column.aggregation_type}(\`${column.table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
   }else{
     if(column.column_type == 'numeric'){
       colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;

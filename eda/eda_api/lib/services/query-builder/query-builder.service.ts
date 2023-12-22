@@ -179,23 +179,28 @@ export abstract class QueryBuilderService {
 
         }
 
+
         //to WHERE CLAUSE
         const filters = this.queryTODO.filters.filter(f => {
-            let column =  this.queryTODO.fields.filter(c=> f.filter_table == c.table_id && f.filter_column == c.column_name );
+            let column =  this.queryTODO.fields.find(c=> f.filter_table == c.table_id && f.filter_column == c.column_name );
             if(column){
-            return column.aggregation_type=='none'||!column.hasOwnProperty('aggregation_type')?true:false;
+                if(column.hasOwnProperty('aggregation_type')){
+                    return column.aggregation_type==='none'?true:false;
+                }else{
+                    return true;
+                }
             }else{
-            return true;
+                return true;
             }
             });
 
         //TO HAVING CLAUSE 
         const havingFilters = this.queryTODO.filters.filter(f => {
-            const column = this.queryTODO.fields.find(e => e.table_id === f.filter_table &&  e.column_name === f.filter_column );
+            const column = this.queryTODO.fields.find(e => e.table_id === f.filter_table &&   f.filter_column === e.column_name);
             if(column){
             return column.column_type=='numeric' && column.aggregation_type!=='none'?true:false;
             }else{
-            return false;
+                return false;
             }
         });
 

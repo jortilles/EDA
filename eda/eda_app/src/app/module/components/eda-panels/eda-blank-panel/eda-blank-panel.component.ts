@@ -412,7 +412,6 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = output.styles ? new ChartConfig(output.styles) : new ChartConfig(output.config);
         this.changeChartType(content.chart, content.edaChart, config);
         this.chartForm.patchValue({ chart: this.chartUtils.chartTypes.find(o => o.subValue === content.edaChart) });
-        console.log('Reload content', this.display_v.saved_panel);
     }
 
     /**
