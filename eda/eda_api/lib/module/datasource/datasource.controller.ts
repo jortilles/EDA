@@ -321,9 +321,8 @@ export class DataSourceController {
             try {
                 const cn = req.qs.type !== 'bigquery' ? new ConnectionModel(req.qs.user, req.qs.host, req.qs.database,
                     req.qs.password, req.qs.port, req.qs.type,
-                    req.body.poolLimit, req.qs.schema, req.qs.sid, req.qs.warehouse)
+                    req.body.poolLimit, req.qs.schema, req.qs.sid, req.qs.warehouse, req.qs.allowSSL)
                     : new BigQueryConfig(req.qs.type, req.qs.database, req.qs.project_id);
-
                 const manager = await ManagerConnectionService.testConnection(cn);
                 await manager.tryConnection();
                 return res.status(200).json({ ok: true });
@@ -357,7 +356,6 @@ export class DataSourceController {
     }
 
     static async GenerateDataModel(req: Request, res: Response, next: NextFunction) {
-
         if (req.body.type === 'bigquery') {
 
             return DataSourceController.GenerateDataModelBigQuery(req, res, next);
@@ -368,7 +366,6 @@ export class DataSourceController {
 
     static async GenerateDataModelBigQuery(req: Request, res: Response, next: NextFunction) {
         try {
-
             const cn = new BigQueryConfig(req.body.type, req.body.database, req.body.project_id);
             const manager = await ManagerConnectionService.testConnection(cn);
             const tables = await manager.generateDataModel(req.body.optimize,  req.body.filter);
@@ -421,12 +418,12 @@ export class DataSourceController {
     static async GenerateDataModelSql(req: Request, res: Response, next: NextFunction) {
         try {
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database,
-                req.body.password, req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid, req.qs.warehouse);
+                req.body.password, req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid, req.qs.warehouse, req.qs.allowSSL);
             const manager = await ManagerConnectionService.testConnection(cn);
             const tables = await manager.generateDataModel(req.body.optimize, req.body.filter, req.body.name);
             const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
 
-          
+            
             const datasource: IDataSource = new DataSource({
                 ds: {
                     connection: {
@@ -440,7 +437,8 @@ export class DataSourceController {
                         password: EnCrypterService.encrypt(req.body.password || 'no'),
                         poolLimit: req.body.poolLimit,
                         sid: req.body.sid,
-                        warehouse: req.body.warehouse
+                        warehouse: req.body.warehouse,
+                        ssl: req.qs.ssl
                     },
                     metadata: {
                         model_name: req.body.name,

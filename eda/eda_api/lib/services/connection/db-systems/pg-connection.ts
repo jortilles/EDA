@@ -17,6 +17,9 @@ export class PgConnection extends AbstractConnection {
     private AggTypes: AggregationTypes;
 
     async getclient() {
+        if (this.config.ssl) {
+            this.config.ssl= { rejectUnauthorized: false };
+        }
         try {
             const connection = new PgClient(this.config);
             return connection;
@@ -26,6 +29,9 @@ export class PgConnection extends AbstractConnection {
     }
 
     async tryConnection(): Promise<any> {
+        if (this.config.ssl) {
+            this.config.ssl= { rejectUnauthorized: false };
+        }
         try {
             this.client = await this.getclient();
             console.log('\x1b[32m%s\x1b[0m', 'Connecting to PostgreSQL database...\n');
@@ -38,7 +44,7 @@ export class PgConnection extends AbstractConnection {
         }
     }
 
-    async generateDataModel(optimize: number, filter: string): Promise<any> {
+    async generateDataModel(optimize: number, filter: string): Promise<any> {   
         try {
             this.client = await this.getclient();
             let tableNames = [];
