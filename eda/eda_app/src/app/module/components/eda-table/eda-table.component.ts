@@ -131,7 +131,7 @@ export class EdaTableComponent implements OnInit {
             const colors = this.generateColor(styles[i].max, styles[i].min, 5);
   
             colors.forEach((color, i) => {
-                let name = key.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9 ]/g, '') ;
+                let name = key.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9-_ ]/g, '') ;
                 this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color} `);
                 this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
                 {
@@ -150,8 +150,7 @@ export class EdaTableComponent implements OnInit {
     }
 
     applyPivotSyles(styles){
-        //console.log('Los estilos que me llegan son ');
-        //console.log(styles.toString());
+
 
         const fields = styles.map(style => style.col);
         const limits = {};
@@ -227,6 +226,7 @@ export class EdaTableComponent implements OnInit {
         });
 
         this.styles = tmpStyles;
+
     }
 
     /**Genertate range colors =>> thanks to Euler Junior: https://stackoverflow.com/a/32257791 */
