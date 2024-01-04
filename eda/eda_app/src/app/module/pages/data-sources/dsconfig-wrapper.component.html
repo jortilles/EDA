@@ -157,7 +157,7 @@
           <p-checkbox [ngStyle]="{'border': '0ch'}" class="form-control" formControlName="allowCache"
             [label]="allowCacheSTR" [binary]="true">
           </p-checkbox>
-          <p-checkbox *ngIf="form.value.type && (form.value.type.value ==='postgres' || form.value.type.value ==='mysql')" [ngStyle]="{'border': '0ch'}" class="form-control" formControlName="allowSSL"
+          <p-checkbox *ngIf="form.value.type && (form.value.type.value ==='postgres' || form.value.type.value ==='mysql' || form.value.type.value ==='sqlserver')" [ngStyle]="{'border': '0ch'}" class="form-control" formControlName="allowSSL"
             [label]="allowSSLSTR" [binary]="true">
           </p-checkbox>
         </div>

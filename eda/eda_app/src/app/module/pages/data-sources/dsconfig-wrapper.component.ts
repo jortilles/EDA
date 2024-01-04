@@ -40,7 +40,7 @@ export class DsConfigWrapperComponent implements OnInit {
 	public allowSSLSTR: string = $localize`:@@allowSSL:Conexión mediante SSL`;
 	public optimize: boolean = true;
 	public allowCache: boolean = true;
-	public allowSSL: boolean = false;
+	public allowSSL: boolean;
 	private project_id: string;
 
 
@@ -141,7 +141,7 @@ export class DsConfigWrapperComponent implements OnInit {
 			sid: this.form.value.sid.value,
 			optimize: this.form.value.optimize ? 1 : 0,
 			allowCache: this.form.value.allowCache ? 1 : 0,
-			allowSSL: this.form.value.allowSSL ? true : false,
+			allowSSL: this.form.value.allowSSL ? 1 : 0,
 			filter: this.form.value.filter
 		};
 

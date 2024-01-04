@@ -37,6 +37,10 @@ export class MysqlConnection extends AbstractConnection {
                     keepAliveInitialDelay: 0
                 };
 
+                if (this.config.ssl != '0') {
+                    mySqlConn.ssl= { rejectUnauthorized: false };
+                }
+
                 poolManager.createPool(this.config.database, mySqlConn);
                 this.pool = poolManager.getPool(this.config.database);
 
@@ -54,6 +58,10 @@ export class MysqlConnection extends AbstractConnection {
             password: this.config.password
         };
 
+        if (this.config.ssl != '0') {
+            this.config.ssl= { rejectUnauthorized: false };
+        }
+
         return createConnection(mySqlConn);
     }
 
@@ -61,6 +69,9 @@ export class MysqlConnection extends AbstractConnection {
         try {
             return new Promise((resolve, reject) => {
                 const mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
+                if (this.config.ssl != '0') {
+                    this.config.ssl= { rejectUnauthorized: false };
+                }
                 this.client = createConnection(mySqlConn);
                 console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
                 this.client.connect((err:Error , connection: SqlConnection): void => {
