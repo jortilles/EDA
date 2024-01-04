@@ -91,6 +91,7 @@ export class EdaBlankPanelComponent implements OnInit {
         saved_panel: false, // saved panel
         btnSave: false, // button guardar
         aggreg_dialog: false, // aggregation dialog
+        whatIf_dialog: false,
         calendar: false, // calendars inputs
         between: false, // between inputs
         filterValue: true,
@@ -274,7 +275,6 @@ export class EdaBlankPanelComponent implements OnInit {
         this.tables = _.cloneDeep(tables.allTables);
         this.tablesToShow = _.cloneDeep(tables.tablesToShow);
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
-
     }
 
     /**
@@ -309,35 +309,60 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param panelContent panel content to build configuration .
      */
 
-    buildGlobalconfiguration(panelContent: any) {
+    public buildGlobalconfiguration(panelContent: any) {
         if (!panelContent.query.query.modeSQL) {
             try{
-                const queryTables = [...new Set(panelContent.query.query.fields.map((field) => field.table_id))];
+                const queryTables = [...new Set(panelContent.query.query.fields.map((field: any) => field.table_id))];
+
                 for (const idTable of queryTables) {
                     const table = this.tables.find(t => t.table_name === idTable);
+                    // Init columns from table
                     PanelInteractionUtils.loadColumns(this, table);
-                    panelContent.query.query.fields.forEach((el) => {
-                        const column = this.columns.find(c => c.table_id === el.table_id &&  c.column_name === el.column_name && c.display_name.default === el.display_name);
-                        if (column) PanelInteractionUtils.moveItem(this, column);
-                        else {
-                            if(el.table_id === idTable ){
-                                let duplicatedColumn = _.cloneDeep(  this.currentQuery.find(c =>  c.table_id === el.table_id && c.column_name === el.column_name ) ); // es una columna duplicada que es a la consulta
-                                if(!duplicatedColumn){
-                                    duplicatedColumn = _.cloneDeep(  this.columns.find(c => c.table_id === el.table_id &&  c.column_name === el.column_name )  ); // es una columna duplicada sense original a la consulta
-                                }
-                                if(duplicatedColumn){
-                                    duplicatedColumn.display_name.default = el.display_name;
 
-                                    PanelInteractionUtils.handleAggregationType4DuplicatedColumns( this, duplicatedColumn);
-                                    this.currentQuery.push(duplicatedColumn); // Moc la columna directament perque es una duplicada.... o no....
+                    for (const contentColumn of panelContent.query.query.fields) {
+                        const column = this.columns.find(c =>
+                            c.table_id === contentColumn.table_id &&
+                            c.column_name === contentColumn.column_name &&
+                            c.display_name.default === contentColumn.display_name
+                        );
+                        
+                        if (column) {
+                            column.whatif_column = contentColumn.whatif_column || false;
+                            column.whatif = contentColumn.whatif || {};
+                            PanelInteractionUtils.moveItem(this, column);
+                        } else {
+                            if(contentColumn.table_id === idTable) {
+                                let duplicatedColumn = _.cloneDeep(
+                                    this.currentQuery.find(c =>
+                                        c.table_id === contentColumn.table_id &&
+                                        c.column_name === contentColumn.column_name
+                                    )
+                                );
+
+                                if(!duplicatedColumn){
+                                    duplicatedColumn = _.cloneDeep(
+                                        this.columns.find(c =>
+                                            c.table_id === contentColumn.table_id &&
+                                            c.column_name === contentColumn.column_name
+                                        )
+                                    );
+                                }
+
+                                if(duplicatedColumn){
+                                    duplicatedColumn.display_name.default = contentColumn.display_name;
+                                    duplicatedColumn.whatif_column = contentColumn.whatif_column || false;
+                                    duplicatedColumn.whatif = contentColumn.whatif || {};
+                                    PanelInteractionUtils.handleAggregationType4DuplicatedColumns(this, duplicatedColumn);
+                                    // Moc la columna directament perque es una duplicada.... o no....
+                                    this.currentQuery.push(duplicatedColumn);
                                 }
                             }
-                            
                         }
-                    });
-                 } 
+                    }
+
+                } 
                 this.columns = this.columns.filter((c) => !c.isdeleted);
-            }catch(e){
+            } catch(e) {
                 console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
                 console.error(e);
             }
@@ -355,8 +380,6 @@ export class EdaBlankPanelComponent implements OnInit {
 
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
-
-
     }
 
 
@@ -1010,4 +1033,13 @@ export class EdaBlankPanelComponent implements OnInit {
     public getNiceTableName(  table ){
          return this.tables.find( t => t.table_name === table).display_name.default;
     }
+
+    public onWhatIfDialog(): void {
+        this.display_v.whatIf_dialog = true;
+    }
+
+    public onCloseWhatIfDialog(): void {
+        this.display_v.whatIf_dialog = false;
+    }
+    
 }

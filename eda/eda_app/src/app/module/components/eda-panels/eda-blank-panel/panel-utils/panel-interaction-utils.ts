@@ -1,9 +1,8 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { Column } from '@eda/models/model.index';
-import * as _ from 'lodash';
 import { TableUtils } from './tables-utils';
-import { display } from 'html2canvas/dist/types/css/property-descriptors/display';
+import * as _ from 'lodash';
 
 export const PanelInteractionUtils = {
 
@@ -11,7 +10,7 @@ export const PanelInteractionUtils = {
      * loads columns from table
      * @param table  
      */
-  loadColumns: (ebp: EdaBlankPanelComponent, table: any) => {
+  loadColumns2: (ebp: EdaBlankPanelComponent, table: any) => {
     ebp.userSelectedTable = table.table_name;
     ebp.disableBtnSave();
     // Clean columns
@@ -27,6 +26,34 @@ export const PanelInteractionUtils = {
     if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
       ebp.inputs.findTable.reset();
       ebp.setTablesData();
+    }
+  },
+
+  loadColumns: (ebp: EdaBlankPanelComponent, table: any) => {
+    // Set the user-selected table and disable the save button
+    ebp.userSelectedTable = table.table_name;
+    ebp.disableBtnSave();
+
+    // Clean columns
+    const filteredColumns = table.columns.filter((tableColumn: Column) => {
+      tableColumn.table_id = table.table_name;
+
+        const matcher = ebp.currentQuery.find((currentColumn: Column) =>
+          tableColumn.table_id === currentColumn.table_id &&
+          tableColumn.column_name === currentColumn.column_name &&
+          tableColumn.display_name.default === currentColumn.display_name.default
+        );
+
+        return !matcher && tableColumn.visible === true;
+    });
+
+    // Sort columns by default display name
+    ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
+
+    // Reset input and update table data if the findTable ngModel is not empty
+    if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
+        ebp.inputs.findTable.reset();
+        ebp.setTablesData();
     }
   },
 

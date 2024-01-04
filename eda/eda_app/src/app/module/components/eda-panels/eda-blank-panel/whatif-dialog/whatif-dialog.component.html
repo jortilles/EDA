@@ -1,0 +1,48 @@
+<eda-dialog2 [display]="display"
+    header="What If" width="50vw" height= "50vh"
+    (close)="onCloseWhatIfDialog()">
+
+    <div content>
+        <div class="row pl-1">
+        <div class="col-3">
+            <span>Medida:</span>
+            <p-dropdown [(ngModel)]="whatIf.column" [options]="columnOptions" [autoDisplayFirst]="false" [style]="{'width': '100%'}" appendTo="body">
+            </p-dropdown>
+        </div>
+            <div class="col-2">
+                <span>Operación:</span>
+                <p-dropdown [(ngModel)]="whatIf.operator" [options]="ifOptions" [autoDisplayFirst]="false" [style]="{'width': '100%'}" appendTo="body">
+                </p-dropdown>
+            </div>
+            <div class="col-2 flex flex-column">
+                <span>Valor numerico:</span>
+                <input type="number" pInputText [(ngModel)]="whatIf.value">
+            </div>
+            <div class="col-3 flex flex-column">
+                <span>Nuevo nombre:</span>
+                <div class="p-inputgroup">
+                    <input type="text" pInputText [(ngModel)]="whatIf.display_name">
+                    <button type="button" pButton pRipple icon="pi pi-refresh" class="p-button-info" title="Generate alias" (click)="generateAlias()"></button>
+                </div>
+            </div>
+            <div class="col-2 d-flex align-items-end">
+                <button pButton icon="fa fa-check" class="p-button-info p-button-outlined button-add" label="Añadir" (click)="addWhatIfColumn()" [disabled]="!whatIf.column || !whatIf.operator || !whatIf.value || !whatIf.display_name"></button> 
+            </div>
+        </div>
+
+        <div class="col-12 mt-3">
+            <hr>
+            <div *ngFor="let column of currentQuery">
+                <ng-container *ngIf="column.whatif_column">
+                    <div class="d-flex justify-content-between align-items-center" style="width: fit-content; font-weight: bold;">
+                        <i class="pi pi-times mr-2" style="cursor: pointer; font-size: 10px;" (click)="removeWhatIfColumn(column)"></i>
+                        {{column.display_name.default}}
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+</eda-dialog2>
+
+<p-confirmDialog  [style]="{width: '30vw'}" header="Confirmation" icon="pi pi-exclamation-triangle" appendTo="body"></p-confirmDialog>

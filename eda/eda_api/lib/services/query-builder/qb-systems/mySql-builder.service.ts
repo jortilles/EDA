@@ -183,9 +183,13 @@ export class MySqlBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
-      if (!el.hasOwnProperty('minimumFractionDigits')) {
-        el.minimumFractionDigits = 0;
-      }
+      const table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
+      
+      let whatIfExpression = '';
+      if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;
+
+      el.minimumFractionDigits = el.minimumFractionDigits || 0;
+
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
@@ -228,72 +232,72 @@ export class MySqlBuilderService extends QueryBuilderService {
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`cast( count( distinct \`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+            columns.push(`cast(count(distinct ${table_column}) as decimal(32,${el.minimumFractionDigits})) ${whatIfExpression} as \`${el.display_name}\``);
           } else {
-            columns.push(`cast(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+            columns.push(`cast(${el.aggregation_type}(${table_column}) as decimal(32,${el.minimumFractionDigits})) ${whatIfExpression} as \`${el.display_name}\``);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`cast(\`${el.table_id}\`.\`${el.column_name}\` as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
+            columns.push(`cast(${table_column} as decimal(32,${el.minimumFractionDigits})) ${whatIfExpression} as \`${el.display_name}\``);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y') as \`${el.display_name}\``);
               } else if (_.isEqual(el.format, 'quarter')) {
-                columns.push(   `concat( concat( year(\`${el.table_id}\`.\`${el.column_name}\`),'-Q' ),  quarter(\`${el.table_id}\`.\`${el.column_name}\`) )  as \`${el.display_name}\`` );
+                columns.push(   `concat( concat( year(${table_column}),'-Q' ),  quarter(${table_column}) )  as \`${el.display_name}\`` );
               } else if (_.isEqual(el.format, 'month')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m') as \`${el.display_name}\``);
               } else if (_.isEqual(el.format, 'week')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%x-%v') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%x-%v') as \`${el.display_name}\``);
               } else if (_.isEqual(el.format, 'day')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d') as \`${el.display_name}\``);
               } else if (_.isEqual(el.format, 'week_day')) {
-                columns.push(`WEEKDAY(\`${el.table_id}\`.\`${el.column_name}\`) + 1 as \`${el.display_name}\``);
+                columns.push(`WEEKDAY(${table_column}) + 1 as \`${el.display_name}\``);
               }else if (_.isEqual(el.format, 'day_hour')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H') as \`${el.display_name}\``);
               }else if (_.isEqual(el.format, 'day_hour_minute')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H:%i') as \`${el.display_name}\``);
               }else if (_.isEqual(el.format, 'timestamp')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i:%s') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H:%i:%s') as \`${el.display_name}\``);
               } else {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d') as \`${el.display_name}\``);
               }
             } else {
-              columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d') as \`${el.display_name}\``);
+              columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d') as \`${el.display_name}\``);
             }
           } else {
 
-              columns.push(`\`${el.table_id}\`.\`${el.column_name}\` as \`${el.display_name}\``);
+              columns.push(`${table_column} as \`${el.display_name}\``);
 
           }
 
           // GROUP BY
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y')`);
+              grouping.push(`DATE_FORMAT(${table_column}, '%Y')`);
             } else if (_.isEqual(el.format, 'quarter')) {
-              grouping.push(   `concat( concat( year(\`${el.table_id}\`.\`${el.column_name}\`),'-Q' ),  quarter(\`${el.table_id}\`.\`${el.column_name}\`) )  ` );
+              grouping.push(   `concat( concat( year(${table_column}),'-Q' ),  quarter(${table_column}) )  ` );
             } else if (_.isEqual(el.format, 'month')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m')`);
+              grouping.push(`DATE_FORMAT(${table_column}, '%Y-%m')`);
             } else if (_.isEqual(el.format, 'week')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%x-%v')`);
+              grouping.push(`DATE_FORMAT(${table_column}, '%x-%v')`);
             } else if (_.isEqual(el.format, 'week_day')) {
-              grouping.push(`WEEKDAY(\`${el.table_id}\`.\`${el.column_name}\`) + 1`);
+              grouping.push(`WEEKDAY(${table_column}) + 1`);
             } else if (_.isEqual(el.format, 'day')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d')`);
+              grouping.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d')`);
             }else if (_.isEqual(el.format, 'day_hour')) {
-              columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H')  `);
+              columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H')  `);
             }else if (_.isEqual(el.format, 'day_hour_minute')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i')  `);
+              grouping.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H:%i')  `);
             }else if (_.isEqual(el.format, 'timestamp')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i:%s')`);
+              grouping.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H:%i:%s')`);
             } else {
-              grouping.push(`\`${el.table_id}\`.\`${el.column_name}\``);
+              grouping.push(`${table_column}`);
             }
           } else {
             //  Si es una única columna numérica no se agrega.
             if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
-              grouping.push(`\`${el.table_id}\`.\`${el.column_name}\``);
+              grouping.push(`${table_column}`);
             }
           }
         }

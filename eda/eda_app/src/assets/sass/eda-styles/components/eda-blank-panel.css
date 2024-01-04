@@ -54,7 +54,7 @@ h2 {
     margin-top:10px;
 }
 .infoJoin{
-    margin-top:20px;
+    margin-top:13px;
 }
 .question{
     margin-left: 5px;
@@ -344,6 +344,12 @@ body .ui-accordion .ui-accordion-header a {
     margin: 0.3em;
     background-color: #d6e4e8;
 } */
+
+.button-whatif {
+    border: solid 2px #ccc!important;
+    color: var(--header-bg-color)!important;
+    font-weight: 600!important;
+}
 
 .ui-dialog .ui-dialog-titlebar {
     border: 1px solid #c8c8c8;

@@ -96,6 +96,8 @@ export class QueryBuilderService extends ApiService {
             col.minimumFractionDigits = select[i].minimumFractionDigits;
             col.cumulativeSum = select[i].cumulativeSum;
             col.valueListSource = select[i].valueListSource;
+            col.whatif_column = select[i].whatif_column || false;
+            col.whatif = select[i].whatif;
             queryColumns.push(col);
             labels.push(select[i].column_name);
         }

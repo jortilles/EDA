@@ -166,7 +166,7 @@
                         </div>
 
                         <div class="grid">
-                            <div class="col-4 md:col-12 infoFiltres">
+                            <div class="col-3 md:col-12 infoFiltres">
                                 <span i18n="@@topQueryH4">
                                     Mostrar Top: &nbsp;
                                     <p-inputNumber [(ngModel)]="queryLimit" (onInput)="onTopChange()"></p-inputNumber>
@@ -174,21 +174,20 @@
 
 
                             </div>
-                            <div class="col-6 md:col-12  flex infoJoin">
+                            <div class="col-3 md:col-12 flex infoJoin">
                                 <span i18n="@@joinTypeH4">
                                     Tipo de intersección: &nbsp;
                                 </span>
-                                    <p-selectButton [options]="joinTypeOptions" [(ngModel)]="joinType"  (onChange)="onJoinTypeChange()"  optionLabel="icon" optionValue="joinType" >
-                                        <ng-template let-item>
-                                            <i [class]="item.icon"></i>
+                                <p-selectButton [options]="joinTypeOptions" [(ngModel)]="joinType"  (onChange)="onJoinTypeChange()"  optionLabel="icon" optionValue="joinType" >
+                                    <ng-template let-item>
+                                        <i [class]="item.icon"></i>
 
-                                        </ng-template>
-                                    </p-selectButton>
+                                    </ng-template>
+                                </p-selectButton>
+                            </div>
 
-
-
-
-
+                            <div class="col-3 col-offset-3 md:col-12 infoFiltres d-flex justify-content-end">
+                                <button pButton (click)="onWhatIfDialog()" icon="pi pi-question-circle" class="p-button-info p-button-outlined button-whatif ml-2" label="What IF"></button>
                             </div>
 
                             <div class="col-12 md:col-12 info-query" *ngIf="currentQuery.length !== 0">
@@ -215,7 +214,8 @@
 
                                                 <p-progressSpinner *ngIf="display_v.minispinnerSQL"
                                                     [style]="{width: '4vw', height: '4vh'}" strokeWidth="5" class=""
-                                                    fill="#EEEEEE" animationDuration=".5s"></p-progressSpinner>
+                                                    fill="#EEEEEE" animationDuration=".5s">
+                                                </p-progressSpinner>
 
                                             </div>
 
@@ -284,7 +284,8 @@
                         <h6 i18n="@@sqlExpresionH6">Expresión SQL</h6>
                         <hr>
                         <textarea id="query-area" class="sqlInput" rows="12" cols="100" pInputTextarea
-                            autoResize="autoResize" [(ngModel)]="currentSQLQuery"></textarea>
+                            autoResize="autoResize" [(ngModel)]="currentSQLQuery">
+                        </textarea>
                         <div class="col-6">
                             <h6 i18n="@@originTable">Tabla origen</h6>
                             <hr>
@@ -532,3 +533,5 @@
 <sunburst-dialog *ngIf="sunburstController" [controller]="sunburstController"> </sunburst-dialog>
 
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>
+
+<app-whatif-dialog *ngIf="display_v.whatIf_dialog" [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>

@@ -1,0 +1,5 @@
+.button-add {
+    border: solid 2px #ccc!important;
+    color: var(--header-bg-color)!important;
+    font-weight: 600!important;
+}
