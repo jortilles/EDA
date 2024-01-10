@@ -75,7 +75,8 @@ export class EdaTableComponent implements OnInit {
             let cellClass = null;
             let field = col.field;
             if(this.inject.pivot) field = this.styles[col.field].value;
-            field =  field.replace('%', 'percent').replace(/ /g, '') ;
+
+            field = this.getNiceName(field);
             
             if(!parseFloat(rowData[col.field])) cellClass = null;
             else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[0])) cellClass = `table-gradient-${field}-${0}`
@@ -131,7 +132,7 @@ export class EdaTableComponent implements OnInit {
             const colors = this.generateColor(styles[i].max, styles[i].min, 5);
   
             colors.forEach((color, i) => {
-                let name = key.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9-_ ]/g, '') ;
+                const name = this.getNiceName(key)
                 this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color} `);
                 this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
                 {
@@ -193,7 +194,7 @@ export class EdaTableComponent implements OnInit {
             const colors = this.generateColor(styles[i].max, styles[i].min, 5);
   
             colors.forEach((color, i) => {
-                let name = key.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9 ]/g, '') ;
+                const name = this.getNiceName(key)
                 this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color}`);
                 this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
                 {
@@ -206,7 +207,6 @@ export class EdaTableComponent implements OnInit {
             });
 
         });
-
         let tmpStyles = {};
 
         Object.keys(limits).forEach(key => {
@@ -224,7 +224,6 @@ export class EdaTableComponent implements OnInit {
             });
 
         });
-
         this.styles = tmpStyles;
 
     }
@@ -287,6 +286,10 @@ export class EdaTableComponent implements OnInit {
 
         return saida;
 
+    }
+
+    private getNiceName(name) {
+        return name.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9-_-\wáéíóúüñÁÉÍÓÚÜÑ ]/g, '').replace('_','');
     }
 
 
