@@ -16,6 +16,14 @@ const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 const crypto = require('crypto');
 
+function AASingleSingnOn(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value;
+  
+    descriptor.value = async function (req: Request, res: Response, next: NextFunction) {
+      console.log('Nueva lógica de Single Sign On', req.body);
+      return res.status(200).json({ok: 'nuevo sign on'});
+    };
+}
 
 export class UserController {
 
@@ -139,7 +147,7 @@ export class UserController {
         }
     }
 
-
+    @AASingleSingnOn
     static async singleSingnOn(req:Request, res:Response, next:NextFunction){
 
         console.log('Single Sign On', req.body);
