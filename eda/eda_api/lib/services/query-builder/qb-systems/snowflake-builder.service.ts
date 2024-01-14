@@ -171,9 +171,12 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
-      if (!el.hasOwnProperty('minimumFractionDigits')) {
-        el.minimumFractionDigits = 0;
-      }
+      const table_column = `"${el.table_id}"."${el.column_name}"`;
+
+      let whatIfExpression = '';
+      if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;
+
+      el.minimumFractionDigits = el.minimumFractionDigits || 0;
         
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
@@ -218,70 +221,70 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`CAST(count( distinct "${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits||0}))as "${el.display_name}"`);
+            columns.push(`CAST(count( distinct ${table_column}) AS DECIMAL(32, ${el.minimumFractionDigits})) ${whatIfExpression} as "${el.display_name}"`);
           } else {
-            columns.push(`CAST(${el.aggregation_type}("${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits||0})) as "${el.display_name}"`);
+            columns.push(`CAST(${el.aggregation_type}(${table_column}) AS DECIMAL(32, ${el.minimumFractionDigits})) ${whatIfExpression} as "${el.display_name}"`);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`CAST("${el.table_id}"."${el.column_name}" AS DECIMAL(32, ${el.minimumFractionDigits})) "${el.display_name}"`);
+            columns.push(`CAST(${table_column} AS DECIMAL(32, ${el.minimumFractionDigits})) ${whatIfExpression} as "${el.display_name}"`);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
-                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' ) as "${el.display_name}"`);
+                columns.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'quarter')) {
-                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-Q' ) as "${el.display_name}"`);
+                columns.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-Q' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'month')) {
-                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' ) as "${el.display_name}"`);
+                columns.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week')) {
-                columns.push(`YEAROFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE) ) as "${el.display_name}"`);
+                columns.push(`YEAROFWEEKISO(CAST(${table_column} AS DATE) ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week_day')) {
-                columns.push(`DAYOFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE) ) as "${el.display_name}"`);
+                columns.push(`DAYOFWEEKISO(CAST(${table_column} AS DATE) ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
-                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+                columns.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day_hour')) {
-                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24' ) as "${el.display_name}"`);
+                columns.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH24' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day_hour_minute')) {
-                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI' ) as "${el.display_name}"`);
+                columns.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH24:MI' ) as "${el.display_name}"`);
               }  else if (_.isEqual(el.format, 'timestamp')) {
-                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI:SS' ) as "${el.display_name}"`);
+                columns.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH24:MI:SS' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'No')) {
-                columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+                columns.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
               }
             } else {
-              columns.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+              columns.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
             }
           } else {
-            columns.push(`"${el.table_id}"."${el.column_name}" as "${el.display_name}"`);
+            columns.push(`${table_column} as "${el.display_name}"`);
           }
 
           // GROUP BY
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
-              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' )`);
+              grouping.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy' )`);
             } else if (_.isEqual(el.format, 'quarter')) {
-              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-Q' )`);
+              grouping.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-Q' )`);
             } else if (_.isEqual(el.format, 'month')) {
-              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' )`);
+              grouping.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM' )`);
             } else if (_.isEqual(el.format, 'week')) {
-              grouping.push(`YEAROFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE))`);
+              grouping.push(`YEAROFWEEKISO(CAST(${table_column} AS DATE))`);
             } else if (_.isEqual(el.format, 'week_day')) {
-              grouping.push(`DAYOFWEEKISO(CAST("${el.table_id}"."${el.column_name}" AS DATE))`);
+              grouping.push(`DAYOFWEEKISO(CAST(${table_column} AS DATE))`);
             } else if (_.isEqual(el.format, 'day')) {
-              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' )`);
+              grouping.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM-dd' )`);
             } else if (_.isEqual(el.format, 'day_hour')) {
-              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24' ) `);
+              grouping.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH24' ) `);
             } else if (_.isEqual(el.format, 'day_hour_minute')) {
-              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI' ) `);
+              grouping.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH24:MI' ) `);
             }else if (_.isEqual(el.format, 'timestamp')) {
-              grouping.push(`TO_CHAR(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH24:MI:SS' )`);
+              grouping.push(`TO_CHAR(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH24:MI:SS' )`);
             }  else if (_.isEqual(el.format, 'No')) {
-              grouping.push(`"${el.table_id}"."${el.column_name}"`);
+              grouping.push(`${table_column}`);
             }
           } else {
             //  Si es una única columna numérica no se agrega.
             if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
-              grouping.push(`"${el.table_id}"."${el.column_name}"`);
+              grouping.push(`${table_column}`);
             }
           }
         }

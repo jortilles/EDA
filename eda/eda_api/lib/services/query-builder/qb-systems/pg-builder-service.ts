@@ -184,9 +184,13 @@ export class PgBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
-      if (!el.hasOwnProperty('minimumFractionDigits')) {
-        el.minimumFractionDigits = 0;
-      }
+      const table_column = `"${el.table_id}"."${el.column_name}"`;
+
+      let whatIfExpression = '';
+      if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;
+
+      el.minimumFractionDigits = el.minimumFractionDigits || 0;
+
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
@@ -232,71 +236,71 @@ export class PgBuilderService extends QueryBuilderService {
         if (el.aggregation_type !== 'none') {
 
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`ROUND( count( distinct "${el.table_id}"."${el.column_name}")::numeric, ${el.minimumFractionDigits||0})::float as "${el.display_name}"`);
+            columns.push(`ROUND(count(distinct ${table_column})::numeric, ${el.minimumFractionDigits})::float ${whatIfExpression} as "${el.display_name}"`);
           } else {
-            columns.push(`ROUND(${el.aggregation_type}("${el.table_id}"."${el.column_name}")::numeric, ${el.minimumFractionDigits||0})::float as "${el.display_name}"`);
+            columns.push(`ROUND(${el.aggregation_type}(${table_column})::numeric, ${el.minimumFractionDigits})::float ${whatIfExpression} as "${el.display_name}"`);
           }
 
 
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`ROUND("${el.table_id}"."${el.column_name}"::numeric, ${el.minimumFractionDigits})::float as "${el.display_name}"`);
+            columns.push(`ROUND(${table_column}::numeric, ${el.minimumFractionDigits})::float ${whatIfExpression} as "${el.display_name}"`);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'quarter')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-"Q"Q') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-"Q"Q') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'month')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'IYYY-IW') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'IYYY-IW') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM-DD') as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'day_hour')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM-DD HH') as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'day_hour_minute')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM-DD HH:MI') as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'timestamp')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI:SS') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM-DD HH:MI:SS') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week_day')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'ID') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'ID') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'No')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM-DD') as "${el.display_name}"`);
               }
             } else {
-              columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+              columns.push(`to_char(${table_column}, 'YYYY-MM-DD') as "${el.display_name}"`);
             }
           } else {
-            columns.push(`"${el.table_id}"."${el.column_name}" as "${el.display_name}"`);
+            columns.push(`${table_column} as "${el.display_name}"`);
           }
           // GROUP BY
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY')`);
+              grouping.push(`to_char(${table_column}, 'YYYY')`);
             } else if (_.isEqual(el.format, 'quarter')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-"Q"Q') `);
+              grouping.push(`to_char(${table_column}, 'YYYY-"Q"Q') `);
             } else if (_.isEqual(el.format, 'month')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM')`);
+              grouping.push(`to_char(${table_column}, 'YYYY-MM')`);
             } else if (_.isEqual(el.format, 'week')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'IYYY-IW')`);
+              grouping.push(`to_char(${table_column}, 'IYYY-IW')`);
             }else if (_.isEqual(el.format, 'day')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD')`);
+              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD')`);
             }else if (_.isEqual(el.format, 'day_hour')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH')  `);
+              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD HH')  `);
             }else if (_.isEqual(el.format, 'day_hour_minute')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI')  `);
+              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD HH:MI')  `);
             }else if (_.isEqual(el.format, 'timestamp')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI:SS')`);
+              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD HH:MI:SS')`);
             } else if (_.isEqual(el.format, 'week_day')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'ID')`);
+              grouping.push(`to_char(${table_column}, 'ID')`);
             } else if (_.isEqual(el.format, 'No')) {
-              grouping.push(`"${el.table_id}"."${el.column_name}"`);
+              grouping.push(`${table_column}`);
             }
           } else {
             //  Si no se agrega
             if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
-              grouping.push(`"${el.table_id}"."${el.column_name}"`);
+              grouping.push(`${table_column}`);
             }
           }
         }
