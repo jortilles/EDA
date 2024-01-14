@@ -3956,6 +3956,31 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Nom columna duplicada:</target>
 </trans-unit>
 
+<trans-unit id="addBtn">
+<source>Añadir</source>
+<target>Afegir</target>
+</trans-unit>
+
+<trans-unit id="measureLabel">
+<source>Medida:</source>
+<target>Mesura</target>
+</trans-unit>
+
+<trans-unit id="operationLabel">
+<source>Operación</source>
+<target>Operació</target>
+</trans-unit>
+
+<trans-unit id="numericalValueLabel">
+<source>Valor numérico</source>
+<target>Valor numèric</target>
+</trans-unit>
+
+<trans-unit id="newNameLabel">
+<source>Nuevo nombre</source>
+<target>Nou nom</target>
+</trans-unit>
+
 </body>
 </file>
 </xliff>

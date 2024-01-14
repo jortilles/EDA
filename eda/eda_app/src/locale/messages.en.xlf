@@ -3928,6 +3928,32 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Duplicated column name:</target>
 </trans-unit>
 
+<trans-unit id="addBtn">
+<source>Añadir</source>
+<target>Add</target>
+</trans-unit>
+
+<trans-unit id="measureLabel">
+<source>Medida</source>
+<target>Measure</target>
+</trans-unit>
+
+<trans-unit id="operationLabel">
+<source>Operación</source>
+<target>Operation</target>
+</trans-unit>
+
+<trans-unit id="numericalValueLabel">
+<source>Valor numérico</source>
+<target>Numerical value</target>
+</trans-unit>
+
+<trans-unit id="newNameLabel">
+<source>Nuevo nombre</source>
+<target>New name</target>
+</trans-unit>
+
+
 </body>
 </file>
 </xliff>
