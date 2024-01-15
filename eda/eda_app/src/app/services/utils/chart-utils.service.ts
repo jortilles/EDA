@@ -1181,11 +1181,11 @@ export class ChartUtilsService {
                 if(chartSubType!=='horizontalBar' && chartSubType!=='pyramid'){
                     if(showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
                         dataLabelsObjt =  {
-                            anchor: 'end',
-                            align: 'top',
+                            anchor: size.height>150?'end':'center',
+                            align:  size.height>150?'top':'center',
                             display: 'auto',
                             color: function(context) {
-                                return context.dataset.backgroundColor;
+                                return size.height>150?context.dataset.backgroundColor:'#ffffff';
                                 },
                             font: {
                             weight: 'bold',
