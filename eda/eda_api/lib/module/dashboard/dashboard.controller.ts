@@ -875,11 +875,21 @@ export class DashboardController {
       const dataModelObject = JSON.parse(JSON.stringify(dataModel))
 
       /** Forbidden tables  */
-      const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+      let uniquesForbiddenTables = DashboardController.getForbiddenTables(
         dataModelObject,
         req['user'].role,
         req.user._id
       )
+      const includesAdmin = req['user'].role.includes("135792467811111111111110")
+      if(includesAdmin){
+        // el admin ve todo
+       uniquesForbiddenTables = [];
+      }
+      if( req.user._id == '135792467811111111111112'){
+        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+        uniquesForbiddenTables = [];
+
+      }
       let notAllowedQuery = false
       uniquesForbiddenTables.forEach(table => {
         if (req.body.query.SQLexpression.indexOf(table) >= 0) {
