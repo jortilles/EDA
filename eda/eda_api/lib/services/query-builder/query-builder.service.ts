@@ -741,10 +741,10 @@ export abstract class QueryBuilderService {
             equalfilters.map.forEach((value, key) => {
                 let filterSTR = '\nand ('
                 value.forEach(f => {
-                    filterSTR += this.filterToString(f, type) + '\n  or ';
+                    filterSTR += this.filterToString(f, type) + '\n  and ';
                 });
 
-                filterSTR = filterSTR.slice(0, -3);
+                filterSTR = filterSTR.slice(0, -4);
                 filterSTR += ') ';
                 filtersString += filterSTR;
             });
