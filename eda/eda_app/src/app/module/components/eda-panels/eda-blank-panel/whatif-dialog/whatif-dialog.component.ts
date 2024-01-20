@@ -62,23 +62,27 @@ export class WhatIfDialogComponent implements OnInit {
         }
     }
 
-    public onCloseWhatIfDialog(): void {
-        if (this.whatIf.column && this.whatIf.operator && this.whatIf.value) {
-            this.confirmationService.confirm({
-                header: 'Warning',
-                message: `No ha añadido la condicion "WhatIf" a la consulta.<br> ¿Desea continuar sin ser añadida?`,
-                acceptLabel: 'Si',
-                rejectLabel: 'No',
-                accept: () => {
-                    this.display = false;
-                    this.close.emit();
-                },
-                rejectButtonStyleClass: 'p-button-danger'
-            })
-        } else {
+    public disableApply(): boolean {
+        return !this.whatIf.column || !this.whatIf.operator || !this.whatIf.value || !this.whatIf.display_name;
+    }
+
+    public onApplyWhatIfDialog(): void {
+        if (this.whatIf.column && this.whatIf.operator && this.whatIf.value && this.whatIf.display_name) {
+            const whatIfColumn = _.cloneDeep(this.whatIf.column);
+            whatIfColumn.whatif_column = true;
+            whatIfColumn.display_name.default = this.whatIf.display_name;
+            whatIfColumn.whatif = { operator: this.whatIf.operator, value: this.whatIf.value };
+            this.currentQuery.push(whatIfColumn);
+            this.whatIf = {};
             this.display = false;
             this.close.emit();
         }
+    }
+
+    public onCloseWhatIfDialog(): void {
+        this.whatIf = {};
+        this.display = false;
+        this.close.emit();
     }
 
 }

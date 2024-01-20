@@ -1,5 +1,7 @@
 <eda-dialog2 [display]="display"
     header="What If" width="50vw" height= "50vh"
+    [disableApply]="disableApply()"
+    (apply)="onApplyWhatIfDialog()"
     (close)="onCloseWhatIfDialog()">
 
     <div content>
@@ -25,9 +27,6 @@
                     <button type="button" pButton pRipple icon="pi pi-refresh" class="p-button-info" title="Generate alias" (click)="generateAlias()"></button>
                 </div>
             </div>
-            <div class="col-2 d-flex align-items-end">
-                <button pButton icon="fa fa-check" class="p-button-info p-button-outlined button-add" label="Añadir" i18n-label="@@addBtn" (click)="addWhatIfColumn()" [disabled]="!whatIf.column || !whatIf.operator || !whatIf.value || !whatIf.display_name"></button> 
-            </div>
         </div>
 
         <div class="col-12 mt-3">
@@ -46,3 +45,5 @@
 </eda-dialog2>
 
 <p-confirmDialog  [style]="{width: '30vw'}" header="Confirmation" icon="pi pi-exclamation-triangle" appendTo="body"></p-confirmDialog>
+
+<!-- <button pButton icon="fa fa-check" class="p-button-info p-button-outlined button-add" label="Añadir" i18n-label="@@addBtn" (click)="addWhatIfColumn()" [disabled]="!whatIf.column || !whatIf.operator || !whatIf.value || !whatIf.display_name"></button>  -->
