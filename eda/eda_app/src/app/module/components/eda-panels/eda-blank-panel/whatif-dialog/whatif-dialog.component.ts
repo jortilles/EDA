@@ -70,8 +70,15 @@ export class WhatIfDialogComponent implements OnInit {
         if (this.whatIf.column && this.whatIf.operator && this.whatIf.value && this.whatIf.display_name) {
             const whatIfColumn = _.cloneDeep(this.whatIf.column);
             whatIfColumn.whatif_column = true;
+            whatIfColumn.whatif = {
+                operator: this.whatIf.operator,
+                value: this.whatIf.value,
+                origin: this.whatIf.column
+            };
+
             whatIfColumn.display_name.default = this.whatIf.display_name;
-            whatIfColumn.whatif = { operator: this.whatIf.operator, value: this.whatIf.value };
+
+
             this.currentQuery.push(whatIfColumn);
             this.whatIf = {};
             this.display = false;

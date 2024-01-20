@@ -228,6 +228,39 @@ export class EdaBlankPanelComponent implements OnInit {
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
 
+    public showWhatIfSection(): boolean {
+        return this.currentQuery.some((query: any) => query.whatif_column);
+    }
+
+    public getWhatIfColumns(): any[] {
+        return this.currentQuery.filter((query: any) => query.whatif_column);
+    }
+
+    public async runWhatIfQuery(column?: any): Promise<void> {
+        try {
+            const updateDisplayName = (col: any) => {
+                const origin = col.whatif.origin;
+                if (origin) {
+                    col.display_name.default = `${origin.display_name.default}(${col.whatif.operator}${col.whatif.value})`;
+                }
+            };
+        
+            if (!column) {
+                for (const col of this.getWhatIfColumns()) {
+                    updateDisplayName(col);
+                }
+            } else {
+                updateDisplayName(column);
+            }
+
+
+            await this.runQueryFromDashboard(true);
+            this.panelChart.updateComponent();
+        } catch (err) {
+            throw err;
+        }
+    }
+
     private initializeBlankPanelUtils(): void {
 
         this.chartForm = this.formBuilder.group({ chart: [null, Validators.required] });

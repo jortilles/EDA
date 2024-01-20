@@ -298,8 +298,10 @@ body .ui-tree {
 /* Primeng Components css */
 
 .panel-heading .pi {
-    color: #000!important;
-    font-size: 1.70em!important;
+    /* color: var(--header-bg-color)!important; */
+    color: #455A64!important;
+
+    /* font-size: 1.70em; */
 }
 
 .ui-paginator-bottom .pi {

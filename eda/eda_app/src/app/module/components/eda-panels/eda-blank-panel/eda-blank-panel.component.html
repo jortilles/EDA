@@ -1,21 +1,34 @@
 
 <!-- Panel Header -->
-<div class="panel-heading d-flex justify-content-between">
-    <div style="width: 100%;">
+<div class="panel-heading d-flex justify-content-between align-items-center">
+    <div>
         <h6 id="p-header" class="panel-title" style="cursor: default">
             {{ panel.title || title }}
         </h6>
     </div>
 
-    <div id="edit" [ngClass]="{'edit-blink': lodash.isEmpty(panel.content) }">
-        <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
-    </div>
+    <div class="d-flex align-items-center" style="gap: 15px;">
+        <ng-container *ngIf="showWhatIfSection()">
+            <label class="panel-title">What if:</label>
+            <div *ngFor="let column of getWhatIfColumns()">
+                <span style="font-weight: bold;">{{column.display_name.default}}</span>
+                <input type="number" pInputText [(ngModel)]="column.whatif.value"
+                    (keydown.enter)="runWhatIfQuery(column)"
+                    style="margin-left: 5px; width: 50px; padding: 0;">
+                <button type="button" pButton pRipple icon="pi pi-refresh" class="p-button-outlined" style="width: 20px; padding: 0; border: 0;" (click)="runWhatIfQuery(column)"></button>
+            </div>
+        </ng-container>
 
+
+        <div id="edit" [ngClass]="{'edit-blink': lodash.isEmpty(panel.content) }" style="width: 25px;">
+            <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
+        </div>
+    </div>
 </div>
 
 <!-- Body of Panel -->
-<div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner === true}">
-    <div *ngIf="display_v.saved_panel" class="p-1" style="height: 100%">
+<div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner}">
+    <div *ngIf="display_v.saved_panel && !display_v.minispinner" class="p-1" style="height: 100%">
         <panel-chart #PanelChartComponent
             [props]="panelChartConfig"
             (configUpdated)="setChartProperties()"
@@ -26,8 +39,8 @@
 
     <div class="grid" *ngIf="display_v.minispinner">
         <div class="col-12">
-            <p-progressSpinner [style]="{width: '5vw', height: '5vh'}" strokeWidth="8" class="" fill="#EEEEEE"
-                animationDuration=".5s"></p-progressSpinner>
+            <p-progressSpinner [style]="{width: '5vw', height: '5vh'}" strokeWidth="8" class="" fill="#EEEEEE" animationDuration=".5s">
+            </p-progressSpinner>
         </div>
     </div>
 </div>
