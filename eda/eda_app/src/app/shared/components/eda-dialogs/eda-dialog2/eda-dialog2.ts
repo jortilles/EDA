@@ -14,6 +14,7 @@ export abstract class EdaDialog2 {
 
     @Input() showApply: boolean = true;
     @Input() showClose: boolean = true;
+    @Input() disableApply: boolean = false;
 
     constructor() { }
 
