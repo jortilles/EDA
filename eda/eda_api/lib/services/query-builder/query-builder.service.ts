@@ -270,19 +270,29 @@ export abstract class QueryBuilderService {
                 if(elem.rel.length > 1 ){
                     elem.rel.forEach( 
                        e=>{ console.log( e); console.log(ruta.paths[i]);
+                            const currentLenght = ruta.paths[i].length;
+                            //console.log('Ruta Original');
+                            //console.log(ruta.paths[i]);
                             let dup =  [...ruta.paths[i]];
-                            const currentLenght = ruta.paths[i];
                             dup.push(e);
                             let unique = new Set(dup);
                             dup = [...unique];
+                            //console.log( dup );
                             const newLenght = dup.length;
+                            //console.log('Ruta nueva');
                             ruta.paths.push( dup );
-                            console.log( 'Tamaños'  + currentLenght  + ' - ' + newLenght  );
+                            //console.log( 'Tamaños: '  + currentLenght  + ' - ' + newLenght  );
                             if( newLenght > currentLenght){
+                                //console.log('Crece')
                                 grow = 1;
                             }
                        }
                     )
+                    ruta.paths.splice(i,1);
+                }else{
+                    if(ruta.paths.length-1 == i){
+                        exito = 1;
+                    }
                 }
             });
             if(grow == 0){
@@ -292,26 +302,54 @@ export abstract class QueryBuilderService {
         }
 
 
+        //console.log('rutas posibles ==================');
+        //console.log(ruta.paths);
+        //console.log('rutas==================');
 
-        console.log('rutas posibles ==================');
-        console.log(ruta.paths);
-        console.log('rutas==================');
+
+
 
         const goodPaths = [];
+        let finalPaths = [];
+        
+        ruta.paths.forEach( r => {
+            var exito = 1;
+            finalPaths.forEach(f=>{ if( this.arrayEquals(r,f) ){exito = 0; } });
+            if(exito == 1){
+              finalPaths.push(r);
+            }
+          })
+        // rutas limpias sin duplicados.
+        ruta.paths = [...finalPaths];
+        finalPaths = [];
+        
         ruta.paths.forEach( r => {
             let exito = 1;
             dest.forEach(e => {  if(r.indexOf(e)<0){ exito=0;}} );
             if( exito==1){goodPaths.push(r);}
         })
-        console.log('Rutas buenas:');
-        console.log(goodPaths);
-        ruta.paths = goodPaths;
+        //Si tengo un origen y un destino.
+        goodPaths.forEach((p,i)=>{
+            if( dest.indexOf( p[p.length-1] ) >=0 ){ finalPaths.push(p);}
+        })
+
+        
+     
+
+        console.log('Rutas finales:');
+        console.log(finalPaths);
+        ruta.paths = finalPaths;
         //        { name: 'orders', dist: Infinity, path: [] }
      
     }
 
 
-    
+    public arrayEquals(a, b) {
+        return Array.isArray(a) &&
+            Array.isArray(b) &&
+            a.length === b.length &&
+            a.every((val, index) => val === b[index]);
+    }
     
     public dijkstraAlgorithm(graph, origin, dest) {
         this.getGraph(graph, origin, dest);
