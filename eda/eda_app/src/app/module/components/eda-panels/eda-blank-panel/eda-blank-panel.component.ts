@@ -481,8 +481,10 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public onChartClick(event: any): void {
         const config = this.panelChart.getCurrentConfig();
-        if (config?.chartType == 'doughnut') {
+        if (config?.chartType == 'doughnut' || config?.chartType == 'polarArea' || config?.chartType == 'bar'   || config?.chartType == 'line'  ) {
             this.action.emit({ code: 'ADDFILTER', data: {...event, panel: this.panel} });
+        }else{
+            console.log('No filter here... yet');
         }
     }
 
