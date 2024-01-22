@@ -21,7 +21,7 @@ export class SQLserverConnection extends AbstractConnection {
             database: this.config.database,
             options: {
                 enableArithAbort: true,
-                encrypt: false // antes estava a true. Robson reportó que en docker no funcionava bien.
+                encrypt: this.config.ssl=='0'?false:true 
             }
         }
 

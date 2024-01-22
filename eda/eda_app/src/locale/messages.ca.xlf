@@ -3981,6 +3981,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Nou nom</target>
 </trans-unit>
 
+<trans-unit id="allowSSL">
+<source>Conexión mediante SSL</source>
+<target>Conexió mijanjant SSL</target>
+
+
 </body>
 </file>
 </xliff>
