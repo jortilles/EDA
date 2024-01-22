@@ -220,9 +220,8 @@ export class EdaTable {
         if (this.withColSubTotals) {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
         } 
-        if (this.noRepetitions || !this.noRepetitions) {
-            this.noRepeatedRows();
-        }
+        //Es te que executar sempre
+        this.noRepeatedRows();
 
     }
 
