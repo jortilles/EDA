@@ -310,6 +310,11 @@
                         <button type="button" pButton (click)="checkConection()" class="ui-button-success ml-2"
                             i18n-label='@@checkConnection' label="Comprobar conexión"></button>
                     </div>
+
+                    <div class="col-12 " *ngIf="selectedTipoBD.value !== 'bigquery'">
+                        <p-checkbox label="SSL" [binary]="true" [(ngModel)]="modelPanel.connection.ssl" (keyup)="update()"
+                            i18n-label='@@allowSSL' label="Permitir SSL"></p-checkbox>
+                    </div>
                 </div>
             </div>
             <div style="margin-bottom: 1rem;" class="col-12">

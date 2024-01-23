@@ -341,9 +341,8 @@ export class DataSourceController {
             try {
                 const actualDS = await DataSourceController.getMongoDataSource(req.params.id);
                 const passwd = req.qs.password === '__-(··)-__' ? EnCrypterService.decode(actualDS.ds.connection.password) : req.qs.password;
-
                 const cn = new ConnectionModel(req.qs.user, req.qs.host, req.qs.database, passwd,
-                    req.qs.port, req.qs.type, req.qs.schema, req.body.poolLimit, req.qs.sidm, req.qs.warehouse);
+                    req.qs.port, req.qs.type, req.qs.schema, req.body.poolLimit, req.qs.sidm, req.qs.warehouse, req.qs.ssl);
                 const manager = await ManagerConnectionService.testConnection(cn);
                 await manager.tryConnection();
                 return res.status(200).json({ ok: true });
