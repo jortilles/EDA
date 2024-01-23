@@ -69,13 +69,9 @@ export class MysqlConnection extends AbstractConnection {
         try {
             return new Promise((resolve, reject) => {
                 let mySqlConn = {}
-                console.log(this.config)
-                console.log(this.config.ssl)
                 if (this.config.ssl === "1") {
-                    console.log("1")
                     mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password, "ssl": { rejectUnauthorized: false }};
                 } else {
-                    console.log("2")
                     mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
                 }
                 this.client = createConnection(mySqlConn);
