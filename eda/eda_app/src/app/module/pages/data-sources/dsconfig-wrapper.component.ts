@@ -85,7 +85,6 @@ export class DsConfigWrapperComponent implements OnInit {
 			this.alertService.addError('Formulario incorrecto, revise los campos');
 		}
 		else if (this.form.value.type.value !== 'bigquery') {
-			console.log(this);
 			this.addDataSource();
 		}
 		else {
