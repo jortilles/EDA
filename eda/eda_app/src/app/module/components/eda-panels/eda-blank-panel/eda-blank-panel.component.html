@@ -16,8 +16,11 @@
 <!-- Body of Panel -->
 <div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner === true}">
     <div *ngIf="display_v.saved_panel" class="p-1" style="height: 100%">
-        <panel-chart class="component" #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties()" (onChartClick)="onChartClick($event)"
-            style="height: 100%; width: 100%; display:block">
+        <panel-chart #PanelChartComponent
+            [props]="panelChartConfig"
+            (configUpdated)="setChartProperties()"
+            (onChartClick)="onChartClick($event)"
+            class="component" style="height: 100%; width: 100%; display:block">
         </panel-chart>
     </div>
 
@@ -56,63 +59,56 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-6 md:col-2 pl-2">
                         <div class="d-flex justify-content-between"  style="min-height: 45px;">
                             <h4 *ngIf="!userSelectedTable" i18n="@@atributosH4"  i18n-title="@@atributsTitle" title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
                                 Atributos
                             </h4>
                             <h5 *ngIf="userSelectedTable"  i18n-title="@@atributsTitle+" title="Clique sobre un entidad para ver sus atributos." >
-                                <span i18n="@@atributosH4+">Columnas de:</span> <span class="d-block font-weight-bold" i18n="@@atributosH4interpolation" i18n-title="@@atributsTitle+">{{getDisplayName(userSelectedTable)}}</span>
+                                <span i18n="@@atributosH4+">Columnas de:</span> <span class="d-block font-weight-bold" i18n="@@atributosH4interpolation" i18n-title="@@atributsTitle+">{{getNiceTableName(userSelectedTable)}}</span>
                             </h5>
-
-                            <div *ngIf="userService.isAdmin && showHiddId">
-                                <span i18n-title="@@hiddenAttributes" title="Mostrar/ocultar campos ocultos" class="pointer icon-hover" (click)="changeHiddenMode()">
-                                    <i *ngIf="hiddenColumn==0" class="pi pi-eye" style="font-size: 1.5rem"></i>
-                                    <i *ngIf="hiddenColumn==1" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
-                                </span>
-                            </div>
-                    </div>
-                        <div>
-                            <eda-input [inject]="inputs.findColumn"></eda-input>
                         </div>
-
+                        <div>
+                        <eda-input [inject]="inputs.findColumn"></eda-input>
+                        </div>    
                         <div class="column-list" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
                             [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
                             [cdkDropListEnterPredicate]="isAllowed" >
                             <div *ngFor="let column of columns">
-                                <div class="column-box"
-                                *ngIf='(column.column_type === "numeric" || column.column_type === "date" ) && ( column.hidden != hiddenColumn || hiddenColumn==0) '
-                                (click)="moveItem(column)"
-                                (mouseover)="showDescription(column)"
-                                (mouseout)="description= ''"
-                                cdkDrag
+                                <div class="column-box"  
+                                *ngIf='column.column_type === "numeric" || column.column_type === "date"' 
+                                (click)="moveItem(column)" 
+                                (mouseover)="showDescription(column)" 
+                                (mouseout)="description= ''" 
+                                cdkDrag 
                                 [cdkDragData] = "column"
-                                (cdkDragDropped)="searchRelations(column, $event)"
-
-                                [ngStyle]=" column.hidden == 1 && {'opacity': '0.5'} " >
+                                (cdkDragDropped)="searchRelations(column, $event)" 
+                                (cdkDragDropped)="openColumnDialog(column)" >  
+                                   
+   
                                    <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                   <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
-                                   <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
-                                   <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">
+                                   <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
+                                   <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
+                                   <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">                        
                                        {{column.display_name.default}}
                                    </span>
-                               </div>
-                               <div  class="column-box"
-                               *ngIf='(column.column_type != "numeric" && column.column_type !="date" ) && ( column.hidden != hiddenColumn || hiddenColumn==0) '
+                               </div> 
+                               <div class="column-box"
+                               *ngIf='column.column_type != "numeric" && column.column_type !="date"'
                                (click)="moveItem(column)"
                                (mouseover)="showDescription(column)"
                                (mouseout)="description= ''"
                                cdkDrag
-                               (cdkDragDropped)="searchRelations(column, $event)"
-                               [ngStyle]=" column.hidden == 1  && {'opacity': '0.5'} " >
-
+                               (cdkDragDropped)="searchRelations(column, $event)">  
+                                  
                                   <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                  <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
-                                  <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
-                                  <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">
-                                      {{column.display_name.default}}
+                                  <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
+                                  <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
+                                  <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">                        
+                                    {{column.display_name.default}}
                                   </span>
-                                </div>
+                              </div> 
                             </div>
                         </div>
                     </div>

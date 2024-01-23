@@ -1,4 +1,3 @@
- import { filter } from 'rxjs/operators';
 import { EdaKnob } from './../../../eda-knob/edaKnob';
 import { EdaKnobComponent } from './../../../eda-knob/eda-knob.component';
 import { EdaScatter } from './../../../eda-scatter/eda-scatter.component';
@@ -19,7 +18,6 @@ import { ChartUtilsService, StyleConfig, StyleProviderService } from '@eda/servi
 
 import { Column } from '@eda/models/model.index';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { EdaColumnDate } from '@eda/components/eda-table/eda-columns/eda-column-date';
 import { EdaColumnNumber } from '@eda/components/eda-table/eda-columns/eda-column-number';
 import { EdaColumnText } from '@eda/components/eda-table/eda-columns/eda-column-text';
@@ -71,7 +69,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public histoGramDescTxt2: string = $localize`:@@histoGramDescTxt2:en este rango`;
 
 
-    constructor(public resolver: ComponentFactoryResolver,
+    constructor(
+        public resolver: ComponentFactoryResolver,
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
         public styleProviderService: StyleProviderService) {
@@ -98,7 +97,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-
         /**
          * If data change chart type
          */
@@ -231,7 +229,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.otherColumns.push(newCol);
             dataDescription.totalColumns++;
 
-            }
+        }
 
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart,  values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
 
@@ -659,6 +657,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public destroyComponent() {
         if (this.componentRef) {
             this.componentRef.destroy();
+        }
+    }
+
+    public updateComponent() {
+        if (this.componentRef) {
+            this.componentRef.instance.updateChart();
         }
     }
 

@@ -21,7 +21,7 @@ export class MysqlConnection extends AbstractConnection {
             const existingPool = poolManager.getPool(this.config.database);
 
             if (existingPool) {
-                console.log('same pool')
+                console.log('same pool');
                 this.pool = existingPool;
             } else {
                 const mySqlConn: PoolOptions = {

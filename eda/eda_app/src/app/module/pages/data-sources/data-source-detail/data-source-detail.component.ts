@@ -135,17 +135,27 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 contextMenuItems: [
                     new EdaContextMenuItem({
                         label: 'ELIMINAR', command: () => {
-                         
-                        
-                            const elem = this.permissionsColumn.getContextMenuRow()._id.reduce((a, b)=> a + b) ;
+                            
+                            let elem : any =  this.permissionsColumn.getContextMenuRow();
+                            
+                            try {
+                                elem = this.permissionsColumn.getContextMenuRow()._id?.reduce((a, b)=> a + b) ;
+                            } catch (e) {
 
+                            }
+                            
+                            const dynValue = this.modelPanel.metadata.model_granted_roles.filter(r => r.value !== undefined)
+                            .filter(r => r.value !== "(x => None)" && r.value !== "(~ => All)")
+                            .filter(r => r.value != elem.value );
+                            
                             const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined && r.users.length > 0  )
                             .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
 
-                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined && r.users.length > 0 )
+                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined && r.groups.length > 0  )
                             .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
-
+   
                             let tmpPermissions = [];
+                            dynValue.forEach(dyn => tmpPermissions.push(dyn))
                             groups.forEach(group => tmpPermissions.push(group));
                             users.forEach(user => tmpPermissions.push(user));
 
@@ -496,7 +506,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         const agg = ['sum', 'max', 'min', 'avg', 'count', 'distinct'];
         let exists = 0;
         agg.forEach(e => { if (column.SQLexpression.toString().toLowerCase().indexOf(e) >= 0) { exists = 1; } });
-        if (exists == 0) {
+
+        if (exists == 0 && column.column_type == 'numeric' ) {
             this.alertService.addError($localize`:@@IncorrectQueryAgg:Debes incluir la agregación (distinct, sum, max, min, etc)`);
             this.spinnerService.off()
         } else {

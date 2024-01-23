@@ -213,6 +213,17 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             this.onClose(EdaDialogCloseEvent.UPDATE, response);
         }
 
+        // this.filtersList.push({
+        //     table: this.targetTable, column: this.targetCol,
+        //     panelList: this.panelstoFilter.map(p => p.id), data: null, selectedItems: this.selectedValues, selectedRange:this.selectedRange, id: this.fileUtils.generateUUID(),
+        //     isGlobal: true, applyToAll: !this.applyToAll
+        // });
+
+        // response = {
+        //     filterList: this.filtersList[this.filtersList.length - 1],
+        //     targetTable: this.targetTable.value
+        // };
+        // this.onClose(EdaDialogCloseEvent.NEW, response);
     }
 
     public loadGlobalFiltersData() {
@@ -220,6 +231,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             table: this.targetTable.value,
             dataSource: this.params.dataSource._id,
             dashboard: this.params.id,
+            forSelector: true,
             panel: '',
             filters: []
         };

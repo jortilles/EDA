@@ -337,7 +337,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
                         }
                     });
-                }
+                 } 
                 this.columns = this.columns.filter((c) => !c.isdeleted);
             }catch(e){
                 console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
@@ -455,6 +455,9 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
+    /**
+     * Chart click event
+    */
     public onChartClick(event: any): void {
         const config = this.panelChart.getCurrentConfig();
         if (config?.chartType == 'doughnut') {
@@ -477,7 +480,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
-            this.panelChart.destroyComponent();
+            // this.panelChart.destroyComponent();
             const _config = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
@@ -530,12 +533,20 @@ export class EdaBlankPanelComponent implements OnInit {
                 event.container.data,
                 event.previousIndex,
                 event.currentIndex);
-
-                //apertura del diálogo de atributos o filtros
-                if(event.container.id == 'cdk-drop-list-1'){
+                //obor dialeg o filre
+                if(event.container.element.nativeElement.className.toString().includes( 'select-list') ) {                
                     this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex] );
                 }else{
                     this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex]  , true);
+                   // Trec la agregació si puc.
+                    try{
+                        const c:Column = <Column><unknown>event.container.data[event.currentIndex];
+                        c.aggregation_type.forEach( e=> e.selected = false);
+                        c.aggregation_type.map( e=> e.value == 'none'? e.selected = true:true );
+                    }catch(e){
+                        console.log('no llego')
+                    }
+                    
                 }
         }
 

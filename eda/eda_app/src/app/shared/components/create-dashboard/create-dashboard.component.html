@@ -1,0 +1,31 @@
+<eda-dialog2 *ngIf="display" [display]="display" i88n="@@newDashboardtitle" header="CREA UN NUEVO INFORME" width="50vw" height="60vh" (close)="onClose()" (apply)="createNewDashboard()">
+    <div content>
+        <form [formGroup]="form" class="form-horizontal form-material" (ngSubmit)="createNewDashboard()">
+            <div class="grid">
+                <div class="col-12  mt-2">
+                    <span class="p-float-label">
+                        <input id="float-dash" formControlName="name" type="text" pInputText required style="width: 100%;">
+                        <label i18n="@@labelDameNombre" for="float-dash">Dame un nombre *</label>
+                    </span>
+                </div>
+
+                <div class="col-12 ">
+                    <p-dropdown id="float-ds" formControlName="ds" [options]="dataSources" optionLabel="model_name" 
+                        [showClear]="true" i18n-placeholder="@@selectFuenteDatos"
+                        placeholder="Selecciona una fuente de datos *" required [style]="{'minWidth':'100%'}">
+                    </p-dropdown>
+                </div>
+
+                <div style="margin: 8px">
+                    <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)">
+                    </p-selectButton>
+                </div>
+
+                <div class="col-12 " *ngIf="showGroups">
+                    <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false" optionLabel="name" defaultLabel="Selecciona un grupo *">
+                    </p-multiSelect>
+                </div>
+            </div>
+        </form>
+    </div>
+</eda-dialog2>

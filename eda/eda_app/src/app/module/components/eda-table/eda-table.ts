@@ -36,7 +36,6 @@ export class EdaTable {
     public onSortColEvent: EventEmitter<any> = new EventEmitter();
 
     public _value: any[] = [];
-    public _value_copy: any[] = [];
 
     public cols: EdaColumn[] = [];
     public rows: number = 10;
@@ -68,7 +67,9 @@ export class EdaTable {
     public resultAsPecentage: boolean = false;
     public onlyPercentages: boolean = false;
     public percentageColumns: Array<any> = [];
-    public noRepetitions: boolean = false;
+
+    public noRepetitions: boolean; 
+
     public autolayout: boolean = true;
     public sortedSerie: any = null;
     public sortedColumn: any = { field: null, order: null };
@@ -220,12 +221,10 @@ export class EdaTable {
         }
         if (this.withColSubTotals) {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
-        }
-        if (this.noRepetitions) {
+
+        } 
+        if (this.noRepetitions || !this.noRepetitions) {
             this.noRepeatedRows();
-        }
-        if (!this.noRepetitions) {
-            this.withRepeatedRows();
         }
 
     }
@@ -510,50 +509,74 @@ export class EdaTable {
         return row;
     }
 
-    makeCopy(val) : void {
-        this._value_copy = val;
-    }
 
-    getCopy() {
-        return this._value_copy;
-    }
+    //usamos la extracción de valores para el noRepetitions
+    extractDataValues(val) {
 
-    withRepeatedRows() {
-        const val = this.getCopy();
-
-        if (_.isEmpty(val) == true) {
-            return this._value;
-        } else {
-            this._value = val;
-            return this._value;
-        }
-    }
-
-    noRepeatedRows() {
-
-        this.makeCopy(this._value); //hacemos una copia del valor original que nos entra, por si tenemos que reutilizarlo en la vista opuesta
-        let val = this._value;
         //separamos valores de claves
         let values = [];
         for (let i=0; i<val.length;i++) {
             values.push(Object.values(val[i]));
         }
-
-        //tomamos claves que serán el cabecero
-        let labels = [];
+        return values;
+    }
+    //usamos la extracción de labels para el noRepetitions
+    extractLabels(val) {
+        let labels = [];      
         labels.push(Object.keys(val[0])); //insertamos el primer objeto con el cabecero para iterar y extraer los datos
         labels.forEach(e => {
             e.forEach(function(key,val) {
                 labels.push(key);
 
             })
-
         })
-        labels.shift(); //borramos el primer objeto.
+        return labels;
+    }
+    
+    noRepeatedRows() {
 
+        //separamos valores de claves
+        let values = this.extractDataValues(this.value);
+                
+        //tomamos claves que serán el cabecero
+        let labels = this.extractLabels(this.value)
+        
+        labels.shift(); //borramos el primer objeto.
+        let first  = _.cloneDeep(values[0]);
         let output = [];
 
-            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE
+
+        //esta primera iteración con this.noRepetitions en false se hace para devolver las palabras repetidas al diálogo.
+        //Es una secuencia similar a la de quitar los valores, pero opuesta.
+        if (!this.noRepetitions) {
+
+            const output = [];
+            let values = this.extractDataValues(this.value);
+            values = values.filter(row => !row.every(element => element === null));
+            // Load the Table for a preview
+            for (let i = 0; i < values.length; i += 1) {
+                const obj = {};
+                if (i == 0) {
+                    for (let e = 0; e < values[i].length; e += 1) {
+                        obj[labels[e]] = values[i][e];       
+                }
+                } else {
+                    for (let e = 0; e < values[i].length; e += 1) {            
+                        if (values[i][e] == ""){
+                            obj[labels[e]] = first[e];
+                        } else {
+                            obj[labels[e]] = values[i][e];
+                            first[e] = values[i][e];
+                        }   
+                    }
+                }
+                
+                output.push(obj);
+            }
+            return this.value = output;
+          
+        } else {
+            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
             let first  = _.cloneDeep(values[0]);
             for (let i = 0; i < values.length; i += 1) {
                 const obj = [];
@@ -574,11 +597,14 @@ export class EdaTable {
                 output.push(obj);
             }
 
-            this._value = output;
-
-        return this._value;
+            this.value = output;  
+            
+        }   
+        return this.value;
+       
 
     }
+
 
     colsPercentages() {
         if (this.percentageColumns.length !== 0) {

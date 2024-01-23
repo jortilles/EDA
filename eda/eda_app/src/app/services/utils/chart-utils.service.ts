@@ -154,9 +154,11 @@ export class ChartUtilsService {
             // Faig push a l'array output, que sera retornat per l'inicialització del PieChart
             const _output = [[], []];
             _output[0] =  _output[0] = values.map(v => v[label_idx]);
-            _output[1] = [{
-                data: values.map(v => v[number_idx])
-            }];
+            _output[1] = [{ data: values.map(v => v[number_idx]) }];
+                 
+            if (dataDescription?.otherColumns?.length > 0) {
+                _output[1][0].label = dataDescription?.otherColumns[0]?.name
+            }
 
             output =  _output;
             //console.log(JSON.stringify(output));
