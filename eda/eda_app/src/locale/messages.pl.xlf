@@ -929,9 +929,9 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="tituloNuevoInforme" datatype="html">
-<source> CREAR UN NUEVO INFORME
+<source> Crear nuevo informe
 </source>
-<target> STWÓRZ NOWY RAPORT
+<target> Stwórz nowy raport
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
