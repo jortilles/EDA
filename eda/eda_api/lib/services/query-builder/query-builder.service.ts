@@ -271,28 +271,24 @@ export abstract class QueryBuilderService {
                     elem.rel.forEach( 
                        e=>{ console.log( e); console.log(ruta.paths[i]);
                             const currentLenght = ruta.paths[i].length;
-                            //console.log('Ruta Original');
-                            //console.log(ruta.paths[i]);
                             let dup =  [...ruta.paths[i]];
                             dup.push(e);
                             let unique = new Set(dup);
                             dup = [...unique];
-                            //console.log( dup );
                             const newLenght = dup.length;
-                            //console.log('Ruta nueva');
-                            ruta.paths.push( dup );
-                            //console.log( 'Tamaños: '  + currentLenght  + ' - ' + newLenght  );
                             if( newLenght > currentLenght){
-                                //console.log('Crece')
+                                console.log('Crece');
+                                console.log( 'Tamaños: '  + currentLenght  + ' - ' + newLenght  );
+                                console.log(ruta.paths[i]);
+                                console.log(dup);
                                 grow = 1;
                             }
+                            ruta.paths.push( dup );
                        }
                     )
                     ruta.paths.splice(i,1);
                 }else{
-                    if(ruta.paths.length-1 == i){
-                        exito = 1;
-                    }
+                    if(ruta.paths.length-1 == i){    exito = 1;    }
                 }
             });
             if(grow == 0){
@@ -352,7 +348,7 @@ export abstract class QueryBuilderService {
     }
     
     public dijkstraAlgorithm(graph, origin, dest) {
-        this.getGraph(graph, origin, dest);
+//        this.getGraph(graph, origin, dest);
         const not_visited = [];
         const v = [];
 
@@ -406,21 +402,6 @@ export abstract class QueryBuilderService {
         return (v);
     }
 
-/* NO APLICA PORQUE NO APLICA SEGURIDAD    
-    public valueListQuery( ) {
-        const schema = this.dataModel.ds.connection.schema;
-        let table = this.queryTODO.fields[0].valueListSource.target_table
-        if (schema) {
-            table = `${schema}.${this.queryTODO.fields[0].valueListSource.target_table}`;
-        }
-
-        console.log('Woho!!!!!!!!!');
-        console.log('Woho!!!!!!!!!');
-        console.log('Woho!!!!!!!!!');
-        console.log('Woho!!!!!!!!!');
-        return `SELECT DISTINCT ${this.queryTODO.fields[0].valueListSource.target_description_column} \nFROM ${table}`;
-    }
-*/
 
 
     /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
