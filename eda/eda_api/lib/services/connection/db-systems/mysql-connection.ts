@@ -37,7 +37,7 @@ export class MysqlConnection extends AbstractConnection {
                     keepAliveInitialDelay: 0
                 };
 
-                if (this.config.ssl !== '0' || this.config.ssl === true) {
+                if (this.config.ssl === '1' ||  this.config.ssl === true) {
                     mySqlConn.ssl= { rejectUnauthorized: false };
                 }
 
