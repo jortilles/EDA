@@ -37,7 +37,7 @@ export class MysqlConnection extends AbstractConnection {
                     keepAliveInitialDelay: 0
                 };
 
-                if (this.config.ssl !== '0' || this.config.ssl === true) {
+                if ( this.config.ssl  && ( this.config.ssl === true)) {
                     mySqlConn.ssl= { rejectUnauthorized: false };
                 }
 
@@ -58,7 +58,7 @@ export class MysqlConnection extends AbstractConnection {
             password: this.config.password,
         };
 
-        if (this.config.ssl === '1' ||  this.config.ssl === true) {
+        if ( this.config.ssl  && ( this.config.ssl === true)) {
             mySqlConn.ssl= { rejectUnauthorized: false };
         }
 
@@ -67,9 +67,10 @@ export class MysqlConnection extends AbstractConnection {
 
     async tryConnection(): Promise<any> {
         try {
+            console.log(this.config)
             return new Promise((resolve, reject) => {
                 let mySqlConn = {}
-                if (this.config.ssl === "1" ||  this.config.ssl === 'true') {
+                if (this.config.ssl && (this.config.ssl === 'true')) {
                     mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password, "ssl": { rejectUnauthorized: false }};
                 } else {
                     mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };

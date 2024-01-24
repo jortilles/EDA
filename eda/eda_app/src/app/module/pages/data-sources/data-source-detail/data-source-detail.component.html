@@ -311,9 +311,18 @@
                             i18n-label='@@checkConnection' label="Comprobar conexión"></button>
                     </div>
 
-                    <div class="col-12 " *ngIf="selectedTipoBD.value !== 'bigquery'">
-                        <p-checkbox label="SSL" [binary]="true" [(ngModel)]="modelPanel.connection.ssl" (keyup)="update()"
-                            i18n-label='@@allowSSL' label="Permitir SSL"></p-checkbox>
+                    <div class="col-12 " *ngIf="modelPanel.connection.ssl && (selectedTipoBD.value == 'mysql' || selectedTipoBD.value == 'postgres' || selectedTipoBD.value == 'sqlserver') "
+                        i18n-label='@@allowSSL' style=" display: flex !important; align-items: center !important;">
+                        <p-inputSwitch [(ngModel)]="modelPanel.connection.ssl" (keyup)="update()" label="Permitir SSL" >
+                        </p-inputSwitch>
+                        &nbsp; Conexión mediante SSL
+                    </div>
+                    
+                    <div class="col-12 " *ngIf="!modelPanel.connection.ssl && (selectedTipoBD.value == 'mysql' || selectedTipoBD.value == 'postgres' || selectedTipoBD.value == 'sqlserver') "
+                        i18n-label='@@allowSSL' style=" display: flex !important; align-items: center !important;">
+                        <p-inputSwitch [(ngModel)]="modelPanel.connection.ssl" (keyup)="update()" label="Permitir SSL" >
+                        </p-inputSwitch>
+                        &nbsp; Conexión sin SSL
                     </div>
                 </div>
             </div>

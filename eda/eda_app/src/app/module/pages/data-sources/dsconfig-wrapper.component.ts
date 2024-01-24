@@ -140,7 +140,7 @@ export class DsConfigWrapperComponent implements OnInit {
 			sid: this.form.value.sid.value,
 			optimize: this.form.value.optimize ? 1 : 0,
 			allowCache: this.form.value.allowCache ? 1 : 0,
-			allowSSL: this.form.value.allowSSL ? 1 : 0,
+			allowSSL: this.form.value.allowSSL ? true : false,
 			filter: this.form.value.filter
 		};
 
