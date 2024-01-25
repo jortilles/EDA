@@ -359,9 +359,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                         dest: `${relation.target_table}.${relation.target_column}`,
                         _id: relation
                     };
-                    if (!this.relationsTable.value.map(value => value.dest).includes(row.dest)) {
+                    if (!this.relationsTable.value.map(value => value.dest).includes(row.dest) ) {
+                        this.relationsTable.value.push(row);
+                    } else if(!this.relationsTable.value.map(value => value.origin).includes(relation.source_column)){
                         this.relationsTable.value.push(row);
                     }
+                    
                 });
                 //Update to contain only actual values
                 this.relationsTable.value = this.relationsTable.value.filter(table => this.tmpRelations.includes(table._id))
