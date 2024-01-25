@@ -1,7 +1,7 @@
 /**
- * 
+ *
  * chart-utils.services.ts: Totes les utilitats dels gràfics.
- * 
+ *
  */
 
 
@@ -69,7 +69,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypesBubblechart:Bubblechart`, value: 'bubblechart', subValue: 'bubblechart', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
-        
+
     ];
 
     public filterTypes: FilterType[] = [
@@ -109,7 +109,7 @@ export class ChartUtilsService {
 
 
     /*
-        Funció especifica per transformar les dades per el velocímetre (knob) 
+        Funció especifica per transformar les dades per el velocímetre (knob)
     */
     public transformData4Knob(data: any, dataTypes: string[]): any {
         let values = [];
@@ -154,9 +154,11 @@ export class ChartUtilsService {
             // Faig push a l'array output, que sera retornat per l'inicialització del PieChart
             const _output = [[], []];
             _output[0] =  _output[0] = values.map(v => v[label_idx]);
-            _output[1] = [{
-                data: values.map(v => v[number_idx])
-            }];
+            _output[1] = [{ data: values.map(v => v[number_idx]) }];
+                 
+            if (dataDescription?.otherColumns?.length > 0) {
+                _output[1][0].label = dataDescription?.otherColumns[0]?.name
+            }
 
             output =  _output;
             //console.log(JSON.stringify(output));
@@ -186,7 +188,7 @@ export class ChartUtilsService {
 
 
                 //If >1 numeric series
-            }                       
+            }
 
             //para el gráfico de pirámide, cogemos los valores del primer segmento y los multiplicamos por -1.
             let u = _.cloneDeep(_output[1])
@@ -265,7 +267,7 @@ export class ChartUtilsService {
                         });
                 });
 
-            }                        
+            }
             output =  _output;
 
             /* Histograma  */
@@ -280,7 +282,7 @@ export class ChartUtilsService {
 
             let grupos = [];
             let new_data=[];
-            let num_cols=0;  
+            let num_cols=0;
             let salto=0;
             //Si hay nulos van a parte
             const grupo_null =  values.map(v => v[number_idx]).filter(element => {
@@ -301,7 +303,7 @@ export class ChartUtilsService {
             }
 
             if(range<30){
-                num_cols=range;                 
+                num_cols=range;
             }else if(range>=30 && range<=100){
                 num_cols=30
             }else {
@@ -312,38 +314,38 @@ export class ChartUtilsService {
             //No me llega el numero de columnas fijo el numero de columnas
             if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
                 num_cols=numberOfColumns;
-            } 
+            }
 
 
            if( this.esEntero(distinctNumbers)){
                 salto =  Math.ceil( max/num_cols )  ;
-            }else{  
+            }else{
                 num_cols<5?num_cols=5:num_cols=num_cols;
                 salto =   Math.ceil( max/num_cols * 10) / 10 ;
             }
-           
+
             if(salto == 1 ){
                 new_data = this.generateNewDataOneForHistogram(allNumbers,num_cols,min,max , salto);
-                grupos =   this.generateGruposOneForHistogram( num_cols,min ); 
+                grupos =   this.generateGruposOneForHistogram( num_cols,min );
             }
             else{
                 if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
                     num_cols=numberOfColumns;
-                } 
+                }
                 new_data = this.generateNewDataRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto);
                                                                                                                             /** array de un único elemento. Cuando tenga mas ya veré lo que hago */
                 grupos =   this.generateGruposRangeForHistogram( num_cols,min,max , salto,  this.esEntero(distinctNumbers) , dataDescription.query[0].minimumFractionDigits    );
             }
-            if(grupo_null.length > 0 ){ 
+            if(grupo_null.length > 0 ){
                 new_data.push(grupo_null.length  );
-                grupos.push('null');                
+                grupos.push('null');
             }
             _output[0]=grupos;
             _output[1] = [{
                     data: new_data,
                     label:  this.histoGramRangesTxt + ' - '  + dataDescription.numericColumns[0].name
                 }];
- 
+
 
             output =  _output;
         }
@@ -353,13 +355,13 @@ export class ChartUtilsService {
 
 
     /**
-     * 
-     * @param allNumbers 
-     * @param num_cols 
-     * @param min 
-     * @param max 
-     * @param salto 
-     * @returns grupos 
+     *
+     * @param allNumbers
+     * @param num_cols
+     * @param min
+     * @param max
+     * @param salto
+     * @returns grupos
      */
     private   generateGruposRangeForHistogram( num_cols,min,max, salto , esEntero , minimumFractionDigits ):any[] {
         let mi_salto =  0;
@@ -382,12 +384,12 @@ export class ChartUtilsService {
                 // Salgo del bucle
                 i = i+num_cols;
             }
- 
- 
- 
+
+
+
            mi_min = mi_salto;
 
-        } 
+        }
 
         return grupos;
     }
@@ -400,25 +402,25 @@ export class ChartUtilsService {
         let mi_salto =  0;
         let mi_min = min;
         let new_data = [];
-       
+
         for(let i=0; i<num_cols; i++){
             mi_salto =   min+((salto*i)+salto)   ;
             let grupo = [];
 
             for( let j=0; j < allNumbers.length; j++){
-               if(  ( allNumbers[j] >= mi_min && allNumbers[j] < mi_salto)   && 
+               if(  ( allNumbers[j] >= mi_min && allNumbers[j] < mi_salto)   &&
                ( mi_salto <  max )
-               ){            
-                    grupo.push(allNumbers[j]);   
-               }else  if(  
-                        ( allNumbers[j] >= mi_min && allNumbers[j] <= mi_salto)   && 
+               ){
+                    grupo.push(allNumbers[j]);
+               }else  if(
+                        ( allNumbers[j] >= mi_min && allNumbers[j] <= mi_salto)   &&
                         ( mi_salto >=  max )
-               ){     
-                    grupo.push(allNumbers[j]);   
+               ){
+                    grupo.push(allNumbers[j]);
                }
             }
 
-                  
+
            new_data.push( grupo.length);
            mi_min = mi_salto;
            if( mi_min >= max){
@@ -426,7 +428,7 @@ export class ChartUtilsService {
             i = num_cols;
            }
 
-        } 
+        }
 
         return new_data;
     }
@@ -439,12 +441,12 @@ export class ChartUtilsService {
             mi_salto =    min+(salto*i);
             let grupo = [];
             for( let j=0; j < allNumbers.length; j++){
-               if( allNumbers[j]== mi_salto)  {            
-                    grupo.push(allNumbers[j]);   
+               if( allNumbers[j]== mi_salto)  {
+                    grupo.push(allNumbers[j]);
                }
             }
            new_data.push( grupo.length);
-        } 
+        }
         return new_data;
     }
 
@@ -453,9 +455,9 @@ export class ChartUtilsService {
     private  generateGruposOneForHistogram(num_cols,min ):any[] {
         let grupos = [];
         for(let i=min; i<=num_cols; i++){
-            grupos.push(i);      
-        } 
-       
+            grupos.push(i);
+        }
+
         return grupos;
     }
 
@@ -463,7 +465,7 @@ export class ChartUtilsService {
 /** Ajuda per saber si un númeor es enter o no.  */
     private esEntero(numeros:number[]):boolean{
         let res = true;
-        numeros.forEach( 
+        numeros.forEach(
             (numero)=> {
             if ( isNaN(numero)){
                 res = false;
@@ -480,7 +482,7 @@ export class ChartUtilsService {
     public uniqueLabels(labels: Array<string>) {
         const uniqueLabels = [];
         for (let i = 0; i < labels.length; i++) {
-            if (uniqueLabels.includes(labels[i])) { 
+            if (uniqueLabels.includes(labels[i])) {
                 uniqueLabels.push(`${labels[i]}_${i}`);
             } else {
                 uniqueLabels.push(labels[i])
@@ -490,7 +492,7 @@ export class ChartUtilsService {
     }
 
     public transformDataQueryForTable(noRepetitions: boolean, labels: any[], values: any[]) {
-        
+
         if (noRepetitions !== true) {
 
             const output = [];
@@ -509,11 +511,11 @@ export class ChartUtilsService {
 
             const output = [];
             values = values.filter(row => !row.every(element => element === null));
-            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
+            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE
             let first  = _.cloneDeep(values[0]);
             for (let i = 0; i < values.length; i += 1) {
                 const obj = [];
-                if(i == 0){   
+                if(i == 0){
                     for (let e = 0; e < values[i].length; e += 1) {
                             obj[labels[e]] = values[i][e];
                         }
@@ -527,32 +529,32 @@ export class ChartUtilsService {
                         first[e]  =  values[i][e]; //AQUI SE SUTITUYE EL PRIMER VALOR
                         }
                 }
-                output.push(obj);   
+                output.push(obj);
             }
-                
+
             return output;
 
         }
-        
-        
+
+
     }
 
     /**
      * Takes current query and returs not allowedCharts
-     * @param currentQuery 
+     * @param currentQuery
      * @return [] notAllowed chart types
      */
     public getNotAllowedCharts(dataDescription: any, query: any): any[] {
-        
+
         let notAllowed =
             [
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
-                'doughnut', 'polarArea', 'line', 'area', 'bar', 'histogram',  'funnel', 'bubblechart', 
+                'doughnut', 'polarArea', 'line', 'area', 'bar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
                 'pyramid'
             ];
 
-        
+
         //table (at least one column)
         if (dataDescription.totalColumns > 0) notAllowed.splice(notAllowed.indexOf('table'), 1);
 
@@ -560,7 +562,7 @@ export class ChartUtilsService {
         if (dataDescription.totalColumns === 1 && dataDescription.numericColumns.length === 1) {
             notAllowed.splice(notAllowed.indexOf('kpi'), 1);
         }
-        
+
         // DynamicText (only one numeric column)
         if (dataDescription.totalColumns === 1  && dataDescription.otherColumns.length === 1 ) {
             notAllowed.splice(notAllowed.indexOf('dynamicText'), 1);
@@ -605,7 +607,7 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('coordinatesMap'), 1);
         }
 
-        //GeoJson Map 
+        //GeoJson Map
         if (dataDescription.numericColumns.length === 1
             && dataDescription.query.filter(elem => elem.linkedMap).length > 0
             && dataDescription.totalColumns === 2) {
@@ -654,7 +656,6 @@ export class ChartUtilsService {
         //pyramid
         if (dataDescription.totalColumns === 3 && dataDescription.numericColumns.length === 1
             ) {
-            console.log(dataDescription)
             notAllowed.splice(notAllowed.indexOf('pyramid'), 1);
         }
         return notAllowed;
@@ -664,7 +665,7 @@ export class ChartUtilsService {
 
     /**
      * Check the resultset size for every chart and return the ones you can not have because you have too many data
-     * @param dataSize  
+     * @param dataSize
      * @return [] notAllowed chart types
      */
     public getTooManyDataForCharts(dataSize: number): any[] {
@@ -716,8 +717,8 @@ export class ChartUtilsService {
 
     /**
      * Check if actual config is compatible with actual chart and returns a valid color configuration
-     * @param currentChartype 
-     * @param layout 
+     * @param currentChartype
+     * @param layout
      */
     public recoverChartColors(currentChartype: string, layout: ChartConfig) {
         const config = layout.getConfig();
@@ -849,7 +850,6 @@ export class ChartUtilsService {
 
         });
 
-
         let min_om = Math.pow(10, Math.floor(Math.log10(Math.abs(min))));
         let min_sign = min < 0;
         min = Math.ceil(Math.abs(min) / min_om) * min_om;
@@ -859,13 +859,13 @@ export class ChartUtilsService {
         let max_resto = Math.pow(10, Math.floor(Math.log10(Math.abs(max % max_om))));
         max_resto==0?max_resto=1:max_resto=max_resto;
 
-    
 
-        // Metode original del pau que arodonia al seguent ordre de magnitud. 
+
+        // Metode original del pau que arodonia al seguent ordre de magnitud.
         // Pero si el maxim es 10.000  estableix 20.000
         // Ho intento ajustar una mica.
         //max = Math.ceil(max / max_om) * max_om;
-        
+
         // si estic a valors petit poso el max a 5 o a 10
         if(max_om == 1){
            if(max <1){
@@ -882,7 +882,7 @@ export class ChartUtilsService {
             if(  ( (max % max_om) /max_om) < 0.5 ){
 
                 // Si tinc motl marge fins a la seguent unitat de magnitut ho arrodoneixo mes paropor
-                max = max - ( max % max_om) + 
+                max = max - ( max % max_om) +
             ( 2* (  Math.ceil(  ( max % max_om) / max_resto )  *  max_resto) );
             }else{
                 // Si no ho arodoneixo a la propera unitat de magnitu
@@ -899,6 +899,7 @@ export class ChartUtilsService {
 */
         if (min_sign) min = -min;
         min = min > 0 && max > 0 ? 0 : min;
+        
         return { min: min ? min : 0, max: max ? max : 0 }
 
     }
@@ -1075,7 +1076,7 @@ export class ChartUtilsService {
 
         const maxTicksLimit = size.width < 200 ? 5 + variador : size.width < 400 ? 12 + variador : size.width < 600 ? 25 + variador : 40 + variador;
         const maxTicksLimitHorizontal = size.height < 200 ? 5 + variador : size.height < 400 ? 12 + variador : size.height < 600 ? 25 + variador : 40 + variador;
-        const maxTicksLimitY = size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 3 :  size.height < 300 ? 4 : 5;
+        const maxTicksLimitY = size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 4 :  size.height < 250 ? 5 :  size.height < 300 ? 6 :  size.height < 350 ? 8: 10;
 
         /** Defineixo les propietats en funció del tipus de gràfic. */
         let dataLabelsObjt={}
@@ -1139,15 +1140,15 @@ export class ChartUtilsService {
                         animateScale: true,
                         animateRotate: true
                     },
-                    
+
                     responsive: true,
                     maintainAspectRatio: false,
                     devicePixelRatio: 2,
-                   
 
-                   
+
+
                     plugins: {
-                        datalabels: dataLabelsObjt, 
+                        datalabels: dataLabelsObjt,
                         tooltip: {
                             callbacks: {
                                 title: (context) => {
@@ -1180,20 +1181,20 @@ export class ChartUtilsService {
                 if(chartSubType!=='horizontalBar' && chartSubType!=='pyramid'){
                     if(showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
                         dataLabelsObjt =  {
-                            anchor: 'end',
-                            align: 'top',
+                            anchor: size.height>150?'end':'center',
+                            align:  size.height>150?'top':'center',
                             display: 'auto',
                             color: function(context) {
-                                return context.dataset.backgroundColor;
+                                return size.height>150?context.dataset.backgroundColor:'#ffffff';
                                 },
                             font: {
                             weight: 'bold',
                             size:  edaFontSize  ,
                             },
-                            padding: 10,
+                            padding: 2,
 
                             formatter: (value,ctx) => {
-                                
+
                                 const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
                                 const total = datapoints.reduce((total, datapoint) => total +  datapoint , 0);
 
@@ -1215,19 +1216,19 @@ export class ChartUtilsService {
                         }
                     }else{
                             dataLabelsObjt =   { display: false }
-                        
-                    }      
+
+                    }
 
                     options.chartOptions = {
                         animation: {
                             duration: 3000
                         },
-                        
+
                         responsive: true,
                         maintainAspectRatio: false,
                         devicePixelRatio: 2,
-                    
-                        
+
+
                         tooltips: {
                             callbacks: {
                                 title: (tooltipItem, data) => {
@@ -1254,12 +1255,12 @@ export class ChartUtilsService {
                                 footer: () => { return linked },
                             }
                         },
-                    
+
                         scales: {
                             x: {
                                 stacked: stacked || false,
                                 grid: { display: false },
-                                
+
                                 ticks: {
                                     callback: function(val, index) {
                                         if (this.getLabelForValue(val))
@@ -1272,13 +1273,14 @@ export class ChartUtilsService {
                                     autoSkip: true,
                                 }
                             },
-                            
+
                             y: {
                                 stacked: stacked || false,
                                 grid: {
                                     drawBorder: false,
                                 },
                                 display: true,
+                                grace: (showLabels || showLabelsPercent )?'1%': '0%',
                                 ticks: {
                                     autoSkip: true,
                                     maxTicksLimit: maxTicksLimitY,
@@ -1292,22 +1294,24 @@ export class ChartUtilsService {
                                     fontColor: styles.fontColor,
                                 }
                             }
-                            
+
                         },
-                    
+
                         plugins: {
                             datalabels: dataLabelsObjt,
                             legend: edaBarLineLegend
                         },
-                    
+
                     };
                 }else{
                     // horizontalBar Since chart.js 3 there is no more horizontal bar. Its just  barchart with horizonal axis
-                    // buscar en chart.js las opciones 
+                    // buscar en chart.js las opciones
                     if(showLabels || showLabelsPercent ){
                         /** si haig de mostrar les etiquetes ho configuro */
                         dataLabelsObjt =  {
-                            anchor: 'end',
+                            anchor: function(context) {
+                                return context.dataset.data.some(el => el < 0) ? 'center' : 'end';
+                            },
                             align: 'start',
                             display: function(context) {
                                 const chartWidth = context.chart.width;
@@ -1320,7 +1324,10 @@ export class ChartUtilsService {
                                     }
                                 }, 0);
                                 const elem = realData[context.dataIndex];
-                                const percentage = elem / total * 100;
+
+                                // Ensure is a postive number
+                                const percentage = Math.abs(elem / total * 100);
+
                                 if(chartWidth < 200){
                                     return  percentage > 30 ; /** Mostro la etiqueta si es mes que el 30 % del total  */
                                 }else{
@@ -1330,7 +1337,7 @@ export class ChartUtilsService {
                             color: 'white',
                             font: {
                                 weight: 'bold',
-                                size:  edaFontSize  
+                                size:  edaFontSize
                             },
                             formatter: (value,ctx) => {
                                 const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
@@ -1349,13 +1356,13 @@ export class ChartUtilsService {
                                 return   res;
                             },
 
-                            
+
                         }
                     }else{
                             dataLabelsObjt =   { display: false }
-                        
+
                     }
-    
+
                     options.chartOptions  = {
                         animation: {
                             duration: 3000
@@ -1372,7 +1379,7 @@ export class ChartUtilsService {
                                     if (data && tooltipItem)
                                         return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
                                 },
-    
+
                                 label: (tooltipItem, data) => {
                                     if (data && tooltipItem) {
                                         const realData = data.datasets[0].data;
@@ -1383,12 +1390,12 @@ export class ChartUtilsService {
                                         const percentage = elem / total * 100;
                                         return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
                                     }
-    
+
                                 },
-    
+
                                 footer: () => { return linked },
                             }
-    
+
                         },
                         scales: {
                             x: {
@@ -1398,7 +1405,7 @@ export class ChartUtilsService {
                                 },
                                 ticks: {
                                     callback: (value) => {
-                                       
+
                                         if (value)
                                             return isNaN(value) ? value : this.format10thPowers(parseFloat(value))// parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 });
                                     },
@@ -1430,19 +1437,19 @@ export class ChartUtilsService {
                                 }
                             }
                         },
-                   
+
                         plugins: {
                             datalabels: dataLabelsObjt,
                             legend: edaBarLineLegend
                         },
-                      
+
                     };
 
                     if (chartSubType=='pyramid') {
                         //modificamos los valores del eje x para que sean positivos a la vista
                         (<any>options.chartOptions).scales.y.stacked = true;
                         (<any>options.chartOptions).scales.x.ticks.callback = (value, index, ticks) => {
-                            
+
                             if  (value < 0)  {
                                 value = value * -1;
                             }
@@ -1475,17 +1482,17 @@ export class ChartUtilsService {
                             }else if (( (chartWidth/10)  / realData.length  ) < 1.5 ){
                                 return context.dataIndex%2==0 // devuelvo uno de cada 2
                             }else{
-                                return true; // devuelvo todas 
+                                return true; // devuelvo todas
                             }
 
-                           
+
                       },
 
                         borderRadius: 4,
                         color: 'white',
                         font: {
                           weight: 'bold',
-                          size:  edaFontSize-2  
+                          size:  edaFontSize-2
                         },
                         formatter: (value,ctx) => {
                             const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
@@ -1510,7 +1517,7 @@ export class ChartUtilsService {
 
                 }else{
                         dataLabelsObjt =   { display: false }
-                    
+
                 }
 
                 options.chartOptions = {
@@ -1602,13 +1609,13 @@ export class ChartUtilsService {
                                 stacked: false
 
                             }
-                        
+
                     },
                     elements: {
                         point: { radius: 0, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
-                        line: { 
-                                borderWidth: 1.5, 
-                                fill:  chartSubType=='area'?true:false, 
+                        line: {
+                                borderWidth: 1.5,
+                                fill:  chartSubType=='area'?true:false,
                                 tension: 0.4 }
                     },
                     plugins: {
@@ -1617,7 +1624,7 @@ export class ChartUtilsService {
                     },
                 };
                 break;
-              
+
         }
 
         return options;

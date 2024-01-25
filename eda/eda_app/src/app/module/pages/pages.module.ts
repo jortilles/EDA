@@ -20,7 +20,6 @@ import { DataSourcesComponent } from './data-sources/datasource-configuration/da
 import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.component'
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 import { DataSourceDetailComponent } from './data-sources/data-source-detail/data-source-detail.component';
-import { CreateDashboardComponent } from './home/create-dashboard/create-dashboard.component';
 import { TableRelationsDialogComponent } from './data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component';
 import { ColumnPermissionDialogComponent } from './data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component';
 import { TablePermissionDialogComponent } from './data-sources/data-source-detail/table-permissions-dialog/table-permission-dialog.component';
@@ -53,7 +52,6 @@ import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-s
     ],
     declarations: [
         HomeComponent,
-        CreateDashboardComponent,
         DashboardComponent,
         AccountSettingsComponent,
         ProfileComponent,
