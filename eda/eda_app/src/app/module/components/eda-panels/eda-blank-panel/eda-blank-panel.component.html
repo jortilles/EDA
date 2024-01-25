@@ -68,6 +68,12 @@
                             <h5 *ngIf="userSelectedTable"  i18n-title="@@atributsTitle+" title="Clique sobre un entidad para ver sus atributos." >
                                 <span i18n="@@atributosH4+">Columnas de:</span> <span class="d-block font-weight-bold" i18n="@@atributosH4interpolation" i18n-title="@@atributsTitle+">{{getNiceTableName(userSelectedTable)}}</span>
                             </h5>
+ <!--SDA CUSTOM-->          <div *ngIf="userService.isAdmin && showHiddId">
+ <!--SDA CUSTOM-->              <span i18n-title="@@hiddenAttributes" title="Mostrar/ocultar campos ocultos" class="pointer icon-hover" (click)="changeHiddenMode()">
+ <!--SDA CUSTOM-->                  <i *ngIf="hiddenColumn==0" class="pi pi-eye" style="font-size: 1.5rem"></i>
+ <!--SDA CUSTOM-->                  <i *ngIf="hiddenColumn==1" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
+ <!--SDA CUSTOM-->              </span>
+ <!--SDA CUSTOM-->          </div>
                         </div>
                         <div>
                         <eda-input [inject]="inputs.findColumn"></eda-input>
@@ -76,17 +82,26 @@
                             [cdkDropListConnectedTo]="[selectList, filterList]" (cdkDropListDropped)="drop($event)"
                             [cdkDropListEnterPredicate]="isAllowed" >
                             <div *ngFor="let column of columns">
-                                <div class="column-box"  
-                                *ngIf='column.column_type === "numeric" || column.column_type === "date"' 
+ <!--SDA CUSTOM-->              <!--div class="column-box"  
+ SDA CUSTOM                    *ngIf='(column.column_type === "numeric" || column.column_type === "date" )
+ SDA CUSTOM                    (click)="moveItem(column)" 
+ SDA CUSTOM                    (mouseover)="showDescription(column)" 
+ SDA CUSTOM                    (mouseout)="description= ''" 
+ SDA CUSTOM                    cdkDrag 
+ SDA CUSTOM                    [cdkDragData] = "column"
+ SDA CUSTOM                    (cdkDragDropped)="searchRelations(column, $event)" 
+ SDA CUSTOM                    (cdkDragDropped)="openColumnDialog(column)" -->  
+  <!--SDA CUSTOM-->            <div class="column-box"  
+                                *ngIf='(column.column_type === "numeric" || column.column_type === "date" ) && ( column.hidden != hiddenColumn || hiddenColumn==0) '
                                 (click)="moveItem(column)" 
                                 (mouseover)="showDescription(column)" 
                                 (mouseout)="description= ''" 
                                 cdkDrag 
                                 [cdkDragData] = "column"
                                 (cdkDragDropped)="searchRelations(column, $event)" 
-                                (cdkDragDropped)="openColumnDialog(column)" >  
-                                   
-   
+                                (cdkDragDropped)="openColumnDialog(column)" 
+                                [ngStyle]=" column.hidden == 1 && {'opacity': '0.5'} " >                                  
+<!--SDA CUSTOM-->  
                                    <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                    <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
                                    <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
@@ -94,14 +109,22 @@
                                        {{column.display_name.default}}
                                    </span>
                                </div> 
-                               <div class="column-box"
-                               *ngIf='column.column_type != "numeric" && column.column_type !="date"'
+  <!--SDA CUSTOM-->           <!--div class="column-box"
+   SDA CUSTOM                  *ngIf='(column.column_type != "numeric" && column.column_type !="date" ) '
+   SDA CUSTOM                  (click)="moveItem(column)"
+   SDA CUSTOM                  (mouseover)="showDescription(column)"
+   SDA CUSTOM                  (mouseout)="description= ''"
+   SDA CUSTOM                  cdkDrag
+   SDA CUSTOM                  (cdkDragDropped)="searchRelations(column, $event)" --> 
+  <!--SDA CUSTOM-->           <div class="column-box"
+                               *ngIf='(column.column_type != "numeric" && column.column_type !="date" ) && ( column.hidden != hiddenColumn || hiddenColumn==0) '
                                (click)="moveItem(column)"
                                (mouseover)="showDescription(column)"
                                (mouseout)="description= ''"
                                cdkDrag
-                               (cdkDragDropped)="searchRelations(column, $event)">  
-                                  
+                               (cdkDragDropped)="searchRelations(column, $event)"
+                               [ngStyle]=" column.hidden == 1  && {'opacity': '0.5'} " > 
+  <!--SDA CUSTOM-->                                   
                                   <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                   <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span> 
                                   <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span> 
