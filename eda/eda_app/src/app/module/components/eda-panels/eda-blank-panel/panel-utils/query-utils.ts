@@ -120,7 +120,6 @@ export const QueryUtils = {
         query.query.fields.push(QueryUtils.createColumn('custom', null, ebp.sqlOriginTable));
       }
 
-      console.log(query);
 
       // Execute query
       const response = await QueryUtils.switchAndRun(ebp, query);
@@ -165,7 +164,6 @@ export const QueryUtils = {
       return;
     }
 
-    console.log(ebp);
     /**
     * Cumulative sum check 
     */
