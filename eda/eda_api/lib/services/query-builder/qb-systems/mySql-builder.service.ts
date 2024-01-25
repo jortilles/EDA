@@ -175,6 +175,13 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   }
 
+  public getMinFractionDigits(el:any): any{
+    if (!el.hasOwnProperty('minimumFractionDigits')) {
+      el.minimumFractionDigits = 0;
+    }
+    return el;
+  }
+  
   public getSeparedColumns(origin: string, dest: string[]): any {
 
     const columns = [];
@@ -188,7 +195,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       let whatIfExpression = '';
       if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;
 
-      el.minimumFractionDigits = el.minimumFractionDigits || 0;
+      el = this.getMinFractionDigits(el);
 
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
