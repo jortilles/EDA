@@ -305,7 +305,19 @@
                         <input pInputText type="text" [(ngModel)]="modelPanel.metadata.filter" (keyup)="update()">
                     </div>
 
-
+                    <div class="col-12 " *ngIf="modelPanel.connection.ssl && (selectedTipoBD.value == 'mysql' || selectedTipoBD.value == 'postgres' || selectedTipoBD.value == 'sqlserver') "
+                        i18n-label='@@allowSSL' style=" display: flex !important; align-items: center !important;">
+                        <p-inputSwitch [(ngModel)]="modelPanel.connection.ssl" (keyup)="update()" label="Permitir SSL" >
+                        </p-inputSwitch>
+                        &nbsp; Conexión mediante SSL
+                    </div>
+                    
+                    <div class="col-12 " *ngIf="!modelPanel.connection.ssl && (selectedTipoBD.value == 'mysql' || selectedTipoBD.value == 'postgres' || selectedTipoBD.value == 'sqlserver') "
+                        i18n-label='@@allowSSL' style=" display: flex !important; align-items: center !important;">
+                        <p-inputSwitch [(ngModel)]="modelPanel.connection.ssl" (keyup)="update()" label="Permitir SSL" >
+                        </p-inputSwitch>
+                        &nbsp; Conexión sin SSL
+                    </div>
                     <div class="col-12 " *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <button type="button" pButton (click)="checkConection()" class="ui-button-success ml-2"
                             i18n-label='@@checkConnection' label="Comprobar conexión"></button>
