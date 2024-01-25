@@ -238,6 +238,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public async runWhatIfQuery(column?: any): Promise<void> {
         try {
+            /* Este código actualiza el nombre de la columna. pero No lo actualizamos
             const updateDisplayName = (col: any) => {
                 const origin = col.whatif.origin;
                 if (origin) {
@@ -252,7 +253,7 @@ export class EdaBlankPanelComponent implements OnInit {
             } else {
                 updateDisplayName(column);
             }
-
+*/
 
             await this.runQueryFromDashboard(true);
             this.panelChart.updateComponent();
