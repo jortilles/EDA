@@ -9,6 +9,8 @@
       "outDir": "./dist",
       "baseUrl": "./lib",
       "resolveJsonModule":  true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
       "typeRoots": ["lib/types", "node_modules/@types"]
   },
   "include": [
