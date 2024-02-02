@@ -2,7 +2,7 @@
   "name": "app-eda",
   "version": "2.0.1",
   "scripts": {
-    "ng": "ng",
+    "ng": "ng serve",
     "start": "ng serve -o --configuration=ca",
     "start:ca": "ng serve  --configuration=ca",
     "copy-index": "node scripts/copy-index.js",
