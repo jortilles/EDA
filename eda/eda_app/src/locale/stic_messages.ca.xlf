@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2"
+  xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="sidebarMyDashboards" datatype="html">
+        <source>Mis informes</source>
+        <target>Els meus informes</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tituloNuevoInforme" datatype="html">
+        <source> Crear nuevo informe
+        </source>
+        <target>Crear nou informe</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputPassword" datatype="html">
+        <source>Contraseña *</source>
+        <target>Contrasenya *</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/pages/data-sources/data-sources.component.html</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+          <context context-type="linenumber">195</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inputRepitePassword" datatype="html">
+        <source>Repite la contraseña</source>
+        <target>Repeteix la contrasenya</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/pages/users-management/users-detail/users-detail.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="saveModel" datatype="html">
+        <source>Guardar modelo de datos</source>
+        <target>Guardar model de dades</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="labelnewPass" datatype="html">
+        <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en
+          blanco)</source>
+        <target>Nova contrasenya (si no vols modificar la teva contrasenya actual deixa el camp en
+          blanc)</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="namePass" datatype="html">
+        <source>password</source>
+        <target>contrasenya</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="labelRepeatPass" datatype="html">
+        <source>Repite la nueva contraseña </source>
+        <target>Repeteix la nova contrasenya </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nameNewPass" datatype="html">
+        <source>newPassword</source>
+        <target>nova contrasenya</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="newPassPlaceholderProfile" datatype="html">
+        <source>Repite la contraseña</source>
+        <target>Repeteix la contrasenya</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+
+      <trans-unit id="direccionMail" datatype="html">
+        <source>Dirección Email</source>
+        <target>Nom d'usuari</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+
+      <trans-unit id="passwordLogin" datatype="html">
+        <source>Contraseña</source>
+        <target>Contrasenya</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="topQueryH4" datatype="html">
+        <source> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
+            equiv-text="&lt;p-inputNumber&gt;" />
+      <x id="CLOSE_TAG_P-INPUTNUMBER"
+            ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
+        </source>
+        <target> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
+            equiv-text="&lt;p-inputNumber&gt;" />
+      <x id="CLOSE_TAG_P-INPUTNUMBER"
+            ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
+        </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="hiddenAttributes">
+        <source>Atributos ocultos</source>
+        <target>Mostra/amaga columnes ocultes</target>
+      </trans-unit>
+      <trans-unit id="atributosH4+" datatype="html">
+        <source>
+          Columnas de:
+        </source>
+        <target>
+          Columnes de:
+        </target>
+      </trans-unit>
+      <trans-unit id="atributosH4interpolation" datatype="html">
+        <source>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </source>
+        <target>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

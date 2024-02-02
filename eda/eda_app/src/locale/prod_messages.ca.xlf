@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xliff version="1.2"
-  xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" target-language="ca" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="placeholderInputUsuario" datatype="html">
         <source>Usuario</source>
@@ -21,7 +19,7 @@
       </trans-unit>
       <trans-unit id="spanRememberme" datatype="html">
         <source>Recuérdame</source>
-        <target>Recorda'm</target>
+        <target>Recorda&apos;m</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">38</context>
@@ -52,11 +50,17 @@
         </context-group>
       </trans-unit>
       <trans-unit id="terms1" datatype="html">
-        <source> Estoy de acuerdo con los <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;" />
-          términos<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;" />
+        <source>
+           Estoy de acuerdo con los 
+          <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+          términos
+          <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
         </source>
-        <target> Estic d'acord amb els <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;" />
-          termes<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;" />
+        <target>
+           Estic d&apos;acord amb els 
+          <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+          termes
+          <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
@@ -64,19 +68,21 @@
         </context-group>
       </trans-unit>
       <trans-unit id="haveAccount" datatype="html">
-        <source> ¿Tienes una cuenta? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;" />
-    <x
-            id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;" /> Ingresa ahora<x
-            id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;" />
-  <x id="CLOSE_LINK"
-            ctype="x-a" equiv-text="&lt;/a&gt;" />
+        <source>
+           ¿Tienes una cuenta? 
+          <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+          <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
+           Ingresa ahora
+          <x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
+          <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
         </source>
-        <target> Tens un compte? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;" />
-<x
-            id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;" /> Entrar<x id="CLOSE_BOLD_TEXT"
-            ctype="x-b" equiv-text="&lt;/b&gt;" />
-<x id="CLOSE_LINK" ctype="x-a"
-            equiv-text="&lt;/a&gt;" />
+        <target>
+           Tens un compte? 
+          <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+          <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
+           Entrar
+          <x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
+          <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
@@ -94,7 +100,7 @@
       <trans-unit id="sidebarUserManagement" datatype="html">
         <source>Gestión de
           Usuarios</source>
-        <target>Gestió d'usuaris</target>
+        <target>Gestió d&apos;usuaris</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
           <context context-type="linenumber">47</context>
@@ -119,8 +125,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="sidebarMyDashboards" datatype="html">
-        <source> Mis informes</source>
-        <target> Els meus informes</target>
+        <source>Mis informes</source>
+        <target>Els meus informes</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
           <context context-type="linenumber">68</context>
@@ -160,7 +166,7 @@
       </trans-unit>
       <trans-unit id="conditionsP2" datatype="html">
         <source>No ofrece ninguna garantía y no somos responsables del uso que se haga de la misma.</source>
-        <target>No ofereix cap garantia i no som responsables de l'us que se'n faci.</target>
+        <target>No ofereix cap garantia i no som responsables de l&apos;us que se&apos;n faci.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/conditions/conditions.component.html</context>
           <context context-type="linenumber">4</context>
@@ -329,7 +335,7 @@
           Fecha inicio
 </source>
         <target>
-          Data d'inici
+          Data d&apos;inici
 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -741,7 +747,7 @@
           Resumen de atributos
 </source>
         <target>
-          Resum d'atributs
+          Resum d&apos;atributs
 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -767,7 +773,7 @@
           Resumen de filtros del informe
 </source>
         <target>
-          Resum de filtres de l'informe
+          Resum de filtres de l&apos;informe
 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -821,10 +827,10 @@
           Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal
           (puede ser cualquiera de las que aparecen en la consulta).
           Usaremos esta tabla para vincular la consulta a los filtros del informe. </source>
-        <target> Pots realitzar consultes SQL sobre l'esquema definit en el teu model.
+        <target> Pots realitzar consultes SQL sobre l&apos;esquema definit en el teu model.
           Per fer-ho introdueix la consulta en el quadre de text i selecciona la taula principal
           (pot ser qualsevol de les que aparèixen en la consulta).
-          Farem servir aquesta taula per vincular la consulta amb els filtres de l'informe. </target>
+          Farem servir aquesta taula per vincular la consulta amb els filtres de l&apos;informe. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -845,7 +851,7 @@
           Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
 </source>
         <target>
-          Només és possible fer servir les taules de l'esquema del model (si n'hi ha).
+          Només és possible fer servir les taules de l&apos;esquema del model (si n&apos;hi ha).
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -859,7 +865,7 @@
           c )
 </source>
         <target>
-          Has d'utilitzar alies per totes les taules de la consulta ( select a,b from taula t where
+          Has d&apos;utilitzar alies per totes les taules de la consulta ( select a,b from taula t where
           c )
 </target>
         <context-group purpose="location">
@@ -870,7 +876,7 @@
       </trans-unit>
       <trans-unit id="indicaciones5" datatype="html">
         <source> Puedes vincular los filtros del informe con la consulta</source>
-        <target> Pots vincular els filtres de l'informe amb la consulta</target>
+        <target> Pots vincular els filtres de l&apos;informe amb la consulta</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -878,18 +884,24 @@
         </context-group>
       </trans-unit>
       <trans-unit id="indicaciones6" datatype="html">
-        <source> Para hacerlo sólo tienes que añadir: <x id="START_TAG_SPAN" ctype="x-span"
-            equiv-text="&lt;span&gt;" /> AND <x id="INTERPOLATION"
-            equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}" />
-<x id="CLOSE_TAG_SPAN"
-            ctype="x-span" equiv-text="&lt;/span&gt;" /> en la cláusula &apos;WHERE&apos; de la
-          consulta donde quieras inyectar el filtro </source>
-        <target> Per fer-ho només has d'afegir: <x id="START_TAG_SPAN" ctype="x-span"
-            equiv-text="&lt;span&gt;" /> AND <x id="INTERPOLATION"
-            equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}" />
-<x id="CLOSE_TAG_SPAN"
-            ctype="x-span" equiv-text="&lt;/span&gt;" /> a la cláusula &apos;WHERE&apos; de la
-          consulta on vols injectar el filtre </target>
+        <source>
+           Para hacerlo sólo tienes que añadir: 
+          <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
+           AND 
+          <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/>
+          <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
+           en la cláusula &apos;WHERE&apos; de la
+          consulta donde quieras inyectar el filtro 
+        </source>
+        <target>
+           Per fer-ho només has d&apos;afegir: 
+          <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
+           AND 
+          <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}"/>
+          <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
+           a la cláusula &apos;WHERE&apos; de la
+          consulta on vols injectar el filtre 
+        </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -897,21 +909,19 @@
         </context-group>
       </trans-unit>
       <trans-unit id="indicaciones7" datatype="html">
-        <source> Si no has añadido ningúna cláusula WHERE, añádela a la consulta y haz los joins
-          necesarios, junto con el filtro en el formato <x id="START_TAG_SPAN" ctype="x-span"
-            equiv-text="&lt;span&gt;" />
-<x id="INTERPOLATION"
-            equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}" />
-<x id="CLOSE_TAG_SPAN"
-            ctype="x-span" equiv-text="&lt;/span&gt;" />
+        <source>
+           Si no has añadido ningúna cláusula WHERE, añádela a la consulta y haz los joins
+          necesarios, junto con el filtro en el formato 
+          <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
+          <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/>
+          <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
         </source>
-        <target> Si no has afegit cap clàusula WHERE, afegeix-la a la consulta i fes els JOIN
-          necessaris, juntament amb el el filtre en el format <x id="START_TAG_SPAN" ctype="x-span"
-            equiv-text="&lt;span&gt;" />
-<x id="INTERPOLATION"
-            equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}" />
-<x id="CLOSE_TAG_SPAN"
-            ctype="x-span" equiv-text="&lt;/span&gt;" />
+        <target>
+           Si no has afegit cap clàusula WHERE, afegeix-la a la consulta i fes els JOIN
+          necessaris, juntament amb el el filtre en el format 
+          <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
+          <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_taula.columna_filtrada} &apos;}}"/>
+          <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -925,7 +935,7 @@
           para poder vicular la tabla del filtro con tu consulta
 </source>
         <target>Si la taula per la que filtrem no és a la consulta, recorda que has
-          d'afegir les clàusules JOIN necessàries per poder vincular
+          d&apos;afegir les clàusules JOIN necessàries per poder vincular
           la taula del filtre amb la teva consulta
 </target>
         <context-group purpose="location">
@@ -945,7 +955,7 @@
       </trans-unit>
       <trans-unit id="indicaciones10" datatype="html">
         <source>Consulta con los filtros del informe vinculados</source>
-        <target>Consulta amb els filtres de l'informe vinculats</target>
+        <target>Consulta amb els filtres de l&apos;informe vinculats</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -955,7 +965,7 @@
       <trans-unit id="indicaciones11" datatype="html">
         <source> Tenemos un filtro en el informe para el campo &apos;city&apos; de la tabla
           CUSTOMERS</source>
-        <target> Tenim un filtre a l'informe per el camp &apos;city&apos; de la taula CUSTOMERS</target>
+        <target> Tenim un filtre a l&apos;informe per el camp &apos;city&apos; de la taula CUSTOMERS</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -984,7 +994,7 @@
         <source> Tenemos un filtro en el informe para el campo &apos;office_id&apos; de la tabla
           OFFICES
 </source>
-        <target> Tenim un filtre a l'informe per el camp &apos;office_id&apos; de la taula OFFICES
+        <target> Tenim un filtre a l&apos;informe per el camp &apos;office_id&apos; de la taula OFFICES
 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -1012,10 +1022,10 @@
       </trans-unit>
       <trans-unit id="vistaSeleccionador" datatype="html">
         <source>
-          <x id="INTERPOLATION" equiv-text="{{!modeSQL ? editQuery : editSQLQuery}}" />
+          <x id="INTERPOLATION" equiv-text="{{!modeSQL ? editQuery : editSQLQuery}}"/>
         </source>
         <target>
-          <x id="INTERPOLATION" equiv-text="{{!modeSQL ? editQuery : editSQLQuery}}" />
+          <x id="INTERPOLATION" equiv-text="{{!modeSQL ? editQuery : editSQLQuery}}"/>
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -1043,9 +1053,8 @@
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
         <source> Crear nuevo informe
-</source>
-        <target> Crear nou informe
-</target>
+        </source>
+        <target>Crear nou informe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1098,7 +1107,7 @@
       </trans-unit>
       <trans-unit id="labelDameNombre" datatype="html">
         <source>Dame un nombre *</source>
-        <target>Posa'm un nom *</target>
+        <target>Posa&apos;m un nom *</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/home/create-dashboard/create-dashboard.component.html</context>
@@ -1107,7 +1116,7 @@
       </trans-unit>
       <trans-unit id="buscarPorNombre" datatype="html">
         <source>Buscar por nombre del informe</source>
-        <target>Cercar per nom de l'informe</target>
+        <target>Cercar per nom de l&apos;informe</target>
       </trans-unit>
       <trans-unit id="buscar" datatype="html">
         <source>Buscar</source>
@@ -1138,7 +1147,6 @@
           <context context-type="linenumber">38</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="thisWeek" datatype="html">
         <source> Ésta semana </source>
         <target> Aquesta setmana </target>
@@ -1248,7 +1256,7 @@
       </trans-unit>
       <trans-unit id="tituloPerfilUsuario" datatype="html">
         <source>Perfil del usuario</source>
-        <target>Perfil de l'usuari</target>
+        <target>Perfil de l&apos;usuari</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">6</context>
@@ -1256,7 +1264,7 @@
       </trans-unit>
       <trans-unit id="labelNombreUsuario" datatype="html">
         <source>Nombre de usuario</source>
-        <target>Nom d'usuari</target>
+        <target>Nom d&apos;usuari</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">10</context>
@@ -1268,7 +1276,7 @@
       </trans-unit>
       <trans-unit id="labelUsuarioEmail" datatype="html">
         <source>Correo de usuario</source>
-        <target>Correo de l'usuari</target>
+        <target>Correo de l&apos;usuari</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">18</context>
@@ -1282,7 +1290,7 @@
         <source>
           Fotografía del usuario</source>
         <target>
-          Fotografia de l'usuari</target>
+          Fotografia de l&apos;usuari</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">48</context>
@@ -1371,7 +1379,7 @@
       </trans-unit>
       <trans-unit id="inputPassword" datatype="html">
         <source>Contraseña *</source>
-        <target>Contrassenya *</target>
+        <target>Contrasenya *</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/users-management/users-detail/users-detail.component.html</context>
@@ -1404,7 +1412,7 @@
       </trans-unit>
       <trans-unit id="inputRepitePassword" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repeteix la contrassenya</target>
+        <target>Repeteix la contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/users-management/users-detail/users-detail.component.html</context>
@@ -1596,7 +1604,6 @@
         <source>
           Agregación
 </source>
-
         <target>
           Agregació
 </target>
@@ -1615,19 +1622,14 @@
           <context context-type="linenumber">102</context>
         </context-group>
       </trans-unit>
-
-
       <trans-unit id="addModelPermissions" datatype="html">
         <source> Añadir permiso a nivel de modelo</source>
         <target> Afegir permís a nivell de model</target>
       </trans-unit>
-
       <trans-unit id="addPermission" datatype="html">
         <source> Añadir permiso</source>
         <target> Afegir permís</target>
       </trans-unit>
-
-
       <trans-unit id="esconderColumna" datatype="html">
         <source>Esconder columna</source>
         <target>Amagar columna</target>
@@ -1709,7 +1711,6 @@
       </trans-unit>
       <trans-unit id="placeholderSourceColumns" datatype="html">
         <source>Columna origen</source>
-
         <target>Columna origen</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -1788,7 +1789,6 @@
         <source>
           Filtrar por
 </source>
-
         <target>
           Filtrat per
 </target>
@@ -1893,8 +1893,6 @@
           <context context-type="linenumber">57</context>
         </context-group>
       </trans-unit>
-
-
       <trans-unit id="borrar" datatype="html">
         <source>Borrar</source>
         <target>Esborrar</target>
@@ -1973,33 +1971,30 @@
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="targetRel">
         <source>Destino</source>
         <target>Destí</target>
       </trans-unit>
-
       <trans-unit id="originRel">
         <source>Origen</source>
         <target>Origen</target>
       </trans-unit>
-
       <trans-unit id="userTable">
         <source>USUARIO</source>
         <target>USUARI</target>
       </trans-unit>
-
       <trans-unit id="valueTable">
         <source>VALOR</source>
         <target>VALOR</target>
       </trans-unit>
-
       <trans-unit id="editModelHeaders" datatype="html">
-        <source>Editar <x id="INTERPOLATION"
-            equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}" />
+        <source>
+          Editar 
+          <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/>
         </source>
-        <target>Editar <x id="INTERPOLATION"
-            equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}" />
+        <target>
+          Editar 
+          <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/>
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -2035,39 +2030,30 @@
           <context context-type="linenumber">345</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="panelOptions1">
         <source>Editar consulta</source>
         <target>Editar consulta</target>
       </trans-unit>
-
       <trans-unit id="panelOptions2">
         <source>Editar opciones del gráfico</source>
         <target>Editar opcions del gràfic</target>
       </trans-unit>
-
       <trans-unit id="panelOptions3">
         <source>Exportar a Excel</source>
         <target>Exportar a Excel</target>
       </trans-unit>
-
       <trans-unit id="panelOptions4">
         <source>Eliminar panel</source>
         <target>Eliminar panell</target>
       </trans-unit>
-
       <trans-unit id="panelOptionsDup">
         <source>Duplicar panel</source>
         <target>Duplicar panell</target>
       </trans-unit>
-
-
       <trans-unit id="duplicateColumnButton">
         <source>Duplicar columna</source>
         <target>Duplicar columna</target>
       </trans-unit>
-
-
       <trans-unit id="chartTypes1">
         <source>Tabla de Datos</source>
         <target>Taula de dades</target>
@@ -2082,7 +2068,7 @@
       </trans-unit>
       <trans-unit id="chartTypes4">
         <source>Gráfico de Área Polar</source>
-        <target>Gràfic d'àrea polar</target>
+        <target>Gràfic d&apos;àrea polar</target>
       </trans-unit>
       <trans-unit id="chartTypes5">
         <source>Gráfico de Barras</source>
@@ -2096,8 +2082,6 @@
         <source>Gráfico Solar</source>
         <target>Gràfic solar</target>
       </trans-unit>
-
-
       <trans-unit id="chartTypesDynamicText">
         <source>Texto Dinámico</source>
         <target>Text Dinàmic</target>
@@ -2106,8 +2090,6 @@
         <source>Un texto dinámicos requiere de un único valor NO numérico</source>
         <target>Un text dinàmic requereix un únic valor NO numèric</target>
       </trans-unit>
-
-
       <trans-unit id="chartTypes6">
         <source>Gráfico de Barras Apliadas</source>
         <target>Gràfic de barres apilades</target>
@@ -2126,7 +2108,7 @@
       </trans-unit>
       <trans-unit id="chartTypes18">
         <source>Gráfico de Áreas</source>
-        <target>Gràfic d'Àrees</target>
+        <target>Gràfic d&apos;Àrees</target>
       </trans-unit>
       <trans-unit id="chartTypes9">
         <source>Mixto: Barras y lineas</source>
@@ -2144,7 +2126,6 @@
         <source>Velocímetro</source>
         <target>Velocímetre</target>
       </trans-unit>
-
       <trans-unit id="filters1">
         <source>IGUAL A (=)</source>
         <target>IGUAL A (=)</target>
@@ -2193,7 +2174,6 @@
         <source>VALORES NO NULOS (not null)</source>
         <target>VALORS NO NULS (not null)</target>
       </trans-unit>
-
       <trans-unit id="dates1">
         <source>AÑO</source>
         <target>ANY</target>
@@ -2234,12 +2214,10 @@
         <source>DIA HORA MINUTO</source>
         <target>DIA HORA MINUT</target>
       </trans-unit>
-
       <trans-unit id="ChartProps">
         <source>PROPIEDADES DEL gráfico</source>
         <target>PROPIETATS DEL GRÀFIC</target>
       </trans-unit>
-
       <trans-unit id="newPanelTitle">
         <source>Nuevo Panel</source>
         <target>Nou Panell</target>
@@ -2248,7 +2226,6 @@
         <source>Nuevo Panel</source>
         <target>Nou Panell</target>
       </trans-unit>
-
       <trans-unit id="addMap" datatype="html">
         <source> Mapas</source>
         <target> Mapes</target>
@@ -2267,7 +2244,6 @@
           <context context-type="linenumber">181</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="listRelations" datatype="html">
         <source>Relaciones</source>
         <target>Relacions</target>
@@ -2285,11 +2261,10 @@
           <context context-type="linenumber">44</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="labelnewPass" datatype="html">
         <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en
           blanco)</source>
-        <target>Nova contrassenya (si no vols modificar la teva contrassenya actual deixa el camp en
+        <target>Nova contrasenya (si no vols modificar la teva contrasenya actual deixa el camp en
           blanc)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
@@ -2298,7 +2273,7 @@
       </trans-unit>
       <trans-unit id="namePass" datatype="html">
         <source>password</source>
-        <target>contrassenya</target>
+        <target>contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2306,7 +2281,7 @@
       </trans-unit>
       <trans-unit id="labelRepeatPass" datatype="html">
         <source>Repite la nueva contraseña </source>
-        <target>Repeteix la nova contrassenya </target>
+        <target>Repeteix la nova contrasenya </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">31</context>
@@ -2314,13 +2289,12 @@
       </trans-unit>
       <trans-unit id="nameNewPass" datatype="html">
         <source>newPassword</source>
-        <target>nova contrassenya</target>
+        <target>nova contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="groups1">
         <source>EMAIL</source>
         <target>EMAIL</target>
@@ -2337,34 +2311,30 @@
         <source>ROLE</source>
         <target>ROL</target>
       </trans-unit>
-
       <trans-unit id="newPassPlaceholderProfile" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repeteix la contrassenya</target>
+        <target>Repeteix la contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">32</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="direccionMail" datatype="html">
         <source>Dirección Email</source>
-        <target>Direcció email</target>
+        <target>Nom d&apos;usuari</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="passwordLogin" datatype="html">
         <source>Contraseña</source>
-        <target>Contrassenya</target>
+        <target>Contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="informacionGeneral" datatype="html">
         <source>Información general</source>
         <target>Informació general</target>
@@ -2374,7 +2344,6 @@
           <context context-type="linenumber">202</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="linkFilters" datatype="html">
         <source>Vincular consulta con los filtros del panel</source>
         <target>Vincular consulta amb els filtres del panell</target>
@@ -2384,7 +2353,6 @@
           <context context-type="linenumber">221</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="examples" datatype="html">
         <source>Ejemplos</source>
         <target>Exemples</target>
@@ -2394,7 +2362,6 @@
           <context context-type="linenumber">242</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="newPassPlaceholderUsers" datatype="html">
         <source>Repite la contraseña</source>
         <target>Repeteix la contrassenya</target>
@@ -2404,7 +2371,6 @@
           <context context-type="linenumber">17</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="AddPermiso" datatype="html">
         <source>Añadir permiso</source>
         <target>Afegir permís</target>
@@ -2414,54 +2380,42 @@
           <context context-type="linenumber">3</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="AddValueListOptions" datatype="html">
         <source>Definir un listado de valores posibles</source>
         <target>Definir un llistat de valors possibles</target>
       </trans-unit>
-
       <trans-unit id="possibleValuesList" datatype="html">
         <source>Tabla y columna asociadas</source>
         <target>Taula i columna associades</target>
       </trans-unit>
-
       <trans-unit id="possibleValuesListTable" datatype="html">
         <source>Tabla:</source>
         <target>Taula:</target>
       </trans-unit>
-
-
       <trans-unit id="valueListSourceHeader" datatype="html">
         <source>Tabla que contiene los valores posibles para el filtro asociado a esta columna</source>
         <target>Taula que conté els valors possibles per al filtre associat a aquesta columna</target>
       </trans-unit>
-
       <trans-unit id="valueListSourceTabla" datatype="html">
         <source>Tabla relacionada</source>
         <target>Taula relacionada</target>
       </trans-unit>
-
       <trans-unit id="valueListSourceID" datatype="html">
         <source>Id de la columna relacionada</source>
         <target>Id de la columna relacionada</target>
       </trans-unit>
-
       <trans-unit id="possibleValuesListID" datatype="html">
         <source>Id Columna:</source>
         <target>Id Columna:</target>
       </trans-unit>
-
       <trans-unit id="valueListSourceDescripcion" datatype="html">
         <source>Descripción de la columna relacionada</source>
         <target>Descripció de la columna relacionada</target>
       </trans-unit>
-
       <trans-unit id="possibleValuesListDescription" datatype="html">
         <source>Columna descripción:</source>
         <target>Columna descripció:</target>
       </trans-unit>
-
-
       <trans-unit id="columnaCalculada" datatype="html">
         <source> Nueva columna calculada </source>
         <target> Nova columna calculada </target>
@@ -2471,7 +2425,6 @@
           <context context-type="linenumber">3</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="inputxDescription" datatype="html">
         <source>Si desconoces las coordenadas del centro las calcularemos automáticamente</source>
         <target>Si desconeixes les coordenades del centre les calcularem automàticament</target>
@@ -2481,7 +2434,6 @@
           <context context-type="linenumber">27</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="sqlExp" datatype="html">
         <source>Expresión SQL</source>
         <target>Expressió SQL</target>
@@ -2491,18 +2443,15 @@
           <context context-type="linenumber">74</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="sqlExpColumn" datatype="html">
         <source>Expresión SQL (Debe incluir la agregación)</source>
-        <target>Expressió SQL (Ha d'incloure l'agregació)</target>
+        <target>Expressió SQL (Ha d&apos;incloure l&apos;agregació)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
           <context context-type="linenumber">103</context>
         </context-group>
       </trans-unit>
-
-
       <trans-unit id="aggTsum">
         <source>Suma</source>
         <target>Suma</target>
@@ -2539,16 +2488,14 @@
         <source>Privado</source>
         <target>Privat</target>
       </trans-unit>
-
       <trans-unit id="col">
         <source>Atributo</source>
         <target>Atribut</target>
       </trans-unit>
       <trans-unit id="table">
         <source>de la entidad</source>
-        <target>de l'entitat</target>
+        <target>de l&apos;entitat</target>
       </trans-unit>
-
       <trans-unit id="addCalculatedColTitle">
         <source>Añadir columna calculada a la tabla</source>
         <target>Afegir columna calculada a la taula </target>
@@ -2557,7 +2504,6 @@
         <source>Añadir relación a la tabla</source>
         <target>Afegir relació a la taula</target>
       </trans-unit>
-
       <trans-unit id="chartInfo1">
         <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
         <target>Les dades seleccionades no permeten utilitzar aquest gràfic.</target>
@@ -2570,7 +2516,7 @@
         <source>Un gráfico de barras necesita una o más categorías y una série numéricas. Además, si
           hay mas de una série los datos numéricos deben agregarse.</source>
         <target>Un gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si
-          hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
+          hi ha més d&apos;una sèrie les dades numèriques han d&apos;agregar-se.</target>
       </trans-unit>
       <trans-unit id="chartInfo4">
         <source> Un gráfico combinado necesita una categoría y dos séries numéricas.</source>
@@ -2579,23 +2525,23 @@
       <trans-unit id="chartInfo5">
         <source>Un gráfico de línea necesita una o más categorías y una série numérica.</source>
         <target>Un gràfic de línia necessita una o més categories i una sèrie numèrica. A més, si hi
-          ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
+          ha més d&apos;una sèrie les dades numèriques han d&apos;agregar-se.</target>
       </trans-unit>
       <trans-unit id="chartInfoArea">
         <source>Un gráfico de areas necesita una o más categorías y una série numérica. Además, si
           hay mas de una série los datos numéricos deben agregarse.</source>
-        <target>Un gràfic d'àrea necessita una o més categories i una sèrie numèrica. A més, si hi
-          ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
+        <target>Un gràfic d&apos;àrea necessita una o més categories i una sèrie numèrica. A més, si hi
+          ha més d&apos;una sèrie les dades numèriques han d&apos;agregar-se.</target>
       </trans-unit>
       <trans-unit id="chartInfo6">
         <source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
         <target>Un gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si
-          hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
+          hi ha més d&apos;una sèrie les dades numèriques han d&apos;agregar-se.</target>
       </trans-unit>
       <trans-unit id="chartInfo7">
         <source>Un gráfico de barras necesita una o más categorías y una série numérica.</source>
         <target>Un gràfic de barres necessita una o més categories i una sèrie numèrica. A més, si
-          hi ha més d'una sèrie les dades numèriques han d'agregar-se.</target>
+          hi ha més d&apos;una sèrie les dades numèriques han d&apos;agregar-se.</target>
       </trans-unit>
       <trans-unit id="chartInfo8">
         <source>Un gráfico polar necesita una categoría y una série numérica.</source>
@@ -2631,7 +2577,6 @@
         <source>Un gráfico de burbujas necesita una categorías y una série numérica.</source>
         <target>Un gràfic de bombolles necessita una categoria i una sèrie numèrica.</target>
       </trans-unit>
-
       <trans-unit id="tooManyValues" datatype="html">
         <source> - Demasiados valores</source>
         <target> - Massa valors</target>
@@ -2641,7 +2586,6 @@
           <context context-type="linenumber">332</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="notAvaliable" datatype="html">
         <source> - No Disponible</source>
         <target> - No Disponible</target>
@@ -2651,12 +2595,10 @@
           <context context-type="linenumber">335</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="MapDatamodel">
         <source>Mapas</source>
         <target>Mapes</target>
       </trans-unit>
-
       <trans-unit id="tooManyValuestext">
         <source>Hay demasiados valores para este gráfico. Agrega o filtra los datos para poder
           visualizarlos mejor.</source>
@@ -2681,7 +2623,6 @@
           <context context-type="linenumber">206</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="notSavedChanges" datatype="html">
         <source> Hay cambios sin guardar... </source>
         <target> Hi ha canvis sense guardar... </target>
@@ -2690,260 +2631,213 @@
           <context context-type="linenumber">205</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="dahsboardSaved">
         <source>Informe guardado correctamente</source>
         <target>Informe guardat correctament</target>
       </trans-unit>
-
       <trans-unit id="DatadourceTitle">
         <source>Fuente de datos: </source>
         <target>Font de dades: </target>
       </trans-unit>
-
       <trans-unit id="DatadourceText">
         <source>Creada correctamente </source>
         <target>Creada correctament</target>
       </trans-unit>
-
       <trans-unit id="ErrorMessage">
         <source>Ha ocurrido un error </source>
         <target>Hi ha hagut un error</target>
       </trans-unit>
-
       <trans-unit id="CorrectQuery">
         <source>Consulta correcta </source>
         <target>Consulta correcta</target>
       </trans-unit>
-
       <trans-unit id="IncorrectQuery">
         <source>Consulta incorrecta</source>
         <target>Consulta incorrecta</target>
       </trans-unit>
-
       <trans-unit id="IncorrectQueryAgg">
         <source>Debes incluir la agregación (distinct, sum, max, min, etc)</source>
-        <target>Has d'incloure l'agregació (distinct, sum, max, min, etc)</target>
+        <target>Has d&apos;incloure l&apos;agregació (distinct, sum, max, min, etc)</target>
       </trans-unit>
-
       <trans-unit id="EstablishedConnections">
         <source>Conexión establecida </source>
         <target>Connexió establerta</target>
       </trans-unit>
-
       <trans-unit id="IncorrectConnectionData">
         <source>Datos de conexión incorrectos</source>
         <target>Dades de connexió incorrectes</target>
       </trans-unit>
-
       <trans-unit id="Sure">
         <source>¿Estás seguro?</source>
-        <target>N'estàs segur?</target>
+        <target>N&apos;estàs segur?</target>
       </trans-unit>
-
       <trans-unit id="SureInfo">
         <source>Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el
           cambio es irreversible</source>
-        <target>Estàs a punt d'esborrar el model de dades i tots els informes associats, el canvi és
+        <target>Estàs a punt d&apos;esborrar el model de dades i tots els informes associats, el canvi és
           irreversible</target>
       </trans-unit>
-
       <trans-unit id="ConfirmDeleteModel">
         <source>Si, ¡Eliminalo! </source>
-        <target>Si, elimina'l!</target>
+        <target>Si, elimina&apos;l!</target>
       </trans-unit>
-
       <trans-unit id="Deleted">
         <source>¡Eliminado!</source>
         <target>Eliminat!</target>
       </trans-unit>
-
       <trans-unit id="DeleteSuccess">
         <source>Modelo eliminado correctamente.</source>
         <target>Model eliminat correctament.</target>
       </trans-unit>
-
       <trans-unit id="UpdateModelSucess">
         <source>Modelo actualizado correctamente</source>
         <target>Model actualitzat correctament</target>
       </trans-unit>
-
       <trans-unit id="DeletedUser">
         <source>Usuario borrado</source>
         <target>Usuari eliminat</target>
       </trans-unit>
-
       <trans-unit id="UserDeletedOk">
         <source>El usuario a sido eliminado correctamente</source>
         <target>Usuari eliminat correctament</target>
       </trans-unit>
-
       <trans-unit id="picUpdated">
         <source>Imagen Actualizada</source>
         <target>Imatge actualitzada</target>
       </trans-unit>
-
       <trans-unit id="NoRecords">
         <source>No se pudo obtener ningún registro</source>
-        <target>No s'ha pogut obtenir cap registre</target>
+        <target>No s&apos;ha pogut obtenir cap registre</target>
       </trans-unit>
-
       <trans-unit id="mandatoryFields">
         <source>Recuerde rellenar los campos obligatorios</source>
-        <target>Recorda't d'omplir els camps obligatoris </target>
+        <target>Recorda&apos;t d&apos;omplir els camps obligatoris </target>
       </trans-unit>
-
       <trans-unit id="IncorrectForm">
         <source>Formulario incorrecto. Revise los campos obligatorios.</source>
         <target>Formulari incorrecte. Revisa els camps obligatoris.</target>
       </trans-unit>
-
       <trans-unit id="ImportantMessage">
         <source>Importante</source>
         <target>Important</target>
       </trans-unit>
-
       <trans-unit id="AcceptConditions">
         <source>Debe de aceptar las condiciones</source>
-        <target>Has d'acceptar les condicions</target>
+        <target>Has d&apos;acceptar les condicions</target>
       </trans-unit>
-
       <trans-unit id="UserCreated">
         <source>Usuario creado</source>
         <target>Usuari creat</target>
       </trans-unit>
-
       <trans-unit id="RegisterError">
         <source>Error al registrarse</source>
         <target>Error al registrar-se</target>
       </trans-unit>
-
       <trans-unit id="AddFiltersWarningTittle">
         <source>Solo puedes añadir filtros cuando todos los paneles están configurados</source>
         <target>Només pots afegir filtres quan tots els panells estan configurats</target>
       </trans-unit>
-
       <trans-unit id="AddFiltersWarningText">
         <source>Puedes borrar los paneles en blanco o configurarlos</source>
         <target>Pots esborrar els panells en blanc o configurar-los</target>
       </trans-unit>
-
       <trans-unit id="AddFiltersWarningButton">
         <source>Entendido</source>
         <target>Entesos</target>
       </trans-unit>
-
       <trans-unit id="DeleteGroup">
         <source>ELIMINAR GRUPO</source>
         <target>ELIMINAR GRUPO</target>
       </trans-unit>
-
-
       <trans-unit id="DeleteGroupText">
         <source>Eliminarás todos los elementos relacionados con este grupo, ¿Deseas continuar?</source>
         <target>Eliminaràs tots els elements relacionats amb aquest grup, vols continuar?</target>
       </trans-unit>
-
       <trans-unit id="DeleteGroupButton">
         <source>Si, ¡Eliminalo!</source>
-        <target>Si, elimina'l!</target>
+        <target>Si, elimina&apos;l!</target>
       </trans-unit>
-
       <trans-unit id="DeleteGroupCancel">
         <source>Cancelar</source>
         <target>Cancel·lar</target>
       </trans-unit>
-
       <trans-unit id="deleteDashboardWarning">
         <source>Estás a punto de borrar el informe: </source>
-        <target>Ets a punt d'esborrar l'informe: </target>
+        <target>Ets a punt d&apos;esborrar l&apos;informe: </target>
       </trans-unit>
-
       <trans-unit id="DashboardDeletedInfo">
         <source>Informe eliminado correctamente. </source>
         <target>Informe eliminat correctament. </target>
       </trans-unit>
-
       <trans-unit id="userDetailHeader">
         <source>USUARIO </source>
         <target>USUARI </target>
       </trans-unit>
-
       <trans-unit id="userDetailSaveButton">
         <source>GUARDAR </source>
         <target>GUARDAR </target>
       </trans-unit>
-
       <trans-unit id="UpdatedUser">
         <source>Usuario actualizado </source>
         <target>Usuari actualitzat </target>
       </trans-unit>
-
       <trans-unit id="PasswordsNotEqual">
         <source>Las contraseñas no coinciden </source>
         <target>Les contrassenyes no coincideixen</target>
       </trans-unit>
-
       <trans-unit id="CreatedUser">
         <source>Usuario creado </source>
         <target>Usuari creat</target>
       </trans-unit>
-
       <trans-unit id="fileNotPicture">
         <source>El archivo seleccionado no es una imagen </source>
-        <target> L'arxiu seleccionat no és una imatge</target>
+        <target> L&apos;arxiu seleccionat no és una imatge</target>
       </trans-unit>
-
       <trans-unit id="cantDeleteUser">
         <source>No se puede borrar el usuario </source>
-        <target>No es pot esborrar l'usuari</target>
+        <target>No es pot esborrar l&apos;usuari</target>
       </trans-unit>
-
       <trans-unit id="cantSelfDelete">
         <source>No se puede borrar a si mismo </source>
         <target>No es pot esborrar a si mateix</target>
       </trans-unit>
-
       <trans-unit id="DeleteUserMessage">
         <source>Estás a punto de borrar el usuario </source>
-        <target>Ets a punt d'esborrar l'usuari </target>
+        <target>Ets a punt d&apos;esborrar l&apos;usuari </target>
       </trans-unit>
-
       <trans-unit id="DeleteUser">
         <source>Si, ¡Bórralo! </source>
-        <target>Si, esborra'l!</target>
+        <target>Si, esborra&apos;l!</target>
       </trans-unit>
-
       <trans-unit id="rowOptions">
         <source>OPCIONES DE LA FILA </source>
         <target>OPCIONS DE LA FILA</target>
       </trans-unit>
-
       <trans-unit id="EDITCAP">
         <source>EDITAR </source>
         <target>EDITAR</target>
       </trans-unit>
-
       <trans-unit id="deleteCAP">
         <source>ELIMINAR </source>
         <target>ELIMINAR</target>
       </trans-unit>
-
       <trans-unit id="DashboardFilters">
         <source>FILTROS DEL INFORME </source>
-        <target>FILTRES DE L'INFORME</target>
+        <target>FILTRES DE L&apos;INFORME</target>
       </trans-unit>
-
       <trans-unit id="newUserTitle">
         <source>CREAR NUEVO USUARIO</source>
         <target>CREAR NOU USUARI</target>
       </trans-unit>
-
       <trans-unit id="registers1" datatype="html">
         <source>
-          <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}" /> registros</source>
+          <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}"/>
+           registros
+        </source>
         <target>
-          <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}" /> registres</target>
+          <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}"/>
+           registres
+        </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-table/eda-table.component.html</context>
@@ -2952,16 +2846,19 @@
       </trans-unit>
       <trans-unit id="registers2" datatype="html">
         <source>
-          <x id="INTERPOLATION" equiv-text="{{ table.value.length }}" /> registros</source>
+          <x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/>
+           registros
+        </source>
         <target>
-          <x id="INTERPOLATION" equiv-text="{{ table.value.length }}" /> registres</target>
+          <x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/>
+           registres
+        </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-table/eda-table.component.html</context>
           <context context-type="linenumber">112</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="EditQuery">
         <source>EDITAR CONSULTA</source>
         <target>EDITAR CONSULTA</target>
@@ -2970,7 +2867,6 @@
         <source>EDITAR CONSULTA SQL</source>
         <target>EDITAR CONSULTA SQL</target>
       </trans-unit>
-
       <trans-unit id="DatePickerAll">
         <source>Todas</source>
         <target>Totes</target>
@@ -2981,7 +2877,7 @@
       </trans-unit>
       <trans-unit id="DatePickerBeforeYesterday">
         <source>Antes de ayer</source>
-        <target>Abans d'ahir</target>
+        <target>Abans d&apos;ahir</target>
       </trans-unit>
       <trans-unit id="DatePickerWeek">
         <source>Ésta semana</source>
@@ -3013,11 +2909,11 @@
       </trans-unit>
       <trans-unit id="DatePickerMonthPreviousYear">
         <source>Éste mes del año pasado</source>
-        <target>Aquest mes de l'any passat</target>
+        <target>Aquest mes de l&apos;any passat</target>
       </trans-unit>
       <trans-unit id="DatePickerMonthPreviousYearFull">
         <source>Éste mes al completo del año pasado</source>
-        <target>Aquest mes, complert, de l'any passat</target>
+        <target>Aquest mes, complert, de l&apos;any passat</target>
       </trans-unit>
       <trans-unit id="DatePickerYear">
         <source>Éste año</source>
@@ -3025,7 +2921,7 @@
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYear">
         <source>El año pasado</source>
-        <target>L'any passat</target>
+        <target>L&apos;any passat</target>
       </trans-unit>
       <trans-unit id="DatePickerLast7">
         <source> Últimos 7 días </source>
@@ -3055,7 +2951,6 @@
         <source>Selecciona un rango</source>
         <target>Selecciona un rang</target>
       </trans-unit>
-
       <trans-unit id="inputPuerto" datatype="html">
         <source>Puerto </source>
         <target>Port </target>
@@ -3065,12 +2960,10 @@
           <context context-type="linenumber">181</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="filterButtonDashboard">
         <source>Filtrar</source>
         <target>Filtrar </target>
       </trans-unit>
-
       <trans-unit id="kpiAlertH6" datatype="html">
         <source> Generar alerta </source>
         <target> Generar alerta </target>
@@ -3080,7 +2973,6 @@
           <context context-type="linenumber">15</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="DynamicTextColor" datatype="html">
         <source> Cambiar Color </source>
         <target> Camviar Color </target>
@@ -3090,7 +2982,6 @@
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="kpiGreatSmallEqualH6" datatype="html">
         <source> Operador </source>
         <target> Operador </target>
@@ -3132,15 +3023,12 @@
           <context context-type="linenumber">76</context>
         </context-group>
       </trans-unit>
-
-
       <trans-unit id="alertsInfo">
         <source>Cuando el valor del kpi sea (=, &lt;, &gt;) que el valor definido cambiará el color
           del texto</source>
         <target>Quan el valor del kpi sigui (=, &lt;, &gt;) que el valor definit cambiarà el color
           del text </target>
       </trans-unit>
-
       <trans-unit id="ViewDatamodel">
         <source>Añadir Vista</source>
         <target>Afegir Vista </target>
@@ -3154,7 +3042,6 @@
           <context context-type="linenumber">31</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="inputQueryView" datatype="html">
         <source> Vista </source>
         <target> Vista </target>
@@ -3164,7 +3051,6 @@
           <context context-type="linenumber">23</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="ViewsDatamodel" datatype="html">
         <source> Vistas </source>
         <target> Vistes </target>
@@ -3174,7 +3060,6 @@
           <context context-type="linenumber">246</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="addView" datatype="html">
         <source> Añadir vista</source>
         <target> Afegir vista</target>
@@ -3184,8 +3069,6 @@
           <context context-type="linenumber">250</context>
         </context-group>
       </trans-unit>
-
-
       <trans-unit id="inputBorrarVista" datatype="html">
         <source>Borrar vista</source>
         <target>Esborrar vista</target>
@@ -3195,17 +3078,16 @@
           <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="topQueryH4" datatype="html">
-        <source> Mostrar Top: <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
-            equiv-text="&lt;p-inputNumber&gt;" />
-      <x id="CLOSE_TAG_P-INPUTNUMBER"
-            ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
+        <source>
+           Mostrar Top:   
+          <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;"/>
+          <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;"/>
         </source>
-        <target> Mostrar Top: <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
-            equiv-text="&lt;p-inputNumber&gt;" />
-      <x id="CLOSE_TAG_P-INPUTNUMBER"
-            ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
+        <target>
+           Mostrar Top:   
+          <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;"/>
+          <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;"/>
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -3213,13 +3095,10 @@
           <context context-type="linenumber">131</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="joinTypeH4" datatype="html">
         <source> Tipo de intersección: </source>
-        <target> Tipus d'intersecció: </target>
+        <target> Tipus d&apos;intersecció: </target>
       </trans-unit>
-
-
       <trans-unit id="addCSV" datatype="html">
         <source>Añadir tabla desde CSV</source>
         <target>Afegir taula des de CSV</target>
@@ -3234,7 +3113,6 @@
           <context context-type="linenumber">14</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="placeholderTableName" datatype="html">
         <source>Nombre de la tabla</source>
         <target>Nom de la taula</target>
@@ -3262,17 +3140,14 @@
           <context context-type="linenumber">51</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="addTableTitle">
         <source>Añadir Tabla</source>
         <target>Afegir Taula</target>
       </trans-unit>
-
       <trans-unit id="succesAddTable">
         <source>Tabla creada correctamente</source>
         <target>Taula creada correctament</target>
       </trans-unit>
-
       <trans-unit id="csvField">
         <source>Campo</source>
         <target>Camp</target>
@@ -3285,7 +3160,6 @@
         <source>Formato</source>
         <target>Format</target>
       </trans-unit>
-
       <trans-unit id="functionalities">
         <source>Extender el model</source>
         <target>Extendre el model</target>
@@ -3294,7 +3168,6 @@
         <source>Utilidades</source>
         <target>Utilitats</target>
       </trans-unit>
-
       <trans-unit id="hideTables">
         <source>Ocultar todas las tablas</source>
         <target>Ocultar totes les taules</target>
@@ -3307,235 +3180,184 @@
         <source>Ocultar todas las relaciones</source>
         <target>Ocultar totes les relacions</target>
       </trans-unit>
-
       <trans-unit id="addFile">
         <source>Subir archivo</source>
         <target>Pujar arxiu </target>
       </trans-unit>
-
       <trans-unit id="FiltersH4">
         <source>Filtros</source>
         <target>Filtres </target>
       </trans-unit>
-
       <trans-unit id="dragFields">
         <source>Arrastre aquí los atributos que quiera ver en su panel</source>
         <target>Arrossega aqui els atributs que vols veure al teu panell</target>
       </trans-unit>
-
       <trans-unit id="draggFilters">
         <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
         <target>Arrossega aquí els atributs sobre els que vols filtrar </target>
       </trans-unit>
-
       <trans-unit id="LegendPosition">
         <source>Posición de la leyenda</source>
         <target>Posició de la llegenda </target>
       </trans-unit>
-
       <trans-unit id="LinkDashboardDbFilter">
         <source> Informe a vincular </source>
         <target>Informe a vincular</target>
       </trans-unit>
-
       <trans-unit id="LinkDashboardSelectedDashboard">
         <source> Campo del informe </source>
-        <target>Camp de l'informe</target>
+        <target>Camp de l&apos;informe</target>
       </trans-unit>
-
       <trans-unit id="DashboardLink">
         <source> Vincular con un informe </source>
         <target>Vincular amb un informe</target>
       </trans-unit>
-
       <trans-unit id="panelOptions5">
         <source> Vincular con otro informe </source>
         <target>Vincular amb un altre informe</target>
       </trans-unit>
-
       <trans-unit id="NoTag">
         <source> Sin Etiqueta </source>
         <target>Sense Etiqueta </target>
       </trans-unit>
-
-
       <trans-unit id="addTag">
         <source>AÑADIR ETIQUETA</source>
         <target>AFEGIR ETIQUETA </target>
       </trans-unit>
-
       <trans-unit id="AllTags">
         <source> Todos </source>
         <target>Tots </target>
       </trans-unit>
-
       <trans-unit id="NoneTags">
         <source> Ninguno </source>
         <target>Cap </target>
       </trans-unit>
-
       <trans-unit id="linkedTo">
         <source> Vinculado con </source>
         <target>Vinculat amb </target>
       </trans-unit>
-
-
       <trans-unit id="newTag">
         <source> Nueva etiqueta </source>
         <target> Nova etiqueta </target>
       </trans-unit>
-
       <trans-unit id="DataModelHeader">
         <source> Configurar nuevo orígen de datos </source>
         <target> Configurar nou origen de dades </target>
       </trans-unit>
-
       <trans-unit id="OptimizeQuery">
         <source> Optimizar consultas </source>
         <target> Optimitzar consultes </target>
       </trans-unit>
-
       <trans-unit id="inputBigQueryKeys">
         <source> Subir archivo de claves (json) * </source>
         <target> Pujar arxiu de claus (json) * </target>
       </trans-unit>
-
       <trans-unit id="DatasourceText">
         <source> Creada correctamente </source>
         <target> Creada correctament </target>
       </trans-unit>
-
       <trans-unit id="panelOptions0">
         <source> OPCIONES DEL PANEL </source>
         <target> OPCIONS DEL PANELL </target>
       </trans-unit>
-
       <trans-unit id="greendot">
         <source> Paneles filtrados </source>
         <target> Panells filtrats </target>
       </trans-unit>
-
       <trans-unit id="reddot">
         <source> Paneles no relacionados </source>
         <target> Panells no relacionats </target>
       </trans-unit>
-
       <trans-unit id="unselecteddot">
         <source> Paneles no filtrados </source>
         <target> Panells no filtrats </target>
       </trans-unit>
-
-
       <trans-unit id="seconds_to_refresh">
         <source> Intervalo de recarga </source>
         <target> Interval de recàrrega </target>
       </trans-unit>
-
-
       <trans-unit id="sidebarModelsManagement">
         <source>Gestión de modelos </source>
         <target>Gestió de models </target>
       </trans-unit>
-
-
       <trans-unit id="Models_ms">
         <source> Modelos </source>
         <target> Models </target>
       </trans-unit>
-
       <trans-unit id="Dashboards_ms">
         <source> Informes </source>
         <target> Informes </target>
       </trans-unit>
-
       <trans-unit id="ExportModel">
         <source> Exportar Modelo </source>
         <target> Exportar Model </target>
       </trans-unit>
-
       <trans-unit id="ExportDashboard">
         <source> Exportar Informe </source>
         <target> Exportar informe </target>
       </trans-unit>
-
       <trans-unit id="importModel">
         <source> Importar Modelo </source>
         <target> Importar Model </target>
       </trans-unit>
-
       <trans-unit id="importDashboard">
         <source> Importar Informe </source>
         <target> Importar Informe </target>
       </trans-unit>
-
       <trans-unit id="import">
         <source> Importar </source>
         <target> Importar </target>
       </trans-unit>
-
       <trans-unit id="DBInconsistencies">
         <source> Se han encontrado inconsistencias en el informe, los siguientes elementos no
           existen en el modelo: </source>
-        <target> S'han trobat inconsistències en l'informe, els següents elements no existeixen al
+        <target> S&apos;han trobat inconsistències en l&apos;informe, els següents elements no existeixen al
           model: </target>
       </trans-unit>
-
       <trans-unit id="modelInconsistenciesS">
         <source> Se han encontrado inconsistencias en los siguientes informes: </source>
-        <target> S'han trobat inconsistències als següents informes: </target>
+        <target> S&apos;han trobat inconsistències als següents informes: </target>
       </trans-unit>
-
       <trans-unit id="ModelSaved">
         <source> Modelo guardado correctamente </source>
         <target> Model guardat correctament </target>
       </trans-unit>
-
       <trans-unit id="downloadModel">
         <source> Descargar modelo </source>
         <target> Descarregar model </target>
       </trans-unit>
-
       <trans-unit id="downloadDashboard">
         <source> Descargar Informe </source>
         <target> Descarregar informe </target>
       </trans-unit>
-
       <trans-unit id="NotSavedWarning">
         <source> Hay cambios sin guardar. ¿Seguro que quieres salir? </source>
         <target> Hi ha canvis sense guardar, segur que vols sortir? </target>
       </trans-unit>
-
       <trans-unit id="csvSep">
         <source> Separador Decimal </source>
         <target> Decimal separator</target>
       </trans-unit>
-
       <trans-unit id="viewOk">
         <source> Vista generada correctamente</source>
         <target> Vista generada correctament</target>
       </trans-unit>
-
       <trans-unit id="limitRowsInfo">
         <source> Establece un Top n para la consulta</source>
         <target> Estableix un Top n per la consulta</target>
       </trans-unit>
-
       <trans-unit id="Limits">
         <source> Límites</source>
         <target> Limits</target>
       </trans-unit>
-
-
       <trans-unit id="usersPermissions">
         <source> Permisos de usuario</source>
-        <target> Permisos d'usuari</target>
+        <target> Permisos d&apos;usuari</target>
       </trans-unit>
-
       <trans-unit id="groupsPersmissions">
         <source> Permisos de grupo</source>
         <target> Permisos de grup</target>
       </trans-unit>
-
       <trans-unit id="users">
         <source> Usuarios</source>
         <target> Usuaris</target>
@@ -3548,134 +3370,106 @@
         <source>GRUPO</source>
         <target>GRUP</target>
       </trans-unit>
-
       <trans-unit id="yourQuerySQL">
         <source>Mi consulta SQL</source>
         <target>La meva consulta SQL</target>
       </trans-unit>
-
       <trans-unit id="openSqlMode">
         <source>Abrir en modo SQL</source>
         <target>Obrir en mode SQL</target>
       </trans-unit>
-
       <trans-unit id="sqlTooltip">
         <source>Al cambiar de modo perderás la configuración de la consulta actual</source>
         <target>Al canviar de mode perdràs la configuració de la consulta actual</target>
       </trans-unit>
-
-
       <trans-unit id="ptooltipViewQuery">
         <source>Ver consulta SQL</source>
         <target>Veure consulta SQL</target>
       </trans-unit>
-
       <trans-unit id="noStyle">
         <source>Sin estilo</source>
         <target>Sense estil</target>
       </trans-unit>
-
-
       <trans-unit id="removeRowTotals">
         <source>Quitar totales de columna</source>
         <target>Eliminar totals de columna</target>
       </trans-unit>
-
       <trans-unit id="removeRowSubtotals">
         <source>Quitar subtotales de columna</source>
         <target>Eliminar subtotals de columna</target>
       </trans-unit>
-
       <trans-unit id="addRowTotals">
         <source>Totales de fila</source>
         <target>Totals de fila</target>
       </trans-unit>
-
       <trans-unit id="addRowSubtotals">
         <source>Subtotales de fila</source>
         <target>Subtotals de fila</target>
       </trans-unit>
-
       <trans-unit id="addColTotals">
         <source>Totales de columna</source>
         <target>Totals de columna</target>
       </trans-unit>
-
       <trans-unit id="removeColTotals">
         <source>Quitar totales de columna</source>
         <target>Eliminar totals de columna</target>
       </trans-unit>
-
       <trans-unit id="addOnlyPercentages">
         <source>Sólo porcentajes</source>
         <target>Només percentatges</target>
       </trans-unit>
-
       <trans-unit id="addOnlyValues">
         <source>Sólo valores</source>
         <target>Només valors</target>
       </trans-unit>
-
       <trans-unit id="addValuesPercentages">
         <source>Valores y porcentajes</source>
         <target>Valors i percentatges</target>
       </trans-unit>
-
       <trans-unit id="addtrend">
         <source>Tendencia</source>
         <target>Tendència</target>
       </trans-unit>
-
       <trans-unit id="removetrend">
         <source>Quitar tendencia</source>
         <target>Eliminar tendència</target>
       </trans-unit>
-
       <trans-unit id="addTotals">
         <source>Totales</source>
         <target>Totals</target>
       </trans-unit>
-
       <trans-unit id="addPercentages">
         <source>Porcentajes</source>
         <target>Percentatges</target>
       </trans-unit>
-
       <trans-unit id="addStyles">
         <source>Código de color</source>
         <target>Codi de color</target>
       </trans-unit>
-
       <trans-unit id="tableTitleDialog">
         <source>Propiedades de la tabla</source>
         <target>Propietats de la taula</target>
       </trans-unit>
-
       <trans-unit id="SubTotals">
         <source>SubTotales</source>
         <target>SubTotals</target>
       </trans-unit>
-
       <trans-unit id="gradientTitle">
         <source>Código de color para la columna: </source>
         <target>Codi de color per a la columna: </target>
       </trans-unit>
-
       <trans-unit id="unlink">
         <source>Desvincular del informe: </source>
-        <target>Desvincular de l'informe: </target>
+        <target>Desvincular de l&apos;informe: </target>
       </trans-unit>
-
       <trans-unit id="adChacheConfig">
         <source>Configurar caché del modelo</source>
         <target>Configurar caché del model</target>
       </trans-unit>
-
       <trans-unit id="CacheDeletedOK">
         <source>Caché eliminada correctamente</source>
         <target>Caché eliminada correctament</target>
       </trans-unit>
-
       <trans-unit id="IncorrectCacheDelete">
         <source>No ha sido posible eliminar la caché</source>
         <target>No ha estat possible eliminat la caché</target>
@@ -3684,7 +3478,6 @@
         <source>Actualizar los datos del modelo cada:</source>
         <target>Actualitzar les dades del model cada: </target>
       </trans-unit>
-
       <trans-unit id="hours">
         <source>Hora/s</source>
         <target>Hora/es</target>
@@ -3697,53 +3490,42 @@
         <source>Sin caché</source>
         <target>Sense caché</target>
       </trans-unit>
-
       <trans-unit id="deleteCache">
         <source>Borrar cache del modelo</source>
         <target>Esborrar caché del model</target>
       </trans-unit>
-
       <trans-unit id="MailSending">
         <source>Envío de alertas por mail </source>
-        <target>Enviament d'alertes per mail</target>
+        <target>Enviament d&apos;alertes per mail</target>
       </trans-unit>
-
       <trans-unit id="SendMailEvery">
         <source>Enviar mail de alerta cada:</source>
-        <target>Enviar mail d'alerta cada:</target>
+        <target>Enviar mail d&apos;alerta cada:</target>
       </trans-unit>
-
       <trans-unit id="SendMailWho">
         <source>Destinatarios </source>
         <target>Destinataris </target>
       </trans-unit>
-
       <trans-unit id="SendMailWhat">
         <source>Contenido del mail: </source>
         <target>Contingut del mail: </target>
       </trans-unit>
-
       <trans-unit id="at">
         <source>A las</source>
         <target>A les</target>
       </trans-unit>
-
       <trans-unit id="NoValidCol">
         <source>No hay columnas válidas</source>
         <target>No hi ha columnes vàlides</target>
       </trans-unit>
-
       <trans-unit id="securityConfig">
         <source>Configuración de seguridad</source>
         <target>Configuració de seguretat</target>
       </trans-unit>
-
       <trans-unit id="viewsecurity">
         <source>Ver configuración de seguridad</source>
         <target>Veure configuració de seguretat</target>
       </trans-unit>
-
-
       <trans-unit id="rolesPermisosTabla">
         <source>Visibilidad de tablas</source>
         <target>Visibilitat de taules</target>
@@ -3779,234 +3561,186 @@
         <target>Qualsevol usuari pot veure el model. Els filtres de seguretat es defineixen a nivell
           de taula i columna concreta.</target>
       </trans-unit>
-
-
       <trans-unit id="tablesd">
         <source>TABLAS</source>
         <target>TAULES</target>
       </trans-unit>
-
       <trans-unit id="visible">
         <source>VISIBLE</source>
         <target>VISIBLE</target>
       </trans-unit>
-
       <trans-unit id="permisos">
         <source>PERMISOS</source>
         <target>PERMISOS</target>
       </trans-unit>
-
-
       <trans-unit id="column">
         <source>COLUMNAS </source>
         <target>COLUMNES</target>
       </trans-unit>
-
       <trans-unit id="sidebarAlertsManagement">
         <source>Gestión de alertas </source>
-        <target>Gestió d'alertes</target>
+        <target>Gestió d&apos;alertes</target>
       </trans-unit>
-
-
       <trans-unit id="alertTable">
         <source>ALERTAS </source>
         <target>ALERTES</target>
       </trans-unit>
-
       <trans-unit id="gotodashboard">
         <source>Ir al informe </source>
-        <target>Anar a l'informe</target>
+        <target>Anar a l&apos;informe</target>
       </trans-unit>
-
       <trans-unit id="alertsConfigTitle">
         <source>Gestión de alertas </source>
-        <target>Gestió d'alertes</target>
+        <target>Gestió d&apos;alertes</target>
       </trans-unit>
-
       <trans-unit id="panelTable">
         <source>PANEL </source>
         <target>PANELL</target>
       </trans-unit>
-
       <trans-unit id="dashboardTable">
         <source>INFORME </source>
         <target>INFORME</target>
       </trans-unit>
-
       <trans-unit id="chartInfo14">
         <source>Un Parallel Set necesita dos o más categorias y un campo numérico </source>
         <target>un Parallel Set necessita dos o més categories i un camp numèric </target>
       </trans-unit>
-
       <trans-unit id="chartInfo15">
         <source>Un Tree Map necesita un campo numérico y una o más categorias </source>
         <target>Un Tree Map necessita un camp numèric i una o més categories</target>
       </trans-unit>
-
       <trans-unit id="chartInfo16">
         <source>Un Scatter Plot necesita una categoria y dos o tres campos numéricos </source>
         <target>Un scatter Plot necessita una categoria i dos o més camps numèrics</target>
       </trans-unit>
-
       <trans-unit id="chartInfo17">
         <source>El velocímetro necesita uno o dos valores numéricos, en caso de disponer de dos
           valores el segundo se interpretará como límite </source>
         <target>El velocímetre necessita un o dos valors numèrics, en cas de disposar de dos valors,
-          el segon s'interpretarà com a límit </target>
+          el segon s&apos;interpretarà com a límit </target>
       </trans-unit>
-
       <trans-unit id="chartInfoHistogram">
         <source>Un histograma requiere una única columna de valores numericos de los que se
           calculará la frecuencia </source>
         <target>Un histograma requereix una única columna de valors numèrics dels quals es calcularà
           la freqüència </target>
       </trans-unit>
-
       <trans-unit id="chartInfoFunnel">
         <source>Un embudo necesita una categoría y un valor numérico </source>
         <target>Un embut necessita una categoria i un valor numèric</target>
       </trans-unit>
-
       <trans-unit id="chartInfoPyramid">
         <source>Un gráfico de piramide necesita de dos categorías y un valor numérico </source>
         <target>Un gràfic de piràmide necessita dues categories i un valor numèric</target>
       </trans-unit>
-
       <trans-unit id="mailConfOk">
         <source>Credenciales correctas </source>
         <target> Credencials correctes</target>
       </trans-unit>
-
       <trans-unit id="checkCredentials">
         <source> Comprobar credenciales</source>
         <target>Comprovar credencials </target>
       </trans-unit>
-
       <trans-unit id="mailmanagementHeader">
         <source>Gestión de correo y envio de mails </source>
         <target>Gestió del correu i eviament de mails</target>
       </trans-unit>
-
       <trans-unit id="mailConfSaved">
         <source>Configuración guardada correctamente </source>
         <target>Configuració guardada correctament</target>
       </trans-unit>
-
       <trans-unit id="allowCache">
         <source>Habilitar caché </source>
         <target>Habilitar caché</target>
       </trans-unit>
-
       <trans-unit id="addCacheConfig">
         <source>Configurar Caché </source>
         <target>Configurar Caché</target>
       </trans-unit>
-
       <trans-unit id="conexionh3">
         <source>Conexión </source>
         <target>Connexió</target>
       </trans-unit>
-
       <trans-unit id="newDashboardtitle">
         <source>CREA UN NUEVO INFORME</source>
         <target>CREA UN NOU INFORME</target>
       </trans-unit>
-
       <trans-unit id="inputCuenta">
         <source>CUENTA* </source>
         <target>COMPTE *</target>
       </trans-unit>
-
       <trans-unit id="inputCuentaEdit">
         <source>Cuenta </source>
         <target>Compte </target>
-
       </trans-unit>
-
       <trans-unit id="entidadesTitle">
         <source>Clique sobre un entidad para ver sus atributos. </source>
         <target>Cliqueu sobre una entitat per veure els seus atributs</target>
       </trans-unit>
-
       <trans-unit id="atributsTitle">
         <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para
           consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
-        <target>Atributs d'una entitat. Arrossegueu els atributs a la selecció o els filtres per
-          consultar-los. Fent clic sobre l'atribut s'accedeix als seus propiedaes</target>
+        <target>Atributs d&apos;una entitat. Arrossegueu els atributs a la selecció o els filtres per
+          consultar-los. Fent clic sobre l&apos;atribut s&apos;accedeix als seus propiedaes</target>
       </trans-unit>
-
       <trans-unit id="seleccionTitle">
         <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos
           para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</source>
         <target>Per llançar una consulta. Seleccioneu els atributs que voleu veure, Cliqueu sobre
           ells per configurar-i executi la consulta. Sempre podrà tornar a aquesta vista.</target>
       </trans-unit>
-
       <trans-unit id="agregacionh5">
         <source>Agregación </source>
         <target>Agregació </target>
       </trans-unit>
-
       <trans-unit id="inputFormat">
         <source>Número de decimales </source>
         <target>Número de decimals </target>
       </trans-unit>
-
       <trans-unit id="DashboardMailingTitle">
         <source>Configuración del envío por email </source>
         <target>Configuració dels enviaments per email </target>
       </trans-unit>
-
       <trans-unit id="opcionMail">
         <source>Enviar por email </source>
         <target>Enviar per email </target>
       </trans-unit>
-
       <trans-unit id="noMail">
         <source>Sin alertas de correo </source>
         <target>Sense alertes de correu </target>
       </trans-unit>
-
       <trans-unit id="dashbaordsMailingHeader">
         <source>Envio de informes por email </source>
-        <target>Enviament d'informes per email</target>
+        <target>Enviament d&apos;informes per email</target>
       </trans-unit>
-
       <trans-unit id="cumulativeSum">
         <source>Suma acumulativa </source>
         <target>Suma acumulativa </target>
       </trans-unit>
-
       <trans-unit id="ptooltipViewAlerts">
         <source>Configurar alertas</source>
         <target>Configurar alertes</target>
       </trans-unit>
-
       <trans-unit id="inputFilter">
         <source>Filtros</source>
         <target>Filtres</target>
       </trans-unit>
-
       <trans-unit id="comparativeTooltip">
         <source>La función de comparar sólo se puede activar si se dispone de un campo de fecha
           agregado por mes o semana y un único campo numérico agregado</source>
-        <target>La funció de comparar només es pot activar si es disposa d'un camp de data agregat
+        <target>La funció de comparar només es pot activar si es disposa d&apos;un camp de data agregat
           per mes o setmana i un únic camp numèric agregat</target>
       </trans-unit>
-
       <trans-unit id="canIeditTooltip">
         <source>Si esta opción está seleccionada, sólo el propietario del informe y los
           administradores podrán guardar los cambios</source>
-        <target>Si aquesta opció està marcada, només el propietari de l'informe i els administradors
+        <target>Si aquesta opció està marcada, només el propietari de l&apos;informe i els administradors
           podran desar els canvis</target>
       </trans-unit>
-
       <trans-unit id="onlyIcanEditTag">
         <source>Edición privada:</source>
         <target>Edició privada: </target>
       </trans-unit>
-
-
       <trans-unit id="showLabels">
         <source>Mostrar Etiquetas</source>
         <target>Mostra Etiquetes</target>
@@ -4015,39 +3749,32 @@
         <source>Mostrar Etiquetas</source>
         <target>Mostra Etiquetes en Percentatges</target>
       </trans-unit>
-
       <trans-unit id="histogramColum">
         <source>Columnas</source>
         <target>Columnes</target>
       </trans-unit>
-
       <trans-unit id="showLablesTooltip">
         <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
         <target>Mostrar o amagar les etiquetes sobre els gràfics</target>
       </trans-unit>
-
       <trans-unit id="showLablesPercentTooltip">
         <source>Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos</source>
         <target>Mostrar o amagar les etiquetes en percentatge sobre els gràfics</target>
       </trans-unit>
-
       <trans-unit id="columnsTooltip">
         <source>Elige cuantas columnas quieres mostrar</source>
         <target>Tria quantes columnes vols mostrar</target>
       </trans-unit>
-
       <trans-unit id="trendTooltip">
         <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
-        <target>La funció d'afegir una tendència només es pot activar en els gràfics de línies</target>
+        <target>La funció d&apos;afegir una tendència només es pot activar en els gràfics de línies</target>
       </trans-unit>
-
       <trans-unit id="filterTooltip">
         <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo
           LIKE a la hora de recuperar las tablas de tu base de datos</source>
-        <target>Pots afegir paraules separades per comes, que s'aplicaràn com a filtres de tipus
-          LIKE a l'hora de recuperar les taules de la teva base de dades</target>
+        <target>Pots afegir paraules separades per comes, que s&apos;aplicaràn com a filtres de tipus
+          LIKE a l&apos;hora de recuperar les taules de la teva base de dades</target>
       </trans-unit>
-
       <trans-unit id="cumulativeSumTooltip">
         <source>Si activas ésta función se calculará la suma acumulativa
           para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por
@@ -4056,89 +3783,70 @@
           escullis.
           Només es pot activar si la data està agregada per mes, setmana o dia.</target>
       </trans-unit>
-
-
       <trans-unit id="cumsumAlertMessage1">
         <source> La suma acumulativa sólo se puede aplicar si se dispone de una única serie no
           numérica.</source>
-        <target>La suma acumulativa només es pot aplicar si es disposa d'una única sèrie no
+        <target>La suma acumulativa només es pot aplicar si es disposa d&apos;una única sèrie no
           numèrica.</target>
       </trans-unit>
-
       <trans-unit id="cumsumAlertMessage2">
         <source>Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna
           no numérica.</source>
         <target>Pots desactivar la funció acumulativa en el camp de data o treure una columna no
           numèrica. </target>
       </trans-unit>
-
       <trans-unit id="SaveAs">
         <source>GUARDAR COMO...</source>
         <target>GUARDAR COM... </target>
       </trans-unit>
-
       <trans-unit id="opcionGuardarComo">
         <source>GUARDAR COMO</source>
         <target>GUARDAR COM</target>
       </trans-unit>
-
-
       <trans-unit id="editStylesTitle">
         <source>EDITAR ESTILOS DEL INFORME</source>
-        <target>EDITAR ESTILS DE L'INFORME</target>
+        <target>EDITAR ESTILS DE L&apos;INFORME</target>
       </trans-unit>
-
       <trans-unit id="dashboardTitleEdit">
         <source>Título del informe</source>
-        <target>Títol de l'informe</target>
+        <target>Títol de l&apos;informe</target>
       </trans-unit>
-
       <trans-unit id="filtersEdit">
         <source>Filtros</source>
         <target>Filtres</target>
       </trans-unit>
-
       <trans-unit id="panelTitleEdit">
         <source>Título del panel</source>
         <target>Títol del panell</target>
       </trans-unit>
-
       <trans-unit id="panelContentEdit">
         <source>Contenido del panel</source>
         <target>Contingut del panell</target>
       </trans-unit>
-
       <trans-unit id="ChangeFontFamily">
         <source>Tipo de fuente</source>
         <target>Tipus de font</target>
       </trans-unit>
-
       <trans-unit id="ChangeFontSize">
         <source>Tamaño de fuente</source>
         <target>Mida de la font</target>
       </trans-unit>
-
       <trans-unit id="ChangeFontColor">
         <source>Color de la fuente</source>
         <target>Color de la font</target>
       </trans-unit>
-
-
       <trans-unit id="ChangeBackgroundColor">
         <source>Color del fondo</source>
         <target>Color del fons </target>
       </trans-unit>
-
       <trans-unit id="ChangePaneColor">
         <source>Color del panel</source>
         <target>Color del panell</target>
       </trans-unit>
-
       <trans-unit id="opcionEditarEstilos">
         <source>EDITAR ESTILOS</source>
         <target>EDITAR ESTILS</target>
       </trans-unit>
-
       <trans-unit id="left">
         <source>Izquierda</source>
         <target>Esquerra</target>
@@ -4151,43 +3859,34 @@
         <source>Derecha</source>
         <target>Dreta</target>
       </trans-unit>
-
       <trans-unit id="resetStylesBtn">
         <source>Volver a los valores por defecto</source>
         <target>Tornar als valors per defecte</target>
       </trans-unit>
-
       <trans-unit id="samplePanelTitle">
         <source>Previsualización</source>
         <target>Previsualització</target>
       </trans-unit>
-
       <trans-unit id="samplePanelDBName">
         <source>Título del informe</source>
-        <target>Títol de l'informe</target>
+        <target>Títol de l&apos;informe</target>
       </trans-unit>
-
       <trans-unit id="samplePanelName">
         <source>Título del panel</source>
         <target>Títol del panell</target>
       </trans-unit>
-
       <trans-unit id="histoGramRangesTxt">
         <source>Rango</source>
         <target>Rang</target>
       </trans-unit>
-
       <trans-unit id="histoGramDescTxt">
         <source>Número de</source>
         <target>Numero de</target>
       </trans-unit>
-
       <trans-unit id="histoGramDescTxt2">
         <source>en este rango</source>
         <target>en aquest rang</target>
       </trans-unit>
-
-
       <trans-unit id="sidebarInform" datatype="html">
         <source>Crear Informe</source>
         <target>Crear Informe</target>
@@ -4196,53 +3895,62 @@
           <context context-type="linenumber">83</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="si">
         <source>Si</source>
         <target>Si</target>
       </trans-unit>
-
       <trans-unit id="no">
         <source>No</source>
         <target>No</target>
       </trans-unit>
-
       <trans-unit id="duplicatedColumnNameLabel">
         <source>Nombre columna duplicada:</source>
         <target>Nom columna duplicada:</target>
       </trans-unit>
-
       <trans-unit id="addBtn">
         <source>Añadir</source>
         <target>Afegir</target>
       </trans-unit>
-
       <trans-unit id="measureLabel">
         <source>Medida:</source>
         <target>Mesura</target>
       </trans-unit>
-
       <trans-unit id="operationLabel">
         <source>Operación</source>
         <target>Operació</target>
       </trans-unit>
-
       <trans-unit id="numericalValueLabel">
         <source>Valor numérico</source>
         <target>Valor numèric</target>
       </trans-unit>
-
       <trans-unit id="newNameLabel">
         <source>Nuevo nombre</source>
         <target>Nou nom</target>
       </trans-unit>
-
       <trans-unit id="allowSSL">
         <source>Conexión mediante SSL</source>
         <target>Conexió mijanjant SSL</target>
       </trans-unit>
-
-
+      <trans-unit id="hiddenAttributes">
+        <source>Atributos ocultos</source>
+        <target>Mostra/amaga columnes ocultes</target>
+      </trans-unit>
+      <trans-unit id="atributosH4+" datatype="html">
+        <source>
+          Columnas de:
+        </source>
+        <target>
+          Columnes de:
+        </target>
+      </trans-unit>
+      <trans-unit id="atributosH4interpolation" datatype="html">
+        <source>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
+        </source>
+        <target>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
+        </target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

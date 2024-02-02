@@ -118,8 +118,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="sidebarMyDashboards" datatype="html">
-        <source>Mis informes</source>
-        <target>My dashboards</target>
+        <source> Mis informes</source>
+        <target> My dashboards</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
           <context context-type="linenumber">68</context>
@@ -1040,9 +1040,10 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-          <source> Crear nuevo informe
-          </source>
-          <target>Create new dashboard</target>
+        <source> Crear nuevo informe
+</source>
+        <target> Create a new dashboard
+</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
           <context context-type="linenumber">7</context>
@@ -2343,7 +2344,7 @@
 
       <trans-unit id="direccionMail" datatype="html">
         <source>Dirección Email</source>
-        <target>Username</target>
+        <target>Email</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">22</context>
@@ -2504,7 +2505,7 @@
       </trans-unit>
       <trans-unit id="aggTmean">
         <source>Media</source>
-        <target>Average</target>
+        <target>AVG</target>
       </trans-unit>
       <trans-unit id="aggTmax">
         <source>Màximo</source>
@@ -3192,12 +3193,12 @@
       </trans-unit>
 
       <trans-unit id="topQueryH4" datatype="html">
-        <source> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
+        <source> Mostrar Top: <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
             equiv-text="&lt;p-inputNumber&gt;" />
       <x id="CLOSE_TAG_P-INPUTNUMBER"
             ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
         </source>
-        <target> Show Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
+        <target> Show Top: <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
             equiv-text="&lt;p-inputNumber&gt;" />
       <x id="CLOSE_TAG_P-INPUTNUMBER"
             ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
@@ -4189,27 +4190,31 @@
         <target>Duplicated column name:</target>
       </trans-unit>
 
-      <trans-unit id="hiddenAttributes">
-        <source>Atributos ocultos</source>
-        <target>Show/hide hidden columns</target>
+      <trans-unit id="addBtn">
+        <source>Añadir</source>
+        <target>Add</target>
       </trans-unit>
 
-      <trans-unit id="atributosH4+" datatype="html">
-        <source>
-          Columnas de:
-        </source>
-        <target>
-          Columns of:
-        </target>
+      <trans-unit id="measureLabel">
+        <source>Medida</source>
+        <target>Measure</target>
       </trans-unit>
-      <trans-unit id="atributosH4interpolation" datatype="html">
-        <source>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
-        </source>
-        <target>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
-        </target>
+
+      <trans-unit id="operationLabel">
+        <source>Operación</source>
+        <target>Operation</target>
       </trans-unit>
+
+      <trans-unit id="numericalValueLabel">
+        <source>Valor numérico</source>
+        <target>Numerical value</target>
+      </trans-unit>
+
+      <trans-unit id="newNameLabel">
+        <source>Nuevo nombre</source>
+        <target>New name</target>
+      </trans-unit>
+
 
     </body>
   </file>
