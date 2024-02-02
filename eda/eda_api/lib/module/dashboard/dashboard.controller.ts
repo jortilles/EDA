@@ -866,11 +866,6 @@ export class DashboardController {
        uniquesForbiddenTables = [];
       }
       
-      if( req.user._id == '135792467811111111111112'){
-        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-        uniquesForbiddenTables = [];
-
-      }
       let notAllowedQuery = false
       uniquesForbiddenTables.forEach(table => {
         if (req.body.query.SQLexpression.indexOf(table) >= 0) {
