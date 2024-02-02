@@ -1,3 +1,3 @@
 module.exports = {
-    url: "mongodb://127.0.0.1:27017/EDA"
+    url: "mongodb://myUserAdmin:Samsung--1982@dev.executionpro.com:27017/EDA?authSource=admin"
 };
