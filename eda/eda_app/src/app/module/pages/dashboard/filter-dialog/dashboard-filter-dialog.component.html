@@ -114,23 +114,26 @@
 </ng-template>
 
 <ng-template #filtersTemplate>
-    <div class="col-12 pl-2">
-        <div cdkDropList cdkDropListOrientation="horizontal" class="select-list" [cdkDropListData]="filtersList" (cdkDropListDropped)="onReorderFilter($event)">
-            <ng-container *ngFor="let filter of filtersList">
-                <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>
-                    <span class="close-thin pointer" (click)="removeFilter(filter, 'select')"></span>
-        
-                    <span class="text-center">
-                        {{filter.column.label}}
-                    </span>
-                </div>
-            </ng-container>
-        </div>
-    </div>
+
 
     <ng-container *ngIf="selectedFilter && !selectedFilter?.isdeleted">
         <p-card [header]="selectedFilter.table?.label + ' -' + selectedFilter.column?.label">
             <ng-container *ngTemplateOutlet="filterTemplate;"></ng-container>
         </p-card>
     </ng-container>
+    <div class="col-12 pl-2">
+        <p-card  [header]="posicion" >
+        <div cdkDropList cdkDropListOrientation="horizontal" class="select-list" [cdkDropListData]="filtersList" (cdkDropListDropped)="onReorderFilter($event)">
+            <ng-container *ngFor="let filter of filtersList">
+                <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>
+                    <span class="close-thin pointer" (click)="removeFilter(filter, 'select')"></span>
+        
+                    <span class="text-center" [ngClass]="(selectedFilter.table==filter.table) && (selectedFilter.column.label==filter.column.label)?'edaEmfasis':''">
+                        {{filter.column.label}}
+                    </span>
+                </div>
+            </ng-container>
+        </div>
+    </p-card>
+    </div>
 </ng-template>

@@ -3908,42 +3908,9 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Zduplikowana nazwa kolumny:</target>
 </trans-unit>
 
-<trans-unit id="hiddenAttributes">
-  <source>Atributos ocultos</source>
-  <target>Ukryte atrybuty</target>
-</trans-unit>
-
-<trans-unit id="atributosH4+" datatype="html">
-  <source>
-    Columnas de:
-  </source>
-  <target>
-    Atrybuty:
-  </target>
-</trans-unit>
-<trans-unit id="atributosH4interpolation" datatype="html">
-  <source>
-    <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
-  </source>
-  <target>
-    <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
-  </target>
-</trans-unit>
-<trans-unit id="canIfilter">
-  <source>Visiblidad del filtro</source>
-  <target>Widoczność filtra</target>
-</trans-unit>
-  <trans-unit id="public">
-  <source>público</source>
-  <target>publiczny</target>
-</trans-unit>
-<trans-unit id="readOnly">
-  <source>deshabilitado</source>
-  <target>wyłączony</target>
-</trans-unit>
-<trans-unit id="hidden">
-  <source>oculto</source>
-  <target>ukryty</target>
+<trans-unit id="positionFilterInReport">
+<source>Posición del filtro en el informe</source>
+<target>Filtruj pozycję w raporcie</target>
 </trans-unit>
 
 </body>

@@ -4229,6 +4229,11 @@
         <target>hidden</target>
       </trans-unit>
 
+      <trans-unit id="positionFilterInReport">
+        <source>Posición del filtro en el informe</source>
+        <target>Filter position in the report</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

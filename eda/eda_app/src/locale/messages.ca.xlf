@@ -4251,6 +4251,11 @@
       </trans-unit>
 
 
+      <trans-unit id="positionFilterInReport">
+        <source>Posición del filtro en el informe</source>
+        <target>Posició del filtre a l'informe</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

@@ -4259,21 +4259,9 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
         </target>
       </trans-unit>
-         <trans-unit id="canIfilter">
-        <source>Visiblidad del filtro</source>
-        <target>Visiblidad del filtro</target>
-      </trans-unit>
-       <trans-unit id="public">
-        <source>público</source>
-        <target>público</target>
-      </trans-unit>
-      <trans-unit id="readOnly">
-        <source>deshabilitado</source>
-        <target>deshabilitado</target>
-      </trans-unit>
-      <trans-unit id="hidden">
-        <source>oculto</source>
-        <target>oculto</target>
+      <trans-unit id="positionFilterInReport">
+        <source>Posición del filtro en el informe</source>
+        <target>Posición del filtro en el informe</target>
       </trans-unit>
     </body>
   </file>
