@@ -35,8 +35,8 @@
                     <div class="col-4">
                         <div  i18n-title="@@filterVisibleScope" title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica" class="filterDialogTitles">{{header4}}</div>
                         <p-dropdown id="applyToOneFilterDropdown" 
-                        i18n-title="@@filterVisibleScope" title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
-                        [options]="publicRoHidden" [(ngModel)]="publicRoHiddenOption" selected="publicRoHiddenOption" autoWidth="false"></p-dropdown>
+                        i18n-title="@@filterVisibleScope" title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica"
+                        [options]="publicRoHidden" [(ngModel)]="publicRoHiddenOption" (onClick)="applyToPublicFilterCheck(publicRoHiddenOption)" autoWidth="false"></p-dropdown>
                     </div>
                 </div>
             </div>

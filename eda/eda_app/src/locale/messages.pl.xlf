@@ -3903,6 +3903,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 
+<trans-unit id="filterVisibleScope">
+<source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica</source>
+<target>Określ widoczność filtra. Publiczny: każdy może z niego korzystać.  Wyłączone: Inni użytkownicy mogą zobaczyć filtr, ale nie mogą go modyfikować.  Ukryty: Inni użytkownicy nie mogą zobaczyć filtra. Ale to ich dotyczy</target>
+</trans-unit>
+
 </body>
 </file>
 </xliff>
