@@ -4249,13 +4249,14 @@
         <source>oculto</source>
         <target>ocult</target>
       </trans-unit>
-
-
       <trans-unit id="positionFilterInReport">
         <source>Posición del filtro en el informe</source>
         <target>Posició del filtre a l'informe</target>
       </trans-unit>
-
+      <trans-unit id="filterVisibleScope">
+        <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica</source>
+        <target>Definir la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: La resta d'usuaris poden veure el filtre però no el poden modificar.  Ocult: La resta d'usuaris no poden veure el filtre. Però se'ls aplica</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

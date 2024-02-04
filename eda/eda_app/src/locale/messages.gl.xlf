@@ -4263,6 +4263,10 @@
         <source>Posición del filtro en el informe</source>
         <target>Posición del filtro en el informe</target>
       </trans-unit>
+      <trans-unit id="filterVisibleScope">
+        <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica</source>
+        <target>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
