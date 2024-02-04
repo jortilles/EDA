@@ -265,12 +265,9 @@ export class DashboardController {
                   // Poso taules prohivides a false
                   for (let x = 0; x < toJson.ds.model.tables.length; x++) {
                     try {
-
                       if (
                         uniquesForbiddenTables.includes(
                           toJson.ds.model.tables[x].table_name
-
-
                         )
                       ) {
                         toJson.ds.model.tables[x].visible = false
@@ -318,18 +315,12 @@ export class DashboardController {
                           i
                         ].content.query.query.fields = MyFields
                       }
-
-
-
-
-
                     }
                   }
                 }
               } catch (error) {
                 console.log('no pannels in dashboard')
               }
-
 
             }
 
@@ -637,7 +628,6 @@ export class DashboardController {
    */
   static async execQuery(req: Request, res: Response, next: NextFunction) {
 
-
     try {
       const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
@@ -713,7 +703,12 @@ export class DashboardController {
 
       if (myQuery.fields.length == 0) {
         console.log('you cannot see any data');
-        return res.status(200).json([['noData'], [[]]]);
+        return res.status(200).json([['noDataAllowed'], [[]]]);
+      }
+      if( req.body.query.hasOwnProperty('forSelector') && req.body.query.forSelector===true ){
+          myQuery.forSelector = true;
+      }else{
+          myQuery.forSelector = false;
       }
 
       const query = await connection.getQueryBuilded(
@@ -727,8 +722,8 @@ export class DashboardController {
       console.log(
         '\x1b[32m%s\x1b[0m',
         `QUERY for user ${req.user.name}, with ID: ${req.user._id
-
-        },  at: ${formatDate(new Date())} `
+        },  at: ${formatDate(new Date())}  for Dashboard:${req.body.dashboard.dashboard_id
+        } and Panel:${req.body.dashboard.panel_id}  `
       )
       console.log(query)
       console.log(
@@ -817,7 +812,6 @@ export class DashboardController {
         console.log(
           '\x1b[32m%s\x1b[0m',
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
 
@@ -831,7 +825,7 @@ export class DashboardController {
          * Si hay fechas agregadas por mes o dia
          * y el flag cumulative está activo se hace la suma acumulativa en todos los campos numéricos
          */
-        console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾')
+        console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
         DashboardController.cumulativeSum(
           cachedQuery.cachedQuery.response,
           req.body.query
@@ -839,7 +833,6 @@ export class DashboardController {
         console.log(
           '\x1b[32m%s\x1b[0m',
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
         return res.status(200).json(cachedQuery.cachedQuery.response)
@@ -875,11 +868,21 @@ export class DashboardController {
       const dataModelObject = JSON.parse(JSON.stringify(dataModel))
 
       /** Forbidden tables  */
-      const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+      let uniquesForbiddenTables = DashboardController.getForbiddenTables(
         dataModelObject,
         req['user'].role,
         req.user._id
       )
+      const includesAdmin = req['user'].role.includes("135792467811111111111110")
+      if(includesAdmin){
+        // el admin ve todo
+       uniquesForbiddenTables = [];
+      }
+      if( req.user._id == '135792467811111111111112'){
+        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+        uniquesForbiddenTables = [];
+
+      }
       let notAllowedQuery = false
       uniquesForbiddenTables.forEach(table => {
         if (req.body.query.SQLexpression.indexOf(table) >= 0) {
@@ -888,7 +891,7 @@ export class DashboardController {
       })
       if (notAllowedQuery) {
         console.log('Not allowed table in query')
-        return res.status(200).json("[['noData'],[]]")
+        return res.status(200).json("[['noDataAllowed'],[]]")
       } else {
         const query = connection.BuildSqlQuery(
           req.body.query,
@@ -909,7 +912,6 @@ export class DashboardController {
         console.log(
           '\x1b[32m%s\x1b[0m',
           `QUERY for user ${req.user.name}, with ID: ${req.user._id
-
           },  at: ${formatDate(new Date())} `
         )
         console.log(query)
@@ -997,21 +999,18 @@ export class DashboardController {
           console.log(
             '\x1b[32m%s\x1b[0m',
             `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
           //console.log('Query output');
           //console.log(output);
           return res.status(200).json(output)
         } else {
-          console.log('\x1b[36m%s\x1b[0m', '💾 Chached query 💾')
+          console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
           console.log(
             '\x1b[32m%s\x1b[0m',
             `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
-
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
-          console.log(cachedQuery.cachedQuery.response);
           return res.status(200).json(cachedQuery.cachedQuery.response)
         }
       }
@@ -1039,9 +1038,6 @@ export class DashboardController {
       // Null values are...NULL
     }
 
-
-
-
     return isNotNumeric;
 
   }
@@ -1049,6 +1045,10 @@ export class DashboardController {
   /**Check if an user can or not see a data model. */
   static securityCheck(dataModel: any, user: any) {
 
+    /** un admin  lo ve todo */
+    if( user.role.includes('135792467811111111111110') ){
+      return true;
+    }
     if(user._id== '135792467811111111111112'){
       console.log('Anonymous access');
       return true;

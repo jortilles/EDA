@@ -1,0 +1,4 @@
+.cdk-drop-list.select-list{display:flex;flex-direction:row;justify-content:flex-start;box-sizing:border-box;font-size:1.4em}
+.cdk-drop-list.select-list .select-box{max-width:30%;display:block}
+.cdk-drop-list.select-list .select-box .fa-close{color:silver}
+.cdk-drop-list.select-list .select-box .fa-close:hover{color:#000}

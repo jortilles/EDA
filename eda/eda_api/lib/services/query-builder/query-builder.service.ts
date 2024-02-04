@@ -36,10 +36,11 @@ export abstract class QueryBuilderService {
     abstract getJoins(joinTree: any[], dest: any[], tables: Array<any>, 
         joinType:string, valueListJoins:Array<any>, schema?: string, database?: string);
     abstract getSeparedColumns(origin: string, dest: string[]);
-    abstract filterToString(filterObject: any, type: string);
+    abstract filterToString(filterObject: any);
+    abstract havingToString(filterObject: any);
     abstract processFilter(filter: any, columnType: string);
     abstract normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[],
-        grouping: any[], tables: Array<any>, limit: number, 
+        grouping: any[], filters: any[], havingFilters: any[], tables: Array<any>, limit: number, 
         joinType: string,valueListJoins:any[], Schema?: string, database?: string, forSelector?: any );
     abstract sqlQuery(query: string, filters: any[], filterMarks: string[]): string;
     abstract buildPermissionJoin(origin: string, join: string[], permissions: any[], schema?: string);
@@ -49,8 +50,8 @@ export abstract class QueryBuilderService {
 
         const graph = this.buildGraph();
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
-        const origin = this.queryTODO.fields.find(x => x.order === 0).table_id;
-        const dest = [];
+        let origin = this.queryTODO.fields.find(x => x.order === 0).table_id;
+        let dest = [];
         const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
@@ -71,10 +72,13 @@ export abstract class QueryBuilderService {
         /** ............................PER ELS VALUE LISTS................................ */
         /** si es una consulta de llista de valors es retorna la llista de valors possibles */
         /** ............................................................................... */
+        /*
         if( this.queryTODO.fields.length == 1 && this.queryTODO.fields[0].valueListSource   && this.queryTODO.fields[0].column_type === 'text'   && this.permissions.length == 0&& this.queryTODO.filters.length == 0){
+            nO APLICA PORQUE NO APLICA LA SEGURDAD
             this.query = this.valueListQuery( );
             return this.query;
         }
+*/
         /** Reviso si cap columna de la  consulta es un multivalueliest..... */
         this.queryTODO.fields.forEach( e=>{
                 if( e.valueListSource ){
@@ -150,7 +154,55 @@ export abstract class QueryBuilderService {
 
 
         /** ARBRE DELS JOINS A FER */
-        const joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
+        let joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
+        // Busco relacions directes.
+        if( ! this.validateJoinTree(  joinTree, dest ) ){
+            let exito = false;
+            let new_origin  = '';
+            let new_dest  = [...dest];
+            let new_joinTree:any;
+            for (let d of  dest) {
+                new_origin = d;
+                new_dest =  [...dest].filter(e => e !== d);
+                new_dest.push(origin);
+                new_joinTree = this.dijkstraAlgorithm(graph, new_origin, new_dest.slice(0) );
+                if(  this.validateJoinTree(  new_joinTree, new_dest ) ){
+                    exito = true;
+                    break;
+                }
+            }
+            if(exito){
+                origin = new_origin;
+                dest = [...new_dest];
+                joinTree = new_joinTree;
+            }
+
+        }
+
+        //to WHERE CLAUSE
+        const filters = this.queryTODO.filters.filter(f => {
+            let column =  this.queryTODO.fields.find(c=> f.filter_table == c.table_id && f.filter_column == c.column_name );
+            if(column){
+                if(column.hasOwnProperty('aggregation_type')){
+                    return column.aggregation_type==='none'?true:false;
+                }else{
+                    return true;
+                }
+            }else{
+                return true;
+            }
+            });
+
+        //TO HAVING CLAUSE 
+        const havingFilters = this.queryTODO.filters.filter(f => {
+            const column = this.queryTODO.fields.find(e => e.table_id === f.filter_table &&   f.filter_column === e.column_name);
+            if(column){
+            return column.column_type=='numeric' && column.aggregation_type!=='none'?true:false;
+            }else{
+                return false;
+            }
+        });
+
 
         if (this.queryTODO.simple) {
             this.query = this.simpleQuery(columns, origin);
@@ -158,8 +210,9 @@ export abstract class QueryBuilderService {
         } else {
             let tables = this.dataModel.ds.model.tables
                 .map(table => { return { name: table.table_name, query: table.query } });
-            this.query = this.normalQuery(columns, origin, dest, joinTree, grouping, tables,
-                this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, this.dataModel.ds.connection.schema, this.dataModel.ds.connection.database, this.queryTODO.forSelector);
+            this.query = this.normalQuery(columns, origin, dest, joinTree, grouping,  filters, havingFilters,  tables,
+                this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, this.dataModel.ds.connection.schema, 
+                this.dataModel.ds.connection.database, this.queryTODO.forSelector);
             return this.query;
         }
     }
@@ -177,6 +230,19 @@ export abstract class QueryBuilderService {
         return graph;
     }
 
+
+    /** valida relaciones directas */
+    public validateJoinTree(joinTree:any, dest:any){
+        for (let i = 0; i < dest.length; i++) {
+            let elem = joinTree.find(n => n.name === dest[i]);
+            if(elem.dist > 1 ){
+                return false;
+            }
+          }
+        return true;
+    }
+
+    
     public dijkstraAlgorithm(graph, origin, dest) {
         const not_visited = [];
         const v = [];
@@ -229,20 +295,11 @@ export abstract class QueryBuilderService {
         return (v);
     }
 
-    
-    public valueListQuery( ) {
-        const schema = this.dataModel.ds.connection.schema;
-        let table = this.queryTODO.fields[0].valueListSource.target_table
-        if (schema) {
-            table = `${schema}.${this.queryTODO.fields[0].valueListSource.target_table}`;
-        }
-        return `SELECT DISTINCT ${this.queryTODO.fields[0].valueListSource.target_description_column} \nFROM ${table}`;
-    }
+
 
     /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
     public simpleQuery(columns: string[], origin: string) {
     
-
         const schema = this.dataModel.ds.connection.schema;
         if (schema) {
             origin = `${schema}.${origin}`;
@@ -369,7 +426,13 @@ export abstract class QueryBuilderService {
 
     public findColumn(table: string, column: string) {
         const tmpTable = this.tables.find(t => t.table_name === table);
-        return tmpTable.columns.find(c => c.column_name === column);
+        const col =  tmpTable.columns.find(c => c.column_name === column);
+        col.table_id = tmpTable.table_name;
+        return col;
+    }
+
+    public findHavingColumn(table: string, column: string) {
+        return   this.queryTODO.fields.find(f=> f.table_id === table && f.column_name === column);
     }
 
     public setFilterType(filter: string) {
@@ -378,6 +441,8 @@ export abstract class QueryBuilderService {
         else if (filter === 'between') return 2;
         else if (filter === 'not_null') return 3;
     }
+
+
 
     public sqlBuilder(userQuery: any, filters: any[]): string {
 
@@ -434,7 +499,7 @@ export abstract class QueryBuilderService {
         //Get sql formated filters ad types
         const formatedFilters: any[] = [];
         filters.forEach(filter => {
-            formatedFilters.push({ string: this.filterToString(filter, 'where'), type: filter.filter_type });
+            formatedFilters.push({ string: this.filterToString(filter ), type: filter.filter_type });
         });
 
         return this.sqlQuery(query, formatedFilters, filterMarks);
@@ -699,13 +764,13 @@ export abstract class QueryBuilderService {
     }
 
 
-    public mergeFilterStrings = (filtersString, equalfilters, type) => {
+    public mergeFilterStrings = (filtersString, equalfilters ) => {
         if (equalfilters.toRemove.length > 0) {
 
             equalfilters.map.forEach((value, key) => {
                 let filterSTR = '\nand ('
                 value.forEach(f => {
-                    filterSTR += this.filterToString(f, type) + '\n  or ';
+                    filterSTR += this.filterToString(f) + '\n  or ';
                 });
 
                 filterSTR = filterSTR.slice(0, -3);

@@ -108,16 +108,18 @@ export const QueryUtils = {
       ebp.panelChart.NO_DATA = false;
       ebp.display_v.minispinner = true;
     }
+    console.log(ebp);
 
     try {
 
-      if (ebp.panelChart) ebp.panelChart.destroyComponent();
+      // if (ebp.panelChart) ebp.panelChart.destroyComponent();
 
       const query = ebp.switchAndBuildQuery();
       /**Add fake column if SQL mode and there isn't fields yet */
       if (query.query.modeSQL && query.query.fields.length === 0) {
         query.query.fields.push(QueryUtils.createColumn('custom', null, ebp.sqlOriginTable));
       }
+
 
       // Execute query
       const response = await QueryUtils.switchAndRun(ebp, query);
@@ -136,15 +138,13 @@ export const QueryUtils = {
         ebp.spinnerService.off();
 
       } else {
-
         ebp.reloadContent();
         ebp.display_v.minispinner = false;
-
       }
 
+      ebp.spinnerService.off();
       ebp.index = 1;
       ebp.display_v.saved_panel = true;
-
     } catch (err) {
 
       ebp.alertService.addError(err);
@@ -164,7 +164,6 @@ export const QueryUtils = {
       return;
     }
 
-    console.log(ebp);
     /**
     * Cumulative sum check 
     */

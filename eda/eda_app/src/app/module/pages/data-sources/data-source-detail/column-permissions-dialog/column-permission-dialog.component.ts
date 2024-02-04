@@ -102,7 +102,7 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
             permissionFilter = {
                 users : this.selectedUsers.map(usr => usr._id),
                 usersName : this.selectedUsers.map(usr => usr.name),
-                value : this.dynamic ? this.dynamicQuery :   this.all ? '(~ => All)' :  this.none ? '(x  => None)' : this.selectedValues,
+                value : this.dynamic ? this.dynamicQuery :   this.all ? '(~ => All)' :  this.none ? ['(x => None)'] : this.selectedValues,
                 none : this.none ? true : false,
                 table : this.table.table_name,
                 column : this.column.column_name,
@@ -115,7 +115,7 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
             permissionFilter = {
                 groups : this.selectedRoles.map(usr => usr._id),
                 groupsName : this.selectedRoles.map(usr => usr.name),
-                value : this.dynamic ? this.dynamicQuery : this.all ? '(~ => All)' :  this.none ? '(x  => None)' : this.selectedValues,
+                value : this.dynamic ? this.dynamicQuery : this.all ? '(~ => All)' :  this.none ? ['(x => None)'] : this.selectedValues,
                 none : this.none ? true : false,
                 table : this.table.table_name,
                 column : this.column.column_name,

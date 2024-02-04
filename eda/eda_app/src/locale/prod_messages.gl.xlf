@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en_US" datatype="plaintext" original="ng2.template">
+  <file source-language="en_US" target-language="gl" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="placeholderInputUsuario" datatype="html">
         <source>Usuario</source>
@@ -51,13 +50,17 @@
         </context-group>
       </trans-unit>
       <trans-unit id="terms1" datatype="html">
-        <source>Estoy de acuerdo con los <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;" />
-          términos<x
-            id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;" />
+        <source>
+          Estoy de acuerdo con los 
+          <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+          términos
+          <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
         </source>
-        <target>Estoy de acuerdo con los <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;" />
-          términos<x
-            id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;" />
+        <target>
+          Estoy de acuerdo con los 
+          <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+          términos
+          <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
@@ -65,16 +68,22 @@
         </context-group>
       </trans-unit>
       <trans-unit id="haveAccount" datatype="html">
-        <source>¿Tienes una cuenta? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;" /><x
-            id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;" />Ingresa ahora<x
-            id="CLOSE_BOLD_TEXT"
-            ctype="x-b" equiv-text="&lt;/b&gt;" /><x id="CLOSE_LINK" ctype="x-a"
-            equiv-text="&lt;/a&gt;" /></source>
-        <target>¿Tienes una cuenta? <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;" /><x
-            id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;" />Ingresa ahora<x
-            id="CLOSE_BOLD_TEXT"
-            ctype="x-b" equiv-text="&lt;/b&gt;" /><x id="CLOSE_LINK" ctype="x-a"
-            equiv-text="&lt;/a&gt;" /></target>
+        <source>
+          ¿Tienes una cuenta? 
+          <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+          <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
+          Ingresa ahora
+          <x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
+          <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
+        </source>
+        <target>
+          ¿Tienes una cuenta? 
+          <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>
+          <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>
+          Ingresa ahora
+          <x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
+          <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
+        </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
           <context context-type="linenumber">54</context>
@@ -374,7 +383,6 @@
           <context context-type="linenumber">164</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="valor2Label" datatype="html">
         <source>
           Valor 2
@@ -535,7 +543,6 @@
           <context context-type="sourcefile">
             app/module/pages/dashboard/filter-dialog/dashboard-filter-dialog.component.html</context>
           <context context-type="linenumber">77</context>
-
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -553,7 +560,6 @@
           <context context-type="linenumber">79</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="colorsChartH6" datatype="html">
         <source>
           Colores
@@ -672,7 +678,6 @@
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="atributosH4" datatype="html">
         <source>
           Atributos
@@ -865,41 +870,44 @@
         </context-group>
       </trans-unit>
       <trans-unit id="indicaciones6" datatype="html">
-        <source> Para hacerlo sólo tienes que añadir: <x id="START_TAG_SPAN" ctype="x-span"
-            equiv-text="&lt;span&gt;" /> AND <x id="INTERPOLATION"
-            equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}" />
-<x id="CLOSE_TAG_SPAN"
-            ctype="x-span" equiv-text="&lt;/span&gt;" /> en la cláusula &apos;WHERE&apos; de la
-          consulta donde quieras inyectar el filtro </source>
-        <target> Para hacerlo, sólo tienes que añadir:: <x id="START_TAG_SPAN" ctype="x-span"
-            equiv-text="&lt;span&gt;" /> AND <x id="INTERPOLATION"
-            equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}" />
-<x id="CLOSE_TAG_SPAN"
-            ctype="x-span" equiv-text="&lt;/span&gt;" /> en la cláusula &apos;WHERE&apos; de la
-          consulta donde quieras inyectar el filtro </target>
+        <source>
+           Para hacerlo sólo tienes que añadir: 
+          <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
+           AND 
+          <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/>
+          <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
+           en la cláusula &apos;WHERE&apos; de la
+          consulta donde quieras inyectar el filtro 
+        </source>
+        <target>
+           Para hacerlo, sólo tienes que añadir:: 
+          <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
+           AND 
+          <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/>
+          <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
+           en la cláusula &apos;WHERE&apos; de la
+          consulta donde quieras inyectar el filtro 
+        </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
           <context context-type="linenumber">220</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="indicaciones7" datatype="html">
-        <source> Si no has añadido ninguna cláusula WHERE, añádela a la consulta y haz los joins
-          necesarios, junto con el filtro en el formato <x id="START_TAG_SPAN" ctype="x-span"
-            equiv-text="&lt;span&gt;" />
-<x id="INTERPOLATION"
-            equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}" />
-<x id="CLOSE_TAG_SPAN"
-            ctype="x-span" equiv-text="&lt;/span&gt;" />
+        <source>
+           Si no has añadido ninguna cláusula WHERE, añádela a la consulta y haz los joins
+          necesarios, junto con el filtro en el formato 
+          <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
+          <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/>
+          <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
         </source>
-        <target> Si no has añadido ninguna cláusula WHERE, añádela a la consulta y haz los joins
-          necesarios, junto con el filtro en el formato <x id="START_TAG_SPAN" ctype="x-span"
-            equiv-text="&lt;span&gt;" />
-<x id="INTERPOLATION"
-            equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}" />
-<x id="CLOSE_TAG_SPAN"
-            ctype="x-span" equiv-text="&lt;/span&gt;" />
+        <target>
+           Si no has añadido ninguna cláusula WHERE, añádela a la consulta y haz los joins
+          necesarios, junto con el filtro en el formato 
+          <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span&gt;"/>
+          <x id="INTERPOLATION" equiv-text="{{&apos; ${alias_tabla.columna_filtrada} &apos;}}"/>
+          <x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/>
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -941,8 +949,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="indicaciones11" datatype="html">
-        <source> Tenemos un filtro en el informe para el campo 'city' de la tabla CUSTOMERS</source>
-        <target> Tenemos un filtro en el informe para el campo 'city' de la tabla CUSTOMERS</target>
+        <source> Tenemos un filtro en el informe para el campo &apos;city&apos; de la tabla CUSTOMERS</source>
+        <target> Tenemos un filtro en el informe para el campo &apos;city&apos; de la tabla CUSTOMERS</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -968,9 +976,9 @@
         </context-group>
       </trans-unit>
       <trans-unit id="indicaciones14" datatype="html">
-        <source> Tenemos un filtro en el informe para el campo 'office_id' de la tabla OFFICES
+        <source> Tenemos un filtro en el informe para el campo &apos;office_id&apos; de la tabla OFFICES
 </source>
-        <target> Tenemos un filtro en el informe para el campo 'office_id' de la tabla OFFICES
+        <target> Tenemos un filtro en el informe para el campo &apos;office_id&apos; de la tabla OFFICES
 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -998,10 +1006,10 @@
       </trans-unit>
       <trans-unit id="vistaSeleccionador" datatype="html">
         <source>
-          <x id="INTERPOLATION" equiv-text="{{!modeSQL ? editQuery : editSQLQuery}}" />
+          <x id="INTERPOLATION" equiv-text="{{!modeSQL ? editQuery : editSQLQuery}}"/>
         </source>
         <target>
-          <x id="INTERPOLATION" equiv-text="{{!modeSQL ? editQuery : editSQLQuery}}" />
+          <x id="INTERPOLATION" equiv-text="{{!modeSQL ? editQuery : editSQLQuery}}"/>
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -1028,7 +1036,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-        <source>CREAR UN NUEVO INFORME</source>
+        <source> Crear nuevo informe
+        </source>
         <target>Crear un nuevo informe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -1122,7 +1131,6 @@
           <context context-type="linenumber">38</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="thisWeek" datatype="html">
         <source> Ésta semana </source>
         <target> Esta semana </target>
@@ -1274,7 +1282,6 @@
         <note priority="1" from="description">Label del input imagen de usuario</note>
         <note priority="1" from="meaning">Label Input Imagen</note>
       </trans-unit>
-
       <trans-unit id="button" datatype="html">
         <source>Actualizar Foto</source>
         <target>Actualizar foto</target>
@@ -1550,7 +1557,6 @@
           <context context-type="linenumber">21</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="inputTipoTabla" datatype="html">
         <source>Tipo de tabla</source>
         <target>Tipo de tabla</target>
@@ -1586,7 +1592,6 @@
         <source>
           Agregación
 </source>
-
         <target>
           Agregación
 </target>
@@ -1605,19 +1610,14 @@
           <context context-type="linenumber">102</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="addPermission" datatype="html">
         <source> Añadir permiso </source>
         <target> Añadir permiso </target>
       </trans-unit>
-
-
       <trans-unit id="addModelPermissions" datatype="html">
         <source>Añadir permiso a nivel de modelo</source>
         <target>Añadir permiso a nivel de modelo</target>
       </trans-unit>
-
-
       <trans-unit id="esconderColumna" datatype="html">
         <source>Esconder columna</source>
         <target>Esconder columna</target>
@@ -1781,7 +1781,6 @@
         <source>
           Filtrar por
 </source>
-
         <target>
           Filtrar por
 </target>
@@ -1886,7 +1885,6 @@
           <context context-type="linenumber">57</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="borrar" datatype="html">
         <source>Borrar</source>
         <target>Borrar</target>
@@ -1965,33 +1963,30 @@
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="targetRel">
         <source>Destino</source>
         <target>Destino</target>
       </trans-unit>
-
       <trans-unit id="originRel">
         <source>Origen</source>
         <target>Origen</target>
       </trans-unit>
-
       <trans-unit id="userTable">
         <source>USUARIO</source>
         <target>USUARIO</target>
       </trans-unit>
-
       <trans-unit id="valueTable">
         <source>VALOR</source>
         <target>VALOR</target>
       </trans-unit>
-
       <trans-unit id="editModelHeaders" datatype="html">
-        <source>Editar <x id="INTERPOLATION"
-            equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}" />
+        <source>
+          Editar 
+          <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/>
         </source>
-        <target>Editar <x id="INTERPOLATION"
-            equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}" />
+        <target>
+          Editar 
+          <x id="INTERPOLATION" equiv-text="{{tablePanel.type ? tablePanel.name : &apos;&apos;}}"/>
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -2031,12 +2026,10 @@
         <source>Editar consulta</source>
         <target>Editar consulta</target>
       </trans-unit>
-
       <trans-unit id="panelOptions2">
         <source>Editar opciones del gráfico</source>
         <target>Editar opciones del gráfico</target>
       </trans-unit>
-
       <trans-unit id="panelOptions3">
         <source>Exportar a Excel</source>
         <target>Exportar a Excel</target>
@@ -2053,7 +2046,6 @@
         <source>Duplicar columna</source>
         <target>Duplicar columna</target>
       </trans-unit>
-
       <trans-unit id="chartTypes1">
         <source>Tabla de Datos</source>
         <target>Tabla de Datos</target>
@@ -2082,7 +2074,6 @@
         <source>Gráfico Solar</source>
         <target>Gráfico Solar</target>
       </trans-unit>
-
       <trans-unit id="chartTypesDynamicText">
         <source>Texto Dinámico</source>
         <target>Texto Dinámico</target>
@@ -2091,7 +2082,6 @@
         <source>Un texto dinámico requiere de un único valor NO numérico</source>
         <target>Un texto dinámico requiere de un único valor NO numérico</target>
       </trans-unit>
-
       <trans-unit id="chartTypes6">
         <source>Gráfico de Barras Apiladas</source>
         <target>Gráfico de Barras Apiladas</target>
@@ -2124,12 +2114,10 @@
         <source>Mapa de Capas</source>
         <target>Mapa de Capas</target>
       </trans-unit>
-
       <trans-unit id="chartTypes15">
         <source>Velocímetro</source>
         <target>Velocímetro</target>
       </trans-unit>
-
       <trans-unit id="filters1">
         <source>IGUAL A (=)</source>
         <target>IGUAL A (=)</target>
@@ -2178,7 +2166,6 @@
         <source>VALORES NO NULOS (not null)</source>
         <target>VALORES NO NULOS (not null)</target>
       </trans-unit>
-
       <trans-unit id="dates1">
         <source>AÑO</source>
         <target>AÑO</target>
@@ -2207,7 +2194,6 @@
         <source>DÍA DE LA SEMANA</source>
         <target>DÍA DE LA SEMANA</target>
       </trans-unit>
-
       <trans-unit id="dates7">
         <source>FECHA COMPLETA</source>
         <target>FECHA COMPLETA</target>
@@ -2220,12 +2206,10 @@
         <source>DÍA HORA MINUTO</source>
         <target>DÍA HORA MINUTO</target>
       </trans-unit>
-
       <trans-unit id="ChartProps">
         <source>PROPIEDADES DEL GRÁFICO</source>
         <target>PROPIEDADES DEL GRÁFICO</target>
       </trans-unit>
-
       <trans-unit id="newPanelTitle">
         <source>Nuevo Panel</source>
         <target>Nuevo Panel</target>
@@ -2234,7 +2218,6 @@
         <source>Nuevo Panel</source>
         <target>Nuevo Panel</target>
       </trans-unit>
-
       <trans-unit id="addMap" datatype="html">
         <source>Mapas</source>
         <target>Mapas</target>
@@ -2244,7 +2227,6 @@
           <context context-type="linenumber">210</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="inputNombreEsquemaModel" datatype="html">
         <source>Esquema</source>
         <target>Esquema</target>
@@ -2254,7 +2236,6 @@
           <context context-type="linenumber">181</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="listRelations" datatype="html">
         <source>Relaciones</source>
         <target>Relaciones</target>
@@ -2272,7 +2253,6 @@
           <context context-type="linenumber">44</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="labelnewPass" datatype="html">
         <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en
           blanco)</source>
@@ -2307,7 +2287,6 @@
           <context context-type="linenumber">32</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="groups1">
         <source>EMAIL</source>
         <target>EMAIL</target>
@@ -2324,7 +2303,6 @@
         <source>ROLE</source>
         <target>ROLE</target>
       </trans-unit>
-
       <trans-unit id="newPassPlaceholderProfile" datatype="html">
         <source>Repite la contraseña</source>
         <target>Repite la contraseña</target>
@@ -2333,7 +2311,6 @@
           <context context-type="linenumber">32</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="direccionMail" datatype="html">
         <source>Dirección Email</source>
         <target>Usuario</target>
@@ -2342,7 +2319,6 @@
           <context context-type="linenumber">22</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="passwordLogin" datatype="html">
         <source>Contraseña</source>
         <target>Contraseña</target>
@@ -2351,7 +2327,6 @@
           <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="informacionGeneral" datatype="html">
         <source>Información general</source>
         <target>Información general</target>
@@ -2361,7 +2336,6 @@
           <context context-type="linenumber">202</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="linkFilters" datatype="html">
         <source>Vincular consulta con los filtros del panel</source>
         <target>Vincular consulta con los filtros del panel</target>
@@ -2371,7 +2345,6 @@
           <context context-type="linenumber">221</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="examples" datatype="html">
         <source>Ejemplos</source>
         <target>Ejemplos</target>
@@ -2381,7 +2354,6 @@
           <context context-type="linenumber">242</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="newPassPlaceholderUsers" datatype="html">
         <source>Repite la contraseña</source>
         <target>Repite la contraseña</target>
@@ -2391,7 +2363,6 @@
           <context context-type="linenumber">17</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="AddPermiso" datatype="html">
         <source>Añadir permiso</source>
         <target>Añadir permiso</target>
@@ -2401,52 +2372,42 @@
           <context context-type="linenumber">3</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="AddValueListOptions" datatype="html">
         <source>Definir un listado de valores posibles</source>
         <target>Definir un listado de valores posibles</target>
       </trans-unit>
-
       <trans-unit id="possibleValuesList" datatype="html">
         <source>Tabla y columna asociadas</source>
         <target>Tabla y columna asociadas</target>
       </trans-unit>
-
       <trans-unit id="possibleValuesListTable" datatype="html">
         <source>Tabla:</source>
         <target>Tabla:</target>
       </trans-unit>
-
       <trans-unit id="valueListSourceHeader" datatype="html">
         <source>Tabla que contiene los valores posibles para el filtro asociado a esta columna</source>
         <target>Tabla que contiene los valores posibles para el filtro asociado a esta columna</target>
       </trans-unit>
-
       <trans-unit id="valueListSourceTabla" datatype="html">
         <source>Tabla relacionada</source>
         <target>Tabla relacionada</target>
       </trans-unit>
-
       <trans-unit id="valueListSourceID" datatype="html">
         <source>Id de la columna relacionada</source>
         <target>Id de la columna relacionada</target>
       </trans-unit>
-
       <trans-unit id="possibleValuesListID" datatype="html">
         <source>Id Columna:</source>
         <target>Id Columna:</target>
       </trans-unit>
-
       <trans-unit id="valueListSourceDescripcion" datatype="html">
         <source>Descripción de la columna relacionada</source>
         <target>Descripción de la columna relacionada</target>
       </trans-unit>
-
       <trans-unit id="possibleValuesListDescription" datatype="html">
         <source>Columna descripción</source>
         <target>Columna descripción</target>
       </trans-unit>
-
       <trans-unit id="columnaCalculada" datatype="html">
         <source> Nueva columna calculada </source>
         <target> Nueva columna calculada </target>
@@ -2456,7 +2417,6 @@
           <context context-type="linenumber">3</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="inputxDescription" datatype="html">
         <source>Si desconoces las coordenadas del centro las calcularemos automáticamente</source>
         <target>Si desconoces las coordenadas del centro las calcularemos automáticamente</target>
@@ -2466,7 +2426,6 @@
           <context context-type="linenumber">27</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="sqlExp" datatype="html">
         <source>Expresión SQL</source>
         <target>Expresión SQL</target>
@@ -2476,7 +2435,6 @@
           <context context-type="linenumber">74</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="sqlExpColumn" datatype="html">
         <source>Expresión SQL (Debe incluir la agregación)</source>
         <target>Expresión SQL (Debe incluir la agregación)</target>
@@ -2486,8 +2444,6 @@
           <context context-type="linenumber">103</context>
         </context-group>
       </trans-unit>
-
-
       <trans-unit id="aggTsum">
         <source>Suma</source>
         <target>Suma</target>
@@ -2524,8 +2480,6 @@
         <source>Privado</source>
         <target>Privado</target>
       </trans-unit>
-
-
       <trans-unit id="col">
         <source>Atributo</source>
         <target>Columna:</target>
@@ -2534,7 +2488,6 @@
         <source>de la entidad</source>
         <target>de la entidad:</target>
       </trans-unit>
-
       <trans-unit id="addCalculatedColTitle">
         <source>Añadir columna calculada a la tabla</source>
         <target>Añadir columna calculada a la tabla</target>
@@ -2543,7 +2496,6 @@
         <source>Añadir relación a la tabla</source>
         <target>Añadir relación a la tabla</target>
       </trans-unit>
-
       <trans-unit id="chartInfo1">
         <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
         <target>Los datos seleccionados no permiten utilizar este gráfico.</target>
@@ -2624,7 +2576,6 @@
         <source>Un gráfico de burbujas necesita una categoría y una serie numérica.</source>
         <target>Un gráfico de burbujas necesita una categoría y una serie numérica.</target>
       </trans-unit>
-
       <trans-unit id="tooManyValues" datatype="html">
         <source> - Demasiados valores</source>
         <target> - Demasiados valores</target>
@@ -2634,7 +2585,6 @@
           <context context-type="linenumber">332</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="notAvaliable" datatype="html">
         <source> - No Disponible</source>
         <target> - No Disponible</target>
@@ -2648,14 +2598,12 @@
         <source>Mapas</source>
         <target>Mapas</target>
       </trans-unit>
-
       <trans-unit id="tooManyValuestext">
         <source>Hay demasiados valores para este gráfico. Agrega o filtra los datos para poder
           visualizarlos mejor.</source>
         <target>Hay demasiados valores para este gráfico. Agrega o filtra los datos para poder
           visualizarlos mejor.</target>
       </trans-unit>
-
       <trans-unit id="inputTipoDatamodel" datatype="html">
         <source> Tipo </source>
         <target> Tipo </target>
@@ -2674,7 +2622,6 @@
           <context context-type="linenumber">206</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="notSavedChanges" datatype="html">
         <source> Hay cambios sin guardar... </source>
         <target> Hay cambios sin guardar... </target>
@@ -2683,57 +2630,46 @@
           <context context-type="linenumber">205</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="dahsboardSaved">
         <source>Informe guardado correctamente</source>
         <target>Informe guardado correctamente</target>
       </trans-unit>
-
       <trans-unit id="DatadourceTitle">
         <source>Fuente de datos: </source>
         <target>Fuente de datos: </target>
       </trans-unit>
-
       <trans-unit id="DatadourceText">
         <source>Creada correctamente </source>
         <target>Creada correctamente</target>
       </trans-unit>
-
       <trans-unit id="ErrorMessage">
         <source>Ha ocurrido un error </source>
         <target>Ha ocurrido un error</target>
       </trans-unit>
-
       <trans-unit id="CorrectQuery">
         <source>Consulta correcta </source>
         <target>Consulta correcta</target>
       </trans-unit>
-
       <trans-unit id="IncorrectQuery">
         <source>Consulta incorrecta</source>
         <target>Consulta incorrecta</target>
       </trans-unit>
-
       <trans-unit id="IncorrectQueryAgg">
         <source>Debes incluir la agregación (distinct, sum, max, min, etc)</source>
         <target>Debes incluir la agregación (distinct, sum, max, min, etc)</target>
       </trans-unit>
-
       <trans-unit id="EstablishedConnections">
         <source>Conexión establecida </source>
         <target>Conexión establecida</target>
       </trans-unit>
-
       <trans-unit id="IncorrectConnectionData">
         <source>Datos de conexión incorrectos</source>
         <target>Datos de conexión incorrectos</target>
       </trans-unit>
-
       <trans-unit id="Sure">
         <source>¿Estás seguro?</source>
         <target>¿Estás seguro?</target>
       </trans-unit>
-
       <trans-unit id="SureInfo">
         <source>Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el
           cambio es
@@ -2742,42 +2678,34 @@
           cambio es
           irreversible</target>
       </trans-unit>
-
       <trans-unit id="ConfirmDeleteModel">
         <source>Si, ¡Eliminalo! </source>
         <target>Si, ¡Elimínalo!</target>
       </trans-unit>
-
       <trans-unit id="Deleted">
         <source>¡Eliminado!</source>
         <target>¡Eliminado!</target>
       </trans-unit>
-
       <trans-unit id="DeleteSuccess">
         <source>Modelo eliminado correctamente.</source>
         <target>Modelo eliminado correctamente.</target>
       </trans-unit>
-
       <trans-unit id="UpdateModelSucess">
         <source>Modelo actualizado correctamente</source>
         <target>Modelo actualizado correctamente</target>
       </trans-unit>
-
       <trans-unit id="DeletedUser">
         <source>Usuario borrado</source>
         <target>Usuario borrado</target>
       </trans-unit>
-
       <trans-unit id="UserDeletedOk">
         <source>El usuario ha sido eliminado correctamente</source>
         <target>El usuario ha sido eliminado correctamente</target>
       </trans-unit>
-
       <trans-unit id="picUpdated">
         <source>Imagen Actualizada</source>
         <target>Imagen Actualizada</target>
       </trans-unit>
-
       <trans-unit id="NoRecords">
         <source>No se pudo obtener ningún registro</source>
         <target>No se pudo obtener ningún registro</target>
@@ -2786,157 +2714,131 @@
         <source>Recuerde rellenar los campos obligatorios</source>
         <target>Recuerde rellenar los campos obligatorios</target>
       </trans-unit>
-
       <trans-unit id="IncorrectForm">
         <source>Formulario incorrecto. Revise los campos obligatorios.</source>
         <target>Formulario incorrecto. Revise los campos obligatorios.</target>
       </trans-unit>
-
       <trans-unit id="ImportantMessage">
         <source>Importante</source>
         <target>Importante</target>
       </trans-unit>
-
       <trans-unit id="AcceptConditions">
         <source>Debe de aceptar las condiciones</source>
         <target>Debe de aceptar las condiciones</target>
       </trans-unit>
-
       <trans-unit id="UserCreated">
         <source>Usuario creado</source>
         <target>Usuario creado</target>
       </trans-unit>
-
       <trans-unit id="RegisterError">
         <source>Error al registrarse</source>
         <target>Error al registrarse</target>
       </trans-unit>
-
       <trans-unit id="AddFiltersWarningTittle">
         <source>Solo puedes añadir filtros cuando todos los paneles están configurados</source>
         <target>Solo puedes añadir filtros cuando todos los paneles están configurados</target>
       </trans-unit>
-
       <trans-unit id="AddFiltersWarningText">
         <source>Puedes borrar los paneles en blanco o configurarlos</source>
         <target>Puedes borrar los paneles en blanco o configurarlos</target>
       </trans-unit>
-
       <trans-unit id="AddFiltersWarningButton">
         <source>Entendido</source>
         <target>Entendido</target>
       </trans-unit>
-
       <trans-unit id="DeleteGroup">
         <source>ELIMINAR GRUPO</source>
         <target>ELIMINAR GRUPO</target>
       </trans-unit>
-
       <trans-unit id="DeleteGroupText">
         <source>Eliminarás todos los elementos relacionados con este grupo, ¿Deseas continuar?</source>
         <target>Eliminarás todos los elementos relacionados con este grupo, ¿Deseas continuar?</target>
       </trans-unit>
-
       <trans-unit id="DeleteGroupButton">
         <source>Si, ¡Eliminalo!</source>
         <target>Si, ¡Eliminalo!</target>
       </trans-unit>
-
       <trans-unit id="DeleteGroupCancel">
         <source>Cancelar</source>
         <target>Cancelar</target>
       </trans-unit>
-
       <trans-unit id="deleteDashboardWarning">
         <source>Estás a punto de borrar el informe: </source>
         <target>Estás a punto de borrar el informe: </target>
       </trans-unit>
-
       <trans-unit id="DashboardDeletedInfo">
         <source>Informe eliminado correctamente. </source>
         <target>Informe eliminado correctamente. </target>
       </trans-unit>
-
       <trans-unit id="userDetailHeader">
         <source>USUARIO </source>
         <target>USUARIO </target>
       </trans-unit>
-
       <trans-unit id="userDetailSaveButton">
         <source>GUARDAR </source>
         <target>GUARDAR </target>
       </trans-unit>
-
       <trans-unit id="UpdatedUser">
         <source>Usuario actualizado </source>
         <target>Usuario actualizado </target>
       </trans-unit>
-
       <trans-unit id="PasswordsNotEqual">
         <source>Las contraseñas no coinciden </source>
         <target>Las contraseñas no coinciden </target>
       </trans-unit>
-
       <trans-unit id="CreatedUser">
         <source>Usuario creado </source>
         <target>Usuario creado </target>
       </trans-unit>
-
       <trans-unit id="fileNotPicture">
         <source>El archivo seleccionado no es una imagen </source>
         <target>El archivo seleccionado no es una imagen </target>
       </trans-unit>
-
       <trans-unit id="cantDeleteUser">
         <source>No se puede borrar el usuario </source>
         <target>No se puede borrar el usuario </target>
       </trans-unit>
-
       <trans-unit id="cantSelfDelete">
         <source>No se puede borrar a sí mismo </source>
         <target>No se puede borrar a sí mismo </target>
       </trans-unit>
-
       <trans-unit id="DeleteUserMessage">
         <source>Estás a punto de borrar el usuario </source>
         <target>Estás a punto de borrar el usuario </target>
       </trans-unit>
-
       <trans-unit id="DeleteUser">
         <source>Si, ¡Bórralo! </source>
         <target>Si, ¡Bórralo! </target>
       </trans-unit>
-
       <trans-unit id="rowOptions">
         <source>OPCIONES DE LA FILA </source>
         <target>OPCIONES DE LA FILA </target>
       </trans-unit>
-
       <trans-unit id="EDITCAP">
         <source>EDITAR </source>
         <target>EDITAR </target>
       </trans-unit>
-
       <trans-unit id="deleteCAP">
         <source>ELIMINAR </source>
         <target>ELIMINAR </target>
       </trans-unit>
-
       <trans-unit id="DashboardFilters">
         <source>FILTROS DEL INFORME </source>
         <target>FILTROS DEL INFORME </target>
       </trans-unit>
-
       <trans-unit id="newUserTitle">
         <source>CREAR NUEVO USUARIO</source>
         <target>CREAR NUEVO USUARIO</target>
       </trans-unit>
-
       <trans-unit id="registers1" datatype="html">
         <source>
-          <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}" /> registros</source>
+          <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}"/>
+           registros
+        </source>
         <target>
-          <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}" /> registros</target>
+          <x id="INTERPOLATION" equiv-text="{{ table.filteredValue.length }}"/>
+           registros
+        </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-table/eda-table.component.html</context>
@@ -2945,16 +2847,19 @@
       </trans-unit>
       <trans-unit id="registers2" datatype="html">
         <source>
-          <x id="INTERPOLATION" equiv-text="{{ table.value.length }}" /> registros</source>
+          <x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/>
+           registros
+        </source>
         <target>
-          <x id="INTERPOLATION" equiv-text="{{ table.value.length }}" /> registros</target>
+          <x id="INTERPOLATION" equiv-text="{{ table.value.length }}"/>
+           registros
+        </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-table/eda-table.component.html</context>
           <context context-type="linenumber">112</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="EditQuery">
         <source>EDITAR CONSULTA</source>
         <target>EDITAR CONSULTA</target>
@@ -2963,7 +2868,6 @@
         <source>EDITAR CONSULTA SQL</source>
         <target>EDITAR CONSULTA SQL</target>
       </trans-unit>
-
       <trans-unit id="DatePickerAll">
         <source>Todas</source>
         <target>Todas</target>
@@ -3008,57 +2912,46 @@
         <source>Éste mes del año pasado</source>
         <target>Éste mes del año pasado</target>
       </trans-unit>
-
       <trans-unit id="DatePickerMonthPreviousYearFull">
         <source>Éste mes al completo del año pasado</source>
         <target>Éste mes al completo del año pasado</target>
       </trans-unit>
-
       <trans-unit id="DatePickerYear">
         <source>Éste año</source>
         <target>Éste año</target>
       </trans-unit>
-
       <trans-unit id="DatePickerYearPreviousYear">
         <source>El año pasado</source>
         <target>El año pasado</target>
       </trans-unit>
-
       <trans-unit id="DatePickerLast7">
         <source> Últimos 7 días </source>
         <target> Últimos 7 días </target>
       </trans-unit>
-
       <trans-unit id="DatePickerLast3">
         <source> Últimos 3 días </source>
         <target> Últimos 3 días </target>
       </trans-unit>
-
       <trans-unit id="DatePickerLast15">
         <source> Últimos 15 días </source>
         <target> Últimos 15 días </target>
       </trans-unit>
-
       <trans-unit id="DatePickerLast30">
         <source> Últimos 30 días </source>
         <target> Últimos 30 días </target>
       </trans-unit>
-
       <trans-unit id="DatePickerLast60">
         <source> Últimos 60 días </source>
         <target> Últimos 60 días </target>
       </trans-unit>
-
       <trans-unit id="DatePickerLast120">
         <source> Últimos 120 días </source>
         <target> Últimos 120 días </target>
       </trans-unit>
-
       <trans-unit id="DateSelectRange">
         <source>Selecciona un rango</source>
         <target>Selecciona un rango</target>
       </trans-unit>
-
       <trans-unit id="inputPuerto" datatype="html">
         <source>Puerto </source>
         <target>Puerto </target>
@@ -3068,12 +2961,10 @@
           <context context-type="linenumber">181</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="filterButtonDashboard">
         <source>Filtrar</source>
         <target>Filtrar</target>
       </trans-unit>
-
       <trans-unit id="kpiAlertH6" datatype="html">
         <source> Generar alerta </source>
         <target> Generar alerta </target>
@@ -3083,7 +2974,6 @@
           <context context-type="linenumber">15</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="DynamicTextColor" datatype="html">
         <source> Cambiar Color </source>
         <target> Cambiar Color </target>
@@ -3093,7 +2983,6 @@
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="kpiGreatSmallEqualH6" datatype="html">
         <source> Operador </source>
         <target> Operador </target>
@@ -3103,7 +2992,6 @@
           <context context-type="linenumber">29</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="colorKpiH6" datatype="html">
         <source> Color </source>
         <target> Color </target>
@@ -3113,7 +3001,6 @@
           <context context-type="linenumber">49</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="kpiAlerts" datatype="html">
         <source> Alertas </source>
         <target> Alertas </target>
@@ -3123,7 +3010,6 @@
           <context context-type="linenumber">60</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="addAlert" datatype="html">
         <source> Añadir alerta </source>
         <target> Añadir alerta </target>
@@ -3138,7 +3024,6 @@
           <context context-type="linenumber">76</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="alertsInfo">
         <source>Cuando el valor del kpi sea (=, &lt;,&gt;) que el valor definido cambiará el color
           del
@@ -3147,7 +3032,6 @@
           del
           texto</target>
       </trans-unit>
-
       <trans-unit id="generateView" datatype="html">
         <source>Generar vista</source>
         <target>Generar vista</target>
@@ -3157,7 +3041,6 @@
           <context context-type="linenumber">31</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="inputQueryView" datatype="html">
         <source> Vista </source>
         <target> Vista </target>
@@ -3167,7 +3050,6 @@
           <context context-type="linenumber">23</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="ViewsDatamodel" datatype="html">
         <source> Vistas </source>
         <target> Vistas </target>
@@ -3177,7 +3059,6 @@
           <context context-type="linenumber">246</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="addView" datatype="html">
         <source> Añadir vista</source>
         <target> Añadir vista</target>
@@ -3187,7 +3068,6 @@
           <context context-type="linenumber">250</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="ViewDatamodel">
         <source>Añadir Vista</source>
         <target>Añadir Vista</target>
@@ -3201,19 +3081,16 @@
           <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="topQueryH4" datatype="html">
-        <source> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
-            equiv-text="&lt;p-inputNumber&gt;" />
-    <x id="CLOSE_TAG_P-INPUTNUMBER"
-            ctype="x-p-inputNumber"
-            equiv-text="&lt;/p-inputNumber&gt;" />
+        <source>
+           Mostrar Top:   
+          <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;"/>
+          <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;"/>
         </source>
-        <target> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
-            equiv-text="&lt;p-inputNumber&gt;" />
-    <x id="CLOSE_TAG_P-INPUTNUMBER"
-            ctype="x-p-inputNumber"
-            equiv-text="&lt;/p-inputNumber&gt;" />
+        <target>
+           Mostrar Top:   
+          <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;"/>
+          <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;"/>
         </target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -3221,12 +3098,10 @@
           <context context-type="linenumber">131</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="joinTypeH4" datatype="html">
         <source> Tipo de intersección: </source>
         <target> Tipo de intersección: </target>
       </trans-unit>
-
       <trans-unit id="addCSV" datatype="html">
         <source>Añadir tabla desde CSV</source>
         <target>Añadir tabla desde CSV</target>
@@ -3241,7 +3116,6 @@
           <context context-type="linenumber">14</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="placeholderTableName" datatype="html">
         <source>Nombre de la tabla</source>
         <target>Nombre de la tabla</target>
@@ -3251,7 +3125,6 @@
           <context context-type="linenumber">5</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="placeholderInputSeparator" datatype="html">
         <source>Separador</source>
         <target>Separador</target>
@@ -3261,7 +3134,6 @@
           <context context-type="linenumber">9</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="saveCSV" datatype="html">
         <source>Generar tabla</source>
         <target>Generar tabla</target>
@@ -3271,132 +3143,106 @@
           <context context-type="linenumber">51</context>
         </context-group>
       </trans-unit>
-
       <trans-unit id="addTableTitle">
         <source>Añadir Tabla</source>
         <target>Añadir Tabla</target>
       </trans-unit>
-
       <trans-unit id="succesAddTable">
         <source>Tabla creada correctamente</source>
         <target>Tabla creada correctamente</target>
       </trans-unit>
-
       <trans-unit id="csvField">
         <source>Campo</source>
         <target>Campo</target>
       </trans-unit>
-
       <trans-unit id="csvType">
         <source>Tipo</source>
         <target>Tipo</target>
       </trans-unit>
-
       <trans-unit id="csvFormat">
         <source>Formato</source>
         <target>Formato</target>
       </trans-unit>
-
       <trans-unit id="functionalities">
         <source>Extender el modelo</source>
         <target>Extender el modelo</target>
       </trans-unit>
-
       <trans-unit id="utilities">
         <source>Utilidades</source>
         <target>Utilidades</target>
       </trans-unit>
-
       <trans-unit id="hideTables">
         <source>Ocultar todas las tablas</source>
         <target>Ocultar todas las tablas</target>
       </trans-unit>
-
       <trans-unit id="hideColumns">
         <source>Ocultar todas las columnas</source>
         <target>Ocultar todas las columnas</target>
       </trans-unit>
-
       <trans-unit id="hideAllRelations">
         <source>Ocultar todas las relaciones</source>
         <target>Ocultar todas las relaciones</target>
       </trans-unit>
-
       <trans-unit id="addFile">
         <source>Subir archivo</source>
         <target>Subir archivo</target>
       </trans-unit>
-
       <trans-unit id="FiltersH4">
         <source>Filtros</source>
         <target>Filtros</target>
       </trans-unit>
-
       <trans-unit id="dragFields">
         <source>Arrastre aquí los atributos que quiera ver en su panel</source>
         <target>Arrastre aquí las columnas que quiera ver en su panel</target>
       </trans-unit>
-
       <trans-unit id="dragFilters">
         <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
         <target>Arrastre aquí las columnas sobre los que quiera filtrar</target>
       </trans-unit>
-
       <trans-unit id="LegendPosition">
         <source>Posición de la leyenda</source>
         <target>Posición de la leyenda</target>
       </trans-unit>
-
       <trans-unit id="LinkDashboardDbFilter">
         <source> Informe a vincular </source>
         <target> Informe a vincular </target>
       </trans-unit>
-
       <trans-unit id="LinkDashboardSelectedDashboard">
         <source> Campo del informe </source>
         <target> Campo del informe </target>
       </trans-unit>
-
       <trans-unit id="DashboardLink">
         <source> Vincular con un informe </source>
         <target> Vincular con un informe </target>
       </trans-unit>
-
       <trans-unit id="panelOptions5">
         <source> Vincular con otro informe </source>
         <target> Vincular con otro informe </target>
       </trans-unit>
-
       <trans-unit id="NoTag">
         <source> Sin Etiqueta </source>
         <target> Sin Etiqueta </target>
       </trans-unit>
-
       <trans-unit id="newTag">
         <source> Nueva etiqueta </source>
         <target> Nueva etiqueta </target>
       </trans-unit>
-
       <trans-unit id="addTag">
         <source>AÑADIR ETIQUETA</source>
         <target>AÑADIR ETIQUETA</target>
       </trans-unit>
-
       <trans-unit id="AllTags">
         <source> Todos </source>
         <target> Todos </target>
       </trans-unit>
-
       <trans-unit id="NoneTags">
         <source> Ninguno </source>
         <target> Ninguno </target>
       </trans-unit>
-
       <trans-unit id="linkedTo">
         <source> Vinculado con </source>
         <target> Vinculado con </target>
       </trans-unit>
-
       <trans-unit id="DataModelHeader">
         <source> Configurar nuevo orígen de datos </source>
         <target> Configurar nuevo orígen de datos </target>
@@ -3405,82 +3251,66 @@
         <source> Optimizar consultas </source>
         <target> Optimizar consultas </target>
       </trans-unit>
-
       <trans-unit id="inputBigQueryKeys">
         <source> Subir archivo de claves (json) * </source>
         <target> Subir archivo de claves (json) * </target>
       </trans-unit>
-
       <trans-unit id="DatasourceText">
         <source> Creada correctamente </source>
         <target> Creada correctamente </target>
       </trans-unit>
-
       <trans-unit id="panelOptions0">
         <source> OPCIONES DEL PANEL </source>
         <target> OPCIONES DEL PANEL </target>
       </trans-unit>
-
       <trans-unit id="greendot">
         <source> Paneles filtrados </source>
         <target> Paneles filtrados </target>
       </trans-unit>
-
       <trans-unit id="reddot">
         <source> Paneles no relacionados </source>
         <target> Paneles no relacionados </target>
       </trans-unit>
-
       <trans-unit id="unselecteddot">
         <source> Paneles no filtrados </source>
         <target> Paneles no filtrados </target>
       </trans-unit>
-
       <trans-unit id="seconds_to_refresh">
         <source> Intervalo de recarga </source>
         <target> Intervalo de recarga </target>
       </trans-unit>
-
       <trans-unit id="sidebarModelsManagement">
         <source> Gestión de modelos </source>
         <target> Gestión de modelos </target>
       </trans-unit>
-
       <trans-unit id="Models_ms">
         <source> Modelos </source>
         <target> Modelos </target>
       </trans-unit>
-
       <trans-unit id="Dashboards_ms">
         <source> Informes </source>
         <target> Informes </target>
       </trans-unit>
-
       <trans-unit id="ExportModel">
         <source> Exportar Modelo </source>
         <target> Exportar Modelo </target>
       </trans-unit>
-
       <trans-unit id="ExportDashboard">
         <source> Exportar Informe </source>
         <target> Exportar Informe </target>
       </trans-unit>
-
       <trans-unit id="importModel">
         <source> Importar Modelo </source>
         <target> Importar Modelo </target>
       </trans-unit>
-
       <trans-unit id="importDashboard">
         <source> Importar Informe </source>
         <target> Importar Informe </target>
       </trans-unit>
-
       <trans-unit id="import">
         <source> Importar </source>
         <target> Importar </target>
       </trans-unit>
-
       <trans-unit id="DBInconsistencies">
         <source> Se han encontrado inconsistencias en el informe, los siguientes elementos no
           existen en
@@ -3488,132 +3318,106 @@
         <target> Se han encontrado inconsistencias en el informe actual, los siguientes elementos no
           existen en el modelo: </target>
       </trans-unit>
-
       <trans-unit id="modelInconsistenciesS">
         <source> Se han encontrado inconsistencias en los siguientes informes: </source>
         <target> Se han encontrado inconsistencias en los informes actuales: </target>
       </trans-unit>
-
       <trans-unit id="ModelSaved">
         <source> Modelo guardado correctamente </source>
         <target> Modelo guardado correctamente </target>
       </trans-unit>
-
       <trans-unit id="downloadModel">
         <source> Descargar modelo </source>
         <target> Descargar modelo </target>
       </trans-unit>
-
       <trans-unit id="downloadDashboard">
         <source> Descargar Informe </source>
         <target> Descargar Informe </target>
       </trans-unit>
-
       <trans-unit id="NotSavedWarning">
         <source> Hay cambios sin guardar. ¿Seguro que quieres salir? </source>
         <target> Hay cambios sin guardar. ¿Seguro que deseas continuar de todos modos? </target>
       </trans-unit>
-
       <trans-unit id="csvSep">
         <source> Separador Decimal </source>
         <target> Separador Decimal </target>
       </trans-unit>
-
       <trans-unit id="viewOk">
         <source> Vista generada correctamente</source>
         <target> Vista generada correctamente</target>
       </trans-unit>
-
       <trans-unit id="limitRowsInfo">
         <source> Establece un Top n para la consulta</source>
         <target> Establece un Top n para la consulta</target>
       </trans-unit>
-
       <trans-unit id="Limits">
         <source> Límites</source>
         <target> Límites</target>
       </trans-unit>
-
       <trans-unit id="usersPermissions">
         <source> Permisos de usuario</source>
         <target> Permisos de usuario </target>
       </trans-unit>
-
       <trans-unit id="groupsPersmissions">
         <source> Permisos de grupo</source>
         <target> Permisos de grupo </target>
       </trans-unit>
-
       <trans-unit id="users">
         <source> Usuarios</source>
         <target> Usuarios </target>
       </trans-unit>
-
       <trans-unit id="groups">
         <source> Grupos</source>
         <target> Grupos </target>
       </trans-unit>
-
       <trans-unit id="groupTable">
         <source>GRUPO</source>
         <target>GRUPO</target>
       </trans-unit>
-
       <trans-unit id="yourQuerySQL">
         <source>Mi consulta SQL</source>
         <target>Mi consulta SQL</target>
       </trans-unit>
-
       <trans-unit id="openSqlMode">
         <source>Abrir en modo SQL</source>
         <target>Abrir en modo SQL</target>
       </trans-unit>
-
       <trans-unit id="sqlTooltip">
         <source>Al cambiar de modo perderás la configuración de la consulta actual</source>
         <target>Al cambiar de modo se perderá la configuración actual de la consulta</target>
       </trans-unit>
-
       <trans-unit id="ptooltipViewQuery">
         <source>Ver consulta SQL</source>
         <target>Ver consulta SQL</target>
       </trans-unit>
-
       <trans-unit id="noStyle">
         <source>Sin estilo</source>
         <target>Sin estilo</target>
       </trans-unit>
-
       <trans-unit id="removeRowTotals">
         <source>Quitar totales de columna</source>
         <target>Quitar totales de columna</target>
       </trans-unit>
-
       <trans-unit id="removeRowSubtotals">
         <source>Quitar subtotales de columna</source>
         <target>Quitar subtotales de columna</target>
       </trans-unit>
-
       <trans-unit id="addRowTotals">
         <source>Totales de fila</source>
         <target>Totales de fila</target>
       </trans-unit>
-
       <trans-unit id="addRowSubtotals">
         <source>Subtotales de fila</source>
         <target>Subtotales de fila</target>
       </trans-unit>
-
       <trans-unit id="addColTotals">
         <source>Totales de columna</source>
         <target>Totales de columna</target>
       </trans-unit>
-
       <trans-unit id="removeColTotals">
         <source>Quitar totales de columna</source>
         <target>Quitar totales de columna</target>
       </trans-unit>
-
       <trans-unit id="addOnlyPercentages">
         <source>Sólo porcentajes</source>
         <target>Sólo porcentajes</target>
@@ -3622,179 +3426,144 @@
         <source>Sólo valores</source>
         <target>Only values</target>
       </trans-unit>
-
       <trans-unit id="addValuesPercentages">
         <source>Valores y porcentajes</source>
         <target>Valores y porcentajes</target>
       </trans-unit>
-
       <trans-unit id="addtrend">
         <source>Tendencia</source>
         <target>Tendencia</target>
       </trans-unit>
-
       <trans-unit id="removetrend">
         <source>Quitar tendencia</source>
         <target>Quitar tendencia</target>
       </trans-unit>
-
       <trans-unit id="addTotals">
         <source>Totales</source>
         <target>Totales</target>
       </trans-unit>
-
       <trans-unit id="addPercentages">
         <source>Porcentajes</source>
         <target>Porcentajes</target>
       </trans-unit>
-
       <trans-unit id="addStyles">
         <source>Còdigo de color</source>
         <target>Còdigo de color</target>
       </trans-unit>
-
       <trans-unit id="tableTitleDialog">
         <source>Propiedades de la tabla</source>
         <target>Propiedades de la tabla</target>
       </trans-unit>
-
       <trans-unit id="SubTotals">
         <source>SubTotales</source>
         <target>SubTotales</target>
       </trans-unit>
-
       <trans-unit id="gradientTitle">
         <source>Código de color para la columna: </source>
         <target>Código de color para la columna: </target>
       </trans-unit>
-
       <trans-unit id="unlink">
         <source>Desvincular del informe: </source>
         <target>Desvincular del informe: </target>
       </trans-unit>
-
       <trans-unit id="adChacheConfig">
         <source>Configurar caché del modelo</source>
         <target>Configurar caché del modelo</target>
       </trans-unit>
-
       <trans-unit id="CacheDeletedOK">
         <source>Caché eliminada correctamente</source>
         <target>Caché eliminada correctamente</target>
       </trans-unit>
-
       <trans-unit id="IncorrectCacheDelete">
         <source>No ha sido posible eliminar la caché</source>
         <target>No ha sido posible eliminar la caché</target>
       </trans-unit>
-
       <trans-unit id="RefreshCacheTitle">
         <source>Actualizar los datos del modelo cada:</source>
         <target>Actualizar los datos del modelo cada: </target>
       </trans-unit>
-
       <trans-unit id="hours">
         <source>Hora/s</source>
         <target>Hora/s</target>
       </trans-unit>
-
       <trans-unit id="days">
         <source>Día/s</source>
         <target>Día/s</target>
       </trans-unit>
-
       <trans-unit id="noCache">
         <source>Sin caché</source>
         <target>Sin caché</target>
       </trans-unit>
-
       <trans-unit id="deleteCache">
         <source>Borrar cache del modelo</source>
         <target>Borrar cache del modelo</target>
       </trans-unit>
-
       <trans-unit id="MailSending">
         <source>Envío de alertas por mail </source>
         <target>Envío de alertas por mail</target>
       </trans-unit>
-
       <trans-unit id="SendMailEvery">
         <source>Enviar mail de alerta cada:</source>
         <target>Enviar mail de alerta cada:</target>
       </trans-unit>
-
       <trans-unit id="SendMailWho">
         <source>Destinatarios </source>
         <target>Destinatarios </target>
       </trans-unit>
-
       <trans-unit id="SendMailWhat">
         <source>Contenido del mail: </source>
         <target>Contenido del mail: </target>
       </trans-unit>
-
       <trans-unit id="at">
         <source>A las</source>
         <target>A las</target>
       </trans-unit>
-
       <trans-unit id="NoValidCol">
         <source>No hay columnas válidas</source>
         <target>No hay columnas válidas</target>
       </trans-unit>
-
       <trans-unit id="securityConfig">
         <source>Configuración de seguridad</source>
         <target>Configuración de seguridad</target>
       </trans-unit>
-
       <trans-unit id="viewsecurity">
         <source>Ver configuración de seguridad</source>
         <target>Ver configuración de seguridad</target>
       </trans-unit>
-
       <trans-unit id="tablesd">
         <source>TABLAS</source>
         <target>TABLAS</target>
       </trans-unit>
-
       <trans-unit id="rolesPermisosTabla">
         <source>Visibilidad de tablas</source>
         <target>Visibilidad de tablas</target>
       </trans-unit>
-
       <trans-unit id="rolesPermisosModelo">
         <source>Visibilidad a nivel de modelo</source>
         <target>Visibilidad a nivel de modelo</target>
       </trans-unit>
-
       <trans-unit id="tablePermissionNO">
         <source>No tiene permiso para ver esta tabla</source>
         <target>No tiene permiso para ver esta tabla</target>
       </trans-unit>
-
       <trans-unit id="tablePpermissionYES">
         <source>SI tiene permiso para ver esta tabla</source>
         <target>SI tiene permiso para ver esta tabla</target>
       </trans-unit>
-
       <trans-unit id="modelPermissionNO">
         <source>No tiene permiso para ver este modelo</source>
         <target>No tiene permiso para ver este modelo</target>
       </trans-unit>
-
       <trans-unit id="modelPermissionYES">
         <source>SI tiene permiso para ver este modelo</source>
         <target>SI tiene permiso para ver este modelo</target>
       </trans-unit>
-
       <trans-unit id="anyCanSeeNO">
         <source>Los usuarios y grupos que pueden ver el modelo son SOLO los definidos
           explícitamente.</source>
         <target>Los usuarios y grupos que pueden ver el modelo son SOLO los definidos
           explícitamente.</target>
       </trans-unit>
-
       <trans-unit id="anyCanSeeYES">
         <source>Cualquier usuario puede ver el modelo. Los filtros de seguridad se definen a nivel
           de
@@ -3807,62 +3576,50 @@
         <source>PERMISOS</source>
         <target>PERMISOS</target>
       </trans-unit>
-
       <trans-unit id="visible">
         <source>VISIBLE</source>
         <target>VISIBLE</target>
       </trans-unit>
-
       <trans-unit id="column">
         <source>COLUMNAS </source>
         <target>COLUMNAS</target>
       </trans-unit>
-
       <trans-unit id="sidebarAlertsManagement">
         <source>Gestión de alertas </source>
         <target>Gestión de alertas</target>
       </trans-unit>
-
       <trans-unit id="alertTable">
         <source>ALERTAS </source>
         <target>ALERTAS</target>
       </trans-unit>
-
       <trans-unit id="gotodashboard">
         <source>Ir al informe </source>
         <target>Ir al informe</target>
       </trans-unit>
-
       <trans-unit id="alertsConfigTitle">
         <source>Gestión de alertas </source>
         <target>Gestión de alertas</target>
       </trans-unit>
-
       <trans-unit id="panelTable">
         <source>PANEL </source>
         <target>PANEL</target>
       </trans-unit>
-
       <trans-unit id="dashboardTable">
         <source>INFORME </source>
         <target>INFORME</target>
       </trans-unit>
-
       <trans-unit id="chartInfo14">
         <source>Un Parallel Set necesita dos o más categorias y un campo numérico </source>
         <target>Un Parallel Set necesita dos o más categorías y un campo numérico</target>
       </trans-unit>
-
       <trans-unit id="chartInfo15">
         <source>Un Tree Map necesita un campo numérico y una o más categorias </source>
         <target>Un Tree Map necesita un campo numérico y una o más categorías</target>
       </trans-unit>
-
       <trans-unit id="chartInfo16">
         <source>Un Scatter Plot necesita una categoria y dos o tres campos numéricos </source>
         <target>Un Scatter Plot necesita una categoría y dos o tres campos numéricos</target>
       </trans-unit>
-
       <trans-unit id="chartInfo17">
         <source>El velocímetro necesita uno o dos valores numéricos. En caso de disponer de dos
           valores el
@@ -3871,7 +3628,6 @@
           valores,
           el segundo se interpretará como límite</target>
       </trans-unit>
-
       <trans-unit id="chartInfoHistogram">
         <source>Un histograma requiere una única columna de valores numericos de los que se
           calculará la
@@ -3880,79 +3636,64 @@
           calculará la
           frecuencia</target>
       </trans-unit>
-
       <trans-unit id="chartInfoFunnel">
         <source>Un embudo necesitar una categoría y un valor numérico </source>
         <target>Un embudo necesita una categoría y un valor numérico</target>
       </trans-unit>
-
       <trans-unit id="chartInfoPyramid">
         <source>Un gráfico de pirámide necesita de dos categorías y un valor numérico </source>
         <target>Un gráfico de pirámide necesita de dos categorías y un valor numérico</target>
       </trans-unit>
-
       <trans-unit id="mailConfOk">
         <source>Credenciales correctas </source>
         <target>Credenciales correctas</target>
       </trans-unit>
-
       <trans-unit id="checkCredentials">
         <source> Comprobar credenciales</source>
         <target> Comprobar credenciales</target>
       </trans-unit>
-
       <trans-unit id="mailmanagementHeader">
         <source>Gestión de correo y envio de mails</source>
         <target>Gestión de correo y envío de correos electrónicos</target>
       </trans-unit>
-
       <trans-unit id="mailConfSaved">
         <source>Configuración guardada correctamente </source>
         <target>Configuración guardada correctamente</target>
       </trans-unit>
-
       <trans-unit id="allowCache">
         <source>Habilitar caché </source>
         <target>Habilitar caché</target>
       </trans-unit>
-
       <trans-unit id="addCacheConfig">
         <source>Configurar Caché </source>
         <target>Configurar Caché</target>
       </trans-unit>
-
       <trans-unit id="conexionh3">
         <source>Conexión </source>
         <target>Conexión</target>
       </trans-unit>
-
       <trans-unit id="newDashboardtitle">
         <source>CREA UN NUEVO INFORME</source>
         <target>CREA UN NUEVO INFORME</target>
       </trans-unit>
-
       <trans-unit id="inputCuenta">
         <source>CUENTA* </source>
         <target>CUENTA*</target>
       </trans-unit>
-
       <trans-unit id="inputCuentaEdit">
         <source>CUENTA </source>
         <target>CUENTA</target>
       </trans-unit>
-
       <trans-unit id="entidadesTitle">
         <source>Clique sobre un entidad para ver sus atributos.</source>
         <target>Haga click sobre una tabla para ver sus columnas.</target>
       </trans-unit>
-
       <trans-unit id="atributsTitle">
         <source>Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para
           consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
         <target>Columnas de una tabla. Arrastre las columnas a la selección o los filtros para
           consultarlos. Haciendo clic sobre la columna se accede a sus propiedades.</target>
       </trans-unit>
-
       <trans-unit id="seleccionTitle">
         <source>Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos
           para
@@ -3961,42 +3702,34 @@
           ellos
           para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.</target>
       </trans-unit>
-
       <trans-unit id="agregacionh5">
         <source>Agregación </source>
         <target>Agregación</target>
       </trans-unit>
-
       <trans-unit id="inputFormat">
         <source>Número de decimales </source>
         <target>Número de decimales</target>
       </trans-unit>
-
       <trans-unit id="DashboardMailingTitle">
         <source>Configuración del envío por email </source>
         <target>Configuración del envío por correo electrónico</target>
       </trans-unit>
-
       <trans-unit id="opcionMail">
         <source>Enviar por email </source>
         <target>Enviar por correo electrónico</target>
       </trans-unit>
-
       <trans-unit id="noMail">
         <source>Sin alertas de correo </source>
         <target>Sin alertas de correo</target>
       </trans-unit>
-
       <trans-unit id="dashbaordsMailingHeader">
         <source>Envio de informes por email </source>
         <target>Envío de informes por correo electrónico</target>
       </trans-unit>
-
       <trans-unit id="cumulativeSum">
         <source>Suma acumulativa </source>
         <target>Suma acumulativa</target>
       </trans-unit>
-
       <trans-unit id="ptooltipViewAlerts">
         <source>Configurar alertas</source>
         <target>Configurar alertas</target>
@@ -4005,7 +3738,6 @@
         <source>Filtros</source>
         <target>Filtros</target>
       </trans-unit>
-
       <trans-unit id="comparativeTooltip">
         <source>La función de comparar sólo se puede activar si se dispone de un campo de fecha
           agregado
@@ -4014,7 +3746,6 @@
           por mes
           o semana y un campo numérico</target>
       </trans-unit>
-
       <trans-unit id="canIeditTooltip">
         <source>Si esta opción está seleccionada, sólo el propietario del informe y los
           administradores
@@ -4023,47 +3754,38 @@
           administradores
           podrán guardar los cambios</target>
       </trans-unit>
-
       <trans-unit id="onlyIcanEditTag">
         <source>Edición privada:</source>
         <target>Edición privada:</target>
       </trans-unit>
-
       <trans-unit id="showLablesTooltip">
         <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
         <target>Mostrar u ocultar etiquetas en los gráficos</target>
       </trans-unit>
-
       <trans-unit id="showLablesPercentTooltip">
         <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
         <target>Mostrar u ocultar etiquetas en porcentaje en los gráficos</target>
       </trans-unit>
-
       <trans-unit id="columnsTooltip">
         <source>Elige cuantas columnas quieres mostrar</source>
         <target>Elige cuántas columnas deseas mostrar</target>
       </trans-unit>
-
       <trans-unit id="showLabels">
         <source>Mostrar Etiquetas</source>
         <target>Mostrar Etiquetas</target>
       </trans-unit>
-
       <trans-unit id="showLabelsPercent">
         <source>Mostrar Etiquetas en Porcentaje</source>
         <target>Mostrar Etiquetas en Porcentaje</target>
       </trans-unit>
-
       <trans-unit id="histogramColum">
         <source>Columnas</source>
         <target>Columnas</target>
       </trans-unit>
-
       <trans-unit id="trendTooltip">
         <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
         <target>La función de tendencia solo está permitida en gráficos de líneas</target>
       </trans-unit>
-
       <trans-unit id="filterTooltip">
         <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo
           LIKE a
@@ -4071,7 +3793,6 @@
         <target>Puedes agregar palabras separadas por comas, que se aplicarán como filtros LIKE al
           recuperar las tablas de tu base de datos</target>
       </trans-unit>
-
       <trans-unit id="cumulativeSumTooltip">
         <source>Si activas ésta función se calculará la suma acumulativa para los campos numéricos
           que
@@ -4081,13 +3802,11 @@
           selecciones. Solo se puede activar si el campo de fecha está agregado por mes, semana o
           día.</target>
       </trans-unit>
-
       <trans-unit id="cumsumAlertMessage1">
         <source> La suma acumulativa sólo se puede aplicar si se dispone de una única serie no
           numérica.</source>
         <target>La suma acumulativa solo se puede aplicar en una única serie no numérica.</target>
       </trans-unit>
-
       <trans-unit id="cumsumAlertMessage2">
         <source>Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna
           no
@@ -4096,122 +3815,98 @@
           no
           numérica.</target>
       </trans-unit>
-
       <trans-unit id="SaveAs">
         <source>GUARDAR COMO...</source>
         <target>GUARDAR COMO...</target>
       </trans-unit>
-
       <trans-unit id="opcionGuardarComo">
         <source>GUARDAR COMO</source>
         <target>GUARDAR COMO</target>
       </trans-unit>
-
       <trans-unit id="editStylesTitle">
         <source>EDITAR ESTILOS DEL INFORME</source>
         <target>EDITAR ESTILOS DEL INFORME</target>
       </trans-unit>
-
       <trans-unit id="dashboardTitleEdit">
         <source>Título del informe</source>
         <target>Título del informe</target>
       </trans-unit>
-
       <trans-unit id="filtersEdit">
         <source>Filtros</source>
         <target>Filtros</target>
       </trans-unit>
-
       <trans-unit id="panelTitleEdit">
         <source>Título del panel</source>
         <target>Título del panel</target>
       </trans-unit>
-
       <trans-unit id="panelContentEdit">
         <source>Contenido del panel</source>
         <target>Contenido del panel</target>
       </trans-unit>
-
       <trans-unit id="ChangeFontFamily">
         <source>Tipo de fuente</source>
         <target>Tipo de fuente</target>
       </trans-unit>
-
       <trans-unit id="ChangeFontSize">
         <source>Tamaño de fuente</source>
         <target>Tamaño de fuente</target>
       </trans-unit>
-
       <trans-unit id="ChangeFontColor">
         <source>Color de la fuente</source>
         <target>Color de la fuente</target>
       </trans-unit>
-
       <trans-unit id="ChangeBackgroundColor">
         <source>Color del fondo</source>
         <target>Color del fondo</target>
       </trans-unit>
-
       <trans-unit id="ChangePaneColor">
         <source>Color del panel</source>
         <target>Color del panel</target>
       </trans-unit>
-
       <trans-unit id="opcionEditarEstilos">
         <source>EDITAR ESTILOS</source>
         <target>EDITAR ESTILOS</target>
       </trans-unit>
-
       <trans-unit id="left">
         <source>Izquierda</source>
         <target>Izquierda</target>
       </trans-unit>
-
       <trans-unit id="center">
         <source>Centro</source>
         <target>Centro</target>
       </trans-unit>
-
       <trans-unit id="right">
         <source>Derecha</source>
         <target>Derecha</target>
       </trans-unit>
-
       <trans-unit id="resetStylesBtn">
         <source>Volver a los valores por defecto</source>
         <target>Restablecer los valores por defecto</target>
       </trans-unit>
-
       <trans-unit id="samplePanelTitle">
         <source>Previsualización</source>
         <target>Previsualización</target>
       </trans-unit>
-
       <trans-unit id="samplePanelDBName">
         <source>Título del informe</source>
         <target>Título del informe</target>
       </trans-unit>
-
       <trans-unit id="samplePanelName">
         <source>Título del panel</source>
         <target>Título del panel</target>
       </trans-unit>
-
       <trans-unit id="histoGramRangesTxt">
         <source>Rango</source>
         <target>Rango</target>
       </trans-unit>
-
       <trans-unit id="histoGramDescTxt">
         <source>Número de</source>
         <target>Número de</target>
       </trans-unit>
-
       <trans-unit id="histoGramDescTxt2">
         <source>en este rango</source>
         <target>en este rango</target>
       </trans-unit>
-
       <trans-unit id="sidebarInform" datatype="html">
         <source>Crear Informe</source>
         <target>Crear Informe</target>
@@ -4224,22 +3919,18 @@
         <source>Si</source>
         <target>Sí</target>
       </trans-unit>
-
       <trans-unit id="no">
         <source>No</source>
         <target>No</target>
       </trans-unit>
-
       <trans-unit id="duplicatedColumnNameLabel">
         <source>Nombre columna duplicada:</source>
         <target>Nombre de columna duplicada:</target>
       </trans-unit>
-
       <trans-unit id="hiddenAttributes">
         <source>Atributos ocultos</source>
         <target>Mostrar/ocultar columnas ocultas</target>
       </trans-unit>
-
       <trans-unit id="atributosH4+" datatype="html">
         <source>
           Columnas de:
@@ -4250,19 +3941,11 @@
       </trans-unit>
       <trans-unit id="atributosH4interpolation" datatype="html">
         <source>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
         </source>
         <target>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
         </target>
-      </trans-unit>
-      <trans-unit id="positionFilterInReport">
-        <source>Posición del filtro en el informe</source>
-        <target>Posición del filtro en el informe</target>
-      </trans-unit>
-      <trans-unit id="filterVisibleScope">
-        <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica</source>
-        <target>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica</target>
       </trans-unit>
     </body>
   </file>

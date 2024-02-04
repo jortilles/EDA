@@ -65,24 +65,34 @@
                                 <i class="mdi mdi-logout"></i> <span i18n="@@sidebarLogOut">Cerrar sesión</span>
                             </a>
                         </li>
-                        
                     </ul>
                 </li>
 
                 <li class="nav-devider"></li>
 
                 <li class="user-profile">
-                    <a class="has-arrow waves-effect waves-dark" (click)="checkNotSaved()"  aria-expanded="false">
+                    <a class="has-arrow waves-effect waves-dark" href="#"  (click)="checkNotSaved()" aria-expanded="false">
+
                         <i class="mdi mdi-view-dashboard"></i>
-                        <span class="hide-menu ml-2" i18n="@@sidebarMyDashboards">Mis informes</span>
+                        <span class="hide-menu ml-2" i18n="@@Dashboards_ms"> Informes </span>
                     </a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li>
+                            <a class="waves-effect waves-dark" (click)="checkNotSaved()">
+                                <i class="mdi mdi-view-dashboard"></i>
+                                <span i18n="@@sidebarMyDashboards"> Ver informes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a  class="waves-effect waves-dark" (click)="createDashboard = true;">
+                                <i class="mdi mdi-view-dashboard"></i>
+                                <span i18n="@@tituloNuevoInforme"> Nuevo informe</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
-
-
-
-
-                <li   *ngIf="userService.isDataSourceCreator||userService.isAdmin"  class="nav-devider"></li>
+                <li *ngIf="userService.isDataSourceCreator||userService.isAdmin"  class="nav-devider"></li>
 
                 <li *ngIf="userService.isDataSourceCreator||userService.isAdmin" class="user-profile">
                     <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false" id="edaNewDataSource">
@@ -129,7 +139,7 @@
                         <li>
                             <a  style="cursor: pointer;" (click)="redirectLocale('GL')" >Galego</a>
                         </li>
-                        
+
                     </ul>
                 </li>
                 <li class="nav-devider"></li>
@@ -143,3 +153,5 @@
 
 <div *ngIf="mobileSize && !sidebarService.toggleSideNav" class="out-sidebar" (click)="toggleClassSide()">
 </div>
+
+<app-create-dashboard *ngIf="createDashboard" (close)="onCloseCreateDashboard($event)"></app-create-dashboard>
