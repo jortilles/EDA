@@ -59,7 +59,7 @@ export class CalculatedColumnDialogComponent extends EdaDialogAbstract {
         display_name: { default: this.form.value.colName, localized: Array(0) },
         row_granted_roles: [],
         SQLexpression: '',
-        computed_column : 'computed_numeric',
+        computed_column : 'computed',
         visible: true
 
       };

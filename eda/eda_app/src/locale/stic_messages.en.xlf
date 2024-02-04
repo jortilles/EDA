@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2"
+  xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="sidebarMyDashboards" datatype="html">
+        <source>Mis informes</source>
+        <target>My dashboards</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tituloNuevoInforme" datatype="html">
+        <source> Crear nuevo informe
+        </source>
+        <target>Create new dashboard</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="saveModel" datatype="html">
+        <source>Guardar modelo de datos</source>
+        <target>Save datamodel</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="direccionMail" datatype="html">
+        <source>Dirección Email</source>
+        <target>Username</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aggTmean">
+        <source>Media</source>
+        <target>Average</target>
+      </trans-unit>
+      <trans-unit id="topQueryH4" datatype="html">
+        <source> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
+            equiv-text="&lt;p-inputNumber&gt;" />
+    <x id="CLOSE_TAG_P-INPUTNUMBER"
+            ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
+        </source>
+        <target> Show Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
+            equiv-text="&lt;p-inputNumber&gt;" />
+    <x id="CLOSE_TAG_P-INPUTNUMBER"
+            ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
+        </target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">
+            app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="hiddenAttributes">
+        <source>Atributos ocultos</source>
+        <target>Show/hide hidden columns</target>
+      </trans-unit>
+
+      <trans-unit id="atributosH4+" datatype="html">
+        <source>
+          Columnas de:
+        </source>
+        <target>
+          Columns of:
+        </target>
+      </trans-unit>
+      <trans-unit id="atributosH4interpolation" datatype="html">
+        <source>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </source>
+        <target>
+          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+        </target>
+      </trans-unit>
+
+    </body>
+  </file>
+</xliff>

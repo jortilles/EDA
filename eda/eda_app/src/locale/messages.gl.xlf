@@ -12,7 +12,7 @@
       </trans-unit>
       <trans-unit id="placeholderInputPassword" datatype="html">
         <source>Contraseña</source>
-        <target>Contrasinal</target>
+        <target>Contraseña</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">31</context>
@@ -36,7 +36,7 @@
       </trans-unit>
       <trans-unit id="e369e13629132e32dcd958b82261059243f21d58" datatype="html">
         <source>Contraseña</source>
-        <target>Contrasinal</target>
+        <target>Contraseña</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/register/register.component.html</context>
           <context context-type="linenumber">31</context>
@@ -557,7 +557,7 @@
       <trans-unit id="colorsChartH6" datatype="html">
         <source>
           Colores
-</source>
+        </source>
         <target>
           Colores
 </target>
@@ -1028,12 +1028,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-        <source>
-          CREAR UN NUEVO INFORME
-</source>
-        <target>
-          CREAR UN NUEVO INFORME
-</target>
+        <source>CREAR UN NUEVO INFORME</source>
+        <target>Crear un nuevo informe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
           <context context-type="linenumber">7</context>
@@ -1930,6 +1926,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="saveModel" datatype="html">
+        <source>Guardar modelo de datos</source>
         <target>Guardar modelo de datos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -2348,7 +2345,7 @@
 
       <trans-unit id="passwordLogin" datatype="html">
         <source>Contraseña</source>
-        <target>Contrasinal</target>
+        <target>Contraseña</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2531,7 +2528,7 @@
 
       <trans-unit id="col">
         <source>Atributo</source>
-        <target>Atributo:</target>
+        <target>Columna:</target>
       </trans-unit>
       <trans-unit id="table">
         <source>de la entidad</source>
@@ -4240,7 +4237,7 @@
 
       <trans-unit id="hiddenAttributes">
         <source>Atributos ocultos</source>
-        <target>Mostar/ocultar columnas ocultas</target>
+        <target>Mostrar/ocultar columnas ocultas</target>
       </trans-unit>
 
       <trans-unit id="atributosH4+" datatype="html">
@@ -4259,7 +4256,6 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
         </target>
       </trans-unit>
-
     </body>
   </file>
 </xliff>

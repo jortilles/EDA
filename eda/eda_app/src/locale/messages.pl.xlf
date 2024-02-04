@@ -114,8 +114,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="sidebarMyDashboards" datatype="html">
-<source>Mis informes</source>
-<target>Moje raporty</target>
+<source> Mis informes</source>
+<target> Moje raporty</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
 <context context-type="linenumber">68</context>
@@ -302,7 +302,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                                     Fecha inicio
 </source>
 <target>
-                                    Data rozpoczęcia 
+                                    Data rozpoczęcia
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/column-dialog/column-dialog.component.html</context>
@@ -729,11 +729,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="indicaciones1" datatype="html">
-<source> Puedes realizar consultas SQL sobre el esquema definido en tu modelo. 
-                                    Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal 
+<source> Puedes realizar consultas SQL sobre el esquema definido en tu modelo.
+                                    Para ello introduce la consulta en el cuadro de texto y selecciona la tabla principal
                                     (puede ser cualquiera de las que aparecen en la consulta).
                                     Usaremos esta tabla para vincular la consulta a los filtros del informe. </source>
-<target>  You can perform SQL queries on the schema defined in your model. 
+<target>  You can perform SQL queries on the schema defined in your model.
                                     To do this, enter the query in the text box and select the main table
                                     (It can be any of those that appear in the query).
                                     We will use this table to link the query to the report filters. </target>
@@ -753,7 +753,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="indicaciones3" datatype="html">
 <source>
                                         Solo es posible usar las tablas del esquema definido en el modelo (si lo hay)
-</source> 
+</source>
 <target>Możliwe tylko użycie tabel schematu zdefiniowanych w modelu (jeżeli są).
 </target>
 <context-group purpose="location">
@@ -929,11 +929,9 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="tituloNuevoInforme" datatype="html">
-<source>
-                    CREAR UN NUEVO INFORME
+<source> Crear nuevo informe
 </source>
-<target>
-                    STWÓRZ NOWY RAPORT
+<target> Stwórz nowy raport
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -965,7 +963,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
                 MIS GRUPOS
 </source>
 <target>
-                MOJE GRUPY 
+                MOJE GRUPY
 </target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -1745,6 +1743,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="saveModel" datatype="html">
+<source>Guardar modelo de datos</source>
 <target>Zapisz model danych</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
@@ -1899,7 +1898,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartTypes7">
 <source>Gráfico de Barras Horizontales</source>
 <target>Poziomy wykres słupkowy</target>
-
 </trans-unit>
 <trans-unit id="chartTypesPyramid">
 <source>Gráfico de Piramide</source>
@@ -2395,12 +2393,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartInfo13">
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
 <target>Wykres niedostępny dla bieżących danych.</target>
-
 </trans-unit>
 <trans-unit id="chartInfoBubble">
 <source>Un gráfico de burbujas necesita una categorías y una série numérica.</source>
 <target>Wykres bąbelkowy wymaga jednej kategorii i jednej serii numerycznej.</target>
-
 </trans-unit>
 
 
@@ -3112,17 +3108,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="AllTags">
-
     <source>Todos</source>
     <target>Wszystko</target>
   </trans-unit>
 
-    
+
   <trans-unit id="NoneTags">
     <source> Ninguno  </source>
     <target>Brak </target>
   </trans-unit>
-  
+
 
   <trans-unit id="linkedTo">
     <source> Vinculado con  </source>
@@ -3404,7 +3399,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>No ha sido posible eliminar la caché</source>
     <target>Błąd podczas usuwania pamięci podręcznej</target>
   </trans-unit>
-  
+
   <trans-unit id="RefreshCacheTitle">
     <source>Actualizar los datos del modelo cada:</source>
     <target>Aktualizuj model danych co:  </target>
@@ -3419,7 +3414,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Día/s</source>
     <target>Dzień/dni</target>
   </trans-unit>
-  
+
   <trans-unit id="noCache">
     <source>Sin caché</source>
     <target>Brak pamięci podręcznej</target>
@@ -3466,7 +3461,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Configuración de seguridad</source>
     <target>Ustawienia bezpieczeństwa</target>
   </trans-unit>
-  
+
   <trans-unit id="viewsecurity">
     <source>Ver configuración de seguridad</source>
     <target>Zobacz ustawienia bezpieczeństwa </target>
@@ -3517,7 +3512,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>ZEZWOLENIA</target>
   </trans-unit>
 
-  
+
   <trans-unit id="visible">
     <source>VISIBLE</source>
     <target>WIDOCZNY</target>
@@ -3592,7 +3587,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
    <trans-unit id="mailConfOk">
     <source>Credenciales correctas </source>
     <target> Prawidłowe dane uwierzytelniające</target>
-
   </trans-unit>
 
   <trans-unit id="chartInfoPyramid">
@@ -3634,16 +3628,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>CREA UN NUEVO INFORME</source>
     <target>TWÓJ NOWY RAPORT</target>
   </trans-unit>
-  
+
  <trans-unit id="inputCuenta">
     <source>CUENTA*  </source>
-    <target>KONTO* </target>   
+    <target>KONTO* </target>
   </trans-unit>
 
    <trans-unit id="inputCuentaEdit">
     <source>CUENTA  </source>
     <target>KONTO </target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="entidadesTitle">
     <source>Clique sobre un entidad para ver sus atributos.</source>
@@ -3663,234 +3657,234 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <trans-unit id="agregacionh5">
     <source>Agregación   </source>
     <target>Agregacja  </target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="inputFormat">
     <source>Número de decimales   </source>
     <target>Decimal places  </target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="DashboardMailingTitle">
     <source>Configuración del envío por email  </source>
     <target>Wysyłanie wiadomości email </target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="opcionMail">
     <source>Enviar por email  </source>
     <target>Wyślij email  </target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="noMail">
     <source>Sin alertas de correo </source>
     <target>Bez powiadomienia  </target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="dashbaordsMailingHeader">
     <source>Envio de informes por email </source>
     <target>Dashboards mail sending</target>
-  </trans-unit> 
+  </trans-unit>
 
  <trans-unit id="cumulativeSum">
     <source>Suma acumulativa   </source>
     <target>Łączna suma </target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="ptooltipViewAlerts">
     <source>Configurar alertas</source>
     <target>Ustawienia powiadomień</target>
-  </trans-unit> 
+  </trans-unit>
 
 
   <trans-unit id="inputFilter">
     <source>Filtros</source>
     <target>Filtery</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="comparativeTooltip">
     <source>La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes y un único campo numèrico agregado</source>
     <target>Compare function is only allowed in queries with one date field monthly or weekly aggregated and one numeric field</target>
-  </trans-unit> 
+  </trans-unit>
 
 
      <trans-unit id="canIeditTooltip">
     <source>Si esta opción está seleccionada, sólo el propietario del informe y los administradores podrán guardar los cambios</source>
     <target>Jeśli ta opcja jest zaznaczona, tylko właściciel raportu i administratorzy będą mogli zapisywać zmiany</target>
-  </trans-unit> 
+  </trans-unit>
      <trans-unit id="onlyIcanEditTag">
     <source>Edición privada:</source>
     <target>Edycja prywatna:  </target>
-  </trans-unit> 
+  </trans-unit>
 
        <trans-unit id="showLabels">
     <source>Mostrar Etiquetas</source>
     <target>Pokaż tagi</target>
-  </trans-unit> 
+  </trans-unit>
              <trans-unit id="showLabelsPercent">
     <source>Mostrar Etiquetas en Porcentaje</source>
     <target>Pokaż tagi w procentach</target>
-  </trans-unit> 
- 
+  </trans-unit>
+
        <trans-unit id="histogramColum">
     <source>Columnas</source>
     <target>kolumny</target>
-  </trans-unit> 
+  </trans-unit>
 
        <trans-unit id="showLablesTooltip">
     <source>Mostrar o ocultar las etiquetas sobre los gráficos</source>
     <target>Pokaż lub ukryj etykiety na wykresach</target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="showLablesTooltip">
     <source>Mostrar o ocultar las etiquetas en porcentaje sobre los gráficos</source>
     <target>Pokaż lub ukryj etykiety procentowe na wykresach</target>
-  </trans-unit> 
+  </trans-unit>
 
          <trans-unit id="columnsTooltip">
     <source>Elige cuantas columnas quieres mostrar</source>
     <target>Wybierz ile kolumn chcesz wyświetlić</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="trendTooltip">
     <source>La función de añadir tendencia sólo se puede activar en los gràficos de lineas</source>
     <target>Funkcja trendu jest dozwolona tylko na wykresach liniowych</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="filterTooltip">
     <source>Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos</source>
     <target>Można dodać słowa oddzielone przecinkami, które zostaną zastosowane jako filtry LIKE podczas pobierania tabel z bazy danych.</target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="cumulativeSumTooltip">
-    <source>Si activas ésta función se calculará la suma acumulativa 
+    <source>Si activas ésta función se calculará la suma acumulativa
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes o dia.</source>
-    <target>Aktywacja tej funkcji spowoduje obliczenie sumy skumulowanej dla plików numerycznych. 
+    <target>Aktywacja tej funkcji spowoduje obliczenie sumy skumulowanej dla plików numerycznych.
                                         Można go aktywować tylko wtedy, gdy pole danych jest agregowane według miesiąca, tygodnia lub dnia. </target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="cumsumAlertMessage1">
     <source> La suma acumulativa sólo se puede aplicar si se dispone de una única serie no numérica.</source>
     <target>Suma kumulatywna może być zastosowana tylko w jednej serii nienumerycznej.</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="cumsumAlertMessage2">
     <source>Puedes desactivar la función acumulativa en el campo de fecha o quitar una columna no numérica.</source>
     <target>Wyłącz funkcję kumulacji w polu danych lub usuń jedno pole nienumeryczne. </target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="SaveAs">
     <source>GUARDAR COMO...</source>
     <target>ZAPISZ JAKO...  </target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="opcionGuardarComo">
     <source>GUARDAR COMO</source>
     <target>ZAPISZ JAKO</target>
-  </trans-unit> 
+  </trans-unit>
 
 
    <trans-unit id="editStylesTitle">
     <source>EDITAR ESTILOS DEL INFORME</source>
     <target>EDYCJA STYLU PANELU</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="dashboardTitleEdit">
     <source>Título del informe</source>
     <target>TYTUŁ RAPORTU</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="filtersEdit">
     <source>Filtros</source>
     <target>Filtry</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="panelTitleEdit">
     <source>Título del panel</source>
     <target>Tytuł panelu</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="panelContentEdit">
     <source>Contenido del panel</source>
     <target>Treść panelu</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="ChangeFontFamily">
     <source>Tipo de fuente</source>
     <target>Typ czcionki</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="ChangeFontSize">
     <source>Tamaño de fuente</source>
     <target>Rozmiar czcionki</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="ChangeFontColor">
     <source>Color de la fuente</source>
     <target>Kolor czcionki</target>
-  </trans-unit> 
+  </trans-unit>
 
 
   <trans-unit id="ChangeBackgroundColor">
     <source>Color del fondo</source>
     <target>Kolor tła </target>
-  </trans-unit> 
-  
+  </trans-unit>
+
      <trans-unit id="ChangePaneColor">
     <source>Color del panel</source>
     <target>Kolor panelu</target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="opcionEditarEstilos">
     <source>EDITAR ESTILOS</source>
     <target>EDYTUJ STYL</target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="left">
     <source>Izquierda</source>
     <target>Lewo</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="center">
     <source>Centro</source>
     <target>Po środku</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="right">
     <source>Derecha</source>
     <target>Prawo</target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="resetStylesBtn">
     <source>Volver a los valores por defecto</source>
     <target>Ustaw domyślnie</target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="samplePanelTitle">
     <source>Previsualización</source>
     <target>Podgląd</target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="samplePanelDBName">
     <source>Título del informe</source>
     <target>Tytuł raportu</target>
-  </trans-unit> 
+  </trans-unit>
 
    <trans-unit id="samplePanelName">
     <source>Título del panel</source>
     <target>Tytuł raportu</target>
-  </trans-unit> 
-  
+  </trans-unit>
+
    <trans-unit id="histoGramRangesTxt">
     <source>Rango</source>
     <target>Zakres</target>
-  </trans-unit> 
+  </trans-unit>
 
   <trans-unit id="histoGramDescTxt">
     <source>Número de</source>
     <target>Ilość</target>
-  </trans-unit> 
+  </trans-unit>
 
       <trans-unit id="histoGramDescTxt2">
     <source>en este rango</source>
     <target>w tym zakresie</target>
-  </trans-unit> 
+  </trans-unit>
 
 
 <trans-unit id="si">

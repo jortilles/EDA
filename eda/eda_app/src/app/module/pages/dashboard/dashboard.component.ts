@@ -165,8 +165,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             setTimeout(() => {
                 unsetPanels.forEach(panel => {
                     globalFilters.forEach(filter => {
-                        filter.panelList.push(panel.panel.id);
-                        panel.setGlobalFilter(this.formatFilter(filter))
+                        if (panel) {
+                            filter.panelList.push(panel.panel.id);
+                            panel.setGlobalFilter(this.formatFilter(filter))
+                        }
                     });
                 });
             }, 0);
@@ -559,15 +561,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.panels.push(panel);
     }
 
-    public reloadPanelsWithTimeOut() {
-        setTimeout(() => this.reloadPanels(), 250);
+    public reloadPanelsWithTimeOut(time?: number) {
+        setTimeout(() => {
+            this.reloadPanels()
+        }, time || 250);
     }
 
     public reloadPanels(): void {
-        this.edaPanels.forEach(panel => {
+        this.edaPanels.forEach(async (panel) => {
             if (panel.currentQuery.length !== 0) {
                 panel.display_v.chart = '';
-                panel.runQueryFromDashboard(true);
+                await panel.runQueryFromDashboard(true);
+                panel.panelChart.updateComponent();
             }
         });
     }
@@ -738,6 +743,23 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.filterController = undefined;
             }
         });
+
+        // const params = {
+        //     panels: this.panels,
+        //     dataSource: this.dataSource
+        // };
+        // this.display_v.rightSidebar = false;
+        // this.filterController = new EdaDialogController({
+        //     params,
+        //     close: (event, response) => {
+        //         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        //             this.onAddGlobalFilter(response.filterList, response.targetTable)
+        //             //not saved alert message
+        //             this.dashboardService._notSaved.next(true);
+        //         }
+        //         this.filterController = undefined;
+        //     }
+        // });
     }
 
     private reloadOnGlobalFilter(): void {
@@ -1064,7 +1086,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         filter.panelList
             .map(id => this.edaPanels.toArray().find(p => p.panel.id === id))
             .forEach((panel) => {
-                panel.setGlobalFilter(newFilter);
+                if (panel) panel.setGlobalFilter(newFilter);
             });
         
         // this.reloadPanels();
@@ -1210,37 +1232,106 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-
-    onDuplicatePanel(panel){
+    public onDuplicatePanel(panel): void {
         this.panels.push(panel);
         this.dashboardService._notSaved.next(true);
 
     }
 
+    // public async onPanelAction(event: IPanelAction): Promise<void> {
+    //     if (event.code === 'ADDFILTER') {
+    //         const data = event?.data;
+    //         const panel = event?.data?.panel;
+    //         if (data?.inx) {
+    //             const column = event.data.query.find((query: any) => query?.display_name?.default === data.filterBy);
+    //             const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
+
+    //             if (column && table) {
+    //                 let config = this.setPanelsToFilter(panel);
+                    
+    //                 let globalFilter = {
+    //                     id: `${table.table_name}_${column.column_name}`,  //this.fileUtils.generateUUID(),
+    //                     isGlobal: true,
+    //                     applyToAll: config.applyToAll,
+    //                     panelList: config.panelList.map(p => p.id), 
+    //                     table: { label: table.display_name.default, value: table.table_name },
+    //                     column: { label: column.display_name.default, value: column },
+    //                     selectedItems: [data.label]
+    //                 };
+
+    //                 await this.onAddGlobalFilter(globalFilter, table.table_name);
+
+    //                 //not saved alert message
+    //                 this.dashboardService._notSaved.next(true);
+    //                 this.reloadPanelsWithTimeOut();
+
+    //             }
+    //         }
+    //     }
+    // }
+
+    // private setPanelsToFilter(panel: any): any {
+    //     const newPanel = this.panels.find(p => p.id === panel.id);
+    //     const panels = this.globalFiltersService.panelsToDisplay(this.dataSource.model.tables, this.panels, newPanel);
+    //     const panelsToFilter = panels.filter(p => p.avaliable === true);
+
+    //     return {
+    //         panelList: panelsToFilter,
+    //         applyToAll: (panels.length === panelsToFilter.length)
+    //     };
+    // }
+
+    // private async onAddGlobalFilter(filter: any, targetTable: string): Promise<void> {
+    //     let existFilter = this.filtersList.find((f) => f.id === `${targetTable}_${filter.column.value?.column_name}`); 
+    //     if (existFilter) {
+    //         existFilter = filter;
+    //     } else {
+    //         this.filtersList.push(filter);
+    //     }
+
+    //     // Load Filter dropdwons option s
+    //     if (filter.column.value.column_type === 'date' && filter.selectedItems.length > 0) {
+    //         await this.loadDatesFromFilter(filter);
+    //     } else {
+    //         await this.loadGlobalFiltersData(filter, targetTable);
+    //     }
+
+    //     // If default values are selected filter is applied
+    //     if (filter.selectedItems.length > 0) {
+    //         await this.applyGlobalFilter(filter);
+    //     }
+
+    //     // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
+    //     if (filter.applyToAll && (this.applyToAllfilter.present === false)) {
+    //         this.applyToAllfilter = { present: true, refferenceTable: targetTable, id: filter.id };
+    //         await this.updateApplyToAllFilterInPanels();
+    //     }
+    // }
+
 
 
     public onResetWidgets(): void {
             // Get the queries in the dashboard for delete it from cache
-            const queries = [];
-            this.panels.forEach( p=> {
-                    if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
-                        queries.push( p.content.query.query );
-                    }
-                });
-            let body =
-            {
-                model_id: this.dataSource._id,
-                queries: queries
-            }
+        const queries = [];
+        this.panels.forEach( p=> {
+                if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
+                    queries.push( p.content.query.query );
+                }
+            });
+        let body =
+        {
+            model_id: this.dataSource._id,
+            queries: queries
+        }
 
-            this.dashboardService.cleanCache(body).subscribe(
-                res => {
-                    this.initializeDashboard();
-                    this.display_v.rightSidebar = false;
-                    this.dashboardService._notSaved.next(false);
-                },
-                err => console.log(err)
-            )
+        this.dashboardService.cleanCache(body).subscribe(
+            res => {
+                this.initializeDashboard();
+                this.display_v.rightSidebar = false;
+                this.dashboardService._notSaved.next(false);
+            },
+            err => console.log(err)
+        )
     }
 
     public getsharedURL(): string {
