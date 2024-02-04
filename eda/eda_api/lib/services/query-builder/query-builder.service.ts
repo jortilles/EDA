@@ -777,9 +777,9 @@ export abstract class QueryBuilderService {
                 values.forEach(f => {
                     if(f.filter_type == 'not_null'){
                         //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
-                        filterSTR += this.filterToString(f, type) + '\n  and ';
+                        filterSTR += this.filterToString(f ) + '\n  and ';
                     }else{
-                        filterSTR += this.filterToString(f, type) + '\n  or ';
+                        filterSTR += this.filterToString(f ) + '\n  or ';
                     }
                     
 
