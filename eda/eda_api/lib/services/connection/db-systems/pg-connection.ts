@@ -227,7 +227,7 @@ export class PgConnection extends AbstractConnection {
             column.aggregation_type = AggregationTypes.getValuesForOthers();
         }
 
-        column.computed_column == 'no'   // las posibilidades son no, computed_numeric, computed_string
+        column.computed_column == 'no'   // las posibilidades son no, computed, 
 
         column.column_granted_roles = [];
         column.row_granted_roles = [];

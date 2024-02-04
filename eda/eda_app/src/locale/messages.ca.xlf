@@ -119,8 +119,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="sidebarMyDashboards" datatype="html">
-        <source>Mis informes</source>
-        <target>Els meus informes</target>
+        <source> Mis informes</source>
+        <target> Els meus informes</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
           <context context-type="linenumber">68</context>
@@ -687,10 +687,10 @@
       <trans-unit id="atributosH4" datatype="html">
         <source>
           Atributos
-        </source>
+</source>
         <target>
           Atributs
-        </target>
+</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -1042,11 +1042,9 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-        <source>
-          CREAR UN NUEVO INFORME
+        <source> Crear nuevo informe
 </source>
-        <target>
-          CREAR UN NOU INFORME
+        <target> Crear nou informe
 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -1373,7 +1371,7 @@
       </trans-unit>
       <trans-unit id="inputPassword" datatype="html">
         <source>Contraseña *</source>
-        <target>Contrasenya *</target>
+        <target>Contrassenya *</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/users-management/users-detail/users-detail.component.html</context>
@@ -1406,7 +1404,7 @@
       </trans-unit>
       <trans-unit id="inputRepitePassword" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repeteix la contrasenya</target>
+        <target>Repeteix la contrassenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/users-management/users-detail/users-detail.component.html</context>
@@ -1936,6 +1934,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="saveModel" datatype="html">
+        <source>Guardar modelo de datos</source>
         <target>Guardar model de dades</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
@@ -2290,7 +2289,7 @@
       <trans-unit id="labelnewPass" datatype="html">
         <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en
           blanco)</source>
-        <target>Nova contrasenya (si no vols modificar la teva contrasenya actual deixa el camp en
+        <target>Nova contrassenya (si no vols modificar la teva contrassenya actual deixa el camp en
           blanc)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
@@ -2299,7 +2298,7 @@
       </trans-unit>
       <trans-unit id="namePass" datatype="html">
         <source>password</source>
-        <target>contrasenya</target>
+        <target>contrassenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2307,7 +2306,7 @@
       </trans-unit>
       <trans-unit id="labelRepeatPass" datatype="html">
         <source>Repite la nueva contraseña </source>
-        <target>Repeteix la nova contrasenya </target>
+        <target>Repeteix la nova contrassenya </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">31</context>
@@ -2315,7 +2314,7 @@
       </trans-unit>
       <trans-unit id="nameNewPass" datatype="html">
         <source>newPassword</source>
-        <target>nova contrasenya</target>
+        <target>nova contrassenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">32</context>
@@ -2341,7 +2340,7 @@
 
       <trans-unit id="newPassPlaceholderProfile" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repeteix la contrasenya</target>
+        <target>Repeteix la contrassenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">32</context>
@@ -2350,7 +2349,7 @@
 
       <trans-unit id="direccionMail" datatype="html">
         <source>Dirección Email</source>
-        <target>Nom d'usuari</target>
+        <target>Direcció email</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">22</context>
@@ -2359,7 +2358,7 @@
 
       <trans-unit id="passwordLogin" datatype="html">
         <source>Contraseña</source>
-        <target>Contrasenya</target>
+        <target>Contrassenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
           <context context-type="linenumber">28</context>
@@ -2398,7 +2397,7 @@
 
       <trans-unit id="newPassPlaceholderUsers" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repeteix la contrasenya</target>
+        <target>Repeteix la contrassenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/users-management/users-detail/users-detail.component.html</context>
@@ -3198,12 +3197,12 @@
       </trans-unit>
 
       <trans-unit id="topQueryH4" datatype="html">
-        <source> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
+        <source> Mostrar Top: <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
             equiv-text="&lt;p-inputNumber&gt;" />
       <x id="CLOSE_TAG_P-INPUTNUMBER"
             ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
         </source>
-        <target> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
+        <target> Mostrar Top: <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
             equiv-text="&lt;p-inputNumber&gt;" />
       <x id="CLOSE_TAG_P-INPUTNUMBER"
             ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
@@ -4213,25 +4212,19 @@
         <target>Nom columna duplicada:</target>
       </trans-unit>
 
-      <trans-unit id="hiddenAttributes">
-        <source>Atributos ocultos</source>
-        <target>Mostra/amaga columnes ocultes</target>
+      <trans-unit id="addBtn">
+        <source>Añadir</source>
+        <target>Afegir</target>
       </trans-unit>
-      <trans-unit id="atributosH4+" datatype="html">
-        <source>
-          Columnas de:
-        </source>
-        <target>
-          Columnes de:
-        </target>
+
+      <trans-unit id="measureLabel">
+        <source>Medida:</source>
+        <target>Mesura</target>
       </trans-unit>
-      <trans-unit id="atributosH4interpolation" datatype="html">
-        <source>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
-        </source>
-        <target>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
-        </target>
+
+      <trans-unit id="operationLabel">
+        <source>Operación</source>
+        <target>Operació</target>
       </trans-unit>
       <trans-unit id="canIfilter">
         <source>Visiblidad del filtro</source>
@@ -4255,6 +4248,22 @@
         <source>Posición del filtro en el informe</source>
         <target>Posició del filtre a l'informe</target>
       </trans-unit>
+
+      <trans-unit id="numericalValueLabel">
+        <source>Valor numérico</source>
+        <target>Valor numèric</target>
+      </trans-unit>
+
+      <trans-unit id="newNameLabel">
+        <source>Nuevo nombre</source>
+        <target>Nou nom</target>
+      </trans-unit>
+
+      <trans-unit id="allowSSL">
+        <source>Conexión mediante SSL</source>
+        <target>Conexió mijanjant SSL</target>
+      </trans-unit>
+
 
     </body>
   </file>

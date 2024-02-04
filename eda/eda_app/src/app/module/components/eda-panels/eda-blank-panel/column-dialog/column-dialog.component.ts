@@ -291,7 +291,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.filter.switch = handler.switchBtn;
 
             if (handler.switchBtn) {
-                this.loadDropDrownData();            
+                this.loadDropDrownData();
                 this.display.switchButton = true;
             }
 
@@ -388,7 +388,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
                 this.formatDate = { display_name: '', value: tmpDateFormat, selected: true };
                 this.addFormatDate()
-
                 this.controller.params.currentQuery.find(c => column.column_name === c.column_name && column.table_id === c.table_id  && c.display_name.default === column.display_name.default).format = tmpDateFormat;
                 return;
             }
@@ -500,8 +499,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 dataSource: this.controller.params.inject.dataSource._id,
                 dashboard: this.controller.params.inject.dashboard_id,
                 panel: this.controller.params.panel._id,
-                filters: [],
-                forSelector: true
+                forSelector: true,
+                filters: []
             };
             this.dashboardService.executeQuery(this.queryBuilder.normalQuery([this.selectedColumn], params)).subscribe(
                 res => this.dropDownFields = res[1].map(item => ({ label: item[0], value: item[0] })),

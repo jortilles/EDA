@@ -120,7 +120,7 @@ export class DataSourceController {
                         }
                     });
 
-                    if (users.includes(userID) || roles.length > 0 || allCanSee == 'true') {
+                    if (users.includes(userID) || roles.length > 0 || allCanSee == 'true'  || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
                         output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
                     }
 
@@ -443,6 +443,7 @@ export class DataSourceController {
                         searchPath: req.body.schema || manager.GetDefaultSchema(),
                         user: req.body.user,
                         password: EnCrypterService.encrypt(req.body.password || 'no'),
+                        poolLimit: req.body.poolLimit,
                         sid: req.body.sid,
                         warehouse: req.body.warehouse
                     },

@@ -5,8 +5,9 @@ import * as _ from 'lodash';
 export class SnowFlakeBuilderService extends QueryBuilderService {
 
 
-  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], tables: Array<any>,  limit: number, joinType: string, valueListJoins: Array<any>, schema: string) {
-
+  public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
+    tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
+      
     let SCHEMA = `${schema}`;
 
     if (SCHEMA === 'null' || SCHEMA === '') {
@@ -19,29 +20,10 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
       .map(table => { return table.query ? `${table.query}` : `"${SCHEMA}"."${table.name}"` })[0];
     let myQuery = `SELECT ${limitString} ${columns.join(', ')} \nFROM ${o}`;
 
-    //to WHERE CLAUSE
-    const filters = this.queryTODO.filters.filter(f => {
-
-      const column = this.findColumn(f.filter_table, f.filter_column);
-      if(column){
-        return column.computed_column != 'computed_numeric';
-      }else{
-        return false;
-      }
-
-    });
-
-    //TO HAVING CLAUSE 
-    const havingFilters = this.queryTODO.filters.filter(f => {
-
-      const column = this.findColumn(f.filter_table, f.filter_column);
-      if(column){
-        return column.computed_column == "computed_numeric";
-      }else{
-        return false;
-      }
-
-    });
+    /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
+    if (forSelector === true) {
+      myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
+    }
 
     // JOINS
     const joinString = this.getJoins(joinTree, dest, tables, joinType,valueListJoins, SCHEMA);
@@ -51,7 +33,7 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     });
 
     // WHERE
-    myQuery += this.getFilters(filters, 'where');
+    myQuery += this.getFilters(filters );
 
     // GroupBy
     if (grouping.length > 0) {
@@ -59,7 +41,7 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     }
 
     //HAVING 
-    myQuery += this.getHavingFilters(havingFilters, 'having');
+    myQuery += this.getHavingFilters(havingFilters );
 
     // OrderBy
     const orderColumns = this.queryTODO.fields.map(col => {
@@ -81,7 +63,7 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     return myQuery;
   }
 
-  public getFilters(filters: any, type: any) {
+  public getFilters(filters: any ) {
     if (this.permissions.length > 0) {
       this.permissions.forEach(permission => { filters.push(permission); });
     }
@@ -89,17 +71,13 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
 
       let equalfilters = this.getEqualFilters(filters);
       filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
-      let filtersString = `\n${type} 1 = 1 `;
+      let filtersString = `\nwhere 1 = 1 `;
 
       filters.forEach(f => {
-
         const column = this.findColumn(f.filter_table, f.filter_column);
-        const colname = type == 'where' ? `"${f.filter_table}"."${f.filter_column}"` : `CAST( ${column.SQLexpression} as DECIMAL(32, ${column.minimumFractionDigits})) `;
-
+        const colname = this.getFilterColname(column);
         if (f.filter_type === 'not_null') {
-
-          filtersString += '\nand ' + this.filterToString(f, type);
-
+          filtersString += '\nand ' + this.filterToString(f);
         } else {
 
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
@@ -109,17 +87,17 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
             if (f.filter_elements[0].value1.length === 1) {
               filtersString += `\nand ${colname}  is null `;
             } else {
-              filtersString += `\nand (${this.filterToString(f, type)} or ${colname}  is null) `;
+              filtersString += `\nand (${this.filterToString(f)} or ${colname}  is null) `;
             }
           } else {
-            filtersString += '\nand ' + this.filterToString(f, type);
+            filtersString += '\nand ' + this.filterToString(f);
           }
 
         }
       });
 
       /**Allow filter ranges */
-      filtersString = this.mergeFilterStrings(filtersString, equalfilters, type);
+      filtersString = this.mergeFilterStrings(filtersString, equalfilters );
 
       return filtersString;
       
@@ -128,43 +106,6 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     }
   }
 
-  public getHavingFilters(filters: any, type: any) {
-
-    if (filters.length) {
-
-      let filtersString = `\n${type} 1 = 1 `;
-
-      filters.forEach(f => {
-
-        const column = this.findColumn(f.filter_table, f.filter_column);
-        const colname = type == 'where' ? `"${f.filter_table}"."${f.filter_column}"` : `CAST( ${column.SQLexpression} as DECIMAL(32, ${column.minimumFractionDigits})) `;
-
-        if (f.filter_type === 'not_null') {
-
-          filtersString += '\nand ' + this.filterToString(f, type);
-
-        } else {
-
-          let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
-
-          if (nullValueIndex != - 1) {
-
-            if (f.filter_elements[0].value1.length === 1) {
-              filtersString += `\nand ${colname}  is null `;
-            } else {
-              filtersString += `\nand (${this.filterToString(f, type)} or ${colname}  is null) `;
-            }
-          } else {
-            filtersString += '\nand ' + this.filterToString(f, type);
-          }
-
-        }
-      });
-      return filtersString;
-    } else {
-      return '';
-    }
-  }
 
   public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string , valueListJoins:Array<any> , schema: string ) {
 
@@ -233,9 +174,47 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
       if (!el.hasOwnProperty('minimumFractionDigits')) {
         el.minimumFractionDigits = 0;
       }
-      // chapuza de JJ para integrar expresiones. Esto hay que hacerlo mejor.
-      if (el.computed_column === 'computed_numeric') {
-        columns.push(` CAST( ${el.SQLexpression}  AS DECIMAL(32, ${el.minimumFractionDigits})) as "${el.display_name}"`);
+        
+      // Aqui se manejan las columnas calculadas
+      if (el.computed_column === 'computed') {
+        if(el.column_type=='text'){
+          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+        }else if(el.column_type=='numeric'){
+          columns.push(` CAST( ${el.SQLexpression}  AS DECIMAL(32, ${el.minimumFractionDigits})) as "${el.display_name}"`);
+        }else if(el.column_type=='date'){
+          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+        }else if(el.column_type=='coordinate'){
+          columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
+        }
+        // GROUP BY
+        if (el.format) {
+          if (_.isEqual(el.format, 'year')) {
+            grouping.push(`TO_CHAR(CAST(${el.SQLexpression} AS DATE), 'yyyy' )`);
+          } else if (_.isEqual(el.format, 'quarter')) {
+            grouping.push(`TO_CHAR(CAST(${el.SQLexpression} AS DATE), 'yyyy-Q' )`);
+          } else if (_.isEqual(el.format, 'month')) {
+            grouping.push(`TO_CHAR(CAST(${el.SQLexpression} AS DATE), 'yyyy-MM' )`);
+          } else if (_.isEqual(el.format, 'week')) {
+            grouping.push(`YEAROFWEEKISO(CAST(${el.SQLexpression} AS DATE))`);
+          } else if (_.isEqual(el.format, 'week_day')) {
+            grouping.push(`DAYOFWEEKISO(CAST(${el.SQLexpression} AS DATE))`);
+          } else if (_.isEqual(el.format, 'day')) {
+            grouping.push(`TO_CHAR(CAST(${el.SQLexpression} AS DATE), 'yyyy-MM-dd' )`);
+          } else if (_.isEqual(el.format, 'day_hour')) {
+            grouping.push(`TO_CHAR(CAST(${el.SQLexpression} AS DATE), 'yyyy-MM-dd HH24' ) `);
+          } else if (_.isEqual(el.format, 'day_hour_minute')) {
+            grouping.push(`TO_CHAR(CAST(${el.SQLexpression} AS DATE), 'yyyy-MM-dd HH24:MI' ) `);
+          }else if (_.isEqual(el.format, 'timestamp')) {
+            grouping.push(`TO_CHAR(CAST(${el.SQLexpression} AS DATE), 'yyyy-MM-dd HH24:MI:SS' )`);
+          }  else if (_.isEqual(el.format, 'No')) {
+            grouping.push(`${el.SQLexpression}`);
+          }
+        } else {
+          if( el.column_type != 'numeric' ){ // Computed colums require agrregations for numeric
+            grouping.push(` ${el.SQLexpression} `);
+          }
+        }
+
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
@@ -312,30 +291,152 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
   }
 
 
-  /**
+/**
+   * 
    * @param filterObject 
-   * @param type 
-   * @returns filter to string. If type === having we are in a computed_column case, and colname = sql.expression wich defines column. 
+   * @returns filter to string.  
    */
-  public filterToString(filterObject: any, type: string) {
+public filterToString(filterObject: any ) {
 
-    const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
+  const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
+  if (!column.hasOwnProperty('minimumFractionDigits')) {
+    column.minimumFractionDigits = 0;
+  }
+  const colname=this.getFilterColname(column);
+   let colType = column.column_type;
+
+  switch (this.setFilterType(filterObject.filter_type)) {
+    case 0:
+      if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
+      if (filterObject.filter_type === 'like') {
+        return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+      }
+      if (filterObject.filter_type === 'not_like') { 
+        filterObject.filter_type = 'not like'
+        return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
+      }   
+      return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+    case 1:
+      if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
+      return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+    case 2:
+      return `${colname}  ${filterObject.filter_type} 
+                      ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
+    case 3:
+      return `${colname} is not null`;
+  }
+}
+
+ /**
+   * 
+   * @param column 
+   * @returns coumn name in string mode for filtering. 
+   */
+  public getFilterColname(column: any){
+
+    let colname:String ;
+    if( column.computed_column == 'no' ){
+      colname =  `"${column.table_id}"."${column.column_name}"` ;
+    }else{
+      if(column.column_type == 'numeric'){
+        colname =  `CAST( ${column.SQLexpression}  as DECIMAL(32, ${column.minimumFractionDigits}))` ;
+      }else{
+        colname = `  ${column.SQLexpression}  `;
+      }
+    }
+    return colname;
+  }
+
+
+   /**
+   * 
+   * @param filterObject 
+   * @returns clausula having en un string.  
+   */
+  public getHavingFilters(filters: any ) {
+
+    if (filters.length) {
+
+      let filtersString = `\nhaving 1=1 `;
+
+      filters.forEach(f => {
+
+        const column = this.findHavingColumn(f.filter_table, f.filter_column);
+        const colname = this.getHavingColname(column);
+        if (f.filter_type === 'not_null') {
+          filtersString += `\nand ${colname}  is not null `;
+        } else {
+
+          let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
+          if (nullValueIndex != - 1) {
+            if (f.filter_elements[0].value1.length === 1) {
+              filtersString += `\nand ${colname}  is null `;
+            } else {
+              filtersString += `\nand (${this.havingToString(f)} or ${colname}  is null) `;
+            }
+          } else {
+            if (f.filter_type == '=') {
+              filtersString += `\nand (${this.havingToString(f)} or ${colname}  is null) `;
+            } else {
+              filtersString += `\nand (${this.havingToString(f)} or ${colname}  is not null) `;
+            }
+          }
+
+        }
+      });
+      return filtersString;
+    } else {
+      return '';
+    }
+  }
+
+  
+
+   /**
+   * 
+   * @param column 
+   * @returns coumn name in string mode for having. 
+   */
+    public getHavingColname(column: any){
+      let colname:String  ;
+      if( column.computed_column === 'no'  || ! column.hasOwnProperty('computed_column')   ){
+        colname =   `ROUND( ${column.aggregation_type} ("${column.table_id}"."${column.column_name}")::numeric, ${column.minimumFractionDigits})::float` ;
+      }else{
+        if(column.column_type == 'numeric'){
+          colname = `ROUND(   ${column.SQLexpression}  as numeric)  , ${column.minimumFractionDigits})::float`;
+        }else{
+          colname = `  ${column.SQLexpression}  `;
+        }
+      }
+      return colname;
+    }
+
+
+  /**
+   * 
+   * @param filterObject 
+   * @returns having filters  to string. 
+   */
+  public havingToString(filterObject: any) {
+    const column = this.findHavingColumn(filterObject.filter_table, filterObject.filter_column);
+
     if (!column.hasOwnProperty('minimumFractionDigits')) {
       column.minimumFractionDigits = 0;
     }
-    const colname = type == 'where' ? `"${filterObject.filter_table}"."${filterObject.filter_column}"` : `CAST( ${column.SQLexpression}  as DECIMAL(32, ${column.minimumFractionDigits}))`;
+    const  colname = this.getHavingColname(column) ;
+
     let colType = column.column_type;
 
     switch (this.setFilterType(filterObject.filter_type)) {
       case 0:
         if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
-        if (filterObject.filter_type === 'like') {
+        if (filterObject.filter_type === 'like') { 
           return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
         }
         if (filterObject.filter_type === 'not_like') { 
           filterObject.filter_type = 'not like'
           return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
-        }   
+        }        
         return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
       case 1:
         if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
@@ -347,6 +448,7 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
         return `${colname} is not null`;
     }
   }
+
 
   public processFilter(filter: any, columnType: string) {
     filter = filter.map(elem => {
@@ -394,6 +496,18 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
           : columnType === 'numeric' ? value : `'${value.replace(/'/g, "''")}'`;
         str = str + tail + ','
       });
+
+      // En el cas dels filtres de seguretat si l'usuari no pot veure res....
+      filter.forEach(f => {
+        if(f == '(x => None)'){
+          switch (columnType) {
+            case 'text': str = `'(x => None)'  `;   break; 
+            case 'numeric': str =  'null  ';   break; 
+            case 'date': str =  `to_date('4092-01-01','YYYY-MM-DD')  `;   break; 
+          }
+        }
+      });
+
       return str.substring(0, str.length - 1);
     }
   }
@@ -415,7 +529,7 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     let joinString = `( SELECT ${origin}.* from ${origin} `;
     joinString += joinStrings.join(' ') + ' where ';
     permissions.forEach(permission => {
-      joinString += ` ${this.filterToString(permission, 'where')} and `
+      joinString += ` ${this.filterToString(permission )} and `
     });
     return `${joinString.slice(0, joinString.lastIndexOf(' and '))} )`;
   }

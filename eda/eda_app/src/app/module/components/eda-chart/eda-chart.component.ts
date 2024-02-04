@@ -74,7 +74,7 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
             }
 
             activeEls.forEach(point => {
-                const filterBy = chart.data.datasets[point.datasetIndex].label;
+                const filterBy = chart.data.datasets[point.datasetIndex].label || chart.data.labels[point.index];
                 const label = chart.data.labels[point.index];
                 const value = chart.data.datasets[point.datasetIndex].data[point.index];
                 this.onClick.emit({ inx: point.index, label, value, filterBy })

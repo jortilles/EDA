@@ -11,6 +11,8 @@
     "build:prod": "ng build --configuration production --localize --build-optimizer --vendor-chunk && npm run copy-index",
     "test": "ng test",
     "lint": "ng lint",
+    "custom-lang-prepare": "bash ./scripts/custom-lang-prepare.sh",
+    "custom-lang-end": "bash ./scripts/custom-lang-end.sh",
     "e2e": "ng e2e",
     "int:extract": "ng xi18n --output-path locale"
   },
@@ -58,7 +60,8 @@
     "tslib": "^2.0.0",
     "xlsx": "^0.17.1",
     "zone.js": "^0.12.0",
-    "fs-extra": "^3.0.1"
+    "fs-extra": "^3.0.1",
+    "xliff-simple-merge": "1.2.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.2.10",
