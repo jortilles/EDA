@@ -1515,7 +1515,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     result = true;
                 }
             } else {
-                result = true;
+                if (this.userService.user._id == '135792467811111111111112') { // Usuari anonim no pot editar
+                    result = false;
+                }else{
+                    result = true;
+                }
+                
             }
 
         }

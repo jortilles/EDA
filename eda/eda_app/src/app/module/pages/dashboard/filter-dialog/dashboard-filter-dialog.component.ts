@@ -56,8 +56,8 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public header1 : string = $localize`:@@aplyToAllPanelsH5:¿Aplica a todos los paneles?`;
     public header2 : string = $localize`:@@panelsToAplyH5:Paneles para los que aplica el filtro`;
     public header3 : string = $localize`:@@filterForH5: Filtrar por`;
-    public posicion: string = $localize`:@@positionFilterInReport: Posición del filtro en el informe`;
     public header4 : string = $localize`:@@canIfilter: Visiblidad del filtro`;
+    public posicion: string = $localize`:@@positionFilterInReport: Posición del filtro en el informe`;
     public greendot :string = $localize`:@@greendot:Paneles filtrados`;
     public reddot :string =$localize`:@@reddot:Paneles no relacionados`;
     public unselecteddot :string = $localize`:@@unselecteddot:Paneles no filtrados`;

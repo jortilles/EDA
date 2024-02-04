@@ -48,7 +48,7 @@
                 (onChange)="applyGlobalFilter(filter)">
 
                 <p-footer>
-                    <button id="dashFilterConf"
+                    <button *ngIf="canIedit()" id="dashFilterConf"
                         pButton pRipple type="button"
                         icon="pi pi-cog"
                         (click)="onFilterConfig(false, filter)"
