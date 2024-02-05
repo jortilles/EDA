@@ -775,17 +775,26 @@ export class DashboardController {
                   return res
                 }
               } else {
-                //això es per evitar els null trec els nulls i els canvio per '' dels lavels
+                //això es per evitar els null trec els nulls i els canvio per '-' dels lavels al igual que les cadenes buidaes
                 if (r[i] == null == null) {
-                  return ''
+                    return '-';
                 } else {
-                  return r[i]
+                  if(r[i].length == 0){
+                    return '-';
+                  }else{
+                    return r[i];
+                  }
+                 
                 }
               }
             } else {
-              // trec els nulls i els canvio per '' dels lavels
+              // trec els nulls i els canvio per '--' dels lavelsal igual que les cadenes buidaes
               if (numerics[ind] != 'true' && r[i] == null) {
-                return ''
+                if(r[i].length == 0){
+                  return '-';
+                }else{
+                  return r[i];
+                }
               } else {
                 return r[i];
               }
@@ -814,6 +823,8 @@ export class DashboardController {
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
+
+        console.log(output);
 
         return res.status(200).json(output)
 
