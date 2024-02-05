@@ -25,7 +25,20 @@
     <p-card [header]="header1">
         <div class="grid">
             <div class="col-12">
-                <p-inputSwitch id="applyToAllFiltersButton" (onChange)="applyToAllCheck()" [(ngModel)]="switchChecked"> </p-inputSwitch>
+                <div class="grid">
+                    <div class="col-4">
+                        <div class="filterDialogTitles">{{header1}}</div>
+                        <p-inputSwitch id="applyToAllFiltersButton" (onChange)="applyToAllCheck()" [(ngModel)]="switchChecked"></p-inputSwitch>
+                    </div>
+                    <div class="col-4">
+                    </div>
+                    <div class="col-4">
+                        <div  i18n-title="@@filterVisibleScope" title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica" class="filterDialogTitles">{{header4}}</div>
+                        <p-dropdown id="applyToOneFilterDropdown" 
+                        i18n-title="@@filterVisibleScope" title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
+                        [options]="publicRoHidden" [(ngModel)]="publicRoHiddenOption" selected="publicRoHiddenOption" autoWidth="false"></p-dropdown>
+                    </div>
+                </div>
             </div>
         </div>
     </p-card>

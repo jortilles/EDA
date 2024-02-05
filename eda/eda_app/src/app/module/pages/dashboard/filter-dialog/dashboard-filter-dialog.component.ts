@@ -36,6 +36,13 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public selectedValues: any = [];
     public applyToAll: boolean = true;
     public switchChecked: boolean = false;
+    public switchFilter: any;
+    public publicRoHidden  = [ //valors del dropdown de filtrat de visiblitat
+        {label: $localize`:@@public:público`, value: `public` }, 
+        {label: $localize`:@@readOnly:deshabilitado`, value: `readOnly` }, 
+        {label: $localize`:@@hidden:oculto`, value: `hidden` }
+        ]; 
+    public publicRoHiddenOption: any //valor per defecte del dropdown
     
     public rangeDates: Date[];
     public selectedRange : string = null;
@@ -73,8 +80,8 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     onShow() {
+
         this.params = this.controller.params;
-        
         if (this.params.filtersList) {
             for (let filter of this.params.filtersList) {
                 this.filtersList.push(filter);
@@ -298,7 +305,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.selectedValues = filter.selectedItems;
         this.selectedRange = filter.selectedRange;
         this.selectedFilter = filter;
-
+        this.publicRoHiddenOption = filter.visible;
         if (filter.column.value.column_type === 'date') {
             this.loadDatesFromFilter(filter)
         }
