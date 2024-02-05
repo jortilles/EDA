@@ -775,7 +775,7 @@ export class DashboardController {
                   return res
                 }
               } else {
-                //això es per evitar els null trec els nulls i els canvio per '-' dels lavels al igual que les cadenes buidaes
+                //això es per evitar els null trec els nulls i els canvio per '-' dels labels al igual que les cadenes buides
                 if (r[i] == null == null) {
                     return '-';
                 } else {
@@ -788,7 +788,7 @@ export class DashboardController {
                 }
               }
             } else {
-              // trec els nulls i els canvio per '--' dels lavelsal igual que les cadenes buidaes
+              // trec els nulls i els canvio per '--' dels labels al igual que les cadenes buides
               if (numerics[ind] != 'true' && r[i] == null) {
                 if(r[i].length == 0){
                   return '-';
@@ -823,8 +823,6 @@ export class DashboardController {
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
-
-        console.log(output);
 
         return res.status(200).json(output)
 
