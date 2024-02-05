@@ -1145,8 +1145,12 @@ export class ChartUtilsService {
                     maintainAspectRatio: false,
                     devicePixelRatio: 2,
                    
-
-                   
+                    onHover: (event,chartElement ) => {
+                        //Canviem el cursor de normal a tipus link
+                        chartElement.length == 1 ? 
+                        event.native.target.style.cursor = "pointer" :
+                        event.native.target.style.cursor = "default";
+                    },
                     plugins: {
                         datalabels: dataLabelsObjt, 
                         tooltip: {
@@ -1227,8 +1231,12 @@ export class ChartUtilsService {
                         responsive: true,
                         maintainAspectRatio: false,
                         devicePixelRatio: 2,
-                    
-                        
+                        onHover: (event,chartElement ) => {
+                            //Canviem el cursor de normal a tipus link
+                            chartElement.length == 1 ? 
+                            event.native.target.style.cursor = "pointer" :
+                            event.native.target.style.cursor = "default";
+                        },
                         tooltips: {
                             callbacks: {
                                 title: (tooltipItem, data) => {
@@ -1367,6 +1375,12 @@ export class ChartUtilsService {
                         maintainAspectRatio: false,
                         devicePixelRatio: 2,
                         legend: edaBarLineLegend,
+                        onHover: (event,chartElement ) => {
+                            //Canviem el cursor de normal a tipus link
+                            chartElement.length == 1 ? 
+                            event.native.target.style.cursor = "pointer" :
+                            event.native.target.style.cursor = "default";
+                        },
                         tooltips: {
                             mode: 'nearest',
                             callbacks: {
@@ -1523,6 +1537,12 @@ export class ChartUtilsService {
                     spanGaps: true,
                     responsive: true,
                     maintainAspectRatio: false,
+                    onHover: (event,chartElement ) => {
+                        //Canviem el cursor de normal a tipus link
+                        chartElement.length == 1 ? 
+                        event.native.target.style.cursor = "pointer" :
+                        event.native.target.style.cursor = "default";
+                    },
                     tooltips: {
                         mode: 'nearest',
                         intersect: false,
