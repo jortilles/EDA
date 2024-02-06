@@ -3919,6 +3919,26 @@
         <source>Operación</source>
         <target>Operació</target>
       </trans-unit>
+      <trans-unit id="canIfilter">
+        <source>Visiblidad del filtro</source>
+        <target>Visiblitat del filtre</target>
+      </trans-unit>
+      <trans-unit id="public">
+        <source>público</source>
+        <target>Públic</target>
+      </trans-unit>
+      <trans-unit id="readOnly">
+        <source>deshabilitado</source>
+        <target>Només lectura</target>
+      </trans-unit>
+      <trans-unit id="hidden">
+        <source>oculto</source>
+        <target>Ocult</target>
+      </trans-unit>
+      <trans-unit id="positionFilterInReport">
+        <source>Posición del filtro en el informe</source>
+        <target>Posició del filtre a l&apos;informe</target>
+      </trans-unit>
       <trans-unit id="numericalValueLabel">
         <source>Valor numérico</source>
         <target>Valor numèric</target>
@@ -3930,6 +3950,14 @@
       <trans-unit id="allowSSL">
         <source>Conexión mediante SSL</source>
         <target>Conexió mijanjant SSL</target>
+      </trans-unit>
+      <trans-unit id="filterVisibleScope">
+        <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El
+          resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de
+          usuario no pueden ver el filtro. pero se les aplica</source>
+        <target>Definir la visibilitat del filtre. Públic: tothom pot utilitzar-lo. Només lectura:
+          Els usuaris no administradors poden veure el filtre però no poden modificar-lo. Ocult: Els
+          usuaris no administradors no poden veure el filtre, però se&apos;ls aplica.</target>
       </trans-unit>
       <trans-unit id="hiddenAttributes">
         <source>Atributos ocultos</source>
