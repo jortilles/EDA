@@ -3971,6 +3971,26 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Operación</source>
 <target>Operació</target>
 </trans-unit>
+<trans-unit id="canIfilter">
+<source>Visiblidad del filtro</source>
+<target>Visiblitat del filtre</target>
+</trans-unit>
+<trans-unit id="public">
+<source>público</source>
+<target>public</target>
+</trans-unit>
+<trans-unit id="readOnly">
+<source>deshabilitado</source>
+<target>deshabilitat</target>
+</trans-unit>
+<trans-unit id="hidden">
+<source>oculto</source>
+<target>ocult</target>
+</trans-unit>
+<trans-unit id="positionFilterInReport">
+<source>Posición del filtro en el informe</source>
+<target>Posició del filtre a l'informe</target>
+</trans-unit>
 
 <trans-unit id="numericalValueLabel">
 <source>Valor numérico</source>
@@ -3985,6 +4005,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="allowSSL">
 <source>Conexión mediante SSL</source>
 <target>Conexió mijanjant SSL</target>
+</trans-unit>
+<trans-unit id="filterVisibleScope">
+<source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. pero se les aplica</source>
+<target>Definir la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: La resta d'usuaris poden veure el filtre però no el poden modificar.  Ocult: La resta d'usuaris no poden veure el filtre, però se'ls aplica</target>
 </trans-unit>
 
 
