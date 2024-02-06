@@ -201,8 +201,6 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
         }
       })
               .on('mouseover', (d, data) => { 
-                console.log(d);
-                console.log(data);
 
                 //Se aumenta el tamaño del contorno de la burbuja
                 node   //TO-DO ------------> HACER QUE EL CONTORNO SEA POR BURBUJA EN VEZ DEL TOTAL DE BURBUJAS

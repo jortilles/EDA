@@ -1,4 +1,3 @@
-import { Column } from 'snowflake-sdk';
 import { QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
 
