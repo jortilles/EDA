@@ -16,6 +16,8 @@ import Swal from 'sweetalert2';
 import jspdf from 'jspdf';
 import * as _ from 'lodash';
 import { ValueListSource } from '@eda/models/data-source-model/data-source-models';
+import { DashboardFilterDialogComponent } from './filter-dialog/dashboard-filter-dialog.component';
+import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-dashboard',
@@ -52,6 +54,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public group: string = '';
     public onlyIcanEdit: boolean = false;
     public queryParams: any = {};
+    public filterButtonVisibility = {
+        public : false,
+        readOnly : false
+        }
+    public isDashboardCreator: boolean = false; 
 
     // Grid Global Variables
     public inject: InjectEdaPanel;
@@ -153,12 +160,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         //JJ: Inicialitzo a false...
         this.dashboardService._notSaved.next(false);
         // this.display_v.notSaved = false;
-
+        
     }
 
     /* Set applyToAllFilters for new panel when it's created */
     public ngAfterViewInit(): void {
-
         this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
             const globalFilters = this.filtersList.filter(filter => filter.isGlobal === true);
             const unsetPanels = this.edaPanels.filter(panel => panel.panel.content === undefined);
@@ -358,9 +364,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.setEditMode();
                     // Check dashboard owner
                     this.checkVisibility(res.dashboard);
-
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
                     me.filtersList = !_.isNil(config.filters) ? config.filters : []; // Filtres del dashboard
+                    me.filtersList = me.setFiltersVisibility(me.filtersList);
+                    me.setFilterButtonVisibilty(me.filtersList); //crida per ocultar o visiblitzar botó de filtre
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.datasourceName = res.datasource.name;
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
@@ -376,11 +383,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.sendViaMailConfig = config.sendViaMailConfig || this.sendViaMailConfig;
                     me.styles = config.styles || this.stylesProviderService.generateDefaultStyles();
                     this.stylesProviderService.setStyles(me.styles);
-
+                    
                     // pot ser que no estinguin disponibles encara els grups... per això de vegades es perd
                     // i es crida també des de els subscribe del groupcontroller ... a mes a mes des de la inicilialització del dashboard
                     // per estar segurn que es tenen disponibles.
                     let grp = [];
+                    me.setDashboardCreator(res.dashboard);
                     if (config.visible === 'group' && res.dashboard.group) {
                         grp = res.dashboard.group;
                     }
@@ -1598,10 +1606,50 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     result = true;
                 }
             } else {
-                result = true;
+                if (this.userService.user._id == '135792467811111111111112') { // Usuari anonim no pot editar
+                    result = false;
+                }else{
+                    result = true;
+                }
+                
             }
 
         }
         return result;
+    }
+
+    //métode per descobrir o amagar el botó de filtrar al dashboard
+    public setFilterButtonVisibilty(filtersList: any[]) : void {
+        filtersList = filtersList.filter((f) => { 
+            return (f.visible != "hidden" && f.visible == "readOnly") ||
+                   (f.visible != "hidden" && f.visible == "public")
+        })
+        
+        filtersList.forEach(a => {
+            if (a.visible == "public") {
+                this.filterButtonVisibility.public = true;
+            } else if (a.visible == "readOnly") {
+                this.filterButtonVisibility.readOnly = true;
+            }
+
+        })   
+    }
+    
+    setDashboardCreator(dashboard : any) : void {
+
+        if (this.userService.user._id === dashboard.user)  {
+            this.isDashboardCreator = true;
+        }
+       
+    }
+
+    setFiltersVisibility(filters : any[]) : Array<any> {
+        filters.forEach(f => {
+            if (!f.hasOwnProperty("visible")) {
+                f.visible = 'public';
+            }
+        })
+
+        return filters;
     }
 }
