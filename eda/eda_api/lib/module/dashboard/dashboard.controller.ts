@@ -776,7 +776,7 @@ export class DashboardController {
                 }
               } else {
                 //això es per evitar els null trec els nulls i els canvio per ' ' dels labels al igual que les cadenes buides
-                if (r[i] == null == null) {
+                if (r[i] === null ) {
                     return ' ';
                 } else {
                   if(r[i].length == 0){
@@ -789,7 +789,7 @@ export class DashboardController {
               }
             } else {
               // trec els nulls i els canvio per ' ' dels labels al igual que les cadenes buides
-              if (numerics[ind] != 'true' && ( r[i] == null || r[i].length == 0 ) ) {
+              if (numerics[ind] != 'true' && ( r[i] == null || r[i]?.length == 0 ) ) {
                   return ' ';
               } else {
                 return r[i];
