@@ -775,12 +775,12 @@ export class DashboardController {
                   return res
                 }
               } else {
-                //això es per evitar els null trec els nulls i els canvio per '-' dels labels al igual que les cadenes buides
+                //això es per evitar els null trec els nulls i els canvio per ' ' dels labels al igual que les cadenes buides
                 if (r[i] == null == null) {
-                    return '-';
+                    return ' ';
                 } else {
                   if(r[i].length == 0){
-                    return '-';
+                    return ' ';
                   }else{
                     return r[i];
                   }
@@ -788,10 +788,10 @@ export class DashboardController {
                 }
               }
             } else {
-              // trec els nulls i els canvio per '--' dels labels al igual que les cadenes buides
+              // trec els nulls i els canvio per ' ' dels labels al igual que les cadenes buides
               if (numerics[ind] != 'true' && r[i] == null) {
                 if(r[i].length == 0){
-                  return '-';
+                  return ' ';
                 }else{
                   return r[i];
                 }
