@@ -638,11 +638,7 @@ export class DashboardController {
       }
       const dataModelObject = JSON.parse(JSON.stringify(dataModel))
       /** Forbidden tables  */
-      let uniquesForbiddenTables = DashboardController.getForbiddenTables(
-        dataModelObject,
-        req['user'].role,
-        req.user._id
-      )
+      let uniquesForbiddenTables = DashboardController.getForbiddenTables(dataModelObject, req['user'].role, req.user._id);
 
 
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
@@ -657,34 +653,37 @@ export class DashboardController {
         myQuery = { fields: [], filters: [] }
         mylabels = []
         let notAllowedColumns = []
-        for (let c = 0; c < req.body.query.fields.length; c++) {
-          if (
-            uniquesForbiddenTables.includes(req.body.query.fields[c].table_id)
-          ) {
-            notAllowedColumns.push(req.body.query.fields[c])
+        const fields = req.body.query.fields;
+
+        for (const field of fields) {
+          if (uniquesForbiddenTables.includes(field.table_id)) {
+            notAllowedColumns.push(field);
           } else {
-            mylabels.push(req.body.query.fields[c].column_name)
-            myQuery.fields.push(req.body.query.fields[c])
+            mylabels.push(field.column_name);
+            myQuery.fields.push(field);
           }
         }
+
         if (uniquesForbiddenTables.length > 0) {
-          for (let i = 0; i < myQuery.fields.length; i++) {
-            myQuery.fields[i].order = i
+          let i = 0;
+          for (const field of myQuery.fields) {
+            field.order = i;
+            i++;
           }
           myQuery.filters = req.body.query.filters
         }
       } else {
         // las etiquetas son el nombre técnico...
-        myQuery = JSON.parse(JSON.stringify(req.body.query))
-        for (let c = 0; c < req.body.query.fields.length; c++) {
-          mylabels.push(req.body.query.fields[c].column_name)
+        myQuery = JSON.parse(JSON.stringify(req.body.query));
+
+        for (const field of req.body.query.fields) {
+          mylabels.push(field.column_name)
         }
       }
 
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
-
 
 
       if (myQuery.fields.length == 0) {
@@ -697,20 +696,15 @@ export class DashboardController {
           myQuery.forSelector = false;
       }
 
-      const query = await connection.getQueryBuilded(
-        myQuery,
-        dataModelObject,
-        req.user
-      )
+      const query = await connection.getQueryBuilded(myQuery, dataModelObject, req.user);
 
       /**---------------------------------------------------------------------------------------------------------*/
 
       console.log(
         '\x1b[32m%s\x1b[0m',
-        `QUERY for user ${req.user.name}, with ID: ${req.user._id
-        },  at: ${formatDate(new Date())}  for Dashboard:${req.body.dashboard.dashboard_id
-        } and Panel:${req.body.dashboard.panel_id}  `
-      )
+        `QUERY for user ${req.user.name}, with ID: ${req.user._id},
+          at: ${formatDate(new Date())} for Dashboard:${req.body.dashboard.dashboard_id} and Panel:${req.body.dashboard.panel_id}
+      `);
       console.log(query)
       console.log(
         '\n-------------------------------------------------------------------------------\n'

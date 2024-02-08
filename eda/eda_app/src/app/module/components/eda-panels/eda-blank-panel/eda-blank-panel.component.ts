@@ -147,6 +147,11 @@ export class EdaBlankPanelComponent implements OnInit {
     public globalFilters: any[] = [];
     public filterValue: any = {};
 
+    public loadingNodes: boolean = false;
+    public tableNodes: any = [];
+    public selectedTableNode: any;
+    public nodeJoins: any[] = [];
+
     public color: any = { r: 255, g: 0, b: 0.3 };
 
     /*Deep copies for panel and color configuration to recover panel when edit changes are cancelled*/
@@ -185,7 +190,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
         this.index = 0;
         this.modeSQL = false;
 
@@ -220,6 +224,32 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
+    }
+
+    public tableNodeSelect(event: any): void {
+        const node = event?.node;
+        if (node) {
+            if (node.table_id) {
+                PanelInteractionUtils.loadColumns(this, this.findTable(node.table_id));
+            } else {
+                PanelInteractionUtils.loadColumns(this, this.findTable(node.child_id.split('.')[0]));
+            }
+
+            if (node.joins) {
+                this.nodeJoins.push(node.joins);
+            }
+        }
+
+        console.log(this.nodeJoins)
+    }
+
+    public tableNodeExpand(event: any): void {
+        this.loadingNodes = true;
+        const node = event?.node;
+        if (node) {
+            PanelInteractionUtils.expandTableNode(this, node);
+        }
+        this.loadingNodes = false;
     }
 
     getEditMode() {
@@ -627,7 +657,7 @@ export class EdaBlankPanelComponent implements OnInit {
             currentQuery: this.currentQuery,
             inject: this.inject,
             panel: this.panel,
-            table: this.findTable(column.table_id),
+            table: this.findTable(column.table_id)?.display_name?.default,
             filters: this.selectedFilters
         };
 
@@ -696,8 +726,8 @@ export class EdaBlankPanelComponent implements OnInit {
      * find table by name
      * @param t table name
      */
-    private findTable(t: string): string {
-        return this.tables.find(table => table.table_name === t).display_name.default;
+    private findTable(t: string): any {
+        return this.tables.find(table => table.table_name === t);
     }
 
     /**

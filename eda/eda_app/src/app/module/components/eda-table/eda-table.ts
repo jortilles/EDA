@@ -860,7 +860,7 @@ export class EdaTable {
             return this.buildSubMapTree(cols[0], cols[1]);
         } else {
             const unsetCols = cols.slice(1);
-            cols[0].forEach(col => {
+            cols[0]?.forEach(col => {
                 map.set(col, this.buildMapRecursive(unsetCols));
             });
         }

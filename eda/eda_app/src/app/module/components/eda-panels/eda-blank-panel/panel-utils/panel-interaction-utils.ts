@@ -50,12 +50,93 @@ export const PanelInteractionUtils = {
     // Sort columns by default display name
     ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
+    PanelInteractionUtils.loadTableNodes(ebp);
     // Reset input and update table data if the findTable ngModel is not empty
     if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
         ebp.inputs.findTable.reset();
         ebp.setTablesData();
     }
+
+    console.log(ebp.currentQuery);
   },
+
+  loadTableNodes: (ebp: EdaBlankPanelComponent) => {
+    const idTables = [...new Set(ebp.currentQuery.map((q) => q.table_id))];
+    const dataSource = ebp.inject.dataSource.model.tables;
+
+    ebp.tableNodes = [];
+    for (const table_id of idTables) {
+      const table = dataSource.find((source) => source.table_name == table_id);
+
+      let isexpandible = table.relations.length > 0;
+
+      let node: any = {
+        label: table.display_name.default,
+        table_id: table_id
+      }
+      
+      if (isexpandible) {
+        node.expandedIcon = "pi pi-folder-open";
+        node.collapsedIcon = "pi pi-folder";
+        node.children = [{}];
+      }
+      ebp.tableNodes.push(node);
+    }
+  },
+
+  expandTableNode: (ebp: EdaBlankPanelComponent, expandNode: any) => {
+    const dataSource = ebp.inject.dataSource.model.tables;
+    const table_id = expandNode.table_id || expandNode.child_id.split('.')[0];
+    
+    console.log(expandNode);
+    if (table_id) {
+      expandNode.children = [];
+      const table = dataSource.find((source) => source.table_name == table_id);
+  
+      const getAllChildIds = (node: any, ids: string[] = []): string[] => {
+        if (node.child_id) ids.push(node.child_id);
+    
+        if (node.parent) return getAllChildIds(node.parent, ids);
+    
+        return ids;
+      };
+    
+      const rootTree = ebp.tableNodes.map((n) => n.table_id);
+      const childrenId = getAllChildIds(expandNode);
+
+      for (const relation of table.relations) {
+        const child_id = relation.target_table+'.'+relation.target_column[0];
+
+        if (!rootTree.includes(relation.target_table) && !childrenId.includes(child_id)) {
+          let childLabel = relation.display_name?.default
+          ? `${relation.display_name.default} - ${relation.target_column[0]}`
+          : `${relation.target_table} - ${relation.target_column[0]}`;
+
+
+          let isexpandible = dataSource.find((source) => relation.target_table == source.table_name)?.relations?.length > 0;
+
+          let sourceJoin = relation.source_table+'.'+relation.source_column[0];
+          let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, child_id]]) : [[sourceJoin, child_id]];
+
+          let childNode: any = {
+            label: childLabel,
+            child_id: child_id,
+            joins
+          };
+
+          if (isexpandible) {
+            childNode.expandedIcon = "pi pi-folder-open";
+            childNode.collapsedIcon = "pi pi-folder";
+            childNode.children = [{}];
+          }
+
+          expandNode.children.push(childNode);
+        }
+      }
+    }
+
+  },
+
 
   /**
      * set local and global filters
@@ -285,6 +366,7 @@ export const PanelInteractionUtils = {
     const match = _.find(ebp.columns, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
     if (match) match.isdeleted = true; // Marco la columna com a borrada
 
+    c.joins = c.joins || ebp.nodeJoins.pop() || [];
     ebp.currentQuery.push(_.cloneDeep(c));      // Col·loca la nova columna a l'array Select
     PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida a la consulta
     PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions de la nova columna afegida a la consulta
