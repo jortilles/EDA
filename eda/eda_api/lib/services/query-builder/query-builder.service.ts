@@ -152,33 +152,53 @@ export abstract class QueryBuilderService {
         const columns = separedCols[0];
         const grouping = separedCols[1];
 
-
-        /** ARBRE DELS JOINS A FER */
-        let joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
-        // Busco relacions directes.
-        if( ! this.validateJoinTree(  joinTree, dest ) ){
-            let exito = false;
-            let new_origin  = '';
-            let new_dest  = [...dest];
-            let new_joinTree:any;
-            for (let d of  dest) {
-                new_origin = d;
-                new_dest =  [...dest].filter(e => e !== d);
-                new_dest.push(origin);
-                new_joinTree = this.dijkstraAlgorithm(graph, new_origin, new_dest.slice(0) );
-                if(  this.validateJoinTree(  new_joinTree, new_dest ) ){
-                    exito = true;
-                    break;
+        
+        let joinTree = [];
+        let tree = [];
+        for (const query of this.queryTODO.fields) {
+            if (query.joins && query.joins.length > 0) {
+                for (const join of query.joins) {
+                    tree.push(join);
                 }
             }
-            if(exito){
-                origin = new_origin;
-                dest = [...new_dest];
-                joinTree = new_joinTree;
-            }
-
         }
 
+        tree = [...new Set(tree)];
+    
+        // console.log(JSON.stringify( [...new Set(tree)] ));
+
+
+        if (tree.length === 0) {
+            /** ARBRE DELS JOINS A FER */
+            joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
+            // Busco relacions directes.
+            if( ! this.validateJoinTree(  joinTree, dest ) ){
+                let exito = false;
+                let new_origin  = '';
+                let new_dest  = [...dest];
+                let new_joinTree:any;
+                for (let d of  dest) {
+                    new_origin = d;
+                    new_dest =  [...dest].filter(e => e !== d);
+                    new_dest.push(origin);
+                    new_joinTree = this.dijkstraAlgorithm(graph, new_origin, new_dest.slice(0) );
+                    if(  this.validateJoinTree(  new_joinTree, new_dest ) ){
+                        exito = true;
+                        break;
+                    }
+                }
+                if(exito){
+                    origin = new_origin;
+                    dest = [...new_dest];
+                    joinTree = new_joinTree;
+                }
+            }
+
+            this.queryTODO.joined = false;
+        } else {
+            joinTree = tree;
+            this.queryTODO.joined = true;
+        }
 
         //to WHERE CLAUSE
         const filters = this.queryTODO.filters.filter(f => {

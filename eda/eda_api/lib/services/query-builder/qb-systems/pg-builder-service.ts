@@ -32,7 +32,12 @@ export class PgBuilderService extends QueryBuilderService {
     }
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+    let joinString;
+    if (this.queryTODO.joined) {
+      joinString = this.setJoins(joinTree, joinType, schema);
+    } else {
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+    }
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -135,6 +140,8 @@ export class PgBuilderService extends QueryBuilderService {
       tmp.push(elem.name);
       joins.push(tmp);
     }
+    
+
 
     joins.forEach(e => {
       for (let i = 0; i < e.length - 1; i++) {
@@ -172,6 +179,30 @@ export class PgBuilderService extends QueryBuilderService {
         }
       }
     });
+
+    return joinString;
+  }
+
+  public setJoins(joinTree: any[], joinType: string, schema: string) {
+    if (schema === 'null' || schema === '') {
+      schema = 'public';
+    }
+
+    const joinExists = [];
+    const joinString = [];
+    for (const join of joinTree) {
+      const source = join[0].split('.');
+      const target = join[1].split('.');
+
+      const sourceTable = source[0];
+      const sourceColumn = source[1];
+      const targetTable = target[0];
+      const targetColumn = target[1];
+
+      if (targetTable && !joinExists.includes(targetTable)) {
+        joinString.push(`${joinType} JOIN "${schema}"."${targetTable}" ON "${schema}"."${sourceTable}"."${sourceColumn}" = "${schema}"."${targetTable}"."${targetColumn}"`);
+      }
+    }
 
     return joinString;
   }

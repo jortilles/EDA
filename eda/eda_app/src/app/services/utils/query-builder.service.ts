@@ -98,6 +98,7 @@ export class QueryBuilderService extends ApiService {
             col.valueListSource = select[i].valueListSource;
             col.whatif_column = select[i].whatif_column || false;
             col.whatif = select[i].whatif;
+            col.joins = select[i].joins || [];
             queryColumns.push(col);
             labels.push(select[i].column_name);
         }

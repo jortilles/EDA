@@ -54,23 +54,37 @@
             <p-tabPanel i18n-header="@@vistaSeleccionador" header="{{!modeSQL ? editQuery : editSQLQuery}}">
 
                 <div *ngIf="!modeSQL" class="grid">
+                    
+                    <!-- TABLES -->
                     <div class="col-6 md:col-2 pl-2 pr-2" >
-                      <div class="d-flex justify-content-between"  style="min-height: 45px;">
-                        <h4 i18n="@@entidadesH4"  i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos.">
-                            Entidades
-                        </h4>
-                      </div>
-
-                        <eda-input [inject]="inputs.findTable"></eda-input>
-                        <div class="column-list">
-                            <div class="our-table-box" *ngFor="let table of tablesToShow" (click)="loadColumns(table)"
-                                [className]="table.table_name === userSelectedTable ? 'selected-table-class' : 'our-table-box'"
-                                (mouseover)="showDescription(table)" (mouseout)="description = ''">
-                                <span class="text-left" title="{{table.description.default}}">
-                                    {{table.display_name.default}}
-                                </span>
-                            </div>
+                        <div class="d-flex justify-content-between"  style="min-height: 45px;">
+                            <h4 i18n="@@entidadesH4"  i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos.">
+                                Entidades
+                            </h4>
                         </div>
+
+                        <ng-container *ngIf="currentQuery.length > 0">
+                            <p-tree selectionMode="single" [filter]="true" filterMode="strict"
+                                [value]="tableNodes"
+                                [loading]="loadingNodes"
+                                (onNodeExpand)="tableNodeExpand($event)"
+                                (onNodeSelect)="tableNodeSelect($event)">
+                            </p-tree>
+                            <!-- (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)" -->
+                        </ng-container>
+                        <ng-container *ngIf="currentQuery.length === 0">
+                            <eda-input [inject]="inputs.findTable"></eda-input>
+                            <div class="column-list">
+                                <div class="our-table-box" *ngFor="let table of tablesToShow" (click)="loadColumns(table)"
+                                    [className]="table.table_name === userSelectedTable ? 'selected-table-class' : 'our-table-box'"
+                                    (mouseover)="showDescription(table)" (mouseout)="description = ''">
+                                    <span class="text-left" title="{{table.description.default}}">
+                                        {{table.display_name.default}}
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-container>
+
                     </div>
 
                     <div class="col-6 md:col-2 pl-2">
@@ -184,8 +198,6 @@
                                     Mostrar Top: &nbsp;
                                     <p-inputNumber [(ngModel)]="queryLimit" (onInput)="onTopChange()"></p-inputNumber>
                                 </span>
-
-
                             </div>
                             <div class="col-4 md:col-12 flex infoJoin">
                                 <span i18n="@@joinTypeH4">
