@@ -357,8 +357,6 @@ export class MySqlBuilderService extends QueryBuilderService {
    */
   public getFilterColname(column: any){
     let colname:String ;
-    console.log('la columna es ')
-    console.log(column);
     if( column.computed_column == 'no'  || ! column.hasOwnProperty('computed_column') ){
       colname =   `\`${column.table_id}\`.\`${column.column_name}\`` ;
     }else{

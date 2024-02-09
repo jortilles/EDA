@@ -876,11 +876,23 @@ export abstract class QueryBuilderService {
 
             equalfilters.map.forEach((value, key) => {
                 let filterSTR = '\nand ('
-                value.forEach(f => {
-                    filterSTR += this.filterToString(f) + '\n  or ';
+
+                //poso els nulls al principi
+                let n = value.filter( f=> f.filter_type == 'not_null');
+                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null')];
+   
+                values.forEach(f => {
+                    if(f.filter_type == 'not_null'){
+                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
+                        filterSTR += this.filterToString(f ) + '\n  and ';
+                    }else{
+                        filterSTR += this.filterToString(f ) + '\n  or ';
+                    }
+                    
+
                 });
 
-                filterSTR = filterSTR.slice(0, -3);
+                filterSTR = filterSTR.slice(0, -4);
                 filterSTR += ') ';
                 filtersString += filterSTR;
             });
