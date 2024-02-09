@@ -148,6 +148,14 @@ export class EdaScatter implements AfterViewInit {
       .attr("cy", d => y(d.y))
       .attr("r", d => d.radius + 1)
       .attr("fill", d => color(d.category))
+      .on('click', (e, data) => {
+        if (this.inject.linkedDashboard) {
+          const props = this.inject.linkedDashboard;
+          const value = data.data.name;
+          const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+          window.open(url, "_blank");
+        }
+      })
       .on('mouseover', (d, data) => {
 
 
