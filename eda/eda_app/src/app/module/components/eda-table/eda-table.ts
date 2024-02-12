@@ -220,8 +220,12 @@ export class EdaTable {
         if (this.withColSubTotals) {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
         } 
-        //Es te que executar sempre
-        this.noRepeatedRows();
+        //Aixó no s'executa per les taules creuades
+        
+        if ( !this.pivot) {
+         console.log('desactivadas las no repeticiones');
+        // this.noRepeatedRows();
+         }
 
     }
 
