@@ -63,7 +63,11 @@ export const PanelInteractionUtils = {
 
     console.log(ebp.currentQuery);
   },
-
+  
+  /**
+   * Generate the rootTree for the currentQuery columns
+   * @param ebp EdaBlankPanelComponent
+   */ 
   loadTableNodes: (ebp: EdaBlankPanelComponent) => {
     const idTables = [...new Set(ebp.currentQuery.map((q) => q.table_id))];
     const dataSource = ebp.inject.dataSource.model.tables;
@@ -88,15 +92,24 @@ export const PanelInteractionUtils = {
     }
   },
 
+  /**
+   * Find all nodes from the expanNode. expandNode can be rootNode or a childNode.
+   * Both have the children array property.
+   * @param ebp EdaBlankPanelComponent
+   * @param expandNode node to find all possible children nodes.
+   */ 
   expandTableNode: (ebp: EdaBlankPanelComponent, expandNode: any) => {
     const dataSource = ebp.inject.dataSource.model.tables;
+
+    /** @rootNode have table_id @childNode have child_id ("table_name.column_name")  */
     const table_id = expandNode.table_id || expandNode.child_id.split('.')[0];
     
-    console.log(expandNode);
     if (table_id) {
       expandNode.children = [];
+
       const table = dataSource.find((source) => source.table_name == table_id);
-  
+      
+      /** find all the existing childNodes found before */
       const getAllChildIds = (node: any, ids: string[] = []): string[] => {
         if (node.child_id) ids.push(node.child_id);
     
@@ -109,33 +122,41 @@ export const PanelInteractionUtils = {
       const childrenId = getAllChildIds(expandNode);
 
       for (const relation of table.relations) {
+        // Init child_id
         const child_id = relation.target_table+'.'+relation.target_column[0];
 
-       // if (!rootTree.includes(relation.target_table) && !childrenId.includes(child_id)) {
+        /** Checks if the current child_node is included before.
+         * This prevents duplicated paths.*/
+        if (!rootTree.includes(relation.target_table) && !childrenId.includes(child_id)) {
+          // Label to show on the treeComponent 
           let childLabel = relation.display_name?.default
           ? `${relation.display_name.default} - ${relation.target_column[0]}`
           : `${relation.target_table} - ${relation.target_column[0]}`;
 
-
+          // Check if the childNode have more possible paths to explore
           let isexpandible = dataSource.find((source) => relation.target_table == source.table_name)?.relations?.length > 0;
 
+          /** This creates the path to relate this node with the previous tables.
+           * It will be used later to generate the query. */
           let sourceJoin = relation.source_table+'.'+relation.source_column[0];
           let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, child_id]]) : [[sourceJoin, child_id]];
 
+          // Init childNode object
           let childNode: any = {
             label: childLabel,
             child_id: child_id,
             joins
           };
 
+          // If it's expandable, we add properties to expand the node. 
           if (isexpandible) {
             childNode.expandedIcon = "pi pi-folder-open";
             childNode.collapsedIcon = "pi pi-folder";
             childNode.children = [{}];
           }
-
+          // Finally add this childNode to expandNode. This will create the tree.
           expandNode.children.push(childNode);
-        //}
+        }
       }
     }
 
