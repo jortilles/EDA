@@ -226,6 +226,10 @@ export class EdaBlankPanelComponent implements OnInit {
         });
     }
 
+    /**
+     * When selecting a node from the tree, it loads the columns to display.
+     * @param event selected node. Can be rootNode (table_id) or childNode (child_id). 
+     */
     public tableNodeSelect(event: any): void {
         const node = event?.node;
         if (node) {
@@ -236,19 +240,25 @@ export class EdaBlankPanelComponent implements OnInit {
             }
 
             if (node.joins) {
+                // Add the sourceJoins from this node. When select a column then will add this join to this column for generate the query
                 this.nodeJoins.push(node.joins);
             }
         }
-
-        console.log(this.nodeJoins)
     }
 
+    /**
+     * Expand table relations
+     * @param event node to expand. Empty for nodes without more paths.
+    */ 
     public tableNodeExpand(event: any): void {
         this.loadingNodes = true;
+
         const node = event?.node;
+
         if (node) {
             PanelInteractionUtils.expandTableNode(this, node);
         }
+
         this.loadingNodes = false;
     }
 
