@@ -223,9 +223,16 @@ export class EdaTable {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
 
         } 
-        if (this.noRepetitions || !this.noRepetitions) {
-            this.noRepeatedRows();
-        }
+        // SDA CUSTOM Este código produce repeticiones en tabnlas normales y tablas cruzadas  Issue 96 y 101
+        // SDA CUSTOM if (this.noRepetitions || !this.noRepetitions) {
+        // SDA CUSTOM    this.noRepeatedRows();
+        // SDA CUSTOM }
+        // Nueva propuesta
+        // if ( !this.pivot) {
+        // console.log('desactivadas las no repeticiones');
+        // this.noRepeatedRows();
+        // }
+        // END SDA CUSTOM
 
     }
 

@@ -557,7 +557,7 @@
       <trans-unit id="colorsChartH6" datatype="html">
         <source>
           Colores
-</source>
+        </source>
         <target>
           Colores
 </target>
@@ -1028,9 +1028,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-        <source>
-          CREAR UN NUEVO INFORME
-</source>
+        <source>CREAR UN NUEVO INFORME</source>
         <target>Crear un nuevo informe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
