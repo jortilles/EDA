@@ -227,23 +227,25 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public tableNodeSelect(event: any): void {
+        console.log('tableNodeSelect');
+        console.log(event);
         const node = event?.node;
         if (node) {
             if (node.table_id) {
-                PanelInteractionUtils.loadColumns(this, this.findTable(node.table_id));
+                PanelInteractionUtils.loadColumns(this, this.findTable(node.table_id), true);
             } else {
-                PanelInteractionUtils.loadColumns(this, this.findTable(node.child_id.split('.')[0]));
+                PanelInteractionUtils.loadColumns(this, this.findTable(node.child_id.split('.')[0]), true);
             }
 
-            if (node.joins) {
-                this.nodeJoins.push(node.joins);
-            }
+
         }
 
         console.log(this.nodeJoins)
     }
 
     public tableNodeExpand(event: any): void {
+        console.log('tableNodeExpand');
+        console.log(event);
         this.loadingNodes = true;
         const node = event?.node;
         if (node) {

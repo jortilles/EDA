@@ -29,7 +29,8 @@ export const PanelInteractionUtils = {
     }
   },
 
-  loadColumns: (ebp: EdaBlankPanelComponent, table: any) => {
+  loadColumns: (ebp: EdaBlankPanelComponent, table: any, treeClick?:boolean) => {
+
     // Set the user-selected table and disable the save button
     ebp.userSelectedTable = table.table_name;
     ebp.disableBtnSave();
@@ -50,7 +51,10 @@ export const PanelInteractionUtils = {
     // Sort columns by default display name
     ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
-    PanelInteractionUtils.loadTableNodes(ebp);
+    if(!treeClick){
+      console.log('actualizo el arbol');
+      PanelInteractionUtils.loadTableNodes(ebp);
+    }
     // Reset input and update table data if the findTable ngModel is not empty
     if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
         ebp.inputs.findTable.reset();
@@ -107,7 +111,7 @@ export const PanelInteractionUtils = {
       for (const relation of table.relations) {
         const child_id = relation.target_table+'.'+relation.target_column[0];
 
-        if (!rootTree.includes(relation.target_table) && !childrenId.includes(child_id)) {
+       // if (!rootTree.includes(relation.target_table) && !childrenId.includes(child_id)) {
           let childLabel = relation.display_name?.default
           ? `${relation.display_name.default} - ${relation.target_column[0]}`
           : `${relation.target_table} - ${relation.target_column[0]}`;
@@ -131,7 +135,7 @@ export const PanelInteractionUtils = {
           }
 
           expandNode.children.push(childNode);
-        }
+        //}
       }
     }
 
