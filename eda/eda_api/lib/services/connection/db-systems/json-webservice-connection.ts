@@ -159,6 +159,7 @@ export class JSONWebServiceConnection extends AbstractConnection {
 			const aggregationInfo = this.getAggregationInfo(fields)
 			const sortFields = this.getSortInfo(fields)
 			const aggregatedDatesInfo = this.getDatesInfo(fields)
+			const limit = query[0].queryLimit;
 
 			/**Security */
 			const modelPermissions = this.dataModel.ds.metadata.model_granted_roles
@@ -244,7 +245,9 @@ export class JSONWebServiceConnection extends AbstractConnection {
 			})
 			response = finalResponse;
 
-
+			if(limit){
+			response  = response.slice(0,limit);
+			}
 
 			return response;
 
