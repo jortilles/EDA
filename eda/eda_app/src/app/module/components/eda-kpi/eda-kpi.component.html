@@ -1,7 +1,5 @@
-<div class="text-center w-100 h-100" #kpiContainer >
-
-    <div >
-        <div class="pointer pl-5 pr-5" title="Añadir unidades" style="color: var(--panel-font-color); font-family: var(--panel-font-family);" >
+<div class="text-center w-100 h-100 d-flex justify-content-center"  #kpiContainer >
+        <div class="pointer" title="Añadir unidades" style="color: var(--panel-font-color); font-family: var(--panel-font-family);" #sufixContainer>
             <div [ngStyle]="getStyle()" (click)="setSufix()"  >
                 {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
             </div>
@@ -10,6 +8,4 @@
                     name=unidades [(ngModel)]="inject.sufix" autofocusOnShow>
             </div>
         </div>
-    </div>
-
 </div>

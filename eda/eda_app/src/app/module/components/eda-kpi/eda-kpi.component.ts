@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
@@ -13,6 +13,8 @@ export class EdaKpiComponent implements OnInit {
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
     @ViewChild('kpiContainer')
     kpiContainer: ElementRef;
+    @ViewChild('sufixContainer')
+    sufixContainer: ElementRef;
 
     sufixClick: boolean = false;
     color : string ;
@@ -51,36 +53,60 @@ export class EdaKpiComponent implements OnInit {
     }
 
     getStyle():any{
-        return {'font-weight': 'bold',  'font-size': this.getFontSize()  +'px' , display: 'inline', 'white-space': 'nowrap', color:this.color}
+        return { 'font-weight': 'bold','font-size': this.getFontSize(), display: 'flex','justify-content':'center',color:this.color}
     }
-
+   
+    /**
+     * This function returns a string with the given font size (in px) based on the panel width and height 
+     * @returns {string}
+    */
     getFontSize():string{
-        let result:number = 1;
-        //  By default is the height / 2
-        result = this.containerHeight/2;
-        // But maybe the widht is no enought.... lets check...
-        if( result*4 > this.containerWidth){
-            result =  this.containerWidth/4;
-        }
-        // But maybe the string lenght is too long... lets check 
-        let strlen =  (this.inject.value + this.inject.sufix).length;
-        if( strlen * result > this.containerWidth*1.5 ){
-            result = result / 1.8;
-        }
-        // Ok.... we are done...
-        return result.toFixed().toString();
+        let resultSize:number = 1;
 
+        resultSize = this.containerHeight/2;
+        
+        let textLongitude = (this.inject.value + this.inject.sufix).length;
+
+        let textWidth = textLongitude * resultSize;
+        
+        if (textWidth > this.containerWidth) resultSize = this.containerWidth / textLongitude;
+    
+        if (resultSize > this.containerHeight) resultSize = this.containerHeight;
+        
+        if (textLongitude * resultSize > this.containerWidth * 1.5) resultSize = resultSize / 1.8;
+        
+        return resultSize.toFixed().toString() +'px';
     }
+    
+     
+    
+    
 
     ngAfterViewInit() {
         const width = this.kpiContainer.nativeElement.offsetWidth;
         const height = this.kpiContainer.nativeElement.offsetHeight;
+        const elementReference = this.sufixContainer.nativeElement;
+  
+        console.log("Padre width: ",width);
+        console.log("Padre height: ",height);
        
-
         if( width > 0 ){
             this.containerHeight = height  ;
             this.containerWidth = width  ;
+        } 
+        if(height < 200){
+            elementReference.style.margin =  "0 0 10%";
+           
         }
+        if(height > width){
+            elementReference.style.marginTop = "30%";
+        }
+        if(width > height && height > 200){
+            elementReference.style.marginTop =  ((height/3)).toFixed() + "px";
+            elementReference.style.marginBottom =  ((height/3)).toFixed() + "px"; 
+        }
+       
+        
 
       }
       
