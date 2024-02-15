@@ -557,7 +557,7 @@ export class EdaTable {
                 }
                 } else {
                     for (let e = 0; e < values[i].length; e += 1) {            
-                        if (values[i][e] == ""){
+                        if (values[i][e] == "" &&  isNaN(values[i][e])){
                             obj[labels[e]] = first[e];
                         } else {
                             obj[labels[e]] = values[i][e];
