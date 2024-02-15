@@ -127,7 +127,7 @@ export const PanelInteractionUtils = {
 
         /** Checks if the current child_node is included before.
          * This prevents duplicated paths.*/
-        //if (!rootTree.includes(relation.target_table) && !childrenId.includes(child_id)) {
+        if (!rootTree.includes(relation.target_table) && !childrenId.includes(child_id)) {
           // Label to show on the treeComponent 
           let childLabel = relation.display_name?.default
           ? `${relation.display_name.default}`
