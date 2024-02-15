@@ -130,7 +130,7 @@ export const PanelInteractionUtils = {
         //if (!rootTree.includes(relation.target_table) && !childrenId.includes(child_id)) {
           // Label to show on the treeComponent 
           let childLabel = relation.display_name?.default
-          ? `${relation.display_name.default} - ${relation.target_column[0]}`
+          ? `${relation.display_name.default}`
           : `${relation.target_table} - ${relation.target_column[0]}`;
 
           // Check if the childNode have more possible paths to explore
