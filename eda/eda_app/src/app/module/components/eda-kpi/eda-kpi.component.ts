@@ -15,7 +15,6 @@ export class EdaKpiComponent implements OnInit {
     kpiContainer: ElementRef;
     @ViewChild('sufixContainer')
     sufixContainer: ElementRef;
-
     sufixClick: boolean = false;
     color : string ;
     defaultColor = '#67757c';
@@ -83,27 +82,18 @@ export class EdaKpiComponent implements OnInit {
     
 
     ngAfterViewInit() {
-        const width = this.kpiContainer.nativeElement.offsetWidth;
-        const height = this.kpiContainer.nativeElement.offsetHeight;
-        const elementReference = this.sufixContainer.nativeElement;
-         
-        if( width > 0 ){
-            this.containerHeight = height  ;
-            this.containerWidth = width  ;
-        } 
-        if(height < 200){
-            elementReference.style.margin =  "0 0 10%";
-           
-        }
-        if(height > width){
-            elementReference.style.marginTop = "30%";
-        }
-        if(width > height && height > 200){
-            elementReference.style.marginTop =  ((height/3)).toFixed() + "px";
-            elementReference.style.marginBottom =  ((height/3)).toFixed() + "px"; 
-        }
-       
+        const widthKpiContainer = this.kpiContainer.nativeElement.offsetWidth;
         
+        const heightKpiContainer = this.kpiContainer.nativeElement.offsetHeight;
+        
+        const sufixContainerReference = this.sufixContainer.nativeElement;
+        
+        if( widthKpiContainer > 0 ){
+            this.containerHeight = heightKpiContainer  ;
+            this.containerWidth = widthKpiContainer  ;
+        }
+        //Se pone en automático el ajustado del margen del texto
+        sufixContainerReference.style.margin = "auto"
 
       }
       

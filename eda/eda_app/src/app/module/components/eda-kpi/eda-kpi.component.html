@@ -1,6 +1,6 @@
 <div class="text-center w-100 h-100 d-flex justify-content-center"  #kpiContainer >
         <div class="pointer" title="Añadir unidades" style="color: var(--panel-font-color); font-family: var(--panel-font-family);" #sufixContainer>
-            <div [ngStyle]="getStyle()" (click)="setSufix()"  >
+            <div [ngStyle]="getStyle()" (click)="setSufix()">
                 {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
             </div>
             <div *ngIf="!!sufixClick" class="ui-inputgroup w-100">
