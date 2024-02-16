@@ -86,10 +86,7 @@ export class EdaKpiComponent implements OnInit {
         const width = this.kpiContainer.nativeElement.offsetWidth;
         const height = this.kpiContainer.nativeElement.offsetHeight;
         const elementReference = this.sufixContainer.nativeElement;
-  
-        console.log("Padre width: ",width);
-        console.log("Padre height: ",height);
-       
+         
         if( width > 0 ){
             this.containerHeight = height  ;
             this.containerWidth = width  ;
