@@ -190,13 +190,11 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .style("fill-opacity", 1)
       .attr("stroke", "black")
       .style("stroke-width", 1)
-
-
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
           const value = data.data.name;
-          const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+          const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
         }
       })

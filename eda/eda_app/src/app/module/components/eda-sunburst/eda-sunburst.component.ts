@@ -135,6 +135,7 @@ export class EdaSunburstComponent implements AfterViewInit {
       .join('path')
       .attr('fill', d => color(d.data.name))
       .attr('d', arc)
+      
 
     svg
       .append('g')
@@ -201,6 +202,14 @@ export class EdaSunburstComponent implements AfterViewInit {
         // per posar-ho a dalt de tot
         label.raise();
         
+      }) 
+      .on('click', (mouseevent, data) => {
+        if (this.inject.linkedDashboard) {
+          const props = this.inject.linkedDashboard;
+          const value = data.data.name;
+          const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+          window.open(url, "_blank");
+        }
       })
   }
 
