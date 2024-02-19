@@ -81,7 +81,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
   onShow(): void {
     this.oldLinked = this.controller.params.linkedDashboard ? this.controller.params.linkedDashboard.dashboardName : null;
     
-    if ((this.controller.params.charttype === 'parallelSets') && !this.controller.params.modeSQL) {
+    if ((this.controller.params.charttype === 'parallelSets') && this.controller.params.queryMode != 'SQL') {
 
       this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
         .map(col => {
@@ -89,7 +89,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
         });
     }
 
-    else if ((this.controller.params.charttype === 'treeMap') && !this.controller.params.modeSQL) {
+    else if ((this.controller.params.charttype === 'treeMap') && this.controller.params.queryMode != 'SQL') {
       this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
@@ -100,7 +100,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
     }
 
-    else if (this.controller.params.charttype !== 'table' && !this.controller.params.modeSQL) {
+    else if (this.controller.params.charttype !== 'table' && this.controller.params.queryMode != 'SQL') {
       let column = this.controller.params.query
         .map((col, i) => { return { col: col.column_name, table: col.table_id, colname: col.display_name.default, index:i, column_type:col.column_type } })
         .filter(col => (col.column_type === 'text' || col.column_type === 'date'))[0];
@@ -112,7 +112,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
     }
 
-    else if (this.controller.params.charttype === 'table' && !this.controller.params.modeSQL) {
+    else if (this.controller.params.charttype === 'table' && this.controller.params.queryMode != 'SQL') {
       this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
@@ -120,7 +120,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
     }
 
-    else if (this.controller.params.modeSQL) {
+    else if (this.controller.params.queryMode == 'SQL') {
       this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
@@ -139,10 +139,8 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
   }
 
   public handleTargetColumn() {
-
     this.targetColumn = this.selectedFilter.colname;
     this.targetTable = this.selectedFilter.table;
-
   }
 
   public async initDashboards(column: any): Promise<any> {
@@ -174,7 +172,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
             let disable = true;
 
-            if (!this.controller.params.modeSQL) {
+            if (this.controller.params.queryMode != 'SQL') {
               res.dashboard.config.filters.forEach(filter => {
 
                 if (filter.column.value.column_name === column.col && filter.table.value === column.table) {

@@ -133,7 +133,15 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryLimit: number;
     public joinType: string = 'inner';
 
-    public modeSQL: boolean;
+    public queryModes: any[] = [
+        { label: 'EDA Query', value: 'EDA' },
+        { label: 'SQL Query', value: 'SQL' },
+        { label: 'EDA Joins Query', value: 'EDA2' }
+    ];
+    public selectedQueryMode: string = 'EDA';
+    
+    // Depreacted use selectedQueryMode instead of
+    // public modeSQL: boolean;
     public sqlOriginTables: {}[];
     public sqlOriginTable: any;
 
@@ -191,7 +199,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     ngOnInit(): void {
         this.index = 0;
-        this.modeSQL = false;
+        // this.modeSQL = false;
 
         this.setTablesData();
 
@@ -199,19 +207,23 @@ export class EdaBlankPanelComponent implements OnInit {
         if (this.panel.content) {
             try{
                 const query = this.panel.content.query;
-                    
-                if (query.query.modeSQL) {
-                    this.modeSQL = true;
+                const modeSQL = query.query.modeSQL;
+                const queryMode = query.query.queryMode;
+
+                if (queryMode) {
+                    this.selectedQueryMode = queryMode;
+                }
+
+                if (modeSQL || queryMode=='SQL') {
                     this.currentSQLQuery = query.query.SQLexpression;
                     this.sqlOriginTable = this.tables.filter(t => t.table_name === query.query.fields[0].table_id)
-                        .map(table => {
-                            return { label: table.display_name.default, value: table.table_name }
-                        })[0];
+                        .map(table => ({ label: table.display_name.default, value: table.table_name }))[0];
                 }
 
                 this.loadChartsData(this.panel.content);
-            }catch(e){
+            } catch(e){
                 console.error('Error loading panen conent.....');
+                throw e;
             }
         }
 
@@ -231,8 +243,6 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param event selected node. Can be rootNode (table_id) or childNode (child_id). 
      */
     public tableNodeSelect(event: any): void {
-        console.log('tableNodeSelect');
-        console.log(event);
         const node = event?.node;
         if (node) {
             if (node.table_id) {
@@ -253,8 +263,6 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param event node to expand. Empty for nodes without more paths.
     */ 
     public tableNodeExpand(event: any): void {
-        console.log('tableNodeExpand');
-        console.log(event);
         this.loadingNodes = true;
 
         const node = event?.node;
@@ -264,6 +272,14 @@ export class EdaBlankPanelComponent implements OnInit {
         }
 
         this.loadingNodes = false;
+    }
+
+    public checkNodeSelected(node: any) {
+        if (node?.child_id) {
+            return this.currentQuery.some((query: any) => query.table_id == node.child_id.split('.')[0]);
+        } else {
+            return false;
+        }   
     }
 
     getEditMode() {
@@ -388,7 +404,10 @@ export class EdaBlankPanelComponent implements OnInit {
      */
 
     public buildGlobalconfiguration(panelContent: any) {
-        if (!panelContent.query.query.modeSQL) {
+        const modeSQL = panelContent.query.query.modeSQL;
+        const queryMode = panelContent.query.query.queryMode;
+
+        if ((queryMode && queryMode != 'SQL') || !modeSQL) {
             try{
                 const queryTables = [...new Set(panelContent.query.query.fields.map((field: any) => field.table_id))];
 
@@ -467,13 +486,13 @@ export class EdaBlankPanelComponent implements OnInit {
     public savePanel() {
 
         this.panel.title = this.pdialog.getTitle();
-
-
-        if (!_.isEmpty(this.graficos) || this.modeSQL) {
+        this.panel.content.query.query.queryMode = this.selectedQueryMode;
+        
+        if (!_.isEmpty(this.graficos) || this.selectedQueryMode == 'SQL') {
 
             this.display_v.saved_panel = true;
 
-            const query = this.initObjectQuery(this.modeSQL);
+            const query = this.initObjectQuery();
             const chart = this.chartForm.value.chart.value ? this.chartForm.value.chart.value : this.chartForm.value.chart;
             const edaChart = this.panelChart.props.edaChart;
 
@@ -495,8 +514,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     }
 
-    public initObjectQuery(modeSQL: boolean) {
-        if (modeSQL) {
+    public initObjectQuery() {
+        if (this.selectedQueryMode == 'SQL') {
             return QueryUtils.initSqlQuery(this);
         } else {
             return QueryUtils.initEdaQuery(this)
@@ -645,7 +664,8 @@ export class EdaBlankPanelComponent implements OnInit {
                         c.aggregation_type.forEach( e=> e.selected = false);
                         c.aggregation_type.map( e=> e.value == 'none'? e.selected = true:true );
                     }catch(e){
-                        console.log('no llego')
+                        console.error(e)
+                        throw e;
                     }
                     
                 }
@@ -793,14 +813,19 @@ export class EdaBlankPanelComponent implements OnInit {
             this.filtredColumns = [];
             //Reassing sqlQuery -if exists
             this.currentSQLQuery = this.panelDeepCopy.query.query.SQLexpression;
-            this.modeSQL = this.panelDeepCopy.query.query.modeSQL;
+
+            const queryMode = this.panelDeepCopy.query.query.queryMode;
+            const modeSQL = this.panelDeepCopy.query.query.modeSQL;
+
+            this.selectedQueryMode = _.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode;
+            
+            // this.modeSQL = this.panelDeepCopy.query.query.modeSQL;
         }
 
         this.loadChartsData(this.panelDeepCopy);
         this.userSelectedTable = undefined;
         this.tablesToShow = this.tables;
         this.display_v.chart = '';
-        // this.index = this.modeSQL ? 1 : 0;
         this.display_v.page_dialog = false;
     }
 
@@ -1040,7 +1065,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public switchAndBuildQuery() {
-        if (!this.modeSQL) return QueryUtils.initEdaQuery(this);
+        if (this.selectedQueryMode != 'SQL') return QueryUtils.initEdaQuery(this);
         else return QueryUtils.initSqlQuery(this);
     }
 
@@ -1095,23 +1120,22 @@ export class EdaBlankPanelComponent implements OnInit {
         this.queryFromServer = '';
         this.currentQuery = [];
         this.filtredColumns = [];
-        this.modeSQL = true;
+        this.selectedQueryMode = 'SQL';
     }
 
-    public async changeQueryMode(): Promise<void> {
-
+    public changeQueryMode(): void {
+        this.index = 0;
         this.currentSQLQuery = '';
         this.currentQuery = [];
         this.filtredColumns = [];
         this.display_v.btnSave = true;
     }
 
-    public accopen(e){
+    public accopen(e) { }
 
-    }
     /** This funciton return the display name for a given table. Its used for the query resumen      */
-    public getNiceTableName(  table ){
-         return this.tables.find( t => t.table_name === table).display_name.default;
+    public getNiceTableName(table: any){
+        return this.tables.find( t => t.table_name === table).display_name.default;
     }
 
     public onWhatIfDialog(): void {
@@ -1122,4 +1146,20 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.whatIf_dialog = false;
     }
     
+    public disableRunQuery(): boolean {
+        let disable = false;
+
+        if (this.selectedQueryMode !== 'SQL') {
+            if (this.currentQuery.length === 0 && this.index === 0) {
+                disable = true;
+            }
+        } else {
+            if (_.isNil(this.sqlOriginTables)) {
+                disable = true;
+            }
+        }
+
+        return disable;
+    }
+
 }

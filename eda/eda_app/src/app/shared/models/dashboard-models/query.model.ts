@@ -15,7 +15,8 @@ export interface Query {
         fields: Column[]
         filters: any[],
         simple: boolean,
-        modeSQL: boolean,
+        queryMode: string,
+        // modeSQL: boolean, Deprecated use queryMode instead
         SQLexpression : string,
         queryLimit : number,
         joinType: string,

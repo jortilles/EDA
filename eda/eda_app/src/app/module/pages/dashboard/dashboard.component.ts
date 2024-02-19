@@ -8,16 +8,12 @@ import { EdaDialogController, EdaDialogCloseEvent, EdaDatePickerComponent } from
 import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupService, IGroup, SpinnerService, UserService, StyleProviderService, DashboardStyles, GlobalFiltersService } from '@eda/services/service.index';
 import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
-import { environment } from 'environments/environment';
 import { SelectItem } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import domtoimage from 'dom-to-image';
 import Swal from 'sweetalert2';
 import jspdf from 'jspdf';
 import * as _ from 'lodash';
-import { ValueListSource } from '@eda/models/data-source-model/data-source-models';
-import { DashboardFilterDialogComponent } from './filter-dialog/dashboard-filter-dialog.component';
-import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-dashboard',
@@ -1379,7 +1375,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             const body = {
                 config: {
                     title: this.title,
-                    panel: this.dashboard.panel,
+                    panel: [],
                     ds: { _id: this.dataSource._id },
                     filters: this.cleanFiltersData(),
                     applyToAllfilter: this.applyToAllfilter,
@@ -1395,9 +1391,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
             };
 
-            this.edaPanels.forEach(panel => {
-                panel.savePanel();
-            });
+            this.edaPanels.forEach(panel => { panel.savePanel(); });
+            body.config.panel = this.dashboard.panel;
 
             this.dashboardService.updateDashboard(this.id, body).subscribe(
                 () => {

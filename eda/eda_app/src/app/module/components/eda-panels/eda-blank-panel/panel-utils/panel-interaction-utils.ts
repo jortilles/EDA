@@ -51,8 +51,8 @@ export const PanelInteractionUtils = {
     // Sort columns by default display name
     ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
-    if(!treeClick){
-      console.log('actualizo el arbol');
+    // if(!treeClick){ Juanjo?
+    if(treeClick || ebp.selectedQueryMode == 'EDA2') {
       PanelInteractionUtils.loadTableNodes(ebp);
     }
     // Reset input and update table data if the findTable ngModel is not empty
@@ -60,8 +60,6 @@ export const PanelInteractionUtils = {
         ebp.inputs.findTable.reset();
         ebp.setTablesData();
     }
-
-    console.log(ebp.currentQuery);
   },
   
   /**
@@ -69,18 +67,22 @@ export const PanelInteractionUtils = {
    * @param ebp EdaBlankPanelComponent
    */ 
   loadTableNodes: (ebp: EdaBlankPanelComponent) => {
-    const idTables = [...new Set(ebp.currentQuery.map((q) => q.table_id))];
-    const dataSource = ebp.inject.dataSource.model.tables;
-
-    ebp.tableNodes = [];
-    for (const table_id of idTables) {
-      const table = dataSource.find((source) => source.table_name == table_id);
+    if (ebp.currentQuery.length > 0) {
+      const idTables = [...new Set(ebp.currentQuery.map((q) => q.table_id))];
+      const rootTable = idTables[0];
+  
+      const dataSource = ebp.inject.dataSource.model.tables;
+  
+      ebp.tableNodes = [];
+  
+      // const table = dataSource.find((source) => source.table_name == table_id);
+      const table = dataSource.find((source) => source.table_name == rootTable);
 
       let isexpandible = table.relations.length > 0;
-
+  
       let node: any = {
         label: table.display_name.default,
-        table_id: table_id
+        table_id: rootTable
       }
       
       if (isexpandible) {
@@ -90,6 +92,25 @@ export const PanelInteractionUtils = {
       }
       ebp.tableNodes.push(node);
     }
+
+
+    // for (const table_id of idTables) {
+    //   const table = dataSource.find((source) => source.table_name == table_id);
+
+    //   let isexpandible = table.relations.length > 0;
+
+    //   let node: any = {
+    //     label: table.display_name.default,
+    //     table_id: table_id
+    //   }
+      
+    //   if (isexpandible) {
+    //     node.expandedIcon = "pi pi-folder-open";
+    //     node.collapsedIcon = "pi pi-folder";
+    //     node.children = [{}];
+    //   }
+    //   ebp.tableNodes.push(node);
+    // }
   },
 
   /**
@@ -100,7 +121,6 @@ export const PanelInteractionUtils = {
    */ 
   expandTableNode: (ebp: EdaBlankPanelComponent, expandNode: any) => {
     const dataSource = ebp.inject.dataSource.model.tables;
-
     /** @rootNode have table_id @childNode have child_id ("table_name.column_name")  */
     const table_id = expandNode.table_id || expandNode.child_id.split('.')[0];
     
@@ -117,7 +137,7 @@ export const PanelInteractionUtils = {
     
         return ids;
       };
-    
+      
       const rootTree = ebp.tableNodes.map((n) => n.table_id);
       const childrenId = getAllChildIds(expandNode);
 
@@ -143,8 +163,9 @@ export const PanelInteractionUtils = {
 
           // Init childNode object
           let childNode: any = {
+            type: 'child',
             label: childLabel,
-            child_id: child_id,
+            child_id: child_id.trim(),
             joins
           };
 

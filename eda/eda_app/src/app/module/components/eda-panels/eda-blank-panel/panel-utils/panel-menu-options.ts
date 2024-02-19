@@ -184,12 +184,19 @@ export const PanelOptions = {
       icon:"fa fa-external-link",
       command: () => {
         panelComponent.contextMenu.hideContextMenu();
+
+        let queryMode = panelComponent.panel.content.query.query.queryMode;
+        const modeSQL = panelComponent.panel.content.query.query.modeSQL;
+
+        if (!queryMode) queryMode = modeSQL ? 'SQL' : 'EDA';
+
         panelComponent.linkDashboardController = new EdaDialogController({
           params:{
             query : panelComponent.currentQuery,
             datasource : panelComponent.inject.dataSource._id,
             charttype : panelComponent.panelChart.props.chartType,
-            modeSQL : panelComponent.panel.content.query.query.modeSQL,
+            queryMode: panelComponent.panel.content.query.query.queryMode,
+            // modeSQL : panelComponent.panel.content.query.query.modeSQL,
             dashboard_id : panelComponent.inject.dashboard_id,
             linkedDashboard : panelComponent.panel.linkedDashboardProps
           },
