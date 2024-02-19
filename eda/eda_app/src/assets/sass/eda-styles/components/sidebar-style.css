@@ -366,3 +366,7 @@
   width: 50px;
 }
 
+
+.mini-sidebar-2 .sidebar-nav #sidebarnav > li > a {
+  padding: 12px 20px;
+}

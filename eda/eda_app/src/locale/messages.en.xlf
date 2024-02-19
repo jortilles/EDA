@@ -3325,12 +3325,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="removeRowTotals">
-    <source>Quitar totales de columna</source>
-    <target>Delete column totals</target>
+    <source>Quitar totales de fila</source>
+    <target>Delete row totals</target>
   </trans-unit>
-  <trans-unit id="removeRowSubtotals">
+  <trans-unit id="removeColSubtotals">
     <source>Quitar subtotales de columna</source>
     <target>Delete column subtotals</target>
+  </trans-unit>
+  <trans-unit id="addColSubtotals">
+    <source>Subtotales de columna</source>
+    <target>Column subtotals</target>
   </trans-unit>
   <trans-unit id="addRowTotals">
     <source>Totales de fila</source>
