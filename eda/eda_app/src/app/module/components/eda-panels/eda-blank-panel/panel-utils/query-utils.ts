@@ -40,7 +40,7 @@ export const QueryUtils = {
    * 
    */
   switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
-    if (!ebp.modeSQL) {
+    if (ebp.selectedQueryMode != 'SQL') {
       const response = await ebp.dashboardService.executeQuery(query).toPromise();
       return response;
     } else {
@@ -109,12 +109,9 @@ export const QueryUtils = {
     }
 
     try {
-
-      // if (ebp.panelChart) ebp.panelChart.destroyComponent();
-
       const query = ebp.switchAndBuildQuery();
       /**Add fake column if SQL mode and there isn't fields yet */
-      if (query.query.modeSQL && query.query.fields.length === 0) {
+      if (query.query.queryMode == 'SQL' && query.query.fields.length === 0) {
         query.query.fields.push(QueryUtils.createColumn('custom', null, ebp.sqlOriginTable));
       }
 
@@ -157,7 +154,7 @@ export const QueryUtils = {
   */
   runManualQuery: (ebp: EdaBlankPanelComponent) => {
     /**No check in sql mode */
-    if (ebp.modeSQL) {
+    if (ebp.selectedQueryMode == 'SQL') {
       QueryUtils.runQuery(ebp, false);
       return;
     }
@@ -225,7 +222,8 @@ export const QueryUtils = {
       queryLimit: ebp.queryLimit,
       joinType: ebp.joinType
     };
-    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params);
+    console.log(ebp.selectedQueryMode);
+    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },
 
 
@@ -242,7 +240,7 @@ export const QueryUtils = {
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
       config: config.getConfig()
     };
-    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, true, ebp.currentSQLQuery);
+    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode, ebp.currentSQLQuery);
 
   }
 }

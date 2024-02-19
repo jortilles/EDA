@@ -59,7 +59,8 @@ export class QueryBuilderService extends ApiService {
                 fields: queryColumns,
                 filters: [],
                 simple: true,
-                modeSQL : false,
+                // modeSQL : false,
+                queryMode: 'EDA',
                 SQLexpression : null,
                 queryLimit : null,
                 joinType: 'left' //puede que necesite el joinType
@@ -73,7 +74,7 @@ export class QueryBuilderService extends ApiService {
     }
 
 
-    public normalQuery(select: any[], params: QueryParams, modeSQL ?:boolean, SQLexpression?: string): Query {
+    public normalQuery(select: any[], params: QueryParams, queryMode: string = 'EDA' , SQLexpression?: string): Query {
         const labels = [];
         const queryColumns = [];
         for (let i = 0, n = select.length; i < n; i += 1) {
@@ -118,7 +119,8 @@ export class QueryBuilderService extends ApiService {
                 fields: queryColumns,
                 filters: params.filters,
                 simple: false,
-                modeSQL : modeSQL,
+                queryMode,
+                // modeSQL : modeSQL,
                 SQLexpression : SQLexpression,
                 queryLimit : params.queryLimit,
                 joinType: params.joinType,
