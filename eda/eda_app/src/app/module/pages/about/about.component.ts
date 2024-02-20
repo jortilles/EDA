@@ -18,7 +18,7 @@ export class AboutComponent implements OnInit {
   sinergiaDaVersion: string = "XXXX";
   edaApiVersion: string = "XXXX";
   edaApiPort: string = "XXXX";
-  edaAppVersion: string = "XXXX";
+  // edaAppVersion: string = "XXXX";
   lastRebuildDate: string = "XXXX";
   sinergiaCRMDatabaseName: string = "XXXX";
   lastUpdateModelRun: string = "XXXX";
@@ -45,7 +45,7 @@ export class AboutComponent implements OnInit {
     interface InfoResponse {
       info: {
         sinergiaDaVersion: string;
-        edaAppVersion: string;
+        // edaAppVersion: string;
         edaApiVersion: string;
         edaApiPort: string;
         lastRebuildDate: string;
@@ -67,7 +67,7 @@ export class AboutComponent implements OnInit {
         this.sinergiaDaVersion = data.info.sinergiaDaVersion;
         this.edaApiVersion = data.info.edaApiVersion;
         this.edaApiPort = data.info.edaApiPort;
-        this.edaAppVersion = data.info.edaAppVersion;
+        // this.edaAppVersion = data.info.edaAppVersion;
         this.lastRebuildDate = data.info.lastRebuildDate;
         this.lastUpdateModelRun = data.info.lastUpdateModelRun;
         // Conditionally displays the database name based on admin status.
