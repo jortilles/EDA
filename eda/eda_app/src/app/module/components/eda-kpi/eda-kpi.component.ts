@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
@@ -13,7 +13,8 @@ export class EdaKpiComponent implements OnInit {
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
     @ViewChild('kpiContainer')
     kpiContainer: ElementRef;
-
+    @ViewChild('sufixContainer')
+    sufixContainer: ElementRef;
     sufixClick: boolean = false;
     color : string ;
     defaultColor = '#67757c';
@@ -51,36 +52,55 @@ export class EdaKpiComponent implements OnInit {
     }
 
     getStyle():any{
-        return {'font-weight': 'bold',  'font-size': this.getFontSize()  +'px' , display: 'inline', 'white-space': 'nowrap', color:this.color}
+        return { 'font-weight': 'bold','font-size': this.getFontSize(), display: 'flex','justify-content':'center',color:this.color}
     }
-
+   
+    /**
+     * This function returns a string with the given font size (in px) based on the panel width and height 
+     * @returns {string}
+    */
     getFontSize():string{
-        let result:number = 1;
-        //  By default is the height / 2
-        result = this.containerHeight/2;
-        // But maybe the widht is no enought.... lets check...
-        if( result*4 > this.containerWidth){
-            result =  this.containerWidth/4;
+        let resultSize:number = 1;
+        resultSize = this.containerHeight/2;
+        
+        let textLongitude = (this.inject.value + this.inject.sufix).length;
+        if(this.inject.sufix.length > 3){
+            // Provoco saltos de linea en sufijos largos
+            textLongitude = this.inject.value.toString().length
         }
-        // But maybe the string lenght is too long... lets check 
-        let strlen =  (this.inject.value + this.inject.sufix).length;
-        if( strlen * result > this.containerWidth*1.5 ){
-            result = result / 1.8;
-        }
-        // Ok.... we are done...
-        return result.toFixed().toString();
 
+        let textWidth = textLongitude * resultSize;
+        
+        if (textWidth > this.containerWidth) resultSize = ( this.containerWidth / textLongitude ) * 1.1 ;
+    
+        if (resultSize > this.containerHeight) resultSize = this.containerHeight;
+        
+        if (textLongitude * resultSize > this.containerWidth * 1.2) resultSize = resultSize / 1.5;
+        
+        if(this.inject.sufix.length > 3 &&  
+            resultSize * 4 > this.containerHeight  &&
+            textWidth >  this.containerWidth  ) resultSize = resultSize / 1.8;
+        
+        return resultSize.toFixed().toString() +'px';
     }
+    
+     
+    
+    
 
     ngAfterViewInit() {
-        const width = this.kpiContainer.nativeElement.offsetWidth;
-        const height = this.kpiContainer.nativeElement.offsetHeight;
-       
-
-        if( width > 0 ){
-            this.containerHeight = height  ;
-            this.containerWidth = width  ;
+        const widthKpiContainer = this.kpiContainer.nativeElement.offsetWidth;
+        
+        const heightKpiContainer = this.kpiContainer.nativeElement.offsetHeight;
+        
+        const sufixContainerReference = this.sufixContainer.nativeElement;
+        
+        if( widthKpiContainer > 0 ){
+            this.containerHeight = heightKpiContainer  ;
+            this.containerWidth = widthKpiContainer  ;
         }
+        //Se pone en automático el ajustado del margen del texto
+        sufixContainerReference.style.margin = "auto"
 
       }
       

@@ -1,15 +1,11 @@
-<div class="text-center w-100 h-100" #kpiContainer >
-
-    <div >
-        <div class="pointer pl-5 pr-5" title="Añadir unidades" style="color: var(--panel-font-color); font-family: var(--panel-font-family);" >
-            <div [ngStyle]="getStyle()" (click)="setSufix()"  >
-                {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
-            </div>
-            <div *ngIf="!!sufixClick" class="ui-inputgroup w-100">
-                <input type="text" class="w-100" pInputText (focusout)="setSufix()" (keydown.enter)="setSufix()"
-                    name=unidades [(ngModel)]="inject.sufix" autofocusOnShow>
-            </div>
+<div class="text-center w-100 h-100 d-flex justify-content-center text-wrap"  #kpiContainer >
+    <div class="pointer" title="Añadir unidades" style="color: var(--panel-font-color); font-family: var(--panel-font-family);" #sufixContainer>
+        <div [ngStyle]="getStyle()" (click)="setSufix()">
+            {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
+        </div>
+        <div *ngIf="!!sufixClick" class="ui-inputgroup w-100">
+            <input type="text" class="w-100" pInputText (focusout)="setSufix()" (keydown.enter)="setSufix()"
+                name=unidades [(ngModel)]="inject.sufix" autofocusOnShow>
         </div>
     </div>
-
 </div>
