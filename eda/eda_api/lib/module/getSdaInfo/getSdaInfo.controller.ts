@@ -60,9 +60,10 @@ export class getSdaInfo {
         }
       });
 
-      // Retrieve EDA APP version from package.json.
-      const packageJsonPathAPP = path.join(__dirname, "../../../../eda_app/package.json");
-      info["edaAppVersion"] = JSON.parse(fs.readFileSync(packageJsonPathAPP, "utf8")).version;
+      //  It is necessary to put this information in an accessible place from the API
+      // // Retrieve EDA APP version from package.json.
+      // const packageJsonPathAPP = path.join(__dirname, "../../../../eda_app/package.json");
+      // info["edaAppVersion"] = JSON.parse(fs.readFileSync(packageJsonPathAPP, "utf8")).version;
 
       // Retrieve the last synchronization date with SinergiaCRM.
       let connection: any;
