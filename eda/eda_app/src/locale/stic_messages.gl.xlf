@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="es" datatype="plaintext" original="ng2.template">
+  <file source-language="gl-ES" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="sidebarMyDashboards" datatype="html">
         <source>Mis informes</source>
@@ -83,6 +83,47 @@
         </target>
       </trans-unit>
 
+      <!-- ABOUT PAGE -->
+      <trans-unit
+        id="aboutPageTitle" datatype="html">
+        <source>Acerca de</source>
+        <target>Acerca de</target>
+      </trans-unit>
+      <trans-unit id="aboutPageSinergiaDAVersion"
+        datatype="html">
+        <source>Versión de SinergiaDA</source>
+        <target>Versión de SinergiaDA</target>
+      </trans-unit>
+      <trans-unit
+        id="aboutPageEdaVersionAPI" datatype="html">
+        <source>Puerto / Versión de EDA (API)</source>
+        <target>Porto / Versión de EDA (API)</target>
+      </trans-unit>
+      <trans-unit
+        id="aboutPageEdaVersionAPP" datatype="html">
+        <source>Versión de EDA (APP)</source>
+        <target>Versión de EDA (APP)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageLastUpdateModelDate"
+        datatype="html">
+        <source>Última sincronización con SinergiaCRM (updateModel)</source>
+        <target>Última sincronización con SinergiaCRM (updateModel)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageLastRebuildDate" datatype="html">
+        <source>Última reconstrucción de origenes de datos en SinergiaCRM
+          (rebuild)</source>
+        <target>Última reconstrución de orixes de datos en SinergiaCRM (rebuild)
+        </target>
+      </trans-unit>
+      <trans-unit id="aboutPageDB" datatype="html">
+        <source>Base de datos de SinergiaCRM</source>
+        <target>Base de datos de SinergiaCRM</target>
+      </trans-unit>
+      <trans-unit id="logotipoSdaAlt" datatype="html">
+        <source>Logotipo de Sinergia Data Analytics</source>
+        <target>Logotipo de Sinergia Data Analytics</target>
+      </trans-unit>
+      <!-- END ABOUT PAGE -->
 
     </body>
   </file>

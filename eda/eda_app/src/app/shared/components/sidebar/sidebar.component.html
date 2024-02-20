@@ -33,8 +33,10 @@
 
                 <li class="user-profile">
                     <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false" (click)="ignoreNotSaved()">
-                        <img [src]="user.img | image" alt="user" />
-                        <span class="hide-menu ml-2"> {{ user.name }} </span>
+                        <!--SDA CUSTOM  <img [src]="user.img | image" alt="user" /> -->
+                        <!--SDA CUSTOM --><i class="mdi mdi-account-outline"></i>
+
+                          <span class="hide-menu ml-2"> {{ user.name }} </span>
                     </a>
                     <ul aria-expanded="false" class="collapse">
                         <li>
@@ -124,7 +126,8 @@
                 <li class="nav-devider"></li>
                 <li  >
                     <a class="has-arrow waves-effect waves-dark">
-                        <i class="pi pi-globe"></i>
+                        <!-- SDA CUSTOM<i class="pi pi-globe"></i> -->
+<!-- SDA CUSTOM -->    <i class="mdi mdi-web"></i>
                     </a>
                     <ul aria-expanded="false" class="collapse">
                         <li>
@@ -143,6 +146,13 @@
                     </ul>
                 </li>
                 <li class="nav-devider"></li>
+
+<!--SDA CUSTOM-->                 <li class="user-profile">
+<!--SDA CUSTOM-->                   <a routerLink="/about" (click)="ignoreNotSaved()">
+<!--SDA CUSTOM-->                     <i class="mdi mdi-information-outline"></i>
+<!--SDA CUSTOM-->                     <span class="hide-menu ml-2" i18n="@@aboutPageTitle">Acerca de</span>
+<!--SDA CUSTOM-->                   </a>
+<!--SDA CUSTOM-->                 </li>
             </ul>
 
         </nav>

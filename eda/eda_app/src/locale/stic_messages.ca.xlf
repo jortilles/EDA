@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2"
   xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+  <file source-language="ca-ES" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="sidebarMyDashboards" datatype="html">
         <source>Mis informes</source>
@@ -12,9 +12,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-        <source> Crear nuevo informe
-        </source>
-        <target>Crear nou informe</target>
+        <source> Crear nuevo informe</source>
+        <target>Crea un nou informe</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
           <context context-type="linenumber">7</context>
@@ -46,7 +45,7 @@
       </trans-unit>
       <trans-unit id="inputRepitePassword" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repeteix la contrasenya</target>
+        <target>Repetiu la contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/users-management/users-detail/users-detail.component.html</context>
@@ -55,7 +54,7 @@
       </trans-unit>
       <trans-unit id="saveModel" datatype="html">
         <source>Guardar modelo de datos</source>
-        <target>Guardar model de dades</target>
+        <target>Desa el model de dades</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
@@ -65,7 +64,8 @@
       <trans-unit id="labelnewPass" datatype="html">
         <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en
           blanco)</source>
-        <target>Nova contrasenya (si no vols modificar la teva contrasenya actual deixa el camp en
+        <target>Nova contrasenya (si no voleu modificar la vostra contrasenya actual deixeu el camp
+          en
           blanc)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
@@ -82,7 +82,7 @@
       </trans-unit>
       <trans-unit id="labelRepeatPass" datatype="html">
         <source>Repite la nueva contraseña </source>
-        <target>Repeteix la nova contrasenya </target>
+        <target>Repetiu la nova contrasenya </target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">31</context>
@@ -98,7 +98,7 @@
       </trans-unit>
       <trans-unit id="newPassPlaceholderProfile" datatype="html">
         <source>Repite la contraseña</source>
-        <target>Repeteix la contrasenya</target>
+        <target>Repetiu la contrasenya</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
           <context context-type="linenumber">32</context>
@@ -128,7 +128,7 @@
       <x id="CLOSE_TAG_P-INPUTNUMBER"
             ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
         </source>
-        <target> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
+        <target> Mostra Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
             equiv-text="&lt;p-inputNumber&gt;" />
       <x id="CLOSE_TAG_P-INPUTNUMBER"
             ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
@@ -141,15 +141,11 @@
       </trans-unit>
       <trans-unit id="hiddenAttributes">
         <source>Atributos ocultos</source>
-        <target>Mostra/amaga columnes ocultes</target>
+        <target>Mostra/amaga les columnes</target>
       </trans-unit>
       <trans-unit id="atributosH4+" datatype="html">
-        <source>
-          Columnas de:
-        </source>
-        <target>
-          Columnes de:
-        </target>
+        <source>Columnas de:</source>
+        <target>Columnes de:</target>
       </trans-unit>
       <trans-unit id="atributosH4interpolation" datatype="html">
         <source>
@@ -159,6 +155,48 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
         </target>
       </trans-unit>
+
+      <!-- ABOUT PAGE -->
+      <trans-unit
+        id="aboutPageTitle" datatype="html">
+        <source>Acerca de</source>
+        <target>Quant a</target>
+      </trans-unit>
+      <trans-unit id="aboutPageSinergiaDAVersion"
+        datatype="html">
+        <source>Versión de SinergiaDA</source>
+        <target>Versió de SinergiaDA</target>
+      </trans-unit>
+      <trans-unit
+        id="aboutPageEdaVersionAPI" datatype="html">
+        <source>Puerto / Versión de EDA (API)</source>
+        <target>Port / Versió d'EDA (API)</target>
+      </trans-unit>
+      <trans-unit
+        id="aboutPageEdaVersionAPP" datatype="html">
+        <source>Versión de EDA (APP)</source>
+        <target>Versió d'EDA (APP)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageLastUpdateModelDate"
+        datatype="html">
+        <source>Última sincronización con SinergiaCRM (updateModel)</source>
+        <target>Última sincronització amb SinergiaCRM (updateModel)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageLastRebuildDate" datatype="html">
+        <source>Última reconstrucción de origenes de datos en SinergiaCRM
+          (rebuild)</source>
+        <target>Última reconstrucció dels orígens de dades a SinergiaCRM (rebuild)
+        </target>
+      </trans-unit>
+      <trans-unit id="aboutPageDB" datatype="html">
+        <source>Base de datos de SinergiaCRM</source>
+        <target>Base de dades de SinergiaCRM</target>
+      </trans-unit>
+      <trans-unit id="logotipoSdaAlt" datatype="html">
+        <source>Logotipo de Sinergia Data Analytics</source>
+        <target>Logotip de Sinergia Data Analytics</target>
+      </trans-unit>
+      <!-- END ABOUT PAGE -->
     </body>
   </file>
 </xliff>

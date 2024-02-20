@@ -7,6 +7,9 @@ import UploadsRouter from './module/uploads/uploads.router';
 import MailRouter from './module/mail/mail.router';
 
 import updateModelRouter from './module/updateModel/updateModel.router';
+// SDA CUSTOM
+import getSdaInfoRouter from './module/getSdaInfo/getSdaInfo.router';
+// END SDA CUSTOM
 
 const router = express.Router();
 
@@ -22,8 +25,11 @@ router.use('/addTable', AddTableRouter );
 
 router.use('/mail', MailRouter);
 
-//Router para update model de SinergiaTIC
+// Router for SinergiaTIC update model
 router.use('/updatemodel', updateModelRouter);
 
+// SDA CUSTOM
+router.use('/getsdainfo', getSdaInfoRouter);
+// END SDA CUSTOM
 
 export default router;
