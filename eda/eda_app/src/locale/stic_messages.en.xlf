@@ -12,8 +12,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
-        <source> Crear nuevo informe
-        </source>
+        <source> Crear nuevo informe</source>
         <target>Create new dashboard</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
@@ -22,7 +21,7 @@
       </trans-unit>
       <trans-unit id="saveModel" datatype="html">
         <source>Guardar modelo de datos</source>
-        <target>Save datamodel</target>
+        <target>Save data model</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
@@ -60,16 +59,11 @@
       </trans-unit>
       <trans-unit id="hiddenAttributes">
         <source>Atributos ocultos</source>
-        <target>Show/hide hidden columns</target>
+        <target>Show/hide columns</target>
       </trans-unit>
-
       <trans-unit id="atributosH4+" datatype="html">
-        <source>
-          Columnas de:
-        </source>
-        <target>
-          Columns of:
-        </target>
+        <source>Columnas de:</source>
+        <target>Columns of:</target>
       </trans-unit>
       <trans-unit id="atributosH4interpolation" datatype="html">
         <source>
@@ -80,6 +74,46 @@
         </target>
       </trans-unit>
 
+      <!-- ABOUT PAGE -->
+      <trans-unit
+        id="aboutPageTitle" datatype="html">
+        <source>Acerca de</source>
+        <target>About</target>
+      </trans-unit>
+      <trans-unit id="aboutPageSinergiaDAVersion"
+        datatype="html">
+        <source>Versión de SinergiaDA</source>
+        <target>SinergiaDA Version</target>
+      </trans-unit>
+      <trans-unit
+        id="aboutPageEdaVersionAPI" datatype="html">
+        <source>Puerto / Versión de EDA (API)</source>
+        <target>EDA Version / Port (API)</target>
+      </trans-unit>
+      <trans-unit
+        id="aboutPageEdaVersionAPP" datatype="html">
+        <source>Versión de EDA (APP)</source>
+        <target>EDA Version (APP)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageLastUpdateModelDate"
+        datatype="html">
+        <source>Última sincronización con SinergiaCRM (updateModel)</source>
+        <target>Last synchronization with SinergiaCRM (updateModel)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageLastRebuildDate" datatype="html">
+        <source>Última reconstrucción de origenes de datos en SinergiaCRM
+          (rebuild)</source>
+        <target>Last data source rebuild in SinergiaCRM (rebuild)</target>
+      </trans-unit>
+      <trans-unit id="aboutPageDB" datatype="html">
+        <source>Base de datos de SinergiaCRM</source>
+        <target>SinergiaCRM database</target>
+      </trans-unit>
+      <trans-unit id="logotipoSdaAlt" datatype="html">
+        <source>Logotipo de Sinergia Data Analytics</source>
+        <target>Sinergia Data Analytics Logo</target>
+      </trans-unit>
+      <!-- END ABOUT PAGE -->
     </body>
   </file>
 </xliff>
