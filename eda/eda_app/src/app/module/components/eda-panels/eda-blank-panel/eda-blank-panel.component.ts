@@ -136,9 +136,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryModes: any[] = [
         { label: 'EDA Query', value: 'EDA' },
         { label: 'SQL Query', value: 'SQL' },
-        { label: 'EDA Joins Query', value: 'EDA2' }
+        { label: 'Tree Query', value: 'EDA2' }
     ];
-    public selectedQueryMode: string = 'EDA';
+    public selectedQueryMode: string = 'EDA2';
     
     // Depreacted use selectedQueryMode instead of
     // public modeSQL: boolean;
@@ -671,7 +671,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 }
         }
 
-
+        PanelInteractionUtils.loadTableNodes(this);
     }
 
 

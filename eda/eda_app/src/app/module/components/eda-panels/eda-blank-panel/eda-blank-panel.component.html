@@ -534,10 +534,13 @@
         <div class="col-1">
             <!-- <div i18n="@@edaMode" *ngIf="!modeSQL">Modo EDA</div>
             <div i18n="@@sqlMode" *ngIf="modeSQL">Modo SQL</div> -->
-
-            <p-dropdown [(ngModel)]="selectedQueryMode" [options]="queryModes" (ngModelChange)="changeQueryMode()" [style]="{'width': '100%'}">
-            </p-dropdown>
-
+<!--
+            <p-selectButton  [(ngModel)]="selectedQueryMode" [options]="queryModes" (ngModelChange)="changeQueryMode()" [style]="{'width': '100%'}">
+            </p-selectButton >
+-->
+            <p-dropdown  [(ngModel)]="selectedQueryMode" [options]="queryModes" (ngModelChange)="changeQueryMode()" [style]="{'width': '100%'}">
+            </p-dropdown >
+            
             <!-- <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" (onChange)="changeQueryMode()" #switchMode
                 [(ngModel)]="modeSQL" [pTooltip]="ptooltipSQLmode" tooltipPosition="left">
             </p-inputSwitch> -->

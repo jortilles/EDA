@@ -51,8 +51,7 @@ export const PanelInteractionUtils = {
     // Sort columns by default display name
     ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
 
-    // if(!treeClick){ Juanjo?
-    if(treeClick || ebp.selectedQueryMode == 'EDA2') {
+    if(!treeClick){
       PanelInteractionUtils.loadTableNodes(ebp);
     }
     // Reset input and update table data if the findTable ngModel is not empty
@@ -151,7 +150,7 @@ export const PanelInteractionUtils = {
           // Label to show on the treeComponent 
           let childLabel = relation.display_name?.default
           ? `${relation.display_name.default}`
-          : `${relation.target_table} - ${relation.target_column[0]}`;
+          : ` ${relation.source_column[0]} - ${relation.target_table} `;
 
           // Check if the childNode have more possible paths to explore
           let isexpandible = dataSource.find((source) => relation.target_table == source.table_name)?.relations?.length > 0;
