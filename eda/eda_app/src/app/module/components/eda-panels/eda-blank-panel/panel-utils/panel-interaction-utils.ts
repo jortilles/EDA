@@ -91,25 +91,30 @@ export const PanelInteractionUtils = {
       }
       ebp.tableNodes.push(node);
     }
+  },
 
+  assertTable: (ebp: EdaBlankPanelComponent, column: Column) => {
+    if (column.joins.length > 0 && !ebp.tables.some((t) => t.table_name == column.table_id)) {
+      const rootJoin = column.joins[0];
+      const rootTable = (rootJoin[0]||'').split('.')[0];
+      const sourceTable = ebp.tables.find((table: any) => table.table_name == rootTable);
 
-    // for (const table_id of idTables) {
-    //   const table = dataSource.find((source) => source.table_name == table_id);
+      const relation = sourceTable?.relations.find((rel) => `${rel.target_table}.${rel.target_column[0]}` == column.table_id);
+      if (relation) {
+        let assertTable = _.cloneDeep(ebp.tables.find((t) => t.table_name == relation.target_table));
 
-    //   let isexpandible = table.relations.length > 0;
-
-    //   let node: any = {
-    //     label: table.display_name.default,
-    //     table_id: table_id
-    //   }
-      
-    //   if (isexpandible) {
-    //     node.expandedIcon = "pi pi-folder-open";
-    //     node.collapsedIcon = "pi pi-folder";
-    //     node.children = [{}];
-    //   }
-    //   ebp.tableNodes.push(node);
-    // }
+        let displayName = relation.display_name?.default
+          ? `${relation.display_name.default}`
+          : ` ${relation.source_column[0]} - ${relation.target_table} `;
+        
+        if (assertTable?.table_name) {
+          assertTable.table_name = column.table_id;
+          assertTable.display_name.default = displayName;
+          assertTable.description.default = displayName;
+          ebp.tables.push(assertTable);
+        }
+      }
+    }
   },
 
   /**
@@ -152,14 +157,20 @@ export const PanelInteractionUtils = {
           ? `${relation.display_name.default}`
           : ` ${relation.source_column[0]} - ${relation.target_table} `;
 
-          // Check if the childNode have more possible paths to explore
-          let isexpandible = dataSource.find((source) => relation.target_table == source.table_name)?.relations?.length > 0;
-
           /** This creates the path to relate this node with the previous tables.
            * It will be used later to generate the query. */
           let sourceJoin = relation.source_table+'.'+relation.source_column[0];
           let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, child_id]]) : [[sourceJoin, child_id]];
-
+          
+          if (!ebp.tables.some((t) => t.table_name == child_id)) {
+            let assertTable = _.cloneDeep(ebp.tables.find((t) => t.table_name == relation.target_table))
+            if (assertTable?.table_name) {
+              assertTable.table_name = child_id;
+              assertTable.display_name.default = childLabel;
+              assertTable.description.default = childLabel;
+              ebp.tables.push(assertTable)
+            }
+          }
           // Init childNode object
           let childNode: any = {
             type: 'child',
@@ -168,6 +179,9 @@ export const PanelInteractionUtils = {
             joins
           };
 
+          // Check if the childNode have more possible paths to explore
+          if (!childNode.parent) childNode.parent = expandNode;
+          let isexpandible = getAllChildIds(childNode).length > 0; //dataSource.find((source) => relation.target_table == source.table_name)?.relations?.length > 0;
           // If it's expandable, we add properties to expand the node. 
           if (isexpandible) {
             childNode.expandedIcon = "pi pi-folder-open";
@@ -179,9 +193,7 @@ export const PanelInteractionUtils = {
         }
       }
     }
-
   },
-
 
   /**
      * set local and global filters
@@ -405,23 +417,24 @@ export const PanelInteractionUtils = {
      * @param c column to move
      */
   moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
+    // console.log(c); 
     ebp.disableBtnSave();
     // Busca index en l'array de columnes
     // const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id,  });
     const match = _.find(ebp.columns, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
     if (match) match.isdeleted = true; // Marco la columna com a borrada
 
+    if (ebp.currentQuery.length == 0) ebp.nodeJoins = [];
+
     c.joins = c.joins || ebp.nodeJoins.pop() || [];
     ebp.currentQuery.push(_.cloneDeep(c));      // Col·loca la nova columna a l'array Select
     PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida a la consulta
     PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions de la nova columna afegida a la consulta
     PanelInteractionUtils.handleOrdTypes(ebp, c);         // Comprovacio ordenacio  de la nova columna afegida a la consulta
-   
-
+    // console.log(ebp.currentQuery);
     ebp.inputs.findColumn.reset();  // resetea las columnas a mostrar
-    PanelInteractionUtils.loadColumns( // Torna a carregar les columnes de la taula
-      ebp, 
-      ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0]);
+    // Torna a carregar les columnes de la taula
+    PanelInteractionUtils.loadColumns(ebp, ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0]);
   
   },
 
