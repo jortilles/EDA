@@ -243,13 +243,15 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param event selected node. Can be rootNode (table_id) or childNode (child_id). 
      */
     public tableNodeSelect(event: any): void {
+        if (this.currentQuery.length == 0) {
+            this.nodeJoins = [];
+        }
+
         const node = event?.node;
         if (node) {
-            if (node.table_id) {
-                PanelInteractionUtils.loadColumns(this, this.findTable(node.table_id), true);
-            } else {
-                PanelInteractionUtils.loadColumns(this, this.findTable(node.child_id.split('.')[0]), true);
-            }
+            let table_id = node.table_id || node.child_id //.split('.')[0];
+
+            PanelInteractionUtils.loadColumns(this, this.findTable(table_id), true);
 
             if (node.joins) {
                 // Add the sourceJoins from this node. When select a column then will add this join to this column for generate the query
@@ -276,7 +278,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public checkNodeSelected(node: any) {
         if (node?.child_id) {
-            return this.currentQuery.some((query: any) => query.table_id == node.child_id.split('.')[0]);
+            return this.currentQuery.some((query: any) => query.table_id == node.child_id);
         } else {
             return false;
         }   
@@ -408,11 +410,17 @@ export class EdaBlankPanelComponent implements OnInit {
         const queryMode = panelContent.query.query.queryMode;
 
         if ((queryMode && queryMode != 'SQL') || !modeSQL) {
-            try{
-                const queryTables = [...new Set(panelContent.query.query.fields.map((field: any) => field.table_id))];
-
+            try {
+                const currentQuery = panelContent.query.query.fields;
+                const queryTables = [...new Set(currentQuery.map((field: any) => field.table_id))];
                 for (const idTable of queryTables) {
+                    // Assert Relation Tables
+                    for (const column of currentQuery) {
+                        PanelInteractionUtils.assertTable(this, column);
+                    }
+
                     const table = this.tables.find(t => t.table_name === idTable);
+
                     // Init columns from table
                     PanelInteractionUtils.loadColumns(this, table);
 
@@ -486,7 +494,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public savePanel() {
 
         this.panel.title = this.pdialog.getTitle();
-        this.panel.content.query.query.queryMode = this.selectedQueryMode;
+        if (this.panel?.content) {
+            this.panel.content.query.query.queryMode = this.selectedQueryMode;
+        }
         
         if (!_.isEmpty(this.graficos) || this.selectedQueryMode == 'SQL') {
 
