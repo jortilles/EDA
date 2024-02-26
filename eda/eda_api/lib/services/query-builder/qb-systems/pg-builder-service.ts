@@ -80,6 +80,7 @@ export class PgBuilderService extends QueryBuilderService {
         myQuery = myQuery.split(key).join(`"${alias[key]}"`);
       }
     }
+
     return myQuery;
   }
 
@@ -192,7 +193,7 @@ export class PgBuilderService extends QueryBuilderService {
     return joinString;
   }
 
-  public setJoins(joinTree, joinType, schema) {
+  public setJoins(joinTree: any[], joinType: string, schema: string) {
     // Si no se especifica un esquema, se utiliza 'public' por defecto
     if (!schema || schema === 'null') {
       schema = 'public';
@@ -209,16 +210,6 @@ export class PgBuilderService extends QueryBuilderService {
       const [sourceTable, sourceColumn] = join[0].split('.');
       const [targetTable, targetColumn] = join[1].split('.');
 
-      // Construcción de los alias
-      const alias = `"${targetTable}.${targetColumn}"`;
-      aliasTables[alias] = targetTable;
-
-      let aliasTargetTable: string;
-      if (targetTableJoin.includes(targetTable)) {
-        aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
-        aliasTables[alias] = aliasTargetTable;
-      }
-
       // Construcción de las partes de la join
       const sourceJoin = `"${schema}"."${sourceTable}"."${sourceColumn}"`;
       let targetJoin = `"${schema}"."${targetTable}"."${targetColumn}"`;
@@ -226,6 +217,16 @@ export class PgBuilderService extends QueryBuilderService {
       // Si la join no existe ya, se añade
       if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
         joinExists.add(`${sourceJoin}=${targetJoin}`);
+
+        // Construcción de los alias
+        const alias = `"${targetTable}.${targetColumn}"`;
+        aliasTables[alias] = targetTable;
+
+        let aliasTargetTable: string;
+        if (targetTableJoin.includes(targetTable)) {
+          aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+          aliasTables[alias] = aliasTargetTable;
+        }
 
         let joinStr: string;
 

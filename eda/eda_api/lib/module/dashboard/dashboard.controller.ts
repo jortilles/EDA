@@ -706,9 +706,7 @@ export class DashboardController {
           at: ${formatDate(new Date())} for Dashboard:${req.body.dashboard.dashboard_id} and Panel:${req.body.dashboard.panel_id}
       `);
       console.log(query)
-      console.log(
-        '\n-------------------------------------------------------------------------------\n'
-      )
+      console.log('\n-------------------------------------------------------------------------------\n')
 
       /**cached query */
       let cacheEnabled =

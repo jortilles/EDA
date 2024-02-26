@@ -20,7 +20,8 @@ export interface Query {
         SQLexpression : string,
         queryLimit : number,
         joinType: string,
-        forSelector?: boolean ;
+        forSelector?: boolean,
+        rootTable: string
 
     };
     output: {

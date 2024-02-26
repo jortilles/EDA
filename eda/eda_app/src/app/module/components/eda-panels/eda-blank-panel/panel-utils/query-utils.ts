@@ -220,9 +220,9 @@ export const QueryUtils = {
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
       config: config.getConfig(),
       queryLimit: ebp.queryLimit,
-      joinType: ebp.joinType
+      joinType: ebp.joinType,
+      rootTable: ebp.rootTreeTable?.table_name,
     };
-    console.log(ebp.selectedQueryMode);
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },
 

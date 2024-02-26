@@ -223,7 +223,7 @@ export class EdaTable {
         //Aixó no s'executa per les taules creuades
         
         if ( !this.pivot) {
-         console.log('desactivadas las no repeticiones');
+        //  console.log('desactivadas las no repeticiones');
         // this.noRepeatedRows();
          }
 
