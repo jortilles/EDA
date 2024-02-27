@@ -46,6 +46,7 @@ import {ToolbarModule} from 'primeng/toolbar';
 import {EditorModule} from 'primeng/editor';
 import {ToggleButtonModule} from 'primeng/togglebutton';
 import {SliderModule }  from 'primeng/slider';
+import { SplitButtonModule } from 'primeng/splitbutton';
 
 
 
@@ -54,6 +55,7 @@ import {SliderModule }  from 'primeng/slider';
     providers: [ConfirmationService, MessageService],
     exports: [
         CommonModule,
+        SplitButtonModule,
         InputTextModule,
         MenuModule,
         MenubarModule,

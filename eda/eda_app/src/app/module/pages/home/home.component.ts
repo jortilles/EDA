@@ -3,8 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertService, DashboardService, SidebarService, StyleProviderService } from '@eda/services/service.index';
 import { IGroup } from '@eda/services/api/group.service';
+import { SplitButtonModule } from 'primeng/splitbutton';
+import { MenuItem, MessageService } from 'primeng/api';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
+import { Menu } from 'primeng/menu';
+
 
 
 @Component({
@@ -36,6 +40,9 @@ export class HomeComponent implements OnInit {
     public isObserver: boolean = false;
     public filteringByName: boolean = false;
     public createDashboard: boolean = false;
+    public newDatasource: boolean = false;
+    public dataSourceMenu: any = [];
+    public items: MenuItem[]; 
 
     public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
     public AllTags = $localize`:@@AllTags:Todos`;
@@ -48,7 +55,7 @@ export class HomeComponent implements OnInit {
         private sidebarService: SidebarService,
         private alertService: AlertService,
         private groupService: GroupService,
-        private stylesProviderService: StyleProviderService
+        private stylesProviderService: StyleProviderService,
     ) {
         this.sidebarService.getDataSourceNames();
         this.sidebarService.getDataSourceNamesForDashboard();
@@ -57,14 +64,37 @@ export class HomeComponent implements OnInit {
         if (window.innerWidth < 1000) {
             this.toLitle = true;
         }
-
     }
 
     public ngOnInit() {
         this.initDashboards();
         this.ifAnonymousGetOut();
+        this.sidebarService.currentDatasources.subscribe(
+            data => this.dataSourceMenu = data,
+            err => this.alertService.addError(err)   
+        )
+        this.fillItems();
     }
 
+    private fillItems() { //introduim els data-sources per escollir i modificar al botó superior del home
+
+        this.sidebarService.currentDatasources.subscribe(data => {
+            this.dataSourceMenu = data;          
+            let tmp = [];
+            this.dataSourceMenu.forEach(a => {
+                let d = {                    
+                        label: a.model_name,
+                        icon: 'mdi mdi-database',
+                        command: () => {
+                            this.getDataSource(a._id);
+                            }
+                }
+                tmp.push(d);
+            })
+            this.items = tmp;    
+        })
+    }
+    
     private setIsObserver = async () => {
         this.groupService.getGroupsByUser().subscribe(
             res => {
@@ -211,6 +241,35 @@ export class HomeComponent implements OnInit {
         if (event) this.router.navigate(['/dashboard', event._id]);
     }
 
+    public goToNewDatasource(event?: any) : void { //anar a crear datasource
+        this.newDatasource = false;
+        if (event) this.router.navigate(['/data-source']);
+    }
+
+    public getDataSource(datasource : any) : void { //escollir datasource per modificar a home
+        
+        if (datasource) {
+            //this.stylesProviderService.setDefaultBackgroundColor();
+            if (this.dashboardService._notSaved.value === false) {
+                this.router.navigate(['/data-source/', datasource]);
+            } else {
+                this.dashboardService._notSaved.next(false);
+                Swal.fire(
+                    {
+                        text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
+                        icon: 'warning',
+                        showDenyButton: true,
+                        denyButtonText: $localize`:@@cancelarButton:Cancelar`,
+                    }
+                ).then((result) => {
+                    if (result.isConfirmed) {
+                        this.router.navigate(['/data-source/', datasource._id]);
+                    }
+                })
+            }
+
+        } 
+    }
 
 
 }
