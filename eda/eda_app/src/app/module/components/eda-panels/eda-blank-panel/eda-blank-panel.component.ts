@@ -251,6 +251,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public tableNodeSelect(event: any): void {
         if (this.currentQuery.length == 0) {
             this.nodeJoins = [];
+            this.rootTreeTable = undefined;
         }
 
         const node = event?.node;

@@ -1,7 +1,4 @@
-import { Console } from 'console';
 import * as _ from 'lodash';
-import { filter } from 'lodash';
-
 class TreeNode {
     public value: string;
     public child: Array<TreeNode>
@@ -65,7 +62,7 @@ export abstract class QueryBuilderService {
             this.permissions = [];
         }
         /** joins per els value list */
-        const valueListJoins = [];
+        let valueListJoins = [];
 
 
         /** ............................................................................... */
@@ -125,7 +122,6 @@ export abstract class QueryBuilderService {
                 });
         }
 
-        
         /** ..........................PER ELS VALUE LISTS................................ */
 
 
@@ -162,8 +158,6 @@ export abstract class QueryBuilderService {
                 }
             }
         }
-
-        tree = [...new Set(tree)];
     
         // console.log(JSON.stringify( [...new Set(tree)] ));
 
@@ -196,6 +190,34 @@ export abstract class QueryBuilderService {
 
             this.queryTODO.joined = false;
         } else {
+            valueListJoins = []; 
+            
+            for (const field of this.queryTODO.fields) {
+                if(field.valueListSource) {
+                    valueListJoins.push(field.valueListSource);
+                }
+            }
+            
+            for (const value of valueListJoins) {
+                const multiSourceJoin = `${value.source_table}.${value.source_column}`;
+                const multiTargetJoin = `${value.target_table}.${value.target_id_column}`;
+
+                let exists = false;
+                for (const join of tree) {
+                    const sourceJoin = join[0];
+                    const targetJoin = join[1];
+
+                    if (multiSourceJoin == sourceJoin && multiTargetJoin == targetJoin) {
+                        exists = true;
+                    }
+                }
+
+                if (!exists) {
+                    tree.push([multiSourceJoin, multiTargetJoin]);
+                }
+            }
+            valueListJoins = [...new Set(valueListJoins.map((value) => value.target_table))];
+            tree = [...new Set(tree)];
             joinTree = tree;
             this.queryTODO.joined = true;
         }

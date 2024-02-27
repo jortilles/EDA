@@ -544,7 +544,6 @@ export const PanelInteractionUtils = {
    * @param c column to move
    */
   moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
-    // console.log('currentQuery ->',JSON.parse(JSON.stringify(ebp.currentQuery)))
     ebp.disableBtnSave();
 
     // Busca index en l'array de columnes
@@ -555,6 +554,7 @@ export const PanelInteractionUtils = {
 
 
     if (!ebp.rootTreeTable) {
+      console.log(c);
       ebp.rootTreeTable = ebp.tables.find((table) => table.table_name == c.table_id);
     }
 
@@ -678,7 +678,7 @@ export const PanelInteractionUtils = {
 
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
-
+      ebp.rootTreeTable = undefined;
       ebp.tablesToShow = ebp.tables;
 
     } else {

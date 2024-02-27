@@ -35,7 +35,7 @@ export class PgBuilderService extends QueryBuilderService {
     let joinString: any[];
     let alias: any;
     if (this.queryTODO.joined) {
-      const responseJoins = this.setJoins(joinTree, joinType, schema);
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
     } else {
@@ -193,7 +193,7 @@ export class PgBuilderService extends QueryBuilderService {
     return joinString;
   }
 
-  public setJoins(joinTree: any[], joinType: string, schema: string) {
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
     // Si no se especifica un esquema, se utiliza 'public' por defecto
     if (!schema || schema === 'null') {
       schema = 'public';
@@ -229,6 +229,8 @@ export class PgBuilderService extends QueryBuilderService {
         }
 
         let joinStr: string;
+
+        joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
 
         if (aliasTargetTable) {
           targetJoin = `"${aliasTargetTable}"."${targetColumn}"`;
