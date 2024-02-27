@@ -124,6 +124,7 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
+    public assertedTables: any[] = [];
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
     public filtredColumns: Column[] = [];
@@ -156,6 +157,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public filterValue: any = {};
 
     public loadingNodes: boolean = false;
+    public rootTreeTable: any;
     public tableNodes: any = [];
     public selectedTableNode: any;
     public nodeJoins: any[] = [];
@@ -214,6 +216,10 @@ export class EdaBlankPanelComponent implements OnInit {
                     this.selectedQueryMode = queryMode;
                 }
 
+                if (queryMode == 'EDA2') {
+                    this.rootTreeTable = query.query.rootTreeTable;
+                }
+
                 if (modeSQL || queryMode=='SQL') {
                     this.currentSQLQuery = query.query.SQLexpression;
                     this.sqlOriginTable = this.tables.filter(t => t.table_name === query.query.fields[0].table_id)
@@ -249,12 +255,14 @@ export class EdaBlankPanelComponent implements OnInit {
 
         const node = event?.node;
         if (node) {
+            this.selectedTableNode = event.node;
             let table_id = node.table_id || node.child_id //.split('.')[0];
 
             PanelInteractionUtils.loadColumns(this, this.findTable(table_id), true);
 
             if (node.joins) {
-                // Add the sourceJoins from this node. When select a column then will add this join to this column for generate the query
+                // Add the sourceJoins from this node.
+                // When select a column then will add this join to this column for generate the query
                 this.nodeJoins.push(node.joins);
             }
         }
@@ -368,8 +376,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public setTablesData = () => {
         const tables = TableUtils.getTablesData(this.inject.dataSource.model.tables, this.inject.applyToAllfilter);
-        this.tables = _.cloneDeep(tables.allTables);
-        this.tablesToShow = _.cloneDeep(tables.tablesToShow);
+        this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
+        this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
     }
 
@@ -408,75 +416,32 @@ export class EdaBlankPanelComponent implements OnInit {
     public buildGlobalconfiguration(panelContent: any) {
         const modeSQL = panelContent.query.query.modeSQL;
         const queryMode = panelContent.query.query.queryMode;
-
         if ((queryMode && queryMode != 'SQL') || !modeSQL) {
             try {
-                const currentQuery = panelContent.query.query.fields;
-                const queryTables = [...new Set(currentQuery.map((field: any) => field.table_id))];
-                for (const idTable of queryTables) {
+                if (queryMode == 'EDA2') {
                     // Assert Relation Tables
+                    const currentQuery = panelContent.query.query.fields;
                     for (const column of currentQuery) {
                         PanelInteractionUtils.assertTable(this, column);
                     }
-
-                    const table = this.tables.find(t => t.table_name === idTable);
-
-                    // Init columns from table
-                    PanelInteractionUtils.loadColumns(this, table);
-
-                    for (const contentColumn of panelContent.query.query.fields) {
-                        const column = this.columns.find(c =>
-                            c.table_id === contentColumn.table_id &&
-                            c.column_name === contentColumn.column_name &&
-                            c.display_name.default === contentColumn.display_name
-                        );
-                        
-                        if (column) {
-                            column.whatif_column = contentColumn.whatif_column || false;
-                            column.whatif = contentColumn.whatif || {};
-                            PanelInteractionUtils.moveItem(this, column);
-                        } else {
-                            if(contentColumn.table_id === idTable) {
-                                let duplicatedColumn = _.cloneDeep(
-                                    this.currentQuery.find(c =>
-                                        c.table_id === contentColumn.table_id &&
-                                        c.column_name === contentColumn.column_name
-                                    )
-                                );
-
-                                if(!duplicatedColumn){
-                                    duplicatedColumn = _.cloneDeep(
-                                        this.columns.find(c =>
-                                            c.table_id === contentColumn.table_id &&
-                                            c.column_name === contentColumn.column_name
-                                        )
-                                    );
-                                }
-
-                                if(duplicatedColumn){
-                                    duplicatedColumn.display_name.default = contentColumn.display_name;
-                                    duplicatedColumn.whatif_column = contentColumn.whatif_column || false;
-                                    duplicatedColumn.whatif = contentColumn.whatif || {};
-                                    PanelInteractionUtils.handleAggregationType4DuplicatedColumns(this, duplicatedColumn);
-                                    // Moc la columna directament perque es una duplicada.... o no....
-                                    this.currentQuery.push(duplicatedColumn);
-                                }
-                            }
-                        }
-                    }
-
-                } 
+                    PanelInteractionUtils.handleCurrentQuery2(this);
+                    this.reloadTablesData();
+                    PanelInteractionUtils.loadTableNodes(this);
+                } else {
+                    PanelInteractionUtils.handleCurrentQuery(this);
+                }
                 this.columns = this.columns.filter((c) => !c.isdeleted);
             } catch(e) {
                 console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
                 console.error(e);
+                throw e;
             }
         }
 
         this.queryLimit = panelContent.query.query.queryLimit;
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
-        PanelInteractionUtils.handleCurrentQuery(this);
+        // PanelInteractionUtils.handleCurrentQuery(this);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
         PanelInteractionUtils.verifyData(this);
 
@@ -496,6 +461,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.panel.title = this.pdialog.getTitle();
         if (this.panel?.content) {
             this.panel.content.query.query.queryMode = this.selectedQueryMode;
+            this.panel.content.query.query.rootTreeTable = this.rootTreeTable;
         }
         
         if (!_.isEmpty(this.graficos) || this.selectedQueryMode == 'SQL') {
@@ -659,26 +625,25 @@ export class EdaBlankPanelComponent implements OnInit {
             //Reordeno
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
-            transferArrayItem(event.previousContainer.data,
-                event.container.data,
-                event.previousIndex,
-                event.currentIndex);
-                //obor dialeg o filre
-                if(event.container.element.nativeElement.className.toString().includes( 'select-list') ) {                
-                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex] );
-                }else{       
-                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex]  , true);
-                   // Trec la agregació si puc.
-                    try{
-                        const c:Column = <Column><unknown>event.container.data[event.currentIndex];
-                        c.aggregation_type.forEach( e=> e.selected = false);
-                        c.aggregation_type.map( e=> e.value == 'none'? e.selected = true:true );
-                    }catch(e){
-                        console.error(e)
-                        throw e;
-                    }
-                    
+            transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+            //obor dialeg o filre
+            const column = <Column><unknown>event.container.data[event.currentIndex];
+            if(event.container.element.nativeElement.className.toString().includes('select-list')) {
+
+                this.moveItem(column);
+                // this.openColumnDialog(column);
+            } else {
+                this.openColumnDialog(column, true);
+                // Trec la agregació si puc.
+                try{
+                    const c:Column = <Column><unknown>event.container.data[event.currentIndex];
+                    c.aggregation_type.forEach( e=> e.selected = false);
+                    c.aggregation_type.map( e=> e.value == 'none'? e.selected = true:true );
+                }catch(e){
+                    console.error(e)
+                    throw e;
                 }
+            }
         }
 
         PanelInteractionUtils.loadTableNodes(this);
@@ -1139,13 +1104,14 @@ export class EdaBlankPanelComponent implements OnInit {
         this.currentQuery = [];
         this.filtredColumns = [];
         this.display_v.btnSave = true;
+        this.rootTreeTable = undefined;
     }
 
     public accopen(e) { }
 
     /** This funciton return the display name for a given table. Its used for the query resumen      */
     public getNiceTableName(table: any){
-        return this.tables.find( t => t.table_name === table).display_name.default;
+        return this.tables.find( t => t.table_name === table)?.display_name?.default;
     }
 
     public onWhatIfDialog(): void {

@@ -3338,11 +3338,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 
   <trans-unit id="removeRowTotals">
-    <source>Quitar totales de columna</source>
-    <target>Eliminar totals de columna</target>
+        <source>Eliminar totales de fila</source>
+        <target>Eliminar totals de fila</target>
   </trans-unit>
 
-  <trans-unit id="removeRowSubtotals">
+  <trans-unit id="removeColSubtotals">
     <source>Quitar subtotales de columna</source>
     <target>Eliminar subtotals de columna</target>
   </trans-unit>
@@ -3365,6 +3365,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="removeColTotals">
     <source>Quitar totales de columna</source>
     <target>Eliminar totals de columna</target>
+  </trans-unit>
+
+  <trans-unit id="addColSubtotals">
+    <source>Subtotales de columna</source>
+    <target>Subtotals de columna</target>
   </trans-unit>
 
   <trans-unit id="addOnlyPercentages">

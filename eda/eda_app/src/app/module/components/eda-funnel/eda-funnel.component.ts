@@ -147,12 +147,10 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .datum(data2)
       .attr('fill', `url(#${this.id}_temperature-gradient)`)
       .attr('d', area);
-
     svg.append('path')
       .datum(data2)
       .attr('fill',  `url(#${this.id}_temperature-gradient)`)
       .attr('d', areaMirror);
-
     svg.selectAll('.values')
       .data(data)
       .enter()
@@ -180,7 +178,15 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
           font-family: var(--panel-font-family);
           font-size: 14px;
       `)
-      .attr("fill", 'var(--panel-font-color)');
+      .attr("fill", 'var(--panel-font-color)')
+      .on('click', (mouseevent, data) => {
+        if (this.inject.linkedDashboard) {
+          const props = this.inject.linkedDashboard;
+          const value = data?.label
+          const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+          window.open(url, "_blank");
+        }
+      });
 
     svg.selectAll('.percentages')
       .data(data)
@@ -206,7 +212,6 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .style('stroke-width', 1)
       .style('stroke', percentages)
       .style('fill', 'none');
-
   }
 
 }

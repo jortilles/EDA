@@ -3310,10 +3310,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="removeRowTotals">
-    <source>Quitar totales de columna</source>
+    <source>Quitar totales de fila</source>
     <target>Usuń wiersz z sumą</target>
   </trans-unit>
-  <trans-unit id="removeRowSubtotals">
+  <trans-unit id="removeColSubtotals">
     <source>Quitar subtotales de columna</source>
     <target>Usuń wiersz z sumą częściową</target>
   </trans-unit>
@@ -3328,6 +3328,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="addColTotals">
     <source>Totales de columna</source>
     <target>Suma</target>
+  </trans-unit>
+  <trans-unit id="addColSubtotals">
+    <source>Subtotales de columna</source>
+    <target>Podsumy kolumn</target>
   </trans-unit>
   <trans-unit id="removeColTotals">
     <source>Quitar totales de columna</source>

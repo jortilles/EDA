@@ -44,9 +44,9 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public addPercentages: string = $localize`:@@addPercentages:Porcentajes`;
   public addStyles: string = $localize`:@@addStyles:Código de color`;
   public removeRowTotals: string = $localize`:@@removeRowTotals:Quitar totales de fila`
-  public removeRowSubtotals: string = $localize`:@@removeRowSubtotals:Quitar subtotales de fila`
+  public removeColSubtotals: string = $localize`:@@removeColSubtotals:Quitar subtotales de columna`
   public addRowTotals: string = $localize`:@@addRowTotals:Totales de fila`
-  public addRowSubtotals: string = $localize`:@@addRowSubtotals:Subtotales de fila`
+  public addColSubtotals: string = $localize`:@@addColSubtotals:Subtotales de columna`
   public addColTotals: string = $localize`:@@addColTotals:Totales de columna`;
   public removeColTotals: string = $localize`:@@removeColTotals:Quitar totales de columna`;
   public addOnlyPercentages: string = $localize`:@@addOnlyPercentages:Sólo Porcentajes`;
@@ -79,7 +79,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
   }
   onShow(): void {
-
     this.panelChartConfig = this.controller.params.panelChart;
     if (this.panelChartConfig && this.panelChartConfig.config) {
       const config = (<TableConfig>this.panelChartConfig.config.getConfig());
@@ -99,7 +98,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     }
 
     this.setItems();
-
   }
 
 
@@ -313,7 +311,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   }
 
   private setItems() {
-
     if (this.controller.params.panelChart.chartType === 'table') {
       this.items = [
         {
@@ -325,7 +322,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
               command: () => this.colTotals()
             },
             {
-              label: this.col_subtotals === true ? this.removeRowSubtotals : this.addRowSubtotals,
+              label: this.col_subtotals === true ? this.removeColSubtotals : this.addColSubtotals,
               command: () => this.colSubTotals()
             }
           ]
@@ -355,7 +352,8 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
               icon: " ",
               command: () => this.setStyle(col)
             }
-          })
+          }),
+          disabled: this.onlyPercentages
         },
         {
           label: this.seeRepetitions,
@@ -389,7 +387,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
               command: () => this.colTotals()
             },
             {
-              label: this.col_subtotals === true ? this.removeRowSubtotals : this.addRowSubtotals,
+              label: this.col_subtotals === true ? this.removeColSubtotals : this.addColSubtotals,
               command: () => this.colSubTotals()
             }
           ]
@@ -420,7 +418,8 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
               icon: " ",
               command: () => this.setStyle(col)
             }
-          })
+          }),
+          disabled: this.onlyPercentages
         }
 
       ];

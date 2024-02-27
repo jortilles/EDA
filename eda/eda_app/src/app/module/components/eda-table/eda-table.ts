@@ -220,8 +220,12 @@ export class EdaTable {
         if (this.withColSubTotals) {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
         } 
-        //Es te que executar sempre
-        this.noRepeatedRows();
+        //Aixó no s'executa per les taules creuades
+        
+        if ( !this.pivot) {
+        //  console.log('desactivadas las no repeticiones');
+        // this.noRepeatedRows();
+         }
 
     }
 
@@ -302,8 +306,9 @@ export class EdaTable {
 
                 numericCols.forEach(key => {
                     valuesKeys.forEach(valueKey => {
-                        if (key.includes(valueKey)) {     
-                            let decimalplaces =  0;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
+                      let keyArray = key.split('~');
+                        if (keyArray.includes(valueKey)) {
+                            let decimalplaces = new EdaColumnNumber({}).decimals;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */ 
                             try{
                                 if(  row[key].toString().split(".")[1].length > 0){
                                     decimalplaces =  row[key].toString().split(".")[1].length;
@@ -430,8 +435,6 @@ export class EdaTable {
         const values = this._value;
         const keys = this.cols.map(col => col.field);
 
-      
-
         for (let i = 0; i < values.length; i++) {
             for (let j = 0; j < keys.length; j++) {
                 if (i < values.length) {
@@ -466,7 +469,7 @@ export class EdaTable {
                         border: '',
                         type: col.type
                     });
-            }
+            } 
             else {
                 if (firstNonNumericRow) {
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });
@@ -554,7 +557,7 @@ export class EdaTable {
                 }
                 } else {
                     for (let e = 0; e < values[i].length; e += 1) {            
-                        if (values[i][e] == ""){
+                        if (values[i][e] == "" &&  isNaN(values[i][e])){
                             obj[labels[e]] = first[e];
                         } else {
                             obj[labels[e]] = values[i][e];

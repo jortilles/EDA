@@ -706,9 +706,7 @@ export class DashboardController {
           at: ${formatDate(new Date())} for Dashboard:${req.body.dashboard.dashboard_id} and Panel:${req.body.dashboard.panel_id}
       `);
       console.log(query)
-      console.log(
-        '\n-------------------------------------------------------------------------------\n'
-      )
+      console.log('\n-------------------------------------------------------------------------------\n')
 
       /**cached query */
       let cacheEnabled =
@@ -755,17 +753,22 @@ export class DashboardController {
                   return res
                 }
               } else {
-                //això es per evitar els null trec els nulls i els canvio per '' dels lavels
-                if (r[i] == null == null) {
-                  return ''
+                //això es per evitar els null trec els nulls i els canvio per ' ' dels labels al igual que les cadenes buides
+                if (r[i] === null ) {
+                    return ' ';
                 } else {
-                  return r[i]
+                  if(r[i].length == 0){
+                    return ' ';
+                  }else{
+                    return r[i];
+                  }
+                 
                 }
               }
             } else {
-              // trec els nulls i els canvio per '' dels lavels
-              if (numerics[ind] != 'true' && r[i] == null) {
-                return ''
+              // trec els nulls i els canvio per ' ' dels labels al igual que les cadenes buides
+              if (numerics[ind] != 'true' && ( r[i] == null || r[i]?.length == 0 ) ) {
+                  return ' ';
               } else {
                 return r[i];
               }
@@ -930,9 +933,14 @@ export class DashboardController {
               const output = Object.keys(r).map(i => r[i])
               resultsRollback.push([...output])
               const tmpArray = []
+
               output.forEach((val, index) => {
+                if(val===null || val.length == 0){
+                  output[index] = ' ' // los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
+                  resultsRollback[i][index] = ' ';// los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
+                }
                 if (DashboardController.isNotNumeric(val)) {
-                  tmpArray.push('NaN')
+                  tmpArray.push('NaN');
                 } else {
                   tmpArray.push('int')
                   output[index] = parseFloat(val)
@@ -941,7 +949,13 @@ export class DashboardController {
               oracleDataTypes.push(tmpArray)
               results.push(output)
             } else {
-              const output = Object.keys(r).map(i => r[i])
+              const output = Object.keys(r).map(i => r[i]);
+              output.forEach((val, index) => {
+                if(val===null || val.length == 0){
+                  output[index] = ' ' // los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
+                  resultsRollback[i][index] = ' ';// los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
+                }
+              })
               results.push(output)
               resultsRollback.push(output)
             }
@@ -962,13 +976,11 @@ export class DashboardController {
               }
             }
           }
-
           /** si tinc numeros barrejats. Poso el rollback */
           if (oracleEval !== true) {
             results = resultsRollback
           }
           const output = [labels, results]
-
           if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
             CachedQueryService.storeQuery(req.body.model_id, query, output)
           }

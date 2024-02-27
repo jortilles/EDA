@@ -50,7 +50,7 @@ export abstract class QueryBuilderService {
 
         const graph = this.buildGraph();
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
-        let origin = this.queryTODO.fields.find(x => x.order === 0).table_id;
+        let origin = this.queryTODO.rootTable || this.queryTODO.fields.find(x => x.order === 0).table_id;
         let dest = [];
         const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
@@ -896,11 +896,23 @@ export abstract class QueryBuilderService {
 
             equalfilters.map.forEach((value, key) => {
                 let filterSTR = '\nand ('
-                value.forEach(f => {
-                    filterSTR += this.filterToString(f) + '\n  or ';
+
+                //poso els nulls al principi
+                let n = value.filter( f=> f.filter_type == 'not_null');
+                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null')];
+   
+                values.forEach(f => {
+                    if(f.filter_type == 'not_null'){
+                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
+                        filterSTR += this.filterToString(f ) + '\n  and ';
+                    }else{
+                        filterSTR += this.filterToString(f ) + '\n  or ';
+                    }
+                    
+
                 });
 
-                filterSTR = filterSTR.slice(0, -3);
+                filterSTR = filterSTR.slice(0, -4);
                 filterSTR += ') ';
                 filtersString += filterSTR;
             });

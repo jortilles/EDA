@@ -12,7 +12,8 @@ export interface QueryParams {
     config?: any;
     queryLimit? : number;
     joinType?:string;
-    forSelector?: boolean
+    forSelector?: boolean;
+    rootTable?: string;
 }
 
 @Injectable()
@@ -63,7 +64,8 @@ export class QueryBuilderService extends ApiService {
                 queryMode: 'EDA',
                 SQLexpression : null,
                 queryLimit : null,
-                joinType: 'left' //puede que necesite el joinType
+                joinType: 'left', //puede que necesite el joinType
+                rootTable: null
             },
             output: {
                 labels,
@@ -124,7 +126,8 @@ export class QueryBuilderService extends ApiService {
                 SQLexpression : SQLexpression,
                 queryLimit : params.queryLimit,
                 joinType: params.joinType,
-                forSelector: params.forSelector
+                forSelector: params.forSelector,
+                rootTable: params.rootTable,
             },
             output: {
                 labels,
