@@ -81,7 +81,7 @@ export class DataSourceController {
     /* Aquesta funció retorna els datasources disponibles per fer un dashboard.
     Un cop filtrats els permisos de grup i de usuari. */
     static async GetDataSourcesNamesForDashboard(req: Request, res: Response, next: NextFunction) {
-
+        const userID = req.user._id;
         let options:QueryOptions = {};
         DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles',options, (err, ds) => {
             if (!ds) {
@@ -94,7 +94,7 @@ export class DataSourceController {
                 // Si hay permisos de seguridad.....
                 if (e.ds.metadata.model_granted_roles.length > 0) {
 
-                    const userID = req.user._id;
+                    
                     const users = [];
                     const roles = [];
                     let allCanSee = 'false';
@@ -121,13 +121,12 @@ export class DataSourceController {
                     });
 
                   /**  EDA */ //  if (users.includes(userID) || roles.length > 0 || allCanSee == 'true'  || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
-                  /**   edalitics free */        if (   e.ds.metadata.model_owner== req.user.id   ||   req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
+                  /**   edalitics free */        if (   e.ds.metadata.model_owner == userID   ||   req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
                     output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
                     }
 
-                }
-                else {
-       /**  // edalitics free */    if (   e.ds.metadata.model_owner== req.user.id   ||   req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
+                }else {
+       /**  // edalitics free */    if (   e.ds.metadata.model_owner ==  userID ||   req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
                         output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
         /**  // edalitics free */   }
 
