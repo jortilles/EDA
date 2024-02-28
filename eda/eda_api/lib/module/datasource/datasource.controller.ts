@@ -215,6 +215,7 @@ export class DataSourceController {
                    let cadena = JSON.stringify(body);
                    cadena = cadena.split('$oid').join('id');
                    ds = new DataSource( JSON.parse(cadena.toString()));
+                   ds.ds.metadata.model_owner=req.user?.id;
 
                 }else{
                     console.log('Importing existing datasource');
@@ -223,6 +224,7 @@ export class DataSourceController {
                     cadena = cadena.split('$oid').join('id');
                     dataSource.ds =   JSON.parse(cadena.toString());
                     ds = dataSource;
+                    ds.ds.metadata.model_owner=req.user?.id;
                 }       
 
                 
