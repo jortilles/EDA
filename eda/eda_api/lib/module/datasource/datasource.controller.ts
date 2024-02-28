@@ -87,7 +87,6 @@ export class DataSourceController {
             if (!ds) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
-            console.log(ds.pop().ds);
             const names = JSON.parse(JSON.stringify(ds));
             const output = [];
             for (let i = 0, n = names.length; i < n; i += 1) {
