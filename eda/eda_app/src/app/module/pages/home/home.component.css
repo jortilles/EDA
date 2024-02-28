@@ -80,26 +80,24 @@
   padding: 0.5em;
 }
 
-#div_edit_datasource{
-  margin-bottom: 1rem !important;
-}
-#div_edit_datasource div{
-    padding: 0.1rem !important;
-    
-}
-#div_edit_datasource h3{
-  font-weight: bold !important;
-}
-#div_edit_datasource >>> .p-card .p-card-body {
-  padding: 0.5em;
-}
+/*GBI*/ #div_new_dashboard  >>> .p-component { 
+/*GBI*/ border: none;
+/*GBI*/ }
 
-.p-dropdown .p-dropdown-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width:'100%';
-}
+/*GBI*/ #div_new_dashboard  >>> .p-inputtext {
+/*GBI*/ flex-direction:column;
+/*GBI*/ font-weight: bold !important;
+/*GBI*/ justify-content: center;
+/*GBI*/ font-size: 21px;
+/*GBI*/ padding:2.5px;
+/*GBI*/ }
+
+/*GBI*/ #div_new_dashboard  >>> .p-dropdown-item {
+/*GBI*/ font-weight: bold !important;
+/*GBI*/ font-size: 15px;
+/*GBI*/ padding:2.5px;
+/*GBI*/ }
+
 
 #public-list >>> .p-card .p-card-body, 
 #common-list >>> .p-card .p-card-body, 
@@ -115,3 +113,4 @@
   width: 260px;
   border:none;
 }
+

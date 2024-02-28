@@ -41,9 +41,9 @@ export class HomeComponent implements OnInit {
     public filteringByName: boolean = false;
     public createDashboard: boolean = false;
     public newDatasource: boolean = false;
-    public dataSourceMenu: any = [];
-    public items: MenuItem[]; 
-    public selectedDatasource : any;
+/*GBI*/    public dataSourceMenu: any = [];
+/*GBI*/    public items: MenuItem[]; 
+/*GBI*/    public selectedDatasource : any;
 
     public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
     public AllTags = $localize`:@@AllTags:Todos`;
@@ -70,14 +70,14 @@ export class HomeComponent implements OnInit {
     public ngOnInit() {
         this.initDashboards();
         this.ifAnonymousGetOut();
-        this.sidebarService.currentDatasources.subscribe(
-            data => this.dataSourceMenu = data,
-            err => this.alertService.addError(err)   
-        )
-        this.fillItems();
+/*GBI*/ this.sidebarService.currentDatasources.subscribe(
+/*GBI*/ data => this.dataSourceMenu = data,
+/*GBI*/ err => this.alertService.addError(err)   
+/*GBI*/ )
+/*GBI*/ this.fillItems();
     }
 
-    private fillItems() { //introduim els data-sources per escollir i modificar al botó superior del home
+/*GBI*/ private fillItems() { //introduim els data-sources per escollir i modificar al botó superior del home
 
         this.sidebarService.currentDatasources.subscribe(data => {
             this.dataSourceMenu = data;          
@@ -94,7 +94,7 @@ export class HomeComponent implements OnInit {
             })
             this.items = tmp;    
         })
-    }
+/*GBI*/}
     
     private setIsObserver = async () => {
         this.groupService.getGroupsByUser().subscribe(
@@ -242,12 +242,12 @@ export class HomeComponent implements OnInit {
         if (event) this.router.navigate(['/dashboard', event._id]);
     }
 
-    public goToNewDatasource(event?: any) : void { //anar a crear datasource
+/*GBI*/public goToNewDatasource(event?: any) : void { //anar a crear datasource
         this.newDatasource = false;
         if (event) this.router.navigate(['/data-source']);
-    }
+/*GBI*/}
 
-    public getDataSource(datasource : any) : void { //escollir datasource per modificar a home
+/*GBI*/ public getDataSource(datasource : any) : void { //escollir datasource per modificar a home
         try {
            const  datasourcetmp = this.dataSourceMenu.filter(a => a.model_name == datasource.label);
             
@@ -276,7 +276,7 @@ export class HomeComponent implements OnInit {
             return
         }        
       
-    }
+/*GBI*/}
 
 
 }

@@ -12,22 +12,22 @@
         </eda-dashboard-panel>
     </div>  
 
-    <div *ngIf="!isObserver" class="col-4"  id="div_new_dashboard"> <!-- aprovechamos el div_new_dashboard como estilo para el botón newDatasource-->
+<!--GBI--><div *ngIf="!isObserver" class="col-4"  id="div_new_dashboard">           <!--GBI--> 
         <eda-dashboard-panel  class="pointer">
-            <div id="div_new_datasource" class="d-flex justify-content-center" (click)="goToNewDatasource($event)">
+            <div class="d-flex justify-content-center" (click)="goToNewDatasource($event)">
                 <h3>
                     Crear fuente de datos
                 </h3>
             </div>
 
         </eda-dashboard-panel >
-    </div>  
+<!--GBI--></div>                                                                        <!--GBI-->  
 
-    <div *ngIf="!isObserver" class="col-4"  id="div_new_dashboard">
+<!--GBI--><div *ngIf="!isObserver" class="col-4"  id="div_new_dashboard">          <!--GBI--> 
         <eda-dashboard-panel  class="pointer">
-            <p-dropdown  id="div_new_dashboard" [style]="{'width':'100%', 'text-align':'center', 'font-weight':'bold'}" label="Editar fuente de datos"  (click)="getDataSource(selectedDatasource)" [options]="items" [(ngModel)]="selectedDatasource" placeholder="Editar fuente de datos"></p-dropdown>
+            <p-dropdown [style]="{'width':'100%', 'text-align':'center', 'font-weight':'bold', 'padding':'auto'}" label="Editar fuente de datos" (click)="getDataSource(selectedDatasource)" [options]="items" [(ngModel)]="selectedDatasource" placeholder="Editar fuente de datos"></p-dropdown>
         </eda-dashboard-panel>  
-    </div>  
+<!--GBI--></div>                                                                       <!--GBI--> 
 
     <div class="col-12 " *ngIf="tags.length !== 2" style="margin-top: 2em;">
         <p-toolbar class="tag-container" >
