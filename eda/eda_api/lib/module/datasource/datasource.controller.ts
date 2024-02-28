@@ -120,14 +120,16 @@ export class DataSourceController {
                         }
                     });
 
-                    if (users.includes(userID) || roles.length > 0 || allCanSee == 'true'  || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
-                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                  /**  EDA */ //  if (users.includes(userID) || roles.length > 0 || allCanSee == 'true'  || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
+                  /**   edalitics free */        if (   e.ds.metadata.model_owner== req.user.id   ||   req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
+                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
                     }
 
                 }
                 else {
-
-                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+       /**  // edalitics free */    if (   e.ds.metadata.model_owner== req.user.id   ||   req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
+                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+        /**  // edalitics free */   }
 
                 }
             }
@@ -215,6 +217,7 @@ export class DataSourceController {
                    let cadena = JSON.stringify(body);
                    cadena = cadena.split('$oid').join('id');
                    ds = new DataSource( JSON.parse(cadena.toString()));
+                   ds.ds.metadata.model_owner=req.user?.id;
 
                 }else{
                     console.log('Importing existing datasource');
@@ -223,6 +226,7 @@ export class DataSourceController {
                     cadena = cadena.split('$oid').join('id');
                     dataSource.ds =   JSON.parse(cadena.toString());
                     ds = dataSource;
+                    ds.ds.metadata.model_owner=req.user?.id;
                 }       
 
                 
