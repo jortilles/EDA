@@ -23,9 +23,9 @@
         </eda-dashboard-panel >
     </div>  
 
-    <div *ngIf="!isObserver" class="col-4"  id="div_edit_datasource">
+    <div *ngIf="!isObserver" class="col-4"  id="div_new_dashboard">
         <eda-dashboard-panel  class="pointer">
-            <p-splitButton label="Editar fuente de datos" (onDropdownClick)="getDataSource(item)" (onClick) = "getDataSource(item)" [model]="items" ></p-splitButton>
+            <p-dropdown  id="div_new_dashboard" [style]="{'width':'100%', 'text-align':'center', 'font-weight':'bold'}" label="Editar fuente de datos"  (click)="getDataSource(selectedDatasource)" [options]="items" [(ngModel)]="selectedDatasource" placeholder="Editar fuente de datos"></p-dropdown>
         </eda-dashboard-panel>  
     </div>  
 

@@ -43,6 +43,7 @@ export class HomeComponent implements OnInit {
     public newDatasource: boolean = false;
     public dataSourceMenu: any = [];
     public items: MenuItem[]; 
+    public selectedDatasource : any;
 
     public noTagLabel = $localize`:@@NoTag:Sin Etiqueta`;
     public AllTags = $localize`:@@AllTags:Todos`;
@@ -247,28 +248,34 @@ export class HomeComponent implements OnInit {
     }
 
     public getDataSource(datasource : any) : void { //escollir datasource per modificar a home
-        
-        if (datasource) {
-            //this.stylesProviderService.setDefaultBackgroundColor();
-            if (this.dashboardService._notSaved.value === false) {
-                this.router.navigate(['/data-source/', datasource]);
-            } else {
-                this.dashboardService._notSaved.next(false);
-                Swal.fire(
-                    {
-                        text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
-                        icon: 'warning',
-                        showDenyButton: true,
-                        denyButtonText: $localize`:@@cancelarButton:Cancelar`,
-                    }
-                ).then((result) => {
-                    if (result.isConfirmed) {
-                        this.router.navigate(['/data-source/', datasource._id]);
-                    }
-                })
-            }
+        try {
+           const  datasourcetmp = this.dataSourceMenu.filter(a => a.model_name == datasource.label);
+            
+            if (datasourcetmp[0]._id) {
+                //this.stylesProviderService.setDefaultBackgroundColor();
+                if (this.dashboardService._notSaved.value === false) {
+                    this.router.navigate(['/data-source/', datasourcetmp[0]._id]);
+                } else {
+                    this.dashboardService._notSaved.next(false);
+                    Swal.fire(
+                        {
+                            text: $localize`:@@NotSavedWarning:Hay cambios sin guardar. ¿Seguro que quieres salir?`,
+                            icon: 'warning',
+                            showDenyButton: true,
+                            denyButtonText: $localize`:@@cancelarButton:Cancelar`,
+                        }
+                    ).then((result) => {
+                        if (result.isConfirmed) {
+                            this.router.navigate(['/data-source/', datasource._id]);
+                        }
+                    })
+                }
 
-        } 
+            } 
+        } catch (e) {
+            return
+        }        
+      
     }
 
 
