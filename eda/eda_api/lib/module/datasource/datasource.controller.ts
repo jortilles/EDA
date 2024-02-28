@@ -119,15 +119,15 @@ export class DataSourceController {
                                 });
                         }
                     });
-                  /**  EDA */ //  if (users.includes(userID) || roles.length > 0 || allCanSee == 'true'  || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
-                  /**   edalitics free */        if (   e.ds.metadata.model_owner == userID   ||   req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
+                  if (users.includes(userID) || roles.length > 0 || allCanSee == 'true'  || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
+                  /**   edalitics free       if (   e.ds.metadata.model_owner == userID   ||   req.user.role.includes('135792467811111111111110')   )  { */ 
                     output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
                     }
 
                 }else {
-       /**  // edalitics free */    if (   e.ds.metadata.model_owner ==  userID ||   req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
+       /**  // edalitics free     if (   e.ds.metadata.model_owner ==  userID ||   req.user.role.includes('135792467811111111111110')  )  {*/
                         output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-        /**  // edalitics free */   }
+        /**  // edalitics free   } */
 
                 }
             }
