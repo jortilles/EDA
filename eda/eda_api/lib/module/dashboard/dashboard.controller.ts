@@ -32,8 +32,10 @@ export class DashboardController {
       } else {
         privates = await DashboardController.getPrivateDashboards(req)
         group = await DashboardController.getGroupsDashboards(req)
-        publics = await DashboardController.getPublicsDashboards()
-        shared = await DashboardController.getSharedDashboards()
+        /*EDA publics = await DashboardController.getPublicsDashboards() */
+        /*Edalitics Free */publics = await DashboardController.getPublicsDashboards(req)
+        /*EDA shared = await DashboardController.getSharedDashboards() */
+        /*Edalitics Free */shared = await DashboardController.getSharedDashboards(req)
       }
       return res.status(200).json({
         ok: true,
@@ -98,10 +100,12 @@ export class DashboardController {
     }
   }
 
-  static async getPublicsDashboards() {
+  /*EDA static async getPublicsDashboards() {*/
+   /*Edalitics Free */static async getPublicsDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
-        {},
+        /*EDA{},*/
+        /*Edalitics Free */{ users: { $in: req.user._id } },
         'config.title config.visible config.tag config.onlyIcanEdit'
       ).exec()
       const publics = []
@@ -117,10 +121,12 @@ export class DashboardController {
     }
   }
 
-  static async getSharedDashboards() {
+  /*EDA static async getSharedDashboards() { */
+  /*Edalitics Free */static async getSharedDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
-        {},
+        /*EDA{},*/
+        /*Edalitics Free */{ users: { $in: req.user._id } },
         'config.title config.visible config.tag config.onlyIcanEdit'
       ).exec()
       const shared = []
