@@ -82,6 +82,7 @@
 
 /*GBI*/ #div_new_dashboard  >>> .p-component { 
 /*GBI*/ border: none;
+/*GBI*/ box-shadow: unset !important;
 /*GBI*/ }
 
 /*GBI*/ #div_new_dashboard  >>> .p-inputtext {

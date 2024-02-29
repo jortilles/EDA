@@ -1026,6 +1026,10 @@ pre {
   For Laptop & above all (1370px) 
   ============================================================== */
 @media (max-width: 1370px) {
+    /*GBI*/ .p-inputtext {
+    /*GBI*/ font-size: 18px !important;
+    /*GBI*/ }
+
     .widget-app-columns {
         -webkit-column-count: 2;
         -moz-column-count: 2;

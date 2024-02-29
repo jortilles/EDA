@@ -12,7 +12,7 @@
         </eda-dashboard-panel>
     </div>  
 
-<!--GBI--><div *ngIf="!isObserver" class="col-4"  id="div_new_dashboard">           <!--GBI--> 
+<!--GBI--><div *ngIf="!isObserver" class="col-4"  id="div_new_dashboard"> 
         <eda-dashboard-panel  class="pointer">
             <div class="d-flex justify-content-center" (click)="goToNewDatasource($event)">
                 <h3>
@@ -21,13 +21,15 @@
             </div>
 
         </eda-dashboard-panel >
-<!--GBI--></div>                                                                        <!--GBI-->  
+<!--GBI--></div>                                                                       
 
-<!--GBI--><div *ngIf="!isObserver" class="col-4"  id="div_new_dashboard">          <!--GBI--> 
+<!--GBI--><div *ngIf="!isObserver" class="col-4"  id="div_new_dashboard">     
         <eda-dashboard-panel  class="pointer">
-            <p-dropdown [style]="{'width':'100%', 'text-align':'center', 'font-weight':'bold', 'padding':'auto'}" label="Editar fuente de datos" (click)="getDataSource(selectedDatasource)" [options]="items" [(ngModel)]="selectedDatasource" placeholder="Editar fuente de datos"></p-dropdown>
+            <div class="d-flex justify-content-center">
+                <p-dropdown [style]="{'width':'100%', 'text-align':'center', 'font-weight':'bold', 'padding':'auto'}" label="Editar fuente de datos" (click)="getDataSource(selectedDatasource)" [options]="items" [(ngModel)]="selectedDatasource" placeholder="Editar fuente de datos"></p-dropdown>
+            </div>
         </eda-dashboard-panel>  
-<!--GBI--></div>                                                                       <!--GBI--> 
+<!--GBI--></div>                                                                 
 
     <div class="col-12 " *ngIf="tags.length !== 2" style="margin-top: 2em;">
         <p-toolbar class="tag-container" >
