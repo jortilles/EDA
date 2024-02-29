@@ -105,7 +105,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         /*EDA{},*/
-        /*Edalitics Free */{ users: { $in: req.user._id } },
+        /*Edalitics Free */  { user: req.user._id },
         'config.title config.visible config.tag config.onlyIcanEdit'
       ).exec()
       const publics = []
@@ -126,7 +126,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         /*EDA{},*/
-        /*Edalitics Free */{ users: { $in: req.user._id } },
+        /*Edalitics Free */  { user: req.user._id },
         'config.title config.visible config.tag config.onlyIcanEdit'
       ).exec()
       const shared = []
