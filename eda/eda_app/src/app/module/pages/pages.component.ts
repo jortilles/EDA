@@ -12,7 +12,7 @@ declare function init_plugins();
 export class PagesComponent implements OnInit {
 
     backgroundColor : string 
-    panelMode: boolean = false;
+    panelMode: boolean = true;
 
     constructor( private router: Router,
         private route: ActivatedRoute, 
