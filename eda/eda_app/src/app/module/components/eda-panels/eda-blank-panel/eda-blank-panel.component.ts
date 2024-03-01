@@ -789,13 +789,12 @@ export class EdaBlankPanelComponent implements OnInit {
             this.filtredColumns = [];
             //Reassing sqlQuery -if exists
             this.currentSQLQuery = this.panelDeepCopy.query.query.SQLexpression;
-
+            
             const queryMode = this.panelDeepCopy.query.query.queryMode;
             const modeSQL = this.panelDeepCopy.query.query.modeSQL;
-
-            this.selectedQueryMode = _.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode;
             
-            // this.modeSQL = this.panelDeepCopy.query.query.modeSQL;
+            this.selectedQueryMode = _.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode;
+            this.rootTreeTable = this.panelDeepCopy.rootTreeTable;
         }
 
         this.loadChartsData(this.panelDeepCopy);

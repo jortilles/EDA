@@ -10,8 +10,10 @@ export const PanelOptions = {
       icon: 'fa fa-cog',
       command: () => {
         if (panelComponent.panel.content) {
-
           panelComponent.panelDeepCopy = _.cloneDeep(panelComponent.panel.content, true);
+          if (panelComponent.selectedQueryMode == 'EDA2') {
+            panelComponent.panelDeepCopy.rootTreeTable = _.cloneDeep(panelComponent.rootTreeTable);
+          }
           panelComponent.display_v.disablePreview = false;
 
         } else {

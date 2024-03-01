@@ -11,16 +11,16 @@ export class GlobalFiltersService {
         const panelsToDisplay: Array<{title, id, active, avaliable, visible}> = [];
         if (refferencePanel.content) {
             refferencePanel.content.query.query.fields.forEach(field => {
-                if (!panelsTables.includes(field.table_id)) {
-                    panelsTables.push(field.table_id);
-                }
+                const table_id = field.table_id.split('.')[0];
+                if (!panelsTables.includes(table_id)) panelsTables.push(table_id);
             });
             const firstPanelRelatedTables = this.relatedTables(panelsTables, tables);
             panels.forEach(panel => {
                 if (panel.content) {
                     let inlcludePanel = true;
                     panel.content.query.query.fields.forEach(field => {
-                        if (!firstPanelRelatedTables.has(field.table_id)) inlcludePanel = false;
+                        const table_id = field.table_id.split('.')[0];
+                        if (!firstPanelRelatedTables.has(table_id)) inlcludePanel = false;
                     });
                     if (inlcludePanel) {
                         panelsToDisplay.push({title: panel.title, id: panel.id, active: true, avaliable : true, visible: true});
@@ -33,7 +33,7 @@ export class GlobalFiltersService {
         return panelsToDisplay;
     }
 
-    public relatedTables(tables: Array<any>, modeltables): Map<string, any> {
+    public relatedTables(tables: any[], modeltables: any[]): Map<string, any> {
         let visited = new Map();
         const startTable = modeltables.find(t => t.table_name === tables[0]);
         visited = this.findRelations(modeltables, startTable, visited);

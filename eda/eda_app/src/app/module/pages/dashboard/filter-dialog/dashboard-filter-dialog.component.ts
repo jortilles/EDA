@@ -133,10 +133,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         notVisibleTables = this.params.dataSource.model.tables.filter(t => t.visible === false).map(t => t.table_name);
         this.panelstoFilter.forEach(panel => {
             const tmpPanel = this.params.panels.find(p => p.id === panel.id);
-            tmpPanel.content.query.query.fields.forEach(field => {
-                if (!tables.includes(field.table_id)) {
-                    tables.push(field.table_id);
-                }
+            tmpPanel.content.query.query.fields.forEach((field: any) => {
+                const table_id = field.table_id.split('.')[0];
+                if (!tables.includes(table_id)) tables.push(table_id);
             });
         });
 
