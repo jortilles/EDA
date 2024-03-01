@@ -12,7 +12,7 @@ export class SidebarService extends ApiService {
     private _datasourcesDB = new BehaviorSubject<any>([]);
     currentDatasourcesDB = this._datasourcesDB.asObservable();
 
-    public toggleSideNav: boolean = true;
+/*GBI*/ public toggleSideNav: boolean = true;
     public hideSideNavSubj: BehaviorSubject<boolean>;
 
     public menu: any[] = [{ title: 'Fuentes principales', icon: 'mdi mdi-database', submenu: [] }];

@@ -17,7 +17,7 @@ export class SidebarComponent implements OnInit {
     public isAdmin: boolean;
     public dataSourceMenu: any[] = [];
     public edit_mode: boolean = true;
-    public panelMode: boolean = true; // en mode panel es mostra nomel el panell
+/*GBI*/ public panelMode: boolean = true; // en mode panel es mostra nomel el panell
     public mobileSize: boolean = false;
     public sideBtn: boolean = false;
     public logoSidebar: string;
