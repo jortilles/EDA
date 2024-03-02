@@ -534,7 +534,6 @@ export class EdaTable {
         //Es una secuencia similar a la de quitar los valores, pero opuesta.
         if (!this.noRepetitions) {
            this.value = this.origValues  ;
-           this.origValues = []; /**libero espacio */
         } else {
             //separamos valores de claves
             let values = this.extractDataValues(this.value);
