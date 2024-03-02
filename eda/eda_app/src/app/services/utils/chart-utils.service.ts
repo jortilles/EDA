@@ -491,10 +491,7 @@ export class ChartUtilsService {
         return uniqueLabels;
     }
 
-    public transformDataQueryForTable(noRepetitions: boolean, labels: any[], values: any[]) {
-
-        if (noRepetitions !== true) {
-
+    public transformDataQueryForTable( labels: any[], values: any[]) {
             const output = [];
             values = values.filter(row => !row.every(element => element === null));
             // Load the Table for a preview
@@ -506,37 +503,6 @@ export class ChartUtilsService {
                 output.push(obj);
             }
             return output;
-
-        } else {
-
-            const output = [];
-            values = values.filter(row => !row.every(element => element === null));
-            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE
-            let first  = _.cloneDeep(values[0]);
-            for (let i = 0; i < values.length; i += 1) {
-                const obj = [];
-                if(i == 0){
-                    for (let e = 0; e < values[i].length; e += 1) {
-                            obj[labels[e]] = values[i][e];
-                        }
-                }else{
-                    for (let e = 0; e < values[i].length; e += 1) {
-                        if (values[i][e] === first[e]    &&  isNaN(values[i][e]) ) {
-                            obj[labels[e]] = "";   // AQUI SE SUSTITUYEN LOS REPETIDOS POR UNA CADENA EN BLANCO
-                        } else {
-                            obj[labels[e]] = values[i][e];
-                        }
-                        first[e]  =  values[i][e]; //AQUI SE SUTITUYE EL PRIMER VALOR
-                        }
-                }
-                output.push(obj);
-            }
-
-            return output;
-
-        }
-
-
     }
 
     /**
