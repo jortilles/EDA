@@ -38,7 +38,7 @@ export class DateUtils {
     }
 
     public allDates(): Array<Date> {
-        const mostOldDate = moment('1984-08-01').toDate();
+        const mostOldDate = moment('1939-01-01').toDate();
         const today = moment().toDate();
         return [mostOldDate, today];
     }
