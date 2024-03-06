@@ -124,42 +124,36 @@ export class DateUtils {
     }
 
     public setLast3(): Array<Date> {
-       
         const today = moment().toDate();
         const lastTwoDays = moment().subtract(2,'days').toDate();
         return [lastTwoDays, today];
     }
 
     public setLast7(): Array<Date> {
-        //Los últimos siete días incluyendo hoy
         const today = moment().toDate();
         const lastSixDays = moment().subtract(6,'days').toDate();
         return [lastSixDays, today];
     }
     
     public setLast15(): Array<Date> {
-        //Los últimos quince días incluyendo hoy
         const today = moment().toDate();
         const lastFourteenDays = moment().subtract(14,'days').toDate();
         return [lastFourteenDays, today];
     }
 
     public setLast30(): Array<Date> {
-        //Los últimos treinta días incluyendo hoy
         const today = moment().toDate();
         const lastTwentyNine = moment().subtract(29,'days').toDate();
         return [lastTwentyNine, today];
     }
 
     public setLast60(): Array<Date> {
-        //Los últimos sesenta días incluyendo hoy
         const today = moment().toDate();
         const lastFiftyNine = moment().subtract(59,'days').toDate();
         return [lastFiftyNine, today];
     }
 
     public setLast120(): Array<Date> {
-        //Los últimos ciento veinte días incluyendo hoy
         const today = moment().toDate();
         const lastOneHudredNineteen = moment().subtract(119,'days').toDate();
         return [lastOneHudredNineteen, today];
