@@ -3947,6 +3947,28 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}"/>
         </target>
       </trans-unit>
+      <trans-unit id="positionFilterInReport">
+        <source>Posición del filtro en el informe</source>
+        <target>Posición del filtro en el informe</target>
+      </trans-unit>
+      <trans-unit id="filterVisibleScope">
+        <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El
+          resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de
+          usuario no pueden ver el filtro. pero se les aplica</source>
+        <target>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Solo lectura: Los usuarios no administradores pueden ver el filtro pero no pueden modificarlo.  Oculto: Los usuarios no administradores no pueden ver el filtro, pero se les aplica</target>
+      </trans-unit>
+      <trans-unit id="public">
+        <source>público</source>
+        <target>Público</target>
+      </trans-unit>
+      <trans-unit id="readOnly">
+        <source>deshabilitado</source>
+        <target>Solo lectura</target>
+      </trans-unit>
+      <trans-unit id="hidden">
+        <source>oculto</source>
+        <target>Oculto</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
