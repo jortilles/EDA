@@ -779,9 +779,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             let btn = document.getElementById('dashFilterBtn');
             if (btn) btn.click();
             else this.reloadPanels();
-        }, 500);
+        }, 300);
     }
 
+    /** onclick del panel. ara afegeix filtres */
     public async onPanelAction(event: IPanelAction): Promise<void> {
         if (event.code === 'ADDFILTER') {
             const data = event?.data;
@@ -800,7 +801,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         panelList: config.panelList.map(p => p.id), 
                         table: { label: table.display_name.default, value: table.table_name },
                         column: { label: column.display_name.default, value: column },
-                        selectedItems: [data.label]
+                        selectedItems: [data.label],
+                        visible: 'public'
                     };
 
                     await this.onGlobalFilter(globalFilter, table.table_name);
@@ -1047,7 +1049,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 : [{ value1: filter.selectedItems }],
             isGlobal: true,
             applyToAll: filter.applyToAll,  
-            valueListSource: filter.column.value.valueListSource
+            valueListSource: filter.column.value.valueListSource,
+            filter_column_type: filter.column.value.column_type
         }
 
         return formatedFilter;
