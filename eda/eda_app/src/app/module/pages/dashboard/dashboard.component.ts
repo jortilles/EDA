@@ -773,13 +773,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private reloadOnGlobalFilter(): void {
         //not saved alert message
         this.dashboardService._notSaved.next(true);
-
-        // Simula el click en el btn
-        setTimeout(() => {
-            let btn = document.getElementById('dashFilterBtn');
-            if (btn) btn.click();
-            else this.reloadPanels();
-        }, 300);
+        //Determino visibilidad del boton de filtrar
+        this.setFilterButtonVisibilty(this.filtersList);
+        this.reloadPanels();
     }
 
     /** onclick del panel. ara afegeix filtres */
@@ -806,7 +802,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     };
 
                     await this.onGlobalFilter(globalFilter, table.table_name);
+
+
+
                     this.reloadOnGlobalFilter();
+                    
                 }
             }
         }
@@ -1099,8 +1099,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             .forEach((panel) => {
                 if (panel) panel.setGlobalFilter(newFilter);
             });
-        
-        // this.reloadPanels();
     }
 
 
@@ -1623,19 +1621,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     //métode per descobrir o amagar el botó de filtrar al dashboard
     public setFilterButtonVisibilty(filtersList: any[]) : void {
-        filtersList = filtersList.filter((f) => { 
-            return (f.visible != "hidden" && f.visible == "readOnly") ||
-                   (f.visible != "hidden" && f.visible == "public")
-        })
-        
-        filtersList.forEach(a => {
+        const myfiltersList = filtersList.filter( f=>(f.visible != "hidden" )) 
+        myfiltersList.forEach(a => {
             if (a.visible == "public") {
                 this.filterButtonVisibility.public = true;
             } else if (a.visible == "readOnly") {
                 this.filterButtonVisibility.readOnly = true;
             }
 
-        })   
+        });
     }
     
     setDashboardCreator(dashboard : any) : void {
