@@ -223,9 +223,16 @@ export class EdaTable {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
 
         } 
-        if (this.noRepetitions || !this.noRepetitions) {
-            this.noRepeatedRows();
-        }
+        // SDA CUSTOM Este código produce repeticiones en tabnlas normales y tablas cruzadas  Issue 96 y 101
+        // SDA CUSTOM if (this.noRepetitions || !this.noRepetitions) {
+        // SDA CUSTOM    this.noRepeatedRows();
+        // SDA CUSTOM }
+        // Nueva propuesta
+        // if ( !this.pivot) {
+        // console.log('desactivadas las no repeticiones');
+        // this.noRepeatedRows();
+        // }
+        // END SDA CUSTOM
 
     }
 
@@ -308,7 +315,7 @@ export class EdaTable {
                     valuesKeys.forEach(valueKey => {
                       let keyArray = key.split('~');
                         if (keyArray.includes(valueKey)) {
-                            let decimalplaces =  0;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */
+                            let decimalplaces = new EdaColumnNumber({}).decimals;  /** esto se hace  para ajustar el número de dicimales porque 3.1+2.5 puede dar 5.600004 */ 
                             try{
                                 if(  row[key].toString().split(".")[1].length > 0){
                                     decimalplaces =  row[key].toString().split(".")[1].length;
@@ -435,8 +442,6 @@ export class EdaTable {
         const values = this._value;
         const keys = this.cols.map(col => col.field);
 
-
-
         for (let i = 0; i < values.length; i++) {
             for (let j = 0; j < keys.length; j++) {
                 if (i < values.length) {
@@ -471,7 +476,7 @@ export class EdaTable {
                         border: '',
                         type: col.type
                     });
-            }
+            } 
             else {
                 if (firstNonNumericRow) {
                     this.totalsRow.push({ data: `${this.Totals} `, border: " ", class: 'total-row-header', type: col.type });

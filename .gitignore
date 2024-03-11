@@ -38,3 +38,7 @@ eda/eda_api/config/SCRM
 eda/eda_api/config
 eda/eda_app/src/app/config
 eda/eda_api/config/base_datamodel.json
+
+# SinergiaDA exclusions
+eda/eda_api/metadata.json
+.vscode

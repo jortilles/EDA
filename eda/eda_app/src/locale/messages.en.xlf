@@ -3567,10 +3567,10 @@
       </trans-unit>
 
       <trans-unit id="removeRowTotals">
-        <source>Quitar totales de columna</source>
-        <target>Delete column totals</target>
+        <source>Quitar totales de fila</source>
+        <target>Delete row totals</target>
       </trans-unit>
-      <trans-unit id="removeRowSubtotals">
+      <trans-unit id="removeColSubtotals">
         <source>Quitar subtotales de columna</source>
         <target>Delete column subtotals</target>
       </trans-unit>
@@ -3578,9 +3578,9 @@
         <source>Totales de fila</source>
         <target>Row totals</target>
       </trans-unit>
-      <trans-unit id="addRowSubtotals">
-        <source>Subtotales de fila</source>
-        <target>Row subtotals</target>
+      <trans-unit id="addColSubtotals">
+        <source>Subtotales de columna</source>
+        <target>Column subtotals</target>
       </trans-unit>
       <trans-unit id="addColTotals">
         <source>Totales de columna</source>
