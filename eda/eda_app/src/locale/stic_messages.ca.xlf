@@ -171,9 +171,7 @@
         <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El
           resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de
           usuario no pueden ver el filtro. pero se les aplica</source>
-        <target>Definir la visibilitat del filtre. Públic: tothom pot utilitzar-lo. Només lectura:
-          Els usuaris no administradors poden veure el filtre però no poden modificar-lo. Ocult: Els
-          usuaris no administradors no poden veure el filtre, però se'ls aplica.</target>
+        <target>Definir la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: els altres usuaris poden veure el filtre però no el poden modificar.  Ocult: els altres usuaris no poden veure el filtre però els aplica.</target>
       </trans-unit>
 
       <!-- ABOUT PAGE -->
