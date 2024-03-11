@@ -28,6 +28,7 @@ export class DateUtils {
             case 'monthFullPreviousYear': return this.setMonthFullPreviousYear();
             case 'yearStart': return this.setYearStart();
             case 'yearStartPreviousYear': return this.setYearStartPreviousYear();
+            case 'yearStartPreviousYearFull': return this.setYearStartPreviousYearFull();
             case 'last3': return this.setLast3();
             case 'last7': return this.setLast7();
             case 'last15': return this.setLast15();
@@ -121,6 +122,12 @@ export class DateUtils {
         const pastYearStart = moment().subtract(1,'years').startOf('year').toDate();
         const pastYearToday = moment().subtract(1,'years').toDate();
         return [pastYearStart, pastYearToday];
+    }
+
+    public setYearStartPreviousYearFull(): Array<Date> {
+        const pastYearStart = moment().subtract(1,'years').startOf('year').toDate();
+        const pastYearEnd = moment().subtract(1,'years').endOf('year').toDate();
+        return [pastYearStart, pastYearEnd];
     }
 
     public setLast3(): Array<Date> {
