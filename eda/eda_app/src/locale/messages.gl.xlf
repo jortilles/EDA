@@ -4264,7 +4264,7 @@
 
       <trans-unit id="filterVisibleScope">
         <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro, pero se les aplica</source>
-        <target>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro, pero se les aplica</target>
+        <target>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: los demás usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: los demás usuarios no pueden ver el filtro pero les aplica.</target>
       </trans-unit>
     </body>
   </file>
