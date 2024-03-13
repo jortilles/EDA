@@ -12,9 +12,10 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'app-data-source-detail',
-    templateUrl: './data-source-detail.component.html',
+    /*SDA CUSTOM*/ templateUrl: './sda-data-source-detail.component.html',
     styleUrls: ['../data-source-list/data-source-list.component.css']
 })
+
 export class DataSourceDetailComponent implements OnInit, OnDestroy {
     @Output() onTableCreated: EventEmitter<any> = new EventEmitter();
 
@@ -58,7 +59,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public addView:string = $localize`:@@addView:Añadir vista`;
     public addCSV:string = $localize`:@@addCSV:Añadir tabla desde csv`;
     public addRelation:string = $localize`:@@addRelationButton:Añadir relación`;
-    public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`; 
+    public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`;
     public addPermission:string = $localize`:@@addPermission:Añadir permiso`;
     public addValueList:string = $localize`:@@addValueList:Añadir lista de valores posibles`;
     public si = $localize`:@@si:Si`;
@@ -128,39 +129,36 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.alertService.addError(err);
             }
         );
-        
 
         this.permissionsColumn = new EdaTable({
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
                         label: 'ELIMINAR', command: () => {
-                            
+
                             let elem : any =  this.permissionsColumn.getContextMenuRow();
-                            
+
                             try {
                                 elem = this.permissionsColumn.getContextMenuRow()._id?.reduce((a, b)=> a + b) ;
                             } catch (e) {
 
                             }
-                            
+
                             const dynValue = this.modelPanel.metadata.model_granted_roles.filter(r => r.value !== undefined)
                             .filter(r => r.value !== "(x => None)" && r.value !== "(~ => All)")
                             .filter(r => r.value != elem.value );
-                            
+
                             const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined && r.users.length > 0  )
                             .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
 
                             const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined && r.groups.length > 0  )
                             .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
-   
                             let tmpPermissions = [];
                             dynValue.forEach(dyn => tmpPermissions.push(dyn))
                             groups.forEach(group => tmpPermissions.push(group));
                             users.forEach(user => tmpPermissions.push(user));
 
                             this.modelPanel.metadata.model_granted_roles = tmpPermissions;
-  
                             this.update();
                             this.permissionsColumn._hideContexMenu();
                         }
@@ -176,7 +174,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         });
 
 
-        
 
         this.permissionTable = new EdaTable({
             contextMenu: new EdaContextMenu({
@@ -196,7 +193,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
                             this.modelPanel.metadata.model_granted_roles = tmpPermissions;
                             this.update();
-                 
                             this.permissionTable._hideContexMenu();
                         }
                     })
@@ -233,7 +229,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 ]
             }),
             cols: [
-                
                 new EdaColumnContextMenu(),
                 new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
                 new EdaColumnText({ field: 'group', header: $localize`:@@groupTable:GRUPO` }),
@@ -263,8 +258,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.carregarPanels();
-        this.items = [{
+      this.carregarPanels();
+              this.items = [{
             label: 'Options',
             items: [{
                 label: 'Update',
@@ -332,7 +327,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         );
 
-        // tabla 
+        // tabla
         this.dataModelService.currentTablePanel.subscribe(
             tablePanel => {
                 this.tablePanel = tablePanel;
@@ -364,7 +359,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     } else if(!this.relationsTable.value.map(value => value.origin).includes(relation.source_column)){
                         this.relationsTable.value.push(row);
                     }
-                    
                 });
                 //Update to contain only actual values
                 this.relationsTable.value = this.relationsTable.value.filter(table => this.tmpRelations.includes(table._id))
@@ -642,7 +636,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         });
     }
-    
     openPermissionsRelationDialog() {
         const table = this.dataModelService.getTable(this.columnPanel);
         this.permissionsController = new EdaDialogController({

@@ -155,9 +155,7 @@ export class DataSourceController {
                 const names = JSON.parse(JSON.stringify(ds));
                 for (let i = 0, n = names.length; i < n; i += 1) {
                     const e = names[i];
-                    if (e._id != "111111111111111111111111") {
                     output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-                    }
                 }
                 output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : 
                 ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
@@ -178,10 +176,7 @@ export class DataSourceController {
                 if (e.ds.metadata.model_owner) {
                     // Si el model es meu....
                     if ( (req.user._id  == e.ds.metadata.model_owner)) {
-                        // Si no es diu el _id no es el de SinergiaDA...
-                        if (e._id != "111111111111111111111111") {
                             output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-                        } 
                     }
 
                 } 

@@ -203,18 +203,37 @@
       <trans-unit id="aboutPageLastRebuildDate" datatype="html">
         <source>Última reconstrucción de origenes de datos en SinergiaCRM
           (rebuild)</source>
-        <target>Última reconstrucció dels orígens de dades a SinergiaCRM (rebuild)
+        <target>Última reconstrucció dels fonts de dades a SinergiaCRM (rebuild)
         </target>
       </trans-unit>
       <trans-unit id="aboutPageDB" datatype="html">
         <source>Base de datos de SinergiaCRM</source>
         <target>Base de dades de SinergiaCRM</target>
       </trans-unit>
+
       <trans-unit id="logotipoSdaAlt" datatype="html">
         <source>Logotipo de Sinergia Data Analytics</source>
         <target>Logotip de Sinergia Data Analytics</target>
       </trans-unit>
       <!-- END ABOUT PAGE -->
+
+      <!-- PARTIAL SDA DATASOURCE EDIT-->
+      <trans-unit id="partialEditDataSourceNotice" datatype="html">
+        <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran
+          desactivadas porque se configuran automáticamente durante el proceso de sincronización de
+          datos con SinergiaCRM.</source>
+        <target>Algunes àrees de la configuració de la font de dades SinergiaDA estan desactivades
+          perquè es configuren automàticament durant el procés de sincronització de dades amb
+          SinergiaCRM.
+        </target>
+      </trans-unit>
+      <!-- END PARTIAL SDA DATASOURCE EDIT-->
+
+      <trans-unit id="DataModelHeader">
+        <source> Configurar nuevo orígen de datos </source>
+        <target> Configurar nou font de dades </target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

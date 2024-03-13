@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="gl-ES" datatype="plaintext" original="ng2.template">
+  <file source-language="es-ES" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="sidebarMyDashboards" datatype="html">
         <source>Mis informes</source>
@@ -21,7 +21,7 @@
       </trans-unit>
       <trans-unit id="saveModel" datatype="html">
         <source>Guardar modelo de datos</source>
-        <target>Guardar modelo de datos</target>
+        <target>Guardar el modelo de datos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">
             app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
@@ -59,20 +59,13 @@
           <context context-type="linenumber">131</context>
         </context-group>
       </trans-unit>
-
-
       <trans-unit id="hiddenAttributes">
         <source>Atributos ocultos</source>
-        <target>Mostrar/ocultar columnas ocultas</target>
+        <target>Mostrar/ocultar columnas</target>
       </trans-unit>
-
       <trans-unit id="atributosH4+" datatype="html">
-        <source>
-          Columnas de:
-        </source>
-        <target>
-          Columnas de:
-        </target>
+        <source>Columnas de:</source>
+        <target>Columnas de:</target>
       </trans-unit>
       <trans-unit id="atributosH4interpolation" datatype="html">
         <source>
@@ -117,7 +110,7 @@
       <trans-unit
         id="aboutPageEdaVersionAPI" datatype="html">
         <source>Puerto / Versión de EDA (API)</source>
-        <target>Porto / Versión de EDA (API)</target>
+        <target>Puerto / Versión de EDA (API)</target>
       </trans-unit>
       <trans-unit
         id="aboutPageEdaVersionAPP" datatype="html">
@@ -132,18 +125,31 @@
       <trans-unit id="aboutPageLastRebuildDate" datatype="html">
         <source>Última reconstrucción de origenes de datos en SinergiaCRM
           (rebuild)</source>
-        <target>Última reconstrución de orixes de datos en SinergiaCRM (rebuild)
-        </target>
+        <target>Última reconstrucción de las fuentes de datos en SinergiaCRM
+          (rebuild)</target>
       </trans-unit>
       <trans-unit id="aboutPageDB" datatype="html">
         <source>Base de datos de SinergiaCRM</source>
         <target>Base de datos de SinergiaCRM</target>
       </trans-unit>
+
       <trans-unit id="logotipoSdaAlt" datatype="html">
         <source>Logotipo de Sinergia Data Analytics</source>
         <target>Logotipo de Sinergia Data Analytics</target>
       </trans-unit>
       <!-- END ABOUT PAGE -->
+
+      <!-- PARTIAL SDA DATASOURCE EDIT-->
+      <trans-unit id="partialEditDataSourceNotice" datatype="html">
+        <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
+        <target>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</target>
+      </trans-unit>
+      <!-- END PARTIAL SDA DATASOURCE EDIT-->
+
+      <trans-unit id="DataModelHeader">
+        <source> Configurar nuevo orígen de datos </source>
+        <target> Configurar nueva fuente de datos</target>
+      </trans-unit>
 
     </body>
   </file>
