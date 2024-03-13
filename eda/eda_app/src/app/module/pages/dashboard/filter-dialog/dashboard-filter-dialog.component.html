@@ -9,7 +9,6 @@
         </ng-container>
     </div>
 
-
     <div footer>
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
             <button id="saveFilterButton" type="submit" pButton (click)="saveGlobalFilter()" i18n-label="@@guardarBtn"
@@ -22,10 +21,23 @@
 
 
 <ng-template #filterTemplate>
-    <p-card [header]="header1">
+    <p-card>
         <div class="grid">
             <div class="col-12">
-                <p-inputSwitch id="applyToAllFiltersButton" (onChange)="applyToAllCheck()" [(ngModel)]="switchChecked"> </p-inputSwitch>
+                <div class="grid">
+                    <div class="col-4">
+                        <div class="filterDialogTitles">{{header1}}</div>
+                        <p-inputSwitch id="applyToAllFiltersButton" (onChange)="applyToAllCheck()" [(ngModel)]="switchChecked"></p-inputSwitch>
+                    </div>
+                    <div class="col-4">
+                    </div>
+                    <div class="col-4">
+                        <div  i18n-title="@@filterVisibleScope" title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica" class="filterDialogTitles">{{header4}}</div>
+                        <p-dropdown id="applyToOneFilterDropdown" 
+                        i18n-title="@@filterVisibleScope" title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
+                        [options]="publicRoHidden" [(ngModel)]="publicRoHiddenOption" selected="publicRoHiddenOption" autoWidth="false"></p-dropdown>
+                    </div>
+                </div>
             </div>
         </div>
     </p-card>
@@ -104,23 +116,26 @@
 </ng-template>
 
 <ng-template #filtersTemplate>
-    <div class="col-12 pl-2">
-        <div cdkDropList cdkDropListOrientation="horizontal" class="select-list" [cdkDropListData]="filtersList" (cdkDropListDropped)="onReorderFilter($event)">
-            <ng-container *ngFor="let filter of filtersList">
-                <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>
-                    <span class="close-thin pointer" (click)="removeFilter(filter, 'select')"></span>
-        
-                    <span class="text-center">
-                        {{filter.column.label}}
-                    </span>
-                </div>
-            </ng-container>
-        </div>
-    </div>
+
 
     <ng-container *ngIf="selectedFilter && !selectedFilter?.isdeleted">
         <p-card [header]="selectedFilter.table?.label + ' -' + selectedFilter.column?.label">
             <ng-container *ngTemplateOutlet="filterTemplate;"></ng-container>
         </p-card>
     </ng-container>
+    <div class="col-12 pl-2">
+        <p-card  [header]="posicion" >
+        <div cdkDropList cdkDropListOrientation="horizontal" class="select-list" [cdkDropListData]="filtersList" (cdkDropListDropped)="onReorderFilter($event)">
+            <ng-container *ngFor="let filter of filtersList">
+                <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>
+                    <span class="close-thin pointer" (click)="removeFilter(filter, 'select')"></span>
+        
+                    <span class="text-center" [ngClass]="(selectedFilter.table==filter.table) && (selectedFilter.column.label==filter.column.label)?'edaEmfasis':''">
+                        {{filter.column.label}}
+                    </span>
+                </div>
+            </ng-container>
+        </div>
+    </p-card>
+    </div>
 </ng-template>

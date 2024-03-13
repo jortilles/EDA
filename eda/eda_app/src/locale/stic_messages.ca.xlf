@@ -155,6 +155,24 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
         </target>
       </trans-unit>
+      <trans-unit id="public">
+        <source>público</source>
+        <target>Públic</target>
+      </trans-unit>
+      <trans-unit id="readOnly">
+        <source>deshabilitado</source>
+        <target>Només lectura</target>
+      </trans-unit>
+      <trans-unit id="hidden">
+        <source>oculto</source>
+        <target>Ocult</target>
+      </trans-unit>
+      <trans-unit id="filterVisibleScope">
+        <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El
+          resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de
+          usuario no pueden ver el filtro. pero se les aplica</source>
+        <target>Definir la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: els altres usuaris poden veure el filtre però no el poden modificar.  Ocult: els altres usuaris no poden veure el filtre però els aplica.</target>
+      </trans-unit>
 
       <!-- ABOUT PAGE -->
       <trans-unit

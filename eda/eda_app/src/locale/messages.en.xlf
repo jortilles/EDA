@@ -4204,6 +4204,26 @@
         <source>Operación</source>
         <target>Operation</target>
       </trans-unit>
+      <trans-unit id="canIfilter">
+        <source>Visiblidad del filtro</source>
+        <target>Filter visibility</target>
+      </trans-unit>
+       <trans-unit id="public">
+        <source>público</source>
+        <target>public</target>
+      </trans-unit>
+      <trans-unit id="readOnly">
+        <source>deshabilitado</source>
+        <target>read only</target>
+      </trans-unit>
+      <trans-unit id="hidden">
+        <source>oculto</source>
+        <target>hidden</target>
+      </trans-unit>
+      <trans-unit id="positionFilterInReport">
+        <source>Posición del filtro en el informe</source>
+        <target>Filter position in the report</target>
+      </trans-unit>
 
       <trans-unit id="numericalValueLabel">
         <source>Valor numérico</source>
@@ -4214,7 +4234,10 @@
         <source>Nuevo nombre</source>
         <target>New name</target>
       </trans-unit>
-
+     <trans-unit id="filterVisibleScope">
+        <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro, pero se les aplica</source>
+        <target>Define the visibility of the filter.  Public: everyone can use it.  Disabled: other users can see the filter but cannot modify it.  Hidden: other users cannot see the filter but it applies to them.</target>
+      </trans-unit>
 
     </body>
   </file>

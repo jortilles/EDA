@@ -129,15 +129,16 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     addFilter() {
         const table = this.selectedColumn.table_id;
         const column = this.selectedColumn.column_name;
+        const columnType = this.selectedColumn.column_type;
         const type = this.filterSelected.value;
         const range = this.filter.range;
         if(this.selectedColumn.valueListSource){
             this.filter.selecteds.push(
-                this.columnUtils.addFilter(this.filterValue, table, column, type, range, this.selectedColumn.valueListSource)
+                this.columnUtils.addFilter(this.filterValue, table, column, columnType, type, range, this.selectedColumn.valueListSource)
             );
         }else{
             this.filter.selecteds.push(
-                this.columnUtils.addFilter(this.filterValue, table, column, type, range)
+                this.columnUtils.addFilter(this.filterValue, table, column,columnType, type, range)
             );
         }
         
