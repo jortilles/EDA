@@ -322,7 +322,7 @@ export class DataSourceController {
             try {
                 const cn = req.qs.type !== 'bigquery' ? new ConnectionModel(req.qs.user, req.qs.host, req.qs.database,
                     req.qs.password, req.qs.port, req.qs.type,
-                    req.body.poolLimit, req.qs.schema, req.qs.sid, req.qs.warehouse, req.qs.allowSSL)
+                    req.body.poolLimit, req.qs.schema, req.qs.sid, req.qs.warehouse, req.qs.ssl)
                     : new BigQueryConfig(req.qs.type, req.qs.database, req.qs.project_id);
                 const manager = await ManagerConnectionService.testConnection(cn);
                 await manager.tryConnection();
@@ -416,9 +416,13 @@ export class DataSourceController {
     }
 
     static async GenerateDataModelSql(req: Request, res: Response, next: NextFunction) {
+        console.log('generate datamodel sql');
+        console.log(req.body);
         try {
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database,
-                req.body.password, req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid, req.body.warehouse, req.body.allowSSL);
+                req.body.password, req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid, req.body.warehouse, req.body.ssl);
+            console.log('Tengo la cn');
+            console.log(cn);
             const manager = await ManagerConnectionService.testConnection(cn);
             const tables = await manager.generateDataModel(req.body.optimize, req.body.filter, req.body.name);
             const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;          
@@ -493,7 +497,7 @@ export class DataSourceController {
             const passwd = req.body.password === '__-(··)-__' ? EnCrypterService.decode(actualDS.ds.connection.password) : req.body.password
 
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database, passwd,
-                req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid,  req.qs.warehouse);
+                req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid,  req.body.warehouse, req.body.ssl);
             const manager = await ManagerConnectionService.testConnection(cn);
             const storedDataModel = JSON.parse(JSON.stringify(actualDS));
             let tables = [];
