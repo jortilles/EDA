@@ -1891,6 +1891,127 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Un texto dinámicos requiere de un único valor NO numérico</source>
 <target>Tekst dynamiczny wymaga pojedynczej wartości nienumerycznej</target>
 </trans-unit>
+<trans-unit id="visitYouTubeLink" datatype="html">
+<source>Visitános en YouTube</source>
+<target>Odwiedź nas na YouTube</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">33</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="tituloDocs" datatype="html">
+<source>Accede a la documentación</source>
+<target>Uzyskać dostęp do dokumentacji</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">28</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="tituloAbout" datatype="html">
+<source>Sobre EDA</source>
+<target>O EDA</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">4</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="firstAboutParagraphSpan" datatype="html">
+<source>  
+  EDA (Enterprise Data Analytics) es un
+</source>
+<target>
+  EDA (Enterprise Data Analytics) jest
+</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">7</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="secondAboutParagraphSpan" datatype="html">
+<source>  
+  software de código abierto
+</source>
+<target>
+  oprogramowanie typu open-source
+</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">8</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="thirdAboutParagraphSpan" datatype="html">
+<source>  
+  utilizado principalmente para la
+</source>
+<target>
+  używane głównie do
+</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">9</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="fourthAboutParagraphSpan" datatype="html">
+<source>  
+  muestra de datos empresariales de forma gráfica y visual
+</source>
+<target>
+  prezentacji danych biznesowych w sposób graficzny i wizualny
+</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">10</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="fifthAboutParagraphSpan" datatype="html">
+<source>  
+  Se basa en un sistema de informes, los datos de cada informe se distribuyen en paneles y estos tienen la posibilidad de modificarse para mostrar de distintas formas dicha información.
+</source>
+<target>
+  Opiera się na systemie raportowania, dane z każdego raportu są dystrybuowane w panelach, a te można modyfikować, aby wyświetlić informacje na różne sposoby.
+</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">11</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="secondAboutParagraph" datatype="html">
+<source>
+  También tendremos la posibilidad de añadir o modificar fuentes de datos. En EDA hay muchas utilidades para configurar y personalizar cómo deben mostrarse los campos, así que en este aplicativo tendremos la 
+  oportunidad de asignar permisos, extensiones de modelo, restricciones entre otras muchas utilidades diversas para las entidades o tablas que necesitemos transformar.
+</source>
+<target>
+  Będziemy również mieć możliwość dodawania lub modyfikowania źródeł danych. W EDA dostępne są liczne narzędzia do konfigurowania i dostosowywania sposobu wyświetlania pól, więc w tej aplikacji będziemy mieć możliwość przypisywania uprawnień, rozszerzeń modelu, ograniczeń oraz wielu innych różnorodnych narzędzi do transformacji encji lub tabel, które będziemy musieli przekształcić.
+</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">15</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="thirdAboutParagraph" datatype="html">
+<source>
+  Por último cabe decir que EDA ofrece un sistema de gestión de usuarios, en este existen las funciones usuales de crear,actualizar,eliminar o visualizar los permisos de un usuario,
+  un apartado donde crear grupos para administrar categorías de usuarios con permisos concretos, un pequeño gestor de correos y por último un apartado donde poder exportar modelos y informes en relación a los datos guardados.
+</source>
+<target>
+  Wreszcie warto wspomnieć, że EDA oferuje system zarządzania użytkownikami, w którym znajdują się standardowe funkcje tworzenia, aktualizacji, usuwania lub wyświetlania uprawnień użytkownika, 
+  miejsce do tworzenia grup do zarządzania kategoriami użytkowników z określonymi uprawnieniami, mały manager poczty, a na koniec miejsce do eksportu modeli i raportów związanych z przechowywanymi danymi.
+</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">19</context>
+</context-group>
+</trans-unit>
+
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
 <target>Skumulowany wykres słupkowy</target>

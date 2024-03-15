@@ -9,6 +9,7 @@ import { UsersLlistaComponent } from './users-management/users-list/users-list.c
 import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.component'
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 import { ModelSettingsComponent } from './model-settings/model-settings.component';
+import { AboutComponent } from './about/about.component';
 
 
 // Guard
@@ -26,6 +27,7 @@ const pagesRoutes: Routes = [
     { path: 'profile', component: ProfileComponent, canActivate: [VerifyTokenGuard] },
     { path: 'data-source', component: DsConfigWrapperComponent, canActivate: [VerifyTokenGuard] },
     { path: 'data-source/:id', component: DataSourceListComponent, canActivate: [VerifyTokenGuard], runGuardsAndResolvers: 'paramsChange' },
+    { path: 'about', component: AboutComponent, canActivate: [VerifyTokenGuard] },
 
     { path: 'groups-management', component: GroupListComponent, canActivate: [VerifyTokenGuard] },
     { path: 'users-management', component: UsersLlistaComponent, canActivate: [VerifyTokenGuard]},
