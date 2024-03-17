@@ -8,7 +8,7 @@ const swaggerOptions = {
     swaggerDefinition: {
         info:{
             version: "2.0.1",
-            title: 'EDA Documentation',
+            title: 'Enterprise Data Analytics (EDA) Documentation',
             description: "API documentation for use",
             contact: {
                 name: "Enterprise Data Analytics (EDA)",
