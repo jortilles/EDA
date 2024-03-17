@@ -7,13 +7,13 @@ import swaggerUI from 'swagger-ui-express'
 const swaggerOptions = {
     swaggerDefinition: {
         info:{
-            version: "1.0.0",
+            version: "2.0.1",
             title: 'EDA Documentation',
             description: "API documentation for use",
             contact: {
-                name: "Jortilles",
-                url: "https://www.jortilles.com/",
-                mail: "info@jortilles.com"
+                name: "Enterprise Data Analytics (EDA)",
+                url: "https://eda.jortilles.com/",
+                mail: "eda@jortilles.com"
             },
             servers: ["http://edalitics.com"]
             
