@@ -28,7 +28,8 @@ const swaggerOptions = {
 }
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use("/", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+var router = express.Router();
+app.use("/", router, swaggerUI.serve, swaggerUI.setup(swaggerDocs));
  
 export default app ;
 
