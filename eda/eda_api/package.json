@@ -78,6 +78,8 @@
         "@types/node": "^14.14.28",
         "@types/oracledb": "^4.2.2",
         "@types/pg": "^7.14.3",
-        "@types/readable-stream": "^2.3.9"
+        "@types/readable-stream": "^2.3.9",
+        "@types/swagger-jsdoc": "^6.0.4",
+        "@types/swagger-ui-express": "^4.1.6"
     }
 }
