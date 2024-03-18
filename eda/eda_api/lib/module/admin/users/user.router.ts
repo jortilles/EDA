@@ -11,10 +11,23 @@ const router = express.Router();
  * @openapi
  * /admin/user/login:
  *   post:
- *     description: Post login with user and password
+ *     description: Post login with user and password within the request of the form.
+ *     parameters:
+ *       - name: email
+ *         in: formData
+ *         required: true
+ *         type: string
+ *       - name: password
+ *         in: formData
+ *         required: true
+ *         type: string
  *     responses:
  *       200:
- *         description: App user login ok
+ *         description: App user login successful.
+ *       400:
+ *         description: App user not found or wrong parameters.
+ *       500:
+ *         description: Server error.
  */
 router.post('/login', UserController.login);
 router.get('/fake-login/:usermail/:token', originGuard, UserController.provideToken );
@@ -28,12 +41,12 @@ router.post('/sso', UserController.singleSingnOn)
  * @openapi
  * /admin/user/:
  *   get: 
- *     description: get all users
+ *     description: Gets all the users of the database found by the api.
  *     responses:
  *       200:
- *         description: return all users from api
+ *         description: Retrieved all the users stored in the database found by the api.
  *       500: 
- *         description: error loading users
+ *         description: Server error trying to retrieve all the users.
  */
 router.get('', authGuard,  UserController.getUsers);
 
@@ -46,12 +59,17 @@ router.get('/refresh-token', authGuard, UserController.refreshToken);
  * @openapi
  * /admin/user/is-admin/:id:
  *   get: 
- *     description: consult if user is admin
+ *     description: Return a boolean checking if the user found by the database is administrator.
+ *     parameters: 
+ *       - name: id
+ *         in: User id
+ *         required: true
+ *         type: integer
  *     responses:
  *       200:
- *         description: returns true 
+ *         description: Returns true and the user is marked as admin. 
  *       500:
- *         description: User not found with this id or error waiting for other groups
+ *         description: User not found with this id or error waiting for other groups.
  */
 router.get('/is-admin/:id', authGuard, UserController.getIsAdmin);
 
@@ -59,12 +77,17 @@ router.get('/is-admin/:id', authGuard, UserController.getIsAdmin);
  * @openapi
  * /admin/user/is-datasource-creator/:id:
  *   get: 
- *     description: consult if parameter user is datasource creator 
+ *     description: Return a boolean checking if the user found by the database is a datasource creator.
+ *     parameters:
+ *       - name: id
+ *         in: User id
+ *         required: true
+ *         type: integer 
  *     responses:
  *       200:
- *         description: retorns true 
+ *         description: Returns true and the user is marked as datasource creator 
  *       500:
- *         description: user not found with this id or error waiting for other groups
+ *         description: User not found with this id or error waiting for other groups
  */
 router.get('/is-datasource-creator/:id', authGuard, UserController.getIsDataSourceCreator);
 
@@ -72,12 +95,31 @@ router.get('/is-datasource-creator/:id', authGuard, UserController.getIsDataSour
  * @openapi
  * /admin/user/:
  *   post: 
- *     description: save / update user
+ *     description: Creates the user with the request parameters, if this already exists then it's updated with that information.
+ *     parameters:
+ *       - name: name
+ *         in: Username
+ *         required: true
+ *         type: string
+ *       - name: email
+ *         in: Email
+ *         required: true
+ *         type: string
+ *       - name: password
+ *         in: Password
+ *         required: true
+ *         type: string
+ *       - name: img
+ *         in: Image
+ *         type: string
+ *       - name: role
+ *         in: Roles
+ *         type: string array
  *     responses:
  *       201:
- *         description: returns true 
+ *         description: Returns true, creation/updating process successful. 
  *       400:
- *         description: error at saving
+ *         description: An error occurred trying to update nor create. 
  */
 router.post('', authGuard, UserController.create);
 
@@ -86,12 +128,17 @@ router.post('', authGuard, UserController.create);
  * @openapi
  * /admin/user/:id:
  *   get: 
- *     description: get user by parameter
+ *     description: Retrieves a user from the database found by it's id.
+ *     parameters:
+ *       - name: id
+ *         in: User id
+ *         required: true
+ *         type: integer 
  *     responses:
  *       200:
- *         description: retorns user
+ *         description: Returns true, the process of returning the user has been successful.
  *       500:
- *         description: can´t find user / user role
+ *         description: Can not find the user or role.
  */
 router.get('/:id', authGuard,  roleGuard,  UserController.getUser);
 
@@ -99,13 +146,35 @@ router.get('/:id', authGuard,  roleGuard,  UserController.getUser);
  * @openapi
  * /admin/user/me/:id:
  *   put: 
- *     description: update user by parameter
+ *     description: Updates the user with the request parameters. Needs an existing id.
+ *     parameters:
+ *       - name: id
+ *         in: User id
+ *         required: true
+ *         type: integer
+ *       - name: name
+ *         in: Username
+ *         required: true
+ *         type: string
+ *       - name: email
+ *         in: Email
+ *         required: true
+ *         type: string
+ *       - name: password
+ *         in: Password
+ *         required: true
+ *         type: string
+ *       - name: img
+ *         in: Image
+ *         type: string
+ *       - name: role
+ *         in: Roles
+ *         type: string array
  *     responses:
  *       200:
- *         description: retorns true and save
+ *         description: Returns true and saves the user.
  *       500:
- *         description: can´t find user / user role
- * 
+ *         description: Can not find the user/role.
  */
 router.put('/me/:id', authGuard, UserController.update);
 
@@ -114,14 +183,35 @@ router.put('/me/:id', authGuard, UserController.update);
  * @openapi
  * /admin/user/management/:id:
  *   put: 
- *     description: update users by parameter at management page
+ *     description: At management page, update the user with the request parameters. Needs an existing id.
+ *     parameters:
+ *       - name: id
+ *         in: User id
+ *         required: true
+ *         type: integer
+ *       - name: name
+ *         in: Username
+ *         required: true
+ *         type: string
+ *       - name: email
+ *         in: Email
+ *         required: true
+ *         type: string
+ *       - name: password
+ *         in: Password
+ *         required: true
+ *         type: string
+ *       - name: img
+ *         in: Image
+ *         type: string
+ *       - name: role
+ *         in: Roles
+ *         type: string array
  *     responses:
  *       200:
- *         description: retorns true and save
- *       400:
- *         description: user not found
+ *         description: Returns true and saves the user.
  *       500:
- *         description: can´t update user
+ *         description: Can not find the user/role.
  */
 router.put('/management/:id', authGuard, roleGuard, UserController.update);
 
@@ -129,14 +219,19 @@ router.put('/management/:id', authGuard, roleGuard, UserController.update);
  * @openapi
  * /admin/user/:id:
  *   delete: 
- *     description: delete user by parameter
+ *     description: Deletes the user by the requested id.
+ *     parameters:
+ *       - name: id
+ *         in: User id
+ *         required: true
+ *         type: integer
  *     responses:
  *       200:
- *         description: retorna true y salva
+ *         description: Returns true meaning the successful deletion of the user.
  *       400:
- *         description: user not found
+ *         description: User has not been found.
  *       500:
- *         description: can´t delete user
+ *         description: Can't delete this user.
  */
 router.delete('/:id', authGuard, roleGuard, UserController.delete);
 
