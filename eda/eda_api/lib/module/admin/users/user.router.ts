@@ -14,11 +14,11 @@ const router = express.Router();
  *     description: Post login with user and password within the request of the form.
  *     parameters:
  *       - name: email
- *         in: Email
+ *         in: formData
  *         required: true
  *         type: string
  *       - name: password
- *         in: Password
+ *         in: formData
  *         required: true
  *         type: string
  *     responses:
