@@ -29,7 +29,7 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 var router = express.Router();
-app.use("/", router, swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+app.use("/", router, swaggerUI.serve, swaggerUI.setup(swaggerDocs)); //Se añade el router en esta ruta para visualizar a través de la app de Swagger.
  
 export default app ;
 
