@@ -4,6 +4,7 @@ import { roleGuard } from '../../../guards/role-guard';
 import {originGuard} from '../../../guards/origin-guard';
 import { UserController } from './user.controller';
 const router = express.Router();
+const passport = require ('passport');
 
 // Login routes
 

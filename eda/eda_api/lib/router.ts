@@ -5,7 +5,8 @@ import AddTableRouter from './module/addtabletomodel/addtable.router';
 import DataSourceRouter from './module/datasource/datasource.router';
 import UploadsRouter from './module/uploads/uploads.router';
 import MailRouter from './module/mail/mail.router';
-import DocuRouter from './routes/api/api-docs'
+import DocuRouter from './routes/api/api-docs';
+import AuthRouter from './routes/api/auth-router';
 
 const router = express.Router();
 
@@ -23,5 +24,8 @@ router.use('/mail', MailRouter);
 
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);
+
+/* ruta per SSO*/
+router.use("/auth", AuthRouter);
 
 export default router;

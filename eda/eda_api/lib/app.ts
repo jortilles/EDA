@@ -4,6 +4,7 @@ import fileUpload from 'express-fileupload';
 import { NextFunction, Request, Response } from 'express';
 import { callInterceptor } from './services/call-interceptor';
 import errorMiddleware from './middleware/error.middleware';
+const passportSetup = require ('../config/passport.config.js');
 
 
 import Router from './router';
