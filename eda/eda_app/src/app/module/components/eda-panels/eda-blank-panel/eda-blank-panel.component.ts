@@ -745,6 +745,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param filter filter so set
      */
     public setGlobalFilter(filter) {
+        console.log('setGlobalFilter', filter);
         if (filter.filter_elements[0].value1.length === 0) {
             let filters = this.globalFilters;
             this.globalFilters = filters.filter(f => f.filter_id !== filter.filter_id);

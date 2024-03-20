@@ -158,6 +158,14 @@ export abstract class QueryBuilderService {
                 }
             }
         }
+
+        for (const filter of this.queryTODO.filters) {
+            if (filter.joins && filter.joins.length > 0) {
+                for (const join of filter.joins) {
+                    tree.push(join);
+                }
+            }
+        }
     
         // console.log(JSON.stringify( [...new Set(tree)] ));
 

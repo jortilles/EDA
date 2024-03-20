@@ -661,8 +661,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     public updateComponent() {
-        if (this.componentRef) {
-            this.componentRef.instance.updateChart();
+        if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
+            try {
+                this.componentRef.instance?.updateChart();
+            } catch(err) {
+                console.error(err);
+            }
         }
     }
 
