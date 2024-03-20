@@ -1891,6 +1891,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Un texto dinámicos requiere de un único valor NO numérico</source>
 <target>Tekst dynamiczny wymaga pojedynczej wartości nienumerycznej</target>
 </trans-unit>
+
+
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
 <target>Skumulowany wykres słupkowy</target>
@@ -3919,6 +3921,106 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="filterVisibleScope">
 <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica</source>
 <target>Określ widoczność filtra. Publiczny: każdy może z niego korzystać.  Wyłączone: Inni użytkownicy mogą zobaczyć filtr, ale nie mogą go modyfikować.  Ukryty: Inni użytkownicy nie mogą zobaczyć filtra. Ale to ich dotyczy</target>
+</trans-unit>
+
+<trans-unit id="visitYouTubeLink" datatype="html">
+<source>Visitános en YouTube</source>
+<target>Odwiedź nas na YouTube</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">33</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="tituloDocs" datatype="html">
+<source>Accede a la documentación</source>
+<target>Uzyskać dostęp do dokumentacji</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">28</context>
+</context-group>
+</trans-unit>
+
+
+<trans-unit id="tituloAbout" datatype="html">
+<source>Enterprise Data Analytics</source>
+<target>Enterprise Data Analytics</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">4</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="firstAboutParagraphSpan" datatype="html">
+  <source>  
+                <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
+                informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
+                en tus propios servidores o se puede difrutar en su versión SaaS 
+                <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
+                Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+                configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.  </source>
+  <target>
+                <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
+                informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
+                en tus propios servidores o se puede difrutar en su versión SaaS 
+                <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
+                Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+                configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.  </target>
+  <context-group purpose="location">
+    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+    <context context-type="linenumber">7</context>
+  </context-group>
+</trans-unit>
+
+
+<trans-unit id="secondAboutParagraph" datatype="html">
+  <source>
+                 EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
+                Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
+                funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+                y el soporte empresarial que ofrece a sus clientes.  </source>
+  <target>
+                 EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
+                Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
+                funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+                y el soporte empresarial que ofrece a sus clientes. </target>
+  <context-group purpose="location">
+    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+    <context context-type="linenumber">15</context>
+  </context-group>
+</trans-unit>
+
+<trans-unit id="thirdAboutParagraph" datatype="html">
+  <source>
+   El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+  </source>
+  <target>
+    El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+  </target>
+  <context-group purpose="location">
+    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+    <context context-type="linenumber">19</context>
+  </context-group>
+</trans-unit>
+
+<trans-unit id="fourthAboutParagraph" datatype="html">
+  <source>
+   La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
+  </source>
+  <target>
+ La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
+  </target>
+</trans-unit>
+
+<trans-unit id="fifthAboutParagraph" datatype="html">
+  <source>
+                  Existe un foro donde puedes compartir tu experiencia con la comunidad en  
+                <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Este Link</a>
+  </source>
+  <target>
+                  Existe un foro donde puedes compartir tu experiencia con la comunidad en  
+                <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Este Link</a>
+  </target>
 </trans-unit>
 
 </body>
