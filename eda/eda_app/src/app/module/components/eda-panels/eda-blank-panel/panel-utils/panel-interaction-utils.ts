@@ -113,7 +113,6 @@ export const PanelInteractionUtils = {
           assertTable.table_name = column.table_id;
           assertTable.display_name.default = displayName;
           assertTable.description.default = displayName;
-          // console.log('assertTable', assertTable);
           ebp.assertedTables.push(assertTable);
           ebp.tables.push(assertTable);
         }
@@ -183,9 +182,14 @@ export const PanelInteractionUtils = {
             joins
           };
 
-          // Check if the childNode have more possible paths to explore
           if (!childNode.parent) childNode.parent = expandNode;
-          let isexpandible = getAllChildIds(childNode).length > 0; //dataSource.find((source) => relation.target_table == source.table_name)?.relations?.length > 0;
+
+          // Check if the childNode have more possible paths to explore
+          const isexpandible = ebp.tables.some((source) => {
+            return source.table_name == childNode.child_id &&
+                (source.relations||[]).some((rel: any) => rel.target_table != table_id);
+          });
+          
           // If it's expandable, we add properties to expand the node. 
           if (isexpandible) {
             childNode.expandedIcon = "pi pi-folder-open";
