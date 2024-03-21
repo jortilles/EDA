@@ -57,7 +57,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 selectedColumn: {},
                 selectedItems: [],
                 panelList: [],
-                pathList: [],
+                pathList: {},
                 type: '',
                 // selectedRange:this.selectedRange,
                 isGlobal: true,
@@ -71,7 +71,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        console.log('destroy globalFilterDialog')
         this.globalFilter = undefined;    
     }
 
@@ -87,6 +86,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         panels = panels.sort(sortByTittle);
 
         this.filteredPanels = panels.filter((p: any) => p.avaliable === true && p.active === true);
+
+        for (const panel of this.filteredPanels) {
+            this.globalFilter.pathList[panel.id] = {
+                selectedTableNodes: {},
+                path: []
+            };
+        }
     }
 
     public initTablesForFilter() {
@@ -169,32 +175,52 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public onNodeSelect(panel: any, event: any): void {
         const node = event?.node;
-
-        const pathList = this.globalFilter.pathList;
-        const existsPath = pathList.find((path: any) => path.panel_id == panel.id);
         const table_id = node.table_id || node.child_id;
+        const pathList = this.globalFilter.pathList;
 
-        if (existsPath) {
-            existsPath.path = node.joins;
-            existsPath.table_id = table_id;
+        if (this.globalFilter.selectedTable.table_name !== table_id.split('.')[0]) {
+            this.alertService.addWarning(`Invalid path for selected filter`);
+            pathList[panel.id].selectedTableNodes = undefined;
         } else {
-            this.globalFilter.table_id = table_id;
-            pathList.push({ panel_id: panel.id, path: node.joins || [] });
-            this.globalFilter.panelList.push(panel.id);
-            console.log(this.globalFilter);
+            pathList[panel.id].table_id = table_id;
+            pathList[panel.id].path = node.joins || [];
+            
+            if (!this.globalFilter.panelList.includes(panel.id)) {~
+                this.globalFilter.panelList.push(panel.id);
+            }
+    
+            // const existsPath = pathList.find((path: any) => path.panel_id == panel.id);
+            // pathList.push({ panel_id: panel.id, path: node.joins || [] });
+            // this.globalFilter.table_id = table_id;
         }
     }
 
-    public onApply(): void {
-        this.globalFilterChange.emit(this.globalFilter);
-        this.display = false;
-        this.close.emit();
+    private validateGlobalFilter(): boolean {
+        let valid = true;
+
+        for (const key in this.globalFilter.pathList) {
+            if (_.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {
+                valid = false;
+            }
+        }
+
+        return valid;
     }
 
+    public onApply(): void {
+        if (this.validateGlobalFilter()) {
+            this.globalFilterChange.emit(this.globalFilter);
+            this.display = false;
+            this.close.emit(true);
+        } else {
+            this.alertService.addWarning(`Invalid`);
+        }
+    }
+        
     public onClose(): void {
-        this.globalFilter = {};
+        // this.globalFilter = {};
         this.display = false;
-        this.close.emit();
+        this.close.emit(false);
     }
 
 }

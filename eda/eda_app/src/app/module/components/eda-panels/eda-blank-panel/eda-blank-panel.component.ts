@@ -744,15 +744,30 @@ export class EdaBlankPanelComponent implements OnInit {
      * Sets global filter (called from dashboardComponent)
      * @param filter filter so set
      */
-    public setGlobalFilter(filter) {
-        console.log('setGlobalFilter', filter);
-        if (filter.filter_elements[0].value1.length === 0) {
-            let filters = this.globalFilters;
-            this.globalFilters = filters.filter(f => f.filter_id !== filter.filter_id);
+    public setGlobalFilter(_filter: any) {
+        const globalFilter = _.cloneDeep(_filter);
+        globalFilter.joins = _filter.pathList[this.panel.id].path
+        globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+
+        // if (filter.filter_elements[0].value1.length === 0) {
+        //     this.globalFilters = this.globalFilters.filter(f => f.filter_id !== filter.filter_id);
+        // } else {
+        //     this.globalFilters = this.globalFilters.filter(f => f.filter_id !== filter.filter_id)
+        //     this.globalFilters.push(filter)
+        // }
+
+        if (this.globalFilters.some((gf: any) => gf.filter_id === globalFilter.filter_id)) {
+            const globalFilters = _.cloneDeep(this.globalFilters);
+            this.globalFilters = [];
+            for (const gf of globalFilters) {
+                if (globalFilter.filter_id === globalFilter.filter_id) {
+                    this.globalFilters.push(globalFilter);
+                } else {
+                    this.globalFilters.push(gf)
+                }
+            }
         } else {
-            let filters = this.globalFilters;
-            this.globalFilters = filters.filter(f => f.filter_id !== filter.filter_id)
-            this.globalFilters.push(filter)
+            this.globalFilters.push(globalFilter);
         }
     }
 
@@ -1038,11 +1053,6 @@ export class EdaBlankPanelComponent implements OnInit {
         if (this.panel.content) {
             return this.panel.content.chart;
         } else return null;
-    }
-
-    public switchAndBuildQuery() {
-        if (this.selectedQueryMode != 'SQL') return QueryUtils.initEdaQuery(this);
-        else return QueryUtils.initSqlQuery(this);
     }
 
     /** duplica un patell del dashboard i el posiciona un punt per sota del origina./ */

@@ -46,71 +46,6 @@
                     </eda-date-picker> -->
                 </div>
             </div>
-
-            
-            <div class="grid">
-                <div class="col-12">
-                    <br>
-    
-                    <div class="grid">
-    
-                        <div class="col-4">
-                            <!-- <p-dropdown id="selectFilerTable" [options]="targetTables" [(ngModel)]="targetTable"
-                                filter="true" optionLabel="label" [style]="{'width': '100%'}"
-                                i18n-placeholder="@@placeholderTables" placeholder="Entidades"
-                                (onChange)="getColumnsByTable()" (onChange)="resetSelectedValues()" appendTo="body">
-                            </p-dropdown> -->
-
-                            <!-- <p-treeSelect [(ngModel)]="globalFilter.selectedTableNodes" [options]="tableNodes"
-                                [style]="{'width': '100%'}"
-                                placeholder="Entidades" i18n-placeholder="@@placeholderTables"
-                                appendTo="body">
-                            </p-treeSelect> -->
-    
-                           <!-- <p-tree selectionMode="single" [filter]="true" filterMode="strict"
-                                [value]="tableNodes"
-                                [loading]="loadingNodes"
-                                (onNodeExpand)="tableNodeExpand($event)"
-                                (onNodeSelect)="tableNodeSelect($event)">
-    
-                                <ng-template let-node pTemplate="child">
-                                    <span [ngClass]="checkNodeSelected(node) ? 'font-weight-bold' : ''"> {{node.label}} </span>
-                                </ng-template>
-                                <ng-template let-node pTemplate="default">
-                                    <b>{{node.label}}</b>
-                                </ng-template>
-                            </p-tree> -->
-    
-                        </div>
-    
-                        <div class="col-4">
-                            <!-- <p-dropdown id="selectFilterColumn" [options]="targetCols" [(ngModel)]="targetCol"
-                                filter="true" optionLabel="label" [style]="{'width': '100%'}"
-                                i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
-                                (onChange)="loadGlobalFiltersData()" (onChange)="resetSelectedValues()" appendTo="body">
-                            </p-dropdown> -->
-                        </div>
-    
-                        <div class="col-4">
-                            <!-- <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
-                                *ngIf=" targetCol && targetCol.value.column_type !== 'date'" [options]="targetValues"
-                                [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30" display="chip"
-                                [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
-                                [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto" appendTo="body">
-                            </p-multiSelect>
-    
-                            <eda-date-picker #myCalendar
-                                *ngIf="targetCol && targetCol.value.column_type === 'date'"
-                                [autoClear]="true"
-                                [inject]="datePickerConfigs[selectedFilter?.id]"
-                                (onDatesChanges)="processPickerEvent($event)">
-                            </eda-date-picker> -->
-                        </div>
-    
-                    </div>
-    
-                </div>
-            </div>
         </p-card>
 
         <div style="margin: 1rem;"></div>
@@ -135,7 +70,7 @@
                             </button>
                         </td>
                         <td style="width: 60%;">
-                            <p-treeSelect [(ngModel)]="globalFilter.selectedTableNodes"
+                            <p-treeSelect [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes"
                                 [options]="panel.globalFilterPaths"
                                 (onNodeExpand)="onNodeExpand(panel, $event)"
                                 (onNodeSelect)="onNodeSelect(panel, $event)"

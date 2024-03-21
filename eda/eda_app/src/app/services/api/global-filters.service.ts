@@ -358,6 +358,10 @@ export class GlobalFiltersService {
             }
         }
 
+        for (const key in globalFilter.pathList) {
+            delete (globalFilter.pathList[key].selectedTableNodes);
+        }
+
         const formatedFilter = {
             filter_id: globalFilter.id,
             filter_table: globalFilter.table_id || globalFilter.selectedTable.table_name,

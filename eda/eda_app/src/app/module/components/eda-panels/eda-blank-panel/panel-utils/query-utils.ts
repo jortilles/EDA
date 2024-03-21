@@ -40,33 +40,38 @@ export const QueryUtils = {
    * 
    */
   switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
-    if (ebp.selectedQueryMode != 'SQL') {
-      const response = await ebp.dashboardService.executeQuery(query).toPromise();
-      return response;
-    } else {
-      const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
-      const numFields = response[0].length;
-      const types = new Array(numFields);
-      types.fill(null);
-      for (let row = 0; row < response[1].length; row++) {
-        response[1][row].forEach((field, i) => {
-          if (types[i] === null) {
-            if (typeof field === 'number') {
-              types[i] = 'numeric';
-            } else if (typeof field === 'string') {
-              types[i] = 'text';
+    try {
+      if (ebp.selectedQueryMode != 'SQL') {
+        const response = await ebp.dashboardService.executeQuery(query).toPromise();
+        return response;
+      } else {
+        const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
+        const numFields = response[0].length;
+        const types = new Array(numFields);
+        types.fill(null);
+        for (let row = 0; row < response[1].length; row++) {
+          response[1][row].forEach((field, i) => {
+            if (types[i] === null) {
+              if (typeof field === 'number') {
+                types[i] = 'numeric';
+              } else if (typeof field === 'string') {
+                types[i] = 'text';
+              }
             }
+          });
+          if (!types.includes(null)) {
+            break;
           }
-        });
-        if (!types.includes(null)) {
-          break;
         }
+        ebp.currentQuery = [];
+        types.forEach((type, i) => {
+          ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
+        });
+        return response;
       }
-      ebp.currentQuery = [];
-      types.forEach((type, i) => {
-        ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
-      });
-      return response;
+    } catch (err) {
+      console.log(err);
+      throw err;
     }
   },
 
@@ -76,7 +81,10 @@ export const QueryUtils = {
     return serverquery;
   },
 
-
+  switchAndBuildQuery: (ebp: EdaBlankPanelComponent) =>  {
+    if (ebp.selectedQueryMode != 'SQL') return QueryUtils.initEdaQuery(ebp);
+    else return QueryUtils.initSqlQuery(ebp);
+  },
 
   /**
  * Runs a query and sets panel chart
@@ -109,7 +117,7 @@ export const QueryUtils = {
     }
 
     try {
-      const query = ebp.switchAndBuildQuery();
+      const query = QueryUtils.switchAndBuildQuery(ebp);
       /**Add fake column if SQL mode and there isn't fields yet */
       if (query.query.queryMode == 'SQL' && query.query.fields.length === 0) {
         query.query.fields.push(QueryUtils.createColumn('custom', null, ebp.sqlOriginTable));
@@ -141,10 +149,8 @@ export const QueryUtils = {
       ebp.index = 1;
       ebp.display_v.saved_panel = true;
     } catch (err) {
-
       ebp.alertService.addError(err);
       ebp.spinnerService.off();
-
     }
 
   },
@@ -211,7 +217,6 @@ export const QueryUtils = {
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);
-    
     const params = {
       table: '',
       dataSource: ebp.inject.dataSource._id,

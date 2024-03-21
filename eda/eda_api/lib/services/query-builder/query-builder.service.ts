@@ -582,14 +582,14 @@ export abstract class QueryBuilderService {
 
 
     public findColumn(table: string, column: string) {
-        const tmpTable = this.tables.find(t => t.table_name === table);
-        const col =  tmpTable.columns.find(c => c.column_name === column);
-        col.table_id = tmpTable.table_name;
+        const tmpTable = this.tables.find((t: any) => t.table_name === table.split('.')[0]);
+        const col =  tmpTable.columns.find((c: any) => c.column_name === column);
+        col.table_id = table;
         return col;
     }
 
     public findHavingColumn(table: string, column: string) {
-        return   this.queryTODO.fields.find(f=> f.table_id === table && f.column_name === column);
+        return this.queryTODO.fields.find((f: any)=> f.table_id === table.split('.')[0] && f.column_name === column);
     }
 
     public setFilterType(filter: string) {

@@ -621,7 +621,6 @@ export class DashboardController {
    * Executa una consulta EDA per un dashboard
    */
   static async execQuery(req: Request, res: Response, next: NextFunction) {
-
     try {
       const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
@@ -695,6 +694,7 @@ export class DashboardController {
       }else{
           myQuery.forSelector = false;
       }
+
 
       const query = await connection.getQueryBuilded(myQuery, dataModelObject, req.user);
 

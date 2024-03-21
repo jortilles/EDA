@@ -170,6 +170,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 unsetPanels.forEach(panel => {
                     globalFilters.forEach(filter => {
                         if (panel) {
+                            console.log('estic fent el filldeputa per aqui?')
                             filter.panelList.push(panel.panel.id);
                             panel.setGlobalFilter(this.globalFiltersService.formatGlobalFilter(filter))
                         }
@@ -713,6 +714,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public async onPanelAction(event: IPanelAction): Promise<void> {
         if (event.code === 'ADDFILTER') {
+            console.log('onPanelAction')
             const data = event?.data;
             const panel = event?.data?.panel;
             if (!_.isNil(data?.inx)) {
@@ -971,41 +973,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
             }
         }
-    }
-
-    /**
-     * Process data from date picker and apply filter
-     * @param event dates and range(week, month, year, all) if any
-     * @param filter 
-     */
-    public processPickerEvent(event: any, filter: any): void {
-        if (event.dates) {
-            const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
-            if (!event.dates[1]) {
-                event.dates[1] = event.dates[0];
-            }
-
-            let stringRange = [event.dates[0], event.dates[1]]
-                .map(date => {
-                    let [{ value: mo }, , { value: da }, , { value: ye }] = dtf.formatToParts(date);
-                    return `${ye}-${mo}-${da}`
-                });
-
-            filter.selectedItems = stringRange;
-            filter.selectedRange = event.range;
-            this.loadDatesFromFilter(filter);
-        }
-        
-        if (!event.dates) {
-            filter.selectedItems = [];
-        }
-
-        if (!event.range) {
-            filter.selectedRange = null;
-        }
-
-        filter = this.globalFiltersService.formatGlobalFilter(filter);
-        this.applyGlobalFilter(filter);
     }
 
     // Sidebar functions

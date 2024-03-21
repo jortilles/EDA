@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { EdaPanel } from "@eda/models/model.index";
 import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import { EdaDialogCloseEvent, EdaDialogController } from "@eda/shared/components/shared-components.index";
@@ -43,27 +42,19 @@ export class GlobalFilterComponent implements OnInit {
     /** Apply filter to panels when filter's selected value changes */
     public applyGlobalFilter(filter: any): void {
         let formatedFilter: any;
-        console.log('applyGlobalFilter', filter)
+
         if (filter.pathList) {
             formatedFilter = this.globalFilterService.formatGlobalFilterTree(filter);
         } else {
             formatedFilter = this.globalFilterService.formatGlobalFilter(filter);
         }
 
-
-        for (const idPanel of filter.panelList) {
-            this.dashboard.edaPanels.forEach((edaPanel) => {
-                // console.log(idPanel, edaPanel)
-                if (edaPanel.panel.id === idPanel) {
-                    
-                    if (formatedFilter.pathList) {
-                        formatedFilter.joins = formatedFilter.pathList.filter((p) => p.panel_id == idPanel).map((p) => p.path)[0];
-                    }
-                    console.log('formatedFilteeeeer', formatedFilter)
-                    edaPanel.setGlobalFilter(formatedFilter);
-                }
-            });
-        }
+        debugger;
+        this.dashboard.edaPanels.forEach((edaPanel) => {
+            if (filter.panelList.includes(edaPanel.panel.id)) {
+                edaPanel.setGlobalFilter(formatedFilter);
+            }
+        });
 
         this.dashboard.reloadPanels();
 
@@ -94,41 +85,42 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     // Global Filter Tree
-    public async onCloseGlobalFilter(event: any): Promise<void> {
-        console.log('onCloseGlobalFilter', this.globalFilter);
-        if (this.globalFilter.isdeleted) {
-            this.removeGlobalFilter(this.globalFilter);
-        } else {
-
-            if (this.globalFilter.isnew) {
-                this.globalFilters.push(this.globalFilter);
+    public async onCloseGlobalFilter(apply: boolean): Promise<void> {
+        if (apply) {
+            console.log('onCloseGlobalFilter', this.globalFilter);
+            if (this.globalFilter.isdeleted) {
+                this.removeGlobalFilter(this.globalFilter);
             } else {
-                this.globalFilters.find((f) => f.id === this.globalFilter.id).selectedItems = this.globalFilter.selectedItems;
+    
+                if (this.globalFilter.isnew) {
+                    this.globalFilters.push(this.globalFilter);
+                } else {
+                    this.globalFilters.find((f) => f.id === this.globalFilter.id).selectedItems = this.globalFilter.selectedItems;
+                }
+    
+                // Load Filter dropdwons option s
+                if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
+                    this.loadDatesFromFilter(this.globalFilter);
+                } else {
+                    await this.loadGlobalFiltersData();
+                }
+    
+                // If default values are selected filter is applied
+                if (this.globalFilter.selectedItems.length > 0) {
+                    this.applyGlobalFilter(this.globalFilter);
+                }
+    
+                // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
+                // if (this.globalFilter.applyToAll && (this.applyToAllfilter.present === false)) {
+                //     this.applyToAllfilter = { present: true, refferenceTable: this.globalFilter.selectedTable.table_name, id: this.globalFilter.id };
+                //     this.updateApplyToAllFilterInPanels();
+                // }
+    
             }
-
-            // Load Filter dropdwons option s
-            if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
-                this.loadDatesFromFilter(this.globalFilter);
-            } else {
-                await this.loadGlobalFiltersData();
-            }
-
-            // If default values are selected filter is applied
-            if (this.globalFilter.selectedItems.length > 0) {
-                this.applyGlobalFilter(this.globalFilter);
-            }
-
-            // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
-            // if (this.globalFilter.applyToAll && (this.applyToAllfilter.present === false)) {
-            //     this.applyToAllfilter = { present: true, refferenceTable: this.globalFilter.selectedTable.table_name, id: this.globalFilter.id };
-            //     this.updateApplyToAllFilterInPanels();
-            // }
-
         }
 
+
         this.globalFilter = undefined;
-        this.dashboard.reloadOnGlobalFilter();
-        // await this.onGlobalFilter(response.filterList, response.targetTable);
     }
 
     // Legacy Global Filter
@@ -166,6 +158,7 @@ export class GlobalFilterComponent implements OnInit {
 
     // Legacy Global Filter
     public async onGlobalFilter(filter: any, targetTable: string): Promise<void> {
+        console.log('onGlobalFilter');
         return new Promise<void>(async (resolve, reject) => {
             try {
                 if (filter.isdeleted) {
@@ -341,7 +334,6 @@ export class GlobalFilterComponent implements OnInit {
             query.query.forSelector = true;
 
             const res = await this.dashboardService.executeQuery(query).toPromise();
-            console.log(res);
             globalFilter.data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
         } catch (err) {
             this.alertService.addError(err);
