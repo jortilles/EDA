@@ -39,6 +39,7 @@ export class EdaDatePickerComponent implements OnChanges {
 		{ label: $localize`:@@DatePickerMonthPreviousYearFull:Éste mes al completo del año pasado`, value: 'monthFullPreviousYear' },
 		{ label: $localize`:@@DatePickerYear:Éste año`, value: 'yearStart' },
 		{ label: $localize`:@@DatePickerYearPreviousYear:El año pasado`, value: 'yearStartPreviousYear' },
+		{ label: $localize`:@@DatePickerYearPreviousYearFull:El año pasado, completo`, value: 'yearStartPreviousYearFull' },
 		{ label: $localize`:@@DatePickerLast3:Últimos 3 días`, value: 'last3' },
 		{ label: $localize`:@@DatePickerLast7:Últimos 7 días`, value: 'last7' },
 		{ label: $localize`:@@DatePickerLast15:Últimos 15 días`, value: 'last15' },

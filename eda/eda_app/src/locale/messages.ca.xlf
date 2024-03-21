@@ -2810,6 +2810,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>El año pasado</source>
 <target>L'any passat</target>
 </trans-unit>
+<trans-unit id="DatePickerYearPreviousYearFull">
+<source>El año pasado, completo</source>
+<target>L'any passat, complet</target>
+</trans-unit>
 <trans-unit id="DatePickerLast7">
 <source> Últimos 7 días </source>
 <target>Últims 7 dies </target>

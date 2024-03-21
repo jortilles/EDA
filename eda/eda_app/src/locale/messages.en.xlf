@@ -2805,6 +2805,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>El año pasado</source>
 <target>Last year</target>
 </trans-unit>
+<trans-unit id="DatePickerYearPreviousYearFull">
+<source>El año pasado, completo</source>
+<target>Last year, the whole year</target>
+</trans-unit>
 <trans-unit id="DatePickerLast7">
 <source> Últimos 7 días </source>
 <target>Last 7 days </target>
