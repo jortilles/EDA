@@ -1909,126 +1909,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>A dynamic text requires a single NON-numeric value</target>
 </trans-unit>
 
-<trans-unit id="visitYouTubeLink" datatype="html">
-<source>Visitános en YouTube</source>
-<target>Visit us on YouTube</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-<context context-type="linenumber">33</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="tituloDocs" datatype="html">
-<source>Accede a la documentación</source>
-<target>Access the documentation</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-<context context-type="linenumber">28</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="tituloAbout" datatype="html">
-<source>Sobre EDA</source>
-<target>About EDA</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-<context context-type="linenumber">4</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="firstAboutParagraphSpan" datatype="html">
-<source>  
-  EDA (Enterprise Data Analytics) es un
-</source>
-<target>
-  EDA (Enterprise Data Analytics) is a
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-<context context-type="linenumber">7</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="secondAboutParagraphSpan" datatype="html">
-<source>  
-  software de código abierto
-</source>
-<target>
-  open-source software
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-<context context-type="linenumber">8</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="thirdAboutParagraphSpan" datatype="html">
-<source>  
-  utilizado principalmente para la
-</source>
-<target>
-  used mainly for
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-<context context-type="linenumber">9</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="fourthAboutParagraphSpan" datatype="html">
-<source>  
-  muestra de datos empresariales de forma gráfica y visual
-</source>
-<target>
-  display of business data graphically and visually
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-<context context-type="linenumber">10</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="fifthAboutParagraphSpan" datatype="html">
-<source>  
-  Se basa en un sistema de informes, los datos de cada informe se distribuyen en paneles y estos tienen la posibilidad de modificarse para mostrar de distintas formas dicha información.
-</source>
-<target>
-  It is based on a reporting system, the data from each report is distributed in panels and these can be modified to display the information in various ways.
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-<context context-type="linenumber">11</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="secondAboutParagraph" datatype="html">
-<source>
-  También tendremos la posibilidad de añadir o modificar fuentes de datos. En EDA hay muchas utilidades para configurar y personalizar cómo deben mostrarse los campos, así que en este aplicativo tendremos la 
-  oportunidad de asignar permisos, extensiones de modelo, restricciones entre otras muchas utilidades diversas para las entidades o tablas que necesitemos transformar.
-</source>
-<target>
-  We will also have the possibility to add or modify data sources. In EDA, there are many utilities to configure and customize how fields should be displayed, so in this application, we will have the opportunity to assign permissions, model extensions, restrictions among many other diverse utilities for the entities or tables that we need to transform.
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-<context context-type="linenumber">15</context>
-</context-group>
-</trans-unit>
-
-<trans-unit id="thirdAboutParagraph" datatype="html">
-<source>
-  Por último cabe decir que EDA ofrece un sistema de gestión de usuarios, en este existen las funciones usuales de crear,actualizar,eliminar o visualizar los permisos de un usuario,
-  un apartado donde crear grupos para administrar categorías de usuarios con permisos concretos, un pequeño gestor de correos y por último un apartado donde poder exportar modelos y informes en relación a los datos guardados.
-</source>
-<target>
-  Finally, it should be noted that EDA offers a user management system, in this there are the usual functions of creating, updating, deleting or viewing user permissions,
-  a section where you can create groups to manage categories of users with specific permissions, a small mail manager, and finally a section where you can export models and reports related to the stored data.
-</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-<context context-type="linenumber">19</context>
-</context-group>
-</trans-unit>
 
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
@@ -4100,6 +3980,109 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro, pero se les aplica</source>
 <target>Define the visibility of the filter.  Public: everyone can use it.  nDisabled: Other users can see the filter but cannot modify it.  Hidden: Other users cannot see the filter, but it applies to them</target>
 </trans-unit>
+
+
+
+<trans-unit id="visitYouTubeLink" datatype="html">
+<source>Consulta nuestros videotutoriales en youtube</source>
+<target>Check out our video tutorials on YouTube</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">33</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="tituloDocs" datatype="html">
+<source>Accede a la documentación</source>
+<target>Access the documentation</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">28</context>
+</context-group>
+</trans-unit>
+
+
+<trans-unit id="tituloAbout" datatype="html">
+<source>Enterprise Data Analytics</source>
+<target>Enterprise Data Analytics</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">4</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="firstAboutParagraphSpan" datatype="html">
+  <source>  
+                <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
+                informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
+                en tus propios servidores o se puede difrutar en su versión SaaS 
+                <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
+                Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+                configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.  </source>
+  <target>
+                <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> is an free  web application that allows you to perform
+                 graphical and interactive reports in a simple way. EDA is an application that can be installed
+                 on your own servers or you can enjoy it in its SaaS version
+                 <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>.
+                 Edalitics allows you to enjoy all the power of EDA without having to worry about installations,
+                 settings, updates, etc. You connect your data sources and that's it. </target>
+  <context-group purpose="location">
+    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+    <context context-type="linenumber">7</context>
+  </context-group>
+</trans-unit>
+
+
+<trans-unit id="secondAboutParagraph" datatype="html">
+  <source>
+                 EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
+                Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
+                funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+                y el soporte empresarial que ofrece a sus clientes.  </source>
+  <target>
+                 EDA has been developed by <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
+                If you need business support, do not hesitate to contact us. Likewise, how if you want to request new
+                functionalities or characteristics. Jortilles finances the development of EDA through subscriptions to Edalitics
+                and the business support it offers its clients. </target>
+  <context-group purpose="location">
+    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+    <context context-type="linenumber">15</context>
+  </context-group>
+</trans-unit>
+
+<trans-unit id="thirdAboutParagraph" datatype="html">
+  <source>
+   El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+  </source>
+  <target>
+  The EDA source code is available at <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
+  </target>
+  <context-group purpose="location">
+    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+    <context context-type="linenumber">19</context>
+  </context-group>
+</trans-unit>
+
+<trans-unit id="fourthAboutParagraph" datatype="html">
+  <source>
+   La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
+  </source>
+  <target>
+  EDA documentation is available at <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">This Link</a>
+  </target>
+</trans-unit>
+
+<trans-unit id="fifthAboutParagraph" datatype="html">
+  <source>
+                  Existe un foro donde puedes compartir tu experiencia con la comunidad en  
+                <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Este Link</a>
+  </source>
+  <target>
+                There is a forum where you can share your experience with the community at
+                 <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">This Link</a>
+  </target>
+</trans-unit>
+
 
 </body>
 </file>

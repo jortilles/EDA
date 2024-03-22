@@ -1,8 +1,9 @@
 .pos-about{
-    margin: 1% 0 0 0;
+    margin: 5%;
 }
 .title-about{
     font-size: 4em;
+    margin: 10px 0px  40px 0px;
 }
 .stronger-paragraph{
     font-weight: 700;
@@ -10,59 +11,7 @@
 }
 h1{
   font-size: 1.2em;
-
 }
 p{
-  font-size: 1.7em;
-}
-h1,p{
-    -webkit-touch-callout: none; 
-      -webkit-user-select: none; 
-       -khtml-user-select: none; 
-         -moz-user-select: none; 
-          -ms-user-select: none; 
-              user-select: none; 
-}
-a{
-    color:inherit;
-    text-decoration: none;
-
-}
-.hover-underline-animation {
-    display: inline-block;
-    position: relative;
-  }
-  
-  .hover-underline-animation:after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    transform: scaleX(0);
-    height: 2px;
-    bottom: 0;
-    left: 0;
-    background-color: #0087ca;
-    transform-origin: bottom right;
-    transition: transform 0.25s ease-out;
-  }
-  
-  .hover-underline-animation:hover:after {
-    transform: scaleX(1);
-    transform-origin: bottom left;
-  }
-  .about_eda_container{
-
-  }
-  .link_docs_container{
-
-
-  }
-  .other_links_container{
-   display: flex;
-   gap: 5%;
-  }
-.other_links_container iframe{
-    margin-top: 1%;
-    width: 50%;
-    height: 25em;
+  font-size: 1.3em;
 }
