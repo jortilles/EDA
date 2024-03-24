@@ -24,14 +24,12 @@ import { GlobalFilterComponent } from './global-filter/global-filter.component';
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     //@HostListener('window:resize', ['$event'])
 
-    @ViewChild(GlobalFilterComponent, { static: false }) globalFilter: GlobalFilterComponent;
+    @ViewChild(GlobalFilterComponent, { static: false }) gFilter: GlobalFilterComponent;
     // Gridster ViewChild
     @ViewChild(GridsterComponent, { static: false }) gridster: GridsterComponent;
     @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
     private edaPanelsSubscription: Subscription;
 
-    @ViewChildren(EdaDatePickerComponent) datePickers: QueryList<EdaDatePickerComponent>;
-    private datePickersSubscription: Subscription;
     // Dashboard Page Variables
     public id: string;
     public title: string = $localize`:@@loading:Cargando informe...`;
@@ -51,10 +49,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public group: string = '';
     public onlyIcanEdit: boolean = false;
     public queryParams: any = {};
-    public filterButtonVisibility = {
-        public : false,
-        readOnly : false
-        }
+
     public isDashboardCreator: boolean = false; 
 
     // Grid Global Variables
@@ -101,7 +96,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public sharedURL: string;
 
     // Global filters vars
-    public filtersList: Array<any> = [];
+    // public filtersList: Array<any> = [];
     public refreshTime: number = null;
     public stopRefresh: boolean = false;
 
@@ -150,9 +145,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.initStyles();
 
         this.dashboardService.notSaved.subscribe(
-            (data) => {
-                this.display_v.notSaved = data
-            },
+            (data) => this.display_v.notSaved = data,
             (err) => this.alertService.addError(err)
         )
         //JJ: Inicialitzo a false...
@@ -164,15 +157,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     /* Set applyToAllFilters for new panel when it's created */
     public ngAfterViewInit(): void {
         this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
-            const globalFilters = this.filtersList.filter(filter => filter.isGlobal === true);
+            const globalFilters = this.gFilter?.globalFilters.filter(filter => filter.isGlobal === true);
             const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
+
             setTimeout(() => {
                 unsetPanels.forEach(panel => {
                     globalFilters.forEach(filter => {
                         if (panel) {
-                            console.log('estic fent el filldeputa per aqui?')
                             filter.panelList.push(panel.panel.id);
-                            panel.setGlobalFilter(this.globalFiltersService.formatGlobalFilter(filter))
+                            const formatedFilter = this.globalFiltersService.formatFilter(filter);
+                            panel.setGlobalFilter(formatedFilter)
                         }
                     });
                 });
@@ -181,7 +175,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public ngOnDestroy() {
-
         this.stopRefresh = true;
         if (this.edaPanelsSubscription) {
             this.edaPanelsSubscription.unsubscribe();
@@ -364,9 +357,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     // Check dashboard owner
                     this.checkVisibility(res.dashboard);
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
-                    me.filtersList = !_.isNil(config.filters) ? config.filters : []; // Filtres del dashboard
-                    me.filtersList = me.setFiltersVisibility(me.filtersList);
-                    me.setFilterButtonVisibilty(me.filtersList); //crida per ocultar o visiblitzar botó de filtre
+                    me.gFilter.initGlobalFilters(config.filters||[]); // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
                     me.datasourceName = res.datasource.name;
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
@@ -392,15 +383,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         grp = res.dashboard.group;
                     }
            
-                    
-                    if (!res.dashboard.config.panel) { // Si el dashboard no te cap panel es crea un automatic
+                    // Si el dashboard no te cap panel es crea un automatic
+                    if (!res.dashboard.config.panel) {
                         me.panels.push(
-                            new EdaPanel({ id: me.fileUtiles.generateUUID(), title: $localize`:@@newPanelTitle:Nuevo Panel`, type: EdaPanelType.BLANK, w: 20, h: 10, dragAndDrop: true, resizable: true })
+                            new EdaPanel({
+                                id: me.fileUtiles.generateUUID(),
+                                title: $localize`:@@newPanelTitle:Nuevo Panel`,
+                                type: EdaPanelType.BLANK,
+                                dragAndDrop: true,
+                                resizable: true,
+                                w: 20,
+                                h: 10,
+                            })
                         );
-                        
                         // Check url for filters in params
-                        this.findGlobalFilterByUrlParams(this.queryParams);
-                        this.fillFiltersData();
+                        this.gFilter.findGlobalFilterByUrlParams(this.queryParams);
+                        this.gFilter.fillFiltersData();
 
                         me.dashboard = new Dashboard({
                             onlyIcanEdit: me.onlyIcanEdit, id: me.id, title: me.title, visible: config.visible, panel: me.panels, user: res.dashboard.user,
@@ -411,8 +409,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         // Si te panels els carrega
                         me.panels = config.panel;
                         // Check url for filters in params
-                        this.findGlobalFilterByUrlParams(this.queryParams);
-                        this.fillFiltersData();
+                        this.gFilter.findGlobalFilterByUrlParams(this.queryParams);
+                        this.gFilter.fillFiltersData();
 
                         me.dashboard = new Dashboard({
                             onlyIcanEdit: me.onlyIcanEdit, id: me.id, title: me.title, visible: config.visible, panel: config.panel, user: res.dashboard.user,
@@ -486,7 +484,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         /**Set ranges for dates in global filters */
-        this.filtersList.filter(f => f.selectedRange).forEach(filter => {
+        this.gFilter?.globalFilters.filter(f => f.selectedRange).forEach(filter => {
 
             let range = this.dateUtilsService.getRange(filter.selectedRange);
             let stringRange = this.dateUtilsService.rangeToString(range);
@@ -500,9 +498,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 panelFilters.forEach(pFilter => {
 
                     if (pFilter.filter_id === filter.id) {
-
-                        panel.content.query.query.filters.push(this.globalFiltersService.formatGlobalFilter(filter));
-
+                        const formatedFilter = this.globalFiltersService.formatFilter(filter);
+                        panel.content.query.query.filters.push(formatedFilter);
                     } else {
                         panel.content.query.query.filters.push(pFilter);
                     }
@@ -515,23 +512,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.route.queryParams.subscribe(params => {
             this.queryParams = params;
             try{
-                    if(params['hideWheel'] == 'true'){
-                        this.display_v.hideWheel =true;
-                    }
-                    if(params['panelMode'] == 'true'){
-                        this.display_v.panelMode =true;
-                        this.display_v.hideWheel =true;
-                    }
+                if(params['hideWheel'] == 'true'){
+                    this.display_v.hideWheel =true;
+                }
+                if(params['panelMode'] == 'true'){
+                    this.display_v.panelMode =true;
+                    this.display_v.hideWheel =true;
+                }
             }catch(e){
+                console.warn('getUrlParams: ' + e)
             }
-
-
         });
     }
 
     // Dashboard Panels
     private initializePanels(): void {
-
         const user = sessionStorage.getItem('user');
         const userID = JSON.parse(user)._id;
 
@@ -714,7 +709,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public async onPanelAction(event: IPanelAction): Promise<void> {
         if (event.code === 'ADDFILTER') {
-            console.log('onPanelAction')
             const data = event?.data;
             const panel = event?.data?.panel;
             if (!_.isNil(data?.inx)) {
@@ -734,7 +728,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         selectedItems: [data.label]
                     };
 
-                    await this.globalFilter.onGlobalFilter(globalFilter, table.table_name);
+                    await this.gFilter.onGlobalFilter(globalFilter, table.table_name);
                     this.reloadOnGlobalFilter();
                 }
             }
@@ -846,134 +840,25 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         })
     }
 
-    private async loadGlobalFiltersData(filterList: any, targetTable: string): Promise<void> {
-        const filter = filterList;
-        
-        const queryParams = {
-            table: targetTable,
-            dataSource: this.dataSource._id,
-            dashboard: '',
-            panel: '',
-            filters: []
-        };
-
-        filter.column.value.ordenation_type = 'ASC';
-        try {
-            let query = this.queryBuilderService.normalQuery([filter.column.value], queryParams);
-            query.query.forSelector = true;
-            const res = await this.dashboardService.executeQuery(query).toPromise();
-            filter.data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
-        } catch (err) {
-            this.alertService.addError(err);
-            throw err;
-        }
-    }
-
-    private findGlobalFilterByUrlParams(urlParams: any): void {
-
-        if (Object.keys(urlParams).length > 0) {
-            for (let i = 0, n = this.filtersList.length; i < n; i += 1) {
-                const filter = this.filtersList[i];
-                for (const param of Object.keys(urlParams)) {
-                    const paramTable = _.split(param, '.')[0];
-                    const paramColumn = _.split(param, '.')[1];
-
-                    if (filter.table.value === paramTable) {
-                        if (filter.column.value.column_name === paramColumn) {
-                            filter.selectedItems = _.split(urlParams[param], '|');
-
-                            filter.panelList
-                                .map(id => this.panels.find(p => p.id === id))
-                                .forEach((panel) => {
-                                    const panelFilter = panel.content.query.query.filters;
-                                    const newFilter = this.globalFiltersService.formatGlobalFilter(filter);
-                                    panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === newFilter.filter_column), 1);
-                                    panelFilter.push(newFilter);
-
-                                });
-
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    /** Apply filter to panels when filter's selected value changes */
-    public applyGlobalFilter(formatedFilter: any): void {
-        formatedFilter.panelList
-            .map(id => this.edaPanels.toArray().find(p => p.panel.id === id))
-            .forEach((panel) => {
-                if (panel) panel.setGlobalFilter(formatedFilter);
-            });
-        
-        // this.reloadPanels();
-    }
-
-
-    public removeGlobalFilter(filter: any, reload?: boolean): void {
-        // Remove 'applytoall' filter if it's the same fitler
-        if (this.applyToAllfilter && filter.id === this.applyToAllfilter.id) {
-            this.applyToAllfilter = { present: false, refferenceTable: null, id: null };
-            this.updateApplyToAllFilterInPanels();
-        }
-
-        // Update fileterList and clean panels' filters
-        this.filtersList = this.filtersList.filter(f => f.id !== filter.id);
-        this.edaPanels.forEach(panel => {
-            panel.globalFilters = panel.globalFilters.filter(f => f.filter_id !== filter.id);
-        });
-
-        if (reload) {
-            //not saved alert message
-            this.dashboardService._notSaved.next(true);
-            this.reloadPanels();
-        }
-    }
-
     private cleanFiltersData() {
         const filtersCleaned = [];
 
-        for (let i = 0, n = this.filtersList.length; i < n; i += 1) {
-            const filter = _.cloneDeep(this.filtersList[i]);
+        for (let i = 0, n = this.gFilter?.globalFilters.length; i < n; i += 1) {
+            const globalFilter = _.cloneDeep(this.gFilter?.globalFilters[i]);
 
-            filter.data = null;
-            filtersCleaned.push(filter);
+            if (globalFilter.pathList) {
+                for (const key in globalFilter.pathList) {
+                    delete (globalFilter.pathList[key].selectedTableNodes);
+                }
+            }
+
+            globalFilter.data = null;
+            filtersCleaned.push(globalFilter);
         }
+
         return filtersCleaned;
     }
 
-    private fillFiltersData() {
-        for (let i = 0, n = this.filtersList.length; i < n; i += 1) {
-            const filter = this.filtersList[i];
-
-            if (filter.column.value.column_type === 'date') {
-                this.loadDatesFromFilter(filter)
-            } else {
-                this.loadGlobalFiltersData(filter, filter.table.value);
-            }
-        }
-    }
-
-    /**
-     * Set datePicker's configuration
-     * @param filter 
-     */
-    private loadDatesFromFilter(filter) {
-        this.datePickerConfigs[filter.id] = new EdaDatePickerConfig();
-        const config = this.datePickerConfigs[filter.id];
-        config.dateRange = [];
-        config.range = filter.selectedRange;
-        config.filter = filter;
-        if (filter.selectedItems.length > 0) {
-            if (!filter.selectedRange) {
-                let firstDate = filter.selectedItems[0];
-                let lastDate = filter.selectedItems[filter.selectedItems.length - 1];
-                config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
-                config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
-            }
-        }
-    }
 
     // Sidebar functions
     public onAddWidget(): void {
@@ -1010,8 +895,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public onRemovePanel(panel): void {
         this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
 
-        for (let i = 0, n = this.filtersList.length; i < n; i += 1) {
-            const filter = this.filtersList[i];
+        for (let i = 0, n = this.gFilter?.globalFilters.length; i < n; i += 1) {
+            const filter = this.gFilter?.globalFilters[i];
             filter.panelList = filter.panelList.filter(id => id !== panel);
         }
     }
@@ -1019,7 +904,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public onDuplicatePanel(panel): void {
         this.panels.push(panel);
         this.dashboardService._notSaved.next(true);
-
     }
 
     public onResetWidgets(): void {
@@ -1072,7 +956,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public saveDashboard(): void {
-
         this.triggerTimer();
 
         if (this.form.invalid) {
@@ -1098,7 +981,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
             };
-
             this.edaPanels.forEach(panel => { panel.savePanel(); });
             body.config.panel = this.dashboard.panel;
 
@@ -1141,12 +1023,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public getTag() {
-
         if (this.tag && this.tag.value === 0) return null;
         else if (this.tag && this.tag.value) return this.tag.label;
         else if (this.tag) return this.tag;
         else return null;
-
     }
 
     public exportAsPDF() {
@@ -1299,7 +1179,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
-    public canIedit() {
+    public canIedit(): boolean {
         let result: boolean = false;
         result = this.userService.isAdmin;
         // si no es admin...  
@@ -1314,40 +1194,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         return result;
     }
-
-    //métode per descobrir o amagar el botó de filtrar al dashboard
-    public setFilterButtonVisibilty(filtersList: any[]) : void {
-        filtersList = filtersList.filter((f) => { 
-            return (f.visible != "hidden" && f.visible == "readOnly") ||
-                   (f.visible != "hidden" && f.visible == "public")
-        })
-        
-        filtersList.forEach(a => {
-            if (a.visible == "public") {
-                this.filterButtonVisibility.public = true;
-            } else if (a.visible == "readOnly") {
-                this.filterButtonVisibility.readOnly = true;
-            }
-
-        })   
-    }
     
-    setDashboardCreator(dashboard : any) : void {
-
+    public setDashboardCreator(dashboard : any) : void {
         if (this.userService.user._id === dashboard.user)  {
             this.isDashboardCreator = true;
         }
-       
-    }
-
-    setFiltersVisibility(filters : any[]) : Array<any> {
-        filters.forEach(f => {
-            if (!f.hasOwnProperty("visible")) {
-                f.visible = 'public';
-            }
-        })
-
-        return filters;
     }
 
     public validateDashboard(action: string): boolean {

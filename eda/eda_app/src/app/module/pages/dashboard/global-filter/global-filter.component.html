@@ -4,9 +4,8 @@
 <div [ngClass]="{'noShow': hideFilters }" >
     <!--   panel mode es per quan vull mostrat nomes un panell-->
     <div *ngIf="globalFilters.length > 0" class="d-flex align-items-end" style="margin: 0.5em; gap: 10px; flex-wrap: wrap;" >
-        
         <button
-            *ngIf="isAdmin || isDashboardCreator || dashboard.filterButtonVisibility.public"
+            *ngIf="isAdmin || isDashboardCreator || filterButtonVisibility.public"
             id="dashFilterBtn"
             [label]="filtrar"
             pButton pRipple type="button"
@@ -42,13 +41,14 @@
                     </eda-date-picker>
                 </div>
                 <div *ngSwitchDefault>
-                    <p-multiSelect *ngIf="(isAdmin || isDashboardCreator || filter.visible === 'public') "
+                    <p-multiSelect
                         [options]="filter.data"
                         [(ngModel)]="filter.selectedItems"
-                        [virtualScroll]="true"
-                        itemSize="30"
                         [maxSelectedLabels]="3"
+                        [virtualScroll]="true"
                         [defaultLabel]="getFilterLabel(filter)"
+                        [disabled]="disableGlobalFilter(filter)"
+                        itemSize="30"
                         display="chip"
                         class="customMultiselect filters-size"
                         [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
@@ -62,50 +62,19 @@
                                 (click)="onShowGlobalFilter(false, filter)"
                                 class="p-button-rounded p-button-outlined filters-size">
                             </button>
-        
-                            <button *ngIf="autoClear"
-                                pButton pRipple type="button"
-                                icon="pi pi-undo"
-                                (click)="clearRangeDates();emitChanges();"
-                                class="p-button-rounded p-button-outlined">
-                            </button>
-                        </p-footer>
-                    </p-multiSelect>
-        
-                    <p-multiSelect *ngIf="(!isAdmin && !isDashboardCreator && filter.visible === 'readOnly')"
-                        [options]="filter.data"
-                        [(ngModel)]="filter.selectedItems"
-                        [virtualScroll]="true"
-                        itemSize="30"
-                        [maxSelectedLabels]="3"
-                        [defaultLabel]="getFilterLabel(filter)"
-                        display="chip"
-                        disabled="true"
-                        class="customMultiselect filters-size"
-                        [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
-                        [Show]="dropdownFiltersSize(filter)"
-                        (onChange)="applyGlobalFilter(filter)">
-        
-                        <p-footer>
-                            <button id="dashFilterConf"
+
+                            <!-- <button id="dashFilterConf"
                                 pButton pRipple type="button"
                                 icon="pi pi-cog"
                                 (click)="onShowGlobalFilter(false, filter)"
                                 class="p-button-rounded p-button-outlined filters-size">
-                            </button>
+                            </button> -->
         
-                            <button *ngIf="autoClear"
-                                pButton pRipple type="button"
-                                icon="pi pi-undo"
-                                (click)="clearRangeDates();emitChanges();"
-                                class="p-button-rounded p-button-outlined">
-                            </button>
                         </p-footer>
                     </p-multiSelect>
                 </div>
             </ng-container>
         </div>
-
     </div>
 </div>
 
@@ -116,6 +85,7 @@
 
 <app-global-filter-dialog *ngIf="globalFilter"
     [(globalFilter)]="globalFilter"
+    [globalFilterList]="globalFilters"
     [panels]="dashboard.panels"
     [dataSource]="dashboard.dataSource"
     (close)="onCloseGlobalFilter($event)">

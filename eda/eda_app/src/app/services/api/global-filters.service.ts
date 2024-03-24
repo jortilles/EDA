@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { EdaPanel } from '@eda/models/model.index';
-import { table } from 'console';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -15,9 +14,6 @@ export class GlobalFiltersService {
 
 
         if (refferencePanel.content) {
-            console.log('globalFilter')
-            console.log(panelsTables, modelTables);
-
             const panelQuery = refferencePanel.content.query.query;
 
             panelQuery.fields.forEach(field => {
@@ -28,13 +24,7 @@ export class GlobalFiltersService {
             const rootTable = panelQuery.rootTable;
             this.assertTable(rootTable || modelTables[0].table_name, panelsTables, modelTables);
 
-            console.log('=============AFTER ASSERT===========')
-            console.log(modelTables)
-
             const firstPanelRelatedTables = this.relatedTables(panelsTables, modelTables, rootTable);
-
-            console.log('========firstPanelRelatedTables==========')
-            console.log(firstPanelRelatedTables)
 
             for (const panel of panels) {
                 if (panel.content) {
@@ -291,7 +281,18 @@ export class GlobalFiltersService {
         }
     }
 
-    public formatGlobalFilter(globalFilter: any) {
+    public formatFilter(globalFilter: any) {
+        let formatedFilter: any;
+        if (globalFilter.pathList) {
+            formatedFilter = this.formatGlobalFilterTree(globalFilter);
+        } else {
+            formatedFilter = this.formatGlobalFilter(globalFilter);
+        }
+
+        return formatedFilter;
+    }
+
+    private formatGlobalFilter(globalFilter: any) {
         const isDate = globalFilter.column.value.column_type === 'date';
         const year_length = 4;
         const year_month_length = 7;
@@ -334,7 +335,7 @@ export class GlobalFiltersService {
         return formatedFilter;
     }
 
-    public formatGlobalFilterTree(globalFilter: any) {
+    private formatGlobalFilterTree(globalFilter: any) {
         const isDate = globalFilter.selectedColumn.column_type === 'date';
         const year_length = 4;
         const year_month_length = 7;

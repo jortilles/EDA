@@ -458,8 +458,8 @@ export class EdaBlankPanelComponent implements OnInit {
      * Updates panel content with actual state
      */
     public savePanel() {
-
         this.panel.title = this.pdialog.getTitle();
+
         if (this.panel?.content) {
             this.panel.content.query.query.queryMode = this.selectedQueryMode;
             this.panel.content.query.query.rootTreeTable = this.rootTreeTable;
@@ -479,7 +479,6 @@ export class EdaBlankPanelComponent implements OnInit {
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
-
         } else {
             this.display_v.saved_panel = false;
         }
@@ -749,25 +748,24 @@ export class EdaBlankPanelComponent implements OnInit {
         globalFilter.joins = _filter.pathList[this.panel.id].path
         globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
 
-        // if (filter.filter_elements[0].value1.length === 0) {
-        //     this.globalFilters = this.globalFilters.filter(f => f.filter_id !== filter.filter_id);
-        // } else {
-        //     this.globalFilters = this.globalFilters.filter(f => f.filter_id !== filter.filter_id)
-        //     this.globalFilters.push(filter)
-        // }
-
-        if (this.globalFilters.some((gf: any) => gf.filter_id === globalFilter.filter_id)) {
-            const globalFilters = _.cloneDeep(this.globalFilters);
-            this.globalFilters = [];
-            for (const gf of globalFilters) {
-                if (globalFilter.filter_id === globalFilter.filter_id) {
-                    this.globalFilters.push(globalFilter);
-                } else {
-                    this.globalFilters.push(gf)
-                }
-            }
+        if (_filter.filter_elements[0].value1.length === 0) {
+            this.globalFilters = this.globalFilters.filter(f => f.filter_id !== _filter.filter_id);
         } else {
-            this.globalFilters.push(globalFilter);
+            // this.globalFilters = this.globalFilters.filter(f => f.filter_id !== _filter.filter_id)
+            // this.globalFilters.push(_filter)
+            if (this.globalFilters.some((gf: any) => gf.filter_id === globalFilter.filter_id)) {
+                const globalFilters = _.cloneDeep(this.globalFilters);
+                this.globalFilters = [];
+                for (const gf of globalFilters) {
+                    if (globalFilter.filter_id === globalFilter.filter_id) {
+                        this.globalFilters.push(globalFilter);
+                    } else {
+                        this.globalFilters.push(gf)
+                    }
+                }
+            } else {
+                this.globalFilters.push(globalFilter);
+            }
         }
     }
 

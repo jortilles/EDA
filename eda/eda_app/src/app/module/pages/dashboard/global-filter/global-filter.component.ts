@@ -20,6 +20,7 @@ export class GlobalFilterComponent implements OnInit {
     public hideFilters: boolean = false;
     public isAdmin: boolean = false;
     public isDashboardCreator: boolean = false;
+    public filterButtonVisibility = { public: false, readOnly: false };
 
     //Date filter ranges Dropdown
     public datePickerConfigs: {} = {};
@@ -39,34 +40,55 @@ export class GlobalFilterComponent implements OnInit {
         this.hideFilters = this.dashboard.display_v.panelMode;
     }
 
+    public initGlobalFilters(filters: any[]): void {
+        this.globalFilters = _.cloneDeep(filters);
+        this.setFiltersVisibility();
+        this.setFilterButtonVisibilty();
+    }
+
+    private setFiltersVisibility(): void {
+        for (const filter of this.globalFilters) {
+            if (!filter.hasOwnProperty("visible")) {
+                filter.visible = 'public';
+            }
+        }
+    }
+
+    // métode per descobrir o amagar el botó de filtrar al dashboard
+    private setFilterButtonVisibilty(): void {
+        this.globalFilters = this.globalFilters.filter((f: any) => {
+            return (f.visible != "hidden" && f.visible == "readOnly") ||
+                (f.visible != "hidden" && f.visible == "public")
+        });
+
+        this.globalFilters.forEach(a => {
+            if (a.visible == "public") {
+                this.filterButtonVisibility.public = true;
+            } else if (a.visible == "readOnly") {
+                this.filterButtonVisibility.readOnly = true;
+            }
+        });
+    }
+
+    public fillFiltersData() {
+        for (const filter of this.globalFilters) {
+            if (this.getFilterType(filter) == 'date') {
+                this.loadDatesFromFilter(filter)
+            } else {
+                this.loadGlobalFiltersData(filter);
+            }
+        }
+    }
+
     /** Apply filter to panels when filter's selected value changes */
     public applyGlobalFilter(filter: any): void {
-        let formatedFilter: any;
+        const formatedFilter = this.globalFilterService.formatFilter(filter);
 
-        if (filter.pathList) {
-            formatedFilter = this.globalFilterService.formatGlobalFilterTree(filter);
-        } else {
-            formatedFilter = this.globalFilterService.formatGlobalFilter(filter);
-        }
-
-        debugger;
         this.dashboard.edaPanels.forEach((edaPanel) => {
             if (filter.panelList.includes(edaPanel.panel.id)) {
                 edaPanel.setGlobalFilter(formatedFilter);
             }
         });
-
-        this.dashboard.reloadPanels();
-
-
-
-        // formatedFilter.panelList
-        //     .map(id => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
-        //     .forEach((panel) => {
-        //         if (panel) panel.setGlobalFilter(formatedFilter);
-        //     });
-
-        // this.reloadPanels();
     }
 
     // Main Global Filter
@@ -87,35 +109,34 @@ export class GlobalFilterComponent implements OnInit {
     // Global Filter Tree
     public async onCloseGlobalFilter(apply: boolean): Promise<void> {
         if (apply) {
-            console.log('onCloseGlobalFilter', this.globalFilter);
             if (this.globalFilter.isdeleted) {
                 this.removeGlobalFilter(this.globalFilter);
             } else {
-    
+
                 if (this.globalFilter.isnew) {
                     this.globalFilters.push(this.globalFilter);
                 } else {
                     this.globalFilters.find((f) => f.id === this.globalFilter.id).selectedItems = this.globalFilter.selectedItems;
                 }
-    
+
                 // Load Filter dropdwons option s
                 if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
                     this.loadDatesFromFilter(this.globalFilter);
                 } else {
                     await this.loadGlobalFiltersData();
                 }
-    
+
                 // If default values are selected filter is applied
                 if (this.globalFilter.selectedItems.length > 0) {
                     this.applyGlobalFilter(this.globalFilter);
                 }
-    
+
                 // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
                 // if (this.globalFilter.applyToAll && (this.applyToAllfilter.present === false)) {
                 //     this.applyToAllfilter = { present: true, refferenceTable: this.globalFilter.selectedTable.table_name, id: this.globalFilter.id };
                 //     this.updateApplyToAllFilterInPanels();
                 // }
-    
+
             }
         }
 
@@ -158,7 +179,6 @@ export class GlobalFilterComponent implements OnInit {
 
     // Legacy Global Filter
     public async onGlobalFilter(filter: any, targetTable: string): Promise<void> {
-        console.log('onGlobalFilter');
         return new Promise<void>(async (resolve, reject) => {
             try {
                 if (filter.isdeleted) {
@@ -328,7 +348,7 @@ export class GlobalFilterComponent implements OnInit {
             filters: []
         };
 
-        
+
         try {
             const query = this.queryBuilderService.normalQuery([targetColumn], queryParams);
             query.query.forSelector = true;
@@ -346,9 +366,9 @@ export class GlobalFilterComponent implements OnInit {
         if (filter.data) {
             let bol = false;
             for (const item of filter.data) {
-                if ((item.value||[]).length > 60) bol = true;
+                if ((item.value || []).length > 60) bol = true;
             }
-    
+
             // si els elements del filtre son llargs amplio el multiselect. 
             if (bol) {
                 const dropdowns = document.querySelectorAll('p-multiselect');
@@ -363,12 +383,55 @@ export class GlobalFilterComponent implements OnInit {
                         }
                     })
                 } catch (e) {
-                    console.warn('dropdownFilterStyles' +e);
+                    console.warn('dropdownFilterStyles' + e);
                 }
-    
+
             }
         }
     }
 
+    public findGlobalFilterByUrlParams(urlParams: any): void {
+        if (Object.keys(urlParams).length === 0) {
+            return;
+        }
+
+        for (const filter of this.globalFilters) {
+            for (const param of Object.keys(urlParams)) {
+                const paramTable = _.split(param, '.')[0];
+                const paramColumn = _.split(param, '.')[1];
+
+                const tableName = filter.table?.value || filter.selectedTable?.table_name;
+                if (tableName === paramTable) {
+                    const columnName = filter.column?.value?.column_name || filter.selectedColumn.column_name;
+
+                    if (columnName === paramColumn) {
+                        filter.selectedItems = _.split(urlParams[param], '|');
+
+                        filter.panelList
+                            .map(id => this.dashboard.panels.find(p => p.id === id))
+                            .forEach((panel) => {
+                                const panelFilter = panel.content.query.query.filters;
+                                const formatedFilter = this.globalFilterService.formatFilter(filter);
+                                panelFilter.splice(_.findIndex(panelFilter, (inx) => inx.filter_column === formatedFilter.filter_column), 1);
+                                panelFilter.push(formatedFilter);
+                            });
+
+                    }
+                }
+            }
+        }
+    }
+
+    public disableGlobalFilter(filter: any): boolean {
+        let disabled = false;
+
+        if (!this.isAdmin && !this.isDashboardCreator && filter.visible === 'readOnly') {
+            disabled = true;
+        } else if (this.isAdmin || this.isDashboardCreator || filter.visible === 'public') {
+            disabled = false;
+        }
+
+        return disabled;
+    }
 
 }

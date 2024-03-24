@@ -1,24 +1,17 @@
 <eda-dialog2 [display]="display" [header]="dialogHeader"
-    width="70vw" height= "70vh"
+    width="80vw" height= "90vh"
     (apply)="onApply()"
     (close)="onClose()">
 
     <div content>
         <p-card [header]="header3" id="anywhereClick">
-
             <div class="row">
                 <div class="col-4">
-                    <!-- <p-treeSelect [(ngModel)]="globalFilter.selectedTableNodes" [options]="tableNodes"
-                        i18n-placeholder="@@placeholderTables" placeholder="Entidades" [style]="{'width': '100%'}"
-                        appendTo="body">
-                    </p-treeSelect> -->
-    
                     <p-dropdown id="selectFilerTable" [options]="tables" [(ngModel)]="globalFilter.selectedTable"
                         filter="true" optionLabel="display_name.default" [style]="{'width': '100%'}"
                         i18n-placeholder="@@placeholderTables" placeholder="Entidades"
                         (onChange)="getColumnsByTable()" appendTo="body">
                     </p-dropdown>
-                    <!-- (onChange)="getColumnsByTable()" (onChange)="resetSelectedValues()" -->
                 </div>
     
                 <div class="col-4">
@@ -26,7 +19,6 @@
                         filter="true" optionLabel="display_name.default" [style]="{'width': '100%'}"
                         i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
                         (onChange)="loadColumnValues(); findPanelPathTables();" appendTo="body">
-                        <!-- (onChange)="loadGlobalFiltersData()" (onChange)="resetSelectedValues()" -->
                     </p-dropdown>
                 </div>
 
@@ -37,13 +29,6 @@
                         [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
                         [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto" appendTo="body">
                     </p-multiSelect>
-
-                    <!-- <eda-date-picker #myCalendar
-                        *ngIf="globalFilter.selectedColumn?.column_type === 'date'"
-                        [autoClear]="true"
-                        [inject]="datePickerConfigs[selectedFilter?.id]"
-                        (onDatesChanges)="processPickerEvent($event)">
-                    </eda-date-picker> -->
                 </div>
             </div>
         </p-card>
@@ -71,7 +56,7 @@
                         </td>
                         <td style="width: 60%;">
                             <p-treeSelect [(ngModel)]="globalFilter.pathList[panel.id].selectedTableNodes"
-                                [options]="panel.globalFilterPaths"
+                                [options]="panel.content.globalFilterPaths"
                                 (onNodeExpand)="onNodeExpand(panel, $event)"
                                 (onNodeSelect)="onNodeSelect(panel, $event)"
                                 appendTo="body">
@@ -86,7 +71,6 @@
 
             <br><br>
 
-            <!-- (click)="addPanelToFilter(panel)"  -->
             <div style="margin-top: 1rem;">
                 <span style="margin: 0.5rem;" class="dotgreen"></span>
                 <span style="margin-right: 2rem;">{{greendot}}</span>
@@ -98,6 +82,21 @@
                 <span style="margin-right: 2rem;">{{unselecteddot}}</span>
             </div>
         </p-card>
-    </div>
 
+        <div style="margin: 1rem;"></div>
+
+        <p-card [header]="posicion">
+            <div cdkDropList cdkDropListOrientation="horizontal" class="select-list" [cdkDropListData]="globalFilterList" (cdkDropListDropped)="onReorderFilter($event)">
+                <ng-container *ngFor="let filter of globalFilterList">
+                    <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>
+                        <span class="close-thin pointer" (click)="removeFilter(filter, 'select')"></span>
+                        <!-- [ngClass]="(selectedFilter.table==filter.table) && (selectedFilter.column.label==filter.column.label)?'edaEmfasis':''" -->
+                        <span class="text-center">
+                            {{getFilterLabel(filter)}}
+                        </span>
+                    </div>
+                </ng-container>
+            </div>
+        </p-card>
+    </div>
 </eda-dialog2>

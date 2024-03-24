@@ -1,3 +1,4 @@
+import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { EdaPanel } from "@eda/models/model.index";
 import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService } from "@eda/services/service.index";
@@ -10,6 +11,7 @@ import * as _ from 'lodash';
 })
 export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     @Input() globalFilter: any;
+    @Input() globalFilterList: any[] = [];
     @Input() dataSource: any;
     public modelTables: any[] = [];
     @Input() panels: EdaPanel[] = [];
@@ -71,7 +73,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        this.globalFilter = undefined;    
+        this.globalFilter = undefined;
+        for (const panel of this.panels) {
+            panel.content.globalFilterPaths = []
+        }
     }
 
     public initPanels() {
@@ -127,7 +132,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             .filter((col: any) => col.visible === true)
             .forEach((col: any) => this.columns.push(col));
 
-        // this.columns = this.columns.slice();
         this.columns.sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0);
     }
 
@@ -135,7 +139,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         const params = {
             table: this.globalFilter.selectedTable.table_name,
             dataSource: this.dataSource._id,
-            // dashboard: this.params.id,
             forSelector: true,
             panel: '',
             filters: []
@@ -157,20 +160,16 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public findPanelPathTables() {
         for (const panel of this.filteredPanels) {
-            panel.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
+            panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
         }
     }
 
     public onNodeExpand(panel: any, event: any): void {
-        // this.loadingNodes = true;
-
         const node = event?.node;
 
         if (node) {
-            this.globalFilterService.onNodeExpand(panel.globalFilterPaths, node, this.modelTables);
+            this.globalFilterService.onNodeExpand(panel.content.globalFilterPaths, node, this.modelTables);
         }
-
-        // this.loadingNodes = false;
     }
 
     public onNodeSelect(panel: any, event: any): void {
@@ -207,6 +206,28 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         return valid;
     }
 
+    public onReorderFilter(event: CdkDragDrop<string[]>): void {
+        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    }
+
+    public removeFilter(filter: any): void {
+        filter.isdeleted = true;
+        // this.selectedValues = [];
+        this.globalFilterList.splice(this.globalFilterList.indexOf(filter), 0);
+    }
+
+    public getFilterLabel(globalFilter: any): string {
+        let label = '';
+
+        if (globalFilter.selectedColumn) {
+            label = globalFilter.selectedColumn.display_name.default;
+        } else {
+            label = globalFilter.column.label;
+        }
+
+        return label;
+    }
+
     public onApply(): void {
         if (this.validateGlobalFilter()) {
             this.globalFilterChange.emit(this.globalFilter);
@@ -218,7 +239,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
         
     public onClose(): void {
-        // this.globalFilter = {};
         this.display = false;
         this.close.emit(false);
     }
