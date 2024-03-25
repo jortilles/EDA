@@ -852,6 +852,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             }
 
+            delete (globalFilter.isnew);
+
             globalFilter.data = null;
             filtersCleaned.push(globalFilter);
         }

@@ -4,7 +4,7 @@
     (close)="onClose()">
 
     <div content>
-        <p-card [header]="header3" id="anywhereClick">
+        <p-card *ngIf="formReady" [header]="header3" id="anywhereClick" [ngClass]="{'readonly': globalFilter.isdeleted}">
             <div class="row">
                 <div class="col-4">
                     <p-dropdown id="selectFilerTable" [options]="tables" [(ngModel)]="globalFilter.selectedTable"
@@ -35,7 +35,7 @@
 
         <div style="margin: 1rem;"></div>
 
-        <p-card [header]="header2" id="anywhereClick">
+        <p-card *ngIf="formReady" [header]="header2" id="anywhereClick" [ngClass]="{'readonly': globalFilter.isdeleted}">
 
             <br><br>
 
@@ -85,7 +85,7 @@
 
         <div style="margin: 1rem;"></div>
 
-        <p-card [header]="posicion">
+        <p-card *ngIf="formReady" [header]="posicion">
             <div cdkDropList cdkDropListOrientation="horizontal" class="select-list" [cdkDropListData]="globalFilterList" (cdkDropListDropped)="onReorderFilter($event)">
                 <ng-container *ngFor="let filter of globalFilterList">
                     <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>

@@ -33,10 +33,16 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public unselecteddot: string = $localize`:@@unselecteddot:Paneles no filtrados`;
 
     public tables: any[] = [];
-    public columns: any[] = [];
-    public columnValues: any[] = [];
+    public selectedTable: any;
 
+    public columns: any[] = [];
+    public selectedColumn: any;
+
+    public columnValues: any[] = [];
     public tableNodes: any[] = [];
+
+
+    public formReady: boolean = false;
 
     constructor(
         private globalFilterService: GlobalFiltersService,
@@ -49,6 +55,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.display = true;
         this.modelTables = _.cloneDeep(this.dataSource.model.tables);
+        
+        this.initPanels();
+        this.initTablesForFilter();
+
+        console.log(this.globalFilter);
 
         if (this.globalFilter.isnew) {
             this.globalFilter = {
@@ -66,10 +77,17 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 // applyToAll: !this.applyToAll,
                 // visible: this.publicRoHiddenOption,
             };
+        } else {
+            this.getColumnsByTable();
+            this.loadColumnValues();
+            this.findPanelPathTables();
+
+            const tableName = this.globalFilter.selectedTable.table_name;
+            console.log(this.tables)
+            this.globalFilter.selectedTable = _.cloneDeep(this.tables.find((table) => table.table_name == tableName));
         }
 
-        this.initPanels();
-        this.initTablesForFilter();
+        this.formReady = true;
     }
 
     public ngOnDestroy(): void {
@@ -194,24 +212,17 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
     }
 
-    private validateGlobalFilter(): boolean {
-        let valid = true;
-
-        for (const key in this.globalFilter.pathList) {
-            if (_.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {
-                valid = false;
-            }
-        }
-
-        return valid;
-    }
-
     public onReorderFilter(event: CdkDragDrop<string[]>): void {
         moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     }
 
     public removeFilter(filter: any): void {
         filter.isdeleted = true;
+
+        if (filter.id == this.globalFilter.id) {
+            this.globalFilter.isdeleted = true;
+        }
+
         // this.selectedValues = [];
         this.globalFilterList.splice(this.globalFilterList.indexOf(filter), 0);
     }
@@ -226,6 +237,20 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
 
         return label;
+    }
+
+    private validateGlobalFilter(): boolean {
+        let valid = true;
+
+        if (!this.globalFilter.isdeleted) {
+            for (const key in this.globalFilter.pathList) {
+                if (_.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {
+                    valid = false;
+                }
+            }
+        }
+
+        return valid;
     }
 
     public onApply(): void {

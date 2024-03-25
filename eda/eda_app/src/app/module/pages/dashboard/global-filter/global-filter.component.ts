@@ -96,6 +96,8 @@ export class GlobalFilterComponent implements OnInit {
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
             const treeQueryMode = this.dashboard.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
             if (treeQueryMode) {
+                console.log(isnew);
+                delete (filter.isnew);
                 if (isnew) this.globalFilter = { isnew: true };
                 else this.globalFilter = { isnew: false, ...filter };
 
