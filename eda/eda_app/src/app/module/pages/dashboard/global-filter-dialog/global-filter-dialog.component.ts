@@ -56,8 +56,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.display = true;
         this.modelTables = _.cloneDeep(this.dataSource.model.tables);
         
-        this.initPanels();
-        this.initTablesForFilter();
+
 
         console.log(this.globalFilter);
 
@@ -77,7 +76,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 // applyToAll: !this.applyToAll,
                 // visible: this.publicRoHiddenOption,
             };
+
+            this.initPanels();
+            this.initTablesForFilter();
         } else {
+            this.initPanels();
+            this.initTablesForFilter();
+
             this.getColumnsByTable();
             this.loadColumnValues();
             this.findPanelPathTables();
