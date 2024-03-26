@@ -142,6 +142,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         
         if (tags) {
             this.tags = _.uniqBy(tags, 'value');
+            console.log(this.tags)
         } else {
             this.tags = [];
         }
@@ -1564,10 +1565,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     
     public setNewTag(newTag:string) {
-        let newTagToUpper = newTag.toUpperCase()
         let repeated = false;
         this.tags.forEach(tag => {
-            if (newTagToUpper === tag.value) repeated = true;
+            if (newTag.toUpperCase() === tag.value.toUpperCase()) repeated = true;
         })
         if (newTag.length === 0) {
             this.addTag = !this.addTag;
@@ -1577,8 +1577,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.alertService.addError("Tag already existing")
         } 
         else {
-            let tag = {label: newTagToUpper, value: newTagToUpper}
-            this.applyNewTag = newTagToUpper;
+            let tag = {label: newTag, value: newTag}
+            this.applyNewTag = newTag;
             this.selectedTags.push(this.applyNewTag)
             this.addTag = !this.addTag;
             this.tags.push(tag)

@@ -239,7 +239,7 @@
                  </button>
             </div>
             <input class="ml-2" *ngIf="addTag" type="text" pInputText [(ngModel)]="applyNewTag"> 
-            <button pButton pRipple type="button" *ngIf="addTag" class="p-button-raised p-button-success ml-2" style="background-color: #4CAF50" (click)="setNewTag(newTag)">
+            <button pButton pRipple type="button" *ngIf="addTag" class="p-button-raised p-button-success ml-2" style="background-color: #4CAF50" (click)="setNewTag(applyNewTag)">
                 <span> Confirmar </span>
             </button>
         </div>
