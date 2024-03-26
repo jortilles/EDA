@@ -76,9 +76,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         minHeight: 1,
         resizeHandles: { s: false, e: false, n: false, w: false, se: false, ne: false, sw: false, nw: false },
     };
-    public tag: any;;
+    public tag: any;
     public tags: Array<any>;
+    public selectedTags: any[];
     public selectedtag: any;
+    public selectedTagsForDashboard: any = [];
+    public applyNewTag: string;
     public addTag: boolean = false;
     public sendViaMailConfig: any = { enabled: false };
 
@@ -136,18 +139,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.initializeGridsterOptions();
         this.initializeForm();
         let tags = JSON.parse(sessionStorage.getItem('tags'));
+        
         if (tags) {
-            this.tags = tags.filter(tag => tag.value !== 1);
+            this.tags = _.uniqBy(tags, 'value');
         } else {
             this.tags = [];
         }
-        this.tags.push({ value: 2, label: this.newTag });
     }
 
     // ng cycle lives
     public ngOnInit(): void {
         this.dashboard = new Dashboard({});
-
         this.initializeDashboard();
         this.initStyles();
 
@@ -344,7 +346,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private initializeDashboard(): void {
-
         const me = this;
 
         me.route.paramMap.subscribe(
@@ -354,7 +355,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Check url for filters in params
         this.getUrlParams();
-
         if (me.id) {
             me.dashboardService.getDashboard(me.id).subscribe(
                 res => {
@@ -372,8 +372,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.datasourceName = res.datasource.name;
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
                     me.form.controls['visible'].setValue(config.visible);
-                    me.tag = config.tag;
-                    me.selectedtag = me.tags.filter(tag => tag.value === me.tag)[0];
+                    me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
+                    me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
+                    me.tags.forEach(tag => { if (config.tags != null) config.tags.forEach(t => {if (t == tag.value) this.selectedTagsForDashboard.push(t)})});
+                    me.selectedTags = this.selectedTagsForDashboard;
                     me.refreshTime = config.refreshTime;
                     me.onlyIcanEdit = config.onlyIcanEdit;
                     if (me.refreshTime) {
@@ -874,7 +876,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     const ds = { _id: this.dataSource._id };
                     const body = {
                         config: {
-                            title: response.name, visible: response.visible, ds, tag: null, refreshTime: null,
+                            title: response.name, visible: response.visible, ds, tags: null, refreshTime: null,
                             styles: this.stylesProviderService.generateDefaultStyles(),
                         },
                         group: response.group
@@ -892,7 +894,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                                     filters: this.cleanFiltersData(),
                                     applyToAllfilter: this.applyToAllfilter,
                                     visible: response.visible,
-                                    tag: this.getTag(),
+                                    tags: this.selectedTags,
                                     refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
                                     mailingAlertsEnabled: this.getMailingAlertsEnabled(),
                                     sendViaMailConfig: this.sendViaMailConfig,
@@ -1368,7 +1370,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public saveDashboard(): void {
-
         this.triggerTimer();
 
         if (this.form.invalid) {
@@ -1384,7 +1385,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     filters: this.cleanFiltersData(),
                     applyToAllfilter: this.applyToAllfilter,
                     visible: this.form.controls['visible'].value,
-                    tag: this.getTag(),
+                    tags: this.saveTag(),
                     refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
                     mailingAlertsEnabled: this.getMailingAlertsEnabled(),
                     sendViaMailConfig: this.sendViaMailConfig,
@@ -1394,7 +1395,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
             };
-
+            
             this.edaPanels.forEach(panel => {
                 panel.savePanel();
             });
@@ -1437,13 +1438,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         return mailingenabled;
     }
 
-    public getTag() {
-
-        if (this.tag && this.tag.value === 0) return null;
-        else if (this.tag && this.tag.value) return this.tag.label;
-        else if (this.tag) return this.tag;
-        else return null;
-
+    public saveTag() {
+        const dbTags = []
+        try {
+            this.selectedTags.forEach( a=> {
+                dbTags.push(a);
+            });
+            return dbTags;
+        } catch (e) {
+             return null;
+        }
+        
     }
 
     public exportAsPDF() {
@@ -1554,10 +1559,32 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    public selectTag() {
-        this.addTag = this.selectedtag.label === this.newTag;
-        this.tag = this.selectedtag;
-        if (this.tag.value === 0) this.tag.label = null;
+    public addNewTag() {
+        this.addTag = !this.addTag;
+    }
+    
+    public setNewTag(newTag:string) {
+        let newTagToUpper = newTag.toUpperCase()
+        let repeated = false;
+        this.tags.forEach(tag => {
+            if (newTagToUpper === tag.value) repeated = true;
+        })
+        if (newTag.length === 0) {
+            this.addTag = !this.addTag;
+            this.alertService.addError("Empty tag")
+        } else if (repeated) {
+            this.addTag = !this.addTag;
+            this.alertService.addError("Tag already existing")
+        } 
+        else {
+            let tag = {label: newTagToUpper, value: newTagToUpper}
+            this.applyNewTag = newTagToUpper;
+            this.selectedTags.push(this.applyNewTag)
+            this.addTag = !this.addTag;
+            this.tags.push(tag)
+            sessionStorage.setItem('tags', JSON.stringify(this.tags));
+        }
+
     }
 
     public startCountdown(seconds: number) {
@@ -1651,5 +1678,5 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         })
 
         return filters;
-    }
+    }   
 }
