@@ -10,12 +10,14 @@ const router = express.Router();
  * @openapi
  * /datasource/:
  *   get:
- *     description: get all datasources
+ *     description: Get all existing data sources in the current database
  *     responses:
  *       200:
- *         description: returns all dashboards
+ *         description: Returns all existing dashboards
  *       404:
- *         description: error loading datasources
+ *         description: Error loading datasources
+ *     tags:
+ *       - DataSource Routes
  */
 router.get('', authGuard, roleGuard,  DataSourceController.GetDataSources);
 
@@ -23,12 +25,14 @@ router.get('', authGuard, roleGuard,  DataSourceController.GetDataSources);
  * @openapi
  * /datasource/names:
  *   get:
- *     description: get all datasources
+ *     description: Get all data sources names in the current database 
  *     responses:
  *       200:
- *         description: returns all dashboards names
+ *         description: Returns all dashboard names
  *       500:
- *         description: error loading datasources
+ *         description: Error loading datasources
+ *     tags:
+ *       - DataSource Routes
  */
 router.get('/names', authGuard,   roleGuard,  DataSourceController.GetDataSourcesNames);
 
@@ -36,12 +40,14 @@ router.get('/names', authGuard,   roleGuard,  DataSourceController.GetDataSource
  * @openapi
  * /datasource/namesForDashboard:
  *   get:
- *     description: get all datasources names for dashboard, filtered by permits and users
+ *     description: Get all the data sources names for each dashboard, filtered by permits and current users
  *     responses:
  *       200:
- *         description: returns all dashboards names available
+ *         description: Returns all available dashboard names 
  *       500:
- *         description: error loading datasources
+ *         description: Error loading data sources
+ *     tags:
+ *       - DataSource Routes
  */
 router.get('/namesForDashboard', authGuard,  DataSourceController.GetDataSourcesNamesForDashboard)
 
@@ -49,12 +55,14 @@ router.get('/namesForDashboard', authGuard,  DataSourceController.GetDataSources
  * @openapi
  * /datasource/namesForEdit:
  *   get:
- *     description: get all datasources names for dashboard, filtered by permits and users
+ *     description: Get all data sources names for dashboard, filtered by permits and users
  *     responses:
  *       200:
- *         description: returns all dashboards names available
+ *         description: Returns all dashboards names available
  *       500:
- *         description: error loading datasources
+ *         description: Error loading datasources
+ *     tags:
+ *       - DataSource Routes
  */
 router.get('/namesForEdit', authGuard,  DataSourceController.GetDataSourcesNamesForEdit)
 
@@ -62,51 +70,74 @@ router.get('/namesForEdit', authGuard,  DataSourceController.GetDataSourcesNames
  * @openapi
  * /datasource/check-connection:
  *   get:
- *     description: try connection with database
+ *     description: Checks the connection with the current database
  *     responses:
  *       200:
- *         description: returns ok
+ *         description: Successful connection with the database 
  *       500:
- *         description: can´t connect to datasource
+ *         description: Can´t connect to the database
+ *     tags:
+ *       - DataSource Routes
  */
 router.get('/check-connection', authGuard,   roleGuard, DataSourceController.CheckConnection);
 
 /**
  * @openapi
- * /datasource/check-connection:
+ * /datasource/check-connection/{id}:
  *   get:
- *     description: try connection with database for specific datasource
+ *     description: Checks the connection with the current database for one specific datasource
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         type: string
  *     responses:
  *       200:
- *         description: returns ok
+ *         description: Returns okay, successful connection with the database and datasource
  *       500:
- *         description: can´t connect to datasource
+ *         description: Can't connect with the current database
+ *     tags:
+ *       - DataSource Routes
  */
 router.get('/check-connection/:id', authGuard, roleGuard, DataSourceController.CheckStoredConnection);
 
 /**
  * @openapi
- * /datasource/:id :
+ * /datasource/{id}:
  *   get:
- *     description: get datasource by parameter
+ *     description: Get datasource by id parameter
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         type: string 
  *     responses:
  *       200:
- *         description: returns ok
+ *         description: Returns ok
  *       404:
- *         description: can´t find datasource
+ *         description: Can´t find datasource
+ *     tags:
+ *       - DataSource Routes
  */
 router.get('/:id', authGuard,  roleGuard, DataSourceController.GetDataSourceById);
 
 /**
  * @openapi
- * /datasource/add-data-source :
+ * /datasource/add-data-source:
  *   post:
- *     description: add new datasource, adressing to bigquery type or any other
+ *     description: Add a new datasource of any type
+ *     parameters: 
+ *       - name: datasource
+ *         in: body
+ *         required: true
+ *         type: object
  *     responses:
  *       201:
- *         description: returns ok
+ *         description: Creation of the new datasource successful
  *       500:
- *         description: error saving the datasource
+ *         description: Error trying to create the new datasource
+ *     tags:
+ *       - DataSource Routes
  */
 router.post('/add-data-source/', authGuard,  roleGuard, DataSourceController.GenerateDataModel);
 
@@ -114,27 +145,39 @@ router.post('/add-data-source/', authGuard,  roleGuard, DataSourceController.Gen
  * @openapi
  * /datasource/query:
  *   post:
- *     description: execute the query of the panel
+ *     description: Executes the query from the given panel
+ *     parameters:
+ *       - name: query
+ *         in: body
+ *         required: true
+ *         type: object
  *     responses:
  *       200:
- *         description: returns ok 
+ *         description: Returns ok, the query has been executed 
  *       500:
- *         description: returns error at querying by permits or by query error
- *      
+ *         description: Returns error at querying, check your permissions and query syntax
+ *     tags:
+ *       - DataSource Routes 
  */
 router.post('/query', authGuard,  roleGuard, DashboardController.execQuery);
 
 /**
  * @openapi
- * /datasource/reload/:id:
+ * /datasource/reload/{id}:
  *   post:
- *     description: refresh datasource by id
+ *     description: Refresh the datasource by it's id
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         type: string
  *     responses:
  *       200:
- *         description: returns ok 
+ *         description: Returns ok
  *       500:
- *         description: error updating or saving datasource
- *      
+ *         description: Error trying to refresh the datasource
+ *     tags:
+ *       - DataSource Routes 
  */
 router.post('/reload/:id', authGuard, roleGuard, DataSourceController.RefreshDataModel);
 
@@ -142,39 +185,56 @@ router.post('/reload/:id', authGuard, roleGuard, DataSourceController.RefreshDat
  * @openapi
  * /datasource/remove-cache:
  *   post:
- *     description: remove cache from model
+ *     description: Remove cache from model id
+ *     parameters:
+ *       - name: id
+ *         in: formData
+ *         required: true
+ *         type: string
  *     responses:
  *       200:
- *         description: returns ok 
- *      
+ *         description: Returns ok
+ *     tags:
+ *       - DataSource Routes 
  */
 router.post('/remove-cache', authGuard,  roleGuard, DataSourceController.removeCacheFromModel);
 
 /**
  * @openapi
- * /datasource/:id:
+ * /datasource/{id}:
  *   put:
- *     description: remove cache from model
+ *     description: Remove cache from model by it's id
+ *     parameters: 
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         type: string
  *     responses:
  *       200:
- *         description: datasource updated
+ *         description: Datasource updated
  *       500:
- *         description: datasource not found
- *      
+ *         description: Datasource not found
+ *     tags:
+ *       - DataSource Routes 
  */
 router.put('/:id', authGuard,  roleGuard,DataSourceController.UpdateDataSource);
 
 /**
  * @openapi
- * /datasource/:id:
+ * /datasource/{id}:
  *   delete:
- *     description: remove datasource
+ *     description: Remove datasource by it's id
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         type: string
  *     responses:
  *       200:
- *         description: datasource removed
+ *         description: Datasource successfully removed
  *       500:
- *         description: datasource not found, error removing datasource
- *      
+ *         description: Datasource not found, error trying to remove this datasource
+ *     tags:
+ *       - DataSource Routes
  */
 router.delete('/:id', authGuard,  roleGuard, DataSourceController.DeleteDataSource);
 
