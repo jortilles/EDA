@@ -55,10 +55,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.display = true;
         this.modelTables = _.cloneDeep(this.dataSource.model.tables);
-        
-
-
-        console.log(this.globalFilter);
 
         if (this.globalFilter.isnew) {
             this.globalFilter = {
@@ -83,13 +79,15 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.initPanels();
             this.initTablesForFilter();
 
+            const tableName = this.globalFilter.selectedTable.table_name;
+            this.globalFilter.selectedTable = _.cloneDeep(this.tables.find((table) => table.table_name == tableName));
+            
+            const columnName = this.globalFilter.selectedColumn.column_name;
+            this.globalFilter.selectedColumn = _.cloneDeep(this.globalFilter.selectedTable.columns.find((col: any) => col.column_name == columnName));
+
             this.getColumnsByTable();
             this.loadColumnValues();
             this.findPanelPathTables();
-
-            const tableName = this.globalFilter.selectedTable.table_name;
-            console.log(this.tables)
-            this.globalFilter.selectedTable = _.cloneDeep(this.tables.find((table) => table.table_name == tableName));
         }
 
         this.formReady = true;
@@ -115,11 +113,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
         this.filteredPanels = panels.filter((p: any) => p.avaliable === true && p.active === true);
 
-        for (const panel of this.filteredPanels) {
-            this.globalFilter.pathList[panel.id] = {
-                selectedTableNodes: {},
-                path: []
-            };
+        if (this.globalFilter.isnew) {
+            for (const panel of this.filteredPanels) {
+                this.globalFilter.pathList[panel.id] = {
+                    selectedTableNodes: {},
+                    path: []
+                };
+            }
         }
     }
 

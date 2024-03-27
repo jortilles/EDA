@@ -753,11 +753,14 @@ export class EdaBlankPanelComponent implements OnInit {
         } else {
             // this.globalFilters = this.globalFilters.filter(f => f.filter_id !== _filter.filter_id)
             // this.globalFilters.push(_filter)
+
+
+            
             if (this.globalFilters.some((gf: any) => gf.filter_id === globalFilter.filter_id)) {
-                const globalFilters = _.cloneDeep(this.globalFilters);
+                const _globalFilters = _.cloneDeep(this.globalFilters);
                 this.globalFilters = [];
-                for (const gf of globalFilters) {
-                    if (globalFilter.filter_id === globalFilter.filter_id) {
+                for (const gf of _globalFilters) {
+                    if (gf.filter_id === globalFilter.filter_id) {
                         this.globalFilters.push(globalFilter);
                     } else {
                         this.globalFilters.push(gf)

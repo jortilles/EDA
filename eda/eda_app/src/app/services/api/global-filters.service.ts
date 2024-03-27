@@ -359,8 +359,9 @@ export class GlobalFiltersService {
             }
         }
 
-        for (const key in globalFilter.pathList) {
-            delete (globalFilter.pathList[key].selectedTableNodes);
+        const pathList = _.cloneDeep(globalFilter.pathList);
+        for (const key in pathList) {
+            delete (pathList[key].selectedTableNodes);
         }
 
         const formatedFilter = {
@@ -374,7 +375,7 @@ export class GlobalFiltersService {
                     { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }
                 ]
                 : [{ value1: globalFilter.selectedItems }],
-            pathList: globalFilter.pathList,
+            pathList: pathList,
             isGlobal: true,
             applyToAll: globalFilter.applyToAll,  
             valueListSource: globalFilter.selectedColumn.valueListSource

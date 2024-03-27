@@ -76,6 +76,7 @@ export class PgBuilderService extends QueryBuilderService {
     if (limit) myQuery += `\nlimit ${limit}`;
 
     if (alias) {
+      console.log(alias);
       for (const key in alias) {
         myQuery = myQuery.split(key).join(`"${alias[key]}"`);
       }

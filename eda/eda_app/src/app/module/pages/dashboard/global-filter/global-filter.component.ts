@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
+import { Component, Input, OnInit } from "@angular/core";
+import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import { EdaDialogCloseEvent, EdaDialogController } from "@eda/shared/components/shared-components.index";
 import { DashboardComponent } from "../dashboard.component";
+import { EdaBlankPanelComponent } from "@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component";
 import * as _ from 'lodash';
 
 @Component({
@@ -84,11 +85,11 @@ export class GlobalFilterComponent implements OnInit {
     public applyGlobalFilter(filter: any): void {
         const formatedFilter = this.globalFilterService.formatFilter(filter);
 
-        this.dashboard.edaPanels.forEach((edaPanel) => {
-            if (filter.panelList.includes(edaPanel.panel.id)) {
-                edaPanel.setGlobalFilter(formatedFilter);
-            }
-        });
+        filter.panelList
+            .map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
+            .forEach((panel: EdaBlankPanelComponent) => {
+                if (panel) panel.setGlobalFilter(formatedFilter);
+            });
     }
 
     // Main Global Filter
@@ -110,14 +111,23 @@ export class GlobalFilterComponent implements OnInit {
     public async onCloseGlobalFilter(apply: boolean): Promise<void> {
         if (apply) {
             if (this.globalFilter.isdeleted) {
+                this.globalFilter.selectedItems = [];
+                this.applyGlobalFilter(this.globalFilter);
                 this.removeGlobalFilter(this.globalFilter);
             } else {
+
+                for (const key in this.globalFilter.pathList) {
+                    const selectedTableNodes = this.globalFilter.pathList[key].selectedTableNodes;
+                    delete (selectedTableNodes.parent);
+                }
 
                 if (this.globalFilter.isnew) {
                     this.globalFilters.push(this.globalFilter);
                 } else {
                     this.globalFilters.find((f) => f.id === this.globalFilter.id).selectedItems = this.globalFilter.selectedItems;
                 }
+
+                delete (this.globalFilter.isnew);
 
                 // Load Filter dropdwons option s
                 if (this.globalFilter.selectedColumn.column_type === 'date' && this.globalFilter.selectedItems.length > 0) {
@@ -140,8 +150,8 @@ export class GlobalFilterComponent implements OnInit {
             }
         }
 
-
         this.globalFilter = undefined;
+        this.dashboard.reloadOnGlobalFilter();
     }
 
     // Legacy Global Filter

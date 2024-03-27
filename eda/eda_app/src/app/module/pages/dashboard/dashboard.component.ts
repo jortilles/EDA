@@ -843,17 +843,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private cleanFiltersData() {
         const filtersCleaned = [];
 
-        for (let i = 0, n = this.gFilter?.globalFilters.length; i < n; i += 1) {
-            const globalFilter = _.cloneDeep(this.gFilter?.globalFilters[i]);
-
-            if (globalFilter.pathList) {
-                for (const key in globalFilter.pathList) {
-                    delete (globalFilter.pathList[key].selectedTableNodes);
-                }
-            }
-
+        for (const _globalFilter of this.gFilter?.globalFilters) {
+            const globalFilter = _.cloneDeep(_globalFilter);
+            
             delete (globalFilter.isnew);
 
+            if (globalFilter.pathList) {
+                for (const key in globalFilter.ist) {
+                    const selectedTableNodes = globalFilter.pathList[key].selectedTableNodes;
+                    delete (selectedTableNodes.parent);
+                }
+            }
+            
+            if (globalFilter.selectedTable) {
+                delete (globalFilter.selectedTable.columns);
+            }
+            
             globalFilter.data = null;
             filtersCleaned.push(globalFilter);
         }
