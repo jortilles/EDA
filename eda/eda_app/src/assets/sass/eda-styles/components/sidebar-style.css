@@ -123,7 +123,6 @@
 
 .sidebar-nav ul li a.active {
   font-weight: 500;
-  color: white;
 }
 
 .sidebar-nav ul li ul {
@@ -176,16 +175,9 @@
 .sidebar-nav > ul > li {
   margin-bottom: 5px;
 }
-
 .sidebar-nav > ul > li.active > a {
-  color: white;
   font-weight: 500;
 }
-
-.sidebar-nav > ul > li.active > a i {
-  color: white;
-}
-
 .sidebar-nav .waves-effect {
   transition: none;
   -webkit-transition: none;
@@ -313,13 +305,14 @@
     padding: 12px 24px;
     width: 70px;
   }
-
   .mini-sidebar-2 .sidebar-nav #sidebarnav > li:hover > a {
-    width: 330px;
     background: #242a33;
     border-bottom-right-radius: 5px;
     border-top-right-radius: 5px;
-    box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.1), 0 1px 1px 0 rgba(0, 0, 0, 0.178), 0 2px 1px -1px rgba(0, 0, 0, 0.1); 
+    box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.1), 0 1px 1px 0 rgba(0, 0, 0, 0.178), 0 2px 1px -1px rgba(0, 0, 0, 0.1);
+  }
+  .mini-sidebar-2 .sidebar-nav #sidebarnav > li:hover > a.collapser {
+    width: 330px;
   }
 
   .mini-sidebar-2 .sidebar-nav #sidebarnav > li:hover > a .hide-menu {

@@ -10,7 +10,10 @@ function Connection(user, host, database, password, port, type, schema, poolLimi
     this.poolLimit=poolLimit;
     this.sid = sid;
     this.warehouse = warehouse;
-    this.ssl = ssl;
+    if(ssl){
+        this.ssl = ssl;
+    }
+
 }
 
 export default Connection;

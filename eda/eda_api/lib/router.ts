@@ -5,6 +5,7 @@ import AddTableRouter from './module/addtabletomodel/addtable.router';
 import DataSourceRouter from './module/datasource/datasource.router';
 import UploadsRouter from './module/uploads/uploads.router';
 import MailRouter from './module/mail/mail.router';
+import DocuRouter from './routes/api/api-docs'
 
 const router = express.Router();
 
@@ -19,5 +20,8 @@ router.use('/global/upload', UploadsRouter);
 router.use('/addTable', AddTableRouter );
 
 router.use('/mail', MailRouter);
+
+/* ruta per documentació*/
+router.use("/api-docs", DocuRouter);
 
 export default router;
