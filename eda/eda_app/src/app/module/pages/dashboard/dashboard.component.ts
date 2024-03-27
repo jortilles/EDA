@@ -80,7 +80,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public tags: Array<any>;
     public selectedTags: any[];
     public selectedtag: any;
-    public selectedTagsForDashboard: any = [];
     public applyNewTag: string;
     public addTag: boolean = false;
     public sendViaMailConfig: any = { enabled: false };
@@ -142,7 +141,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         
         if (tags) {
             this.tags = _.uniqBy(tags, 'value');
-            console.log(this.tags)
         } else {
             this.tags = [];
         }
@@ -375,8 +373,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.form.controls['visible'].setValue(config.visible);
                     me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
                     me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
-                    me.tags.forEach(tag => { if (config.tags != null) config.tags.forEach(t => {if (t == tag.value) this.selectedTagsForDashboard.push(t)})});
-                    me.selectedTags = this.selectedTagsForDashboard;
+                    me.selectedTags = me.selectedTagsForDashboard(me.tags, config.tag)
                     me.refreshTime = config.refreshTime;
                     me.onlyIcanEdit = config.onlyIcanEdit;
                     if (me.refreshTime) {
@@ -463,6 +460,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
+    private selectedTagsForDashboard(tags, dbTags) {
+        let selectedTagsForDashboard = [];
+        tags.forEach(tag => {
+            if (dbTags != null && Array.isArray(dbTags)) {
+                dbTags.forEach(t => {
+                    if (t == tag.value) {
+                        selectedTagsForDashboard.push(t)
+                    }
+                })
+            } else if (typeof dbTags === 'string' ) {
+                selectedTagsForDashboard.push(dbTags)
+            }
+        });
+        return selectedTagsForDashboard;
+    }
     private updateFilterDatesInPanels(): void {
 
         /**Set ranges for dates in panel filters */
@@ -877,7 +889,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     const ds = { _id: this.dataSource._id };
                     const body = {
                         config: {
-                            title: response.name, visible: response.visible, ds, tags: null, refreshTime: null,
+                            title: response.name, visible: response.visible, ds, tag: null, refreshTime: null,
                             styles: this.stylesProviderService.generateDefaultStyles(),
                         },
                         group: response.group
@@ -1386,7 +1398,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     filters: this.cleanFiltersData(),
                     applyToAllfilter: this.applyToAllfilter,
                     visible: this.form.controls['visible'].value,
-                    tags: this.saveTag(),
+                    tag: this.saveTag(),
                     refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
                     mailingAlertsEnabled: this.getMailingAlertsEnabled(),
                     sendViaMailConfig: this.sendViaMailConfig,
