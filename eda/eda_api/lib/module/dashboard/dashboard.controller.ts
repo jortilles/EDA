@@ -9,6 +9,7 @@ import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
+import _ from 'lodash'
 const cache_config = require('../../../config/cache.config')
 
 export class DashboardController {
@@ -24,7 +25,7 @@ export class DashboardController {
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0
 
       if (isAdmin) {
-        admin = await DashboardController.getAllDashboardToAdmin()
+        admin = await DashboardController.getAllDashboardToAdmin(req)
         publics = admin[0]
         privates = admin[1]
         group = admin[2]
@@ -32,8 +33,8 @@ export class DashboardController {
       } else {
         privates = await DashboardController.getPrivateDashboards(req)
         group = await DashboardController.getGroupsDashboards(req)
-        publics = await DashboardController.getPublicsDashboards()
-        shared = await DashboardController.getSharedDashboards()
+        publics = await DashboardController.getPublicsDashboards(req)
+        shared = await DashboardController.getSharedDashboards(req)
       }
       return res.status(200).json({
         ok: true,
@@ -62,7 +63,31 @@ export class DashboardController {
           privates.push(dashboard)
         }
       }
-      return privates
+
+      let tags : Array<any> = req.qs.tags;
+      
+      if (_.isEmpty(tags)) {
+        return privates;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const privatesTags = []
+        tags.forEach(tag => {
+          privates.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  privatesTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return privatesTags;
+      }
+      
+
     } catch (err) {
       throw new HttpException(400, 'Error loading privates dashboards')
     }
@@ -91,14 +116,38 @@ export class DashboardController {
           }
         }
       }
-      return groupDashboards
+      
+      let tags : Array<any> = req.qs.tags;
+      
+      if (_.isEmpty(tags)) {
+        return groupDashboards;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const groupDashboardsTags = []
+        tags.forEach(tag => {
+          groupDashboards.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  groupDashboardsTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return groupDashboardsTags;
+      }
+
+
     } catch (err) {
       console.log(err)
       throw new HttpException(400, 'Error loading groups dashboards')
     }
   }
 
-  static async getPublicsDashboards() {
+  static async getPublicsDashboards(req : Request) {
     try {
       const dashboards = await Dashboard.find(
         {},
@@ -111,13 +160,36 @@ export class DashboardController {
           publics.push(dashboard)
         }
       }
-      return publics
+
+      let tags : Array<any> = req.qs.tags;
+      
+      if (_.isEmpty(tags)) {
+        return publics;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const publicsTags = []
+        tags.forEach(tag => {
+          publics.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  publicsTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return publicsTags;
+      }
+
     } catch (err) {
       throw new HttpException(400, 'Error loading public dashboards')
     }
   }
 
-  static async getSharedDashboards() {
+  static async getSharedDashboards(req : Request) {
     try {
       const dashboards = await Dashboard.find(
         {},
@@ -129,13 +201,36 @@ export class DashboardController {
           shared.push(dashboard)
         }
       }
-      return shared
+      
+      let tags : Array<any> = req.qs.tags;
+      
+      if (_.isEmpty(tags)) {
+        return shared;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const sharedTags = []
+        tags.forEach(tag => {
+          shared.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  sharedTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return sharedTags;
+      }
     } catch (err) {
       throw new HttpException(400, 'Error loading shared dashboards')
     }
   }
 
-  static async getAllDashboardToAdmin() {
+  static async getAllDashboardToAdmin(req : Request) {
+    
     try {
       const dashboards = await Dashboard.find(
         {},
@@ -145,8 +240,8 @@ export class DashboardController {
       const privates = []
       const groups = []
       const shared = []
-
-      for (const dashboard of dashboards) {
+      
+      for (const dashboard of dashboards) {    
         switch (dashboard.config.visible) {
           case 'public':
             publics.push(dashboard)
@@ -178,8 +273,55 @@ export class DashboardController {
             break
         }
       }
+      
+      //apliquem filtrat per tags desde URL
+      let tags : Array<any> = req.qs.tags;
+      
+      if (_.isEmpty(tags)) {
+        return [publics, privates, groups, shared];
+      } else {
+        tags = req.qs.tags.split(',');
+        const publicsTags = []
+        const privatesTags = []
+        const groupsTags = []
+        const sharedTags = []
 
-      return [publics, privates, groups, shared]
+          tags.forEach(tag => {
+          publics.forEach(dbs => { if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+            dbs.config.tag.forEach(t => {
+              if (t === tag) {
+                publicsTags.push(dbs)
+              }
+            })
+          }})
+          privates.forEach(dbs => { if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag) ) {
+            dbs.config.tag.forEach(t => {
+              if (t === tag) {
+                privatesTags.push(dbs)
+              }
+            })
+          }})
+          groups.forEach(dbs => { if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag) ) {
+            dbs.config.tag.forEach(t => {
+              if (t === tag) {
+                groupsTags.push(dbs)
+              }
+            })
+          }})
+          shared.forEach(dbs => { if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag) ) {
+            dbs.config.tag.forEach(t => {
+              if (t === tag) {
+                sharedTags.push(dbs)
+              }
+            })
+          }})
+         })
+
+          return [publicsTags, privatesTags, groupsTags, sharedTags];     
+      }
+        
+      
+      
     } catch (err) {
       throw new HttpException(400, 'Error loading dashboards for admin')
     }

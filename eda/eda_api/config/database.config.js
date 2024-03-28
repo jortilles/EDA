@@ -1,3 +1,4 @@
 module.exports = {
-    url: "mongodb://127.0.0.1:27017/EDA"
-};
+    url: "mongodb://myUserAdmin:SemperFilelis2024@dev.jortilles.com:12345/EDA?authSource=EDA"
+}
+;
