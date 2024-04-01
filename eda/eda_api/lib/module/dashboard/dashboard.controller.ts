@@ -240,8 +240,8 @@ export class DashboardController {
       const privates = []
       const groups = []
       const shared = []
-
-      for (const dashboard of dashboards) {
+      
+      for (const dashboard of dashboards) {    
         switch (dashboard.config.visible) {
           case 'public':
             publics.push(dashboard)
@@ -273,6 +273,18 @@ export class DashboardController {
             break
         }
       }
+      
+      //apliquem filtrat per tags desde URL
+      let tags : Array<any> = req.qs.tags;
+      
+      if (_.isEmpty(tags)) {
+        return [publics, privates, groups, shared];
+      } else {
+        tags = req.qs.tags.split(',');
+        const publicsTags = []
+        const privatesTags = []
+        const groupsTags = []
+        const sharedTags = []
 
       //apliquem filtrat per tags desde URL
       let tags: Array<any> = req.qs.tags;
