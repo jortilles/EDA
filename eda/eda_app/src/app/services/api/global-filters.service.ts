@@ -130,7 +130,7 @@ export class GlobalFiltersService {
         return firstPanelRelatedTables;
     }
 
-    public filterPanels(tables: any[], panels: EdaPanel[]): any[] {
+    public filterPanels(tables: any[], panels: EdaPanel[], rootPanel?: any): any[] {
         const filteredPanels: any[] = panels.filter((panel) => panel.content);
 
         for (const panel of filteredPanels) {
@@ -146,7 +146,7 @@ export class GlobalFiltersService {
             this.assertTable(rootTable, queryTables, tables);
         }
 
-        const rootPanel = filteredPanels[0];
+        if (!rootPanel) rootPanel = filteredPanels[0];
 
 
         if (rootPanel) {
@@ -175,7 +175,6 @@ export class GlobalFiltersService {
 
         return filteredPanels;
     }
-
 
     public loadTablePaths(tables: any[], rootPanel: EdaPanel) {
         const panelQuery = rootPanel.content.query.query;

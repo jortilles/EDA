@@ -655,7 +655,7 @@ export const PanelInteractionUtils = {
     */
   removeColumn: (ebp: EdaBlankPanelComponent, c: Column, list?: string) => {
     ebp.disableBtnSave();
-
+    console.log(JSON.stringify(ebp));
     // Busca de l'array index, la columna a borrar i ho fa
     if (list === 'select') {
       if (ebp.selectedQueryMode == 'EDA2') {

@@ -15,6 +15,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     @Input() dataSource: any;
     public modelTables: any[] = [];
     @Input() panels: EdaPanel[] = [];
+
+    public allPanels: any[] = [];
     public filteredPanels: any[] = [];
 
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
@@ -51,6 +53,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         private alertService: AlertService,
         private fileUtils: FileUtiles,
     ) {  }
+
+    private sortByTittle = (a: any, b: any) => {
+        if (a.title < b.title) { return -1; }
+        if (a.title > b.title) { return 1; }
+        return 0;
+    };
 
     public ngOnInit(): void {
         this.display = true;
@@ -101,20 +109,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public initPanels() {
-        let panels = this.globalFilterService.filterPanels(this.modelTables, this.panels);
-
-        const sortByTittle = (a: any, b: any) => {
-            if (a.title < b.title) { return -1; }
-            if (a.title > b.title) { return 1; }
-            return 0;
-        };
-
-        panels = panels.sort(sortByTittle);
-
-        this.filteredPanels = panels.filter((p: any) => p.avaliable === true && p.active === true);
-
+        this.allPanels = this.globalFilterService.filterPanels(this.modelTables, this.panels);
+        this.allPanels = this.allPanels.sort(this.sortByTittle);
+        this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable === true && p.active === true);
+        
         if (this.globalFilter.isnew) {
-            for (const panel of this.filteredPanels) {
+            for (const panel of this.allPanels) {
                 this.globalFilter.pathList[panel.id] = {
                     selectedTableNodes: {},
                     path: []
@@ -146,6 +146,18 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
         // this.tables = this.tables.slice();
         this.tables.sort((a, b) => a.value < b.value ? -1 : a.value > b.value ? 1 : 0);
+    }
+
+    public onAddPanelForFilter(panel: any) {
+        if (!panel.avaliable) {
+            this.clear();
+
+            this.allPanels = this.globalFilterService.filterPanels(this.modelTables, this.panels, panel);
+            this.allPanels = this.allPanels.sort(this.sortByTittle);
+            this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable === true && p.active === true);
+            this.initTablesForFilter();
+        }
+
     }
 
     public getColumnsByTable() {
@@ -247,15 +259,38 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     private validateGlobalFilter(): boolean {
         let valid = true;
 
+        const availablePanels = this.filteredPanels.map((p) => p.id);
+
         if (!this.globalFilter.isdeleted) {
             for (const key in this.globalFilter.pathList) {
-                if (_.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {
+                if (availablePanels.includes(key) && _.isEmpty(this.globalFilter.pathList[key].selectedTableNodes)) {
                     valid = false;
                 }
             }
         }
 
         return valid;
+    }
+
+    private clear(): void {
+        this.tables = [];
+        this.columns = [];
+        this.columnValues = [];
+        this.globalFilter.selectedTable = {};
+        this.globalFilter.selectedColumn = {};
+        this.globalFilter.selectedItems = [];
+        this.globalFilter.panelList = [];
+        this.globalFilter.pathList = {};
+        this.globalFilter.type = '';
+
+        for (const panel of this.allPanels) {
+            panel.content.globalFilterPaths = [];
+
+            this.globalFilter.pathList[panel.id] = {
+                selectedTableNodes: {},
+                path: []
+            };
+        }
     }
 
     public onApply(): void {

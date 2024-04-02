@@ -39,7 +39,7 @@
 
             <br><br>
 
-            <p-table [value]="filteredPanels">
+            <p-table [value]="allPanels">
                 <ng-template pTemplate="header">
                     <tr>
                         <th style="width: 40%;">Panel</th>
@@ -50,7 +50,7 @@
                     <tr>
                         <td style="width: 40%;">
                             <button type="button" pButton class="ui-button" [label]="panel.title"
-                                [style]="{'width': '70%'}"
+                                [style]="{'width': '70%'}" (click)="onAddPanelForFilter(panel)"
                                 [ngClass]="{'ui-button-selected': panel.active, 'ui-button-unselected':!panel.active, 'ui-button-unvaliable':!panel.avaliable}">
                             </button>
                         </td>
