@@ -6,7 +6,7 @@ import DataSourceRouter from './module/datasource/datasource.router';
 import UploadsRouter from './module/uploads/uploads.router';
 import MailRouter from './module/mail/mail.router';
 import DocuRouter from './routes/api/api-docs';
-import AuthRouter from './routes/api/auth-router';
+import AuthRouter from './middleware/keycloak/auth.router';
 
 const router = express.Router();
 
