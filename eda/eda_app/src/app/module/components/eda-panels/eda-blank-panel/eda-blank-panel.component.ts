@@ -1039,7 +1039,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
-    public removeColumn = (c: Column, list?: string) => PanelInteractionUtils.removeColumn(this, c, list);
+    public removeColumn = (c: Column, list?: string, event?: Event) => PanelInteractionUtils.removeColumn(this, c, list);
 
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
 

@@ -655,12 +655,25 @@ export const PanelInteractionUtils = {
     */
   removeColumn: (ebp: EdaBlankPanelComponent, c: Column, list?: string) => {
     ebp.disableBtnSave();
-    console.log(JSON.stringify(ebp));
+
     // Busca de l'array index, la columna a borrar i ho fa
     if (list === 'select') {
       if (ebp.selectedQueryMode == 'EDA2') {
-        if (ebp.rootTreeTable && ebp.rootTreeTable.column_name == c.column_name && ebp.rootTreeTable.table_name == c.table_id) {
-          ebp.selectedQueryMode = 'EDA';
+
+        const rootTable = ebp.rootTreeTable.table_name;
+
+        // Remove column is from rootTable then check currentQuery columns to allow or not.
+        if (c.table_id === rootTable) {
+          // If only there is 1 column of rootTable, check if panel have any globalFilter linked it.
+          if (ebp.currentQuery.map((query) => query.table_id == rootTable).length <= 1) {
+            if (ebp.globalFilters.some((filter) => filter.filter_table === rootTable)) {
+              return ebp.alertService.addError(`[Error]: Can not remove this column cause there is a GlobalFilter linked.`);
+            }
+          }
+        }
+
+        if (ebp.rootTreeTable && ebp.rootTreeTable.column_name == c.column_name && rootTable == c.table_id) {
+          // ebp.selectedQueryMode = 'EDA';
           ebp.currentQuery.forEach((query) => query.table_id = query.table_id.split('.')[0]);
           ebp.reloadTablesData();
         }
