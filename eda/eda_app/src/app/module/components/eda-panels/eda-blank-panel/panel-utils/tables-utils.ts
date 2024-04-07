@@ -11,7 +11,6 @@ export const TableUtils = {
     * @param vMap   Map() to keep tracking visited nodes -> first call is just a new Map()
   */
   findRelationsRecursive: (tables: any, table: any, vMap: any) => {
-    console.log(table);
     vMap.set(table.table_name, table);
 
     table.relations.filter(r => r.visible !== false)

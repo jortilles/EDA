@@ -745,30 +745,17 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     public setGlobalFilter(_filter: any) {
         const globalFilter = _.cloneDeep(_filter);
-        globalFilter.joins = _filter.pathList[this.panel.id].path
-        globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
 
-        if (_filter.filter_elements[0].value1.length === 0) {
-            this.globalFilters = this.globalFilters.filter(f => f.filter_id !== _filter.filter_id);
+        if (_filter.pathList) {
+            globalFilter.joins = _filter.pathList[this.panel.id].path
+            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+        }
+        const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
+    
+        if (filterInx != -1) {
+            this.globalFilters.splice(this.globalFilters.indexOf(filterInx), 1, globalFilter);
         } else {
-            // this.globalFilters = this.globalFilters.filter(f => f.filter_id !== _filter.filter_id)
-            // this.globalFilters.push(_filter)
-
-
-            
-            if (this.globalFilters.some((gf: any) => gf.filter_id === globalFilter.filter_id)) {
-                const _globalFilters = _.cloneDeep(this.globalFilters);
-                this.globalFilters = [];
-                for (const gf of _globalFilters) {
-                    if (gf.filter_id === globalFilter.filter_id) {
-                        this.globalFilters.push(globalFilter);
-                    } else {
-                        this.globalFilters.push(gf)
-                    }
-                }
-            } else {
-                this.globalFilters.push(globalFilter);
-            }
+            this.globalFilters.push(globalFilter);
         }
     }
 

@@ -310,13 +310,13 @@
                                 <p *ngIf="currentQuery.length < 1" class="fieldsInfo">{{draggFields}}</p>
                                 <div *ngFor="let item of currentQuery"
                                     class="select-box col-3 col-md-2 p-1"
-                                    (click)="openColumnDialog(item)"
                                     (mouseover)="showDescription(item)"
                                     (mouseout)="description = ''"
                                     [cdkDragData]="column"
                                     cdkDrag>
-    
-                                    <span class="close-thin pointer" style="z-index: 9999;" (click)="removeColumn( item, 'select' )"></span>
+
+                                    <span class="select-box-overlay" (click)="openColumnDialog(item)"></span>
+                                    <span class="close-thin pointer" (click)="removeColumn( item, 'select' )"></span>
                                     <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                     <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
                                     <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>

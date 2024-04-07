@@ -42,7 +42,9 @@ export const QueryUtils = {
   switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
     try {
       if (ebp.selectedQueryMode != 'SQL') {
-        const response = await ebp.dashboardService.executeQuery(query).toPromise();
+        const queryData = JSON.parse(JSON.stringify(query));
+        queryData.query.filters = query.query.filters.filter((f) => f.filter_elements[0].value1 && f.filter_elements[0].value1.length !== 0);
+        const response = await ebp.dashboardService.executeQuery(queryData).toPromise();
         return response;
       } else {
         const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();

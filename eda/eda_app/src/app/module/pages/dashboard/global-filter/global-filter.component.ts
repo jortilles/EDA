@@ -137,9 +137,9 @@ export class GlobalFilterComponent implements OnInit {
                 }
 
                 // If default values are selected filter is applied
-                if (this.globalFilter.selectedItems.length > 0) {
+                // if (this.globalFilter.selectedItems.length > 0) {
                     this.applyGlobalFilter(this.globalFilter);
-                }
+                // }
 
                 // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
                 // if (this.globalFilter.applyToAll && (this.applyToAllfilter.present === false)) {
@@ -196,7 +196,7 @@ export class GlobalFilterComponent implements OnInit {
                     this.applyGlobalFilter(filter);
                     this.removeGlobalFilter(filter);
                 } else {
-                    let existFilter = this.globalFilters.find((f) => f.id === `${targetTable}_${filter.column.value?.column_name}`);
+                    let existFilter = this.globalFilters.find((f) => f.id === filter.id);
 
                     if (existFilter) {
                         existFilter.selectedItems = filter.selectedItems;
@@ -210,11 +210,9 @@ export class GlobalFilterComponent implements OnInit {
                     } else {
                         await this.loadGlobalFiltersData(filter);
                     }
-
-                    // If default values are selected filter is applied
-                    if (filter.selectedItems.length > 0) {
-                        this.applyGlobalFilter(filter);
-                    }
+                    
+                    // Apply globalFilter to linkedPanels
+                    this.applyGlobalFilter(filter);
 
                     // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
                     if (filter.applyToAll && (this.dashboard.applyToAllfilter.present === false)) {
@@ -347,7 +345,7 @@ export class GlobalFilterComponent implements OnInit {
         } else {
             targetTable = globalFilter.table.value;
             targetColumn = globalFilter.column.value;
-            targetColumn.column.value.ordenation_type = 'ASC';
+            targetColumn.ordenation_type = 'ASC';
         }
 
         const queryParams = {

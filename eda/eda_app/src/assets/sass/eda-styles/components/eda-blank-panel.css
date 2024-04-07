@@ -303,6 +303,14 @@ body .ui-accordion .ui-accordion-header a {
     z-index: 99999 !important;
 }
 
+.select-box-overlay {
+    width: 92%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
 .table-box:active {
     box-shadow: 0 2px #666;
     transform: translateY(2px);
