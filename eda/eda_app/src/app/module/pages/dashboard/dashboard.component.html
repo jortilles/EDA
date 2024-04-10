@@ -269,13 +269,14 @@
 
     <div *ngIf="display_v.edit_mode">
         <form [formGroup]="form" *ngIf="canIedit()" >
-            <div >
+            <div class="ml-3">
                 <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)">
                 </p-selectButton>
 
 
             </div>
-            <div  *ngIf="display_v.groups">
+            <div  *ngIf="display_v.groups" class="ml-3">
+                <br>
                 <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="true"
                  optionLabel="name" defaultLabel="Elige grupos *" [style]="{ width: '100%' }" itemSize="30" overflow="visible"
                  >
@@ -290,7 +291,7 @@
         </button>
     </div>
 
-    <div *ngIf="display_v.edit_mode && canIedit()"  [pTooltip]="canIeditTooltip" tooltipPosition="above" class="canIeditClass">
+    <div *ngIf="display_v.edit_mode && canIedit()"  [pTooltip]="canIeditTooltip" tooltipPosition="above" class="canIeditClass ml-3">
         <div i18n="@@onlyIcanEditTag" class="canIeditClassLabel"  >
             Edición privada:
         </div>

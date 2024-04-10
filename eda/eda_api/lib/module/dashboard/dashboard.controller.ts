@@ -286,18 +286,6 @@ export class DashboardController {
         const groupsTags = []
         const sharedTags = []
 
-      //apliquem filtrat per tags desde URL
-      let tags: Array<any> = req.qs.tags;
-
-      if (_.isEmpty(tags)) {
-        return [publics, privates, groups, shared];
-      } else {
-        tags = req.qs.tags.split(',');
-        const publicsTags = []
-        const privatesTags = []
-        const groupsTags = []
-        const sharedTags = []
-
         tags.forEach(tag => {
           publics.forEach(dbs => {
             if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
