@@ -28,6 +28,7 @@ import { ModelPermissionDialogComponent } from './data-sources/data-source-detai
 import { MapDialogComponent } from './data-sources/data-source-detail/mapsDialog/maps-dialog.component';
 import { ViewDialogComponent } from './data-sources/data-source-detail/viewDialog/view-dialog.component';
 import {AddCsvComponent} from './data-sources/data-source-list/addCSV/add-csv.component';
+import { AddTagComponent } from './data-sources/data-source-list/addTag/add-tag.component';
 import { ModelSettingsComponent } from './model-settings/model-settings.component';
 import {CacheDialogComponent} from './data-sources/data-source-detail/cache-dialog/cache-dialog.component';
 import {SecurityDialogComponent} from './data-sources/data-source-detail/security-dialog/security-dialog.component';
@@ -73,6 +74,7 @@ import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-s
         UploadFileComponent,
         ViewDialogComponent,
         AddCsvComponent,
+        AddTagComponent,
         DsConfigWrapperComponent,
         ModelSettingsComponent,
         CacheDialogComponent,

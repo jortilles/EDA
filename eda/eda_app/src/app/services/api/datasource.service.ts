@@ -1,11 +1,13 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { TreeNode } from 'primeng/api';
 import { ApiService } from './api.service';
 import { EditModelPanel, EditColumnPanel, EditTablePanel, Relation, ValueListSource } from '@eda/models/data-source-model/data-source-models';
 import { AlertService } from '../alerts/alert.service';
 import { aggTypes } from '../../config/aggretation-types';
+import { map } from 'rxjs/internal/operators/map';
+import { catchError } from 'rxjs/internal/operators/catchError';
 
 
 @Injectable()
@@ -48,7 +50,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 type: '', host: '', database: ' ', user: ' ', password: ' ', schema : '', port:null, warehouse:''
             },
             metadata: {
-                model_name: ' ', model_granted_roles: [], cache_config:{}, filter:''
+                model_name: ' ', model_granted_roles: [], cache_config:{}, filter:'', tags:[]
             }
         }
     );
@@ -69,7 +71,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
     private _maps = new BehaviorSubject<Array<Object>>([{}]);
     currentMaps = this._maps.asObservable();
 
+    private _tags = new BehaviorSubject<any>([]);
+    currentTags = this._tags.asObservable();
+
     model_id: string;
+
+    tags: string[];
 
     private globalDSRoute = '/datasource';
 
@@ -359,6 +366,30 @@ export class DataSourceService extends ApiService implements OnDestroy {
         tmpMetadata.cache_config = config;
         this._modelMetadata.next(tmpMetadata);
     }
+    //Añadir los tags al modelMetadata 
+    addTags(tags:any){
+        let tmpMetadata = this._modelMetadata.getValue();
+        if(tmpMetadata.tags){
+            let uniqueTags = [...new Set([...tags])];
+            tmpMetadata.tags = uniqueTags;
+        }
+        if(!tmpMetadata.tags) tmpMetadata.tags = [];
+        this._modelMetadata.next(tmpMetadata);
+    }
+    //Obtener todos los tags de todos los dataSources, sin distinción
+    getTags(): void {
+         this.get(this.globalDSRoute)
+             .subscribe((data: any) => {
+                let tagArray = []
+                let dsObject = data.ds;
+                dsObject.map((datasource) =>{
+                  if(datasource.ds.metadata.tags){ 
+                    tagArray = [...tagArray,...datasource.ds.metadata.tags]
+                }
+                });
+                this._tags.next(tagArray)
+             }, err => console.log(err));
+     }
 
     getRelationIndex(rel: Relation, tableIndex: string | number) {
         return this._databaseModel.getValue()[tableIndex].relations
