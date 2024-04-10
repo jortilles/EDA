@@ -113,16 +113,9 @@ a.link:hover, a.link:focus {
   background: #398bf7; }
 
 .sidebar-nav > ul > li.active > a {
-  color: #ffffff;
   border-color: #398bf7; }
-  .sidebar-nav > ul > li.active > a i {
-    color: #ffffff; }
-
 .sidebar-nav ul li a.active, .sidebar-nav ul li a:hover {
   color: #ffffff; }
-  .sidebar-nav ul li a.active i, .sidebar-nav ul li a:hover i {
-    color: #ffffff; }
-
 .sidebar-nav ul li.nav-small-cap {
   color: #687384; }
 

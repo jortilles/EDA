@@ -36,6 +36,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public modelPermissionsController: EdaDialogController;
     public newColController: EdaDialogController;
     public mapController: EdaDialogController;
+    public tagController: EdaDialogController;
     public viewController: EdaDialogController;
     public csvPanelController: EdaDialogController;
     public cacheController : EdaDialogController;
@@ -56,6 +57,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public viewsecurity:string = $localize`:@@viewsecurity:Ver configuración de seguridad`;
     public addMap:string = $localize`:@@addMap:Mapas`;
     public addView:string = $localize`:@@addView:Añadir vista`;
+    public addTagDataSource:string = $localize`:@@addTagDataSource: Añadir Tag`;
     public addCSV:string = $localize`:@@addCSV:Añadir tabla desde csv`;
     public addRelation:string = $localize`:@@addRelationButton:Añadir relación`;
     public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`; 
@@ -266,7 +268,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` })
             ]
         })
-
+       
     }
 
     ngOnInit() {
@@ -610,6 +612,20 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     this.onTableCreated.emit();
                 }
                 this.csvPanelController = undefined;
+            }
+        })
+    }
+    
+    openTagDialog() {
+        
+        this.tagController = new EdaDialogController({
+            params: { model_id: this.dataModelService.model_id, tagArray: this.modelPanel.metadata.tags },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addTags(response);
+                    this.update();
+                }
+                this.tagController = undefined;
             }
         })
     }
