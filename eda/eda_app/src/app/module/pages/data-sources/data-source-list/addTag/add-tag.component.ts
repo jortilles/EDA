@@ -58,10 +58,16 @@ export class AddTagComponent extends EdaDialogAbstract implements OnInit, OnDest
       const distinctTags:any =  [...new Set(response)];
         
       this.tags = this.tagsArrayToOptions(distinctTags);
+      let selectedFilteredTags = [];
+      if(this.controller.params.tagArray){
+         selectedFilteredTags = this.tagsArrayToOptions(this.controller.params.tagArray).map( parameterTag =>{
+        return this.tags.find(tag => tag.label === parameterTag.label )
+      }).filter(tag => tag !== undefined);
+      }
+      
+      
 
-      const selectedTags = this.tagsArrayToOptions(this.controller.params.tagArray);
-
-      this.groupForm.get('selectedTags').setValue([...selectedTags.map(option => option.value)]);
+      this.groupForm.get('selectedTags').setValue([...selectedFilteredTags.map(option => option.value)]);
     }
   )
     
