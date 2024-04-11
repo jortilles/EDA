@@ -41,7 +41,7 @@ export class AddTagComponent extends EdaDialogAbstract implements OnInit, OnDest
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: $localize`:@@addTagDataSource:Añadir Tag`
     });
-    this.dialog.style = { width: '60%', height: '35%',top:'-10em', left:'1em' };
+    this.dialog.style = { width: '60%', height: "55%",top:'-10em', left:'1em'};
 
     this.dataSourceService.getTags()
 
