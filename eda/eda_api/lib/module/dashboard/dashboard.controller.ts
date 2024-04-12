@@ -9,6 +9,7 @@ import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
+import _ from 'lodash'
 const cache_config = require('../../../config/cache.config')
 
 export class DashboardController {
@@ -24,7 +25,7 @@ export class DashboardController {
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0
 
       if (isAdmin) {
-        admin = await DashboardController.getAllDashboardToAdmin()
+        admin = await DashboardController.getAllDashboardToAdmin(req)
         publics = admin[0]
         privates = admin[1]
         group = admin[2]
@@ -32,8 +33,8 @@ export class DashboardController {
       } else {
         privates = await DashboardController.getPrivateDashboards(req)
         group = await DashboardController.getGroupsDashboards(req)
-        publics = await DashboardController.getPublicsDashboards()
-        shared = await DashboardController.getSharedDashboards()
+        publics = await DashboardController.getPublicsDashboards(req)
+        shared = await DashboardController.getSharedDashboards(req)
       }
       return res.status(200).json({
         ok: true,
@@ -62,7 +63,31 @@ export class DashboardController {
           privates.push(dashboard)
         }
       }
-      return privates
+
+      let tags: Array<any> = req.qs.tags;
+
+      if (_.isEmpty(tags)) {
+        return privates;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const privatesTags = []
+        tags.forEach(tag => {
+          privates.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  privatesTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return privatesTags;
+      }
+
+
     } catch (err) {
       throw new HttpException(400, 'Error loading privates dashboards')
     }
@@ -91,14 +116,38 @@ export class DashboardController {
           }
         }
       }
-      return groupDashboards
+
+      let tags: Array<any> = req.qs.tags;
+
+      if (_.isEmpty(tags)) {
+        return groupDashboards;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const groupDashboardsTags = []
+        tags.forEach(tag => {
+          groupDashboards.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  groupDashboardsTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return groupDashboardsTags;
+      }
+
+
     } catch (err) {
       console.log(err)
       throw new HttpException(400, 'Error loading groups dashboards')
     }
   }
 
-  static async getPublicsDashboards() {
+  static async getPublicsDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
         {},
@@ -111,13 +160,36 @@ export class DashboardController {
           publics.push(dashboard)
         }
       }
-      return publics
+
+      let tags: Array<any> = req.qs.tags;
+
+      if (_.isEmpty(tags)) {
+        return publics;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const publicsTags = []
+        tags.forEach(tag => {
+          publics.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  publicsTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return publicsTags;
+      }
+
     } catch (err) {
       throw new HttpException(400, 'Error loading public dashboards')
     }
   }
 
-  static async getSharedDashboards() {
+  static async getSharedDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
         {},
@@ -129,13 +201,36 @@ export class DashboardController {
           shared.push(dashboard)
         }
       }
-      return shared
+
+      let tags: Array<any> = req.qs.tags;
+
+      if (_.isEmpty(tags)) {
+        return shared;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const sharedTags = []
+        tags.forEach(tag => {
+          shared.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  sharedTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return sharedTags;
+      }
     } catch (err) {
       throw new HttpException(400, 'Error loading shared dashboards')
     }
   }
 
-  static async getAllDashboardToAdmin() {
+  static async getAllDashboardToAdmin(req: Request) {
+
     try {
       const dashboards = await Dashboard.find(
         {},
@@ -145,8 +240,8 @@ export class DashboardController {
       const privates = []
       const groups = []
       const shared = []
-
-      for (const dashboard of dashboards) {
+      
+      for (const dashboard of dashboards) {    
         switch (dashboard.config.visible) {
           case 'public':
             publics.push(dashboard)
@@ -178,8 +273,63 @@ export class DashboardController {
             break
         }
       }
+      
+      //apliquem filtrat per tags desde URL
+      let tags : Array<any> = req.qs.tags;
+      
+      if (_.isEmpty(tags)) {
+        return [publics, privates, groups, shared];
+      } else {
+        tags = req.qs.tags.split(',');
+        const publicsTags = []
+        const privatesTags = []
+        const groupsTags = []
+        const sharedTags = []
 
-      return [publics, privates, groups, shared]
+        tags.forEach(tag => {
+          publics.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  publicsTags.push(dbs)
+                }
+              })
+            }
+          })
+          privates.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  privatesTags.push(dbs)
+                }
+              })
+            }
+          })
+          groups.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  groupsTags.push(dbs)
+                }
+              })
+            }
+          })
+          shared.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  sharedTags.push(dbs)
+                }
+              })
+            }
+          })
+        })
+
+        return [publicsTags, privatesTags, groupsTags, sharedTags];
+      }
+
+
+
     } catch (err) {
       throw new HttpException(400, 'Error loading dashboards for admin')
     }
@@ -646,11 +796,11 @@ export class DashboardController {
 
 
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
-      if(includesAdmin){
+      if (includesAdmin) {
         // el admin ve todo
-       uniquesForbiddenTables = [];
+        uniquesForbiddenTables = [];
       }
-      
+
       let mylabels = []
       let myQuery: any
       if (uniquesForbiddenTables.length > 0) {
@@ -691,10 +841,10 @@ export class DashboardController {
         console.log('you cannot see any data');
         return res.status(200).json([['noDataAllowed'], [[]]]);
       }
-      if( req.body.query.hasOwnProperty('forSelector') && req.body.query.forSelector===true ){
-          myQuery.forSelector = true;
-      }else{
-          myQuery.forSelector = false;
+      if (req.body.query.hasOwnProperty('forSelector') && req.body.query.forSelector === true) {
+        myQuery.forSelector = true;
+      } else {
+        myQuery.forSelector = false;
       }
 
       const query = await connection.getQueryBuilded(
@@ -762,21 +912,21 @@ export class DashboardController {
                 }
               } else {
                 //això es per evitar els null trec els nulls i els canvio per ' ' dels labels al igual que les cadenes buides
-                if (r[i] === null ) {
-                    return ' ';
+                if (r[i] === null) {
+                  return ' ';
                 } else {
-                  if(r[i].length == 0){
+                  if (r[i].length == 0) {
                     return ' ';
-                  }else{
+                  } else {
                     return r[i];
                   }
-                 
+
                 }
               }
             } else {
               // trec els nulls i els canvio per ' ' dels labels al igual que les cadenes buides
-              if (numerics[ind] != 'true' && ( r[i] == null || r[i]?.length == 0 ) ) {
-                  return ' ';
+              if (numerics[ind] != 'true' && (r[i] == null || r[i]?.length == 0)) {
+                return ' ';
               } else {
                 return r[i];
               }
@@ -866,11 +1016,11 @@ export class DashboardController {
       )
 
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
-      if(includesAdmin){
+      if (includesAdmin) {
         // el admin ve todo
-       uniquesForbiddenTables = [];
+        uniquesForbiddenTables = [];
       }
-      
+
       let notAllowedQuery = false
       uniquesForbiddenTables.forEach(table => {
         if (req.body.query.SQLexpression.indexOf(table) >= 0) {
@@ -943,7 +1093,7 @@ export class DashboardController {
               const tmpArray = []
 
               output.forEach((val, index) => {
-                if(val===null || val.length == 0){
+                if (val === null || val.length == 0) {
                   output[index] = ' ' // los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
                   resultsRollback[i][index] = ' ';// los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
                 }
@@ -959,7 +1109,7 @@ export class DashboardController {
             } else {
               const output = Object.keys(r).map(i => r[i]);
               output.forEach((val, index) => {
-                if(val===null || val.length == 0){
+                if (val === null || val.length == 0) {
                   output[index] = ' ' // los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
                   resultsRollback[i][index] = ' ';// los valores nulos o cadenas vacías les canvio per un espai en blanc pero que si no tinc problemes
                 }
@@ -1028,7 +1178,7 @@ export class DashboardController {
       if (
         isNaN(val) || val.toString().indexOf('-') >= 0 || val.toString().indexOf('/') >= 0 ||
         val.toString().indexOf('|') >= 0 || val.toString().indexOf(':') >= 0 || val.toString().indexOf('T') >= 0 ||
-        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().replace(/['"]+/g, '').length == 0 ) {
+        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().replace(/['"]+/g, '').length == 0) {
         isNotNumeric = true;
       }
     } catch (e) {
@@ -1042,7 +1192,7 @@ export class DashboardController {
   /**Check if an user can or not see a data model. */
   static securityCheck(dataModel: any, user: any) {
     /** un admin  lo ve todo */
-    if( user.role.includes('135792467811111111111110') ){
+    if (user.role.includes('135792467811111111111110')) {
       return true;
     }
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {

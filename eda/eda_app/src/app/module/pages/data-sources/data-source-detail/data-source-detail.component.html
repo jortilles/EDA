@@ -336,6 +336,8 @@
                         (click)="openNewViewDialog()" style="margin-bottom: 1px;"> </button>
                     <button pButton type="button" icon="pi pi-plus" [label]="addCSV" class="p-button-secondary"
                         (click)="openCSVDialog()" style="margin-bottom: 1px;"> </button>
+                    <button pButton type="button" (click)="openTagDialog()" icon="pi pi-plus" [label]="addTagDataSource" class="p-button-secondary"
+                         style="margin-bottom: 1px;"> </button>
                 </span>
             </div>
             <div style="margin-bottom: 1rem;" class="col-12">
@@ -378,6 +380,7 @@
 <app-map-dialog *ngIf="mapController" [controller]="mapController"></app-map-dialog>
 <app-view-dialog id="viewDialog" *ngIf="viewController" [controller]="viewController"></app-view-dialog>
 <app-add-csv-dialog *ngIf="csvPanelController" [controller]="csvPanelController"></app-add-csv-dialog>
+<app-add-tag-dialog *ngIf="tagController" [controller]="tagController"></app-add-tag-dialog>
 <eda-cache-dialog *ngIf="cacheController" [controller]="cacheController"></eda-cache-dialog>
 <eda-security-dialog *ngIf="securityController" [controller]="securityController"></eda-security-dialog>
 

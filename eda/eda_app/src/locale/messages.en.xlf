@@ -2070,6 +2070,58 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 
+<trans-unit id="emptyTag" datatype="html">
+<source>Este tag esta vacío</source>
+<target>This tag is empty</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.ts</context>
+  <context context-type="linenumber">47</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="existentTag" datatype="html">
+<source>Este tag ya existe</source>
+<target>This tag already exists</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.ts</context>
+  <context context-type="linenumber">48</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="saveNewTag" datatype="html">
+<source>Añadir Tag</source>
+<target>Add Tag</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.html</context>
+  <context context-type="linenumber">24</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="newTagPlaceholder" datatype="html">
+<source>Añadir nuevo Tag</source>
+<target>Add a new Tag</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.html</context>
+  <context context-type="linenumber">19</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="saveTag" datatype="html">
+<source>Guardar Tags</source>
+<target>Save Tags</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.html</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="addTagDataSource" datatype="html">
+<source>Añadir Tag</source>
+<target>Add Tag</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+</context-group>
+</trans-unit>
+
 <trans-unit id="listRelations" datatype="html">
 <source>Relaciones</source>
 <target>Relations</target>

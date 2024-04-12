@@ -182,7 +182,7 @@
             [baseZIndex]="10000"
             blockScroll="true"
             [showCloseIcon]="false"
-            [style]="{width:'21em', overflow: 'auto'}"  >
+            [style]="{width:'25em', overflow: 'auto'}"  >
 
     <div>
 
@@ -226,11 +226,22 @@
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1">
         <div>
             <div>
-                <i class="fa fa-folder-open"></i>
+                <i class="fa fa-tag" ></i>
                 <span class="ml-2"> {{addTagString}} </span>
             </div>
-            <p-dropdown [options]="tags" [(ngModel)]="selectedtag" optionLabel="label" (onChange)="selectTag()" [placeholder]="newTag"></p-dropdown>
-            <input style=" margin-top: 0.4rem;" *ngIf="addTag" type="text" pInputText [(ngModel)]="tag.label">
+            <div>
+                <p-multiSelect class="ml-2" [options]="tags"  [(ngModel)]="selectedTags" [placeholder]="addTagString" showHeader="false" maxSelectedLabels="0" selectedItemsLabel="Show tags"></p-multiSelect>
+            </div>
+            <br>
+            <div>
+                 <button pButton pRipple type="button" *ngIf="!addTag" class="p-button-raised p-button-success ml-2" (click)="addNewTag()" style="background-color: #4CAF50">
+                    <span i18n="@@newTag"> Nueva etiqueta </span>
+                 </button>
+            </div>
+            <input class="ml-2" *ngIf="addTag" type="text" pInputText [(ngModel)]="applyNewTag"> 
+            <button pButton pRipple type="button" *ngIf="addTag" class="p-button-raised p-button-success ml-2" style="background-color: #4CAF50" (click)="setNewTag(applyNewTag)">
+                <span> Confirmar </span>
+            </button>
         </div>
     </div>
 
@@ -258,13 +269,14 @@
 
     <div *ngIf="display_v.edit_mode">
         <form [formGroup]="form" *ngIf="canIedit()" >
-            <div >
+            <div class="ml-3">
                 <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)">
                 </p-selectButton>
 
 
             </div>
-            <div  *ngIf="display_v.groups">
+            <div  *ngIf="display_v.groups" class="ml-3">
+                <br>
                 <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="true"
                  optionLabel="name" defaultLabel="Elige grupos *" [style]="{ width: '100%' }" itemSize="30" overflow="visible"
                  >
@@ -279,7 +291,7 @@
         </button>
     </div>
 
-    <div *ngIf="display_v.edit_mode && canIedit()"  [pTooltip]="canIeditTooltip" tooltipPosition="above" class="canIeditClass">
+    <div *ngIf="display_v.edit_mode && canIedit()"  [pTooltip]="canIeditTooltip" tooltipPosition="above" class="canIeditClass ml-3">
         <div i18n="@@onlyIcanEditTag" class="canIeditClassLabel"  >
             Edición privada:
         </div>
