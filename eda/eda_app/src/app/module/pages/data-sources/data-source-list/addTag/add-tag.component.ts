@@ -29,6 +29,8 @@ export class AddTagComponent extends EdaDialogAbstract implements OnInit, OnDest
   public groupForm: FormGroup;
   public tags:TagOption[] = [];
   public allDsTags:string[];
+  public emptyString:string;
+  public existentString:string;
   constructor(
     public dataSourceService: DataSourceService,
     private fb: FormBuilder,
@@ -41,8 +43,9 @@ export class AddTagComponent extends EdaDialogAbstract implements OnInit, OnDest
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: $localize`:@@addTagDataSource:Añadir Tag`
     });
-    this.dialog.style = { width: '60%', height: '55%',top:'-10em', left:'1em' };
-
+    this.dialog.style = { width: '60%', height: "55%",top:'-10em', left:'1em'};
+    this.emptyString = $localize`:@@emptyTag:Este tag esta vacío`;
+    this.existentString = $localize`:@@existentTag:Este tag ya existe`;
     this.dataSourceService.getTags()
 
     this.groupForm = this.fb.group({
@@ -86,8 +89,8 @@ export class AddTagComponent extends EdaDialogAbstract implements OnInit, OnDest
       const newTagLabel: string = this.newTag.trim(); 
       
       //Si está vacío o ya existe no lo ponemos...
-      if (newTagLabel === ""){ this.alertService.addWarning("Este tag esta vacío!"); return;}
-      if( this.tagExists(newTagLabel)){ this.alertService.addWarning("Este tag ya existe!"); return;}
+      if (newTagLabel === ""){ this.alertService.addWarning(this.emptyString); return;}
+      if( this.tagExists(newTagLabel)){ this.alertService.addWarning(this.existentString); return;}
       
       //Creamos el objeto y lo pusheamos en las opciones
       const newTagOption: TagOption = { label: newTagLabel, value: this.tags.length }; 
