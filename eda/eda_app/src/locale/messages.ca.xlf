@@ -2076,6 +2076,24 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 
+<trans-unit id="emptyTag" datatype="html">
+<source>Este tag esta vacío</source>
+<target>Aquest tag és buit</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.ts</context>
+  <context context-type="linenumber">47</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="existentTag" datatype="html">
+<source>Este tag ya existe</source>
+<target>Aquest tag ja existeix</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.ts</context>
+  <context context-type="linenumber">48</context>
+</context-group>
+</trans-unit>
+
 <trans-unit id="newTagPlaceholder" datatype="html">
 <source>Añadir nuevo Tag</source>
 <target>Afegir nou Tag</target>
