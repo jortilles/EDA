@@ -11,6 +11,7 @@ import { Mongoose, QueryOptions } from 'mongoose';
 import { upperCase } from 'lodash';
 import Group from '../../module/admin/groups/model/group.model';
 import { json } from 'body-parser';
+import _ from 'lodash';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
@@ -28,8 +29,8 @@ export class DataSourceController {
                     datasource.ds.connection.password = '__-(··)-__'; 
                     protectedDataSources.push(datasource);
                 }
-
-                return res.status(200).json({ ok: true, ds: protectedDataSources });
+                if(req?.qs.tags && dataSources) return res.status(200).json({ok:true,ds: DataSourceController.returnTagsFromDataSource(req,dataSources)});
+                if(!req?.qs.tags) return res.status(200).json({ ok: true, ds: protectedDataSources });
             });
         } catch (err) {
             next(err);
@@ -631,6 +632,19 @@ export class DataSourceController {
 
     }
 
-}
+    static returnTagsFromDataSource(req:Request, dataSources:IDataSource[]){
+      let queryTagArray : Array<any> = req.qs.tags;
+      
+      if (_.isEmpty(queryTagArray)) return dataSources;
+      if(!_.isEmpty(queryTagArray)) {
+        queryTagArray = req.qs.tags.split(',');
+        return dataSources.filter(dataSource =>
+            dataSource.ds.metadata.tags && dataSource.ds.metadata.tags.some(tag => queryTagArray.includes(tag))
+        );
+    }
+    }
 
+    }
+
+    
 
