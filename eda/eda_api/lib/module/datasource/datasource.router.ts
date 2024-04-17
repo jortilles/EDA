@@ -16,6 +16,13 @@ const router = express.Router();
  *         description: returns all dashboards
  *       404:
  *         description: error loading datasources
+ *     parameters:
+ *     - in: path
+ *       name: tags
+ *       type: string
+ *       required: false
+ *       description: datasource tags
+
  */
 router.get('', authGuard, roleGuard,  DataSourceController.GetDataSources);
 
