@@ -7,6 +7,7 @@ import mongoose, {
 } from 'mongoose'
 import User, { IUser } from '../../admin/users/model/user.model'
 import Group, { IGroup } from '../../admin/groups/model/group.model'
+import _ from 'lodash';
 
 export class userAndGroupsToMongo {
   static async crm_to_eda_UsersAndGroups (users: any, roles: any) {
@@ -88,8 +89,6 @@ export class userAndGroupsToMongo {
     await this.syncronizeUsersGroups(mongoUsers, mongoGroups, users, roles)
   }
 
-
-
   static async syncronizeUsersGroups (
     users: any,
     roles: any,
@@ -126,7 +125,7 @@ export class userAndGroupsToMongo {
           .catch(function (error) {
             console.log(error) // Failure
           })
-      }
+      } 
     })
 
     // para los grupos. Borro los usuarios. Lo mismo para los usuarios... borro los grupos
@@ -185,14 +184,14 @@ export class userAndGroupsToMongo {
         console.log('Error recreating  group becauser it does not exists in the origin role  ' + group);
       }
     })
-
+    
     //incluimos los id´s correspondientes tanto en usuarios como en grupos, discriminando repeticiones
     console.log('Refrescando roles');
     console.log(roles);
 
     await roles.forEach(async r => {
       try {
-        Group.updateOne({ name: r.name }, { $addToSet: { users: r.users } })
+        Group.updateOne({ name: r.name }, {  users: r.users })
           .then(function () {
             console.log(r.name + ' Updated') // Success
           })
@@ -204,7 +203,15 @@ export class userAndGroupsToMongo {
 
     await users.forEach(async y => {
       try {
-        User.updateOne({ name: y.name }, { $addToSet: { role: y.role } })
+        User.updateOne({ name: y.name }, { $unset: { role: {} } })
+        .then(function () {
+          console.log(y.name + ' Updated') // Success
+        })
+        .catch(function (error) {
+          console.log(error) // Failure
+        })
+
+        User.updateOne({ name: y.name }, { role: y.role } )
           .then(function () {
             console.log(y.name + ' Updated') // Success
           })
