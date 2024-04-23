@@ -104,7 +104,7 @@ export class updateModel {
                                 .then(async users => {
                                     let users_crm = users
                                     //seleccionamos roles de EDA
-                                    await connection.query('select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g;')
+                                    await connection.query('select "EDA_USER_ROLE" as role, b.name, "" as user_name  from sda_def_groups b union select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g; ')
                                         .then(async role => {
                                             let roles = role;
                                             await connection.query('  SELECT DISTINCT  a.`table`, a.`group`  FROM sda_def_security_group_records a  inner join sda_def_user_groups  b on a.`group`  = b.name   inner join   sda_def_tables t on a.`table`  = t.`table`  ')
@@ -203,7 +203,7 @@ export class updateModel {
 
     /** Genera los roles  */
     static async grantedRolesToModel(grantedRoles: any, crmTables: any, permissions: any, permissionsColumns: any) {
-
+        
         const destGrantedRoles = [];
         let gr = {}
         let gr2 = {}
@@ -225,7 +225,6 @@ export class updateModel {
         destGrantedRoles.push(all);
 
         const mongoGroups = await  Group.find();
-
 
         grantedRoles.forEach((line) => {
 
@@ -543,7 +542,7 @@ console.log(sinergiaDatabase);
         const cleanM = new CleanModel; 
         main_model = await cleanM.cleanModel(main_model);
         fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, (err) => { if (err) {throw err} else { }})
-        try {
+          try {
           await new pushModelToMongo().pushModel(main_model,res)
           } catch (e) {
             console.log(e)
