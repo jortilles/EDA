@@ -6,7 +6,7 @@ import DataSourceRouter from './module/datasource/datasource.router';
 import UploadsRouter from './module/uploads/uploads.router';
 import MailRouter from './module/mail/mail.router';
 import DocuRouter from './routes/api/api-docs'
-
+import ExcelRouter from './module/excel/excel-sheet.router';
 const router = express.Router();
 
 router.use('/admin', AdminRouter);
@@ -20,6 +20,8 @@ router.use('/global/upload', UploadsRouter);
 router.use('/addTable', AddTableRouter );
 
 router.use('/mail', MailRouter);
+
+router.use('/excel-sheets',ExcelRouter);
 
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);
