@@ -50,6 +50,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
 
 	async checkView() {
 		this.spinnerService.on();
+		this.form.value.SQLexpression= this.form.value.SQLexpression.replace(';','')
 		const body = {
 			model_id: this.controller.params.model_id,
 			user: this.controller.params.user,
@@ -123,7 +124,7 @@ export class ViewDialogComponent extends EdaDialogAbstract {
 			table_name: `${this.form.value.technical_name.replace(' ', '_')}`,
 			display_name: { default: `${this.form.value.viewName}`, localized: [] },
 			description: { default: `${this.form.value.description}`, localized: [] },
-			query: `(${this.form.value.SQLexpression}) as ${this.form.value.technical_name.replace(' ', '_')}`,
+			query: `(${this.form.value.SQLexpression.replace(';', '')}) as ${this.form.value.technical_name.replace(' ', '_')}`,
 			table_granted_roles: [],
 			table_type: 'view',
 			columns: columns,
