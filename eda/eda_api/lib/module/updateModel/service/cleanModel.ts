@@ -94,12 +94,47 @@ export class CleanModel {
             if (_.isEmpty(match) == false) {
                 match.forEach(c => model_granted_roles.push(c)) ; 
             }     
-
-            //eliminamos posibles valores repetidos
-            model_granted_roles = model_granted_roles.filter( (v,i,self) => {
-                return i == self.indexOf(v)
-            }  )     
             
+            function objetosIgualesGrupos(objetoA: any, objetoB: any): boolean {
+                if (objetoA.groups != undefined && objetoB.groups != undefined
+                 ) return (
+                    objetoA.groups.join(',') === objetoB.groups.join(',') &&
+                    objetoA.groupsName.join(',') === objetoB.groupsName.join(',') &&
+                    objetoA.none === objetoB.none &&
+                    objetoA.table === objetoB.table &&
+                    objetoA.column === objetoB.column &&
+                    objetoA.global === objetoB.global &&
+                    objetoA.permission === objetoB.permission &&
+                    objetoA.type === objetoB.type
+                );
+            }
+
+            function objetosIgualesUsuarios(objetoA: any, objetoB: any): boolean {
+                if (objetoA.users != undefined && objetoB.users != undefined
+                 ) return (
+                    objetoA.users.join(',') === objetoB.users.join(',') &&
+                    objetoA.usersName.join(',') === objetoB.usersName.join(',') &&
+                    objetoA.none === objetoB.none &&
+                    objetoA.table === objetoB.table &&
+                    objetoA.column === objetoB.column &&
+                    objetoA.global === objetoB.global &&
+                    objetoA.permission === objetoB.permission &&
+                    objetoA.type === objetoB.type
+                );
+            }
+            
+            // Filtrar objetos únicos grupos
+            const objetosUnicosGrupos = model_granted_roles.filter((objeto, index, self) =>
+                self.findIndex(other => objetosIgualesGrupos(objeto, other)) === index
+            );
+
+             // Filtrar objetos únicos usuarios
+             const objetosUnicosUsuarios = model_granted_roles.filter((objeto, index, self) =>
+                self.findIndex(other => objetosIgualesUsuarios(objeto, other)) === index
+            );
+            
+            model_granted_roles = objetosUnicosGrupos.concat(objetosUnicosUsuarios);
+
             main_model.ds.metadata.model_granted_roles = model_granted_roles;
             return main_model;
 
