@@ -1254,6 +1254,7 @@ export class ChartUtilsService {
                                     drawBorder: false,
                                 },
                                 display: true,
+                                beginAtZero: true,
                                 grace: (showLabels || showLabelsPercent )?'1%': '0%',
                                 ticks: {
                                     autoSkip: true,
@@ -1400,6 +1401,7 @@ export class ChartUtilsService {
                             },
                             y: {
                                 grid: { display: false },
+                                beginAtZero: true,
                                 ticks: {
                                     /*
                                     callback: (value) => {
@@ -1570,8 +1572,8 @@ export class ChartUtilsService {
                                     zeroLineWidth: 1
                                 }
                                 ,
-
                                 id: 'y-axis-0', position: 'left',
+                                beginAtZero: true,
                                 ticks: {
                                     callback: (value) => {
                                         if (value) {
