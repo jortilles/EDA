@@ -13,7 +13,7 @@ export class PgBuilderService extends QueryBuilderService {
     }
     let myQuery = `SELECT ${columns.join(', ')} \n`
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ?   this.cleanViewString(table.query) : table.name })[0];
-    let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];;
+    let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];
     if( vista ){  // Es una vista. NO la pongo entre comillas
       myQuery += `FROM ${o}`; 
     }else{  // Es una tabla. La pongo entre comillas
