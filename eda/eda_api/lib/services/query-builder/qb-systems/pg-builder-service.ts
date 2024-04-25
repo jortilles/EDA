@@ -145,6 +145,7 @@ export class PgBuilderService extends QueryBuilderService {
 
           /**T can be a table or a custom view, if custom view has a query  */
           let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
+          let view =  tables.filter(table => table.name === e[j]).map(table => { return table.query ? true : false})[0];
           if( valueListJoins.includes(e[j])   ){
             myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
           }else{
@@ -152,20 +153,36 @@ export class PgBuilderService extends QueryBuilderService {
           }
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
-            joinString.push(` ${myJoin} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+            if(!view){
+              //Si no es una vista
+              joinString.push(` ${myJoin} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+            }else{
+              //Si es una vista
+              joinString.push(` ${myJoin} join ${t} on  "${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+            }
+            
           }
           else {
 
-            let join = ` ${myJoin} join "${schema}"."${t}" on`;
+            if(!view){
+              //Si no es una vista
+              let join = ` ${myJoin} join "${schema}"."${t}" on`;
+              joinColumns[0].forEach((_, x) => {
+                join += `  "${schema}"."${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
+              });
+              join = join.slice(0, join.length - 'and'.length);
+              joinString.push(join);
+            }else{
+              //Si es una vista
+              let join = ` ${myJoin} join  ${t}  on`;
+              joinColumns[0].forEach((_, x) => {
+                join += `  "${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
+              });
+              join = join.slice(0, join.length - 'and'.length);
+              joinString.push(join);
+            }
 
-            joinColumns[0].forEach((_, x) => {
 
-              join += `  "${schema}"."${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
-
-            });
-
-            join = join.slice(0, join.length - 'and'.length);
-            joinString.push(join);
 
           }
           joined.push(e[j]);
