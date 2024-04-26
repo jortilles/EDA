@@ -7,7 +7,6 @@ import mongoose, {
 } from 'mongoose'
 import User, { IUser } from '../../admin/users/model/user.model'
 import Group, { IGroup } from '../../admin/groups/model/group.model'
-import _ from 'lodash';
 
 export class userAndGroupsToMongo {
   static async crm_to_eda_UsersAndGroups (users: any, roles: any) {
@@ -42,7 +41,7 @@ export class userAndGroupsToMongo {
           )
         }
       } else {
-          let userInMongo = await User.findOneAndUpdate({name : users[i].name}, {password: users[i].password});
+          await User.findOneAndUpdate({name : users[i].name}, {password: users[i].password});
           console.log(' usuario ' + users[i].name + '  ya existe en mongo')
       }
     }
@@ -88,7 +87,6 @@ export class userAndGroupsToMongo {
 
     await this.syncronizeUsersGroups(mongoUsers, mongoGroups, users, roles)
   }
-
   static async syncronizeUsersGroups (
     users: any,
     roles: any,
@@ -125,7 +123,7 @@ export class userAndGroupsToMongo {
           .catch(function (error) {
             console.log(error) // Failure
           })
-      } 
+      }
     })
 
     // para los grupos. Borro los usuarios. Lo mismo para los usuarios... borro los grupos
@@ -160,7 +158,7 @@ export class userAndGroupsToMongo {
           console.log('Error initializating  because   role does not exists IN THE ORIGIN  role  ' + line.name);
         }
 
-        
+      
       }
     })
 
@@ -184,14 +182,14 @@ export class userAndGroupsToMongo {
         console.log('Error recreating  group becauser it does not exists in the origin role  ' + group);
       }
     })
-    
+
     //incluimos los id´s correspondientes tanto en usuarios como en grupos, discriminando repeticiones
     console.log('Refrescando roles');
     console.log(roles);
 
     await roles.forEach(async r => {
       try {
-        Group.updateOne({ name: r.name }, {  users: r.users })
+        Group.updateOne({ name: r.name }, { $addToSet: { users: r.users } })
           .then(function () {
             console.log(r.name + ' Updated') // Success
           })
@@ -200,24 +198,36 @@ export class userAndGroupsToMongo {
           })
       } catch (err) {}
     })
-
+    
     await users.forEach(async y => {
+      const groups = await Group.find(); //recuperamos todos los grupos
+      const userAt = await User.findById(y._id); //recuperamos el usuario de mongo
+      const groupsWithoutSDA = groups.filter(a => a.name != undefined && !a.name.startsWith("SDA_") ); //filtramos los grupos que NO empiezan por SDA_
+      const mongoUserRoles = (await userAt).role; //recuperamos roles del usuario guardados en el mongo
+      const rolesNotFromCrm = groupsWithoutSDA.filter(a => mongoUserRoles.includes(a._id)) //filtramos los roles que no vienen actualizados del crm y que no son SDA_
+      rolesNotFromCrm.forEach(a => {
+        y.role.push(a._id); //los añadimos a los roles que vienen desde CRM
+      })
+      
       try {
-        User.updateOne({ name: y.name }, { $unset: { role: {} } })
-        .then(function () {
-          console.log(y.name + ' Updated') // Success
-        })
-        .catch(function (error) {
-          console.log(error) // Failure
-        })
-
-        User.updateOne({ name: y.name }, { role: y.role } )
+        if (y.name != "EDA") {
+          User.updateOne({ name: y.name }, { $unset : {role: {}} })
           .then(function () {
             console.log(y.name + ' Updated') // Success
           })
           .catch(function (error) {
             console.log(error) // Failure
           })
+        
+        User.updateOne({ name: y.name }, { $addToSet : {role: y.role} })
+          .then(function () {
+            console.log(y.name + ' Updated') // Success
+          })
+          .catch(function (error) {
+            console.log(error) // Failure
+          })
+        }
+        
       } catch (err) {}
     })
   }
