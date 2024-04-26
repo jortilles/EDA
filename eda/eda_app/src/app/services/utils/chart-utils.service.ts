@@ -1602,7 +1602,7 @@ export class ChartUtilsService {
                     elements: {
                         point: { radius: 0, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
                         line: {
-                                borderWidth: 1.5,
+                                borderWidth: 1 + (size.width/800),
                                 fill:  chartSubType=='area'?true:false,
                                 tension: 0.4 }
                     },
