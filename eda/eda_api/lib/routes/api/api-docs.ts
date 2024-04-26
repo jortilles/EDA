@@ -17,7 +17,7 @@ const swaggerOptions = {
                 url: "https://eda.jortilles.com/",
                 mail: "eda@jortilles.com"
             },
-            servers: ["http://edalitics.com"],
+            servers: [ { "url": "http://edalitics.com/" }],
         }     
     },
     basePath: "/",
