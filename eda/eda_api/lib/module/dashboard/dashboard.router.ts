@@ -10,11 +10,20 @@ const router = express.Router();
  *   get:
  *     description: get all dashboards
  *     parameters:
- *     - in: path
+ *     - in: query
+ *       name: token
+ *       required: true 
+ *       description: authorization token
+ *     - in: query
  *       name: tags
  *       type: string
  *       required: false
  *       description: dashboard tags
+ *     - in: query
+ *       name: external
+ *       type: object
+ *       required: false
+ *       description: dashboard external tags
  *     responses:
  *       200:
  *         description: retrns all dashboards
@@ -58,18 +67,25 @@ router.get('/:id', authGuard, DashboardController.getDashboard);
 router.post('', authGuard, DashboardController.create);
 
 /**
- * @openapi
- * /dashboard/query:
- *   post:
- *     description: execute the query of the panel
- *     responses:
- *       200:
- *         description: returns ok 
- *       500:
- *         description: returns error at querying by permisos o by consult error      
- *     tags:
- *       - Dashboard Routes
- */
+* @openapi
+* /dashboard/query:
+*   post:
+*     description: execute the query of the panel
+*     parameters:
+*       - in: query
+*         name: token
+*         required: true
+*         schema:
+*           type: string
+*         description: token de sesión
+*     responses:
+*       200:
+*         description: returns ok 
+*       500:
+*         description: returns error at querying by permisos o by consult error      
+*     tags:
+*       - Dashboard Routes
+*/
 router.post('/query', authGuard, DashboardController.execQuery);
 
 /**
@@ -118,19 +134,28 @@ router.post('/sql-query', authGuard, DashboardController.execSqlQuery);
 router.post('/view-query', authGuard, DashboardController.execView)
 
 /**
- * @openapi
+ *@openapi
  * /dashboard/:id :
- *   put:
- *     description: update / save dashboard
- *     responses:
- *       200:
- *         description: returns ok 
- *       400:
- *         description: dashboard non existenting
- *       500:
- *         description: returns error  by permisos or query error
- *     tags:
- *       - Dashboard Routes
+*    put:
+*      description: update / save dashboard
+*      consumes:
+*        - application/json
+*      parameters:
+*        - in: query
+*          name: id
+*          required: true
+*          schema:
+*          type: string
+*          description: ID del deshaboard a actualizar
+*      responses:
+*        '200':
+*          description: OK
+*        '400':
+*          description: Dashboard no existente
+*        '500':
+*          description: Error debido a permisos o error de consulta
+*      tags:
+*        - Dashboard Routes
  */     
 router.put('/:id', authGuard, DashboardController.update);
 
