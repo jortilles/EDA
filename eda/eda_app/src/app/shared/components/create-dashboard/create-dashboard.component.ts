@@ -103,7 +103,8 @@ export class CreateDashboardComponent implements OnInit {
                     visible: this.form.value.visible,
                     tag: null, 
                     refreshTime:null, 
-                    styles:this.stylesProviderService.generateDefaultStyles()
+                    styles:this.stylesProviderService.generateDefaultStyles(),
+                    external: null
                 },
                 group: this.form.value.group
                     ? _.map(this.form.value.group, '_id')
