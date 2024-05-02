@@ -64,8 +64,8 @@ export class DashboardController {
         }
       }
 
-      let tags: Array<any> = req.qs.tags;
-
+      let tags: Array<any> = req.qs.tags
+      
       if (_.isEmpty(tags)) {
         return privates;
 
@@ -230,12 +230,22 @@ export class DashboardController {
   }
 
   static async getAllDashboardToAdmin(req: Request) {
-
-    try {
-      const dashboards = await Dashboard.find(
-        {},
-        'user config.title config.visible group config.tag config.onlyIcanEdit'
-      ).exec()
+    let external;
+    if (req.qs.external) {
+      external = JSON.parse(req.qs.external);
+    }
+    // Creamos un objeto de filtro dinámico
+    let filter = {};
+    // Recorremos las claves del objeto externalObject y las añadimos al filtro
+      for (let key in external) { 
+        filter[`config.external.${key}`] = external[key];
+      }
+    try { 
+      //si no lleva filtro, pasamos directamente a recuperarlos todos
+      const dashboards = filter != undefined ? 
+      await Dashboard.find({ $or : [filter]}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.external').exec() : 
+      await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.external').exec();
+      
       const publics = []
       const privates = []
       const groups = []
@@ -526,7 +536,7 @@ export class DashboardController {
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const body = req.body
+      const body = req.body;
 
       Dashboard.findById(req.params.id, (err, dashboard: IDashboard) => {
         if (err) {
@@ -540,7 +550,7 @@ export class DashboardController {
         }
 
         dashboard.config = body.config
-        dashboard.group = body.group
+        dashboard.group = body.group        
         /**avoid dashboards without name */
         if (dashboard.config.title === null) { dashboard.config.title = '-' };
 
@@ -774,7 +784,7 @@ export class DashboardController {
 
     try {
       const connection = await ManagerConnectionService.getConnection(req.body.model_id);
-      const dataModel = await connection.getDataSource(req.body.model_id)
+      const dataModel = await connection.getDataSource(req.body.model_id, req.qs.properties)
       /**--------------------------------------------------------------------------------------------------------- */
       /**Security check */
       const allowed = DashboardController.securityCheck(dataModel, req.user)

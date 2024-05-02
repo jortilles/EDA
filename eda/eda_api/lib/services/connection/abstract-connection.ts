@@ -368,8 +368,27 @@ export abstract class AbstractConnection {
         return data_model;
     }
 
-    async getDataSource(id: string) {
-        try {
+    async getDataSource(id: string, properties? : string) {
+        if (properties) {
+            let filterProperties = JSON.parse(properties);
+            
+            let filter = {};
+            for (let key in filterProperties) { 
+                filter[`ds.metadata.properties.${key}`] = filterProperties[key];
+            }
+            try {
+                return await DataSource.findOne({ $or : [filter] }, (err, datasource) => {
+                if (err) {
+                    throw Error(err);
+                }
+                console.log(datasource)
+                return datasource;
+            });
+            } catch (err) {
+                console.log(err)
+            }
+        } else {
+            try {
             return await DataSource.findOne({ _id: id }, (err, datasource) => {
                 if (err) {
                     throw Error(err);
@@ -380,6 +399,8 @@ export abstract class AbstractConnection {
             console.log(err);
             throw err;
         }
+        }
+        
     }
 
 }
