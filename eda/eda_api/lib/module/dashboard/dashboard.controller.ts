@@ -240,8 +240,8 @@ export class DashboardController {
       for (let key in external) { 
         filter[`external.${key}`] = external[key];
       }
-      console.log(filter)
     try { 
+      //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards = filter != undefined ? 
       await Dashboard.find({ $or : [filter]}, 'user config.title config.visible group config.tag config.onlyIcanEdit external').exec() : 
       await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit external').exec();
