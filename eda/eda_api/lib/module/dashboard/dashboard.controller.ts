@@ -238,13 +238,13 @@ export class DashboardController {
     let filter = {};
     // Recorremos las claves del objeto externalObject y las añadimos al filtro
       for (let key in external) { 
-        filter[`external.${key}`] = external[key];
+        filter[`config.external.${key}`] = external[key];
       }
     try { 
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards = filter != undefined ? 
-      await Dashboard.find({ $or : [filter]}, 'user config.title config.visible group config.tag config.onlyIcanEdit external').exec() : 
-      await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit external').exec();
+      await Dashboard.find({ $or : [filter]}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.external').exec() : 
+      await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.external').exec();
       
       const publics = []
       const privates = []

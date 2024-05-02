@@ -6,7 +6,6 @@ export interface IDashboard extends mongoose.Document {
     config: IDashboardConfig;
     user: IUser;
     group: IGroup[];
-    external: JSON;
 }
 
 interface IDashboardConfig {
@@ -18,13 +17,13 @@ interface IDashboardConfig {
     onlyIcanEdit: boolean;
     styles:any;
     tag: any;
+    external?: any;
 }
 
 const DashboardSchema = new mongoose.Schema({
     config: { type: Object },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     group: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Group', required: false }],
-    external: { type: Object, required: false }
 }, { collection: 'dashboard', strict: false });
 
 export default mongoose.model<IDashboard>('Dashboard', DashboardSchema);
