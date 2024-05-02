@@ -450,7 +450,8 @@ export class DataSourceController {
                         optimized: req.params.optimize === '1',
                         cache_config :CC,
                         filter:req.body.filter,
-                        model_owner: req.user._id
+                        model_owner: req.user._id,
+                        properties: null
                     },
                     model: {
                         tables: tables
