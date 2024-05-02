@@ -26,7 +26,7 @@ const router = express.Router();
  *       description: dashboard external tags
  *     responses:
  *       200:
- *         description: retrns all dashboards
+ *         description: returns all dashboards
  *       400:
  *         description: returns error to load dashboards
  *     tags:
@@ -38,9 +38,23 @@ router.post('/clean-refresh', authGuard, DashboardController.cleanDashboardCache
 
 /**
  * @openapi
- * /dashboard/:id:
+ * /dashboard/{id}:
  *   get:
- *     description: returns dashboard by parametro
+ *     description: returns dashboard by parameter
+ *     parameters:
+ *     - in: query
+ *       name: token
+ *       required: true 
+ *       description: authorization token
+ *     - in: path
+ *       name: id
+ *       required: true 
+ *       description: dashboard id
+ *     - in: query
+ *       name: properties
+ *       type: object
+ *       required: false
+ *       description: dashboard custom properties
  *     responses:
  *       200:
  *         description: returns dashboard
@@ -175,16 +189,6 @@ router.post('', authGuard, DashboardController.create);
 * /dashboard/query:
 *   post:
 *     description: execute the query of the panel
-*     parameters:
-*     - in: query
-*       name: token
-*       required: true 
-*       description: authorization token
-*     - in: query
-*       name: properties
-*       type: object
-*       required: false 
-*       description: properties tags JSON
 *     responses:
 *       200:
 *         description: returns ok 
