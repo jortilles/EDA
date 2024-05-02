@@ -75,10 +75,10 @@ router.get('/:id', authGuard, DashboardController.getDashboard);
  *                 properties:
  *                   _id:
  *                     type: string
- *                     example: "INTRODUCE VALID _id"
+ *                     example: "INTRODUCE VALID DATASOURCE _id"
  *               external:
  *                 type: object
- *                 example: {"xxxx" : "xxxx"}
+ *                 example: {}
  *               refreshTime:
  *                 type: number
  *                 example: null
