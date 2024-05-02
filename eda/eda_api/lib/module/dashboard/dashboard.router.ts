@@ -56,6 +56,104 @@ router.get('/:id', authGuard, DashboardController.getDashboard);
  * /dashboard/:
  *   post:
  *     description: create new dashboard
+ *     parameters:
+ *     - in: query
+ *       name: token
+ *       required: true 
+ *       description: authorization token
+ *     - in: body
+ *       name: new dashboard
+ *       description: introduce body for new dashboard
+ *       schema:
+ *         type: object
+ *         properties:
+ *           config: 
+ *             type: object
+ *             properties:
+ *               ds: 
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "INTRODUCE VALID _id"
+ *               external:
+ *                 type: object
+ *                 example: {"xxxx" : "xxxx"}
+ *               refreshTime:
+ *                 type: number
+ *                 example: null
+ *               styles:
+ *                 type: object
+ *                 properties:
+ *                   backgroundColor:
+ *                     type: string
+ *                     example: "#f1f0f0"    
+ *                   customCss:
+ *                     type: string
+ *                     example: ""     
+ *                   filters:
+ *                     type: object
+ *                     properties:
+ *                       fontColor: 
+ *                         type: string
+ *                         example: "#455a64"
+ *                       fontSize: 
+ *                         type: number
+ *                         example: 0
+ *                       fontFamily: 
+ *                         type: string
+ *                         example: "Questrial" 
+ *                   panelColor:
+ *                     type: string
+ *                     example: "#ffffff"
+ *                   panelContent:
+ *                     type: object
+ *                     properties:
+ *                       fontColor: 
+ *                         type: string
+ *                         example: "#455a64"
+ *                       fontSize: 
+ *                         type: number
+ *                         example: 0
+ *                       fontFamily: 
+ *                         type: string
+ *                         example: "Questrial"    
+ *                   panelTitle:
+ *                     type: object
+ *                     properties:
+ *                       fontColor: 
+ *                         type: string
+ *                         example: "#455a64"
+ *                       fontSize: 
+ *                         type: number
+ *                         example: 0
+ *                       fontFamily: 
+ *                         type: string
+ *                         example: "Questrial"  
+ *                   panelTitleAlign:
+ *                     type: string
+ *                     example: "left"
+ *                   titleAlign:
+ *                     type: string
+ *                     example: "center"
+ *                   title:
+ *                     type: object
+ *                     properties:
+ *                       fontColor: 
+ *                         type: string
+ *                         example: "#455a64"
+ *                       fontSize: 
+ *                         type: number
+ *                         example: 0
+ *                       fontFamily: 
+ *                         type: string
+ *                         example: "Questrial"  
+ *               title:
+ *                 type: string
+ *                 example: "new_dashboard"
+ *               visible:
+ *                 type: string
+ *                 example: "private" 
  *     responses:
  *       201:
  *         description: returns ok and creates dashboard
@@ -63,6 +161,12 @@ router.get('/:id', authGuard, DashboardController.getDashboard);
  *         description: returns error at creating dashboard
  *     tags:
  *       - Dashboard Routes
+ *definitions:
+ *  styles:
+ *    type: object
+ *    properties:
+ *      backgroundColor:
+ *        example: #f1f0f0
  */
 router.post('', authGuard, DashboardController.create);
 
@@ -72,12 +176,15 @@ router.post('', authGuard, DashboardController.create);
 *   post:
 *     description: execute the query of the panel
 *     parameters:
-*       - in: query
-*         name: token
-*         required: true
-*         schema:
-*           type: string
-*         description: token de sesión
+*     - in: query
+*       name: token
+*       required: true 
+*       description: authorization token
+*     - in: query
+*       name: properties
+*       type: object
+*       required: false 
+*       description: properties tags JSON
 *     responses:
 *       200:
 *         description: returns ok 
