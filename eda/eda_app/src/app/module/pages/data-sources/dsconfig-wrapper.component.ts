@@ -186,10 +186,9 @@ export class DsConfigWrapperComponent implements OnInit {
 					name: this.form.value?.name,
 					fields: this.excelFileData
 				  };
-				const res = await this.excelFormatterService.addNewCollectionFromJSON(fileData).toPromise();
+				await this.excelFormatterService.addNewCollectionFromJSON(fileData).toPromise();
 				this.spinnerService.off();
 				this.alertService.addSuccess($localize`:@@CollectionText:Colección creada correctamente`,);
-				//this.router.navigate(['/data-source/', res.data_source_id]);
 			} catch (err) {
 				this.spinnerService.off();
 				this.alertService.addError(err);
@@ -256,7 +255,6 @@ export class DsConfigWrapperComponent implements OnInit {
 		  this.excelFileName = file.name;
 		  try {
 			const jsonData = await this.excelFormatterService.readExcelToJson(file);
-			console.log("JSON: ", jsonData);
 
 			jsonData === null ? this.alertService.addError($localize`:@@ErrorExcel:Cargue un archivo .xls o .xlsx`) : this.excelFileData = jsonData;
 		  } catch (error) {

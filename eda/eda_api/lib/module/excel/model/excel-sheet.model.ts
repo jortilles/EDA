@@ -1,12 +1,15 @@
 import * as mongoose from 'mongoose';
 
 export interface IExcelSheet extends mongoose.Document {
-    name:string,
-    fields:any
+    key:any
 }
 
 const ExcelSheetSchema = new mongoose.Schema({
-    name:{type: String},
-    fields:{type: Object},
-},{collection:'excel-sheets'});
-export default mongoose.model<IExcelSheet>('ExcelSheet',ExcelSheetSchema);
+    key:{type: Object},
+});
+
+const ExcelSheetModel = (name:string) =>{
+ return mongoose.model<IExcelSheet>( name, ExcelSheetSchema);
+}
+
+export default ExcelSheetModel;
