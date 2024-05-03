@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { ApiService } from './api.service';
 import { HttpClient } from '@angular/common/http';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -42,6 +43,10 @@ export class ExcelFormatterService extends ApiService {
   
   addNewCollectionFromJSON(jsonData): Observable<any> {
     return this.post(`${this.globalExcelRoute}/add-json-data-source`, jsonData);
+  }
+
+  checkExistenceFromJSON(nameData): Observable<any> {
+    return this.post(`${this.globalExcelRoute}/existent-json-data-source`, nameData);
   }
   
 }

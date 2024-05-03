@@ -3,10 +3,8 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { Router } from '@angular/router';
 import { SidebarService, DataSourceService, SpinnerService, AlertService, StyleProviderService, ExcelFormatterService } from '@eda/services/service.index';
 import { UploadFileComponent } from './data-source-detail/upload-file/upload-file.component';
-import * as XLSXModule from 'xlsx';
-
+import { ConfirmationService } from 'primeng/api';
 import Swal from 'sweetalert2';
-import { json } from 'd3';
 
 @Component({
 	selector: 'dsconfig-wrapper',
@@ -64,7 +62,8 @@ export class DsConfigWrapperComponent implements OnInit {
 		private alertService: AlertService,
 		private router: Router,
 		public styleProviderService: StyleProviderService,
-		private excelFormatterService:ExcelFormatterService
+		private excelFormatterService:ExcelFormatterService,
+		private confirmationService:ConfirmationService
 	) {
 
 		this.form = this.formBuilder.group({
@@ -92,14 +91,25 @@ export class DsConfigWrapperComponent implements OnInit {
 
 	}
 
-	switchTypes() {
+	async switchTypes() {
 
 		if (this.form.invalid) { this.alertService.addError('Formulario incorrecto, revise los campos');}
 		else if (this.form.value.type.value !== 'bigquery' && this.form.value.type.value !== 'excel') {
 			this.addDataSource();
 		}
 		else if(this.form.value.type.value === 'excel'){
-			this.sendJSONCollection();
+			if(!this.form.value?.name) this.alertService.addError("No name provided");
+			  const checker =  await this.checkExcelCollection();
+			  if(checker.existence){
+				this.confirmationService.confirm({
+					message: $localize`:@@confirmationExcelMessage:¿Estás seguro de que quieres sobreescribir este modelo de datos?`,
+					header: $localize`:@@confirmationExcel:Confirmación`,
+					acceptLabel:$localize`:@@si:Si`,
+					rejectLabel:$localize`:@@no:No`,
+					icon: 'pi pi-exclamation-triangle',
+					accept: () =>this.sendJSONCollection(),
+				})
+			  }else this.sendJSONCollection();
 		}
 		else {
 			this.addBigQueryDataSource();
@@ -194,6 +204,17 @@ export class DsConfigWrapperComponent implements OnInit {
 				this.alertService.addError(err);
 				throw err;
 			}	
+		}
+	}
+
+	public async checkExcelCollection():Promise<any>{
+		try{
+			const nameData = { name:this.form.value?.name}
+			const existenceCheck = await this.excelFormatterService.checkExistenceFromJSON(nameData).toPromise();
+    		return existenceCheck;
+		}catch(error){
+			console.log(error);
+			return false;
 		}
 	}
 

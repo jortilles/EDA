@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpException } from '../global/model/index';
-import * as mongoose from 'mongoose';
-import { error } from "console";
 import ExcelSheetModel from "./model/excel-sheet.model";
-import { model } from "mongoose";
 
 export class ExcelSheetController {
 
@@ -12,6 +9,7 @@ export class ExcelSheetController {
     }
 
     static async FromJSONToCollection(req: Request, res: Response, next: NextFunction) {
+       //Guarda una nueva colección con el nombre pasado desde el frontal, si esta ya existe sustituye los campos del excel por los nuevos.
         try {
           const excelName = req.body?.name;
           const excelFields = req.body?.fields;
@@ -34,6 +32,19 @@ export class ExcelSheetController {
           next(new HttpException(500, 'Error al crear o actualizar el ExcelSheet'));
         }
       }
+    static async ExistsExcelData(req: Request, res: Response, next: NextFunction) {
+      //Checkea si hay documentos, en el nombre pasado por el frontal. Si los hay devuelve true para confirmar en el front
+      try{
+           if (!req.body?.name) return res.status(400).json({ ok: false, message: 'Nombre o campos incorrectos en la solicitud' });
+           const excelModelChecker = ExcelSheetModel(req.body?.name), existentExcelDoc = await excelModelChecker.find({});
+           if(existentExcelDoc.length > 0)   return res.status(200).json({ ok: true, message: 'Modelo existe' , existence: true });
+           return res.status(200).json({ ok: true, message: 'Modelo existe' , existence: false });
+      }catch(error){
+        console.log("Error: ", error);
+        return false;
+      }
+    }
+      
       
       
 }
