@@ -167,6 +167,7 @@ router.get('/:id', authGuard, roleGuard, DataSourceController.GetDataSourceById)
 *     description: Add a new datasource of any type
 *     parameters: 
 *       - name: token
+*         in: query
 *         description: Authentication token
 *         type: string 
 *       - name: datasource
