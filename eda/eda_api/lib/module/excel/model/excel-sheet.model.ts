@@ -7,9 +7,9 @@ export interface IExcelSheet extends mongoose.Document {
 const ExcelSheetSchema = new mongoose.Schema({
     key:{type: Object},
 });
-
+//Función que recibe el nombre del modelo, el esquema y posteriormente el nombre de la colección donde se va a guardar el modelo
 const ExcelSheetModel = (name:string) =>{
- return mongoose.model<IExcelSheet>( name, ExcelSheetSchema);
+ return mongoose.model<IExcelSheet>( name, ExcelSheetSchema, name);
 }
 
 export default ExcelSheetModel;
