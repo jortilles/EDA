@@ -85,12 +85,17 @@ export class DataSourceController {
         const userID = req.user._id;
         const external = req.qs.external ? JSON.parse(req.qs.external) : undefined; 
         let options:QueryOptions = {};
-        let filter = {}
+        let prefilter = {}
         for (let key in external) {
-            filter[`ds.metadata.external.${key}`] = external[key];
+            prefilter[`ds.metadata.external.${key}`] = external[key];
         }
+        let filter = Object.entries(prefilter).reduce((acc, [clave, valor]) => {
+            acc[clave] = valor;
+            return acc;
+          }, {});
+
         if (filter != undefined) {
-            DataSource.find({ $or : [filter]}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner',options, (err, ds) => {
+            DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner',options, (err, ds) => {
                 if (!ds) {
                     return next(new HttpException(500, 'Error loading DataSources'));
                 }

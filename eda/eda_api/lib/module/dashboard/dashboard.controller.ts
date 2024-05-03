@@ -240,10 +240,14 @@ export class DashboardController {
       for (let key in external) { 
         filter[`config.external.${key}`] = external[key];
       }
+      filter = Object.entries(filter).reduce((acc, [clave, valor]) => {
+        acc[clave] = valor;
+        return acc;
+      }, {});
     try { 
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards = filter != undefined ? 
-      await Dashboard.find({ $or : [filter]}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.external').exec() : 
+      await Dashboard.find({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.external').exec() : 
       await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.external').exec();
       
       const publics = []

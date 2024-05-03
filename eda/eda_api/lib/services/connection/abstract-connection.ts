@@ -375,8 +375,12 @@ export abstract class AbstractConnection {
             for (let key in filterProperties) { 
                 filter[`ds.metadata.external.${key}`] = filterProperties[key];
             }
+            filter = Object.entries(filter).reduce((acc, [clave, valor]) => {
+                acc[clave] = valor;
+                return acc;
+              }, {});
             try {
-                return await DataSource.findOne({ $or : [filter] }, (err, datasource) => {
+                return await DataSource.findOne({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))  }, (err, datasource) => {
                 if (err) {
                     throw Error(err);
                 }
