@@ -24,8 +24,8 @@ const router = express.Router();
  *       description: datasource tags
  *     tags:
  *       - DataSource Routes
- */ 
-router.get('', authGuard, roleGuard,  DataSourceController.GetDataSources);
+ */
+router.get('', authGuard, roleGuard, DataSourceController.GetDataSources);
 
 
 
@@ -46,7 +46,7 @@ router.get('', authGuard, roleGuard,  DataSourceController.GetDataSources);
  *     tags:
  *       - DataSource Routes
  */
-router.get('/names', authGuard,   roleGuard,  DataSourceController.GetDataSourcesNames);
+router.get('/names', authGuard, roleGuard, DataSourceController.GetDataSourcesNames);
 
 
 
@@ -67,7 +67,7 @@ router.get('/names', authGuard,   roleGuard,  DataSourceController.GetDataSource
  *     tags:
  *       - DataSource Routes
  */
-router.get('/namesForDashboard', authGuard,  DataSourceController.GetDataSourcesNamesForDashboard)
+router.get('/namesForDashboard', authGuard, DataSourceController.GetDataSourcesNamesForDashboard)
 
 /**
  * @openapi
@@ -86,7 +86,7 @@ router.get('/namesForDashboard', authGuard,  DataSourceController.GetDataSources
  *     tags:
  *       - DataSource Routes
  */
-router.get('/namesForEdit', authGuard,  DataSourceController.GetDataSourcesNamesForEdit)
+router.get('/namesForEdit', authGuard, DataSourceController.GetDataSourcesNamesForEdit)
 
 
 
@@ -107,7 +107,7 @@ router.get('/namesForEdit', authGuard,  DataSourceController.GetDataSourcesNames
  *     tags:
  *       - DataSource Routes
  */
-router.get('/check-connection', authGuard,   roleGuard, DataSourceController.CheckConnection);
+router.get('/check-connection', authGuard, roleGuard, DataSourceController.CheckConnection);
 
 
 
@@ -157,32 +157,32 @@ router.get('/check-connection/:id', authGuard, roleGuard, DataSourceController.C
  *     tags:
  *       - DataSource Routes
  */
-router.get('/:id', authGuard,  roleGuard, DataSourceController.GetDataSourceById);
-
+router.get('/:id', authGuard, roleGuard, DataSourceController.GetDataSourceById);
 
 
 /**
- * @openapi
- * /datasource/add-data-source:
- *   post:
- *     description: Add a new datasource of any type
- *     parameters: 
- *       - name: token
- *         description: Authentication token
- *         type: string 
- *       - name: datasource
- *         in: body
- *         required: true
- *         type: object
- *     responses:
- *       201:
- *         description: Creation of the new datasource successful
- *       500:
- *         description: Error trying to create the new datasource
- *     tags:
- *       - DataSource Routes
- */
-router.post('/add-data-source/', authGuard,  roleGuard, DataSourceController.GenerateDataModel);
+* @openapi
+* /datasource/add-data-source:
+*   post:
+*     description: Add a new datasource of any type
+*     parameters: 
+*       - name: token
+*         description: Authentication token
+*         type: string 
+*       - name: datasource
+*         in: body
+*         required: true
+*         type: object
+*         description: Copy datasource model body from here -----> https://edadoc.jortilles.com/index.html#/modelo_de_datos
+*     responses:
+*       201:
+*         description: Creation of the new datasource successful
+*       500:
+*         description: Error trying to create the new datasource
+*     tags:
+*       - DataSource Routes
+*/
+router.post('/add-data-source/', authGuard, roleGuard, DataSourceController.GenerateDataModel);
 
 
 
@@ -207,7 +207,7 @@ router.post('/add-data-source/', authGuard,  roleGuard, DataSourceController.Gen
  *     tags:
  *       - DataSource Routes 
  */
-router.post('/query', authGuard,  roleGuard, DashboardController.execQuery);
+router.post('/query', authGuard, roleGuard, DashboardController.execQuery);
 
 
 
@@ -255,7 +255,7 @@ router.post('/reload/:id', authGuard, roleGuard, DataSourceController.RefreshDat
  *     tags:
  *       - DataSource Routes 
  */
-router.post('/remove-cache', authGuard,  roleGuard, DataSourceController.removeCacheFromModel);
+router.post('/remove-cache', authGuard, roleGuard, DataSourceController.removeCacheFromModel);
 
 
 
@@ -281,7 +281,7 @@ router.post('/remove-cache', authGuard,  roleGuard, DataSourceController.removeC
  *     tags:
  *       - DataSource Routes
  */
-router.put('/:id', authGuard,  roleGuard,DataSourceController.UpdateDataSource);
+router.put('/:id', authGuard, roleGuard, DataSourceController.UpdateDataSource);
 
 
 
@@ -306,6 +306,6 @@ router.put('/:id', authGuard,  roleGuard,DataSourceController.UpdateDataSource);
  *     tags:
  *       - DataSource Routes 
  */
-router.delete('/:id', authGuard,  roleGuard, DataSourceController.DeleteDataSource);
+router.delete('/:id', authGuard, roleGuard, DataSourceController.DeleteDataSource);
 
 export default router;

@@ -371,17 +371,15 @@ export abstract class AbstractConnection {
     async getDataSource(id: string, properties? : string) {
         if (properties) {
             let filterProperties = JSON.parse(properties);
-            
             let filter = {};
             for (let key in filterProperties) { 
-                filter[`ds.metadata.properties.${key}`] = filterProperties[key];
+                filter[`ds.metadata.external.${key}`] = filterProperties[key];
             }
             try {
                 return await DataSource.findOne({ $or : [filter] }, (err, datasource) => {
                 if (err) {
                     throw Error(err);
                 }
-                console.log(datasource)
                 return datasource;
             });
             } catch (err) {
