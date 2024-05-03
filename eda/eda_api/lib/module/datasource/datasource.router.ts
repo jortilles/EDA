@@ -57,8 +57,15 @@ router.get('/names', authGuard, roleGuard, DataSourceController.GetDataSourcesNa
  *     description: Get all the data sources names for each dashboard, filtered by permits and current users
  *     parameters:
  *       - name: token
+ *         in: query
  *         description: Authentication token
  *         type: string
+ *         required: true
+ *       - name: external
+ *         in: query
+ *         type: object 
+ *         required: false
+ *         description: external value
  *     responses:
  *       200:
  *         description: Returns all available dashboard names 
