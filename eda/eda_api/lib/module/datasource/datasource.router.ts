@@ -174,7 +174,52 @@ router.get('/:id', authGuard, roleGuard, DataSourceController.GetDataSourceById)
 *         in: body
 *         required: true
 *         type: object
-*         description: Copy datasource model body from here -----> https://edadoc.jortilles.com/index.html#/modelo_de_datos
+*         description: Create a new datasource
+*         schema:
+*            type: object
+*            properties:
+*              name:
+*                type: string
+*              type:
+*                type: string
+*                example: "mysql?, postgres?, vertica?, sqlserver?, oracle?, bigquery?, snowflake?, jsonwebservice?" 
+*              host:
+*                type: string
+*              database:
+*                type: string
+*              port:
+*                type: number
+*              user: 
+*                type: string
+*              password:
+*                type: string
+*              warehouse:
+*                type: string
+*                example: null
+*              schema:
+*                type: string
+*                example: null
+*              poolLimit:
+*                type: number
+*                example: null
+*              sid:
+*                type: number
+*                example: 1
+*              optimize:
+*                type: number
+*                example: 0
+*              allowCache:
+*                type: number
+*                example: 1
+*              ssl:
+*                type: boolean
+*                example: false
+*              filter:
+*                type: string
+*                example: null
+*              external:
+*                type: object
+*                example: {"":""}
 *     responses:
 *       201:
 *         description: Creation of the new datasource successful
