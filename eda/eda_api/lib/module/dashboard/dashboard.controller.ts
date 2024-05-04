@@ -783,7 +783,11 @@ export class DashboardController {
   static async execQuery(req: Request, res: Response, next: NextFunction) {
 
     try {
-      const connection = await ManagerConnectionService.getConnection(req.body.model_id);
+      let connectionProps: any;
+      if (req.body.dashboard.connectionProperties) connectionProps = req.body.dashboard.connectionProperties;
+
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
+      
       const dataModel = await connection.getDataSource(req.body.model_id, req.qs.properties)
       /**--------------------------------------------------------------------------------------------------------- */
       /**Security check */
@@ -1000,9 +1004,10 @@ export class DashboardController {
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
     try {
-      const connection = await ManagerConnectionService.getConnection(
-        req.body.model_id
-      )
+      let connectionProps: any;
+      if (req.body.dashboard.connectionProperties) connectionProps = req.body.dashboard.connectionProperties;
+
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
       const dataModel = await connection.getDataSource(req.body.model_id)
 
       /**Security check */
@@ -1251,9 +1256,10 @@ export class DashboardController {
    */
   static async getQuery(req: Request, res: Response, next: NextFunction) {
     try {
-      const connection = await ManagerConnectionService.getConnection(
-        req.body.model_id
-      )
+      let connectionProps: any;
+      if (req.body.dashboard.connectionProperties) connectionProps = req.body.dashboard.connectionProperties;
+
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
       const dataModel = await connection.getDataSource(req.body.model_id)
       const dataModelObject = JSON.parse(JSON.stringify(dataModel))
       const query = await connection.getQueryBuilded(
@@ -1270,9 +1276,10 @@ export class DashboardController {
 
   static async execView(req: Request, res: Response, next: NextFunction) {
     try {
-      const connection = await ManagerConnectionService.getConnection(
-        req.body.model_id
-      )
+      let connectionProps: any;
+      if (req.body.dashboard.connectionProperties) connectionProps = req.body.dashboard.connectionProperties;
+
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
       const query = req.body.query
       connection.client = await connection.getclient()
       const getResults = await connection.execQuery(query)
@@ -1352,14 +1359,11 @@ export class DashboardController {
     }
   }
 
-  static async cleanDashboardCache(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    const connection = await ManagerConnectionService.getConnection(
-      req.body.model_id
-    )
+  static async cleanDashboardCache(req: Request, res: Response, next: NextFunction) {
+    let connectionProps: any;
+    if (req.body.dashboard.connectionProperties) connectionProps = req.body.dashboard.connectionProperties;
+
+    const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
     const dataModel = await connection.getDataSource(req.body.model_id)
 
     if (dataModel.ds.metadata.cache_config.enabled) {

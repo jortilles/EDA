@@ -9,7 +9,8 @@ export interface Query {
     };
     dashboard: {
         dashboard_id: string,
-        panel_id: string
+        panel_id: string,
+        connectionProperties: any
     };
     query: {
         fields: Column[]
@@ -19,8 +20,7 @@ export interface Query {
         SQLexpression : string,
         queryLimit : number,
         joinType: string,
-        forSelector?: boolean ;
-
+        forSelector?: boolean
     };
     output: {
         labels: any[],

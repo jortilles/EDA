@@ -40,6 +40,10 @@ export const QueryUtils = {
    * 
    */
   switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
+    if (ebp.connectionProperties) {
+      query.dashboard.connectionProperties = ebp.connectionProperties;
+    }
+
     if (!ebp.modeSQL) {
       const response = await ebp.dashboardService.executeQuery(query).toPromise();
       return response;
@@ -223,7 +227,8 @@ export const QueryUtils = {
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
       config: config.getConfig(),
       queryLimit: ebp.queryLimit,
-      joinType: ebp.joinType
+      joinType: ebp.joinType,
+      connectionProperties: ebp.connectionProperties
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params);
   },
@@ -240,7 +245,8 @@ export const QueryUtils = {
       panel: ebp.panel.id,
       dashboard: ebp.inject.dashboard_id,
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
-      config: config.getConfig()
+      config: config.getConfig(),
+      connectionProperties: ebp.connectionProperties
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, true, ebp.currentSQLQuery);
 

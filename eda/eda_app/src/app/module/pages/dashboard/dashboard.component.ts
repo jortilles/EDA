@@ -53,7 +53,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public datasourceName: string;
     public group: string = '';
     public onlyIcanEdit: boolean = false;
+    
+    public connectionProperties: any;
     public queryParams: any = {};
+
     public filterButtonVisibility = {
         public : false,
         readOnly : false
@@ -529,19 +532,24 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private getUrlParams(): void {
         this.route.queryParams.subscribe(params => {
-            this.queryParams = params;
-            try{
-                    if(params['hideWheel'] == 'true'){
-                        this.display_v.hideWheel =true;
-                    }
-                    if(params['panelMode'] == 'true'){
-                        this.display_v.panelMode =true;
-                        this.display_v.hideWheel =true;
-                    }
-            }catch(e){
+            try {
+                this.queryParams = params;
+    
+                if(params['hideWheel'] == 'true'){
+                    this.display_v.hideWheel =true;
+                }
+                if(params['panelMode'] == 'true'){
+                    this.display_v.panelMode =true;
+                    this.display_v.hideWheel =true;
+                }
+
+                if (params['cnproperties']) {
+                    this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties'])); 
+                }
+
+            } catch(e){
+                console.error('getUrlParams: '+ e);
             }
-
-
         });
     }
 
@@ -748,6 +756,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 panels: this.panels,
                 dataSource: this.dataSource,
                 filtersList: this.filtersList,
+                connectionProperties: this.connectionProperties,
                 filter,
                 isnew
             },
@@ -977,6 +986,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const queryParams = {
             table: targetTable,
             dataSource: this.dataSource._id,
+            connectionProperties: this.connectionProperties,
             dashboard: '',
             panel: '',
             filters: []
