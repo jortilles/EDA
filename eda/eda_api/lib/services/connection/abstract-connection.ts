@@ -371,17 +371,19 @@ export abstract class AbstractConnection {
     async getDataSource(id: string, properties? : string) {
         if (properties) {
             let filterProperties = JSON.parse(properties);
-            
             let filter = {};
             for (let key in filterProperties) { 
-                filter[`ds.metadata.properties.${key}`] = filterProperties[key];
+                filter[`ds.metadata.external.${key}`] = filterProperties[key];
             }
+            filter = Object.entries(filter).reduce((acc, [clave, valor]) => {
+                acc[clave] = valor;
+                return acc;
+              }, {});
             try {
-                return await DataSource.findOne({ $or : [filter] }, (err, datasource) => {
+                return await DataSource.findOne({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))  }, (err, datasource) => {
                 if (err) {
                     throw Error(err);
                 }
-                console.log(datasource)
                 return datasource;
             });
             } catch (err) {

@@ -83,59 +83,125 @@ export class DataSourceController {
     Un cop filtrats els permisos de grup i de usuari. */
     static async GetDataSourcesNamesForDashboard(req: Request, res: Response, next: NextFunction) {
         const userID = req.user._id;
+        const external = req.qs.external ? JSON.parse(req.qs.external) : undefined; 
         let options:QueryOptions = {};
-        DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner',options, (err, ds) => {
-            if (!ds) {
-                return next(new HttpException(500, 'Error loading DataSources'));
-            }
-            const names = JSON.parse(JSON.stringify(ds));
-            const output = [];
-            for (let i = 0, n = names.length; i < n; i += 1) {
-                const e = names[i];
-                // Si hay permisos de seguridad.....
-                if (e.ds.metadata.model_granted_roles.length > 0) {
+        let prefilter = {}
+        for (let key in external) {
+            prefilter[`ds.metadata.external.${key}`] = external[key];
+        }
+        let filter = Object.entries(prefilter).reduce((acc, [clave, valor]) => {
+            acc[clave] = valor;
+            return acc;
+          }, {});
 
-                    
-                    const users = [];
-                    const roles = [];
-                    let allCanSee = 'false';
-                    //Get users with permission
-                    e.ds.metadata.model_granted_roles.forEach(permission => {
-                        switch(permission.type){
-                            case 'anyoneCanSee':
-                                if( permission.permission === true ){
-                                    allCanSee = 'true';
-                                }
-                            break;
-                            case 'users':
-                                permission.users.forEach(user => {
-                                    if (!users.includes(user)) users.push(user);
-                                });
-                            break;
-                            case 'groups':
-                                req.user.role.forEach(role => {
-                                    if(permission.groups.includes(role)){
-                                        if (!roles.includes(role)) roles.push(role);
-                                    }
-                                });
-                        }
-                    });
-                  if (users.includes(userID) || roles.length > 0 || allCanSee == 'true'  || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
-                  /**   edalitics free       if (   e.ds.metadata.model_owner == userID   ||   req.user.role.includes('135792467811111111111110')   )  { */ 
-                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-                    }
-
-                }else {
-       /**  // edalitics free     if (   e.ds.metadata.model_owner ==  userID ||   req.user.role.includes('135792467811111111111110')  )  {*/
-                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-        /**  // edalitics free   } */
-
+        if (filter != undefined) {
+            DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner',options, (err, ds) => {
+                if (!ds) {
+                    return next(new HttpException(500, 'Error loading DataSources'));
                 }
-            }
-            output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : 
-                                    ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
-            return res.status(200).json({ ok: true, ds: output });
-        });
+                const names = JSON.parse(JSON.stringify(ds));
+                const output = [];
+                for (let i = 0, n = names.length; i < n; i += 1) {
+                    const e = names[i];
+                    // Si hay permisos de seguridad.....
+                    if (e.ds.metadata.model_granted_roles.length > 0) {
+    
+                        
+                        const users = [];
+                        const roles = [];
+                        let allCanSee = 'false';
+                        //Get users with permission
+                        e.ds.metadata.model_granted_roles.forEach(permission => {
+                            switch(permission.type){
+                                case 'anyoneCanSee':
+                                    if( permission.permission === true ){
+                                        allCanSee = 'true';
+                                    }
+                                break;
+                                case 'users':
+                                    permission.users.forEach(user => {
+                                        if (!users.includes(user)) users.push(user);
+                                    });
+                                break;
+                                case 'groups':
+                                    req.user.role.forEach(role => {
+                                        if(permission.groups.includes(role)){
+                                            if (!roles.includes(role)) roles.push(role);
+                                        }
+                                    });
+                            }
+                        });
+                      if (users.includes(userID) || roles.length > 0 || allCanSee == 'true'  || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
+                      /**   edalitics free       if (   e.ds.metadata.model_owner == userID   ||   req.user.role.includes('135792467811111111111110')   )  { */ 
+                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                        }
+    
+                    }else {
+           /**  // edalitics free     if (   e.ds.metadata.model_owner ==  userID ||   req.user.role.includes('135792467811111111111110')  )  {*/
+                            output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+            /**  // edalitics free   } */
+    
+                    }
+                }
+                output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : 
+                                        ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
+                return res.status(200).json({ ok: true, ds: output });
+            });
+        } else {
+            DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner ds.metadata.external' ,options, (err, ds) => {
+                if (!ds) {
+                    return next(new HttpException(500, 'Error loading DataSources'));
+                }
+                const names = JSON.parse(JSON.stringify(ds));
+                const output = [];
+                for (let i = 0, n = names.length; i < n; i += 1) {
+                    const e = names[i];
+                    // Si hay permisos de seguridad.....
+                    if (e.ds.metadata.model_granted_roles.length > 0) {
+
+                        
+                        const users = [];
+                        const roles = [];
+                        let allCanSee = 'false';
+                        //Get users with permission
+                        e.ds.metadata.model_granted_roles.forEach(permission => {
+                            switch(permission.type){
+                                case 'anyoneCanSee':
+                                    if( permission.permission === true ){
+                                        allCanSee = 'true';
+                                    }
+                                break;
+                                case 'users':
+                                    permission.users.forEach(user => {
+                                        if (!users.includes(user)) users.push(user);
+                                    });
+                                break;
+                                case 'groups':
+                                    req.user.role.forEach(role => {
+                                        if(permission.groups.includes(role)){
+                                            if (!roles.includes(role)) roles.push(role);
+                                        }
+                                    });
+                            }
+                        });
+                    if (users.includes(userID) || roles.length > 0 || allCanSee == 'true'  || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
+                    /**   edalitics free       if (   e.ds.metadata.model_owner == userID   ||   req.user.role.includes('135792467811111111111110')   )  { */ 
+                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                        }
+
+                    }else {
+        /**  // edalitics free     if (   e.ds.metadata.model_owner ==  userID ||   req.user.role.includes('135792467811111111111110')  )  {*/
+                            output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+            /**  // edalitics free   } */
+
+                    }
+                }
+                output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : 
+                                        ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
+                return res.status(200).json({ ok: true, ds: output });
+            });
+        }
+        
     }
 
 
@@ -421,7 +487,7 @@ export class DataSourceController {
         console.log(req.body);
         try {
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database,
-                req.body.password, req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid, req.body.warehouse, req.body.ssl);
+                req.body.password, req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid, req.body.warehouse, req.body.ssl, req.body.external);
             console.log('Tengo la cn');
             console.log(cn);
             const manager = await ManagerConnectionService.testConnection(cn);
@@ -451,7 +517,8 @@ export class DataSourceController {
                         cache_config :CC,
                         filter:req.body.filter,
                         model_owner: req.user._id,
-                        properties: null
+                        properties: null,
+                        external: req.body.external
                     },
                     model: {
                         tables: tables
