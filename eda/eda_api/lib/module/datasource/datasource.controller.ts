@@ -17,22 +17,26 @@ const cache_config = require('../../../config/cache.config');
 export class DataSourceController {
 
     static async GetDataSources(req: Request, res: Response, next: NextFunction) {
+
+        // Esto es pare recuperar los filtros externos.
+        const filter = DataSourceController.returnExternalFilter(req);
         try {
-            DataSource.find({}, (err, dataSources) => {
-                if (err) {
-                    return next(new HttpException(404, 'Error loading DataSources'));
-                }
-                const protectedDataSources = [];
-                for (let i = 0, n = dataSources.length; i < n; i += 1) {
-                    const datasource = dataSources[i];
-                    datasource.ds.connection.password = EnCrypterService.decode(datasource.ds.connection.password);
-                    datasource.ds.connection.password = '__-(··)-__'; 
-                    protectedDataSources.push(datasource);
-                }
-                if(req?.qs.tags && dataSources) return res.status(200).json({ok:true,ds: DataSourceController.returnTagsFromDataSource(req,dataSources)});
-                if(!req?.qs.tags) return res.status(200).json({ ok: true, ds: protectedDataSources });
-            });
+            //si no lleva filtro, pasamos directamente a recuperarlos todos
+            const datasources = JSON.stringify(filter) !== '{}' ?
+            await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) } ).exec() :
+            await DataSource.find( {} ).exec();
+
+            const protectedDataSources = [];
+            for (let i = 0, n = datasources.length; i < n; i += 1) {
+                const datasource = datasources[i];
+                datasource.ds.connection.password = EnCrypterService.decode(datasource.ds.connection.password);
+                datasource.ds.connection.password = '__-(··)-__';
+                protectedDataSources.push(datasource);
+            }
+            if (req?.qs.tags && datasources) return res.status(200).json({ ok: true, ds: DataSourceController.returnTagsFromDataSource(req, datasources) });
+            if (!req?.qs.tags) return res.status(200).json({ ok: true, ds: protectedDataSources });
         } catch (err) {
+            return next(new HttpException(404, 'Error loading DataSources'));
             next(err);
         }
     }
@@ -46,7 +50,7 @@ export class DataSourceController {
                 // ocultem el password
                 dataSource.ds.connection.password = EnCrypterService.decode(dataSource.ds.connection.password);
                 dataSource.ds.connection.password = '__-(··)-__';
-                
+
 
                 return res.status(200).json({ ok: true, dataSource });
             });
@@ -55,26 +59,33 @@ export class DataSourceController {
         }
     }
 
-/** aQUSTA FUNCIÓ RETORNA TOTS ELS DATASOURCES */
+    /** aQUSTA FUNCIÓ RETORNA TOTS ELS DATASOURCES */
     static async GetDataSourcesNames(req: Request, res: Response, next: NextFunction) {
-        let options:QueryOptions = {};
-        DataSource.find({}, '_id ds.metadata.model_name ds.security', options, (err, ds) => {
-            if (!ds) {
+        let options: QueryOptions = {};
+        // Esto es pare recuperar los filtros externos.
+        const filter = DataSourceController.returnExternalFilter(req);
+        try {
+            //si no lleva filtro, pasamos directamente a recuperarlos todos
+            const datasources = JSON.stringify(filter) !== '{}' ?
+                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options ).exec() :
+                await DataSource.find({}, '_id ds.metadata.model_name ds.security', options ).exec();
+            if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
-
-            const names = JSON.parse(JSON.stringify(ds));
-
+            const names = JSON.parse(JSON.stringify(datasources));
             const output = [];
-
             for (let i = 0, n = names.length; i < n; i += 1) {
                 const e = names[i];
                 output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
             }
-            output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : 
-            ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
+            output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :
+                ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
             return res.status(200).json({ ok: true, ds: output });
-        });
+        }catch(e){
+            console.log('Error getting GetDataSourcesNames');
+            console.log(e);
+        }
+
     }
 
 
@@ -83,59 +94,73 @@ export class DataSourceController {
     Un cop filtrats els permisos de grup i de usuari. */
     static async GetDataSourcesNamesForDashboard(req: Request, res: Response, next: NextFunction) {
         const userID = req.user._id;
-        let options:QueryOptions = {};
-        DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner',options, (err, ds) => {
-            if (!ds) {
+        let options: QueryOptions = {};
+        // Esto es pare recuperar los filtros externos.
+        const filter = DataSourceController.returnExternalFilter(req);
+        try {
+            //si no lleva filtro, pasamos directamente a recuperarlos todos
+            const datasources = JSON.stringify(filter) !== '{}' ?
+                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() :
+                await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+            if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
-            const names = JSON.parse(JSON.stringify(ds));
+            const names = JSON.parse(JSON.stringify(datasources));
             const output = [];
             for (let i = 0, n = names.length; i < n; i += 1) {
                 const e = names[i];
                 // Si hay permisos de seguridad.....
                 if (e.ds.metadata.model_granted_roles.length > 0) {
 
-                    
+
                     const users = [];
                     const roles = [];
                     let allCanSee = 'false';
                     //Get users with permission
                     e.ds.metadata.model_granted_roles.forEach(permission => {
-                        switch(permission.type){
+                        switch (permission.type) {
                             case 'anyoneCanSee':
-                                if( permission.permission === true ){
+                                if (permission.permission === true) {
                                     allCanSee = 'true';
                                 }
-                            break;
+                                break;
                             case 'users':
                                 permission.users.forEach(user => {
                                     if (!users.includes(user)) users.push(user);
                                 });
-                            break;
+                                break;
                             case 'groups':
                                 req.user.role.forEach(role => {
-                                    if(permission.groups.includes(role)){
+                                    if (permission.groups.includes(role)) {
                                         if (!roles.includes(role)) roles.push(role);
                                     }
                                 });
                         }
                     });
-                  if (users.includes(userID) || roles.length > 0 || allCanSee == 'true'  || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/ )  {
-                  /**   edalitics free       if (   e.ds.metadata.model_owner == userID   ||   req.user.role.includes('135792467811111111111110')   )  { */ 
-                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                    if (users.includes(userID) || roles.length > 0 || allCanSee == 'true' || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/) {
+                        /**   edalitics free       if (   e.ds.metadata.model_owner == userID   ||   req.user.role.includes('135792467811111111111110')   )  { */
+                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
                     }
 
-                }else {
-       /**  // edalitics free     if (   e.ds.metadata.model_owner ==  userID ||   req.user.role.includes('135792467811111111111110')  )  {*/
-                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-        /**  // edalitics free   } */
+                } else {
+                    /**  // edalitics free     if (   e.ds.metadata.model_owner ==  userID ||   req.user.role.includes('135792467811111111111110')  )  {*/
+                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                    /**  // edalitics free   } */
 
                 }
             }
-            output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : 
-                                    ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
+            output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :
+                ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
             return res.status(200).json({ ok: true, ds: output });
-        });
+        } catch (e) {
+            console.log('Error loading DataSources');
+            console.log(e);
+        }
+
+
+
+
+
     }
 
 
@@ -143,12 +168,12 @@ export class DataSourceController {
    Aquesta funció sustitueix GetDataSourcesNames en la nova versió on cada usuari por afegir i editar models de dades */
     static async GetDataSourcesNamesForEdit(req: Request, res: Response, next: NextFunction) {
 
-        const groups = await Group.find({users: {$in: req.user._id}}).exec();
+        const groups = await Group.find({ users: { $in: req.user._id } }).exec();
         const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
         const output = [];
-        let options:QueryOptions = {};
+        let options: QueryOptions = {};
         // Si l'usuari es admin retorna tots els ds.
-        if(isAdmin){
+        if (isAdmin) {
             DataSource.find({}, '_id ds.metadata.model_name ds.security', options, (err, ds) => {
                 if (!ds) {
                     return next(new HttpException(500, 'Error loading DataSources'));
@@ -158,32 +183,32 @@ export class DataSourceController {
                     const e = names[i];
                     output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
                 }
-                output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : 
-                ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
+                output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :
+                    ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
                 return res.status(200).json({ ok: true, ds: output });
             });
-            
-        }else{
-            // Si l'usuari NO es admin retorna els seus.
-            DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_owner',options, (err, ds) => {
-            if (!ds) {
-                return next(new HttpException(500, 'Error loading DataSources'));
-            }
-            const names = JSON.parse(JSON.stringify(ds));
-            
-            for (let i = 0, n = names.length; i < n; i += 1) {
-                const e = names[i];
-                // Si tenim  propietari....
-                if (e.ds.metadata.model_owner) {
-                    // Si el model es meu....
-                    if (req.user._id  == e.ds.metadata.model_owner) {
-                            output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-                    }
 
-                } 
-            }
-            output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
-            return res.status(200).json({ ok: true, ds: output });
+        } else {
+            // Si l'usuari NO es admin retorna els seus.
+            DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_owner', options, (err, ds) => {
+                if (!ds) {
+                    return next(new HttpException(500, 'Error loading DataSources'));
+                }
+                const names = JSON.parse(JSON.stringify(ds));
+
+                for (let i = 0, n = names.length; i < n; i += 1) {
+                    const e = names[i];
+                    // Si tenim  propietari....
+                    if (e.ds.metadata.model_owner) {
+                        // Si el model es meu....
+                        if (req.user._id == e.ds.metadata.model_owner) {
+                            output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                        }
+
+                    }
+                }
+                output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
+                return res.status(200).json({ ok: true, ds: output });
             });
         }
     }
@@ -196,39 +221,37 @@ export class DataSourceController {
             const psswd = body.ds.connection.password;
             let ds: IDataSource;
             let id = req.body._id;
-            if( id === undefined ){
+            if (id === undefined) {
                 id = req.params.id;
             }
-            if(  typeof id == 'object' ){
+            if (typeof id == 'object') {
                 id = id.$oid;
-                body._id = id;                
+                body._id = id;
             }
-            DataSource.findById(id, (err, dataSource : IDataSource) => {
-                
-                
+            DataSource.findById(id, (err, dataSource: IDataSource) => {
                 if (err) {
                     console.log(err);
                     return next(new HttpException(500, 'Datasouce not found'));
                 }
 
                 if (!dataSource) {
-                   console.log('Importing new datasource');
-                   let cadena = JSON.stringify(body);
-                   cadena = cadena.split('$oid').join('id');
-                   ds = new DataSource( JSON.parse(cadena.toString()));
-                   ds.ds.metadata.model_owner=req.user?.id;
+                    console.log('Importing new datasource');
+                    let cadena = JSON.stringify(body);
+                    cadena = cadena.split('$oid').join('id');
+                    ds = new DataSource(JSON.parse(cadena.toString()));
+                    ds.ds.metadata.model_owner = req.user?.id;
 
-                }else{
+                } else {
                     console.log('Importing existing datasource');
                     body.ds.connection.password = psswd === '__-(··)-__' ? dataSource.ds.connection.password : EnCrypterService.encrypt(body.ds.connection.password);
                     let cadena = JSON.stringify(body.ds);
                     cadena = cadena.split('$oid').join('id');
-                    dataSource.ds =   JSON.parse(cadena.toString());
+                    dataSource.ds = JSON.parse(cadena.toString());
                     ds = dataSource;
-                    ds.ds.metadata.model_owner=req.user?.id;
-                }       
+                    ds.ds.metadata.model_owner = req.user?.id;
+                }
 
-                
+
                 //aparto las relaciones ocultas para optimizar el modelo.
                 ds.ds.model.tables.forEach(t => {
                     t.no_relations = t.relations.filter(r => r.visible == false)
@@ -238,29 +261,29 @@ export class DataSourceController {
                 });
                 /** Comprobacionde la reciprocidad de las relaciones */
                 ds.ds.model.tables.forEach(tabla => {
-                tabla.relations.forEach(relacion=> {
-                        const tablas_dstino_array =  ds.ds.model.tables.filter( t=> t.table_name == relacion.target_table ) ;
-                        tablas_dstino_array.forEach( t=> {
-                        const r = t.relations.filter(r =>    r.source_table == relacion.target_table && 
-                                JSON.stringify( r.source_column) == JSON.stringify(  relacion.target_column) &&
-                                r.target_table == relacion.source_table  && 
-                                JSON.stringify( r.target_column) == JSON.stringify( relacion.source_column ));
-                                if(r.length == 0){
-                                        // si la relacion no se encuentra la meto
-                                    const mi_relacion = {
-                                        source_table: relacion.target_table,
-                                        source_column: relacion.target_column,
-                                        target_table: relacion.source_table,
-                                        target_column: relacion.source_column,
-                                        visible: true
-                                    }
-                                    t.relations.push(mi_relacion);
-                                    ds.ds.model.tables =  JSON.parse(JSON.stringify(ds.ds.model.tables.filter(item => item.table_name !==   t.table_name)));  
-                                    ds.ds.model.tables.push( t );
+                    tabla.relations.forEach(relacion => {
+                        const tablas_dstino_array = ds.ds.model.tables.filter(t => t.table_name == relacion.target_table);
+                        tablas_dstino_array.forEach(t => {
+                            const r = t.relations.filter(r => r.source_table == relacion.target_table &&
+                                JSON.stringify(r.source_column) == JSON.stringify(relacion.target_column) &&
+                                r.target_table == relacion.source_table &&
+                                JSON.stringify(r.target_column) == JSON.stringify(relacion.source_column));
+                            if (r.length == 0) {
+                                // si la relacion no se encuentra la meto
+                                const mi_relacion = {
+                                    source_table: relacion.target_table,
+                                    source_column: relacion.target_column,
+                                    target_table: relacion.source_table,
+                                    target_column: relacion.source_column,
+                                    visible: true
                                 }
-                            }  )
+                                t.relations.push(mi_relacion);
+                                ds.ds.model.tables = JSON.parse(JSON.stringify(ds.ds.model.tables.filter(item => item.table_name !== t.table_name)));
+                                ds.ds.model.tables.push(t);
+                            }
                         })
-                 });
+                    })
+                });
 
 
                 const iDataSource = new DataSource(ds);
@@ -291,7 +314,7 @@ export class DataSourceController {
                     if (stopLoop) {
                         return false;
                     }
-                    let options:QueryOptions = {};
+                    let options: QueryOptions = {};
                     Dashboard.findByIdAndDelete(dbds[i]._id, options, (err, dashboard) => {
                         if (err) {
                             stopLoop = true;
@@ -299,7 +322,7 @@ export class DataSourceController {
                         }
                     });
                 }
-                let options:QueryOptions = {};
+                let options: QueryOptions = {};
                 DataSource.findByIdAndDelete(req.params.id, options, (err, dataSource) => {
                     if (err) {
                         return next(new HttpException(500, 'Error removing dataSource'));
@@ -369,7 +392,7 @@ export class DataSourceController {
         try {
             const cn = new BigQueryConfig(req.body.type, req.body.database, req.body.project_id);
             const manager = await ManagerConnectionService.testConnection(cn);
-            const tables = await manager.generateDataModel(req.body.optimize,  req.body.filter);
+            const tables = await manager.generateDataModel(req.body.optimize, req.body.filter);
 
 
             const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG
@@ -387,14 +410,14 @@ export class DataSourceController {
                         user: null,
                         password: null,
                         sid: null,
-                        warehouse:null
+                        warehouse: null
                     },
                     metadata: {
                         model_name: req.body.name,
                         model_id: '',
                         model_granted_roles: [],
                         optimized: req.params.optimize === '1',
-                        cache_config : CC
+                        cache_config: CC
                     },
                     model: {
                         tables: tables
@@ -417,16 +440,12 @@ export class DataSourceController {
     }
 
     static async GenerateDataModelSql(req: Request, res: Response, next: NextFunction) {
-        console.log('generate datamodel sql');
-        console.log(req.body);
         try {
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database,
-                req.body.password, req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid, req.body.warehouse, req.body.ssl);
-            console.log('Tengo la cn');
-            console.log(cn);
+                req.body.password, req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid, req.body.warehouse, req.body.ssl, req.body.external);
             const manager = await ManagerConnectionService.testConnection(cn);
             const tables = await manager.generateDataModel(req.body.optimize, req.body.filter, req.body.name);
-            const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;          
+            const CC = req.body.allowCache === 1 ? cache_config.DEFAULT_CACHE_CONFIG : cache_config.DEFAULT_NO_CACHE_CONFIG;
             const datasource: IDataSource = new DataSource({
                 ds: {
                     connection: {
@@ -448,32 +467,31 @@ export class DataSourceController {
                         model_id: '',
                         model_granted_roles: [],
                         optimized: req.params.optimize === '1',
-                        cache_config :CC,
-                        filter:req.body.filter,
+                        cache_config: CC,
+                        filter: req.body.filter,
                         model_owner: req.user._id,
-                        properties: null
+                        properties: null,
+                        external: req.body.external
                     },
                     model: {
                         tables: tables
                     }
                 }
 
-                });           
-                
+            });
+
             datasource.save((err, data_source) => {
 
                 if (err) {
-
-                    
                     console.log(err);
                     return next(new HttpException(500, `Error saving the datasource`));
                 }
 
                 return res.status(201).json({ ok: true, data_source_id: data_source._id });
-            }); 
+            });
 
         } catch (err) {
-            
+
             next(err);
         }
     }
@@ -498,18 +516,18 @@ export class DataSourceController {
             const actualDS = await DataSourceController.getMongoDataSource(req.params.id);
             const passwd = req.body.password === '__-(··)-__' ? EnCrypterService.decode(actualDS.ds.connection.password) : req.body.password
 
-            
+
             const cn = new ConnectionModel(req.body.user, req.body.host, req.body.database, passwd,
-                req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid,  req.body.warehouse, req.body.ssl);
+                req.body.port, req.body.type, req.body.schema, req.body.poolLimit, req.body.sid, req.body.warehouse, req.body.ssl);
             const manager = await ManagerConnectionService.testConnection(cn);
             const storedDataModel = JSON.parse(JSON.stringify(actualDS));
             let tables = [];
 
-            if(storedDataModel.ds.connection.type =='jsonwebservice' ){
+            if (storedDataModel.ds.connection.type == 'jsonwebservice') {
                 // json webservice get the table name form the model name.... 
-                tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized,storedDataModel.ds.metadata.filter,storedDataModel.ds.metadata.model_name );
-            }else{
-                tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized,storedDataModel.ds.metadata.filter);
+                tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized, storedDataModel.ds.metadata.filter, storedDataModel.ds.metadata.model_name);
+            } else {
+                tables = await manager.generateDataModel(storedDataModel.ds.metadata.optimized, storedDataModel.ds.metadata.filter);
             }
 
             const datasource: IDataSource = new DataSource({
@@ -524,7 +542,7 @@ export class DataSourceController {
                         user: req.body.user,
                         password: passwd,
                         sid: req.body.sid,
-                        warehouse:req.body.warehouse
+                        warehouse: req.body.warehouse
                     },
                     metadata: {
                         model_name: req.body.name,
@@ -576,11 +594,11 @@ export class DataSourceController {
         }
     }
 
-    static async removeCacheFromModel(req: Request, res: Response, next: NextFunction){
-        try{
-            const queries = await CachedQuery.deleteMany({ 'cachedQuery.model_id':  req.body.id }).exec();
-            return res.status(200).json({ ok: true});
-        }catch(err){
+    static async removeCacheFromModel(req: Request, res: Response, next: NextFunction) {
+        try {
+            const queries = await CachedQuery.deleteMany({ 'cachedQuery.model_id': req.body.id }).exec();
+            return res.status(200).json({ ok: true });
+        } catch (err) {
             next(err);
         }
 
@@ -633,19 +651,38 @@ export class DataSourceController {
 
     }
 
-    static returnTagsFromDataSource(req:Request, dataSources:IDataSource[]){
-      let queryTagArray : Array<any> = req.qs.tags;
-      
-      if (_.isEmpty(queryTagArray)) return dataSources;
-      if(!_.isEmpty(queryTagArray)) {
-        queryTagArray = req.qs.tags.split(',');
-        return dataSources.filter(dataSource =>
-            dataSource.ds.metadata.tags && dataSource.ds.metadata.tags.some(tag => queryTagArray.includes(tag))
-        );
-    }
+    static returnTagsFromDataSource(req: Request, dataSources: IDataSource[]) {
+        let queryTagArray: Array<any> = req.qs.tags;
+
+        if (_.isEmpty(queryTagArray)) return dataSources;
+        if (!_.isEmpty(queryTagArray)) {
+            queryTagArray = req.qs.tags.split(',');
+            return dataSources.filter(dataSource =>
+                dataSource.ds.metadata.tags && dataSource.ds.metadata.tags.some(tag => queryTagArray.includes(tag))
+            );
+        }
     }
 
+    static returnExternalFilter(req: Request){
+        // Esto es pare recuperar los filtros externos.
+        let external;
+        if (req.qs.external) {
+            external = JSON.parse(req.qs.external);
+        }
+        // Creamos un objeto de filtro dinámico
+        let filter = {};
+        // Recorremos las claves del objeto externalObject y las añadimos al filtro
+        for (let key in external) {
+            filter[`ds.metadata.external.${key}`] = external[key];
+        }
+        filter = Object.entries(filter).reduce((acc, [clave, valor]) => {
+            acc[clave] = valor;
+            return acc;
+        }, {});
+        return filter;
     }
 
-    
+}
+
+
 

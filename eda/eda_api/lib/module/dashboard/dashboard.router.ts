@@ -175,12 +175,6 @@ router.get('/:id', authGuard, DashboardController.getDashboard);
  *         description: returns error at creating dashboard
  *     tags:
  *       - Dashboard Routes
- *definitions:
- *  styles:
- *    type: object
- *    properties:
- *      backgroundColor:
- *        example: #f1f0f0
  */
 router.post('', authGuard, DashboardController.create);
 
