@@ -246,7 +246,7 @@ export class DashboardController {
       }, {});
     try { 
       //si no lleva filtro, pasamos directamente a recuperarlos todos
-      const dashboards = filter != undefined ? 
+      const dashboards =  JSON.stringify(filter) !== '{}'  ? 
       await Dashboard.find({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.external').exec() : 
       await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.external').exec();
       
