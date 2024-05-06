@@ -28,6 +28,7 @@ import { QueryUtils } from './panel-utils/query-utils';
 import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
+import { ActivatedRoute } from '@angular/router';
 
 export interface IPanelAction {
     code: string;
@@ -167,8 +168,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /**panel chart component configuration */
     public panelChartConfig: PanelChart = new PanelChart();
+    
+    public connectionProperties: any;
 
     constructor(
+        private route: ActivatedRoute,
         public queryBuilder: QueryBuilderService,
         public fileUtiles: FileUtiles,
         private formBuilder: UntypedFormBuilder,
@@ -182,6 +186,15 @@ export class EdaBlankPanelComponent implements OnInit {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
 
+        this.route.queryParams.subscribe(params => {
+            try {
+                if (params['cnproperties']) {
+                    this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties'])); 
+                }
+            } catch (err) {
+                console.error('queryParams: '+ err)
+            }
+        });
     }
 
     ngOnInit(): void {
@@ -628,7 +641,8 @@ export class EdaBlankPanelComponent implements OnInit {
             inject: this.inject,
             panel: this.panel,
             table: this.findTable(column.table_id),
-            filters: this.selectedFilters
+            filters: this.selectedFilters,
+            connectionProperties: this.connectionProperties
         };
 
         if (!isFilter) {
