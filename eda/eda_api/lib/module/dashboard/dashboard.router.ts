@@ -51,10 +51,25 @@ router.post('/clean-refresh', authGuard, DashboardController.cleanDashboardCache
  *       required: true 
  *       description: dashboard id
  *     - in: query
- *       name: properties
+ *       name: cnproperties
  *       type: object
  *       required: false
- *       description: dashboard custom properties
+ *       description: Properties to be pushed to the database connection
+ *     - in: query
+ *       name: hideWheel
+ *       type: boolean
+ *       required: false
+ *       description: booolean (true/false) to inform to hide the control wheel
+ *     - in: query
+ *       name: panelMode
+ *       type: boolean
+ *       required: false
+ *       description: booolean (true/false) to inform show only panels
+ *     - in: query
+ *       name: cnproperties
+ *       type: object
+ *       required: false
+ *       description: Properties to be pushed to the database connection
  *     responses:
  *       200:
  *         description: returns dashboard
