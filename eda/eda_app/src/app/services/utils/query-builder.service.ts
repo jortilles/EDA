@@ -12,7 +12,8 @@ export interface QueryParams {
     config?: any;
     queryLimit? : number;
     joinType?:string;
-    forSelector?: boolean
+    forSelector?: boolean;
+    connectionProperties?: any;
 }
 
 @Injectable()
@@ -54,6 +55,7 @@ export class QueryBuilderService extends ApiService {
             dashboard: {
                 dashboard_id: params.dashboard,
                 panel_id: params.panel,
+                connectionProperties: params.connectionProperties
             },
             query: {
                 fields: queryColumns,
@@ -62,7 +64,7 @@ export class QueryBuilderService extends ApiService {
                 modeSQL : false,
                 SQLexpression : null,
                 queryLimit : null,
-                joinType: 'left' //puede que necesite el joinType
+                joinType: 'left', //puede que necesite el joinType
             },
             output: {
                 labels,
@@ -111,7 +113,8 @@ export class QueryBuilderService extends ApiService {
             },
             dashboard: {
                 dashboard_id: params.dashboard,
-                panel_id: params.panel
+                panel_id: params.panel,
+                connectionProperties: params.connectionProperties
             },
             query: {
                 fields: queryColumns,

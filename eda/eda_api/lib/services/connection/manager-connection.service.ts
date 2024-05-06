@@ -25,10 +25,16 @@ export const
 
 export class ManagerConnectionService {
 
-    static async getConnection(id: string): Promise<AbstractConnection> {
+    static async getConnection(id: string, properties?: any): Promise<AbstractConnection> {
         const datasource = await this.getDataSource(id);
         const config = datasource.ds.connection;
         config.password = EnCrypterService.decode(config.password || ' ');
+
+        if (properties) {
+            for (const prop in properties) {
+                config[prop] = properties[prop];
+            }
+        }
 
         switch (config.type) {
             case MS_CONNECTION:
