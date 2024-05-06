@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { Sda_Basic_Group } from "./sda_basic.group";
 import Group, { IGroup } from '../../admin/groups/model/group.model'
 import DataSourceSchema from '../../datasource/model/datasource.model'
 
@@ -79,23 +78,7 @@ export class CleanModel {
 
                 }
             }
-            
-            const sdaChecker = new Sda_Basic_Group;
-            const basicGroups =  (await sdaChecker.Checker()); //recuperdamos las tablas de grupos SDA_*
-
-            //recuperamos los model_granted_roles de mongo, donde se han añadido permisos para SDA_*
-            const finder = await DataSourceSchema.find({_id: "111111111111111111111111" }) ; 
-            let mgs = [];
-            const mgsmap = _.cloneDeep(finder.map(e => mgs = e.ds.metadata.model_granted_roles));
-            
-            //filtramos los granted roles que coinciden con los nombres de grupos SDA_*
-            const match = mgs.filter(e => e.type == "groups" && e.groupsName.filter(a => a == basicGroups.find(q => q.name))); 
-
-            //empujamos los permisos de los grupos SDA_* a los grantes roles filtrados anteriormente
-            if (_.isEmpty(match) == false) {
-                match.forEach(c => model_granted_roles.push(c)) ; 
-            }     
-                                
+                                           
             main_model.ds.metadata.model_granted_roles = model_granted_roles;
 
             return main_model;

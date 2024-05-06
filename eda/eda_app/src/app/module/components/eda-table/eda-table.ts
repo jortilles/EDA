@@ -9,12 +9,10 @@ import * as _ from 'lodash';
 import { Column } from '@eda/models/model.index';
 import { EdaColumnNumber } from './eda-columns/eda-column-number';
 import { EdaColumnPercentage } from './eda-columns/eda-column-percentage';
-import { Output, EventEmitter, Component } from '@angular/core';
+import { EventEmitter } from '@angular/core';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
-import { ToastModule } from 'primeng/toast';
-import { Key } from 'protractor';
-import { FindValueSubscriber } from 'rxjs/internal/operators/find';
-import { values } from 'd3';
+
+
 
 interface PivotTableSerieParams {
     mainCol: any,
@@ -69,6 +67,7 @@ export class EdaTable {
     public percentageColumns: Array<any> = [];
 
     public noRepetitions: boolean; 
+    public origValues: any[] = [];
 
     public autolayout: boolean = true;
     public sortedSerie: any = null;
@@ -79,7 +78,6 @@ export class EdaTable {
     public Totals:string = $localize`:@@addTotals:Totales`;
     public SubTotals:string = $localize`:@@SubTotals:SubTotales`;
     public Trend:string = $localize`:@@addtrend:Tendencia`;
-
 
     public constructor(init: Partial<EdaTable>) {
         Object.assign(this, init);
@@ -92,6 +90,9 @@ export class EdaTable {
     }
 
     set value(values: any[]) {
+        if( this.origValues.length == 0 ){
+            this.origValues = _.cloneDeep(values);
+        } 
         this.clear();
         this._value = values;
         /* Inicialitzar filtres */
@@ -109,6 +110,7 @@ export class EdaTable {
         if (this.sortedSerie) {
             this.loadSort();
         }
+
 
     }
 
@@ -223,16 +225,10 @@ export class EdaTable {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
 
         } 
-        // SDA CUSTOM Este código produce repeticiones en tabnlas normales y tablas cruzadas  Issue 96 y 101
-        // SDA CUSTOM if (this.noRepetitions || !this.noRepetitions) {
-        // SDA CUSTOM    this.noRepeatedRows();
-        // SDA CUSTOM }
-        // Nueva propuesta
-        // if ( !this.pivot) {
-        // console.log('desactivadas las no repeticiones');
-        // this.noRepeatedRows();
-        // }
-        // END SDA CUSTOM
+
+        if (!this.pivot) {
+            this.noRepeatedRows();
+        }
 
     }
 
@@ -540,47 +536,17 @@ export class EdaTable {
     
     noRepeatedRows() {
 
-        //separamos valores de claves
-        let values = this.extractDataValues(this.value);
-                
-        //tomamos claves que serán el cabecero
-        let labels = this.extractLabels(this.value)
-        
-        labels.shift(); //borramos el primer objeto.
-        let first  = _.cloneDeep(values[0]);
-        let output = [];
-
-
         //esta primera iteración con this.noRepetitions en false se hace para devolver las palabras repetidas al diálogo.
         //Es una secuencia similar a la de quitar los valores, pero opuesta.
         if (!this.noRepetitions) {
-
-            const output = [];
-            let values = this.extractDataValues(this.value);
-            values = values.filter(row => !row.every(element => element === null));
-            // Load the Table for a preview
-            for (let i = 0; i < values.length; i += 1) {
-                const obj = {};
-                if (i == 0) {
-                    for (let e = 0; e < values[i].length; e += 1) {
-                        obj[labels[e]] = values[i][e];       
-                }
-                } else {
-                    for (let e = 0; e < values[i].length; e += 1) {            
-                        if (values[i][e] == ""){
-                            obj[labels[e]] = first[e];
-                        } else {
-                            obj[labels[e]] = values[i][e];
-                            first[e] = values[i][e];
-                        }   
-                    }
-                }
-                
-                output.push(obj);
-            }
-            return this.value = output;
-          
+           this.value = this.origValues  ;
         } else {
+            //separamos valores de claves
+            let values = this.extractDataValues(this.value);
+            //tomamos claves que serán el cabecero
+            let labels = this.extractLabels(this.value)
+            labels.shift(); //borramos el primer objeto.
+            let output = [];
             // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
             let first  = _.cloneDeep(values[0]);
             for (let i = 0; i < values.length; i += 1) {
@@ -601,12 +567,8 @@ export class EdaTable {
                 }
                 output.push(obj);
             }
-
             this.value = output;  
-            
         }   
-        return this.value;
-       
 
     }
 

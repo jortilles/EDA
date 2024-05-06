@@ -55,10 +55,11 @@
         <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
                 <ng-container *ngFor="let col of inject.cols">
-                    <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer;" [ngClass]="getStyle(col, rowData)">
+<!-- SDA CUSTOM     <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer;" [ngClass]="getStyle(col, rowData)"> -->
+<!-- SDA CUSTOM-->  <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer;" [ngClass]="getStyle(col, rowData)" [ngStyle]="getItemStyle(col, rowData)">
                         <ng-container [ngSwitch]="col.type">
                             <!-- ngSwitch TEXT -->
-                            <ng-container *ngSwitchCase="'EdaColumnText'">
+                            <ng-container *ngSwitchCase="'EdaColumnText'" >
                                 <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)">
                                     {{ lodash.get(rowData, col.field) }}
                                 </div>
@@ -88,7 +89,8 @@
                             </ng-container>
                             <!-- ngSwitch CONTXET MENU -->
                             <ng-container *ngSwitchCase="'EdaColumnContextMenu'">
-                                <i class="fa fa-cog btn pl-1" (click)="inject._showContextMenu(rowData)"></i>
+<!-- SDA CUSTOM                 <i class="fa fa-cog btn pl-1" (click)="inject._showContextMenu(rowData)"></i> -->
+<!-- SDA CUSTOM-->              <i class="fa fa-cog btn pl-1" (click)="col.disabled(rowData)? $event.stopPropagation() : inject._showContextMenu(rowData)" [ngStyle]="getItemStyle(col, rowData)"></i>
                             </ng-container>
                             <ng-container *ngSwitchCase="'EdaColumnFunction'">
                                 <i class="fa fa-trash btn pl-1" (click)="col.click(rowData)"></i>
