@@ -230,10 +230,10 @@ export class DataSourceController {
                 
                 //aparto las relaciones ocultas para optimizar el modelo.
                 ds.ds.model.tables.forEach(t => {
-                    t.no_relations = t.relations.filter(r => r.visible == false)
+                    t.no_relations = t ? t.relations.filter(r => r.visible == false) : [];
                 });
                 ds.ds.model.tables.forEach(t => {
-                    t.relations = t.relations.filter(r => r.visible !== false)
+                    t.relations = t ? t.relations.filter(r => r.visible !== false) : [];
                 });
                 /** Comprobacionde la reciprocidad de las relaciones */
                 ds.ds.model.tables.forEach(tabla => {

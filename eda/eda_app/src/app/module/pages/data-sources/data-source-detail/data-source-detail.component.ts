@@ -101,7 +101,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'Oracle', value: 'oracle' },
         { label: 'BigQuery', value: 'bigquery' },
         { label: 'SnowFlake', value: 'snowflake'},
-        { label: 'JsonWebService', value: 'jsonwebservice'}
+        { label: 'JsonWebService', value: 'jsonwebservice'},
+        { label: 'Mongo', value: 'mongodb'}
     ];
     public selectedTipoBD: SelectItem;
 

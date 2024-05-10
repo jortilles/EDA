@@ -26,7 +26,7 @@ export class ExcelFormatterService extends ApiService {
       const fileReader = new FileReader();
       fileReader.onload = (event) => {
         const data = event.target.result;
-        const workbook: XLSX.WorkBook = XLSX.read(data, { type: 'binary' });
+        const workbook: XLSX.WorkBook = XLSX.read(data, { type: 'binary'});
   
         const sheetName: string = workbook.SheetNames[0];
         const sheet: XLSX.WorkSheet = workbook.Sheets[sheetName];

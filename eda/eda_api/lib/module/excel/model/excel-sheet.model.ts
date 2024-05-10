@@ -9,7 +9,7 @@ const ExcelSheetSchema = new mongoose.Schema({
 });
 //Función que recibe el nombre del modelo, el esquema y posteriormente el nombre de la colección donde se va a guardar el modelo
 const ExcelSheetModel = (name:string) =>{
- return mongoose.model<IExcelSheet>( name, ExcelSheetSchema, name);
+ return mongoose.model<IExcelSheet>( name, ExcelSheetSchema, `xls_${name}`);
 }
 
 export default ExcelSheetModel;
