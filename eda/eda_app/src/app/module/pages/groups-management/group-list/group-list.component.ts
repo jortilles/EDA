@@ -13,11 +13,16 @@ import * as _ from 'lodash';
 export class GroupListComponent implements OnInit {
     public fitxa: EdaDialogController;
     public table: EdaTable;
+/* SDA CUSTOM */ public protectedGroups: any = ["135792467811111111111110","135792467811111111111113","135792467811111111111115"]
 
     constructor( private userService: UserService,
                  private groupService: GroupService,
                  private alertService: AlertService ) {
-
+/* SDA CUSTOM*/         let cellStyle = (value, row) => {
+/* SDA CUSTOM*/             let style: any = {};
+/* SDA CUSTOM*/             if (row.protected) style = { opacity: '0.5' };
+/* SDA CUSTOM*/             return style;
+/* SDA CUSTOM*/         };
         this.table = new EdaTable({
             alertService: this.alertService,
             search: true,
@@ -38,9 +43,9 @@ export class GroupListComponent implements OnInit {
                 ]
             }),
             cols: [
-                new EdaColumnContextMenu(),
-                new EdaColumnText({field: 'name', header: $localize`:@@usersName:NOMBRE`}),
-                new EdaColumnText({field: 'role', header: $localize`:@@usersRole:ROLE`})
+/* SDA CUSTOM*/ new EdaColumnContextMenu({disabled : (row) =>  row.protected, cellStyle}),
+/* SDA CUSTOM*/ new EdaColumnText({field: 'name', header: $localize`:@@usersName:NOMBRE`, cellStyle}),
+/* SDA CUSTOM*/ new EdaColumnText({field: 'role', header: $localize`:@@usersRole:ROLE`, cellStyle})
             ],
             autolayout:false
         });
@@ -50,8 +55,12 @@ export class GroupListComponent implements OnInit {
         this.loadGroupList();
     }
 
-    loadGroupList() {
-        this.table.load(this.groupService.getGroups());
+    async loadGroupList() {
+            let groups = await this.groupService.getGroups().toPromise();
+/* SDA CUSTOM*/ for (let group of groups) {
+/* SDA CUSTOM*/ group.protected = this.protectedGroups.includes(group._id);
+/* SDA CUSTOM*/ }
+            this.table.value = groups;
     }
 
     crateNewGroup() {

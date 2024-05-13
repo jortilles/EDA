@@ -155,6 +155,24 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
         </target>
       </trans-unit>
+      <trans-unit id="public">
+        <source>público</source>
+        <target>Públic</target>
+      </trans-unit>
+      <trans-unit id="readOnly">
+        <source>deshabilitado</source>
+        <target>Només lectura</target>
+      </trans-unit>
+      <trans-unit id="hidden">
+        <source>oculto</source>
+        <target>Ocult</target>
+      </trans-unit>
+      <trans-unit id="filterVisibleScope">
+        <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El
+          resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de
+          usuario no pueden ver el filtro. pero se les aplica</source>
+        <target>Definir la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: els altres usuaris poden veure el filtre però no el poden modificar.  Ocult: els altres usuaris no poden veure el filtre però els aplica.</target>
+      </trans-unit>
 
       <!-- ABOUT PAGE -->
       <trans-unit
@@ -185,18 +203,37 @@
       <trans-unit id="aboutPageLastRebuildDate" datatype="html">
         <source>Última reconstrucción de origenes de datos en SinergiaCRM
           (rebuild)</source>
-        <target>Última reconstrucció dels orígens de dades a SinergiaCRM (rebuild)
+        <target>Última reconstrucció dels fonts de dades a SinergiaCRM (rebuild)
         </target>
       </trans-unit>
       <trans-unit id="aboutPageDB" datatype="html">
         <source>Base de datos de SinergiaCRM</source>
         <target>Base de dades de SinergiaCRM</target>
       </trans-unit>
+
       <trans-unit id="logotipoSdaAlt" datatype="html">
         <source>Logotipo de Sinergia Data Analytics</source>
         <target>Logotip de Sinergia Data Analytics</target>
       </trans-unit>
       <!-- END ABOUT PAGE -->
+
+      <!-- PARTIAL SDA DATASOURCE EDIT-->
+      <trans-unit id="partialEditDataSourceNotice" datatype="html">
+        <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran
+          desactivadas porque se configuran automáticamente durante el proceso de sincronización de
+          datos con SinergiaCRM.</source>
+        <target>Algunes àrees de la configuració de la font de dades SinergiaDA estan desactivades
+          perquè es configuren automàticament durant el procés de sincronització de dades amb
+          SinergiaCRM.
+        </target>
+      </trans-unit>
+      <!-- END PARTIAL SDA DATASOURCE EDIT-->
+
+      <trans-unit id="DataModelHeader">
+        <source> Configurar nuevo orígen de datos </source>
+        <target> Configurar nou font de dades </target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

@@ -42,3 +42,4 @@ eda/eda_api/config/base_datamodel.json
 # SinergiaDA exclusions
 eda/eda_api/metadata.json
 .vscode
+eda/eda_app/src/locale/prod_messages*xlf

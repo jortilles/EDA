@@ -3902,6 +3902,15 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Zduplikowana nazwa kolumny:</target>
 </trans-unit>
 
+<trans-unit id="positionFilterInReport">
+<source>Posición del filtro en el informe</source>
+<target>Filtruj pozycję w raporcie</target>
+</trans-unit>
+
+<trans-unit id="filterVisibleScope">
+<source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica</source>
+<target>Określ widoczność filtra. Publiczny: każdy może z niego korzystać.  Wyłączone: Inni użytkownicy mogą zobaczyć filtr, ale nie mogą go modyfikować.  Ukryty: Inni użytkownicy nie mogą zobaczyć filtra, ale to ich dotyczy</target>
+</trans-unit>
 
 </body>
 </file>

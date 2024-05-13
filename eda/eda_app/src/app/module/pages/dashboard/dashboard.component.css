@@ -256,3 +256,12 @@ display:table;
 .noSidebar{
 margin-left:1px !important;
 }
+.filterDialogTitles{
+    font-size: medium; 
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.edaEmfasis{
+    font-size: 1em;
+    font-weight: bolder;
+}

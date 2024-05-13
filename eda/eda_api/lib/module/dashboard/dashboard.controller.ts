@@ -711,6 +711,17 @@ export class DashboardController {
           myQuery.forSelector = false;
       }
 
+      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
+      if(myQuery.filters){
+        myQuery.filters.forEach(f => { 
+          if(!f.filter_column_type){
+
+            f.filter_column_type = dataModelObject.ds.model.tables.filter( t=> t.table_name == f.filter_table)[0]
+            .columns.filter(c=> c.column_name == f.filter_column   )[0].column_type;
+          }
+        });
+      }
+
       const query = await connection.getQueryBuilded(
         myQuery,
         dataModelObject,

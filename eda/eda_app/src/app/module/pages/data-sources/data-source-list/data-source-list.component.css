@@ -47,7 +47,6 @@
     border-radius: 50%;
     transition: 0.3s;
     height: 2.2rem;
-   
 }
 
 .header-button:hover, .header-button.active{
@@ -55,7 +54,6 @@
     color: #08252b !important;
     background-color: #c4c4c4b4 !important;
     box-shadow: 0 1px 3px 0 rgba(119, 119, 119, 0.2), 0 1px 1px 0 rgba(105, 105, 105, 0.14), 0 2px 1px -1px rgba(104, 104, 104, 0.12);
-    
 }
 .wraper{
     margin-top: 0.3rem;
@@ -82,3 +80,9 @@
 .deleteRelation {
     padding-left: 3em;
 }
+
+
+/*SDA CUSTOM*/.sda-disabled{
+/*SDA CUSTOM*/  opacity: .5;
+/*SDA CUSTOM*/  pointer-events: none;
+/*SDA CUSTOM*/}

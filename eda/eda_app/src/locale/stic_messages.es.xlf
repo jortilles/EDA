@@ -75,6 +75,25 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
         </target>
       </trans-unit>
+      <trans-unit id="public">
+        <source>público</source>
+        <target>Público</target>
+      </trans-unit>
+      <trans-unit id="readOnly">
+        <source>deshabilitado</source>
+        <target>Solo lectura</target>
+      </trans-unit>
+      <trans-unit id="hidden">
+        <source>oculto</source>
+        <target>Oculto</target>
+      </trans-unit>
+      <trans-unit id="filterVisibleScope">
+        <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El
+          resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de
+          usuario no pueden ver el filtro. pero se les aplica</source>
+        <target>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: los demás usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: los demás usuarios no pueden ver el filtro pero les aplica.</target>
+      </trans-unit>
+
 
       <!-- ABOUT PAGE -->
       <trans-unit
@@ -105,18 +124,32 @@
       <trans-unit id="aboutPageLastRebuildDate" datatype="html">
         <source>Última reconstrucción de origenes de datos en SinergiaCRM
           (rebuild)</source>
-        <target>Última reconstrucción de los orígenes de datos en SinergiaCRM
+        <target>Última reconstrucción de las fuentes de datos en SinergiaCRM
           (rebuild)</target>
       </trans-unit>
       <trans-unit id="aboutPageDB" datatype="html">
         <source>Base de datos de SinergiaCRM</source>
         <target>Base de datos de SinergiaCRM</target>
       </trans-unit>
+
       <trans-unit id="logotipoSdaAlt" datatype="html">
         <source>Logotipo de Sinergia Data Analytics</source>
         <target>Logotipo de Sinergia Data Analytics</target>
       </trans-unit>
       <!-- END ABOUT PAGE -->
+
+      <!-- PARTIAL SDA DATASOURCE EDIT-->
+      <trans-unit id="partialEditDataSourceNotice" datatype="html">
+        <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
+        <target>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</target>
+      </trans-unit>
+      <!-- END PARTIAL SDA DATASOURCE EDIT-->
+
+      <trans-unit id="DataModelHeader">
+        <source> Configurar nuevo orígen de datos </source>
+        <target> Configurar nueva fuente de datos</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

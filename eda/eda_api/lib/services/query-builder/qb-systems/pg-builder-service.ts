@@ -28,7 +28,7 @@ export class PgBuilderService extends QueryBuilderService {
       if( vista ){  // Es una vista. NO la pongo entre comillas
         myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
       }else{  // Es una tabla. La pongo entre comillas
-        myQuery = `SELECT DISTINCT ${columns.join(', ')} \n"${schema}"."${o}"`;
+        myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM "${schema}"."${o}"`;
       }
     }
 
