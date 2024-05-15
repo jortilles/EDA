@@ -131,9 +131,10 @@ export class MongoDBConnection extends AbstractConnection {
 
     async execQuery(query: string): Promise<any> {
         try {
+            console.log("QUERY: 🐺", query);
             //TODO
             const mongoDatabase = this.client.db(this.config.database);
-            const result = await mongoDatabase
+            const result = []
             
             return result
         } catch (err) {

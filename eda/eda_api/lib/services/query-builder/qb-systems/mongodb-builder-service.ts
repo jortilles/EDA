@@ -8,7 +8,30 @@ export class MongoDBBuilderService extends QueryBuilderService {
 
   public builder(): any {
     try {
-        //TODO
+        const collectionName = this.queryTODO.fields[0].table_id, fieldArray = this.queryTODO.fields,
+        filters = this.queryTODO.filters, simple = this.queryTODO.simple, joinType = this.queryTODO.joinType,
+        queryLimit = this.queryTODO.queryLimit, forSelector = this.queryTODO.forSelector;
+        
+        let arrayOfColumns = [];
+
+        fieldArray.forEach(column => {
+          let newColumnObject = {
+            column_name: column.column_name ?? null,
+            display_name: column.display_name ?? null,
+            column_type: column.column_type ?? 'text',
+            old_column_type: column.old_column_type ?? 'text',
+            aggregation_type: column.aggregation_type ?? 'none',
+            ordenation_type: column.ordenation_type ?? 'No',
+            order: column.order ?? 1,
+            column_granted_roles: column.column_granted_roles ?? [],
+            row_granted_roles: column.row_granted_roles ?? [],
+            tableCount: column.tableCount ?? 0,
+            minimumFractionDigits: column.minimumFractionDigits ?? 0,
+            whatif_column: column.whatif_column ?? false
+          }
+          
+        });
+
         console.log("Info de la consulta: ", this.queryTODO);
         //console.log("Modelo de la consulta o AKA conexión: ", this.dataModel);
     } catch (err) {
