@@ -7,15 +7,15 @@ const databaseUrl = require('../../../config/database.config');
 
 
 export class ExcelSheetController {
-
     static async GenerateCollectionFromJSON(req: Request, res: Response, next: NextFunction) {
             return ExcelSheetController.FromJSONToCollection(req, res, next);
     }
     static async FromJSONToCollection(req: Request, res: Response, next: NextFunction) {
        //Guarda una nueva colección con el nombre pasado desde el frontal, si esta ya existe sustituye los campos del excel por los nuevos.
         try {
-          const excelName = req.body?.name;
+          const excelName = req.body?.name, optimize = req.body?.optimize, cacheAllowed = req.body?.allowCache;
           let excelFields = req.body?.fields;
+
           if (!excelName || !excelFields) return res.status(400).json({ ok: false, message: 'Nombre o campos incorrectos en la solicitud' });
             const excelModel =  ExcelSheetModel(excelName)
             const excelDocs = await excelModel.findOne({});
@@ -26,7 +26,7 @@ export class ExcelSheetController {
             const savingData = new excelModel({ key: excelFields });
             await savingData.save(); 
           }
-            await this.ExcelCollectionToDataSource(excelName,excelFields, res, next);
+            await this.ExcelCollectionToDataSource(excelName,excelFields, optimize, cacheAllowed, res, next);
         } catch (error) {
           console.error('Error al crear o actualizar el ExcelSheet:', error);
           next(new HttpException(500, 'Error al crear o actualizar el ExcelSheet'));
@@ -44,17 +44,15 @@ export class ExcelSheetController {
         return false;
       }
     }
-    static async ExcelCollectionToDataSource(excelName,excelFields, res:Response, next:NextFunction){
+    static async ExcelCollectionToDataSource(excelName,excelFields, optimized, cacheAllowed, res:Response, next:NextFunction){
             //Declaramos un objeto que va a contener los tipos y nombres de los campos del Excel
             const propertiesAndTypes = {};
             excelFields.forEach(object => {
                 Object.entries(object).forEach(([property, value]) => {
                   if(typeof value === 'number') propertiesAndTypes[property] = 'numeric';
                   if(typeof value === 'string') propertiesAndTypes[property] = 'text';                  
-                  console.log("VALOR: ", value, "TYPE: ", typeof value )
                 });});
             const propertiesAndTypesArray = Object.entries(propertiesAndTypes).map(([name, type]) => ({ name, type })), columnsEntry = [];
-            console.log("PROPIEDADES: ", propertiesAndTypes)
             //Mapeado de las columnas
             propertiesAndTypesArray.forEach((column) => {
               let newCol =  {
@@ -104,8 +102,6 @@ export class ExcelSheetController {
       ];
       try{
         if(!databaseUrl?.url) return res.status(400).json({ ok: false, message: 'La connexión a la base de datos no existe' });
-
-        
         const parsedUrl = new URL(databaseUrl?.url);
         //Transformar a datasource con todo inicializado a vacio
         const database = parsedUrl.pathname.substring(1); 
@@ -130,13 +126,13 @@ export class ExcelSheetController {
                 model_name:excelName,
                 model_id:"",
                 model_granted_roles:[],
-                optimized:false,
+                optimized: optimized ?? false,
                 cache_config:{
                   units:"",
                   quantity:1,
                   hours:"",
                   minutes:"",
-                  enabled:true
+                  enabled:cacheAllowed ?? false,
                 },
                 filter:null,
                 model_owner:"",
@@ -150,13 +146,9 @@ export class ExcelSheetController {
         });
 
       datasource.save((err, data_source) => {
-          if (err) {
-              return next(new HttpException(500, `Error saving the datasource`));
-          }
-
+          if (err) {return next(new HttpException(500, `Error saving the datasource`));}
           return res.status(201).json({ ok: true, data_source_id: data_source._id });
       });
-
       }catch(error){
         console.log("Error al parsear el excel: ", error);
       }

@@ -40,11 +40,18 @@ export class ExcelFormatterService extends ApiService {
       fileReader.readAsArrayBuffer(file);
     });
   }
-  
+  /**
+   * Receives a json and sends it to given route
+   * @param json
+   */
   addNewCollectionFromJSON(jsonData): Observable<any> {
     return this.post(`${this.globalExcelRoute}/add-json-data-source`, jsonData);
   }
 
+  /**
+   * Receives a name and checks the existence of given json name
+   * @param json
+   */
   checkExistenceFromJSON(nameData): Observable<any> {
     return this.post(`${this.globalExcelRoute}/existent-json-data-source`, nameData);
   }

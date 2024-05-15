@@ -192,10 +192,13 @@ export class DsConfigWrapperComponent implements OnInit {
 		if(!this.form.value?.name) this.alertService.addError("No name provided");
 		if(Object.keys(this.excelFileData).length > 0 ){
 			try {
-				const fileData = {
+				const fileData = 
+				{
 					name: this.form.value?.name,
-					fields: this.excelFileData
-				  };
+					fields: this.excelFileData,
+					optimize:this.form.value?.optimize,
+					allowCache: this.form.value?.allowCache
+				};
 				const res = await this.excelFormatterService.addNewCollectionFromJSON(fileData).toPromise();
 				this.spinnerService.off();
 				this.alertService.addSuccess($localize`:@@CollectionText:Colección creada correctamente`,);
