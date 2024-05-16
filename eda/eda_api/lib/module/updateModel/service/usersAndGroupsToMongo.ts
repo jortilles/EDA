@@ -202,8 +202,11 @@ export class userAndGroupsToMongo {
     await mongoUsers.forEach(async y => {
       const groups = await Group.find(); 
       let totalRolesIds = []; 
-      const userMongoRoles = (await User.findById(y._id)).role 
-      
+      let userMongoRoles = [];
+      try {
+        userMongoRoles = (await User.findById(y._id)).role;
+      } catch (e) {
+      }
       const groupsWithNoSDA = groups.filter(g => !g.name.startsWith("SDA_")) ; 
       const filteredRoles = groupsWithNoSDA.filter(f => userMongoRoles.includes(f._id)); 
       filteredRoles.forEach(r => totalRolesIds.push(r._id)); 
