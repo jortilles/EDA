@@ -198,6 +198,16 @@ router.post('', authGuard, DashboardController.create);
 * /dashboard/query:
 *   post:
 *     description: execute the query of the panel
+*     parameters: 
+*       - name: token
+*         in: query
+*         description: Authentication token
+*         type: string 
+*       - name: query
+*         in: body
+*         required: true
+*         type: object
+*         description: Query configuration
 *     responses:
 *       200:
 *         description: returns ok 
@@ -213,6 +223,16 @@ router.post('/query', authGuard, DashboardController.execQuery);
  * /dashboard/getQuey:
  *   post:
  *     description: returns the panel query  
+ *     parameters: 
+ *       - name: token
+ *         in: query
+ *         description: Authentication token
+ *         type: string 
+ *       - name: query
+ *         in: body
+ *         required: true
+ *         type: object
+ *         description: Query configuration
  *     responses:
  *       200:
  *         description: returns ok 
@@ -228,6 +248,16 @@ router.post('/getQuey', authGuard, DashboardController.getQuery);
  * /dashboard/sql-query:
  *   post:
  *     description: executes a query from SQL mode 
+ *     parameters: 
+ *       - name: token
+ *         in: query
+ *         description: Authentication token
+ *         type: string 
+ *       - name: query
+ *         in: body
+ *         required: true
+ *         type: object
+ *         description: Query configuration
  *     responses:
  *       200:
  *         description: returns ok 
@@ -243,6 +273,16 @@ router.post('/sql-query', authGuard, DashboardController.execSqlQuery);
  * /dashboard/view-query:
  *   post:
  *     description: creates the SQL query from panel
+ *     parameters: 
+ *       - name: token
+ *         in: query
+ *         description: Authentication token
+ *         type: string 
+ *       - name: query
+ *         in: body
+ *         required: true
+ *         type: object
+ *         description: Query configuration
  *     responses:
  *       200:
  *         description: returns ok 
