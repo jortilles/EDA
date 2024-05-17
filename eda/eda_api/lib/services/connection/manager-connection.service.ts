@@ -30,9 +30,13 @@ export class ManagerConnectionService {
         const config = datasource.ds.connection;
         config.password = EnCrypterService.decode(config.password || ' ');
 
+        // Esto sirve solo para postgres y se pasa con la sintaxis de prostgres. 
+        // Si se quisiera implementar para otras bbdd habría que hacerlo.
         if (properties) {
+            config.options = '';
             for (const prop in properties) {
-                config[prop] = properties[prop];
+                // pasamos las custom properties en el parametro options.
+                config.options += ' -c '+ prop + '=' +properties[prop];
             }
         }
 
