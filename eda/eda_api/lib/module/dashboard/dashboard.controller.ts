@@ -788,7 +788,7 @@ export class DashboardController {
 
     try {
       let connectionProps: any;
-      if (req.body.dashboard.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+      if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
 
       const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
       
@@ -1009,7 +1009,7 @@ export class DashboardController {
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
     try {
       let connectionProps: any;
-      if (req.body.dashboard.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+      if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
 
       const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
       const dataModel = await connection.getDataSource(req.body.model_id)
@@ -1261,7 +1261,7 @@ export class DashboardController {
   static async getQuery(req: Request, res: Response, next: NextFunction) {
     try {
       let connectionProps: any;
-      if (req.body.dashboard.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+      if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
 
       const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
       const dataModel = await connection.getDataSource(req.body.model_id)
@@ -1281,7 +1281,7 @@ export class DashboardController {
   static async execView(req: Request, res: Response, next: NextFunction) {
     try {
       let connectionProps: any;
-      if (req.body.dashboard.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+      if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
 
       const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
       const query = req.body.query
@@ -1365,7 +1365,7 @@ export class DashboardController {
 
   static async cleanDashboardCache(req: Request, res: Response, next: NextFunction) {
     let connectionProps: any;
-    if (req.body.dashboard.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+    if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
 
     const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
     const dataModel = await connection.getDataSource(req.body.model_id)
