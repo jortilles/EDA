@@ -241,7 +241,7 @@ router.post('/query', authGuard, DashboardController.execQuery);
  *     tags:
  *       - Dashboard Routes
  */
-router.post('/getQuey', authGuard, DashboardController.getQuery);
+router.post('/getQuery', authGuard, DashboardController.getQuery);
 
 /**
  * @openapi
