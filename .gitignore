@@ -18,6 +18,15 @@ eda/eda_api/config/SMPT.config.json.sample
 eda/eda_api/lib/module/uploads/users
 eda/eda_api/chromium_dependencies.txt
 eda/eda_api/config/*
+eda/eda_api/config/SCRM
+eda/eda_api/config
+eda/eda_app/src/app/config
+eda/eda_app/config/*
+eda/eda_api/config/database.config.js
+eda/eda_api/config/oracle-config.js
+eda/eda_api/config/seed.js
+eda/eda_api/config/SMPT.config.json
+eda/eda_app/src/app/config/config.ts
 
 #APP
 
@@ -34,12 +43,3 @@ eda/sda_api/src/config/seed.js
 eda/sda_api/src/views/postform.html
 eda/sda_api/package-lock.json
 
-eda/eda_api/config/SCRM
-eda/eda_api/config
-eda/eda_app/src/app/config
-eda/eda_app/config/*
-eda/eda_api/config/database.config.js
-eda/eda_api/config/oracle-config.js
-eda/eda_api/config/seed.js
-eda/eda_api/config/SMPT.config.json
-eda/eda_app/src/app/config/config.ts
