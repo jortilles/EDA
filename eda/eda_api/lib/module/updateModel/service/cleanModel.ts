@@ -79,19 +79,10 @@ export class CleanModel {
             }
 
 
-     
-     
-            let groupNames = []; // y guardamos sus distintos nombre
             //recuperamos los model_granted_roles de mongo, donde se han añadido permisos para SDA_*
             const finder = await DataSourceSchema.find({_id: "111111111111111111111111" }) ; 
             let mgs = [];
             const mgsmap = _.cloneDeep(finder.map(e => mgs = e.ds.metadata.model_granted_roles));
-            //filtramos los granted roles que coinciden con los nombres de grupos SDA_*
-            let match = mgs.filter(e => e.type == "groups").filter(a => a.groupsName.some((name) => groupNames.includes(name)) ); 
-            //empujamos los permisos de los grupos SDA_* a los grantes roles filtrados anteriormente
-            if (_.isEmpty(match) == false) {
-                match.forEach(c => model_granted_roles.push(c)) ; 
-            }     
             
             function objetosIgualesGrupos(objetoA: any, objetoB: any): boolean {
                 if (objetoA.groups != undefined && objetoB.groups != undefined
@@ -106,7 +97,7 @@ export class CleanModel {
                     objetoA.type === objetoB.type
                 );
             }
-
+   
 
             function objetosIgualesUsuarios(objetoA: any, objetoB: any): boolean {
                 if (objetoA.users != undefined && objetoB.users != undefined
