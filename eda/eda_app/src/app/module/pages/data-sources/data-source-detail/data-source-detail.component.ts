@@ -179,18 +179,26 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
-                        label: 'ELIMINAR', command: () => {
-                            const elem = this.permissionTable.getContextMenuRow()._id.reduce((a, b)=> a + b) ;
-                            const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined)
-                            .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
+                        label: 'ELIMINAR', command: () => {                            
+                            let users = [];
+                            let groups = [];
 
-                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined)
-                            .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
+                            if (this.permissionTable.getContextMenuRow().user) {
+                                const usersTmp = this.permissionTable.getContextMenuRow()._id;
+                                const table = this.tablePanel.technical_name;
+                                const mdgTmp = this.modelPanel.metadata.model_granted_roles.filter(r => r.table === table && r.users === usersTmp);
+                                users = this.modelPanel.metadata.model_granted_roles.filter(a => a != mdgTmp[0]);
+                                
 
+                            } else if (this.permissionTable.getContextMenuRow().group) {
+                                const groupTmp = this.permissionTable.getContextMenuRow()._id;
+                                const table = this.tablePanel.technical_name;
+                                const mdgTmpG = this.modelPanel.metadata.model_granted_roles.filter(r => r.table === table && r.groups === groupTmp)
+                                groups = this.modelPanel.metadata.model_granted_roles.filter(a => a != mdgTmpG[0]);
+                            }
                             let tmpPermissions = [];
-                            groups.forEach(group => tmpPermissions.push(group));
                             users.forEach(user => tmpPermissions.push(user));
-
+                            groups.forEach(group => tmpPermissions.push(group));
                             this.modelPanel.metadata.model_granted_roles = tmpPermissions;
                             this.update();
                             this.permissionTable._hideContexMenu();
