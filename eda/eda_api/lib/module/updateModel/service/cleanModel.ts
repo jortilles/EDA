@@ -80,10 +80,10 @@ export class CleanModel {
             }
 
 
-            const sdaChecker = new Sda_Basic_Group;
-            const basicGroups =  (await sdaChecker.Checker()); //recuperdamos los grupos SDA_*
+     //       const sdaChecker = new Sda_Basic_Group;
+     //       const basicGroups =  (await sdaChecker.Checker()); //recuperdamos los grupos SDA_*
             let groupNames = []; // y guardamos sus distintos nombre
-            basicGroups.forEach(n => groupNames.push(n.name))
+     //       basicGroups.forEach(n => groupNames.push(n.name))
             //recuperamos los model_granted_roles de mongo, donde se han añadido permisos para SDA_*
             const finder = await DataSourceSchema.find({_id: "111111111111111111111111" }) ; 
             let mgs = [];
