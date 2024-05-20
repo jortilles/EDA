@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { Sda_Basic_Group } from "./sda_basic.group";
 import Group, { IGroup } from '../../admin/groups/model/group.model'
 import DataSourceSchema from '../../datasource/model/datasource.model'
 
@@ -80,10 +79,9 @@ export class CleanModel {
             }
 
 
-     //       const sdaChecker = new Sda_Basic_Group;
-     //       const basicGroups =  (await sdaChecker.Checker()); //recuperdamos los grupos SDA_*
+     
+     
             let groupNames = []; // y guardamos sus distintos nombre
-     //       basicGroups.forEach(n => groupNames.push(n.name))
             //recuperamos los model_granted_roles de mongo, donde se han añadido permisos para SDA_*
             const finder = await DataSourceSchema.find({_id: "111111111111111111111111" }) ; 
             let mgs = [];
@@ -108,6 +106,7 @@ export class CleanModel {
                     objetoA.type === objetoB.type
                 );
             }
+
 
             function objetosIgualesUsuarios(objetoA: any, objetoB: any): boolean {
                 if (objetoA.users != undefined && objetoB.users != undefined
