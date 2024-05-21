@@ -268,12 +268,17 @@
                                         <h5 i18n="@@resumenFiltrosPanelH6">
                                             Resumen de filtros del panel
                                         </h5>
-
-                                        <div *ngFor='let filter of this.selectedFilters'>
-                                            <span> {{filter.filter_table}} . {{filter.filter_column}} (
-                                                {{filter.filter_type}} )</span>
+                                        <!-- Tooltip para visualizar filtros aplicados-->  
+                                        <div *ngFor='let filter of selectedFilters'>
+                                            <span *ngFor='let elemento of filter.filter_elements'>
+                                                <span [title]="elemento.value1">
+                                                    {{filter.filter_table}} . {{filter.filter_column}} ({{filter.filter_type}} )
+                                                </span>
+                                            </span>
                                         </div>
+                                        <!-- Fin Tooltip para visualizar filtros aplicados-->  
                                     </div>
+
 
                                     <div class="col-12 md:col-6 pl-2">
                                         <h5 i18n="@@resumenFiltrosInformeH6">
@@ -281,6 +286,7 @@
                                         </h5>
 
                                         <div *ngFor='let filter of this.globalFilters'>
+
                                             <span> {{filter.filter_table}} . {{filter.filter_column}} (
                                                 {{filter.filter_type}} )</span>
                                         </div>
