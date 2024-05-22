@@ -270,8 +270,8 @@
                                         </h5>
                                         <!-- Tooltip para visualizar filtros aplicados-->  
                                         <div *ngFor='let filter of selectedFilters'>
-                                            <span *ngFor='let elemento of filter.filter_elements'>
-                                                <span [title]="elemento.value1">
+                                            <span *ngFor='let element of filter.filter_elements'>
+                                                <span [title]="element.value1">
                                                     {{filter.filter_table}} . {{filter.filter_column}} ({{filter.filter_type}} )
                                                 </span>
                                             </span>
@@ -286,9 +286,11 @@
                                         </h5>
 
                                         <div *ngFor='let filter of this.globalFilters'>
-
-                                            <span> {{filter.filter_table}} . {{filter.filter_column}} (
-                                                {{filter.filter_type}} )</span>
+                                            <span *ngFor="let element of filter.filter_elements ">
+                                                <span [title]="element.value1"> {{filter.filter_table}} . {{filter.filter_column}} (
+                                                    {{filter.filter_type}} )
+                                                </span>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
