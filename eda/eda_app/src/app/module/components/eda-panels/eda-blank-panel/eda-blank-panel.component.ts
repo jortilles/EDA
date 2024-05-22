@@ -727,8 +727,6 @@ export class EdaBlankPanelComponent implements OnInit {
             this.globalFilters = filters.filter(f => f.filter_id !== filter.filter_id)
             this.globalFilters.push(filter)
         }
-
-        console.log('Aqui:  ',this.globalFilters);
     }
 
     /* Funcions generals de la pagina */
