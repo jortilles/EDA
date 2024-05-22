@@ -107,14 +107,14 @@ export class updateModel {
                                     await connection.query('select "EDA_USER_ROLE" as role, b.name, "" as user_name  from sda_def_groups b union select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g; ')
                                         .then(async role => {
                                             let roles = role;
-                                            await connection.query('  SELECT DISTINCT  a.`table`, a.`group`  FROM sda_def_security_group_records a  inner join sda_def_user_groups  b on a.`group`  = b.name   inner join   sda_def_tables t on a.`table`  = t.`table`  ')
+                                            await connection.query('  select distinct a.`table`,  "id" as  `column`,  a.`group` from  sda_def_permissions a left join sda_def_security_group_records b on a.`table`  = b.`table` and a.`group`  = b.`group` where a.`group` != ""; ' )
                                                 .then(async granted => {
                                                     let grantedRoles = granted;
                                                     //seleccionamos enumeraciones
                                                     await connection.query(' select source_table , source_column , master_table, master_id, master_column, bridge_table, source_bridge, target_bridge, stic_type, info from sda_def_enumerations sde ;')
                                                         .then(async enums => {
                                                             let ennumeration = enums;
-                                                            await connection.query(' select user_name as name, `table` from sda_def_permissions  ')
+                                                            await connection.query(' select user_name as name, `table` from sda_def_permissions ')
                                                                 .then(async permi => {
                                                                     let permissions = permi
                                                                     //select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records where 
