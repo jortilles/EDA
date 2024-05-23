@@ -268,13 +268,26 @@
                                         <h5 i18n="@@resumenFiltrosPanelH6">
                                             Resumen de filtros del panel
                                         </h5>
-                                        <!-- Tooltip para visualizar filtros aplicados-->  
+                                        
+                                        <!-- Tooltip para visualizar filtros aplicados-->
                                         <div *ngFor='let filter of selectedFilters'>
+
                                             <span *ngFor='let element of filter.filter_elements'>
-                                                <span [title]="element.value1">
-                                                    {{filter.filter_table}} . {{filter.filter_column}} ({{filter.filter_type}} )
+                                                
+                                                <span *ngIf="filter.filter_elements.length === 1" [title]="element.value1">
+                                                    {{filter.filter_table}} . {{filter.filter_column}} ( {{filter.filter_type}} )
                                                 </span>
+
                                             </span>
+
+                                            <span *ngIf="filter.filter_elements.length === 0" [title]="filter.filter_type" >
+                                                {{filter.filter_table}} . {{filter.filter_column}} ( {{filter.filter_type}} )
+                                            </span>
+
+                                            <span *ngIf="filter.filter_elements.length === 2" [title]="'( '+filter.filter_elements[0].value1+' - '+filter.filter_elements[1].value2+' )'">
+                                                {{filter.filter_table}} . {{filter.filter_column}} ( {{filter.filter_type}} )
+                                            </span>
+                                        
                                         </div>
                                         <!-- Fin Tooltip para visualizar filtros aplicados-->  
                                     </div>
