@@ -11,7 +11,7 @@ export class PanelChart {
   public edaChart : string;
   public maps : Array<string>;
   public size : {x:number, y:number};
-  public  linkedDashboardProps : LinkedDashboardProps;
+  public linkedDashboardProps : LinkedDashboardProps;
   public addTrend: boolean;
   public noRepetitions: boolean;
 
