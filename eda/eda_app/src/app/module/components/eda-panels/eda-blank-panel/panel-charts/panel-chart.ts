@@ -18,4 +18,6 @@ export class PanelChart {
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);
   }
+
+  //hola
 }
