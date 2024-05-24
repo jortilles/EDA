@@ -557,7 +557,7 @@ export class EdaBlankPanelComponent implements OnInit {
             // this.panelChart.destroyComponent();
             const _config = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
-            console.log('_config');
+            console.log('Aqui esta el _config');
             console.log(_config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }

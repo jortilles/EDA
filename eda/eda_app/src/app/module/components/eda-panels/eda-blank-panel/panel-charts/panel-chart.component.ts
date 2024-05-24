@@ -243,7 +243,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
       
       
-console.log('Llego aaqui=?==??');
+        console.log('Llego aaqui=?==??');
 
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
@@ -284,8 +284,7 @@ console.log('Llego aaqui=?==??');
                         e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
                 }
 
-                });
-           
+            });
         }
 
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;

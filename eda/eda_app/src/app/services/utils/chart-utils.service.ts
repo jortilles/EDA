@@ -71,7 +71,6 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypesRadar:Radar`, value: 'radar', subValue: 'radar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
-
     ];
 
     public filterTypes: FilterType[] = [
@@ -365,7 +364,7 @@ export class ChartUtilsService {
      * @param salto
      * @returns grupos
      */
-    private   generateGruposRangeForHistogram( num_cols,min,max, salto , esEntero , minimumFractionDigits ):any[] {
+    private generateGruposRangeForHistogram( num_cols,min,max, salto , esEntero , minimumFractionDigits ):any[] {
         let mi_salto =  0;
         let mi_min = min;
         let grupos = [];
@@ -1155,7 +1154,6 @@ export class ChartUtilsService {
                     },
                 };
                 break;
-
             case 'bar':
                 if(chartSubType!=='horizontalBar' && chartSubType!=='pyramid'){
                     if(showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
@@ -1449,111 +1447,108 @@ export class ChartUtilsService {
                         }
                     }
                 }
-                break;
-                
+                break;               
             case 'radar':
-            
-            if(showLabels || showLabelsPercent ){
-                dataLabelsObjt =  {
-                    // backgroundColor: function(context) {
-                    // return context.dataset.backgroundColor;
-                    // },
+                if(showLabels || showLabelsPercent ){
+                    dataLabelsObjt =  {
+                        // backgroundColor: function(context) {
+                        // return context.dataset.backgroundColor;
+                        // },
 
-                    borderColor: 'white',
-                    borderRadius: 25,
-                    borderWidth: 2,
-                    color: 'white',
+                        borderColor: 'white',
+                        borderRadius: 25,
+                        borderWidth: 2,
+                        color: 'white',
 
-                    // display: function(context) {
-                    //     const chartWidth = context.chart.width;
-                    //     const realData = context.dataset.data;
-                    //     const total = realData.reduce((a, b) => {
-                    //         return a + b;
-                    //     }, 0);
-                    //     const elem = realData[context.dataIndex];
-                    //     const percentage = elem / total * 100;
-                    //     //console.log( percentage > 10 );
-                    //     if( chartWidth < 200){
-                    //         return  percentage > 8 ;
-                    //     }else{
-                    //         return  percentage > 3; /** Mostro la etiqueta si es mes que el 10 % del total  */
-                    //     }
-                    // }
-                }
-            }
-            else{
-                dataLabelsObjt =   { display: false }
-            }
-            options.chartOptions = {
-                animation: {
-                    duration: 1500,
-                },
-                elements: {
-                    line: {
-                        borderWidth: 1,
-                        borderColor: '#36A2EB',
-                        backgroundColor: '#9BD0F5',                    
-                    },
-                    point: {
-                        radius: 4, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' }
-                },
-                maintainAspectRatio: false,
-                /*
-                showLines: true,
-                spanGaps: true,
-                responsive: true,
-                maintainAspectRatio: false,
-                onHover: (event,chartElement ) => {
-                    //Canviem el cursor de normal a tipus link
-                    chartElement.length == 1 ? 
-                    event.native.target.style.cursor = "pointer" :
-                    event.native.target.style.cursor = "default";
-                },
-                tooltips: {
-                    mode: 'nearest',
-                    intersect: false,
-                    callbacks: {
-                        title: (tooltipItem, data) => {
-                            if (data && tooltipItem) {
-                                return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
-                            }
-                        },
-
-                        label: (tooltipItem, data) => {
-                            if (data && tooltipItem) {
-                                const realData = data.datasets[tooltipItem.datasetIndex].data;
-                                let total = 0;
-                                for( let i = 0; i< realData.length; i++){
-                                    if(isNaN( parseFloat(realData[i]))){
-                                        total = total;
-                                    }else{
-                                        total = total + parseFloat(realData[i]);
-                                    }
-                                }
-                                const elem = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                                const percentage = elem / total * 100;
-                                return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
-                            }
-                        },
-                        footer: () => { return linked },
+                        // display: function(context) {
+                        //     const chartWidth = context.chart.width;
+                        //     const realData = context.dataset.data;
+                        //     const total = realData.reduce((a, b) => {
+                        //         return a + b;
+                        //     }, 0);
+                        //     const elem = realData[context.dataIndex];
+                        //     const percentage = elem / total * 100;
+                        //     //console.log( percentage > 10 );
+                        //     if( chartWidth < 200){
+                        //         return  percentage > 8 ;
+                        //     }else{
+                        //         return  percentage > 3; /** Mostro la etiqueta si es mes que el 10 % del total  */
+                        //     }
+                        // }
                     }
-                },
-   
-                elements: {
-                    point: { radius: 0, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
-                    line: {
-                            borderWidth: 1 + (size.width/800),
-                            fill:  chartSubType=='area'?true:false,
-                            tension: 0.4 }
-                },
-            */
-                plugins: {
-                    datalabels: dataLabelsObjt,
-                    legend: edaBarLineLegend
-                },
-            };
-            break;
-            
+                }
+                else{
+                    dataLabelsObjt =   { display: false }
+                }
+                options.chartOptions = {
+                    animation: {
+                        duration: 1500,
+                    },
+                    elements: {
+                        line: {
+                            borderWidth: 1,
+                            borderColor: '#36A2EB',
+                            backgroundColor: '#9BD0F5',                    
+                        },
+                        point: {
+                            radius: 4, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' }
+                    },
+                    maintainAspectRatio: false,
+                    /*
+                    showLines: true,
+                    spanGaps: true,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onHover: (event,chartElement ) => {
+                        //Canviem el cursor de normal a tipus link
+                        chartElement.length == 1 ? 
+                        event.native.target.style.cursor = "pointer" :
+                        event.native.target.style.cursor = "default";
+                    },
+                    tooltips: {
+                        mode: 'nearest',
+                        intersect: false,
+                        callbacks: {
+                            title: (tooltipItem, data) => {
+                                if (data && tooltipItem) {
+                                    return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
+                                }
+                            },
+
+                            label: (tooltipItem, data) => {
+                                if (data && tooltipItem) {
+                                    const realData = data.datasets[tooltipItem.datasetIndex].data;
+                                    let total = 0;
+                                    for( let i = 0; i< realData.length; i++){
+                                        if(isNaN( parseFloat(realData[i]))){
+                                            total = total;
+                                        }else{
+                                            total = total + parseFloat(realData[i]);
+                                        }
+                                    }
+                                    const elem = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                    const percentage = elem / total * 100;
+                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
+                                }
+                            },
+                            footer: () => { return linked },
+                        }
+                    },
+    
+                    elements: {
+                        point: { radius: 0, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
+                        line: {
+                                borderWidth: 1 + (size.width/800),
+                                fill:  chartSubType=='area'?true:false,
+                                tension: 0.4 }
+                    },
+                */
+                    plugins: {
+                        datalabels: dataLabelsObjt,
+                        legend: edaBarLineLegend
+                    },
+                };
+                break;      
             case 'line':
                 if(showLabels || showLabelsPercent ){
 

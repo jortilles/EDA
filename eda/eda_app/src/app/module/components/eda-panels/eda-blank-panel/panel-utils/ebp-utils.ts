@@ -168,6 +168,9 @@ export const EbpUtils = {
         break;
       case 'bubblechart':
           description = 'spoke';
+      case 'radar':
+        description = 'radar';
+        break;
     }
 
     return description;
