@@ -3857,6 +3857,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>SAVE AS</target>
   </trans-unit> 
 
+  <trans-unit id="eliminarInforme">
+    <source>ELIMINAR INFORME</source>
+    <target>DELETE REPORT</target>
+  </trans-unit> 
+
 
    <trans-unit id="editStylesTitle">
     <source>EDITAR ESTILOS DEL INFORME</source>

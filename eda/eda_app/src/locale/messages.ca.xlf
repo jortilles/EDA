@@ -3884,6 +3884,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>GUARDAR COM</target>
   </trans-unit> 
 
+  <trans-unit id="eliminarInforme">
+    <source>ELIMINAR INFORME</source>
+    <target>ELIMINAR INFORME</target>
+  </trans-unit> 
+
 
 
 

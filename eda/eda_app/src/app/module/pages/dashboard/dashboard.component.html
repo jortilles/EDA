@@ -266,6 +266,12 @@
             <span i18n="@@opcionGuardarComo" class="ml-2">GUARDAR COMO</span>
         </div>
     </div>
+    <div *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="deleteReport()">
+        <div>
+            <i class="fa fa-trash"></i>
+            <span i18n="@@eliminarInforme" class="ml-2">ELIMINAR INFORME</span>
+        </div>
+    </div>
 
     <div *ngIf="display_v.edit_mode">
         <form [formGroup]="form" *ngIf="canIedit()" >
