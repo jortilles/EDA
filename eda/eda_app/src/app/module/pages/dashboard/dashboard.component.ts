@@ -8,17 +8,13 @@ import { EdaDialogController, EdaDialogCloseEvent, EdaDatePickerComponent } from
 import { DashboardService, AlertService, FileUtiles, QueryBuilderService, GroupService, IGroup, SpinnerService, UserService, StyleProviderService, DashboardStyles, GlobalFiltersService } from '@eda/services/service.index';
 import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { EdaDatePickerConfig } from '@eda/shared/components/eda-date-picker/datePickerConfig';
-import { environment } from 'environments/environment';
 import { SelectItem } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import domtoimage from 'dom-to-image';
 import Swal from 'sweetalert2';
 import jspdf from 'jspdf';
 import * as _ from 'lodash';
-import { ValueListSource } from '@eda/models/data-source-model/data-source-models';
-import { DashboardFilterDialogComponent } from './filter-dialog/dashboard-filter-dialog.component';
-import { filter } from 'rxjs/operators';
-import { time } from 'console';
+
 
 @Component({
     selector: 'app-dashboard',
