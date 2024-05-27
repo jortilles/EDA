@@ -18,6 +18,7 @@ import * as _ from 'lodash';
 import { ValueListSource } from '@eda/models/data-source-model/data-source-models';
 import { DashboardFilterDialogComponent } from './filter-dialog/dashboard-filter-dialog.component';
 import { filter } from 'rxjs/operators';
+import { time } from 'console';
 
 @Component({
     selector: 'app-dashboard',
@@ -952,6 +953,49 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     );
                 }
                 this.saveasController = null;
+            }
+        });
+    }
+
+    public deleteReport() {
+        this.display_v.rightSidebar = false;
+
+        // Referencia al componente dashboard
+        const me = this;
+
+        me.route.paramMap.subscribe(
+            params => {
+                me.id = params.get('id')
+            },
+            err => me.alertService.addError(err)
+        );
+
+        // id del presente dashboard
+        const dashboardId = me.id
+
+        let text = $localize`:@@deleteDashboardWarning: Estás a punto de borrar el informe`;
+        Swal.fire({
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: `${text}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+            cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`
+        }).then(async (borrado) => {
+            if (borrado.value) {
+                try {
+                    await this.dashboardService.deleteDashboard(dashboardId).toPromise();
+
+                    // La app se direcciona al home EDA
+                    this.router.navigate(['/home/']).then(() => {
+                        window.location.reload();
+                    });
+                } catch (err) {
+                    this.alertService.addError(err);
+                    throw err;
+                }
             }
         });
     }
