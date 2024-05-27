@@ -3843,11 +3843,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>ZAPISZ JAKO</target>
   </trans-unit>
 
-  <trans-unit id="eliminarInforme">
-    <source>ELIMINAR INFORME</source>
-    <target>USUŃ RAPORT</target>
-  </trans-unit> 
-
 
    <trans-unit id="editStylesTitle">
     <source>EDITAR ESTILOS DEL INFORME</source>
@@ -4086,6 +4081,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </target>
 </trans-unit>
 
+  <trans-unit id="eliminarInforme">
+    <source>ELIMINAR INFORME</source>
+    <target>USUŃ RAPORT</target>
+  </trans-unit> 
+  
 </body>
 </file>
 </xliff>
