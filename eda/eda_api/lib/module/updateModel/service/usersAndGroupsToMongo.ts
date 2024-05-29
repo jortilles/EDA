@@ -179,7 +179,7 @@ export class userAndGroupsToMongo {
       try {
         userMongoRoles = (await User.findById(y._id)).role;
       } catch (e) {
-        console.log(e,"el usuario " + y.name + " no tiene roles")
+        console.log("el usuario " + y.name + " no tiene roles")
       }
       const groupsWithNoSDA = groups.filter(g => !g.name.startsWith("SDA_"));
       const filteredRoles = groupsWithNoSDA.filter(f => userMongoRoles.includes(f._id)); 
