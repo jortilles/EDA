@@ -76,10 +76,8 @@ Easily, you can do dashboads as nice as this one:
 
 You can see it in action [here](https://www.youtube.com/watch?v=S0wkoeRqz3k&t=5s)
 
-## Technical Documentation
-To see the technical documentation click [here](docs/technical-docs.md) 
 
-## User Documentation
+## Documentation
 We just created documentation site http://edadoc.jortilles.com/en/index.html#/
 
 

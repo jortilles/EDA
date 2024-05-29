@@ -11,6 +11,7 @@
 
         <div class="grid col-12 mt-2">
 
+
             <div class="col-12 mt-1" [ngClass]="{ 'md:col-6': (!display.between && !display.calendar ) || (!!display.calendar )}">
 
                 <span class="p-float-label">
@@ -285,8 +286,13 @@
 
     <div footer>
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-            <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success"
-                i18n-label="@@guardarBtn" label="Confirmar" icon="fa fa-check"></button>
+            <button type="button" pButton (click)="closeDialog()" icon="fa fa-times"
+                class="p-button-danger ml-2" i18n-label="@@cancelarBtn" label="Cancelar" >
+            </button>
+
+            <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success "  [disabled]="!display.filterButton" 
+                i18n-label="@@guardarBtn" label="Confirmar" icon="fa fa-check">
+            </button>
         </div>
     </div>
 </eda-dialog>
