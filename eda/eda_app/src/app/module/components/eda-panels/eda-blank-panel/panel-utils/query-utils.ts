@@ -28,7 +28,7 @@ export const QueryUtils = {
       ordenation_type: 'No',
       tableCount: 0,
       visible: true,
-      hidden: false
+ /* SDA CUSTOM*/   hidden: false
     }
     return column;
   },
@@ -41,33 +41,40 @@ export const QueryUtils = {
    * 
    */
   switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
-    if (!ebp.modeSQL) {
-      const response = await ebp.dashboardService.executeQuery(query).toPromise();
-      return response;
-    } else {
-      const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
-      const numFields = response[0].length;
-      const types = new Array(numFields);
-      types.fill(null);
-      for (let row = 0; row < response[1].length; row++) {
-        response[1][row].forEach((field, i) => {
-          if (types[i] === null) {
-            if (typeof field === 'number') {
-              types[i] = 'numeric';
-            } else if (typeof field === 'string') {
-              types[i] = 'text';
+    try {
+      if (ebp.selectedQueryMode != 'SQL') {
+        const queryData = JSON.parse(JSON.stringify(query));
+        queryData.query.filters = query.query.filters.filter((f) => f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0);
+        const response = await ebp.dashboardService.executeQuery(queryData).toPromise();
+        return response;
+      } else {
+        const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
+        const numFields = response[0].length;
+        const types = new Array(numFields);
+        types.fill(null);
+        for (let row = 0; row < response[1].length; row++) {
+          response[1][row].forEach((field, i) => {
+            if (types[i] === null) {
+              if (typeof field === 'number') {
+                types[i] = 'numeric';
+              } else if (typeof field === 'string') {
+                types[i] = 'text';
+              }
             }
+          });
+          if (!types.includes(null)) {
+            break;
           }
-        });
-        if (!types.includes(null)) {
-          break;
         }
+        ebp.currentQuery = [];
+        types.forEach((type, i) => {
+          ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
+        });
+        return response;
       }
-      ebp.currentQuery = [];
-      types.forEach((type, i) => {
-        ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
-      });
-      return response;
+    } catch (err) {
+      console.log(err);
+      throw err;
     }
   },
 
@@ -77,7 +84,10 @@ export const QueryUtils = {
     return serverquery;
   },
 
-
+  switchAndBuildQuery: (ebp: EdaBlankPanelComponent) =>  {
+    if (ebp.selectedQueryMode != 'SQL') return QueryUtils.initEdaQuery(ebp);
+    else return QueryUtils.initSqlQuery(ebp);
+  },
 
   /**
  * Runs a query and sets panel chart
@@ -110,12 +120,9 @@ export const QueryUtils = {
     }
 
     try {
-
-      // if (ebp.panelChart) ebp.panelChart.destroyComponent();
-
-      const query = ebp.switchAndBuildQuery();
+      const query = QueryUtils.switchAndBuildQuery(ebp);
       /**Add fake column if SQL mode and there isn't fields yet */
-      if (query.query.modeSQL && query.query.fields.length === 0) {
+      if (query.query.queryMode == 'SQL' && query.query.fields.length === 0) {
         query.query.fields.push(QueryUtils.createColumn('custom', null, ebp.sqlOriginTable));
       }
 
@@ -125,7 +132,6 @@ export const QueryUtils = {
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
       ebp.chartData = response[1];       // Chart data
       ebp.ableBtnSave();                 // Button save
-
       /* Labels i Data - Arrays */
       if (!globalFilters) {
 
@@ -145,10 +151,8 @@ export const QueryUtils = {
       ebp.index = 1;
       ebp.display_v.saved_panel = true;
     } catch (err) {
-
       ebp.alertService.addError(err);
       ebp.spinnerService.off();
-
     }
 
   },
@@ -158,7 +162,7 @@ export const QueryUtils = {
   */
   runManualQuery: (ebp: EdaBlankPanelComponent) => {
     /**No check in sql mode */
-    if (ebp.modeSQL) {
+    if (ebp.selectedQueryMode == 'SQL') {
       QueryUtils.runQuery(ebp, false);
       return;
     }
@@ -215,7 +219,6 @@ export const QueryUtils = {
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);
-    
     const params = {
       table: '',
       dataSource: ebp.inject.dataSource._id,
@@ -224,9 +227,10 @@ export const QueryUtils = {
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
       config: config.getConfig(),
       queryLimit: ebp.queryLimit,
-      joinType: ebp.joinType
+      joinType: ebp.joinType,
+      rootTable: ebp.rootTreeTable?.table_name,
     };
-    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params);
+    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },
 
 
@@ -243,7 +247,7 @@ export const QueryUtils = {
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
       config: config.getConfig()
     };
-    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, true, ebp.currentSQLQuery);
+    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode, ebp.currentSQLQuery);
 
   }
 }

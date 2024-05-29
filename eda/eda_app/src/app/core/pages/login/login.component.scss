@@ -47,13 +47,15 @@
         text-align: center;
     }
 
-    .btn {
-        background-color: #B5BC31;
-        color: #000;
-        border: none;
-        &:hover{
-          background-color: #C7CE43;
-          color: #000;
-        }
-    }
+
+/* SDA CUSTOM*/    .btn {
+/* SDA CUSTOM*/         background-color: #B5BC31;
+/* SDA CUSTOM*/         color: #000;
+/* SDA CUSTOM*/         border: none;
+/* SDA CUSTOM*/         &:hover{
+/* SDA CUSTOM*/         background-color: #C7CE43;
+/* SDA CUSTOM*/         color: #000;
+/* SDA CUSTOM*/         }
+/* SDA CUSTOM*/     }
+
 }

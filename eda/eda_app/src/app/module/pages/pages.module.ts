@@ -16,6 +16,7 @@ import { GroupListComponent } from './groups-management/group-list/group-list.co
 import { GroupDetailComponent } from './groups-management/group-detail/group-detail.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DashboardFilterDialogComponent } from './dashboard/filter-dialog/dashboard-filter-dialog.component';
+import { GlobalFilterDialogComponent } from './dashboard/global-filter-dialog/global-filter-dialog.component';
 import { DataSourcesComponent } from './data-sources/datasource-configuration/data-sources.component';
 import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.component'
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
@@ -27,11 +28,11 @@ import { ColumnValueListDialogComponent } from './data-sources/data-source-detai
 import { ModelPermissionDialogComponent } from './data-sources/data-source-detail/model-permissions-dialog/model-permission-dialog.component';
 import { MapDialogComponent } from './data-sources/data-source-detail/mapsDialog/maps-dialog.component';
 import { ViewDialogComponent } from './data-sources/data-source-detail/viewDialog/view-dialog.component';
-import {AddCsvComponent} from './data-sources/data-source-list/addCSV/add-csv.component';
+import { AddCsvComponent } from './data-sources/data-source-list/addCSV/add-csv.component';
 import { ModelSettingsComponent } from './model-settings/model-settings.component';
-import {CacheDialogComponent} from './data-sources/data-source-detail/cache-dialog/cache-dialog.component';
-import {SecurityDialogComponent} from './data-sources/data-source-detail/security-dialog/security-dialog.component';
-import {AlertsManagementComponent} from './alerts-management/alerts-management.component';
+import { CacheDialogComponent } from './data-sources/data-source-detail/cache-dialog/cache-dialog.component';
+import { SecurityDialogComponent } from './data-sources/data-source-detail/security-dialog/security-dialog.component';
+import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
 import { MailManagementComponent } from './mail-management/mail-management.component';
 import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
 // SDA CUSTOM
@@ -44,6 +45,9 @@ import { CalculatedColumnDialogComponent } from './data-sources/data-source-deta
 import { UploadFileComponent } from './data-sources/data-source-detail/upload-file/upload-file.component';
 import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.component';
 import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
+import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.component';
+
+
 
 @NgModule({
     imports: [
@@ -67,6 +71,8 @@ import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-s
         GroupListComponent,
         GroupDetailComponent,
         DashboardFilterDialogComponent,
+        GlobalFilterComponent,
+        GlobalFilterDialogComponent,
         ColumnPermissionDialogComponent,
         ColumnValueListDialogComponent,
         TablePermissionDialogComponent,

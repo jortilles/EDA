@@ -79,7 +79,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
   }
   onShow(): void {
-
     this.panelChartConfig = this.controller.params.panelChart;
     if (this.panelChartConfig && this.panelChartConfig.config) {
       const config = (<TableConfig>this.panelChartConfig.config.getConfig());
@@ -99,7 +98,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     }
 
     this.setItems();
-
   }
 
 
@@ -313,7 +311,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   }
 
   private setItems() {
-
     if (this.controller.params.panelChart.chartType === 'table') {
       this.items = [
         {
@@ -355,7 +352,8 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
               icon: " ",
               command: () => this.setStyle(col)
             }
-          })
+          }),
+          disabled: this.onlyPercentages
         },
         {
           label: this.seeRepetitions,
@@ -420,7 +418,8 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
               icon: " ",
               command: () => this.setStyle(col)
             }
-          })
+          }),
+          disabled: this.onlyPercentages
         }
 
       ];

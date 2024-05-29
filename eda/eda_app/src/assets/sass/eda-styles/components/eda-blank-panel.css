@@ -301,6 +301,15 @@ body .ui-accordion .ui-accordion-header a {
 
     cursor: pointer;
     z-index: 99999 !important;
+    max-width: 27%;
+}
+
+.select-box-overlay {
+    width: 92%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .table-box:active {

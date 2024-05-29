@@ -2800,6 +2800,47 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
   height: 2px;
 }
 
+/* AA p-treeselect */
+.p-treeselect {
+  /* width: 20rem; */
+  width: 100%;
+  display: inline-flex;
+  background: #ffffff;
+  border: 1px solid #ced4da;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  border-radius: 6px;
+}
+
+.p-treeselect-label {
+  padding: 0.75rem 0.75rem;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.p-treeselect .p-treeselect-trigger {
+  background: transparent;
+  color: #6c757d;
+  width: 3rem;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px
+}
+
+.p-treeselect-panel .p-tree {
+  border: 0;
+  background: #ffffff;
+  color: #495057;
+  padding: 1.25rem;
+  border-radius: 6px;
+}
+
+.p-treeselect-panel {
+  background: #ffffff;
+  color: #495057;
+  border: 0 none;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+/* AA p-treeselect */
+
 .p-tree {
   border: 1px solid #dee2e6;
   background: #ffffff;
