@@ -100,6 +100,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         /**
          * If data change chart type
          */
+
         if (this.props.data && this.props.data.values.length !== 0
             && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
 
@@ -190,6 +191,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
     private renderEdaChart(type: string) {
 
+        // console.log('this.props:  ',this.props)
+
         const isbarline = this.props.edaChart === 'barline';
         const isstacked = this.props.edaChart === 'stackedbar';
 
@@ -198,10 +201,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     
         let values = _.cloneDeep(this.props.data.values);
 
+        // console.log('values:   ', values);
+
         /**
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
+        // console.log('cfg: ',cfg);
             // Si es un histogram faig aixó....        
         if (  (['histogram'].includes(this.props.edaChart))
             && this.props.query.length === 1
@@ -232,7 +238,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart,  values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
-
+        
         const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
 
         const manySeries = chartData[1].length > 10 ? true : false;
@@ -242,9 +248,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             fontColor: this.fontColor
         }
       
-      
-        console.log('Llego aaqui=?==??');
-
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart);

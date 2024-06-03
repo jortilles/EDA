@@ -149,9 +149,11 @@ export class ChartUtilsService {
         const label_idx = idx.label;
         const serie_idx = idx.serie;
         const number_idx = idx.numeric[0];
+
         if (type === 'doughnut' || type === 'polarArea') {
             const _labels = values.map(v => v[label_idx]);
             const _values = values.map(v => v[number_idx]).filter(elem => elem != null);
+
             // Faig push a l'array output, que sera retornat per l'inicialització del PieChart
             const _output = [[], []];
             _output[0] =  _output[0] = values.map(v => v[label_idx]);
@@ -163,16 +165,15 @@ export class ChartUtilsService {
 
             output =  _output;
             //console.log(JSON.stringify(output));
-
-        } else if (['bar' ].includes(type)  && ['pyramid' ].includes(subType) ) {
-
+        } 
+        else if (['bar' ].includes(type)  && ['pyramid' ].includes(subType) ) {
             const l = Array.from(new Set(values.map(v => v[label_idx])));
             const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
             const _output = [[], []];
             _output[0] = l;
 
-          //necesitamos dos series de datos y uno numérico para hacer una pirámide
-          if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
+            //necesitamos dos series de datos y uno numérico para hacer una pirámide
+            if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
                 let series = [];
                 s.forEach((s) => {
                     _output[1].push({ data: [], label: s });
@@ -186,8 +187,6 @@ export class ChartUtilsService {
                         t !== null ? _output[1][i].data.push(t) : _output[1][i].data.push(null);
                     });
                 });
-
-
                 //If >1 numeric series
             }
 
@@ -198,17 +197,16 @@ export class ChartUtilsService {
                 if (i==0) {
                     u[i].data.filter(a => {
                        inverData.push(a * -1)
-                    } )
-                    u[i].data = inverData
+                    })
+                    u[i].data = inverData;
                 }
             }
 
             _output[1] = u
             output =  _output;
 
-
-        } else if (['bar', 'line', 'area', 'horizontalBar', 'barline', 'histogram' ,'radar' ].includes(type)  &&  dataTypes.length >  1) {
-
+        } 
+        else if (['bar', 'line', 'area', 'horizontalBar', 'barline', 'histogram' ,'radar' ].includes(type)  &&  dataTypes.length >  1) {
             const l = Array.from(new Set(values.map(v => v[label_idx])));
             const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
             const _output = [[], []];
@@ -216,15 +214,14 @@ export class ChartUtilsService {
 
             //If one serie
             if (dataDescription.otherColumns.length === 1 && dataDescription.numericColumns.length === 1) {
-
                 _output[0] = values.map(v => v[label_idx]);
                 _output[1] = [{
                     data: values.map(v => v[number_idx]),
                     label: dataDescription.otherColumns[0].name
                 }];
-
                 //if two series
-            } else if (dataDescription.numericColumns.length === 1) {
+            } 
+            else if (dataDescription.numericColumns.length === 1) {
                 let series = [];
                 s.forEach((s) => {
                     _output[1].push({ data: [], label: s });
@@ -239,8 +236,8 @@ export class ChartUtilsService {
                     });
                 });
                 //If >1 numeric series
-            } else if (!isBarline) {
-
+            } 
+            else if (!isBarline) {
                 dataDescription.numericColumns.forEach((col, i) => {
                     _output[1].push(
                         {
@@ -249,8 +246,8 @@ export class ChartUtilsService {
                         });
                 });
                 // >1 numeric series and is mixed bar-line
-            } else {
-
+            } 
+            else {
                 dataDescription.numericColumns.forEach((col, i) => {
                     let isLine = i === dataDescription.numericColumns.length - 1;
                     _output[1].push(
@@ -267,18 +264,18 @@ export class ChartUtilsService {
                             pointHoverBorderWidth: 2
                         });
                 });
-
             }
             output =  _output;
 
             /* Histograma  */
-        } else if (  ['bar' ].includes(type)    &&  dataTypes.length ==  1 && dataTypes[0]== 'numeric'   ) {
+        } 
+        else if (  ['bar' ].includes(type)    &&  dataTypes.length ==  1 && dataTypes[0]== 'numeric'   ) {
             let distinctNumbers  = Array.from(new Set(values.map(v => v[number_idx]))).filter(element => {
                 return element !== null;
-              });;
+            });;
             let allNumbers = values.map(v => v[number_idx]).filter(element => {
                 return element !== null;
-              });;
+            });;
             const _output = [[], []];
 
             let grupos = [];
@@ -288,8 +285,7 @@ export class ChartUtilsService {
             //Si hay nulos van a parte
             const grupo_null =  values.map(v => v[number_idx]).filter(element => {
                 return element === null;
-              });;
-
+            });;
             distinctNumbers = distinctNumbers.sort(function(a,b){
                 return a-b
             });
@@ -302,7 +298,6 @@ export class ChartUtilsService {
             if( grupo_null.length > 0 ){
                 range = range+1;
             }
-
             if(range<30){
                 num_cols=range;
             }else if(range>=30 && range<=100){
@@ -311,12 +306,10 @@ export class ChartUtilsService {
                 num_cols=50;
             }
 
-
             //No me llega el numero de columnas fijo el numero de columnas
             if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
                 num_cols=numberOfColumns;
             }
-
 
            if( this.esEntero(distinctNumbers)){
                 salto =  Math.ceil( max/num_cols )  ;
@@ -324,7 +317,6 @@ export class ChartUtilsService {
                 num_cols<5?num_cols=5:num_cols=num_cols;
                 salto =   Math.ceil( max/num_cols * 10) / 10 ;
             }
-
             if(salto == 1 ){
                 new_data = this.generateNewDataOneForHistogram(allNumbers,num_cols,min,max , salto);
                 grupos =   this.generateGruposOneForHistogram( num_cols,min );
@@ -334,8 +326,8 @@ export class ChartUtilsService {
                     num_cols=numberOfColumns;
                 }
                 new_data = this.generateNewDataRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto);
-                                                                                                                            /** array de un único elemento. Cuando tenga mas ya veré lo que hago */
-                grupos =   this.generateGruposRangeForHistogram( num_cols,min,max , salto,  this.esEntero(distinctNumbers) , dataDescription.query[0].minimumFractionDigits    );
+                /** array de un único elemento. Cuando tenga mas ya veré lo que hago */
+                grupos =   this.generateGruposRangeForHistogram( num_cols,min,max , salto, this.esEntero(distinctNumbers) , dataDescription.query[0].minimumFractionDigits);
             }
             if(grupo_null.length > 0 ){
                 new_data.push(grupo_null.length  );
@@ -343,14 +335,13 @@ export class ChartUtilsService {
             }
             _output[0]=grupos;
             _output[1] = [{
-                    data: new_data,
-                    label:  this.histoGramRangesTxt + ' - '  + dataDescription.numericColumns[0].name
-                }];
-
+                data: new_data,
+                label:  this.histoGramRangesTxt + ' - '  + dataDescription.numericColumns[0].name
+            }];
 
             output =  _output;
         }
-
+        
         return output;
     }
 
@@ -539,15 +530,17 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
         }
-
         // barchart i horizontalbar  poden ser grafics normals o poden ser histograms....
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
             || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4  /* && aggregation */) {
-            notAllowed.splice(notAllowed.indexOf('bar'), 1);
-            notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
-            notAllowed.splice(notAllowed.indexOf('line'), 1);
-            notAllowed.splice(notAllowed.indexOf('area'), 1);
-            notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
+                notAllowed.splice(notAllowed.indexOf('bar'), 1);
+                notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
+                notAllowed.splice(notAllowed.indexOf('line'), 1);
+                notAllowed.splice(notAllowed.indexOf('area'), 1);
+                notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
+                // notAllowed.splice(notAllowed.indexOf('radar'), 1);
+            }
+        if(dataDescription.otherColumns.length===1 && dataDescription.numericColumns.length>=1 && dataDescription.totalColumns>=2 ){
             notAllowed.splice(notAllowed.indexOf('radar'), 1);
         }
         // això es per els histogrames.....
@@ -1050,13 +1043,6 @@ export class ChartUtilsService {
 
         /** Defineixo les propietats en funció del tipus de gràfic. */
         let dataLabelsObjt={}
-
-
-        console.log('Ronald==>', type);
-
-        console.log('data: ',dataLabelsObjt)
-        console.log('showLabels: ',showLabels)
-        console.log('showLabelsPercent: ',showLabelsPercent)
 
         switch (type) {
             case 'doughnut':
