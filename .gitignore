@@ -27,6 +27,8 @@ eda/eda_api/config/oracle-config.js
 eda/eda_api/config/seed.js
 eda/eda_api/config/SMPT.config.json
 eda/eda_app/src/app/config/config.ts
+eda/eda_api/.env
+
 
 #APP
 

@@ -1,3 +1,6 @@
+// Variable google
+declare var google: any;
+
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgForm } from '@angular/forms';
@@ -6,6 +9,7 @@ import { UserService } from '@eda/services/service.index';
 import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/index';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
+
 
 declare function init_plugins();
 
@@ -57,6 +61,22 @@ export class LoginComponent implements OnInit {
         if (this.email.length > 1) {
             this.remember = true;
         }
+
+        // callback de google
+        google.accounts.id.initialize({
+            client_id: '134293370744-l1o2qu9g9kqipse32s1r5rq97ichacai.apps.googleusercontent.com',
+            callback: (resp:any) => {
+                console.log(resp);
+            }
+        })
+
+        // configuración del boton de google
+        google.accounts.id.renderButton(document.getElementById("google-btn"), {
+            theme: 'filled_blue',
+            size: 'small',
+            shape: 'rectangle',
+            width: 185
+        })
 
     }
 
