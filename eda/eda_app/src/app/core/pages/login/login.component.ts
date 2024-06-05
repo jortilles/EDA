@@ -66,14 +66,7 @@ export class LoginComponent implements OnInit {
         google.accounts.id.initialize({
             client_id: '134293370744-l1o2qu9g9kqipse32s1r5rq97ichacai.apps.googleusercontent.com',
             callback: (resp:any) => {
-                console.log(resp);
-                this.userService.credentialGoogle(resp).subscribe(
-                    res => {
-                        console.log('res: ',res);
-                    }, err => {
-                        console.log('err: ',err);
-                    }
-                )
+                this.handleResponseGoogle(resp);
             }
         })
 
@@ -85,6 +78,22 @@ export class LoginComponent implements OnInit {
             width: 185
         })
 
+    }
+
+    handleResponseGoogle(resp:any) {
+
+        //decode the token
+        //store in session
+        //navigate to home
+        //save in localstorage
+        console.log(resp);
+        this.userService.credentialGoogle(resp).subscribe(
+            res => {
+                console.log('res: ',res);
+            }, err => {
+                console.log('err: ',err);
+            }
+        )
     }
 
     public login(form: NgForm) {
