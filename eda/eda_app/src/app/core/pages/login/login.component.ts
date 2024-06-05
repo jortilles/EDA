@@ -65,8 +65,8 @@ export class LoginComponent implements OnInit {
         // callback de google
         google.accounts.id.initialize({
             client_id: '134293370744-l1o2qu9g9kqipse32s1r5rq97ichacai.apps.googleusercontent.com',
-            callback: (resp:any) => {
-                this.handleResponseGoogle(resp);
+            callback: (dataGoogle:any) => {
+                this.handleResponseGoogle(dataGoogle);
             }
         })
 
@@ -80,14 +80,14 @@ export class LoginComponent implements OnInit {
 
     }
 
-    handleResponseGoogle(resp:any) {
+    handleResponseGoogle(respGoogle:any) {
 
         //decode the token
         //store in session
         //navigate to home
         //save in localstorage
-        console.log(resp);
-        this.userService.credentialGoogle(resp).subscribe(
+        console.log(respGoogle);
+        this.userService.credentialGoogle(respGoogle).subscribe(
             res => {
                 console.log('res: ',res);
             }, err => {

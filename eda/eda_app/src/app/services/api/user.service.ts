@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 @Injectable()
 export class UserService extends ApiService {
     private route = '/admin/user';
-    private routeGoogle = '/auth/google'
+    private routeGoogle = '/auth/google/login'
 
     public user: User;
     public isAdmin: boolean;
@@ -56,8 +56,8 @@ export class UserService extends ApiService {
     }
 
     /** Jortilles Google Sign In - credential Google*/
-    credentialGoogle(resp: any): Observable<any> {
-        return this.post(this.routeGoogle, {resp: resp});
+    credentialGoogle(respGoogle: any): Observable<any> {
+        return this.post(this.routeGoogle, {respGoogle: respGoogle});
     }
 
     /** Update User credentials and save in localstorage */

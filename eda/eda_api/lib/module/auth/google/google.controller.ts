@@ -27,13 +27,18 @@ export class GoogleController {
 
     static async credentialGoogle(req: Request, res: Response, next: NextFunction) {
         
-        const {credential} = req.body.resp
+        const respGoogle = req.body.respGoogle;
+        const {credential} = respGoogle;
 
-        console.log('credential reception: ',credential)
+        console.log('respGoogle: ', respGoogle);
+
+
+        
+
 
         res.json({
             ok: true,
-            respGoogle: req.body.resp
+            respGoogle: respGoogle
         })
 
     }
