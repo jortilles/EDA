@@ -38,13 +38,14 @@ export const QueryUtils = {
    * Switch sql mode or eda mode and run query
    * @param ebp edaBlankPanelComponent
    * @param query query to run
-   * 
+   *
    */
   switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
     try {
       if (ebp.selectedQueryMode != 'SQL') {
         const queryData = JSON.parse(JSON.stringify(query));
-        queryData.query.filters = query.query.filters.filter((f) => f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0);
+        queryData.query.filters = query.query.filters.filter((f) => (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
+        || f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty');
         const response = await ebp.dashboardService.executeQuery(queryData).toPromise();
         return response;
       } else {
@@ -98,14 +99,14 @@ export const QueryUtils = {
     /** gestiona las columnas duplicadas. Si tengo dos columnas con el mismo nombre le añado el sufijo _1, _2, _3.... etc */
     let dup = [];
     let cont = 0;
-    ebp.currentQuery.forEach(a=> { 
+    ebp.currentQuery.forEach(a=> {
       let finder = dup.find(b => b === a.display_name.default);
       if (finder != null) {
         cont = cont + 1
         a.display_name.default = finder + "_" + cont ;
       } else {
         dup.push(a.display_name.default);
-      }  
+      }
      })
 
     ebp.display_v.disablePreview = false;
@@ -168,7 +169,7 @@ export const QueryUtils = {
     }
 
     /**
-    * Cumulative sum check 
+    * Cumulative sum check
     */
     const dataDescription = ebp.chartUtils.describeData(ebp.currentQuery, ebp.chartLabels);
     const cumulativeSum = ebp.currentQuery.filter(field => field.column_type === 'date' && field.cumulativeSum === true).length > 0;
@@ -192,9 +193,9 @@ export const QueryUtils = {
       /**
        * If the table row count is greather than the MAX_TABLE_ROWS_FOR_ALERT
        * And there is no aggretation
-       * And there is no limit OR the limit is over the MAX_TABLE_ROWS_FOR_ALERT 
+       * And there is no limit OR the limit is over the MAX_TABLE_ROWS_FOR_ALERT
        */
-      if ( (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT)  && (ebp.selectedFilters.length + aggregations <= 0 )   
+      if ( (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT)  && (ebp.selectedFilters.length + aggregations <= 0 )
             &&  ( ( ebp.queryLimit == undefined  )  ||  (  ebp.queryLimit >  MAX_TABLE_ROWS_FOR_ALERT ) )   ) {
 
         ebp.alertController = new EdaDialogController({

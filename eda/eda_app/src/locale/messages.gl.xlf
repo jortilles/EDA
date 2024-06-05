@@ -4256,6 +4256,10 @@
           <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
         </target>
       </trans-unit>
+      <trans-unit id="DatePickerNull">
+       <source>Fecha nula</source>
+        <target>Data nula</target>
+      </trans-unit> 
 
       <trans-unit id="positionFilterInReport">
         <source>Posición del filtro en el informe</source>
@@ -4290,6 +4294,14 @@
         <target>Modo Árbore</target>
       </trans-unit>
 
+      <trans-unit id="filters13">
+        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+        <target>VALORES NON NULOS OU BALEIROS (not null and != '')</target>
+      </trans-unit>
+      <trans-unit id="filters14">
+        <source>VALORES NULOS O VACÍOS (null or = '')</source>
+        <target>VALORES NULOS OU BALEIROS (null or = '')</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

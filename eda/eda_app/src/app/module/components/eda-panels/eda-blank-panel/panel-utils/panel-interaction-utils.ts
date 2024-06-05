@@ -40,7 +40,8 @@ export const PanelInteractionUtils = {
 
     // Clean columns
     const filteredColumns = table.columns.filter((tableColumn: Column) => {
-      tableColumn.table_id = table.table_name;
+        tableColumn.table_id = table.table_name;
+        tableColumn.autorelation = table.autorelation;
 
         const matcher = ebp.currentQuery.find((currentColumn: Column) =>
           tableColumn.table_id === currentColumn.table_id &&
@@ -150,14 +151,15 @@ export const PanelInteractionUtils = {
       
       const rootTree = ebp.tableNodes.map((n) => n.table_id);
       const childrenId = getAllChildIds(expandNode);
+
       table.relations = table.relations.filter(f=>f.bridge==false );
       for (const relation of table.relations) {
         // Init child_id
         const child_id = relation.target_table+'.'+relation.target_column[0];
 
         /** Checks if the current child_node is included before.
-         * This prevents duplicated paths.*/
-        if (!rootTree.includes(relation.target_table) && !childrenId.includes(child_id)) {
+         * This prevents duplicated paths. */
+        if ((!rootTree.includes(relation.target_table) || relation.autorelation) && !childrenId.includes(child_id)) {
           // Label to show on the treeComponent 
           let childLabel = relation.display_name?.default
           ? `${relation.display_name.default}`
@@ -174,6 +176,7 @@ export const PanelInteractionUtils = {
               assertTable.table_name = child_id;
               assertTable.display_name.default = childLabel;
               assertTable.description.default = childLabel;
+              assertTable.autorelation = relation.autorelation;
               ebp.tables.push(assertTable)
             }
           }

@@ -232,7 +232,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
             if (Array.isArray(response) && response.length > 1) {
                 const data = response[1];
-                this.columnValues = data.filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
+                this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
             }
         } catch (err) {
             this.alertService.addError(err)

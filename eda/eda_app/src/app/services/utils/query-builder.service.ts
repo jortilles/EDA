@@ -102,12 +102,14 @@ export class QueryBuilderService extends ApiService {
             col.whatif_column = select[i].whatif_column || false;
             col.whatif = select[i].whatif;
             col.joins = select[i].joins || [];
+            col.autorelation = select[i].autorelation;
             queryColumns.push(col);
             labels.push(select[i].column_name);
         }
 
-        const filters = params.filters.filter((f) => f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0);
-        
+        const filters = params.filters.filter((f) => (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
+        || f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty');
+
         return {
             id: '1',
             model_id: params.dataSource,

@@ -251,7 +251,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.dashboardService.executeQuery(
             this.queryBuilderService.normalQuery([this.targetCol.value], params)
         ).subscribe(
-            res => this.targetValues = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] })),
+            res => this.targetValues = res[1].map(item => ({ label: item[0], value: item[0] })),
             err => this.alertService.addError(err)
         );
     }

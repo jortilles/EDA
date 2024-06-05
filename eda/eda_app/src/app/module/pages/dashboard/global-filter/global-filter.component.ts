@@ -392,7 +392,7 @@ export class GlobalFilterComponent implements OnInit {
             query.query.forSelector = true;
             
             const res = await this.dashboardService.executeQuery(query).toPromise();
-            const data = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
+            const data = res[1].filter(item => !!item[0] || item[0] == '').map(item => ({ label: item[0], value: item[0] }));
 
             this.globalFilters.find((gf: any) => gf.id == globalFilter.id).data = data;
         } catch (err) {

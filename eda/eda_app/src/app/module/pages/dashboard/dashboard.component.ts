@@ -14,6 +14,7 @@ import domtoimage from 'dom-to-image';
 import Swal from 'sweetalert2';
 import jspdf from 'jspdf';
 import * as _ from 'lodash';
+import { NULL_VALUE } from '@eda/configs/personalitzacio/customizables';
 import { GlobalFilterComponent } from './global-filter/global-filter.component';
 
 @Component({

@@ -40,3 +40,4 @@ export const DEFAULT_FONT_FAMILY: string = 'Questrial';
 export const DEFAULT_FONT_SIZE: number = 0;
 export const DEFAULT_TITLE_ALIGN : string = 'center';
 export const DEFAULT_PANEL_TITLE_ALIGN : string = 'left';
+export const NULL_VALUE : string = 'null' ;

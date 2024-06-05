@@ -3046,6 +3046,10 @@
         <source> Últimos 120 días </source>
         <target>Last 120 days </target>
       </trans-unit>
+      <trans-unit id="DatePickerNull">
+        <source>Fecha nula</source>
+        <target>Null date</target>
+      </trans-unit>
       <trans-unit id="DateSelectRange">
         <source>Selecciona un rango</source>
         <target>Select range</target>
@@ -4261,6 +4265,15 @@
         <source>Modo Árbol</source>
         <target>Tree mode</target>
       </trans-unit>
+      <trans-unit id="filters13">
+        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+        <target>VALUES NOR NULL NOR EMPTY (not null and != '')</target>
+      </trans-unit>
+      <trans-unit id="filters14">
+        <source>VALORES NULOS O VACÍOS (null or = '')</source>
+        <target>NULL OR EMPTY VALUES (null or = '')</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

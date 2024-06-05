@@ -119,8 +119,8 @@ export class ColumnUtilsService {
         if ( !_.isNil(filter) ) {
             limitFields = this.handleLimitSelectFields(filter.value);
             between = _.isEqual(filter.value, 'between');
-            value = !_.isEqual(filter.value, 'not_null');
-            switchBtn = _.isEqual(filter.value, 'in') || _.isEqual(filter.value, 'not_in');
+            value = filter.value === 'not_null' || filter.value === 'not_null_nor_empty' || filter.value === 'null_or_empty' ? false : true;
+            switchBtn = _.isEqual(filter.value, 'in') || _.isEqual(filter.value, 'not_in') ;
         }
 
         return {between, value, limitFields, switchBtn};

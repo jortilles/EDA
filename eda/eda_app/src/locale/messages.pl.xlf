@@ -2811,6 +2811,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source> Últimos 120 días </source>
 <target>Ostatnie 120 dni </target>
 </trans-unit>
+<trans-unit id="DatePickerNull">
+  <source>Fecha nula</source>
+  <target>Data zerowa</target>
+</trans-unit>
 <trans-unit id="DateSelectRange">
 <source>Selecciona un rango</source>
 <target>Wybierz zakres</target>
@@ -3911,6 +3915,17 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro. Pero se les aplica</source>
 <target>Określ widoczność filtra. Publiczny: każdy może z niego korzystać.  Wyłączone: Inni użytkownicy mogą zobaczyć filtr, ale nie mogą go modyfikować.  Ukryty: Inni użytkownicy nie mogą zobaczyć filtra, ale to ich dotyczy</target>
 </trans-unit>
+
+<trans-unit id="filters13">
+  <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+  <target>WARTOŚCI NIE NULL LUB PUSTE (not null and != '')</target>
+</trans-unit>
+
+<trans-unit id="filters14">
+  <source>VALORES NULOS O VACÍOS (null or = '')</source>
+  <target>WARTOŚCI NULL LUB PUSTE (null or = '')</target>
+</trans-unit>
+
 
 </body>
 </file>

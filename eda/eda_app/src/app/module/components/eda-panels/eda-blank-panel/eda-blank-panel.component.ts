@@ -29,6 +29,8 @@ import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 
+import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
+
 export interface IPanelAction {
     code: string;
     data: any;
@@ -212,7 +214,9 @@ export class EdaBlankPanelComponent implements OnInit {
         if (this.panel.content) {
             try{
                 const contentQuery = this.panel.content.query;
-                const modeSQL = contentQuery.query.modeSQL;
+
+               const modeSQL = contentQuery.query.modeSQL; // Comptabilitzar dashboard antics sense queryMode informat
+
                 let queryMode = contentQuery.query.queryMode;
 
                 if (!queryMode) {
@@ -228,6 +232,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 if (modeSQL || queryMode=='SQL') {
                     this.currentSQLQuery = contentQuery.query.SQLexpression;
+
                     this.sqlOriginTable = this.tables.filter(t => t.table_name === contentQuery.query.fields[0].table_id)
                         .map(table => ({ label: table.display_name.default, value: table.table_name }))[0];
                 }
@@ -419,7 +424,7 @@ export class EdaBlankPanelComponent implements OnInit {
             try {
                 const response = await QueryUtils.switchAndRun(this, panelContent.query);
                 this.chartLabels = this.chartUtils.uniqueLabels(response[0]);
-                this.chartData = response[1];
+                this.chartData = response[1].map(item => item.map(a => a == null ? NULL_VALUE : a)); // canviem els null per valor customitzable
                 this.buildGlobalconfiguration(panelContent);
             } catch (err) {
                 this.alertService.addError(err);
@@ -437,7 +442,8 @@ export class EdaBlankPanelComponent implements OnInit {
         const modeSQL = panelContent.query.query.modeSQL;
         const queryMode = panelContent.query.query.queryMode;
         this.showHiddenColumn = true;
-        if ((queryMode && queryMode != 'SQL') || !modeSQL) {
+        if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
+
             try {
                 if (queryMode == 'EDA2') {
                     // Assert Relation Tables
@@ -1173,6 +1179,7 @@ export class EdaBlankPanelComponent implements OnInit {
         let pathStr = '';
         if (column.joins?.length > 0) {
 
+
             for (const path of column.joins) {
                 const table = (path[0]||'');
                 let tableName = this.getNiceTableName(table);
@@ -1184,6 +1191,7 @@ export class EdaBlankPanelComponent implements OnInit {
             const tableName = this.getNiceTableName(column.valueListSource.target_table);
             if (tableName) pathStr += ` ${tableName} → `;
         }
+
 
         return pathStr
     }
