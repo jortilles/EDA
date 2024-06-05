@@ -25,11 +25,15 @@ function AASingleSingnOn(target: any, propertyKey: string, descriptor: PropertyD
 export class GoogleController {
 
 
-    static async googleSignIn(req: Request, res: Response, next: NextFunction) {
+    static async credentialGoogle(req: Request, res: Response, next: NextFunction) {
         
+        const {credential} = req.body.resp
+
+        console.log('credential reception: ',credential)
+
         res.json({
             ok: true,
-            msg: req.body.token
+            respGoogle: req.body.resp
         })
 
     }

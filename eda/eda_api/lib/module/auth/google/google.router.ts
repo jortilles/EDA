@@ -13,7 +13,7 @@ const router = express.Router();
 
 // router.get('/', GoogleController.loginGoogle);
 // Falta validar si el token esta vacio o no 
-router.post('/', GoogleController.googleSignIn);
+router.post('/', GoogleController.credentialGoogle);
 
 // router.post('/login', UserController.login);
 // router.get('/fake-login/:usermail/:token', originGuard, UserController.provideToken );

@@ -67,6 +67,13 @@ export class LoginComponent implements OnInit {
             client_id: '134293370744-l1o2qu9g9kqipse32s1r5rq97ichacai.apps.googleusercontent.com',
             callback: (resp:any) => {
                 console.log(resp);
+                this.userService.credentialGoogle(resp).subscribe(
+                    res => {
+                        console.log('res: ',res);
+                    }, err => {
+                        console.log('err: ',err);
+                    }
+                )
             }
         })
 
