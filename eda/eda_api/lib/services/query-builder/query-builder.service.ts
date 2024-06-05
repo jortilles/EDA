@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-
 class TreeNode {
     public value: string;
     public child: Array<TreeNode>
@@ -48,7 +47,7 @@ export abstract class QueryBuilderService {
 
         let graph = this.buildGraph();
         /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
-        let origin = this.queryTODO.fields.find(x => x.order === 0).table_id;
+        let origin = this.queryTODO.rootTable || this.queryTODO.fields.find(x => x.order === 0).table_id;
         let dest = [];
         const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
@@ -63,55 +62,56 @@ export abstract class QueryBuilderService {
             this.permissions = [];
         }
         /** joins per els value list */
-        const valueListJoins = [];
+        let valueListJoins = [];
 
-       /** Reviso si cap columna de la  consulta es un multivalueliest..... */
-        this.queryTODO.fields.forEach( e=>{
+        if (!this.queryTODO.queryMode || this.queryTODO.queryMode == 'EDA') {
+            /** Reviso si cap columna de la  consulta es un multivalueliest..... */
+            this.queryTODO.fields.forEach( e=>{
                 if( e.valueListSource ){
-                    valueListList.push( JSON.parse(JSON.stringify(e)) );
+                    valueListList.push(JSON.parse(JSON.stringify(e)));
                         e.table_id =  e.valueListSource.target_table;
                         e.column_name = e.valueListSource.target_description_column;
                     if (!dest.includes( e.valueListSource.target_table) &&  e.valueListSource.target_table !== origin) {
                         dest.push( e.valueListSource.target_table);
                     }
                 }
-        })
-
-        /** Reviso si cap FILTRE de la  consulta es un multivalueliest.....  */
-        this.queryTODO.filters.forEach( e=>{
-            if( e.valueListSource ){
-                e.table_id =  e.filter_table;
-                e.column_name = e.filter_column;
-                valueListList.push( JSON.parse(JSON.stringify(e)) );
-                if (!dest.includes( e.valueListSource.target_table) &&  e.valueListSource.target_table !== origin) {
-                    dest.push( e.valueListSource.target_table);
-                }
-            }
-    })
-   
-        /** revisió dels filtres per si hi ha un multivaluelist */
-        if( valueListList.length > 0 && this.queryTODO.filters ){
-            this.queryTODO.filters.forEach(f=>{
-                valueListList.forEach(v=>{
-                    if(f.filter_table == v.table_id && f.filter_column == v.column_name  ){
-                        f.filter_table =  v.valueListSource.target_table;
-                        f.filter_column =  v.valueListSource.target_description_column;
-                    }
-                })
             })
-        }
 
-        /** Ajusto els joins per que siguin left join en cas els value list*/
-        if( valueListList.length > 0   ){
+            /** Reviso si cap FILTRE de la  consulta es un multivalueliest.....  */
+            this.queryTODO.filters.forEach(e=>{
+                if(e.valueListSource){
+                    e.table_id = e.filter_table;
+                    e.column_name = e.filter_column;
+                    valueListList.push(JSON.parse(JSON.stringify(e)));
+                    if (!dest.includes(e.valueListSource.target_table) &&  e.valueListSource.target_table !== origin) {
+                        dest.push(e.valueListSource.target_table);
+                    }
+                }
+            })
+
+            /** revisió dels filtres per si hi ha un multivaluelist */
+            if(valueListList.length > 0 && this.queryTODO.filters){
+                this.queryTODO.filters.forEach(f=>{
+                    valueListList.forEach(v=>{
+                        if(f.filter_table == v.table_id && f.filter_column == v.column_name  ){
+                            f.filter_table =  v.valueListSource.target_table;
+                            f.filter_column =  v.valueListSource.target_description_column;
+                        }
+                    })
+                })
+            }
+
+            /** Ajusto els joins per que siguin left join en cas els value list*/
+            if(valueListList.length > 0){
                 valueListList.forEach(v=>{
                     valueListJoins.push(v.valueListSource.target_table);
-                    if(v.valueListSource.bridge_table && v.valueListSource.bridge_table != undefined && v.valueListSource.bridge_table.length >= 1  ){ // les taules pont també han de ser left joins
+                    if(v.valueListSource.bridge_table && v.valueListSource.bridge_table != undefined && v.valueListSource.bridge_table.length >= 1){ // les taules pont també han de ser left joins
                         valueListJoins.push(v.valueListSource.bridge_table );
                     }
                 });
+            }
         }
 
-        
         /** ..........................PER ELS VALUE LISTS................................ */
 
 
@@ -133,53 +133,133 @@ export abstract class QueryBuilderService {
         }
 
         
-
         /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
-        const separedCols = this.getSeparedColumns(origin, dest);
-        const columns = separedCols[0];
-        const grouping = separedCols[1];
+        let separedCols = this.getSeparedColumns(origin, dest);
+        let columns = separedCols[0];
+        let grouping = separedCols[1];
 
-
-        // Las taules de les consultes van primer per potenciar relacions directes
-        const vals = [...dest];
-        const firs = [];
-        vals.forEach(v => firs.push(  graph.filter( e => v == e.name )[0])   );
-        firs.forEach(e => graph = graph.filter(f=> f.name != e.name)   );
-        graph  = [...firs, ...graph];
-
-        /** ARBRE DELS JOINS A FER */
-        let joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
-        // Busco relacions directes.
-        if( ! this.validateJoinTree(  joinTree, dest ) ){
-            let exito = false;
-            let new_origin  = '';
-            let new_dest  = [...dest];
-            let new_joinTree:any;
-            for (let d of  dest) {
-                new_origin = d;
-                new_dest =  [...dest].filter(e => e !== d);
-                new_dest.push(origin);
-                new_joinTree = this.dijkstraAlgorithm(graph, new_origin, new_dest.slice(0) );
-                if(  this.validateJoinTree(  new_joinTree, new_dest ) ){
-                    exito = true;
-                    break;
+        
+        let joinTree = [];
+        let tree = [];
+        for (const query of this.queryTODO.fields) {
+            if (query.joins && query.joins.length > 0) {
+                for (const join of query.joins) {
+                    tree.push(join);
                 }
-            }
-            if(exito){
-                origin = new_origin;
-                dest = [...new_dest];
-                joinTree = new_joinTree;
             }
         }
 
-        /**poso les taules de la consulta al principi del joinTree per potenciar relacions directes */
-        const my_tables = [...dest ];
-        const firsts = [];
-        my_tables.forEach( e => firsts.push(  joinTree.filter( t => e == t.name )[0])  );
-        firsts.forEach(e =>   joinTree = joinTree.filter(f=> f.name != e.name)  );
-        joinTree  = [...firsts, ...joinTree];
-        
+        for (const filter of this.queryTODO.filters) {
+            if (filter.joins && filter.joins.length > 0) {
+                for (const join of filter.joins) {
+                    tree.push(join);
+                }
+            }
+        }
+    
 
+        if (!this.queryTODO.queryMode || this.queryTODO.queryMode == 'EDA') {
+            // Las taules de les consultes van primer per potenciar relacions directes en consultes tipus EDA
+            const vals = [...dest];
+            const firs = [];
+            vals.forEach(v => firs.push(  graph.filter( e => v == e.name )[0])   );
+            firs.forEach(e => graph = graph.filter(f=> f.name != e.name)   );
+            graph  = [...firs, ...graph];
+            
+            /** ARBRE DELS JOINS A FER */
+            joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
+            // Busco relacions directes.
+            if( ! this.validateJoinTree(  joinTree, dest ) ){
+                let exito = false;
+                let new_origin  = '';
+                let new_dest  = [...dest];
+                let new_joinTree:any;
+                for (let d of  dest) {
+                    new_origin = d;
+                    new_dest =  [...dest].filter(e => e !== d);
+                    new_dest.push(origin);
+                    new_joinTree = this.dijkstraAlgorithm(graph, new_origin, new_dest.slice(0) );
+                    if(  this.validateJoinTree(  new_joinTree, new_dest ) ){
+                        exito = true;
+                        break;
+                    }
+                }
+                if(exito){
+                    origin = new_origin;
+                    dest = [...new_dest];
+                    joinTree = new_joinTree;
+                }
+            }
+
+            this.queryTODO.joined = false;
+            /**poso les taules de la consulta al principi del joinTree per potenciar relacions directes */
+            const my_tables = [...dest ];
+            const firsts = [];
+            my_tables.forEach( e => firsts.push(  joinTree.filter( t => e == t.name )[0])  );
+            firsts.forEach(e =>   joinTree = joinTree.filter(f=> f.name != e.name)  );
+            joinTree  = [...firsts, ...joinTree];
+
+        } else {
+            valueListJoins = []; 
+            
+            const processFields = (fields) => {
+                for (const field of fields) {
+                    if (field.valueListSource) {
+                        
+                        field.valueListSource.source_column = field.column_name?field.column_name:field.filter_column;
+                        field.valueListSource.source_table = field.table_id?field.table_id.split('.')[0]:field.filter_table.split('.')[0];
+
+                        field.table_id =  field.valueListSource.target_table;
+                        field.column_name = field.valueListSource.target_description_column;
+
+                        if (field.valueListSource.bridge_table?.length > 0) {
+                            const j = {
+                                source_column: field.valueListSource.source_bridge,
+                                source_table: field.valueListSource.source_table,
+                                target_id_column: field.valueListSource.source_bridge, //field.valueListSource.target_bridge,
+                                target_table: field.valueListSource.bridge_table
+                            };
+                            valueListJoins.push(j);
+                            field.valueListSource.source_column = field.valueListSource.target_bridge;
+                            field.valueListSource.source_table = field.valueListSource.bridge_table;
+                        }
+                        valueListJoins.push(field.valueListSource);
+                    }
+                }
+            };
+            
+            processFields(this.queryTODO.fields);
+            processFields(this.queryTODO.filters);
+
+            for (const value of valueListJoins) {
+                const multiSourceJoin = `${value.source_table}.${value.source_column}`;
+                const multiTargetJoin = `${value.target_table}.${value.target_id_column}`;
+
+                let exists = false;
+                for (const join of tree) {
+                    const sourceJoin = join[0];
+                    const targetJoin = join[1];
+
+                    if (multiSourceJoin == sourceJoin && multiTargetJoin == targetJoin) {
+                        exists = true;
+                    }
+                }
+
+                if (!exists) {
+                    tree.push([multiSourceJoin, multiTargetJoin]);
+                }
+            }
+            valueListJoins = [...new Set(valueListJoins.map((value) => value.target_table))];
+            tree = [...new Set(tree)];
+            joinTree = tree;
+            this.queryTODO.joined = true;
+
+            dest = valueListJoins;
+            /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
+            separedCols = this.getSeparedColumns(origin, dest);
+            columns = separedCols[0];
+            grouping = separedCols[1];
+        }
 
         //to WHERE CLAUSE
         const filters = this.queryTODO.filters.filter(f => {
@@ -194,6 +274,18 @@ export abstract class QueryBuilderService {
                 return true;
             }
             });
+
+        // para los filtros en los value list
+        filters.forEach(f => {
+            if (f.valueListSource) {
+                        
+                f.filter_table = f.valueListSource.target_table;
+                f.filter_column = f.valueListSource.target_description_column;
+            }
+        });
+
+
+
 
         //TO HAVING CLAUSE 
         const havingFilters = this.queryTODO.filters.filter(f => {
@@ -245,7 +337,99 @@ export abstract class QueryBuilderService {
     }
 
     
+    public getGraph(graph, origin, dest) {
+        let new_origin = origin;
+        const workingGrapth = JSON.parse(JSON.stringify(graph));
+        //inicializo en el origen.
+        let elem = workingGrapth.filter(e => e.name === new_origin )[0];
+        const ruta = { name: elem.name, paths: [] };
+        elem.rel.forEach((r,i) => {
+            ruta.paths[i]=[];
+            ruta.paths[i].push(elem.name);
+            ruta.paths[i].push(r);
+        });
+
+        let index = workingGrapth.indexOf(workingGrapth.find(x => x.name === elem.name));
+        if (index > -1) {
+            workingGrapth.splice(index, 1);
+        }
+        let exito = 0;
+        let grow = 0;
+        while(exito == 0){
+            ruta.paths.forEach((p,i) => {
+                grow = 0;
+                new_origin = p[p.length-1];
+                elem = workingGrapth.filter(e => e.name === new_origin )[0];
+                if(elem.rel.length > 1 ){
+                    elem.rel.forEach( 
+                       e=>{ const currentLenght = ruta.paths[i].length;
+                            let dup =  [...ruta.paths[i]];
+                            dup.push(e);
+                            let unique = new Set(dup);
+                            dup = [...unique];
+                            const newLenght = dup.length;
+                            if( newLenght > currentLenght){
+                                grow = 1;
+                            }
+                            ruta.paths.push( dup );
+                       }
+                    )
+                    ruta.paths.splice(i,1);
+                }else{
+                    if(ruta.paths.length-1 == i){    exito = 1;    }
+                }
+            });
+            if(grow == 0){
+                exito = 1;
+            }
+          
+        }
+
+
+
+
+
+        const goodPaths = [];
+        let finalPaths = [];
+        
+        ruta.paths.forEach( r => {
+            var exito = 1;
+            finalPaths.forEach(f=>{ if( this.arrayEquals(r,f) ){exito = 0; } });
+            if(exito == 1){
+              finalPaths.push(r);
+            }
+          })
+        // rutas limpias sin duplicados.
+        ruta.paths = [...finalPaths];
+        finalPaths = [];
+        
+        ruta.paths.forEach( r => {
+            let exito = 1;
+            dest.forEach(e => {  if(r.indexOf(e)<0){ exito=0;}} );
+            if( exito==1){goodPaths.push(r);}
+        })
+        //Si tengo un origen y un destino.
+        goodPaths.forEach((p,i)=>{
+            if( dest.indexOf( p[p.length-1] ) >=0 ){ finalPaths.push(p);}
+        })
+
+        
+     
+        ruta.paths = finalPaths;
+        //        { name: 'orders', dist: Infinity, path: [] }
+     
+    }
+
+
+    public arrayEquals(a, b) {
+        return Array.isArray(a) &&
+            Array.isArray(b) &&
+            a.length === b.length &&
+            a.every((val, index) => val === b[index]);
+    }
+    
     public dijkstraAlgorithm(graph, origin, dest) {
+//        this.getGraph(graph, origin, dest);
         const not_visited = [];
         const v = [];
 
@@ -294,6 +478,8 @@ export abstract class QueryBuilderService {
             })
 
         }
+        //console.log('disgtra devuelve: ');
+        //console.log(v)
         return (v);
     }
 
@@ -427,14 +613,14 @@ export abstract class QueryBuilderService {
 
 
     public findColumn(table: string, column: string) {
-        const tmpTable = this.tables.find(t => t.table_name === table);
-        const col =  tmpTable.columns.find(c => c.column_name === column);
-        col.table_id = tmpTable.table_name;
+        const tmpTable = this.tables.find((t: any) => t.table_name === table.split('.')[0]);
+        const col =  tmpTable.columns.find((c: any) => c.column_name === column);
+        col.table_id = table;
         return col;
     }
 
     public findHavingColumn(table: string, column: string) {
-        return   this.queryTODO.fields.find(f=> f.table_id === table && f.column_name === column);
+        return this.queryTODO.fields.find((f: any)=> f.table_id === table.split('.')[0] && f.column_name === column);
     }
 
     public setFilterType(filter: string) {
@@ -771,11 +957,23 @@ export abstract class QueryBuilderService {
 
             equalfilters.map.forEach((value, key) => {
                 let filterSTR = '\nand ('
-                value.forEach(f => {
-                    filterSTR += this.filterToString(f) + '\n  or ';
+
+                //poso els nulls al principi
+                let n = value.filter( f=> f.filter_type == 'not_null');
+                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null')];
+   
+                values.forEach(f => {
+                    if(f.filter_type == 'not_null'){
+                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
+                        filterSTR += this.filterToString(f ) + '\n  and ';
+                    }else{
+                        filterSTR += this.filterToString(f ) + '\n  or ';
+                    }
+                    
+
                 });
 
-                filterSTR = filterSTR.slice(0, -3);
+                filterSTR = filterSTR.slice(0, -4);
                 filterSTR += ') ';
                 filtersString += filterSTR;
             });

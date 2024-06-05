@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { EdaDialog2 } from './eda-dialog2';
 
 @Component({
@@ -15,7 +15,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnDestroy
     public ngOnInit(): void {
         this.display = true;
 
-        this.ifShowApply = this.apply.observers.length > 0 && this.showApply
+        this.ifShowApply = this.apply.observers.length > 0 && this.showApply;
         this.ifShowClose = this.close.observers.length > 0 && this.showClose;
     }
 

@@ -4265,6 +4265,28 @@
         <target>Definir la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: els altres usuaris poden veure el filtre però no el poden modificar.  Ocult: els altres usuaris no poden veure el filtre però els aplica.</target>
       </trans-unit>
 
+      <trans-unit id="removeColumnGlobalFilter">
+        <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
+        <target>No es pot eliminar la columna perquè té un filtre vinculat</target>
+      </trans-unit>
+
+      <trans-unit id="invalidPathForm">
+        <source>Ruta incorrecta para el filtro seleccionado</source>
+        <target>Ruta incorrecta pel filtre seleccionat</target>
+      </trans-unit>
+
+      <trans-unit id="PanelModeSelectorEDA">
+        <source>Modo EDA</source>
+        <target>Mode EDA</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorSQL">
+        <source>Modo SQL</source>
+        <target>Mode SQL</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorTree">
+        <source>Modo Árbol</source>
+        <target>Mode Arbre</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

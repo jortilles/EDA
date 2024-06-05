@@ -20,8 +20,8 @@
     <ng-template pTemplate="footer">
         <hr>
         <ng-content select="[footer]"></ng-content>
-        <button *ngIf="ifShowApply " pButton icon="fa fa-check" class="p-button-raised p-button-success" label="Confirmar" i18n-label="@@guardarBtn" (click)="onApply()"></button> 
-        <button *ngIf="ifShowClose" pButton icon="fa fa-times" class="p-button-raised p-button-danger" label="Cancelar" i18n-label="@@cancelarBtn" (click)="onClose()"></button> 
+        <button *ngIf="ifShowApply" [disabled]="disableApply"  pButton icon="fa fa-check" class="p-button-raised p-button-success" label="Confirmar" i18n-label="@@guardarBtn" (click)="onApply()"></button> 
+        <button *ngIf="ifShowClose" pButton icon="fa fa-times" class="p-button-raised p-button-danger" label="Cerrar" i18n-label="@@cerrarBtn" (click)="onClose()"></button> 
     </ng-template>
 
 </p-dialog>

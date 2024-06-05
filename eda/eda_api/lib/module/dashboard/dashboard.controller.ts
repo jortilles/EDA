@@ -657,11 +657,10 @@ export class DashboardController {
        uniquesForbiddenTables = [];
       }
 	  
-	  if( req.user._id == '135792467811111111111112'){
-        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-        uniquesForbiddenTables = [];
-
-      }
+/* SDA CUSTOM*/	  if( req.user._id == '135792467811111111111112'){
+/* SDA CUSTOM*/        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+/* SDA CUSTOM*/        uniquesForbiddenTables = [];
+/* SDA CUSTOM*/      }
 	  
 	  
       
@@ -713,13 +712,16 @@ export class DashboardController {
 
       /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
       if(myQuery.filters){
-        myQuery.filters.forEach(f => { 
-          if(!f.filter_column_type){
+        for (const filter of myQuery.filters) {
+          if (!filter.filter_column_type) {
+            const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
 
-            f.filter_column_type = dataModelObject.ds.model.tables.filter( t=> t.table_name == f.filter_table)[0]
-            .columns.filter(c=> c.column_name == f.filter_column   )[0].column_type;
+            if (filterTable) {
+              const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
+              filter.filter_column_type = filterColumn?.column_type || 'text';
+            }
           }
-        });
+        }
       }
 
       const query = await connection.getQueryBuilded(
@@ -860,9 +862,8 @@ export class DashboardController {
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
     try {
-      const connection = await ManagerConnectionService.getConnection(
-        req.body.model_id
-      )
+    console.log('execSqlQuery');
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
 
       /**Security check */
@@ -889,11 +890,11 @@ export class DashboardController {
         // el admin ve todo
        uniquesForbiddenTables = [];
       }
-      if( req.user._id == '135792467811111111111112'){
-        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-        uniquesForbiddenTables = [];
+/* SDA CUSTOM */      if( req.user._id == '135792467811111111111112'){
+/* SDA CUSTOM */        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+/* SDA CUSTOM */       uniquesForbiddenTables = [];
+/* SDA CUSTOM */      }
 
-      }
       let notAllowedQuery = false
       uniquesForbiddenTables.forEach(table => {
         if (req.body.query.SQLexpression.indexOf(table) >= 0) {
@@ -912,23 +913,12 @@ export class DashboardController {
 
         /**If query is in format select foo from a, b queryBuilder returns null */
         if (!query) {
-          return next(
-            new HttpException(
-              500,
-              'Queries in format "select x from A, B" are not suported'
-            )
-          )
+          return next(new HttpException(500,'Queries in format "select x from A, B" are not suported'));
         }
 
-        console.log(
-          '\x1b[32m%s\x1b[0m',
-          `QUERY for user ${req.user.name}, with ID: ${req.user._id
-          },  at: ${formatDate(new Date())} `
-        )
+        console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
         console.log(query)
-        console.log(
-          '\n-------------------------------------------------------------------------------\n'
-        )
+        console.log('\n-------------------------------------------------------------------------------\n');
 
         /**cached query */
         let cacheEnabled =
@@ -1042,7 +1032,7 @@ export class DashboardController {
       if (
         isNaN(val) || val.toString().indexOf('-') >= 0 || val.toString().indexOf('/') >= 0 ||
         val.toString().indexOf('|') >= 0 || val.toString().indexOf(':') >= 0 || val.toString().indexOf('T') >= 0 ||
-        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0) {
+        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().replace(/['"]+/g, '').length == 0 ) {
         isNotNumeric = true;
       }
     } catch (e) {

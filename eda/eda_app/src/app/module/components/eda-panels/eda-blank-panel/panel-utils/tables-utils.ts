@@ -11,7 +11,6 @@ export const TableUtils = {
     * @param vMap   Map() to keep tracking visited nodes -> first call is just a new Map()
   */
   findRelationsRecursive: (tables: any, table: any, vMap: any) => {
-
     vMap.set(table.table_name, table);
 
     table.relations.filter(r => r.visible !== false)
@@ -52,15 +51,11 @@ export const TableUtils = {
    */
 
   getTablesData: (tables: Array<any>, applyToAllfilter: { present: boolean, refferenceTable: string, id: string }) => {
-
-    let allTables = tables.filter(table => table.visible === true)
-      .sort(TableUtils.sortTables);
+    let allTables = tables.filter(table => table.visible === true).sort(TableUtils.sortTables);
 
     if (applyToAllfilter.present) {
-
       const originTable = allTables.filter(t => t.table_name === applyToAllfilter.refferenceTable)[0];
       allTables = TableUtils.filterTables(tables, originTable).filter(table => table.visible === true);
-
     }
 
     let sqlOriginTables = allTables.map(table => {

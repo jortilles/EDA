@@ -15,105 +15,7 @@
     <!-- ============================================================== -->
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
-    <div [ngClass]="{'noShow': display_v.panelMode }" > <!--   panel mode es per quan vull mostrat nomes un panell-->
-    <div *ngIf="filtersList.length > 0" class="d-flex align-items-end" style="margin: 0.5em; gap: 10px; flex-wrap: wrap;" >
-        
-        
-        <button
-            *ngIf="userService.isAdmin || filterButtonVisibility.public || isDashboardCreator"
-            id="dashFilterBtn"
-            [label]="filtrar"
-            pButton pRipple type="button"
-            icon="pi pi-filter"
-            style="height: 36px; min-width: 80px;"
-            (click)="reloadPanelsWithTimeOut()"
-            class="p-button-raised p-button-outlined filters-size">
-        </button>
-
-       
-
-        <div *ngFor="let filter of filtersList" class="filter-set d-flex align-items-center">
-            <span *ngIf="userService.isAdmin || filter.visible === 'public' || filter.visible === 'readOnly' || isDashboardCreator" class="filter-name filters-size"> {{filter.column.label}}: </span>
-            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (userService.isAdmin || filter.visible == 'public' || isDashboardCreator) "
-                [options]="filter.data"
-                [(ngModel)]="filter.selectedItems"
-                [virtualScroll]="true"
-                itemSize="30"
-                [maxSelectedLabels]="3"
-                defaultLabel="{{filter.column.label}}"
-                display="chip"
-                class="customMultiselect filters-size"
-                [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
-                [Show]="adjustSize(filter)"
-                (onChange)="applyGlobalFilter(filter)">
-
-                <p-footer>
-                    <button *ngIf="canIedit()" id="dashFilterConf"
-                        pButton pRipple type="button"
-                        icon="pi pi-cog"
-                        (click)="onFilterConfig(false, filter)"
-                        class="p-button-rounded p-button-outlined filters-size">
-                    </button>
-
-                    <button *ngIf="autoClear"
-                        pButton pRipple type="button"
-                        icon="pi pi-undo"
-                        (click)="clearRangeDates();emitChanges();"
-                        class="p-button-rounded p-button-outlined">
-                    </button>
-                </p-footer>
-            </p-multiSelect>
-
-            <p-multiSelect *ngIf="filter.data && filter.column.value.column_type !== 'date'  && (!userService.isAdmin && filter.visible === 'readOnly' && !isDashboardCreator)"
-                [options]="filter.data"
-                [(ngModel)]="filter.selectedItems"
-                [virtualScroll]="true"
-                itemSize="30"
-                [maxSelectedLabels]="3"
-                defaultLabel="{{filter.column.label}}"
-                display="chip"
-                disabled="true"
-                class="customMultiselect filters-size"
-                [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
-                [Show]="adjustSize(filter)"
-                (onChange)="applyGlobalFilter(filter)">
-
-                <p-footer>
-                    <button id="dashFilterConf"
-                        pButton pRipple type="button"
-                        icon="pi pi-cog"
-                        (click)="onFilterConfig(false, filter)"
-                        class="p-button-rounded p-button-outlined filters-size">
-                    </button>
-
-                    <button *ngIf="autoClear"
-                        pButton pRipple type="button"
-                        icon="pi pi-undo"
-                        (click)="clearRangeDates();emitChanges();"
-                        class="p-button-rounded p-button-outlined">
-                    </button>
-                </p-footer>
-            </p-multiSelect>
-
-            <eda-date-picker
-                *ngIf="filter.column.value.column_type === 'date' && (filter.visible === 'public' || userService.isAdmin || isDashboardCreator) "
-                [autoClear]="true"
-                [inject]="datePickerConfigs[filter.id]"
-                (onRemove)="removeGlobalFilter(filter, true)"
-                (onDatesChanges)="processPickerEvent($event, filter)">
-
-                <ng-container footer>
-                    <button id="dashFilterConf"
-                        pButton pRipple type="button"
-                        icon="pi pi-cog"
-                        (click)="onFilterConfig(false, filter)"
-                        class="p-button-rounded p-button-outlined filters-size">
-                    </button>
-                </ng-container>
-            </eda-date-picker>
-        </div>
-    </div>
-    </div>
+    <app-global-filter #gFilter [dashboard]="this"></app-global-filter>
 
     <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions" #gridster1 >
         <!-- Normal Size -->
@@ -151,13 +53,7 @@
         </ng-container>
     </ng-template>
 
-
 </div>
-
-<!-- ============================================================== -->
-<!-- GLOBAL FILTERS PANEL -->
-<!-- ============================================================== -->
-<dashboard-filter-dialog *ngIf="filterController" [controller]="filterController"></dashboard-filter-dialog>
 
 <!-- ============================================================== -->
 <!-- SENT VIA EMAIL PANEL -->
@@ -186,11 +82,9 @@
             [style]="{width:'21em', overflow: 'auto'}"  >
 
     <div>
-
         <div class="right-sidebar-blocks-title  mt-1">
             <span class="ml-2">{{datasourceName}}</span>
         </div>
-
     </div>
     <hr>
 
@@ -208,7 +102,7 @@
         </div>
     </div>
 
-    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="addGlobalFilter()">
+    <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="gFilter?.onShowGlobalFilter(true)">
         <div>
             <i id="newFilter" class="fa fa-filter"></i>
             <span i18n="@@opcionFiltro" class="ml-2">NUEVO FILTRO</span>
@@ -335,5 +229,6 @@
 
 
 <div  *ngIf="display_v.panelMode" >
-  <a href="https://sinergiacrm.org/es/sinergia-data-analytics/">Sinergia Data Analytics</a>
+<!-- SDA CUSTOM    <a href="https://eda.jortilles.com/">Enterprise Data Analytics</a> -->
+<!-- SDA CUSTOM--> <a href="https://sinergiacrm.org/es/sinergia-data-analytics/">Sinergia Data Analytics</a>
 </div>

@@ -2,3 +2,9 @@
 .cdk-drop-list.select-list .select-box{max-width:30%;display:block}
 .cdk-drop-list.select-list .select-box .fa-close{color:silver}
 .cdk-drop-list.select-list .select-box .fa-close:hover{color:#000}
+
+#queryModelSelector{
+  height: 1px;
+  z-index: 999999;
+}
+

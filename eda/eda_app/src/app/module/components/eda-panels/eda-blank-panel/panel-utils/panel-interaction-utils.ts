@@ -1,9 +1,8 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { Column } from '@eda/models/model.index';
-import * as _ from 'lodash';
 import { TableUtils } from './tables-utils';
-import { display } from 'html2canvas/dist/types/css/property-descriptors/display';
+import * as _ from 'lodash';
 
 export const PanelInteractionUtils = {
 
@@ -11,31 +10,201 @@ export const PanelInteractionUtils = {
      * loads columns from table
      * @param table  
      */
-  loadColumns: (ebp: EdaBlankPanelComponent, table: any, hideColumns : number) => {
-
-
+/* SDA CUSTOM */  loadColumns2: (ebp: EdaBlankPanelComponent, table: any,  hideColumns : number) => {
     ebp.userSelectedTable = table.table_name;
     ebp.disableBtnSave();
     // Clean columns
     ebp.columns = [];
     table.columns.forEach((c: Column) => {
       c.table_id = table.table_name;
-
-      const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name && c.display_name.default === x.display_name.default);
+      const matcher = _.find(ebp.currentQuery, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name && c.display_name.default === x.display_name.default );
       if (!matcher) ebp.columns.push(c);
       
-
-      if (hideColumns === 1) {
-        ebp.columns = ebp.columns.filter(col =>  col.hidden !== hideColumns)
-      } 
-
-      ebp.columns = ebp.columns.filter(col => col.visible === true )
+/* SDA CUSTOM */      if (hideColumns === 1) {
+/* SDA CUSTOM */         ebp.columns = ebp.columns.filter(col =>  col.hidden !== hideColumns)
+/* SDA CUSTOM */       } 
+      ebp.columns = ebp.columns.filter(col => col.visible === true)
         .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
     });
 
     if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
       ebp.inputs.findTable.reset();
       ebp.setTablesData();
+    }
+  },
+
+  loadColumns: (ebp: EdaBlankPanelComponent, table: any) => {
+    // Set the user-selected table and disable the save button
+    ebp.userSelectedTable = table.table_name;
+    ebp.disableBtnSave();
+
+    // Clean columns
+    const filteredColumns = table.columns.filter((tableColumn: Column) => {
+      tableColumn.table_id = table.table_name;
+
+        const matcher = ebp.currentQuery.find((currentColumn: Column) =>
+          tableColumn.table_id === currentColumn.table_id &&
+          tableColumn.column_name === currentColumn.column_name
+          && tableColumn.display_name.default === currentColumn.display_name.default
+        );
+
+        return !matcher && tableColumn.visible === true;
+    });
+
+    // Sort columns by default display name
+    ebp.columns = filteredColumns.sort((a, b) => a.display_name.default.localeCompare(b.display_name.default));
+
+    /* SDA CUSTOM */     ebp.columns = filteredColumns.filter(col => ebp.showHiddenColumn ? (col.hidden || !col.hidden) : !col.hidden);
+
+
+    // Reset input and update table data if the findTable ngModel is not empty
+    if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
+        // ebp.inputs.findTable.reset();
+        // ebp.setTablesData();
+    }
+  },
+  
+  /**
+   * Generate the rootTree for the currentQuery columns
+   * @param ebp EdaBlankPanelComponent
+   */ 
+  loadTableNodes: (ebp: EdaBlankPanelComponent) => {
+    if (ebp.currentQuery.length > 0) {
+      const idTables = [...new Set(ebp.currentQuery.map((q) => q.table_id))];
+      const rootTable = idTables.find((idTable: string) => ebp.rootTreeTable?.table_name == idTable);
+      if (rootTable) {
+        const dataSource = ebp.inject.dataSource.model.tables;
+  
+        ebp.tableNodes = [];
+    
+        const table = dataSource.find((source) => source.table_name == rootTable);
+        
+        if (table) {
+          let isexpandible = table.relations.length > 0;
+    
+          let node: any = {
+            label: table.display_name.default,
+            table_id: rootTable
+          }
+          
+          if (isexpandible) {
+            node.expandedIcon = "pi pi-folder-open";
+            node.collapsedIcon = "pi pi-folder";
+            node.children = [{}];
+          }
+          ebp.tableNodes.push(node);
+        }
+      }
+    }
+  },
+
+  assertTable: (ebp: EdaBlankPanelComponent, column: Column) => {
+    if (column.joins.length > 0 && !ebp.tables.some((t) => t.table_name == column.table_id)) {
+      const rootJoin = column.joins[column.joins.length-1];
+      const rootTable = (rootJoin[0]||'').split('.')[0];
+      const sourceTable = ebp.tables.find((table: any) => table.table_name == rootTable);
+
+      const relation = sourceTable?.relations.find((rel) => `${rel.target_table}.${rel.target_column[0]}` == column.table_id);
+      if (relation) {
+        let assertTable = _.cloneDeep(ebp.tables.find((t) => t.table_name == relation.target_table));
+
+        let displayName = relation.display_name?.default
+          ? `${relation.display_name.default}`
+          : ` ${relation.source_column[0]} - ${relation.target_table} `;
+        
+        if (assertTable?.table_name) {
+          assertTable.table_name = column.table_id;
+          assertTable.display_name.default = displayName;
+          assertTable.description.default = displayName;
+          ebp.assertedTables.push(assertTable);
+          ebp.tables.push(assertTable);
+        }
+      }
+    }
+  },
+
+  /**
+   * Find all nodes from the expanNode. expandNode can be rootNode or a childNode.
+   * Both have the children array property.
+   * @param ebp EdaBlankPanelComponent
+   * @param expandNode node to find all possible children nodes.
+   */ 
+  expandTableNode: (ebp: EdaBlankPanelComponent, expandNode: any) => {
+    const dataSource = ebp.inject.dataSource.model.tables;
+    /** @rootNode have table_id @childNode have child_id ("table_name.column_name")  */
+    const table_id = expandNode.table_id || expandNode.child_id.split('.')[0];
+    
+    if (table_id) {
+      expandNode.children = [];
+
+      const table = dataSource.find((source) => source.table_name == table_id);
+      
+      /** find all the existing childNodes found before */
+      const getAllChildIds = (node: any, ids: string[] = []): string[] => {
+        if (node.child_id) ids.push(node.child_id);
+    
+        if (node.parent) return getAllChildIds(node.parent, ids);
+    
+        return ids;
+      };
+      
+      const rootTree = ebp.tableNodes.map((n) => n.table_id);
+      const childrenId = getAllChildIds(expandNode);
+      table.relations = table.relations.filter(f=>f.bridge==false );
+      for (const relation of table.relations) {
+        // Init child_id
+        const child_id = relation.target_table+'.'+relation.target_column[0];
+
+        /** Checks if the current child_node is included before.
+         * This prevents duplicated paths.*/
+        if (!rootTree.includes(relation.target_table) && !childrenId.includes(child_id)) {
+          // Label to show on the treeComponent 
+          let childLabel = relation.display_name?.default
+          ? `${relation.display_name.default}`
+          : ` ${relation.source_column[0]} - ${relation.target_table} `;
+
+          /** This creates the path to relate this node with the previous tables.
+           * It will be used later to generate the query. */
+          let sourceJoin = relation.source_table+'.'+relation.source_column[0];
+          let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, child_id]]) : [[sourceJoin, child_id]];
+          
+          if (!ebp.tables.some((t) => t.table_name == child_id)) {
+            let assertTable = _.cloneDeep(ebp.tables.find((t) => t.table_name == relation.target_table))
+            if (assertTable?.table_name) {
+              assertTable.table_name = child_id;
+              assertTable.display_name.default = childLabel;
+              assertTable.description.default = childLabel;
+              ebp.tables.push(assertTable)
+            }
+          }
+          // Init childNode object
+          let childNode: any = {
+            type: 'child',
+            label: childLabel,
+            child_id: child_id.trim(),
+            joins
+          };
+
+          if (!childNode.parent) childNode.parent = expandNode;
+
+          // Check if the childNode have more possible paths to explore
+          const isexpandible = ebp.tables.some((source) => {
+            return source.table_name == childNode.child_id &&
+                (source.relations||[]).some((rel: any) => rel.target_table != table_id);
+          });
+          
+          // If it's expandable, we add properties to expand the node. 
+          if (isexpandible) {
+            childNode.expandedIcon = "pi pi-folder-open";
+            childNode.collapsedIcon = "pi pi-folder";
+            childNode.children = [{}];
+          }
+          // Finally add this childNode to expandNode. This will create the tree.
+          expandNode.children.push(childNode);
+        }
+      }
+
+      expandNode.children.sort((a, b) => a.label.localeCompare(b.label));
     }
   },
 
@@ -50,50 +219,193 @@ export const PanelInteractionUtils = {
     ebp.selectedFilters = ebp.selectedFilters.filter(f => f.isGlobal === false);
   },
 
-  handleFilterColumns: (
-    ebp: EdaBlankPanelComponent,
-    filterList: Array<any>,
-    query: Array<any>
-  ): void => {
-    try{
-      filterList.forEach(filter => {
-        const table = ebp.tables.filter(table => table.table_name === filter.filter_table)[0];
-        const column = table.columns? table.columns.filter(column => column.column_name === filter.filter_column)[0] : [];
-        const columnInQuery = query.filter(col => col.column_name === filter.filter_column).length > 0;
-        if (!filter.isGlobal && !columnInQuery && column != undefined) {
-          ebp.filtredColumns.push(column);
-        }
-        if(column == undefined){
-          console.log('WARNING\nWARING. YOU HAVE A COLUMN IN THE FILTERS NOT PRESENT IN THE MODEL!!!!!!!!!!!!\nWARNING');
-          console.log(filter);
-        }
-      });
-    }catch(e){
+  handleFilterColumns: (ebp: EdaBlankPanelComponent, filterList: Array<any>, query: Array<any>): void => {
+    try {
+        // Realizar el assertTable antes de recorrer filterList
+        filterList.forEach(filter => {
+            const table = ebp.tables.find(table => table.table_name === filter.filter_table);
+            if (!table) {
+                const assertTable = ebp.tables.find(table => table.table_name === filter.filter_table.split('.')[0]);
+                if (assertTable) {
+                    const column = assertTable.columns.find(c => c.column_name === filter.filter_column);
+                    if (column) {
+                        column.table_id = filter.filter_table;
+                        column.joins = filter.joins || [];
+                        PanelInteractionUtils.assertTable(ebp, column);
+                    } else {
+                        console.warn('WARNING\nWARNING. YOU HAVE A COLUMN IN THE FILTERS NOT PRESENT IN THE MODEL!!!!!!!!!!!!\nWARNING');
+                        console.warn(filter);
+                    }
+                }
+            }
+        });
+
+        // Luego, procesar filterList
+        filterList.forEach(filter => {
+            const table = ebp.tables.find(table => table.table_name === filter.filter_table);
+            if (table) {
+                const column = table.columns?.find(column => column.column_name === filter.filter_column);
+                const columnInQuery = query.some(col => col.column_name === filter.filter_column);
+                if (!filter.isGlobal && !columnInQuery && column) {
+                    ebp.filtredColumns.push(column);
+                }
+                if (!column) {
+                    console.warn('WARNING\nWARNING. YOU HAVE A COLUMN IN THE FILTERS NOT PRESENT IN THE MODEL!!!!!!!!!!!!\nWARNING');
+                    console.warn(filter);
+                }
+            }
+        });
+    } catch (e) {
         console.error('Error loading filters');
         console.error(e);
     }
   },
 
   handleCurrentQuery: (ebp: EdaBlankPanelComponent): void => {
+    const panelContent = ebp.panel.content;
+    const currentQuery = panelContent.query.query.fields;
+    const queryTables = [...new Set(currentQuery.map((field: any) => field.table_id))];
+
+    for (const idTable of queryTables) {
+
+        const table = ebp.tables.find(t => t.table_name === idTable);
+        // Init columns from table
+        PanelInteractionUtils.loadColumns(ebp, table);
+
+        for (const contentColumn of panelContent.query.query.fields) {
+            const column = ebp.columns.find(c =>
+                c.table_id === contentColumn.table_id &&
+                c.column_name === contentColumn.column_name &&
+                c.display_name.default === contentColumn.display_name
+            );
+            if (column) {
+                column.whatif_column = contentColumn.whatif_column || false;
+                column.whatif = contentColumn.whatif || {};
+                column.joins = contentColumn.joins || [];
+                PanelInteractionUtils.moveItem(ebp, column);
+            } else {
+                if(contentColumn.table_id === idTable) {
+                    let duplicatedColumn = _.cloneDeep(
+                      ebp.currentQuery.find(c =>
+                            c.table_id === contentColumn.table_id &&
+                            c.column_name === contentColumn.column_name
+                        )
+                    );
+
+                    if(!duplicatedColumn){
+                        duplicatedColumn = _.cloneDeep(
+                          ebp.columns.find(c =>
+                                c.table_id === contentColumn.table_id &&
+                                c.column_name === contentColumn.column_name
+                            )
+                        );
+                    }
+
+                    if(duplicatedColumn){
+                        duplicatedColumn.display_name.default = contentColumn.display_name;
+                        duplicatedColumn.whatif_column = contentColumn.whatif_column || false;
+                        duplicatedColumn.whatif = contentColumn.whatif || {};
+                        PanelInteractionUtils.handleAggregationType4DuplicatedColumns(ebp, duplicatedColumn);
+                        // Moc la columna directament perque es una duplicada.... o no....
+                        ebp.currentQuery.push(duplicatedColumn);
+                    }
+                }
+            }
+        }
+    }
+  },
+
+  handleCurrentQuery2: (ebp: EdaBlankPanelComponent): void => {
     if (ebp.panel.content) {
       const fields = ebp.panel.content.query.query.fields;
-      for (let i = 0, n = fields.length; i < n; i++) {
-        const field = fields[i];
-        try{
-          if (field) {
-            ebp.currentQuery[i].format = field.format;
-            ebp.currentQuery[i].cumulativeSum = field.cumulativeSum;
-            if (ebp.currentQuery[i].column_type === 'text' && ![null, 'none'].includes(field.aggregation_type)) {
-              ebp.currentQuery[i].column_type = 'numeric';
-              ebp.currentQuery[i].old_column_type = 'text';
-            }
-          }
-        }catch(e){
-          console.error('ERROR handling current query .... handleCurrentQuery.... did you changed the query model?');
-          console.error(e);
 
+      for (const contentColumn of fields) {
+        const table = ebp.tables.find((table) => table.table_name == contentColumn.table_id);
+
+        if (table && table?.columns) {
+          if (!ebp.rootTreeTable && contentColumn.joins.length == 0) {
+            ebp.rootTreeTable = table;
+          }
+
+          const columns = table.columns;
+          columns.forEach((col) => col.table_id = table.table_name);
+  
+          let column = columns.find((c: Column) =>
+            c.table_id === contentColumn.table_id &&
+            c.column_name === contentColumn.column_name
+            // && c.display_name.default === contentColumn.display_name
+          );
+          // console.log('assertColumn', contentColumn, column);
+          if (!column && contentColumn) {
+            if(columns.length > 0) {
+              column = ebp.currentQuery.find((c: Column) =>
+                c.table_id === contentColumn.table_id &&
+                c.column_name === contentColumn.column_name
+              );
+  
+              if (!column?.table_id) {
+                column = columns.find((c: Column) =>
+                  c.table_id === contentColumn.table_id &&
+                  c.column_name === contentColumn.column_name
+                );
+              }
+  
+              if(column){
+                  const duplicatedColumn = _.cloneDeep(column);
+                  duplicatedColumn.display_name.default = contentColumn.display_name;
+                  duplicatedColumn.whatif_column = contentColumn.whatif_column || false;
+                  duplicatedColumn.whatif = contentColumn.whatif || {};
+                  duplicatedColumn.joins = contentColumn.joins || [];
+                  PanelInteractionUtils.handleAggregationType4DuplicatedColumns(ebp, duplicatedColumn);
+                  // Moc la columna directament perque es una duplicada.... o no....
+                  ebp.currentQuery.push(duplicatedColumn);
+              }
+            }
+          } else if (column && contentColumn) {
+            column.isdeleted = true;
+            const handleColumn = _.cloneDeep(column)
+            handleColumn.display_name.default = contentColumn.display_name;
+            handleColumn.format = contentColumn.format;
+            handleColumn.cumulativeSum = contentColumn.cumulativeSum;
+            handleColumn.joins = contentColumn.joins;
+            handleColumn.whatif_column = contentColumn.whatif_column || false;
+            handleColumn.whatif = contentColumn.whatif || {};
+            handleColumn.joins = contentColumn.joins || [];
+            handleColumn.ordenation_type = contentColumn.ordenation_type;
+            
+            const existsAgg = handleColumn.aggregation_type.find((agg) => agg.value === contentColumn.aggregation_type);
+            if (existsAgg) existsAgg.selected = true;
+
+            if (handleColumn.column_type === 'text' && ![null, 'none'].includes(contentColumn.aggregation_type)) {
+              handleColumn.column_type = 'numeric';
+              handleColumn.old_column_type = 'text';
+            }
+  
+            ebp.currentQuery.push(_.cloneDeep(handleColumn));
+          }
+
+          PanelInteractionUtils.loadColumns(ebp, table);
         }
       }
+
+      // for (let i = 0, n = fields.length; i < n; i++) {
+      //   const field = fields[i];
+      //   try{
+      //     if (field) {
+      //       ebp.currentQuery[i].format = field.format;
+      //       ebp.currentQuery[i].cumulativeSum = field.cumulativeSum;
+      //       ebp.currentQuery[i].joins = field.joins;
+      //       if (ebp.currentQuery[i].column_type === 'text' && ![null, 'none'].includes(field.aggregation_type)) {
+      //         ebp.currentQuery[i].column_type = 'numeric';
+      //         ebp.currentQuery[i].old_column_type = 'text';
+      //       }
+      //     }
+      //   }catch(e){
+      //     console.error('ERROR handling current query .... handleCurrentQuery.... did you changed the query model?');
+      //     console.error(e);
+
+      //   }
+      // }
     }
   },
 
@@ -101,17 +413,20 @@ export const PanelInteractionUtils = {
   * Sets tables and tablesToShow when column is selected
   */
   searchRelations: (ebp: EdaBlankPanelComponent, c: Column, event?: CdkDragDrop<string[]>) => {
-    // Check to drag & drop only to correct container
-    if (!_.isNil(event) && event.container.id === event.previousContainer.id) {
-      return;
+    if (ebp.selectedQueryMode !== 'EDA2') {
+      // Check to drag & drop only to correct container
+      if (!_.isNil(event) && event.container.id === event.previousContainer.id) {
+        return;
+      }
+      // Selected table   
+      const originTable = ebp.tables.filter(t => t.table_name === c.table_id)[0];
+      // Map with all related tables
+      const tablesMap = TableUtils.findRelationsRecursive(ebp.inject.dataSource.model.tables, originTable, new Map());
+      ebp.tablesToShow = Array.from(tablesMap.values());
+      ebp.tablesToShow = ebp.tablesToShow
+        .filter(table => table.visible === true)
+        .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
     }
-
-    const originTable = ebp.tables.filter(t => t.table_name === c.table_id)[0];              // Selected table   
-    const tablesMap = TableUtils.findRelationsRecursive(ebp.inject.dataSource.model.tables, originTable, new Map());         // Map with all related tables
-    ebp.tablesToShow = Array.from(tablesMap.values());
-    ebp.tablesToShow = ebp.tablesToShow
-      .filter(table => table.visible === true)
-      .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
   },
 
   /**
@@ -129,11 +444,14 @@ export const PanelInteractionUtils = {
         tmpAggTypes.push({ display_name: agg.display_name, value: agg.value, selected: agg.value === 'sum' });
       });
     }
+
     if (!voidPanel) {
-      const colInCurrentQuery = ebp.currentQuery.find(c => c.table_id === tableId && c.column_name === colName  && c.display_name.default === displayName ).aggregation_type.find(agg => agg.selected === true);
+      const colInCurrentQuery = ebp.currentQuery.filter(c => c.table_id === tableId && c.column_name === colName && c.display_name.default === displayName);
+      const aggInCurrentQuery = colInCurrentQuery.find((agg) => agg.selected === true);
+
       const queryFromServer = ebp.panel.content.query.query.fields;
       // Column is in currentQuery
-      if (colInCurrentQuery) {
+      if (aggInCurrentQuery) {
         column.aggregation_type.forEach(agg => tmpAggTypes.push(agg));
         ebp.aggregationsTypes = tmpAggTypes;
         //Column isn't in currentQuery
@@ -155,9 +473,11 @@ export const PanelInteractionUtils = {
       initializeAgregations(column, tmpAggTypes);
       ebp.aggregationsTypes = tmpAggTypes;
     }
-    ebp.currentQuery.find(c => {
-      return   c.table_id === tableId && colName === c.column_name   && c.display_name.default == displayName
-    }).aggregation_type = _.cloneDeep(ebp.aggregationsTypes);
+
+    const findColumn =  ebp.currentQuery.find((c) => c.table_id === tableId && colName === c.column_name && c.display_name.default == displayName);
+    if (findColumn) {
+      findColumn.aggregation_type = _.cloneDeep(ebp.aggregationsTypes);
+    }
   },
 
   
@@ -257,27 +577,42 @@ export const PanelInteractionUtils = {
   },
 
   /**
-     * moves given column to [select or filters] in config panel
-     * @param c column to move
-     */
+   * moves given column to [select or filters] in config panel
+   * @param c column to move
+   */
   moveItem: (ebp: EdaBlankPanelComponent, c: Column) => {
     ebp.disableBtnSave();
+
     // Busca index en l'array de columnes
     // const match = _.findIndex(ebp.columns, { column_name: c.column_name, table_id: c.table_id,  });
-    const match = _.find(ebp.columns, (x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
+    const match = ebp.columns.find((x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
+    const matchCurrentQuery = ebp.currentQuery.find((x: Column) => c.table_id === x.table_id && c.column_name === x.column_name);
     if (match) match.isdeleted = true; // Marco la columna com a borrada
 
-    ebp.currentQuery.push(_.cloneDeep(c));      // Col·loca la nova columna a l'array Select
-    PanelInteractionUtils.searchRelations(ebp, c);        // Busca les relacions de la nova columna afegida a la consulta
-    PanelInteractionUtils.handleAggregationType(ebp, c);  // Comprovacio d'agregacions de la nova columna afegida a la consulta
-    PanelInteractionUtils.handleOrdTypes(ebp, c);         // Comprovacio ordenacio  de la nova columna afegida a la consulta
-   
 
-    ebp.inputs.findColumn.reset();  // resetea las columnas a mostrar
-    PanelInteractionUtils.loadColumns( // Torna a carregar les columnes de la taula
-      ebp, 
-      ebp.tablesToShow.filter(table => table.table_name === ebp.userSelectedTable)[0], ebp.hiddenColumn );
-  
+    if (!ebp.rootTreeTable) {
+      ebp.rootTreeTable = ebp.tables.find((table) => table.table_name == c.table_id);
+    }
+
+    if (c.table_id !== ebp.rootTreeTable?.table_name) {
+      c.joins = (c.joins||[]).length == 0 ? ebp.nodeJoins[ebp.nodeJoins.length-1] : c.joins;
+    }
+
+    // Col·loca la nova columna a l'array Select
+    if (!matchCurrentQuery) ebp.currentQuery.push(_.cloneDeep(c));
+
+    // Busca les relacions de la nova columna afegida a la consulta
+    PanelInteractionUtils.searchRelations(ebp, c);
+    // Comprovacio d'agregacions de la nova columna afegida a la consulta
+    PanelInteractionUtils.handleAggregationType(ebp, c);
+    // Comprovacio ordenacio  de la nova columna afegida a la consulta
+    PanelInteractionUtils.handleOrdTypes(ebp, c);
+    // resetea las columnas a mostrar
+    ebp.inputs.findColumn.reset();
+
+    // Torna a carregar les columnes de la taula
+    const selectedTable = ebp.getUserSelectedTable();
+    /* SDA CUSTOM*/    PanelInteractionUtils.loadColumns(ebp, selectedTable);
   },
 
   /**
@@ -351,9 +686,29 @@ export const PanelInteractionUtils = {
     */
   removeColumn: (ebp: EdaBlankPanelComponent, c: Column, list?: string) => {
     ebp.disableBtnSave();
-
     // Busca de l'array index, la columna a borrar i ho fa
     if (list === 'select') {
+      if (ebp.selectedQueryMode == 'EDA2') {
+
+        const rootTable = ebp.rootTreeTable.table_name;
+
+        // Remove column is from rootTable then check currentQuery columns to allow or not.
+        if (c.table_id === rootTable) {
+          // If only there is 1 column of rootTable, check if panel have any globalFilter linked it.
+          if (ebp.currentQuery.map((query) => query.table_id == rootTable).length <= 1) {
+            if (ebp.globalFilters.some((filter) => filter.filter_table === rootTable)) {
+              ebp.alertService.addError($localize`@@removeColumnGlobalFilter:No se puede eliminar la columna porque hay vinculado un Filtro`);
+              throw '[Error]: Can not remove this column cause there is a GlobalFilter linked.'
+            }
+          }
+        }
+
+        if (ebp.rootTreeTable && ebp.rootTreeTable.column_name == c.column_name && rootTable == c.table_id) {
+          // ebp.selectedQueryMode = 'EDA';
+          ebp.currentQuery.forEach((query) => query.table_id = query.table_id.split('.')[0]);
+          ebp.reloadTablesData();
+        }
+      }
 
       const match = _.findIndex(ebp.currentQuery, (o) => o.column_name == c.column_name && o.table_id == c.table_id && o.display_name == c.display_name );
       // Reseting all configs of column removed
@@ -366,12 +721,12 @@ export const PanelInteractionUtils = {
       ebp.filtredColumns.splice(match, 1);
     }
     // Carregar de nou l'array Columns amb la columna borrada
+    PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id));
 
-    PanelInteractionUtils.loadColumns(ebp, _.find(ebp.tables, (t) => t.table_name === c.table_id), ebp.hiddenColumn);
-  
+
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
-
+      ebp.rootTreeTable = undefined;
       ebp.tablesToShow = ebp.tables;
 
     } else {
