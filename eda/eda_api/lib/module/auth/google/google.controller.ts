@@ -1,22 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../global/model/index';
-import { ActiveDirectoryService } from '../../../services/active-directory/active-directory.service';
 import ServerLogService from '../../../services/server-log/server-log.service';
-import * as path from 'path';
-import * as fs from 'fs';
-import { QueryOptions } from 'mongoose';
+// import * as path from 'path';
+// import * as fs from 'fs';
+// import { QueryOptions } from 'mongoose';
 
 // Importaciones necesarias
 import User, { IUser } from '../../admin/users/model/user.model';
 import googleVerify from '../../../helpers/google-verify';
 import { UserController } from '../../admin/users/user.controller';
 
-
-
+// constantes necesarias
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
-const crypto = require('crypto');
 
 export class GoogleController {
 
@@ -33,13 +30,14 @@ export class GoogleController {
 
             insertServerLog(req, 'info', 'newLogin', body.email, 'attempt');
             
-            const {email_verified, email, name, picture, given_name, family_name} = await googleVerify(credential)
-            
+            // del payload de google extraemos el campo jti que es variable para generar un password dinámico
+            const {email_verified, email, name, picture, given_name, family_name, jti} = await googleVerify(credential)
+
             // si el email esta verificado con google
             if(email_verified) {
 
                 if(email=='edaanonim@jortilles.com') {
-                    console.log('Este es el correo de edaanonim@jortilles.com');
+                    console.log('Este es el correo de edaanonim@jortilles.com'); // validar con Juanjo
                 }
                 
                 const userEda = await UserController.getUserInfoByEmail(email, true);
@@ -49,38 +47,32 @@ export class GoogleController {
                     const userToSave: IUser = new User({
                         name: name,
                         email: email,
-                        password: '12345', // SE DEBE MODIFICAR
+                        password: bcrypt.hashSync(jti, 10),
                         img: picture,
-                        role: '135792467811111111111110' // SE DEBE MODIFICAR
+                        role: '135792467811111111111110' // validar con Juanjo
                     });
-
-                    console.log('nuevo usuario', userEda);
-
                     userToSave.save(async (err, userSaved) => {
                         if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
                         Object.assign(user, userSaved);
                         user.password = ':)';
                         token = await jwt.sign({user}, SEED, {expiresIn: 14400})
-                        return res.status(200).json({user, token: token, id: user._id});
+                        return res.status(200).json({ user, token: token, id: user._id });
                     });
                 } else {
                     // Si el usuario ya esta registrado, se actualiza algunos datos.
-                    console.log('usuario ya registrado', userEda);
-
                     userEda.name = name;
                     userEda.email = email;
-                    userEda.password = '12345';
+                    userEda.password = bcrypt.hashSync(jti, 10); // validar con Juanjo
                     userEda.role = '135792467811111111111110';
                     userEda.save(async (err, userSaved) => {
                         if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
                         Object.assign(user, userSaved);
                         user.password = ':)';
                         token = await jwt.sign({ user }, SEED, { expiresIn: 14400 });
-                        return res.status(200).json({user, token: token, id: user._id});
+                        return res.status(200).json({ user, token: token, id: user._id });
                     });
                 }
             } else {
-                console.log('Usuario no verificado por Google')
                 return next(new HttpException(400, 'Usuario no verificado por Google'));
             }
         } catch (error) {

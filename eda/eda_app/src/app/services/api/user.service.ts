@@ -57,8 +57,13 @@ export class UserService extends ApiService {
 
     /** Jortilles Google Sign In - credential Google*/
     credentialGoogle(respGoogle: any): Observable<any> {
-        return this.post(this.routeGoogle, {respGoogle: respGoogle});
+        return this.post(this.routeGoogle, {respGoogle: respGoogle}, true)
+            .pipe(map((res:any) => {
+                this.savingStorage(res.id, res.token, res.user);
+                return true;
+            }, (err) => this.alertService.addError(err)))
     }
+    
 
     /** Update User credentials and save in localstorage */
     updateUser(user: User): Observable<any> {

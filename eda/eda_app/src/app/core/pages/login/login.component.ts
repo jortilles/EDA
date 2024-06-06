@@ -1,7 +1,7 @@
 // Variable google
 declare var google: any;
 
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { User } from '@eda/models/model.index';
@@ -32,7 +32,8 @@ export class LoginComponent implements OnInit {
     constructor(
         private userService: UserService,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private ngZone: NgZone, // se utiliza para envolver la navegación router
     ) {
         this.logo = LogoImage;
         this.subLogo = SubLogoImage;
@@ -64,7 +65,7 @@ export class LoginComponent implements OnInit {
 
         // callback de google
         google.accounts.id.initialize({
-            client_id: '134293370744-l1o2qu9g9kqipse32s1r5rq97ichacai.apps.googleusercontent.com',
+            client_id: '134293370744-l1o2qu9g9kqipse32s1r5rq97ichacai.apps.googleusercontent.com', // ocultar en Angular
             callback: (dataGoogle:any) => {
                 this.handleResponseGoogle(dataGoogle);
             }
@@ -81,15 +82,11 @@ export class LoginComponent implements OnInit {
     }
 
     handleResponseGoogle(respGoogle:any) {
-
-        //decode the token
-        //store in session
-        //navigate to home
-        //save in localstorage
-        console.log(respGoogle);
         this.userService.credentialGoogle(respGoogle).subscribe(
-            res => {
-                console.log('res: ',res);
+            () => {
+                // utilizamos el ngZone debido al callback generado por google
+                // es una función que esta fuera del entorno de Angular.
+                this.ngZone.run(() => this.router.navigate([this.returnUrl]))
             }, err => {
                 console.log('err: ',err);
             }
