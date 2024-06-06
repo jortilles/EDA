@@ -8,10 +8,8 @@ import { QueryOptions } from 'mongoose';
 
 // Importaciones necesarias
 import User, { IUser } from '../../admin/users/model/user.model';
-import verify from '../../../helpers/google-verify';
-// import * as googleVerify from '../../../helpers/google-verify.js';
-
-
+import googleVerify from '../../../helpers/google-verify';
+import { UserController } from '../../admin/users/user.controller';
 
 
 
@@ -29,13 +27,13 @@ export class GoogleController {
             
             const body = req.body
             const {respGoogle} = body;
-            const {credential}:any = respGoogle;
+            const {credential} = respGoogle;
             let token: string;
             let user: IUser = new User({ name: '', email: '', password: '', img: '', role: [] });
 
             insertServerLog(req, 'info', 'newLogin', body.email, 'attempt');
             
-            const {email_verified, email, name, picture, given_name, family_name} = await verify(credential)
+            const {email_verified, email, name, picture, given_name, family_name} = await googleVerify(credential)
             
             // si el email esta verificado con google
             if(email_verified) {
@@ -44,19 +42,47 @@ export class GoogleController {
                     console.log('Este es el correo de edaanonim@jortilles.com');
                 }
                 
+                const userEda = await UserController.getUserInfoByEmail(email, true);
                 
+                // usuario no resgistrado, es un usuario nuevo para hacer un nuevo registro
+                if(!userEda) {
+                    const userToSave: IUser = new User({
+                        name: name,
+                        email: email,
+                        password: '12345', // SE DEBE MODIFICAR
+                        img: picture,
+                        role: '135792467811111111111110' // SE DEBE MODIFICAR
+                    });
+
+                    console.log('nuevo usuario', userEda);
+
+                    userToSave.save(async (err, userSaved) => {
+                        if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
+                        Object.assign(user, userSaved);
+                        user.password = ':)';
+                        token = await jwt.sign({user}, SEED, {expiresIn: 14400})
+                        return res.status(200).json({user, token: token, id: user._id});
+                    });
+                } else {
+                    // Si el usuario ya esta registrado, se actualiza algunos datos.
+                    console.log('usuario ya registrado', userEda);
+
+                    userEda.name = name;
+                    userEda.email = email;
+                    userEda.password = '12345';
+                    userEda.role = '135792467811111111111110';
+                    userEda.save(async (err, userSaved) => {
+                        if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
+                        Object.assign(user, userSaved);
+                        user.password = ':)';
+                        token = await jwt.sign({ user }, SEED, { expiresIn: 14400 });
+                        return res.status(200).json({user, token: token, id: user._id});
+                    });
+                }
+            } else {
+                console.log('Usuario no verificado por Google')
+                return next(new HttpException(400, 'Usuario no verificado por Google'));
             }
-
-            res.json({
-                ok: true,
-                email_verified: email_verified,
-                email: email,
-                name: name,
-                given_name: given_name,
-                family_name: family_name,
-                picture: picture
-            })
-
         } catch (error) {
             next(error);
         }
