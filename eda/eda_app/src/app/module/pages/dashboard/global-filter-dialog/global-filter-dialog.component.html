@@ -6,7 +6,7 @@
             <div class="col-9">
                 <p-card *ngIf="formReady && !globalFilter.isdeleted" [header]="header3" id="anywhereClick">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-3">
                             <p-dropdown id="selectFilerTable" [options]="tables"
                                 [(ngModel)]="globalFilter.selectedTable" filter="true"
                                 optionLabel="display_name.default" [style]="{'width': '100%'}"
@@ -14,7 +14,7 @@
                                 (onChange)="onChangeSelectedTable()" appendTo="body">
                             </p-dropdown>
                         </div>
-                        <div class="col-4">
+                        <div class="col-3">
                             <p-dropdown id="selectFilterColumn" [options]="columns"
                                 [(ngModel)]="globalFilter.selectedColumn" filter="true"
                                 optionLabel="display_name.default" [style]="{'width': '100%'}"
@@ -22,7 +22,14 @@
                                 (onChange)="onChangeSelectedColumn()" appendTo="body">
                             </p-dropdown>
                         </div>
-                        <div class="col-4">
+                        <div class="col-3" >
+                            <input class = "d-flex justify-content-center" type="text" pInputText id="aliasName"
+                            [style]="{'vertical-align' : 'bottom', width: '100%' }"
+                            [(ngModel)]="aliasValue"  
+                            placeholder="Alias del filtro (opcional)"
+                            i18n-placeholder="@@aliasValuePh">
+                        </div>
+                        <div class="col-3">
                             <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
                                 *ngIf="globalFilter.selectedColumn?.column_type !== 'date'" [options]="columnValues"
                                 [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" itemSize="30"

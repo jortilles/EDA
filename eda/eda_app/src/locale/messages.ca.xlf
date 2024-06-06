@@ -4299,7 +4299,10 @@
         <source>VALORES NULOS O VACÍOS (null or = '')</source>
         <target>VALORS NULS O BUITS (null or = '')</target>
       </trans-unit>
-
+      <trans-unit id="aliasValuePh">
+        <source>Alias del filtro (opcional)</source>
+        <target>Alias del filtre (opcional)</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

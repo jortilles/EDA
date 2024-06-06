@@ -21,7 +21,7 @@
 
 
 <ng-template #filterTemplate>
-    <p-card [header]="header1">
+    <p-card >
         <div class="grid">
             <div class="col-12">
                 <div class="grid">
@@ -76,7 +76,7 @@
 
                 <div class="grid">
 
-                    <div class="col-4">
+                    <div class="col-3">
                         <p-dropdown id="selectFilerTable" [options]="targetTables" [(ngModel)]="targetTable"
                             filter="true" optionLabel="label" [style]="{'width': '100%'}"
                             i18n-placeholder="@@placeholderTables" placeholder="Entidades"
@@ -84,7 +84,7 @@
                         </p-dropdown>
                     </div>
 
-                    <div class="col-4">
+                    <div class="col-3">
                         <p-dropdown id="selectFilterColumn" [options]="targetCols" [(ngModel)]="targetCol"
                             filter="true" optionLabel="label" [style]="{'width': '100%'}"
                             i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
@@ -92,11 +92,19 @@
                         </p-dropdown>
                     </div>
 
-                    <div class="col-4">
+                    <div class="col-3" >
+                        <input class = "d-flex justify-content-center" type="text" pInputText id="aliasName"
+                        [style]="{'vertical-align' : 'bottom', width: '100%' }"
+                        *ngIf="targetCol" [(ngModel)]="aliasValue" placeholder="Alias del filtro (opcional)"
+                        i18n-placeholder="@@aliasValuePh"
+                        />
+                    </div>
+
+                    <div class="col-3">
                         <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
                             *ngIf=" targetCol && targetCol.value.column_type !== 'date'" [options]="targetValues"
                             [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30" display="chip"
-                            [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
+                            [style]="{'vertical-align' : 'bottom', width: '100%' }"
                             [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto" appendTo="body">
                         </p-multiSelect>
 
