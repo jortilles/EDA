@@ -8,6 +8,9 @@ import { QueryOptions } from 'mongoose';
 
 // Importaciones necesarias
 import User, { IUser } from '../../admin/users/model/user.model';
+import verify from '../../../helpers/google-verify';
+// import * as googleVerify from '../../../helpers/google-verify.js';
+
 
 
 
@@ -16,15 +19,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 const crypto = require('crypto');
-
-function AASingleSingnOn(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    const originalMethod = descriptor.value;
-  
-    descriptor.value = async function (req: Request, res: Response, next: NextFunction) {
-      console.log('Nueva lógica de Single Sign On', req.body);
-      return res.status(200).json({ok: 'nuevo sign on'});
-    };
-}
 
 export class GoogleController {
 
@@ -35,28 +29,33 @@ export class GoogleController {
             
             const body = req.body
             const {respGoogle} = body;
-            const {credential} = respGoogle;
+            const {credential}:any = respGoogle;
             let token: string;
             let user: IUser = new User({ name: '', email: '', password: '', img: '', role: [] });
-    
-            insertServerLog(req, 'info', 'newLogin', body.email, 'attempt');
 
-            if(credential.length!==0) {
-                console.log('Credential tiene datos')
-                console.log('Verificación del credential con la llave secreta de google')
+            insertServerLog(req, 'info', 'newLogin', body.email, 'attempt');
+            
+            const {email_verified, email, name, picture, given_name, family_name} = await verify(credential)
+            
+            // si el email esta verificado con google
+            if(email_verified) {
+
+                if(email=='edaanonim@jortilles.com') {
+                    console.log('Este es el correo de edaanonim@jortilles.com');
+                }
+                
+                
             }
 
-            // console.log('respGoogle: ', respGoogle);
-            // console.log('credential: ', credential);
-            // console.log('token: ', token);
-            // console.log('user: ', user);
-    
-    
             res.json({
                 ok: true,
-                respGoogle: respGoogle
+                email_verified: email_verified,
+                email: email,
+                name: name,
+                given_name: given_name,
+                family_name: family_name,
+                picture: picture
             })
-
 
         } catch (error) {
             next(error);
@@ -74,4 +73,6 @@ function insertServerLog(req: Request, level: string, action: string, userMail: 
     var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     ServerLogService.log({ level, action, userMail, ip, type, date_str});
 }
+
+
 
