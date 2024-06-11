@@ -9,6 +9,7 @@ import { UserService } from '@eda/services/service.index';
 import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/index';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
+import { MsalService } from '@azure/msal-angular';
 
 
 declare function init_plugins();
@@ -28,12 +29,14 @@ export class LoginComponent implements OnInit {
     public backgroundImage: string
     public languages: Array<any>;
     public selectedLanguage: string;
+    // loginDisplay = false;
 
     constructor(
         private userService: UserService,
         private router: Router,
         private route: ActivatedRoute,
         private ngZone: NgZone, // se utiliza para envolver la navegación router
+        private authService: MsalService
     ) {
         this.logo = LogoImage;
         this.subLogo = SubLogoImage;
@@ -86,12 +89,34 @@ export class LoginComponent implements OnInit {
             () => {
                 // utilizamos el ngZone debido al callback generado por google
                 // es una función que esta fuera del entorno de Angular.
+                console.log('respGoogle: ',respGoogle)
                 this.ngZone.run(() => this.router.navigate([this.returnUrl]))
             }, err => {
                 console.log('err: ',err);
             }
         )
     }
+
+    loginMicrosoft() {
+        this.authService.loginPopup({
+            scopes: ['User.Read'] // configuración en la aplicación de - Jortilles Web EDA
+        }).subscribe({
+          next: (respMicrosoft) => {
+            console.log('respMicrosoft: ',respMicrosoft);
+            // this.setLoginDisplay();
+            this.userService.responseMicrosoft(respMicrosoft).subscribe((res) => {
+                console.log(res);
+                this.ngZone.run(() => this.router.navigate([this.returnUrl]))
+            }, err => {
+                console.log('err: ',err)
+            })
+          },
+          error: (error) => console.log('error: ',error)
+        });
+    }
+    // setLoginDisplay() {
+    //     this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
+    //   }
 
     public login(form: NgForm) {
         if (form.invalid) {
