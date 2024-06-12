@@ -68,6 +68,7 @@ export class updateModel {
                     SELECT target_table as source_table, target_column as source_column , 
                     source_table as target_table , source_column as target_column, label as label , 1 as direccion
                     FROM sda_def_relationships 
+                    where source_table != target_table
                     union 
                     SELECT source_table , source_column  , 
                             master_table  , master_id as target_column, 'xx-bridge|xx-bridge' , 2 as direccion
@@ -514,7 +515,8 @@ export class updateModel {
               "display_name": {
                 "default": relations[i].direccion === 0 ? relations[i].label.split('|')[0] : relations[i].label.split('|')[1] ,
                  "localized": []
-        },
+              },
+              "autorelation" : relations[i].source_table === relations[i].target_table ? true : false
             }
             destRelations.push(rr);
             

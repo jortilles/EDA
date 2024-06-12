@@ -161,7 +161,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public filterValue: any = {};
 
     public loadingNodes: boolean = false;
-    public rootTreeTable: any;
+    public rootTable: any;
     public tableNodes: any = [];
     public selectedTableNode: any;
     public nodeJoins: any[] = [];
@@ -226,9 +226,8 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.selectedQueryMode = queryMode;
 
                 if (queryMode == 'EDA2') {
-                    this.rootTreeTable = contentQuery.query.rootTreeTable;
+                    this.rootTable = contentQuery.query.rootTable;
                 }
-
 
                 if (modeSQL || queryMode=='SQL') {
                     this.currentSQLQuery = contentQuery.query.SQLexpression;
@@ -265,7 +264,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if (this.currentQuery.length == 0) {
             this.nodeJoins = [];
-            this.rootTreeTable = undefined;
+            this.rootTable = undefined;
         }
 
         const node = event?.node;
@@ -446,6 +445,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
             try {
                 if (queryMode == 'EDA2') {
+                    this.rootTable = this.tables.find((t) => t.table_name == this.rootTable);
                     // Assert Relation Tables
                     const currentQuery = panelContent.query.query.fields;
                     for (const column of currentQuery) {
@@ -489,7 +489,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         if (this.panel?.content) {
             this.panel.content.query.query.queryMode = this.selectedQueryMode;
-            this.panel.content.query.query.rootTreeTable = this.rootTreeTable;
+            this.panel.content.query.query.rootTable = this.rootTable;
         }
 
         if (!_.isEmpty(this.graficos) || this.selectedQueryMode == 'SQL') {
@@ -699,7 +699,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public openColumnDialog(column: Column, isFilter?: boolean): void {
         this.disableBtnSave();
 
-        if (column.table_id !== this.rootTreeTable?.table_name) {
+        if (column.table_id !== this.rootTable?.table_name) {
             column.joins = (column.joins||[]).length == 0 ? this.nodeJoins[this.nodeJoins.length-1] : column.joins;
         }
 
@@ -845,7 +845,7 @@ export class EdaBlankPanelComponent implements OnInit {
             const modeSQL = this.panelDeepCopy.query.query.modeSQL;
 
             this.selectedQueryMode = _.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode;
-            this.rootTreeTable = this.panelDeepCopy.rootTreeTable;
+            this.rootTable = this.panelDeepCopy.rootTable;
         }
 
         this.loadChartsData(this.panelDeepCopy);
@@ -1156,7 +1156,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.currentQuery = [];
         this.filtredColumns = [];
         this.display_v.btnSave = true;
-        this.rootTreeTable = undefined;
+        this.rootTable = undefined;
         this.action.emit({ code: 'QUERYMODE', data: { queryMode: this.selectedQueryMode, panel: this.panel } })
     }
 

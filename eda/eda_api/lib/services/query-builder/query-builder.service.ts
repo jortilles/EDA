@@ -131,13 +131,12 @@ export abstract class QueryBuilderService {
                 }
             });
         }
-
+        
         
         /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
         let separedCols = this.getSeparedColumns(origin, dest);
         let columns = separedCols[0];
         let grouping = separedCols[1];
-
         
         let joinTree = [];
         let tree = [];
@@ -208,10 +207,18 @@ export abstract class QueryBuilderService {
                         
                         field.valueListSource.source_column = field.column_name?field.column_name:field.filter_column;
                         // field.valueListSource.source_table = field.table_id?field.table_id.split('.')[0]:field.filter_table.split('.')[0];
-                        field.valueListSource.source_table = field.table_id?field.table_id:field.filter_table;
+
+                        const sourceTable = (field.table_id||field.filter_table)
+                        // const sourceTable = table.substring(0, table.lastIndexOf('.'));
+                        field.valueListSource.source_table = sourceTable;
 
                         field.table_id = field.valueListSource.target_table;
                         field.column_name = field.valueListSource.target_description_column;
+
+                        if (field.autorelation) {
+                            field.valueListSource.source_table = field.joins[field.joins.length-1][0]; //, join[0].substring(sourceLastDotInx + 1)];
+                        }
+
                         
                         if (field.valueListSource.bridge_table?.length > 0) {
                             const j = {
@@ -251,7 +258,7 @@ export abstract class QueryBuilderService {
                 }
             }
             valueListJoins = [...new Set(valueListJoins.map((value) => value.target_table))];
-            
+
             tree = [...new Set(tree)];
             joinTree = tree;
             this.queryTODO.joined = true;

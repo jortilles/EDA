@@ -13,7 +13,7 @@ export const PanelOptions = {
 /* SDA CUSTOM */ panelComponent.showHiddenColumn = false;
           panelComponent.panelDeepCopy = _.cloneDeep(panelComponent.panel.content, true);
           if (panelComponent.selectedQueryMode == 'EDA2') {
-            panelComponent.panelDeepCopy.rootTreeTable = _.cloneDeep(panelComponent.rootTreeTable);
+            panelComponent.panelDeepCopy.rootTable = _.cloneDeep(panelComponent.rootTable);
           }
           panelComponent.display_v.disablePreview = false;
 
