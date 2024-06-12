@@ -59,3 +59,15 @@
 .language:hover{
     color: blue;
 }
+
+.microsoft{
+    padding: 0;
+    margin: 0;    
+    filter: brightness(95%);
+
+}
+
+.microsoft:hover{
+    filter: brightness(100%);
+}
+
