@@ -143,8 +143,8 @@ export class userAndGroupsToMongo {
 
     //empujo el grupo admin para que se inicialize con el admin de eda y el empujo usuario EDA con función de admin
     await mongoGroups.find(i => i.name ===  'EDA_ADMIN').users.push('135792467811111111111111')
-    await mongoUsers.find(i => i.email ===  'eda@jortilles.com').role.push('135792467811111111111110')
-  
+    await mongoUsers.find(i => i.email ===  'eda@sinergiada.org').role.push('135792467811111111111110')
+
     //guardamos en la bbdd
     await mongoGroups.forEach(async r => {
       try {
@@ -190,9 +190,9 @@ export class userAndGroupsToMongo {
       const mongocrmFilterUser = groups.filter(a => groupsMatchCrm.includes(a.name))
       mongocrmFilterUser.forEach(a => totalRolesIds.push(a._id)); 
             
-      try {
-        if (y._id != "135792467811111111111111" || y._id != "135792467811111111111112") {
-          await User.updateOne({ name: y.name }, { $unset : {role: {}} })
+      if (y._id != "135792467811111111111111" || y._id !="135792467811111111111112" ) {
+         try {
+          await User.updateOne({ email: y.email }, { $unset : {role: {}} })
           .then(function () {
             console.log(y.name + ' Unset ') 
           })
@@ -200,7 +200,7 @@ export class userAndGroupsToMongo {
             console.log(error) 
           })
         
-        await User.updateOne({ name: y.name }, { $addToSet : {role: totalRolesIds} })
+        await User.updateOne({ email: y.email }, { $addToSet : {role: totalRolesIds} })
           .then(function () {
             console.log(y.name + ' Updated')
           })
