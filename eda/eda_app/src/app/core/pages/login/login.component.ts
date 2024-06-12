@@ -89,7 +89,7 @@ export class LoginComponent implements OnInit {
             () => {
                 // utilizamos el ngZone debido al callback generado por google
                 // es una función que esta fuera del entorno de Angular.
-                console.log('respGoogle: ',respGoogle)
+                // console.log('respGoogle: ',respGoogle)
                 this.ngZone.run(() => this.router.navigate([this.returnUrl]))
             }, err => {
                 console.log('err: ',err);
@@ -102,10 +102,10 @@ export class LoginComponent implements OnInit {
             scopes: ['User.Read'] // configuración en la aplicación de - Jortilles Web EDA
         }).subscribe({
           next: (respMicrosoft) => {
-            console.log('respMicrosoft: ',respMicrosoft);
+            // console.log('respMicrosoft: ',respMicrosoft);
             // this.setLoginDisplay();
             this.userService.responseMicrosoft(respMicrosoft).subscribe((res) => {
-                console.log(res);
+                // console.log(res);
                 this.ngZone.run(() => this.router.navigate([this.returnUrl]))
             }, err => {
                 console.log('err: ',err)
