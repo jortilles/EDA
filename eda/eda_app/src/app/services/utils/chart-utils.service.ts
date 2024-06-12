@@ -542,11 +542,14 @@ export class ChartUtilsService {
         // barchart i horizontalbar  poden ser grafics normals o poden ser histograms....
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
             || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4  /* && aggregation */) {
-            notAllowed.splice(notAllowed.indexOf('bar'), 1);
-            notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
-            notAllowed.splice(notAllowed.indexOf('line'), 1);
-            notAllowed.splice(notAllowed.indexOf('area'), 1);
-            notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
+                notAllowed.splice(notAllowed.indexOf('bar'), 1);
+                notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
+                notAllowed.splice(notAllowed.indexOf('line'), 1);
+                notAllowed.splice(notAllowed.indexOf('area'), 1);
+                notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
+            }
+        if(dataDescription.otherColumns.length===1 && dataDescription.numericColumns.length>=1 && dataDescription.totalColumns>=2 ){
+            notAllowed.splice(notAllowed.indexOf('radar'), 1);
         }
         // això es per els histogrames.....
         if (dataDescription.numericColumns.length == 1 && dataDescription.totalColumns == 1 ) {
@@ -1438,12 +1441,94 @@ export class ChartUtilsService {
                         }
                     }
                 }
-                break;
+                break;               
+            case 'radar':
+                if(showLabels || showLabelsPercent ){
+                    dataLabelsObjt =  {
+                         backgroundColor: function(context) {
+                            return context.dataset.backgroundColor;
+                         },
 
 
+                        display: function(context) {
+                            const chartWidth = context.chart.width;
+                            const realData = context.dataset.data;
+                            const total = realData.reduce((a, b) => {
+                                return a + b;
+                            }, 0);
+                            const elem = realData[context.dataIndex];
+                            const percentage = elem / total * 100;
+                            if( chartWidth < 200){
+                                return  percentage > 8 ;
+                            }else{
+                                return  percentage > 3; /** Mostro la etiqueta si es mes que el 10 % del total  */
+                            }
+                        }
+                    }
+                }
+                else{
+                    dataLabelsObjt =   { display: false }
+                }
+                options.chartOptions = {
+                    animation: {
+                        duration: 3000,
+                    },
+                    elements: {
+                        line: {
+                            borderWidth: 1,
+                            borderColor: '#36A2EB',
+                            backgroundColor: '#9BD0F5',                    
+                        },
+                        point: {
+                            radius: 4, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' }
+                    },
+                    maintainAspectRatio: false,
+                    
+                    showLines: true,
+                    spanGaps: true,
+                    responsive: true,
+                    onHover: (event,chartElement ) => {
+                        //Canviem el cursor de normal a tipus link
+                        chartElement.length == 1 ? 
+                        event.native.target.style.cursor = "pointer" :
+                        event.native.target.style.cursor = "default";
+                    },
+                    tooltips: {
+                        mode: 'nearest',
+                        intersect: false,
+                        callbacks: {
+                            title: (tooltipItem, data) => {
+                                if (data && tooltipItem) {
+                                    return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
+                                }
+                            },
 
-
-
+                            label: (tooltipItem, data) => {
+                                if (data && tooltipItem) {
+                                    const realData = data.datasets[tooltipItem.datasetIndex].data;
+                                    let total = 0;
+                                    for( let i = 0; i< realData.length; i++){
+                                        if(isNaN( parseFloat(realData[i]))){
+                                            total = total;
+                                        }else{
+                                            total = total + parseFloat(realData[i]);
+                                        }
+                                    }
+                                    const elem = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                    const percentage = elem / total * 100;
+                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
+                                }
+                            },
+                            footer: () => { return linked },
+                        }
+                    },
+                
+                    plugins: {
+                        datalabels: dataLabelsObjt,
+                        legend: edaBarLineLegend
+                    },
+                };
+                break;      
             case 'line':
                 if(showLabels || showLabelsPercent ){
 

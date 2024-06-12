@@ -190,6 +190,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
     private renderEdaChart(type: string) {
 
+
         const isbarline = this.props.edaChart === 'barline';
         const isstacked = this.props.edaChart === 'stackedbar';
 
@@ -197,6 +198,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const dataTypes = this.props.query.map(column => column.column_type);
     
         let values = _.cloneDeep(this.props.data.values);
+
 
         /**
         * add comparative
