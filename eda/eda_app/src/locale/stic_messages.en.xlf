@@ -6,149 +6,163 @@
       <trans-unit id="sidebarMyDashboards" datatype="html">
         <source>Mis informes</source>
         <target>My dashboards</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
-          <context context-type="linenumber">68</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
         <source> Crear nuevo informe</source>
-        <target>Create new dashboard</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
-          <context context-type="linenumber">7</context>
-        </context-group>
+        <target>Create new report</target>
+      </trans-unit>
+      <trans-unit id="inputPassword" datatype="html">
+        <source>Contraseña *</source>
+        <target>Password *</target>
+      </trans-unit>
+      <trans-unit id="inputRepitePassword" datatype="html">
+        <source>Repite la contraseña</source>
+        <target>Repeat password</target>
       </trans-unit>
       <trans-unit id="saveModel" datatype="html">
         <source>Guardar modelo de datos</source>
         <target>Save data model</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">
-            app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
+      </trans-unit>
+      <trans-unit id="labelnewPass" datatype="html">
+        <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</source>
+        <target>New password (if you don't want to modify your current password, leave the field blank)</target>
+      </trans-unit>
+      <trans-unit id="namePass" datatype="html">
+        <source>password</source>
+        <target>password</target>
+      </trans-unit>
+      <trans-unit id="labelRepeatPass" datatype="html">
+        <source>Repite la nueva contraseña </source>
+        <target>Repeat the new password </target>
+      </trans-unit>
+      <trans-unit id="nameNewPass" datatype="html">
+        <source>newPassword</source>
+        <target>new Password</target>
+      </trans-unit>
+      <trans-unit id="newPassPlaceholderProfile" datatype="html">
+        <source>Repite la contraseña</source>
+        <target>Repeat password</target>
       </trans-unit>
       <trans-unit id="direccionMail" datatype="html">
         <source>Dirección Email</source>
         <target>Username</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
-          <context context-type="linenumber">22</context>
-        </context-group>
+      </trans-unit>
+      <trans-unit id="passwordLogin" datatype="html">
+        <source>Contraseña</source>
+        <target>Password</target>
       </trans-unit>
       <trans-unit id="aggTmean">
         <source>Media</source>
         <target>Average</target>
       </trans-unit>
       <trans-unit id="topQueryH4" datatype="html">
-        <source> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
-            equiv-text="&lt;p-inputNumber&gt;" />
-    <x id="CLOSE_TAG_P-INPUTNUMBER"
-            ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
-        </source>
-        <target> Show Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
-            equiv-text="&lt;p-inputNumber&gt;" />
-    <x id="CLOSE_TAG_P-INPUTNUMBER"
-            ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
-        </target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">
-            app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="hiddenAttributes">
-        <source>Atributos ocultos</source>
-        <target>Show/hide columns</target>
-      </trans-unit>
-      <trans-unit id="atributosH4+" datatype="html">
-        <source>Columnas de:</source>
-        <target>Columns of:</target>
-      </trans-unit>
-      <trans-unit id="atributosH4interpolation" datatype="html">
-        <source>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
-        </source>
-        <target>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
-        </target>
-      </trans-unit>
-      <trans-unit id="public">
-        <source>público</source>
-        <target>Public</target>
-      </trans-unit>
-      <trans-unit id="readOnly">
-        <source>deshabilitado</source>
-        <target>Read-only</target>
-      </trans-unit>
-      <trans-unit id="hidden">
-        <source>oculto</source>
-        <target>Hidden</target>
-      </trans-unit>
-      <trans-unit id="filterVisibleScope">
-        <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El
-          resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de
-          usuario no pueden ver el filtro. pero se les aplica</source>
-        <target>Define the visibility of the filter.  Public: everyone can use it.  Disabled: other users can see the filter but cannot modify it.  Hidden: other users cannot see the filter but it applies to them.</target>
-      </trans-unit>
-
-      <!-- ABOUT PAGE -->
-      <trans-unit
-        id="aboutPageTitle" datatype="html">
-        <source>Acerca de</source>
-        <target>About</target>
-      </trans-unit>
-      <trans-unit id="aboutPageSinergiaDAVersion"
-        datatype="html">
-        <source>Versión de SinergiaDA</source>
-        <target>SinergiaDA Version</target>
-      </trans-unit>
-      <trans-unit
-        id="aboutPageEdaVersionAPI" datatype="html">
-        <source>Puerto / Versión de EDA (API)</source>
-        <target>EDA Version / Port (API)</target>
-      </trans-unit>
-      <trans-unit
-        id="aboutPageEdaVersionAPP" datatype="html">
-        <source>Versión de EDA (APP)</source>
-        <target>EDA Version (APP)</target>
-      </trans-unit>
-      <trans-unit id="aboutPageLastUpdateModelDate"
-        datatype="html">
-        <source>Última sincronización con SinergiaCRM (updateModel)</source>
-        <target>Last synchronization with SinergiaCRM (updateModel)</target>
-      </trans-unit>
-      <trans-unit id="aboutPageLastRebuildDate" datatype="html">
-        <source>Última reconstrucción de origenes de datos en SinergiaCRM
-          (rebuild)</source>
-        <target>Last data source rebuild in SinergiaCRM (rebuild)</target>
-      </trans-unit>
-      <trans-unit id="aboutPageDB" datatype="html">
-        <source>Base de datos de SinergiaCRM</source>
-        <target>SinergiaCRM database</target>
-      </trans-unit>
-      <trans-unit id="logotipoSdaAlt" datatype="html">
-        <source>Logotipo de Sinergia Data Analytics</source>
-        <target>Sinergia Data Analytics Logo</target>
-      </trans-unit>
-      <!-- END ABOUT PAGE -->
-
-       <!-- PARTIAL SDA DATASOURCE EDIT-->
-       <trans-unit id="partialEditDataSourceNotice" datatype="html">
-        <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran
-          desactivadas porque se configuran automáticamente durante el proceso de sincronización de
-          datos con SinergiaCRM.</source>
-        <target>Some areas of the SinergiaDA data source settings are disabled because they are
-          automatically configured during the data synchronization process with SinergiaCRM.
-        </target>
-      </trans-unit>
-      <!-- END PARTIAL SDA DATASOURCE EDIT-->
-
-      <trans-unit id="DataModelHeader">
-        <source> Configurar nuevo orígen de datos </source>
-        <target> Configure new data source</target>
-      </trans-unit>
-
-    </body>
-  </file>
+        <source> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;" />
+        <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
+      </source>
+      <target> Show Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;" />
+      <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
+    </target>
+  </trans-unit>
+  <trans-unit id="hiddenAttributes">
+    <source>Atributos ocultos</source>
+    <target>Show/hide columns</target>
+  </trans-unit>
+  <trans-unit id="atributosH4+" datatype="html">
+    <source>Columnas de:</source>
+    <target>Columns of:</target>
+  </trans-unit>
+  <trans-unit id="atributosH4interpolation" datatype="html">
+    <source>
+      <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+    </source>
+    <target>
+      <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+    </target>
+  </trans-unit>
+  <trans-unit id="public">
+    <source>público</source>
+    <target>Public</target>
+  </trans-unit>
+  <trans-unit id="readOnly">
+    <source>deshabilitado</source>
+    <target>Read-only</target>
+  </trans-unit>
+  <trans-unit id="hidden">
+    <source>oculto</source>
+    <target>Hidden</target>
+  </trans-unit>
+  <trans-unit id="filterVisibleScope">
+    <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de usuario no pueden ver el filtro. pero se les aplica</source>
+    <target>Define the visibility of the filter.  Public: everyone can use it.  Disabled: other users can see the filter but cannot modify it.  Hidden: other users cannot see the filter but it applies to them.</target>
+  </trans-unit>  <!-- ABOUT PAGE -->
+  <trans-unit id="aboutPageTitle" datatype="html">
+    <source>Acerca de</source>
+    <target>About</target>
+  </trans-unit>
+  <trans-unit id="aboutPageSinergiaDAVersion" datatype="html">
+    <source>Versión de SinergiaDA</source>
+    <target>SinergiaDA Version</target>
+  </trans-unit>
+  <trans-unit id="aboutPageEdaVersionAPI" datatype="html">
+    <source>Puerto / Versión de EDA (API)</source>
+    <target>EDA Version / Port (API)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageEdaVersionAPP" datatype="html">
+    <source>Versión de EDA (APP)</source>
+    <target>EDA Version (APP)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageLastUpdateModelDate" datatype="html">
+    <source>Última sincronización con SinergiaCRM (updateModel)</source>
+    <target>Last synchronization with SinergiaCRM (updateModel)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageLastRebuildDate" datatype="html">
+    <source>Última reconstrucción de origenes de datos en SinergiaCRM (rebuild)</source>
+    <target>Last data source rebuild in SinergiaCRM (rebuild)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageDB" datatype="html">
+    <source>Base de datos de SinergiaCRM</source>
+    <target>SinergiaCRM database</target>
+  </trans-unit>
+  <trans-unit id="logotipoSdaAlt" datatype="html">
+    <source>Logotipo de Sinergia Data Analytics</source>
+    <target>Sinergia Data Analytics Logo</target>
+  </trans-unit>  <!-- END ABOUT PAGE -->  <!-- PARTIAL SDA DATASOURCE EDIT-->
+  <trans-unit id="partialEditDataSourceNotice" datatype="html">
+    <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
+    <target>Some areas of the SinergiaDA data source settings are disabled because they are automatically configured during the data synchronization process with SinergiaCRM.        </target>
+  </trans-unit>  <!-- END PARTIAL SDA DATASOURCE EDIT-->
+  <trans-unit id="DataModelHeader">
+    <source> Configurar nuevo orígen de datos </source>
+    <target> Configure new data source</target>
+  </trans-unit>
+  <trans-unit id="seleccionH4" datatype="html">
+    <source> Mostrar los siguientes atributos: </source>
+    <target> Show the following columns: </target>
+  </trans-unit>
+  <trans-unit id="dragFields">
+    <source>Arrastre aquí los atributos que quiera ver en su panel</source>
+    <target>Drag here the columns that you want to show in your panel.</target>
+  </trans-unit>
+  <trans-unit id="draggFilters">
+    <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
+    <target>Drag here the columns that you want to filter by.</target>
+  </trans-unit>
+  <trans-unit id="placeholderColumns" datatype="html">
+    <source>Atributos</source>
+    <target>Columns</target>
+  </trans-unit>
+  <trans-unit id="resumenAtrH6" datatype="html">
+    <source> Resumen de atributos </source>
+    <target> Column summary </target>
+  </trans-unit>
+  <trans-unit id="atributsTitle">
+    <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para   consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
+    <target>Columns of the selected table. To add them to the panel, click or drag them to "Show the following columns". To use them as a filter, drag them to "Filter results by".</target>
+  </trans-unit>
+  <trans-unit id="entidadesH4" datatype="html">
+    <source> Entidades </source>
+    <target> Tables </target>
+  </trans-unit>
+</body>
+</file>
 </xliff>
