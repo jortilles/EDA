@@ -143,7 +143,7 @@ export class userAndGroupsToMongo {
 
     //empujo el grupo admin para que se inicialize con el admin de eda y el empujo usuario EDA con función de admin
     await mongoGroups.find(i => i.name ===  'EDA_ADMIN').users.push('135792467811111111111111')
-    await mongoUsers.find(i => i.email ===  'eda@sinergiada.org').role.push('135792467811111111111110')
+    await mongoUsers.find(i => i.email ===  ('eda@sinergiada.org' || 'eda@jortilles.com') ).role.push('135792467811111111111110')
 
     //guardamos en la bbdd
     await mongoGroups.forEach(async r => {
