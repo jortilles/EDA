@@ -209,7 +209,7 @@ export class userAndGroupsToMongo {
           })
         }
         
-      } catch (err) {}
-    })
+      catch (err) {}
+    }})
   }
 }
