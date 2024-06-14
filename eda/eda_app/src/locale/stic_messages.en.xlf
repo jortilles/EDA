@@ -67,7 +67,7 @@
     <source>Atributos ocultos</source>
     <target>Show/hide columns</target>
   </trans-unit>
-  <trans-unit id="atributosH4+" datatype="html">
+  <trans-unit id="atributosH4" datatype="html">
     <source>Columnas de:</source>
     <target>Columns of:</target>
   </trans-unit>
