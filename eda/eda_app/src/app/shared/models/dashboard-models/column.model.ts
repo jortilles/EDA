@@ -17,5 +17,6 @@ export interface Column {
     cumulativeSum: boolean;
     valueListSource: any;
 /* SDA CUSTOM */    hidden: number;
+    autorelation: boolean;
     joins: string[];
 }

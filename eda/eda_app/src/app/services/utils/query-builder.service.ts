@@ -102,12 +102,15 @@ export class QueryBuilderService extends ApiService {
             col.whatif_column = select[i].whatif_column || false;
             col.whatif = select[i].whatif;
             col.joins = select[i].joins || [];
+            col.autorelation = select[i].autorelation;
             queryColumns.push(col);
             labels.push(select[i].column_name);
         }
 
+
         const filters = params.filters.filter((f) => f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0);
-        
+        console.log(filters);
+
         return {
             id: '1',
             model_id: params.dataSource,

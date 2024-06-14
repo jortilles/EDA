@@ -1,6 +1,8 @@
 
 import { Injectable } from '@angular/core';
 import moment from 'moment';
+
+
 @Injectable()
 export class DateUtils {
 
@@ -32,6 +34,7 @@ export class DateUtils {
             case 'last30': return this.setLast30();
             case 'last60': return this.setLast60();
             case 'last120': return this.setLast120();
+            case 'null': return this.nullDate();
         }
     }
 
@@ -217,4 +220,10 @@ export class DateUtils {
         return stringRange;
     }
 
+
+    public nullDate() {
+        return [moment('1900-01-01').toDate(), moment('1900-01-01').toDate()];
+    }
+
 }
+

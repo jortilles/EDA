@@ -34,6 +34,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public greendot: string = $localize`:@@greendot:Paneles filtrados`;
     public reddot: string = $localize`:@@reddot:Paneles no relacionados`;
     public unselecteddot: string = $localize`:@@unselecteddot:Paneles no filtrados`;
+    public aliasValuePh : string = $localize`:@@aliasValuePh: Alias del filtro (opcional)`;
 
     public tables: any[] = [];
     public selectedTable: any;
@@ -53,6 +54,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public formReady: boolean = false;
     public datePickerConfigs: any = {};
+    public aliasValue: string = "";
 
     constructor(
         private globalFilterService: GlobalFiltersService,
@@ -98,11 +100,13 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.globalFilter.selectedTable = _.cloneDeep(this.tables.find((table) => table.table_name == tableName));
 
             const columnName = this.globalFilter.selectedColumn.column_name;
+            // Recupero el display name que le haya podido poner.
+            const display_name_alias = this.globalFilter.selectedColumn.display_name.default;
             this.globalFilter.selectedColumn = _.cloneDeep(this.globalFilter.selectedTable.columns.find((col: any) => col.column_name == columnName));
-
             this.getColumnsByTable();
             this.loadColumnValues();
             this.findPanelPathTables();
+            this.aliasValue = display_name_alias;
         }
 
         this.formReady = true;
@@ -232,7 +236,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
             if (Array.isArray(response) && response.length > 1) {
                 const data = response[1];
-                this.columnValues = data.filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] }));
+                this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
             }
         } catch (err) {
             this.alertService.addError(err)
@@ -363,7 +367,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     private validateGlobalFilter(): boolean {
         let valid = true;
-
+        if (this.aliasValue != "") this.globalFilter.selectedColumn.display_name.default = this.aliasValue;
         const availablePanels = this.filteredPanels.map((p) => p.id);
 
         if (!this.globalFilter.isdeleted) {

@@ -6,234 +6,163 @@
       <trans-unit id="sidebarMyDashboards" datatype="html">
         <source>Mis informes</source>
         <target>Els meus informes</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
-          <context context-type="linenumber">68</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="tituloNuevoInforme" datatype="html">
         <source> Crear nuevo informe</source>
         <target>Crea un nou informe</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/module/pages/home/home.component.html</context>
-          <context context-type="linenumber">7</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="inputPassword" datatype="html">
         <source>Contraseña *</source>
         <target>Contrasenya *</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">
-            app/module/pages/users-management/users-detail/users-detail.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">
-            app/module/pages/users-management/users-detail/users-detail.component.html</context>
-          <context context-type="linenumber">13</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">
-            app/module/pages/data-sources/data-sources.component.html</context>
-          <context context-type="linenumber">85</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">
-            app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-          <context context-type="linenumber">195</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="inputRepitePassword" datatype="html">
         <source>Repite la contraseña</source>
         <target>Repetiu la contrasenya</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">
-            app/module/pages/users-management/users-detail/users-detail.component.html</context>
-          <context context-type="linenumber">17</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="saveModel" datatype="html">
         <source>Guardar modelo de datos</source>
         <target>Desa el model de dades</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">
-            app/module/pages/data-sources/data-source-list/data-source-list.component.html</context>
-          <context context-type="linenumber">12</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="labelnewPass" datatype="html">
-        <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en
-          blanco)</source>
-        <target>Nova contrasenya (si no voleu modificar la vostra contrasenya actual deixeu el camp
-          en
-          blanc)</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
-          <context context-type="linenumber">27</context>
-        </context-group>
+        <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</source>
+        <target>Nova contrasenya (si no voleu modificar la vostra contrasenya actual deixeu el camp en blanc)</target>
       </trans-unit>
       <trans-unit id="namePass" datatype="html">
         <source>password</source>
         <target>contrasenya</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="labelRepeatPass" datatype="html">
         <source>Repite la nueva contraseña </source>
         <target>Repetiu la nova contrasenya </target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
-          <context context-type="linenumber">31</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="nameNewPass" datatype="html">
         <source>newPassword</source>
         <target>nova contrasenya</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
-          <context context-type="linenumber">32</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="newPassPlaceholderProfile" datatype="html">
         <source>Repite la contraseña</source>
         <target>Repetiu la contrasenya</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
-          <context context-type="linenumber">32</context>
-        </context-group>
       </trans-unit>
-
       <trans-unit id="direccionMail" datatype="html">
         <source>Dirección Email</source>
         <target>Nom d'usuari</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
-          <context context-type="linenumber">22</context>
-        </context-group>
       </trans-unit>
-
       <trans-unit id="passwordLogin" datatype="html">
         <source>Contraseña</source>
         <target>Contrasenya</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
-          <context context-type="linenumber">28</context>
-        </context-group>
+      </trans-unit>
+      <trans-unit id="aggTmean">
+        <source>Media</source>
+        <target>Mitjana</target>
       </trans-unit>
       <trans-unit id="topQueryH4" datatype="html">
-        <source> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
-            equiv-text="&lt;p-inputNumber&gt;" />
-      <x id="CLOSE_TAG_P-INPUTNUMBER"
-            ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
-        </source>
-        <target> Mostra Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber"
-            equiv-text="&lt;p-inputNumber&gt;" />
-      <x id="CLOSE_TAG_P-INPUTNUMBER"
-            ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
-        </target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">
-            app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
-          <context context-type="linenumber">131</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="hiddenAttributes">
-        <source>Atributos ocultos</source>
-        <target>Mostra/amaga les columnes</target>
-      </trans-unit>
-      <trans-unit id="atributosH4+" datatype="html">
-        <source>Columnas de:</source>
-        <target>Columnes de:</target>
-      </trans-unit>
-      <trans-unit id="atributosH4interpolation" datatype="html">
-        <source>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
-        </source>
-        <target>
-          <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
-        </target>
-      </trans-unit>
-      <trans-unit id="public">
-        <source>público</source>
-        <target>Públic</target>
-      </trans-unit>
-      <trans-unit id="readOnly">
-        <source>deshabilitado</source>
-        <target>Només lectura</target>
-      </trans-unit>
-      <trans-unit id="hidden">
-        <source>oculto</source>
-        <target>Ocult</target>
-      </trans-unit>
-      <trans-unit id="filterVisibleScope">
-        <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El
-          resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de
-          usuario no pueden ver el filtro. pero se les aplica</source>
-        <target>Definir la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: els altres usuaris poden veure el filtre però no el poden modificar.  Ocult: els altres usuaris no poden veure el filtre però els aplica.</target>
-      </trans-unit>
-
-      <!-- ABOUT PAGE -->
-      <trans-unit
-        id="aboutPageTitle" datatype="html">
-        <source>Acerca de</source>
-        <target>Quant a</target>
-      </trans-unit>
-      <trans-unit id="aboutPageSinergiaDAVersion"
-        datatype="html">
-        <source>Versión de SinergiaDA</source>
-        <target>Versió de SinergiaDA</target>
-      </trans-unit>
-      <trans-unit
-        id="aboutPageEdaVersionAPI" datatype="html">
-        <source>Puerto / Versión de EDA (API)</source>
-        <target>Port / Versió d'EDA (API)</target>
-      </trans-unit>
-      <trans-unit
-        id="aboutPageEdaVersionAPP" datatype="html">
-        <source>Versión de EDA (APP)</source>
-        <target>Versió d'EDA (APP)</target>
-      </trans-unit>
-      <trans-unit id="aboutPageLastUpdateModelDate"
-        datatype="html">
-        <source>Última sincronización con SinergiaCRM (updateModel)</source>
-        <target>Última sincronització amb SinergiaCRM (updateModel)</target>
-      </trans-unit>
-      <trans-unit id="aboutPageLastRebuildDate" datatype="html">
-        <source>Última reconstrucción de origenes de datos en SinergiaCRM
-          (rebuild)</source>
-        <target>Última reconstrucció dels fonts de dades a SinergiaCRM (rebuild)
-        </target>
-      </trans-unit>
-      <trans-unit id="aboutPageDB" datatype="html">
-        <source>Base de datos de SinergiaCRM</source>
-        <target>Base de dades de SinergiaCRM</target>
-      </trans-unit>
-
-      <trans-unit id="logotipoSdaAlt" datatype="html">
-        <source>Logotipo de Sinergia Data Analytics</source>
-        <target>Logotip de Sinergia Data Analytics</target>
-      </trans-unit>
-      <!-- END ABOUT PAGE -->
-
-      <!-- PARTIAL SDA DATASOURCE EDIT-->
-      <trans-unit id="partialEditDataSourceNotice" datatype="html">
-        <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran
-          desactivadas porque se configuran automáticamente durante el proceso de sincronización de
-          datos con SinergiaCRM.</source>
-        <target>Algunes àrees de la configuració de la font de dades SinergiaDA estan desactivades
-          perquè es configuren automàticament durant el procés de sincronització de dades amb
-          SinergiaCRM.
-        </target>
-      </trans-unit>
-      <!-- END PARTIAL SDA DATASOURCE EDIT-->
-
-      <trans-unit id="DataModelHeader">
-        <source> Configurar nuevo orígen de datos </source>
-        <target> Configurar nou font de dades </target>
-      </trans-unit>
-
-    </body>
-  </file>
+        <source> Mostrar Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;" />
+        <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
+      </source>
+      <target> Mostra Top:   <x id="START_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;p-inputNumber&gt;" />
+      <x id="CLOSE_TAG_P-INPUTNUMBER" ctype="x-p-inputNumber" equiv-text="&lt;/p-inputNumber&gt;" />
+    </target>
+  </trans-unit>
+  <trans-unit id="hiddenAttributes">
+    <source>Atributos ocultos</source>
+    <target>Mostra/amaga les columnes</target>
+  </trans-unit>
+  <trans-unit id="atributosH4+" datatype="html">
+    <source>Columnas de:</source>
+    <target>Columnes de:</target>
+  </trans-unit>
+  <trans-unit id="atributosH4interpolation" datatype="html">
+    <source>
+      <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+    </source>
+    <target>
+      <x id="INTERPOLATION" equiv-text="{{getDisplayName(userSelectedTable)}" />
+    </target>
+  </trans-unit>
+  <trans-unit id="public">
+    <source>público</source>
+    <target>Públic</target>
+  </trans-unit>
+  <trans-unit id="readOnly">
+    <source>deshabilitado</source>
+    <target>Només lectura</target>
+  </trans-unit>
+  <trans-unit id="hidden">
+    <source>oculto</source>
+    <target>Ocult</target>
+  </trans-unit>
+  <trans-unit id="filterVisibleScope">
+    <source>Definir la visibilidad del filtro. Público: todos pueden usarlo. Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo. Oculto: El resto de usuario no pueden ver el filtro. pero se les aplica</source>
+    <target>Defineix la visibilitat del filtre.  Públic: tots poden utilitzar-lo.  Deshabilitat: els altres usuaris poden veure el filtre però no el poden modificar.  Ocult: els altres usuaris no poden veure el filtre però els és d'aplicació.</target>
+  </trans-unit>  <!-- ABOUT PAGE -->
+  <trans-unit id="aboutPageTitle" datatype="html">
+    <source>Acerca de</source>
+    <target>Quant a</target>
+  </trans-unit>
+  <trans-unit id="aboutPageSinergiaDAVersion" datatype="html">
+    <source>Versión de SinergiaDA</source>
+    <target>Versió de SinergiaDA</target>
+  </trans-unit>
+  <trans-unit id="aboutPageEdaVersionAPI" datatype="html">
+    <source>Puerto / Versión de EDA (API)</source>
+    <target>Port / Versió d'EDA (API)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageEdaVersionAPP" datatype="html">
+    <source>Versión de EDA (APP)</source>
+    <target>Versió d'EDA (APP)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageLastUpdateModelDate" datatype="html">
+    <source>Última sincronización con SinergiaCRM (updateModel)</source>
+    <target>Última sincronització amb SinergiaCRM (updateModel)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageLastRebuildDate" datatype="html">
+    <source>Última reconstrucción de origenes de datos en SinergiaCRM (rebuild)</source>
+    <target>Última reconstrucció de les fonts de dades a SinergiaCRM (rebuild)</target>
+  </trans-unit>
+  <trans-unit id="aboutPageDB" datatype="html">
+    <source>Base de datos de SinergiaCRM</source>
+    <target>Base de dades de SinergiaCRM</target>
+  </trans-unit>
+  <trans-unit id="logotipoSdaAlt" datatype="html">
+    <source>Logotipo de Sinergia Data Analytics</source>
+    <target>Logotip de Sinergia Data Analytics</target>
+  </trans-unit>  <!-- END ABOUT PAGE -->  <!-- PARTIAL SDA DATASOURCE EDIT-->
+  <trans-unit id="partialEditDataSourceNotice" datatype="html">
+    <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
+    <target>Algunes àrees de la configuració de la font de dades SinergiaDA estan desactivades perquè es configuren automàticament durant el procés de sincronització de dades amb SinergiaCRM.</target>
+  </trans-unit>  <!-- END PARTIAL SDA DATASOURCE EDIT-->
+  <trans-unit id="DataModelHeader">
+    <source> Configurar nuevo orígen de datos </source>
+    <target> Configura una nova font de dades </target>
+  </trans-unit>
+  <trans-unit id="seleccionH4" datatype="html">
+    <source> Mostrar los siguientes atributos: </source>
+    <target> Mostra les següents columnes: </target>
+  </trans-unit>
+  <trans-unit id="dragFields">
+    <source>Arrastre aquí los atributos que quiera ver en su panel</source>
+    <target>Arrossegueu aquí les columnes que vulgueu veure al vostre panell.</target>
+  </trans-unit>
+  <trans-unit id="draggFilters">
+    <source>Arrastre aquí los atributos sobre los que quiera filtrar</source>
+    <target>Arrossegueu aquí les columnes per les quals vulgueu filtrar.</target>
+  </trans-unit>
+  <trans-unit id="placeholderColumns" datatype="html">
+    <source>Atributos</source>
+    <target>Columnes</target>
+  </trans-unit>
+  <trans-unit id="resumenAtrH6" datatype="html">
+    <source> Resumen de atributos </source>
+    <target> Resum de columnes </target>
+  </trans-unit>
+  <trans-unit id="atributsTitle">
+    <source>Atributos de una entidad.Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes.</source>
+    <target>Columnes de la taula seleccionada. Per afegir-les al panell, feu-hi clic o arrossegueu-les a "Mostra les següents columnes". Per fer-les servir com a filtre, arrossegueu-les a "Filtra els resultats per".</target>
+  </trans-unit>
+  <trans-unit id="entidadesH4" datatype="html">
+    <source> Entidades </source>
+    <target> Taules </target>
+  </trans-unit>
+</body>
+</file>
 </xliff>
