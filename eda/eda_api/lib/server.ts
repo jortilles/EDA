@@ -1,5 +1,4 @@
 import app from './app';
-require('dotenv').config();
 
 /**
  * oracle client

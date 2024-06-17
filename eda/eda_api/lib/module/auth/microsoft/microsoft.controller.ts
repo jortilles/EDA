@@ -1,15 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../global/model/index';
 import ServerLogService from '../../../services/server-log/server-log.service';
-// import * as path from 'path';
-// import * as fs from 'fs';
-// import { QueryOptions } from 'mongoose';
 
 // Importaciones necesarias
 import User, { IUser } from '../../admin/users/model/user.model';
 import { UserController } from '../../admin/users/user.controller';
-import authConfig from '../../../helpers/authConfig';
-import fetch from '../../../helpers/fetch';
+import authConfig from '../../../guards/microsoft-authConfig';
+import fetch from '../../../guards/microsoft-fetch';
 
 // constantes necesarias
 const jwt = require('jsonwebtoken');
