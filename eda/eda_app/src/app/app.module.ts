@@ -20,6 +20,9 @@ import { ServicesModule } from './services/services.module';
 // Azure - Microsoft
 import { MsalModule, MsalRedirectComponent } from "@azure/msal-angular";
 import { PublicClientApplication } from "@azure/msal-browser";
+import { MICROSOFT_ID, MICROSOFT_AUTHORITY, MICROSOFT_REDIRECT_URI } from '@eda/configs/config';
+
+
 
 const isIE =
   window.navigator.userAgent.indexOf("MSIE ") > -1 ||
@@ -39,10 +42,9 @@ const isIE =
         MsalModule.forRoot(
             new PublicClientApplication({
               auth: {
-                clientId: "10bf7839-de46-41f1-95fe-48bbf96505a0", // Application (client) ID from the app registration
-                authority:
-                  "https://login.microsoftonline.com/common", // The Azure cloud instance and the app's sign-in audience (tenant ID, common, organizations, or consumers)
-                redirectUri: "http://localhost:4200", // This is your redirect URI
+                clientId: MICROSOFT_ID, // Application (client) ID from the app registration
+                authority: MICROSOFT_AUTHORITY, // The Azure cloud instance and the app's sign-in audience (tenant ID, common, organizations, or consumers)
+                redirectUri: MICROSOFT_REDIRECT_URI, // This is your redirect URI
               },
               cache: {
                 cacheLocation: "localStorage",

@@ -10,6 +10,8 @@ import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/index';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
 import { MsalService } from '@azure/msal-angular';
+import { GOOGLE_CLIENT_ID } from '@eda/configs/config';
+
 
 
 declare function init_plugins();
@@ -68,7 +70,7 @@ export class LoginComponent implements OnInit {
 
         // callback de google
         google.accounts.id.initialize({
-            client_id: '134293370744-l1o2qu9g9kqipse32s1r5rq97ichacai.apps.googleusercontent.com', // ocultar en Angular
+            client_id: GOOGLE_CLIENT_ID, // ocultar en Angular
             callback: (dataGoogle:any) => {
                 this.handleResponseGoogle(dataGoogle);
             }
