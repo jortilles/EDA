@@ -76,10 +76,11 @@ export class LoginComponent implements OnInit {
 
         // configuración del boton de google
         google.accounts.id.renderButton(document.getElementById("google-btn"), {
-            theme: 'filled_blue',
-            size: 'small',
-            shape: 'rectangle',
-            width: 185
+            theme: 'filled_white',
+            size: 'medium',
+            shape: 'square',
+            text: 'continue_with',
+            width: 180
         })
 
     }

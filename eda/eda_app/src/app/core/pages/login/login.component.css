@@ -63,11 +63,16 @@
 .microsoft{
     padding: 0;
     margin: 0;    
-    filter: brightness(95%);
-
+    filter: brightness(100%);
 }
 
 .microsoft:hover{
-    filter: brightness(100%);
+    filter: brightness(97%);
+}
+
+.botones-login {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
 }
 
