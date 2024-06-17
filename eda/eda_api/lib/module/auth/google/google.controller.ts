@@ -7,7 +7,7 @@ import ServerLogService from '../../../services/server-log/server-log.service';
 
 // Importaciones necesarias
 import User, { IUser } from '../../admin/users/model/user.model';
-import googleVerify from '../../../helpers/google-verify';
+import googleVerify from '../../../guards/google-verify-guard';
 import { UserController } from '../../admin/users/user.controller';
 
 // constantes necesarias
