@@ -439,7 +439,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         case 5:
           return `${colname} is not null and ${colname} != ''`;
         case 6:
-          return `${colname} is null or ${colname} = ''`;
+          return `( ${colname} is null or ${colname} = '')`;
       }
     }
 
@@ -480,7 +480,11 @@ export class MySqlBuilderService extends QueryBuilderService {
         const colname = this.getHavingColname(column);
         if (f.filter_type === 'not_null') {
           filtersString += `\nand ${colname}  is not null `;
-        } else {
+        }else if (f.filter_type === 'not_null_nor_empty') {
+          filtersString += `\nand ${colname}  is not null and ${colname} != ''  `;
+        }else if (f.filter_type === 'null_or_empty') {
+          filtersString += `\nand ( ${colname}  is null or ${colname} != ''  ) `;
+        }  else {
           /* Control de nulos... se genera la consutla de forma diferente */
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
           if (nullValueIndex != - 1) {

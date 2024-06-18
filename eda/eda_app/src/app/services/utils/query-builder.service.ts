@@ -108,8 +108,10 @@ export class QueryBuilderService extends ApiService {
         }
 
 
-        const filters = params.filters.filter((f) => f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0);
-        console.log(filters);
+        const filters = params.filters.filter((f) => 
+            (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
+            || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
+        );
 
         return {
             id: '1',

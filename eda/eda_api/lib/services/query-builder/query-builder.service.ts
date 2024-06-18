@@ -275,7 +275,7 @@ export abstract class QueryBuilderService {
             let column =  this.queryTODO.fields.find(c=> f.filter_table == c.table_id && f.filter_column == c.column_name );
             if(column){
                 if(column.hasOwnProperty('aggregation_type')){
-                    return column.aggregation_type==='none'?true:false;
+                    return column.aggregation_type==='none' || [ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type) ?true:false;
                 }else{
                     return true;
                 }
@@ -284,6 +284,9 @@ export abstract class QueryBuilderService {
             }
             });
 
+
+
+            
         // para los filtros en los value list
         filters.forEach(f => {
             if (f.valueListSource) {
@@ -304,7 +307,7 @@ export abstract class QueryBuilderService {
             }else{
                 return false;
             }
-        });
+        }).filter(f=> ![ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type));
 
 
         if (this.queryTODO.simple) {
