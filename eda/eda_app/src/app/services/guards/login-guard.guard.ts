@@ -1,23 +1,22 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot, ActivatedRoute } from '@angular/router';
 import { UserService } from '../api/user.service';
 
 @Injectable()
 export class LoginGuardGuard implements CanActivate {
 
-    constructor(public userService: UserService,
+    constructor(
+        public userService: UserService, 
+        private route: ActivatedRoute,
         public router: Router) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         const token = route.queryParams.token; 
         
         if(token){
-            console.log('El token existe y se envia al backend')
-            this.userService.tokenUrl(token).subscribe((value) => {
-                console.log('envio del backend: ', value);
+            this.userService.tokenUrl(token).subscribe(() => {
+                this.router.navigate([this.route.snapshot.queryParams['returnUrl'] || '/home']);
             })
-            // savingStorage( id: string, token: string, user: User) ;
-            // savingStorage( id de usuario 135792467811111111111111, token: el token que me llega, user: el objeto user del mongo) ;
         }
         if (this.userService.isLogged()) {
             return true;
