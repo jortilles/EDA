@@ -215,8 +215,7 @@ export class EdaBlankPanelComponent implements OnInit {
             try{
                 const contentQuery = this.panel.content.query;
 
-               const modeSQL = contentQuery.query.modeSQL; // Comptabilitzar dashboard antics sense queryMode informat
-
+                const modeSQL = contentQuery.query.modeSQL; // Comptabilitzar dashboard antics sense queryMode informat
                 let queryMode = contentQuery.query.queryMode;
 
                 if (!queryMode) {
@@ -439,8 +438,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public buildGlobalconfiguration(panelContent: any) {
         const modeSQL = panelContent.query.query.modeSQL;
-        const queryMode = panelContent.query.query.queryMode;
+        const queryMode = this.selectedQueryMode;
         this.showHiddenColumn = true;
+
         if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
 
             try {
@@ -458,6 +458,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 } else {
                     PanelInteractionUtils.handleCurrentQuery(this);
                 }
+                
                 this.columns = this.columns.filter((c) => !c.isdeleted);
             } catch(e) {
                 console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
