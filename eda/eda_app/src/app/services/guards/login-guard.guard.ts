@@ -13,23 +13,17 @@ export class LoginGuardGuard implements CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
         const token = route.queryParams.token; 
-        console.log(route);
-        console.log(state);
         
         if (this.userService.isLogged()) {
             return true;
         } else {
-
             if(token){
-                
                 this.userService.tokenUrl(token).subscribe(() => {
                     const urlInforme = state.url.split('?')[0];
                     this.router.navigate([urlInforme], { queryParams: route.queryParams });
                 })
-                
                 return false;
             } else {
-                console.log('aqui Login')
                 this.router.navigate(['/login'], { queryParams: { returnUrl: state.url.split('?')[0], params: state.url.split('?')[1] } });
                 return false;
             }
