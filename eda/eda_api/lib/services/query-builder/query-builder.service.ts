@@ -632,7 +632,7 @@ export abstract class QueryBuilderService {
     }
 
     public findHavingColumn(table: string, column: string) {
-        return this.queryTODO.fields.find((f: any)=> f.table_id === table.split('.')[0] && f.column_name === column);
+        return this.queryTODO.fields.find((f: any)=> f.table_id === table && f.column_name === column);
     }
 
     public setFilterType(filter: string) {

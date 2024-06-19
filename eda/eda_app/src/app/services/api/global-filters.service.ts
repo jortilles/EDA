@@ -257,6 +257,7 @@ export class GlobalFiltersService {
                         child_id: child_id.trim(),
                         type: 'child',
                         label: childLabel,
+                        autorelation: relation.autorelation,
                         joins
                     };
 
@@ -328,6 +329,7 @@ export class GlobalFiltersService {
             pathList: pathList,
             isGlobal: true,
             applyToAll: globalFilter.applyToAll,
+            autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource
         }
 

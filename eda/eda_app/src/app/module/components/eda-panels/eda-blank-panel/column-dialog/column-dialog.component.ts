@@ -123,6 +123,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const selectedRange = this.filter.range;
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
+        const autorelation = this.selectedColumn.autorelation;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -132,6 +133,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             type,
             selectedRange,
             valueListSource,
+            autorelation,
             joins
         });
 

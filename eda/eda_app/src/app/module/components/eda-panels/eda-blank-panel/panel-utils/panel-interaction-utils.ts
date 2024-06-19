@@ -187,6 +187,7 @@ export const PanelInteractionUtils = {
             type: 'child',
             label: childLabel,
             child_id: child_id.trim(),
+            autorelation: relation.autorelation,
             joins
           };
 
