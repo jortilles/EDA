@@ -6,6 +6,7 @@ import DataSourceRouter from './module/datasource/datasource.router';
 import UploadsRouter from './module/uploads/uploads.router';
 import MailRouter from './module/mail/mail.router';
 import DocuRouter from './routes/api/api-docs'
+import ThirdPartyRouter from './module/thirdParty/thirdParty.router';
 
 const router = express.Router();
 
@@ -20,6 +21,8 @@ router.use('/global/upload', UploadsRouter);
 router.use('/addTable', AddTableRouter );
 
 router.use('/mail', MailRouter);
+
+router.use('/tp', ThirdPartyRouter);
 
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);
