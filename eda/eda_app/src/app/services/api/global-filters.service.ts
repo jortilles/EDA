@@ -101,6 +101,7 @@ export class GlobalFiltersService {
                 if (assertTablesNames.includes(idRelation)) {
                     const assertTable = _.cloneDeep(modelTables.find((t: any) => t.table_name == relation.target_table));
                     assertTable.table_name = idRelation;
+                    assertTable.autorelation = relation.autorelation;
                     assertTable.display_name.default = relation.display_name.default;
                     assertTable.description.default = relation.display_name.default;
                     modelTables.push(assertTable);

@@ -118,6 +118,7 @@ export const PanelInteractionUtils = {
           assertTable.table_name = column.table_id;
           assertTable.display_name.default = displayName;
           assertTable.description.default = displayName;
+          assertTable.autorelation = relation.autorelation;
           ebp.assertedTables.push(assertTable);
           ebp.tables.push(assertTable);
         }

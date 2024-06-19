@@ -455,11 +455,14 @@ export class EdaBlankPanelComponent implements OnInit {
                     PanelInteractionUtils.handleCurrentQuery2(this);
                     this.reloadTablesData();
                     PanelInteractionUtils.loadTableNodes(this);
+                    this.userSelectedTable = undefined;
+                    this.columns = [];
                 } else {
                     PanelInteractionUtils.handleCurrentQuery(this);
+                    this.columns = this.columns.filter((c) => !c.isdeleted);
                 }
                 
-                this.columns = this.columns.filter((c) => !c.isdeleted);
+                
             } catch(e) {
                 console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
                 console.error(e);
