@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 @Injectable()
 export class UserService extends ApiService {
     private route = '/admin/user';
+    private routeThirdParty = '/tp/url';
 
     public user: User;
     public isAdmin: boolean;
@@ -114,6 +115,17 @@ export class UserService extends ApiService {
                 return true;
             }, (err) =>this.alertService.addError(err))
         );
+    }
+
+    /** Token sending by the third party through an URL*/
+    tokenUrl(token: string): Observable<any> {
+
+        return this.post(`${this.routeThirdParty}/check`, {token: token}, true)
+            .pipe(map((res: any) => {
+                    this.savingStorage(res.id, res.token, res.user);
+                    return true;
+                }, (err) =>this.alertService.addError(err))
+            );
     }
 
     /** Renovar Token */
