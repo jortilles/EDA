@@ -13,6 +13,8 @@ export class LoginGuardGuard implements CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
         const token = route.queryParams.token; 
+        console.log(route);
+        console.log(state);
         
         if (this.userService.isLogged()) {
             return true;
@@ -33,5 +35,6 @@ export class LoginGuardGuard implements CanActivate {
             }
 
         }
+
     }
 }
