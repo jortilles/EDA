@@ -110,3 +110,23 @@ If you want to connect to an oracle database you need to have installed Oracle I
 For more detailed instructions see: https://oracle.github.io/node-oracledb/doc/api.html#usermanual
 
 Once you have installed the instant client. You need to set the installation path in EDA_API/config/oracle-config.js
+
+
+# Microsoft tip for avoiding a bug 
+
+After this installation (npm install --save @azure/msal-node), when we use the MsalModule and MsalRedirectComponent 
+in our app.module.ts from "@azure/msal-angular" we get an error once we run the app. 
+
+Here the error:
+
+------
+
+Error: node_modules/@azure/msal-angular/msal.redirect.component.d.ts:14:18 - error TS2707: Generic type 'ɵɵComponentDeclaration' requires between 7 and 8 type arguments.
+
+14     static ɵcmp: i0.ɵɵComponentDeclaration<MsalRedirectComponent, "app-redirect", never, {}, {}, never, never, false, never>;
+
+------
+
+we solved this problem erasing the last never from msal.redirect.component.d.ts file, located inside of node_modules.
+The root is -> node_modules/@azure/msal-angular/msal.redirect.component.d.ts
+
