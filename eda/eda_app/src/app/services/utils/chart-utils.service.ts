@@ -84,7 +84,9 @@ export class ChartUtilsService {
         { label: $localize`:@@filters9:FUERA DE (not in)`, value: 'not_in', typeof: ['numeric', 'date', 'text'] },
         { label: $localize`:@@filters10:PARECIDO A (like)`, value: 'like', typeof: ['text'] },
         { label: $localize`:@@filters11:NO PARECIDO A (not like)`, value: 'not_like', typeof: ['text'] },
-        { label: $localize`:@@filters12:VALORES NO NULOS (not null)`, value: 'not_null', typeof: ['numeric', 'date', 'text'] }
+        { label: $localize`:@@filters12:VALORES NO NULOS (not null)`, value: 'not_null', typeof: ['numeric', 'date', 'text'] },
+        { label: $localize`:@@filters13:VALORES NO NULOS NI VACÍOS (not null and != '')`, value: 'not_null_nor_empty', typeof:  ['numeric', 'date', 'text']},
+        { label: $localize`:@@filters14:VALORES NULOS O VACÍOS (null or = '')`, value: 'null_or_empty', typeof:  ['numeric', 'date', 'text']},
     ];
 
     public ordenationTypes: OrdenationType[] = [
@@ -138,12 +140,20 @@ export class ChartUtilsService {
     */
     public transformDataQuery(type: string, subType: string,  values: any[], dataTypes: string[], dataDescription: any, isBarline: boolean, numberOfColumns: number) {
 
+        dataTypes.forEach( (e,indice)=>{            
+            if(e=='text'){
+                values.forEach( (v) => {
+                    v[indice] = (v[indice] == '' || v[indice] == ' ' || v[indice] === null ) ? '-' :  v[indice] ; //canviem les cadenes buides i els null de text per un '-';                   
+                })}
+        })
+        
         let output = [];
         const idx = { label: null, serie: null, numeric: [] };
 
         dataTypes.forEach((e: any, i) => {
             e === 'numeric' ? idx.numeric.push(i) : idx.label != null ? idx.serie = i : idx.label = i;
         });
+        
 
         const label_idx = idx.label;
         const serie_idx = idx.serie;

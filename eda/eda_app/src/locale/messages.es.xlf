@@ -3054,6 +3054,11 @@
         <target> Últimos 120 días </target>
       </trans-unit>
 
+      <trans-unit id="DatePickerNull">
+       <source>Fecha nula</source>
+        <target>Fecha nula</target>
+      </trans-unit> 
+
       <trans-unit id="DateSelectRange">
         <source>Selecciona un rango</source>
         <target>Selecciona un rango</target>
@@ -4263,6 +4268,43 @@
       <trans-unit id="filterVisibleScope">
         <source>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuario no pueden ver el filtro, pero se les aplica</source>
         <target>Definir la visibilidad del filtro.  Público: todos pueden usarlo.  Deshabilitado: los demás usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: los demás usuarios no pueden ver el filtro pero les aplica.</target>
+      </trans-unit>
+
+      <trans-unit id="removeColumnGlobalFilter">
+        <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
+        <target>No se puede eliminar la columna porque tiene un filtro vinculado</target>
+      </trans-unit>
+
+      <trans-unit id="invalidPathForm">
+        <source>Ruta incorrecta para el filtro seleccionado</source>
+        <target>Ruta incorrecta para el filtro seleccionado</target>
+      </trans-unit>
+
+      <trans-unit id="PanelModeSelectorEDA">
+        <source>Modo EDA</source>
+        <target>Modo EDA</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorSQL">
+        <source>Modo SQL</source>
+        <target>Modo SQL</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorTree">
+        <source>Modo Árbol</source>
+        <target>Modo Árbol</target>
+      </trans-unit>
+
+      <trans-unit id="filters13">
+        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+        <target>VALORES NO NULOS NI VACÍOS (not null and != '')</target>
+      </trans-unit>
+      <trans-unit id="filters14">
+        <source>VALORES NULOS O VACÍOS (null or = '')</source>
+        <target>VALORES NULOS O VACÍOS (null or = '')</target>
+      </trans-unit>
+      
+      <trans-unit id="aliasValuePh">
+        <source>Alias del filtro (opcional)</source>
+        <target>Alias del filtro (opcional)</target>
       </trans-unit>
     </body>
   </file>

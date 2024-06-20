@@ -1,4 +1,3 @@
-import { Column } from 'snowflake-sdk';
 import { QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
 
@@ -33,7 +32,15 @@ export class PgBuilderService extends QueryBuilderService {
     }
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+    let joinString: any[];
+    let alias: any;
+    if (this.queryTODO.joined) {
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      joinString = responseJoins.joinString;
+      alias = responseJoins.aliasTables;
+    } else {
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+    }
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -67,6 +74,14 @@ export class PgBuilderService extends QueryBuilderService {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
     if (limit) myQuery += `\nlimit ${limit}`;
+
+    if (alias) {
+      console.log(alias);
+      for (const key in alias) {
+        myQuery = myQuery.split(key).join(`"${alias[key]}"`);
+      }
+    }
+
     return myQuery;
   }
 
@@ -136,6 +151,8 @@ export class PgBuilderService extends QueryBuilderService {
       tmp.push(elem.name);
       joins.push(tmp);
     }
+    
+
 
     joins.forEach(e => {
       for (let i = 0; i < e.length - 1; i++) {
@@ -177,6 +194,67 @@ export class PgBuilderService extends QueryBuilderService {
     return joinString;
   }
 
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
+    // Si no se especifica un esquema, se utiliza 'public' por defecto
+    if (!schema || schema === 'null') {
+      schema = 'public';
+    }
+
+    // Inicialización de variables
+    const joinExists = new Set();
+    const aliasTables = {};
+    const joinString = [];
+    const targetTableJoin = [];
+
+    for (const join of joinTree) {
+      // División de las partes de la join
+      const [sourceTable, sourceColumn] = join[0].split('.');
+      const [targetTable, targetColumn] = join[1].split('.');
+
+      // Construcción de las partes de la join
+      const sourceJoin = `"${schema}"."${sourceTable}"."${sourceColumn}"`;
+      let targetJoin = `"${schema}"."${targetTable}"."${targetColumn}"`;
+
+      // Si la join no existe ya, se añade
+      if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
+        joinExists.add(`${sourceJoin}=${targetJoin}`);
+
+        // Construcción de los alias
+        const alias = `"${targetTable}.${targetColumn}"`;
+        aliasTables[alias] = targetTable;
+
+        let aliasTargetTable: string;
+        if (targetTableJoin.includes(targetTable)) {
+          aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+          aliasTables[alias] = aliasTargetTable;
+        }
+
+        let joinStr: string;
+
+        joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
+
+        if (aliasTargetTable) {
+          targetJoin = `"${aliasTargetTable}"."${targetColumn}"`;
+          joinStr = `${joinType} JOIN "${schema}"."${targetTable}" "${aliasTargetTable}" ON ${sourceJoin} = ${targetJoin}`;
+        } else {
+          joinStr = `${joinType} JOIN "${schema}"."${targetTable}" ON ${sourceJoin} = ${targetJoin}`;
+        }
+
+        // Si la join no se ha incluido ya, se añade al array
+        if (!joinString.includes(joinStr)) {
+          targetTableJoin.push(aliasTargetTable || targetTable);
+          joinString.push(joinStr);
+        }
+      }
+    }
+
+    return {
+      joinString,
+      aliasTables
+    };
+  }
+
+
   public getSeparedColumns(origin: string, dest: string[]) {
     const columns = [];
     const grouping = [];
@@ -184,9 +262,13 @@ export class PgBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
-      if (!el.hasOwnProperty('minimumFractionDigits')) {
-        el.minimumFractionDigits = 0;
-      }
+      const table_column = `"${el.table_id}"."${el.column_name}"`;
+
+      let whatIfExpression = '';
+      if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;
+
+      el.minimumFractionDigits = el.minimumFractionDigits || 0;
+
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
@@ -232,71 +314,71 @@ export class PgBuilderService extends QueryBuilderService {
         if (el.aggregation_type !== 'none') {
 
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`ROUND( count( distinct "${el.table_id}"."${el.column_name}")::numeric, ${el.minimumFractionDigits||0})::float as "${el.display_name}"`);
+            columns.push(`ROUND(count(distinct ${table_column})::numeric, ${el.minimumFractionDigits})::float ${whatIfExpression} as "${el.display_name}"`);
           } else {
-            columns.push(`ROUND(${el.aggregation_type}("${el.table_id}"."${el.column_name}")::numeric, ${el.minimumFractionDigits||0})::float as "${el.display_name}"`);
+            columns.push(`ROUND(${el.aggregation_type}(${table_column})::numeric, ${el.minimumFractionDigits})::float ${whatIfExpression} as "${el.display_name}"`);
           }
 
 
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`ROUND("${el.table_id}"."${el.column_name}"::numeric, ${el.minimumFractionDigits})::float as "${el.display_name}"`);
+            columns.push(`ROUND(${table_column}::numeric, ${el.minimumFractionDigits})::float ${whatIfExpression} as "${el.display_name}"`);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'quarter')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-"Q"Q') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-"Q"Q') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'month')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'IYYY-IW') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'IYYY-IW') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM-DD') as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'day_hour')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM-DD HH') as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'day_hour_minute')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM-DD HH:MI') as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'timestamp')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI:SS') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM-DD HH:MI:SS') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week_day')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'ID') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'ID') as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'No')) {
-                columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+                columns.push(`to_char(${table_column}, 'YYYY-MM-DD') as "${el.display_name}"`);
               }
             } else {
-              columns.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD') as "${el.display_name}"`);
+              columns.push(`to_char(${table_column}, 'YYYY-MM-DD') as "${el.display_name}"`);
             }
           } else {
-            columns.push(`"${el.table_id}"."${el.column_name}" as "${el.display_name}"`);
+            columns.push(`${table_column} as "${el.display_name}"`);
           }
           // GROUP BY
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY')`);
+              grouping.push(`to_char(${table_column}, 'YYYY')`);
             } else if (_.isEqual(el.format, 'quarter')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-"Q"Q') `);
+              grouping.push(`to_char(${table_column}, 'YYYY-"Q"Q') `);
             } else if (_.isEqual(el.format, 'month')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM')`);
+              grouping.push(`to_char(${table_column}, 'YYYY-MM')`);
             } else if (_.isEqual(el.format, 'week')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'IYYY-IW')`);
+              grouping.push(`to_char(${table_column}, 'IYYY-IW')`);
             }else if (_.isEqual(el.format, 'day')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD')`);
+              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD')`);
             }else if (_.isEqual(el.format, 'day_hour')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH')  `);
+              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD HH')  `);
             }else if (_.isEqual(el.format, 'day_hour_minute')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI')  `);
+              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD HH:MI')  `);
             }else if (_.isEqual(el.format, 'timestamp')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'YYYY-MM-DD HH:MI:SS')`);
+              grouping.push(`to_char(${table_column}, 'YYYY-MM-DD HH:MI:SS')`);
             } else if (_.isEqual(el.format, 'week_day')) {
-              grouping.push(`to_char("${el.table_id}"."${el.column_name}", 'ID')`);
+              grouping.push(`to_char(${table_column}, 'ID')`);
             } else if (_.isEqual(el.format, 'No')) {
-              grouping.push(`"${el.table_id}"."${el.column_name}"`);
+              grouping.push(`${table_column}`);
             }
           } else {
             //  Si no se agrega
             if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
-              grouping.push(`"${el.table_id}"."${el.column_name}"`);
+              grouping.push(`${table_column}`);
             }
           }
         }
@@ -304,8 +386,6 @@ export class PgBuilderService extends QueryBuilderService {
     });
     return [columns, grouping];
   }
-
-
 
   /**
    * 

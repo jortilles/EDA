@@ -1,6 +1,5 @@
 import { QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
-import { filter, values } from 'lodash';
 
  /*SDA CUSTOM*/ import * as custom from '../../custom/custom';
 
@@ -12,7 +11,6 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
     tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
-
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
@@ -22,8 +20,20 @@ export class MySqlBuilderService extends QueryBuilderService {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
     }
  
+
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins);
+    let joinString: any[];
+    let alias: any;
+    // joined == EDA2
+    if (this.queryTODO.joined) {
+      /**tree */
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      joinString = responseJoins.joinString;
+      alias = responseJoins.aliasTables;
+    } else {
+      /*EDA Normal*/
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+    }
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -33,14 +43,13 @@ export class MySqlBuilderService extends QueryBuilderService {
     myQuery += this.getFilters(filters);
 
 
-
     // GroupBy
     if (grouping.length > 0) {
       myQuery += '\ngroup by ' + grouping.join(', ');
     }
 
     //HAVING 
-    myQuery += this.getHavingFilters(havingFilters, 'having');
+    myQuery += this.getHavingFilters(havingFilters);
 
     // OrderBy
     const orderColumns = this.queryTODO.fields.map(col => {
@@ -64,10 +73,17 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     if (limit) myQuery += `\nlimit ${limit}`;
 
+    if (alias) {
+      for (const key in alias) {
+        myQuery = myQuery.split(key).join(`\`${alias[key]}\``);
+      }
+    }
+
+
     return myQuery;
   };
 
-  public getFilters(filters): any {
+  public getFilters(filters): any {  
     if (this.permissions.length > 0) {
       this.permissions.forEach(permission => { filters.push(permission); });
     }
@@ -77,33 +93,24 @@ export class MySqlBuilderService extends QueryBuilderService {
       filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
       let filtersString = `\nwhere 1 = 1 `;
 
-      filters.forEach(f => {
 
+      filters.forEach(f => {
         const column = this.findColumn(f.filter_table, f.filter_column);
+        column.autorelation = f.autorelation;
+        column.joins = f.joins;
+        column.valueListSource = f.valueListSource;
         const colname = this.getFilterColname(column);
-        if (f.filter_type === 'not_null') {
+        if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
           /* Control de nulos... se genera la consutla de forma diferente */
-          let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
-          if (nullValueIndex != - 1) {
-            if (f.filter_elements[0].value1.length === 1) {
-              /* puedo haber escogido un nulo en la igualdad */
-              if (f.filter_type == '=') {
-                filtersString += `\nand ${colname}  is null `;
-              } else {
-                filtersString += `\nand ${colname}  is not null `;
-              }
-            } else {
-              if (f.filter_type == '=') {
-                filtersString += `\nand (${this.filterToString(f)} or ${colname}  is null) `;
-              } else {
-                filtersString += `\nand (${this.filterToString(f)} or ${colname}  is not null) `;
-              }
+            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length >1 ) {// Si tengo varios filtors es filtro por X o es nulo.
+                   filtersString += `\nor ${colname}  is null `;
+            } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length ==1 ) { // si soolo tengo el filtro de nulo es un and poqque digo 1=1 y es nulo.
+              filtersString += `\nand ${colname}  is null `;
+            } else {  
+                filtersString += `\nand (${this.filterToString(f)} ) `;
             }
-          } else {
-            filtersString += '\nand ' + this.filterToString(f);
-          }
         }
       });
 
@@ -115,7 +122,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>): any {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema:string): any {
 
     let joins = [];
     let joined = [];
@@ -176,6 +183,82 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   }
 
+
+  
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
+    // Inicialización de variables
+    const joinExists = new Set();
+    const aliasTables = {};
+    const joinString = [];
+    const targetTableJoin = [];
+
+
+    for (const join of joinTree) {
+
+        // División de las partes de la join
+        const sourceLastDotInx = join[0].lastIndexOf('.');
+        // sourceTableAlias === join relation table_id
+        const [sourceTable, sourceColumn] = [join[0].substring(0, sourceLastDotInx), join[0].substring(sourceLastDotInx + 1)];
+        const [targetTable, targetColumn] = join[1].split('.');
+
+        // Construcción de las partes de la join
+        let sourceJoin = `\`${sourceTable}\`.\`${sourceColumn}\``;
+        let targetJoin = `\`${targetTable}\`.\`${targetColumn}\``;
+
+        // Si la join no existe ya, se añade
+        if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
+            joinExists.add(`${sourceJoin}=${targetJoin}`);
+
+
+            let aliasSource;
+            if (sourceJoin.split('.')[0] == targetJoin.split('.')[0]) {
+                aliasSource = `\`${sourceTable}.${sourceColumn}\``;
+            }
+            
+            // Construcción de los alias
+            let alias = `\`${targetTable}.${targetColumn}.${sourceColumn}\``;
+
+            if (aliasSource) {
+                alias = aliasSource;
+            }
+
+            aliasTables[alias] = targetTable;
+            // aliasTables[sourceJoin] = targetTable;
+
+            let aliasTargetTable: string;
+            // targetTable and sourceTable can be the same table (autorelation)
+            if (targetTableJoin.includes(targetTable) || targetTable == sourceTable) {
+                // aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+                aliasTargetTable = `${targetTable}${sourceColumn}`;
+                aliasTables[alias] = aliasTargetTable;
+            }
+
+            let joinStr: string;
+
+            joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
+
+
+            if (aliasTargetTable) {
+                targetJoin = `\`${aliasTargetTable}\`.\`${targetColumn}\``;
+                joinStr = `${joinType} JOIN \`${targetTable}\` \`${aliasTargetTable}\` ON  ${sourceJoin}  =  ${targetJoin} `;
+            } else {
+                joinStr = `${joinType} JOIN \`${targetTable}\` ON  ${sourceJoin} = ${targetJoin} `;
+            }
+
+            // Si la join no se ha incluido ya, se añade al array
+            if (!joinString.includes(joinStr)) {
+                targetTableJoin.push(aliasTargetTable || targetTable);
+                joinString.push(joinStr);
+            }
+        }
+    }
+    
+    return {
+        joinString,
+        aliasTables
+    };
+  }
+
   /*SDA CUSTOM*/ @custom.muSqlBuilderServiceCustomGetMinFractionDigits
   public getMinFractionDigits(el:any): any{
     if (!el.hasOwnProperty('minimumFractionDigits')) {
@@ -191,6 +274,19 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
+
+      let table_column;
+
+      if (el.autorelation && !el.valueListSource && !this.queryTODO.forSelector ) {
+
+        table_column = `\`${el.joins[el.joins.length-1][0]}\`.\`${el.column_name}\``;
+      } else {
+        table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
+      }
+
+      let whatIfExpression = '';
+      if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;
+
 
       el = this.getMinFractionDigits(el);
 
@@ -236,72 +332,72 @@ export class MySqlBuilderService extends QueryBuilderService {
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`cast( count( distinct \`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+            columns.push(`cast( count( distinct ${table_column}) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
           } else {
-            columns.push(`cast(${el.aggregation_type}(\`${el.table_id}\`.\`${el.column_name}\`) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+            columns.push(`cast(${el.aggregation_type}(${table_column}) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`cast(\`${el.table_id}\`.\`${el.column_name}\` as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
+            columns.push(`cast(${table_column} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y') as \`${el.display_name}\``);
               } else if (_.isEqual(el.format, 'quarter')) {
-                columns.push(   `concat( concat( year(\`${el.table_id}\`.\`${el.column_name}\`),'-Q' ),  quarter(\`${el.table_id}\`.\`${el.column_name}\`) )  as \`${el.display_name}\`` );
+                columns.push(   `concat( concat( year(${table_column}),'-Q' ),  quarter(${table_column}) )  as \`${el.display_name}\`` );
               } else if (_.isEqual(el.format, 'month')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m') as \`${el.display_name}\``);
               } else if (_.isEqual(el.format, 'week')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%x-%v') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%x-%v') as \`${el.display_name}\``);
               } else if (_.isEqual(el.format, 'day')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d') as \`${el.display_name}\``);
               } else if (_.isEqual(el.format, 'week_day')) {
-                columns.push(`WEEKDAY(\`${el.table_id}\`.\`${el.column_name}\`) + 1 as \`${el.display_name}\``);
+                columns.push(`WEEKDAY(${table_column}) + 1 as \`${el.display_name}\``);
               }else if (_.isEqual(el.format, 'day_hour')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H') as \`${el.display_name}\``);
               }else if (_.isEqual(el.format, 'day_hour_minute')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H:%i') as \`${el.display_name}\``);
               }else if (_.isEqual(el.format, 'timestamp')) {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i:%s') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H:%i:%s') as \`${el.display_name}\``);
               } else {
-                columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d') as \`${el.display_name}\``);
+                columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d') as \`${el.display_name}\``);
               }
             } else {
-              columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d') as \`${el.display_name}\``);
+              columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d') as \`${el.display_name}\``);
             }
           } else {
 
-              columns.push(`\`${el.table_id}\`.\`${el.column_name}\` as \`${el.display_name}\``);
+              columns.push(`${table_column} as \`${el.display_name}\``);
 
           }
 
           // GROUP BY
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y')`);
+              grouping.push(`DATE_FORMAT(${table_column}, '%Y')`);
             } else if (_.isEqual(el.format, 'quarter')) {
-              grouping.push(   `concat( concat( year(\`${el.table_id}\`.\`${el.column_name}\`),'-Q' ),  quarter(\`${el.table_id}\`.\`${el.column_name}\`) )  ` );
+              grouping.push(   `concat( concat( year(${table_column}),'-Q' ),  quarter(${table_column}) )  ` );
             } else if (_.isEqual(el.format, 'month')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m')`);
+              grouping.push(`DATE_FORMAT(${table_column}, '%Y-%m')`);
             } else if (_.isEqual(el.format, 'week')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%x-%v')`);
+              grouping.push(`DATE_FORMAT(${table_column}, '%x-%v')`);
             } else if (_.isEqual(el.format, 'week_day')) {
-              grouping.push(`WEEKDAY(\`${el.table_id}\`.\`${el.column_name}\`) + 1`);
+              grouping.push(`WEEKDAY(${table_column}) + 1`);
             } else if (_.isEqual(el.format, 'day')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d')`);
+              grouping.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d')`);
             }else if (_.isEqual(el.format, 'day_hour')) {
-              columns.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H')  `);
+              columns.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H')  `);
             }else if (_.isEqual(el.format, 'day_hour_minute')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i')  `);
+              grouping.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H:%i')  `);
             }else if (_.isEqual(el.format, 'timestamp')) {
-              grouping.push(`DATE_FORMAT(\`${el.table_id}\`.\`${el.column_name}\`, '%Y-%m-%d %H:%i:%s')`);
+              grouping.push(`DATE_FORMAT(${table_column}, '%Y-%m-%d %H:%i:%s')`);
             } else {
-              grouping.push(`\`${el.table_id}\`.\`${el.column_name}\``);
+              grouping.push(`${table_column}`);
             }
           } else {
             //  Si es una única columna numérica no se agrega.
             if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
-              grouping.push(`\`${el.table_id}\`.\`${el.column_name}\``);
+              grouping.push(`${table_column}`);
             }
           }
         }
@@ -317,14 +413,18 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @returns filter to string.  
    */
     public filterToString(filterObject: any): any {
-
       const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
+      const colType = filterObject.filter_column_type;
+
       if (!column.hasOwnProperty('minimumFractionDigits')) {
         column.minimumFractionDigits = 0;
       }
+
+      column.autorelation = filterObject.autorelation;
+      column.joins = filterObject.joins || [];
+      column.valueListSource = filterObject.valueListSource;
       const colname=this.getFilterColname(column);
-      let colType = column.column_type;
-  
+      
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
           if (filterObject.filter_type === '!=') { filterObject.filter_type = '<>' }
@@ -344,6 +444,12 @@ export class MySqlBuilderService extends QueryBuilderService {
                       ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
         case 3:
           return `${colname} is not null`;
+        case 4:
+            return `${colname} is null`;
+        case 5:
+          return `${colname} is not null and ${colname} != ''`;
+        case 6:
+          return `( ${colname} is null or ${colname} = '')`;
       }
     }
 
@@ -354,10 +460,14 @@ export class MySqlBuilderService extends QueryBuilderService {
    */
   public getFilterColname(column: any){
     let colname:String ;
-    console.log('la columna es ')
-    console.log(column);
     if( column.computed_column == 'no'  || ! column.hasOwnProperty('computed_column') ){
-      colname =   `\`${column.table_id}\`.\`${column.column_name}\`` ;
+
+      if (column.autorelation && !column.valueListSource) {
+        colname = `\`${column.joins[column.joins.length-1][0]}\`.\`${column.column_name}\``;
+      } else {
+        colname = `\`${column.table_id}\`.\`${column.column_name}\`` ;
+      }
+      
     }else{
       if(column.column_type == 'numeric'){
         colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
@@ -374,19 +484,24 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @param filterObject 
    * @returns clausula having en un string.  
    */
-  public getHavingFilters(filters, type: string): any {
+  public getHavingFilters(filters ): any {
 
     if (filters.length) {
 
-      let filtersString = `\n${type} 1 = 1 `;
+      let filtersString = `\nhaving 1=1 `;
 
       filters.forEach(f => {
-
         const column = this.findHavingColumn(f.filter_table, f.filter_column);
+        column.autorelation = f.autorelation;
+        column.joins = f.joins;
         const colname = this.getHavingColname(column);
         if (f.filter_type === 'not_null') {
           filtersString += `\nand ${colname}  is not null `;
-        } else {
+        }else if (f.filter_type === 'not_null_nor_empty') {
+          filtersString += `\nand ${colname}  is not null and ${colname} != ''  `;
+        }else if (f.filter_type === 'null_or_empty') {
+          filtersString += `\nand ( ${colname}  is null or ${colname} != ''  ) `;
+        }  else {
           /* Control de nulos... se genera la consutla de forma diferente */
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
           if (nullValueIndex != - 1) {
@@ -423,8 +538,14 @@ export class MySqlBuilderService extends QueryBuilderService {
    */
 public getHavingColname(column: any){
   let colname:String  ;
-  if( column.computed_column === 'no'  || ! column.hasOwnProperty('computed_column')   ){
-    colname =  `cast(${column.aggregation_type}(\`${column.table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+  if( column.computed_column === 'no'  || !column.hasOwnProperty('computed_column') ){
+    let table_id = column.table_id;
+
+    if (column.autorelation && !column.valueListSource) {
+        table_id = column.joins[column.joins.length-1][0];
+    }
+
+    colname = `cast(${column.aggregation_type}(\`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
   }else{
     if(column.column_type == 'numeric'){
       colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
@@ -442,6 +563,8 @@ public getHavingColname(column: any){
    */
  public havingToString(filterObject: any) {
     const column = this.findHavingColumn(filterObject.filter_table, filterObject.filter_column);
+    column.autorelation = filterObject.autorelation;
+    column.joins = filterObject.joins;
 
     if (!column.hasOwnProperty('minimumFractionDigits')) {
       column.minimumFractionDigits = 0;
@@ -477,7 +600,7 @@ public getHavingColname(column: any){
 
   public processFilter(filter: any, columnType: string) {
     filter = filter.map(elem => {
-      if (elem === null || elem === undefined) return 'ihatenulos';
+      if (elem === null || elem === undefined || elem === 'null') return 'null'; //aqui poner 'null'
       else return elem;
     });
 

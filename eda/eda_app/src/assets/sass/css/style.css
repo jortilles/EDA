@@ -19,10 +19,18 @@
 
 html {
     font-size: 13px;
-  }
+}
+
+.readonly {
+    pointer-events: none;
+}
+
+.readonly input{ 
+    background-color: greenyellow!important;
+}
   
 
-.custom  .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+.custom .leaflet-popup-content-wrapper, .leaflet-popup-tip {
     background: #010913ce !important;
     font: 11px Questrial;
     color: #fbfbfb  !important;;

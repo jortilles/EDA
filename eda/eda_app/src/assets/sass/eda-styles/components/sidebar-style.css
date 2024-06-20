@@ -367,6 +367,9 @@
 }
 
 
+.mini-sidebar-2 .sidebar-nav #sidebarnav > li > a {
+  padding: 12px 20px;
+}
 
 /* SDA CUSTOM */ .mini-sidebar-2 .sidebar-nav #sidebarnav > li > a {
 /* SDA CUSTOM */    padding: 12px 20px;

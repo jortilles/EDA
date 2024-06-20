@@ -17,7 +17,8 @@ import {
     EdaContextMenuComponent,
     EdaInputComponent,
     EdaDatePickerComponent,
-    CreateDashboardComponent
+    CreateDashboardComponent,
+    EdaFieldComponent
 } from './components/shared-components.index';
 
 @NgModule({
@@ -31,7 +32,8 @@ import {
         EdaInputComponent,
         FocusOnShowDirective,
         EdaDatePickerComponent,
-        CreateDashboardComponent
+        CreateDashboardComponent,
+        EdaFieldComponent
     ],
     imports: [
         CoreModule,
@@ -49,7 +51,8 @@ import {
         EdaInputComponent,
         FocusOnShowDirective,
         EdaDatePickerComponent,
-        CreateDashboardComponent
+        CreateDashboardComponent,
+        EdaFieldComponent
     ]
 })
 export class SharedModule {}

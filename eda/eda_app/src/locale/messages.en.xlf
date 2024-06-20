@@ -3046,6 +3046,10 @@
         <source> Últimos 120 días </source>
         <target>Last 120 days </target>
       </trans-unit>
+      <trans-unit id="DatePickerNull">
+        <source>Fecha nula</source>
+        <target>Null date</target>
+      </trans-unit>
       <trans-unit id="DateSelectRange">
         <source>Selecciona un rango</source>
         <target>Select range</target>
@@ -4239,6 +4243,40 @@
         <target>Define the visibility of the filter.  Public: everyone can use it.  Disabled: other users can see the filter but cannot modify it.  Hidden: other users cannot see the filter but it applies to them.</target>
       </trans-unit>
 
+      <trans-unit id="removeColumnGlobalFilter">
+        <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
+        <target>The column can not be removed because it has a linked filter</target>
+      </trans-unit>
+
+      <trans-unit id="invalidPathForm">
+        <source>Ruta incorrecta para el filtro seleccionado</source>
+        <target>Invalid path for the selected filter</target>
+      </trans-unit>
+
+      <trans-unit id="PanelModeSelectorEDA">
+        <source>Modo EDA</source>
+        <target>EDA mode</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorSQL">
+        <source>Modo SQL</source>
+        <target>SQL mode</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorTree">
+        <source>Modo Árbol</source>
+        <target>Tree mode</target>
+      </trans-unit>
+      <trans-unit id="filters13">
+        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+        <target>VALUES NOR NULL NOR EMPTY (not null and != '')</target>
+      </trans-unit>
+      <trans-unit id="filters14">
+        <source>VALORES NULOS O VACÍOS (null or = '')</source>
+        <target>NULL OR EMPTY VALUES (null or = '')</target>
+      </trans-unit>
+      <trans-unit id="aliasValuePh">
+        <source>Alias del filtro (opcional)</source>
+        <target>Filter alias (optional)</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

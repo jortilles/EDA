@@ -155,7 +155,7 @@ export class DataSourceController {
                 const names = JSON.parse(JSON.stringify(ds));
                 for (let i = 0, n = names.length; i < n; i += 1) {
                     const e = names[i];
-                    output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
+                        output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
                 }
                 output.sort((a,b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : 
                 ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));

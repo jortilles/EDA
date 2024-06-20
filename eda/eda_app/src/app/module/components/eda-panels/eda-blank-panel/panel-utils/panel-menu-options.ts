@@ -10,8 +10,11 @@ export const PanelOptions = {
       icon: 'fa fa-cog',
       command: () => {
         if (panelComponent.panel.content) {
-          panelComponent.hiddenColumn = 0;
+/* SDA CUSTOM */ panelComponent.showHiddenColumn = false;
           panelComponent.panelDeepCopy = _.cloneDeep(panelComponent.panel.content, true);
+          if (panelComponent.selectedQueryMode == 'EDA2') {
+            panelComponent.panelDeepCopy.rootTable = _.cloneDeep(panelComponent.rootTable);
+          }
           panelComponent.display_v.disablePreview = false;
 
         } else {
@@ -184,13 +187,20 @@ export const PanelOptions = {
       icon:"fa fa-external-link",
       command: () => {
         panelComponent.contextMenu.hideContextMenu();
+
+        let queryMode = panelComponent.panel.content.query.query.queryMode;
+        const modeSQL = panelComponent.panel.content.query.query.modeSQL;
+
+        if (!queryMode) queryMode = modeSQL ? 'SQL' : 'EDA';
+
         panelComponent.linkDashboardController = new EdaDialogController({
           params:{
             query : panelComponent.currentQuery,
             datasource : panelComponent.inject.dataSource._id,
             charttype : panelComponent.panelChart.props.chartType,
-            modeSQL : panelComponent.panel.content.query.query.modeSQL,
-            hiddenColumn: panelComponent.hiddenColumn,
+            queryMode: panelComponent.panel.content.query.query.queryMode,
+            // modeSQL : panelComponent.panel.content.query.query.modeSQL,
+/* SDA CUSTOM */ showHiddenColumn: panelComponent.showHiddenColumn,
             dashboard_id : panelComponent.inject.dashboard_id,
             linkedDashboard : panelComponent.panel.linkedDashboardProps
           },

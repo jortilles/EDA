@@ -12,7 +12,8 @@ export interface QueryParams {
     config?: any;
     queryLimit? : number;
     joinType?:string;
-    forSelector?: boolean
+    forSelector?: boolean;
+    rootTable?: string;
 }
 
 @Injectable()
@@ -59,10 +60,12 @@ export class QueryBuilderService extends ApiService {
                 fields: queryColumns,
                 filters: [],
                 simple: true,
-                modeSQL : false,
+                // modeSQL : false,
+                queryMode: 'EDA',
                 SQLexpression : null,
                 queryLimit : null,
-                joinType: 'left' //puede que necesite el joinType
+                joinType: 'left', //puede que necesite el joinType
+                rootTable: null
             },
             output: {
                 labels,
@@ -73,7 +76,7 @@ export class QueryBuilderService extends ApiService {
     }
 
 
-    public normalQuery(select: any[], params: QueryParams, modeSQL ?:boolean, SQLexpression?: string): Query {
+    public normalQuery(select: any[], params: QueryParams, queryMode: string = 'EDA' , SQLexpression?: string): Query {
         const labels = [];
         const queryColumns = [];
         for (let i = 0, n = select.length; i < n; i += 1) {
@@ -96,9 +99,19 @@ export class QueryBuilderService extends ApiService {
             col.minimumFractionDigits = select[i].minimumFractionDigits;
             col.cumulativeSum = select[i].cumulativeSum;
             col.valueListSource = select[i].valueListSource;
+            col.whatif_column = select[i].whatif_column || false;
+            col.whatif = select[i].whatif;
+            col.joins = select[i].joins || [];
+            col.autorelation = select[i].autorelation;
             queryColumns.push(col);
             labels.push(select[i].column_name);
         }
+
+
+        const filters = params.filters.filter((f) => 
+            (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
+            || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
+        );
 
         return {
             id: '1',
@@ -113,13 +126,15 @@ export class QueryBuilderService extends ApiService {
             },
             query: {
                 fields: queryColumns,
-                filters: params.filters,
+                filters,
                 simple: false,
-                modeSQL : modeSQL,
+                queryMode,
+                // modeSQL : modeSQL,
                 SQLexpression : SQLexpression,
                 queryLimit : params.queryLimit,
                 joinType: params.joinType,
-                forSelector: params.forSelector
+                forSelector: params.forSelector,
+                rootTable: params.rootTable,
             },
             output: {
                 labels,

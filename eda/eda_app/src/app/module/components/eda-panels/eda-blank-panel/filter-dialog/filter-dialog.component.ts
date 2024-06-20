@@ -41,14 +41,16 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public inputType: string;
     public filterValue: any = {};
     public filterSelected: FilterType;
-    public dropDownFields: SelectItem[];
+    public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
 
-    constructor( private dashboardService: DashboardService,
-                 private chartUtils: ChartUtilsService,
-                 private columnUtils: ColumnUtilsService,
-                 private queryBuilder: QueryBuilderService,
-                 private alertService: AlertService) {
+    constructor(
+        private dashboardService: DashboardService,
+        private chartUtils: ChartUtilsService,
+        private columnUtils: ColumnUtilsService,
+        private queryBuilder: QueryBuilderService,
+        private alertService: AlertService
+    ) {
         super();
 
         this.filter.types = this.chartUtils.filterTypes;
@@ -60,35 +62,39 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         });
 
         this.dialog.style = { width: '50%', height: '70%', top:"-4em", left:'1em'};
-
     }
 
     onShow(): void {
         this.selectedColumn = this.controller.params.selectedColumn;
         const title = this.selectedColumn.display_name.default;
         this.dialog.title = `Atributo ${title} de la entidad ${this.controller.params.table}`;
-
         this.carrega();
     }
 
     addFilter() {
-
-        const table =  this.selectedColumn.table_id;
-        const columnType  = this.selectedColumn.column_type;
+        const table = this.selectedColumn.table_id;
+        const column_type  = this.selectedColumn.column_type;
         const column = this.selectedColumn.column_name;
         const type = this.filterSelected.value;
-        const range = this.filter.range;
-        if(this.selectedColumn.valueListSource){
-            this.filter.selecteds.push(
-                this.columnUtils.addFilter(this.filterValue, table, column, columnType, type, range, this.selectedColumn.valueListSource)
-            );
-        }else{
-            this.filter.selecteds.push(
-                this.columnUtils.addFilter(this.filterValue, table, column, columnType, type, range)
-            );
-        }
+        const selectedRange = this.filter.range;
+        const valueListSource = this.selectedColumn.valueListSource;
+        const joins = this.selectedColumn.joins;
+        const autorelation = this.selectedColumn.autorelation;
 
+        const filter = this.columnUtils.setFilter({
+            obj: this.filterValue,
+            table,
+            column,
+            column_type,
+            type,
+            selectedRange,
+            valueListSource,
+            autorelation,
+            joins
+        });
         
+        this.filter.selecteds.push(filter);
+
         this.carregarFilters();
 
         /* Reset Filter Form */
@@ -102,6 +108,21 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.carregarFilters();
         this.handleInputTypes();
     }
+
+    handleInputTypes() {
+        const type = this.selectedColumn.column_type;
+        this.inputType = this.columnUtils.handleInputTypes(type);
+    }
+
+    carregarFilters() {
+        this.filter.selecteds = this.controller.params.filters;
+        this.filter.forDisplay = this.filter.selecteds.filter(f =>
+            f.filter_table === this.selectedColumn.table_id &&
+            f.filter_column === this.selectedColumn.column_name &&
+            !f.removed
+        );
+    }
+
 
     removeFilter(item: any) {
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id) ).removed = true;
@@ -131,8 +152,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             this.display.between = handler.between;
             this.display.filterValue = !_.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
             this.display.calendar = _.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
-            this.display.switchButton = _.isEqual(filter.value, 'not_null');
-            this.display.filterButton = !_.isEqual(filter.value, 'not_null');
+            this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty') ? true : false ;
+            this.display.filterButton = filter.value == 'not_null' || filter.value == 'not_null_nor_empty' || filter.value == 'null_or_empty' ? false : true ;
             this.limitSelectionFields = handler.limitFields === 1 ? 1 : 50;
             this.filter.switch = handler.switchBtn;
 
@@ -149,20 +170,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         }
     }
 
-    handleInputTypes() {
-        const type = this.selectedColumn.column_type;
-        this.inputType = this.columnUtils.handleInputTypes(type);
-    }
-
-    carregarFilters() {
-        this.filter.selecteds = this.controller.params.filters;
-        this.filter.forDisplay = this.filter.selecteds.filter(f => {
-            return f.filter_table === this.selectedColumn.table_id &&
-                f.filter_column === this.selectedColumn.column_name &&
-                !f.removed;
-        });
-    }
-
     resetDisplay() {
         this.display.filterButton = true; // btn add filter
         this.display.between = false; // inputs between
@@ -172,23 +179,38 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filter.switch = false; // options switch
     }
 
-    loadDropDrownData() {
+    async loadDropDrownData() {
         this.filterValue.value1 = null;
         this.filterValue.value2 = null;
         if (this.filter.switch) {
+            const column = _.cloneDeep(this.selectedColumn);
+            column.table_id = column.table_id.split('.')[0];
+            column.joins = [];
+            column.ordenation_type = 'ASC';
+
             const params = {
-                table: this.selectedColumn.table_id,
+                table: column.table_id,
                 dataSource: this.controller.params.inject.dataSource._id,
                 dashboard: this.controller.params.inject.dashboard_id,
                 panel: this.controller.params.panel._id,
                 filters: [],
                 forSelector: true
             };
-            this.selectedColumn.ordenation_type= 'ASC' ;
-            this.dashboardService.executeQuery(this.queryBuilder.normalQuery([this.selectedColumn], params)).subscribe(
-                res => this.dropDownFields = res[1].map(item => ({label : item[0], value: item[0]}) ),
-                err => this.alertService.addError(err)
-            );
+
+            try {
+                const res = await this.dashboardService.executeQuery(this.queryBuilder.normalQuery([column], params)).toPromise();
+            
+                if (res.length > 1) {
+                    for (const item of res[1]) {
+                        if (item[0] === '' || item[0] ) { 
+                            this.dropDownFields.push({ label : item[0], value: item[0] });
+                        }
+                    }
+                }
+            } catch (err) {
+                this.alertService.addError(err);
+                throw err;
+            }
         }
     }
 
@@ -213,7 +235,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     closeDialog() {
-
         this.filter.switch = false;
         this.filterSelected = undefined;
         this.filterValue = {};

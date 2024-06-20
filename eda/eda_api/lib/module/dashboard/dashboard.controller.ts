@@ -10,7 +10,7 @@ import { CachedQueryService } from '../../services/cache-service/cached-query.se
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
 const cache_config = require('../../../config/cache.config')
-
+const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
@@ -657,11 +657,10 @@ export class DashboardController {
        uniquesForbiddenTables = [];
       }
 	  
-	  if( req.user._id == '135792467811111111111112'){
-        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-        uniquesForbiddenTables = [];
-
-      }
+/* SDA CUSTOM*/	  if( req.user._id == '135792467811111111111112'){
+/* SDA CUSTOM*/        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+/* SDA CUSTOM*/        uniquesForbiddenTables = [];
+/* SDA CUSTOM*/      }
 	  
 	  
       
@@ -694,12 +693,10 @@ export class DashboardController {
           mylabels.push(req.body.query.fields[c].column_name)
         }
       }
-
+      
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
-
-
 
       if (myQuery.fields.length == 0) {
         console.log('you cannot see any data');
@@ -713,15 +710,76 @@ export class DashboardController {
 
       /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
       if(myQuery.filters){
-        myQuery.filters.forEach(f => { 
-          if(!f.filter_column_type){
+        for (const filter of myQuery.filters) {
+          if (!filter.filter_column_type) {
+            const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
 
-            f.filter_column_type = dataModelObject.ds.model.tables.filter( t=> t.table_name == f.filter_table)[0]
-            .columns.filter(c=> c.column_name == f.filter_column   )[0].column_type;
+            if (filterTable) {
+              const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
+              filter.filter_column_type = filterColumn?.column_type || 'text';
+            }
           }
-        });
+        }
       }
+      
+      let nullFilter = {};
+      const filters = myQuery.filters;
 
+
+      filters.forEach(a => {
+        a.filter_elements.forEach(b => {
+          if( b.value1){
+            if ( 
+                ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
+                && b.value1.length > 1  /** Si tengo varios elementos  */
+                && ( a.filter_type == '=' || a.filter_type == 'in' ||  a.filter_type == 'like' || a.filter_type == 'between')
+            ) {
+                nullFilter =  {
+                              filter_id: 'is_null',
+                              filter_table: a.filter_table,
+                              filter_column: a.filter_column  ,
+                              filter_type: 'is_null',
+                              filter_elements: [{value1:['null']}],
+                              filter_column_type: a.filter_column_type,
+                              isGlobal: true,
+                              applyToAll: false
+                            } 
+                b.value1 = b.value1.filter(c => c != 'null')
+                filters.push(nullFilter);
+              }else  if ( ( b.value1.includes('null') || b.value1.includes('1900-01-01') ) 
+              && b.value1.length > 1  /** Si tengo varios elementos  */
+              && ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like' )
+              ) {
+                nullFilter =  {
+                                filter_id: 'not_null',
+                                filter_table: a.filter_table,
+                                filter_column: a.filter_column  ,
+                                filter_type: 'not_null',
+                                filter_elements: [{value1:['null']}],
+                                filter_column_type: a.filter_column_type,
+                                isGlobal: true,
+                                applyToAll: false
+                              }    
+              b.value1 = b.value1.filter(c => c != 'null')
+              filters.push(nullFilter);
+            } else if ( 
+              ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
+              && b.value1.length == 1  
+              && ( a.filter_type == '=' || a.filter_type == 'in' ||  a.filter_type == 'like' || a.filter_type == 'between') 
+              ){
+                a.filter_type='is_null';
+            } else if ( 
+              ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
+              && b.value1.length == 1  
+              &&  ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like') 
+            ){
+              a.filter_type='not_null';
+            } 
+         }
+        })
+      }) 
+
+      myQuery.filters = filters;
       const query = await connection.getQueryBuilded(
         myQuery,
         dataModelObject,
@@ -767,7 +825,8 @@ export class DashboardController {
             }
           })
         }
-        const results = []
+
+        let results = []
 
         // Normalize data here i also transform oracle numbers who come as strings to real numbers
         for (let i = 0, n = getResults.length; i < n; i++) {
@@ -781,22 +840,22 @@ export class DashboardController {
               if (numerics[ind] == 'true') {
                 const res = parseFloat(r[i])
                 if (isNaN(res)) {
-                  return null
+                   return eda_api_config.null_value;
                 } else {
                   return res
                 }
               } else {
                 //això es per evitar els null trec els nulls i els canvio per '' dels lavels
-                if (r[i] == null == null) {
-                  return ''
+                if (r[i] === null) {
+                  return eda_api_config.null_value;
                 } else {
-                  return r[i]
+                    return r[i];
                 }
               }
             } else {
-              // trec els nulls i els canvio per '' dels lavels
+              // trec els nulls i els canvio per eda_api_config.null_value dels lavels
               if (numerics[ind] != 'true' && r[i] == null) {
-                return ''
+                return eda_api_config.null_value;
               } else {
                 return r[i];
               }
@@ -805,11 +864,11 @@ export class DashboardController {
             }
 
           })
-          results.push(output)
+
+          results.push(output)          
         }
         // las etiquetas son el nombre técnico...
         const output = [mylabels, results]
-
         if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
           CachedQueryService.storeQuery(req.body.model_id, query, output)
         }
@@ -825,6 +884,8 @@ export class DashboardController {
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
           } Panel:${req.body.dashboard.panel_id} DONE\n`
         )
+
+            
 
         return res.status(200).json(output)
 
@@ -845,7 +906,7 @@ export class DashboardController {
           '\x1b[32m%s\x1b[0m',
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
           } Panel:${req.body.dashboard.panel_id} DONE\n`
-        )
+        )    
         return res.status(200).json(cachedQuery.cachedQuery.response)
       }
     } catch (err) {
@@ -860,9 +921,8 @@ export class DashboardController {
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
     try {
-      const connection = await ManagerConnectionService.getConnection(
-        req.body.model_id
-      )
+    console.log('execSqlQuery');
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
 
       /**Security check */
@@ -889,11 +949,11 @@ export class DashboardController {
         // el admin ve todo
        uniquesForbiddenTables = [];
       }
-      if( req.user._id == '135792467811111111111112'){
-        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-        uniquesForbiddenTables = [];
+/* SDA CUSTOM */      if( req.user._id == '135792467811111111111112'){
+/* SDA CUSTOM */        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+/* SDA CUSTOM */       uniquesForbiddenTables = [];
+/* SDA CUSTOM */      }
 
-      }
       let notAllowedQuery = false
       uniquesForbiddenTables.forEach(table => {
         if (req.body.query.SQLexpression.indexOf(table) >= 0) {
@@ -912,23 +972,12 @@ export class DashboardController {
 
         /**If query is in format select foo from a, b queryBuilder returns null */
         if (!query) {
-          return next(
-            new HttpException(
-              500,
-              'Queries in format "select x from A, B" are not suported'
-            )
-          )
+          return next(new HttpException(500,'Queries in format "select x from A, B" are not suported'));
         }
 
-        console.log(
-          '\x1b[32m%s\x1b[0m',
-          `QUERY for user ${req.user.name}, with ID: ${req.user._id
-          },  at: ${formatDate(new Date())} `
-        )
+        console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
         console.log(query)
-        console.log(
-          '\n-------------------------------------------------------------------------------\n'
-        )
+        console.log('\n-------------------------------------------------------------------------------\n');
 
         /**cached query */
         let cacheEnabled =
@@ -964,24 +1013,41 @@ export class DashboardController {
               const output = Object.keys(r).map(i => r[i])
               resultsRollback.push([...output])
               const tmpArray = []
+
               output.forEach((val, index) => {
+
                 if (DashboardController.isNotNumeric(val)) {
-                  tmpArray.push('NaN')
+                  tmpArray.push('NaN');
+                  if(val===null  ){
+                    output[index] =  eda_api_config.null_value;  // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
+                    resultsRollback[i][index] =  eda_api_config.null_value; // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
+                  }
                 } else {
                   tmpArray.push('int')
-                  output[index] = parseFloat(val)
+                  if(val !== null){
+                    output[index] = parseFloat(val);
+                  }else{
+                    output[index] =  eda_api_config.null_value;
+                    resultsRollback[i][index] =  eda_api_config.null_value;
+                    //output[index] = null;
+                  }
+                  
                 }
               })
               oracleDataTypes.push(tmpArray)
               results.push(output)
             } else {
-              const output = Object.keys(r).map(i => r[i])
+              const output = Object.keys(r).map(i => r[i]);
+              output.forEach((val, index) => {
+                if(val===null  ){
+                  output[index] =  eda_api_config.null_value;// los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
+                  resultsRollback[i][index] =   eda_api_config.null_value; // los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
+                }
+              })
               results.push(output)
               resultsRollback.push(output)
             }
           }
-
-
 
 
           /** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats.
@@ -990,19 +1056,31 @@ export class DashboardController {
             for (var i = 0; i < oracleDataTypes.length - 1; i++) {
               var e = oracleDataTypes[i]
               for (var j = 0; j < e.length; j++) {
-                if (oracleDataTypes[i][j] != oracleDataTypes[i + 1][j]) {
-                  oracleEval = false
+                if(oracleDataTypes[j][0]=='int'  ){
+                  if ( oracleDataTypes[i][j] != oracleDataTypes[i + 1][j]) {
+                    oracleEval = false
+                  }
                 }
               }
             }
           }
-
           /** si tinc numeros barrejats. Poso el rollback */
           if (oracleEval !== true) {
             results = resultsRollback
+          }else{
+            // pongo a nulo los numeros nulos
+            for (var i = 0; i < results.length; i++) {
+              var e = results[i]
+              for (var j = 0; j < e.length; j++) {
+                if(oracleDataTypes[j][0]=='int'  ){
+                  if ( results[i][j] ==  eda_api_config.null_value ) {
+                    results[i][j] = null;
+                  }
+                }
+              }
+            }
           }
           const output = [labels, results]
-
           if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
             CachedQueryService.storeQuery(req.body.model_id, query, output)
           }
@@ -1042,7 +1120,7 @@ export class DashboardController {
       if (
         isNaN(val) || val.toString().indexOf('-') >= 0 || val.toString().indexOf('/') >= 0 ||
         val.toString().indexOf('|') >= 0 || val.toString().indexOf(':') >= 0 || val.toString().indexOf('T') >= 0 ||
-        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0) {
+        val.toString().indexOf('Z') >= 0 || val.toString().indexOf('Z') >= 0 || val.toString().replace(/['"]+/g, '').length == 0 ) {
         isNotNumeric = true;
       }
     } catch (e) {
@@ -1060,10 +1138,10 @@ export class DashboardController {
     if( user.role.includes('135792467811111111111110') ){
       return true;
     }
-    if(user._id== '135792467811111111111112'){
-      console.log('Anonymous access');
-      return true;
-    }
+    /*SDA CUSTOM*/if(user._id== '135792467811111111111112'){
+    /*SDA CUSTOM*/  console.log('Anonymous access');
+    /*SDA CUSTOM*/  return true;
+    /*SDA CUSTOM*/}
 
 
 

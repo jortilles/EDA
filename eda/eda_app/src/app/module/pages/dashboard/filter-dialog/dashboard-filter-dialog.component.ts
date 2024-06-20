@@ -48,6 +48,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public selectedRange : string = null;
     public selectedFilter: any;
     public datePickerConfigs: any = {};
+    public aliasValue : string = "";
     
     // Global filters vars
     public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll, visible }> = [];
@@ -126,19 +127,20 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     setTablesAndColumnsToFilter() {
-        const tables = [];
-        let notVisibleTables = [];
         this.targetTables = [];
+        const tables = [];
+        const notVisibleTables = this.params.dataSource.model.tables.filter((t: any) => t.visible === false).map((t: any) => t.table_name);
+        
 
-        notVisibleTables = this.params.dataSource.model.tables.filter(t => t.visible === false).map(t => t.table_name);
-        this.panelstoFilter.forEach(panel => {
+        for (const panel of this.panelstoFilter) {
             const tmpPanel = this.params.panels.find(p => p.id === panel.id);
-            tmpPanel.content.query.query.fields.forEach(field => {
-                if (!tables.includes(field.table_id)) {
-                    tables.push(field.table_id);
-                }
-            });
-        });
+            const panelQuery = tmpPanel.content.query.query;
+            
+            for (const field of panelQuery.fields) {
+                const table_id = field.table_id //.split('.')[0];
+                if (!tables.includes(table_id)) tables.push(table_id);
+            }
+        }
 
         const fMap = this.globalFiltersService.relatedTables(tables, this.params.dataSource.model.tables);
         fMap.forEach((value: any, key: string) => {
@@ -182,6 +184,10 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
                 return this.alertService.addWarning($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
             }
     
+            if (this.aliasValue != "") {
+                this.targetCol.label = this.aliasValue;
+            }
+            
             this.filtersList.push({
                 id: this.fileUtils.generateUUID(),
                 table: this.targetTable,
@@ -204,6 +210,9 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             this.onClose(EdaDialogCloseEvent.NEW, response);
         } else {
             if (this.selectedFilter) {
+                if (this.aliasValue != "") {
+                    this.targetCol.label = this.aliasValue;
+                }
                 this.selectedFilter.table = this.targetTable;
                 this.selectedFilter.column = this.targetCol;
                 this.selectedFilter.panelList = this.panelstoFilter.map(p => p.id);
@@ -247,10 +256,12 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             panel: '',
             filters: []
         };
+        //Recupero el alias value para restaurarlo a la hora de editarlo.
+        this.aliasValue = this.params.filter.column.label;
         this.dashboardService.executeQuery(
             this.queryBuilderService.normalQuery([this.targetCol.value], params)
         ).subscribe(
-            res => this.targetValues = res[1].filter(item => !!item[0]).map(item => ({ label: item[0], value: item[0] })),
+            res => this.targetValues = res[1].map(item => ({ label: item[0], value: item[0] })),
             err => this.alertService.addError(err)
         );
     }
@@ -303,6 +314,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     public onEditFilter(filter: any): void {
+
         this.targetTable = filter.table;
         this.getColumnsByTable();
         this.targetCol = this.targetCols.find((col) => col.value?.column_name === filter.column.value?.column_name);

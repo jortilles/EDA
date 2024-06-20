@@ -51,7 +51,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public formatDate: FormatDates;
     public aggregationsTypes: any[] = [];
     public inputType: string;
-    public dropDownFields: SelectItem[];
+    public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
     public cumulativeSum: boolean;
     public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
@@ -78,7 +78,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     onShow(): void {
-
         this.selectedColumn = this.controller.params.selectedColumn;
         const allowed = [];
         const title = this.selectedColumn.display_name.default;
@@ -87,62 +86,58 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
         this.carregarValidacions();
 
-        for (let i = 0, n = this.filter.types.length; i < n; i += 1) {
-            if (this.selectedColumn.column_type === 'text') {
-                this.filter.types[i].typeof.map(type => {
-                    if (type === 'text') {
-                        allowed.push(this.filter.types[i]);
-                    }
-                });
-            } else if (this.selectedColumn.column_type === 'numeric') {
-                this.filter.types[i].typeof.map(type => {
-                    if (type === 'numeric') {
-                        allowed.push(this.filter.types[i]);
-                    }
-                });
-            } else if (this.selectedColumn.column_type === 'date') {
-                this.filter.types[i].typeof.map(type => {
-                    if (type === 'date') {
-                        allowed.push(this.filter.types[i]);
-                    }
-                });
-            }
+        const columnType = this.selectedColumn.column_type;
+
+        for (const type of this.filter.types) {
+            type.typeof.forEach(columnTypeOf => {
+                if (columnTypeOf === columnType) {
+                    allowed.push(type);
+                }
+            });
         }
 
-        if (!_.isEmpty(allowed)) {
+        if (allowed.length > 0) {
             this.filter.types = allowed;
         }
 
     }
 
-    carregarValidacions() {
+    private carregarValidacions(): void {
         this.carregarFilters();
-        this.handleAggregationType(this.selectedColumn);
-        this.handleOrdTypes(this.selectedColumn);
+        this.handleAggregationType();
+        this.handleOrdTypes();
+
         if (this.selectedColumn.column_type === "date") {
-            this.handleDataFormatTypes(this.selectedColumn);
+            this.handleDataFormatTypes();
             this.addCumulativeSum();
         }
+
         this.handleInputTypes();
     }
 
-    addFilter() {
+    public addFilter(): void {
         const table = this.selectedColumn.table_id;
         const column = this.selectedColumn.column_name;
-        const columnType = this.selectedColumn.column_type;
+        const column_type = this.selectedColumn.column_type;
         const type = this.filterSelected.value;
-        const range = this.filter.range;
-        if(this.selectedColumn.valueListSource){
-            this.filter.selecteds.push(
-                this.columnUtils.addFilter(this.filterValue, table, column, columnType, type, range, this.selectedColumn.valueListSource)
-            );
-        }else{
-            this.filter.selecteds.push(
-                this.columnUtils.addFilter(this.filterValue, table, column,columnType, type, range)
-            );
-        }
-        
+        const selectedRange = this.filter.range;
+        const valueListSource = this.selectedColumn.valueListSource;
+        const joins = this.selectedColumn.joins;
+        const autorelation = this.selectedColumn.autorelation;
 
+        const filter = this.columnUtils.setFilter({
+            obj: this.filterValue,
+            table,
+            column,
+            column_type,
+            type,
+            selectedRange,
+            valueListSource,
+            autorelation,
+            joins
+        });
+
+        this.filter.selecteds.push(filter);        
         this.carregarFilters();
 
         /* Reset Filter Form */
@@ -164,7 +159,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     addAggregation(type: any) {
-        _.find(this.aggregationsTypes, ag => ag.value === type.value).selected = true;
+        this.aggregationsTypes.find((ag: any) => ag.value === type.value).selected = true;
 
         for (let ag of this.aggregationsTypes) {
             if (ag.selected === true && type.value !== ag.value) {
@@ -176,13 +171,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
 
         // Introduim l'agregació a la Select
-        const addAggr: Column = this.controller.params.currentQuery.find((c: any) =>
-            this.selectedColumn.column_name === c.column_name &&
-            this.selectedColumn.table_id === c.table_id  &&
-            this.selectedColumn.display_name.default === c.display_name.default
-        );
+        const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
 
-        addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
+        if (addAggr) {
+            addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
+        }
     }
 
     addOrdenation(ord: any) {
@@ -206,59 +199,42 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         ).ordenation_type = this.selectedColumn.ordenation_type;
     }
 
-    addFormatDate() {
-        const select = this.controller.params.currentQuery;
+    public addFormatDate(): void {
+        const foundFormat = this.formatDates.find(o => o.value === this.formatDate.value);
 
-        let find = _.find(this.formatDates, o => o.value === this.formatDate.value);
-        find.selected = true;
+        if (foundFormat) {
+            foundFormat.selected = true;
 
-        if (!this.formatDate.display_name || this.formatDate.display_name == '') {
-            this.formatDate = find;
-        }
-
-        _.forEach(this.formatDates, o => {
-            if (o.selected === true && this.formatDate.value !== o.value) {
-                o.selected = false;
+            if (!this.formatDate.display_name) {
+                this.formatDate = foundFormat;
             }
-        });
+    
+            this.formatDates.forEach(o => {
+                if (o.selected === true && this.formatDate.value !== o.value) {
+                    o.selected = false;
+                }
+            });
 
-        _.find(select, c =>
-            this.selectedColumn.column_name === c.column_name &&
-            this.selectedColumn.table_id === c.table_id &&
-            this.selectedColumn.display_name.default === c.display_name.default
-        ).format = this.formatDate.value;
+            const selectedColumn = this.selectedColumn;
+            const foundColumn = this.findColumn(selectedColumn, this.controller.params.currentQuery);
 
-        // Introduim l'agregació a la Select
-        const column: Column = this.controller.params.currentQuery.find(c => {
-            return this.selectedColumn.column_name === c.column_name &&
-                this.selectedColumn.table_id === c.table_id &&
-                this.selectedColumn.display_name.default === c.display_name.default;
-        });
-        column.format = this.formatDate.value;
+            if (foundColumn) {
+                foundColumn.format = this.formatDate.value;
+            }
 
-        if (!this.cumulativeSumAllowed()) {
-            this.cumulativeSum = false;
+            if (!this.cumulativeSumAllowed()) {
+                this.cumulativeSum = false;
+            }
         }
     }
 
-    addCumulativeSum() {
-
-        //Add to query
-        const newCol: Column = this.controller.params.currentQuery.find(c => {
-            return this.selectedColumn.column_name === c.column_name &&
-                this.selectedColumn.table_id === c.table_id &&
-                this.selectedColumn.display_name.default === c.display_name.default;
-        });
-        this.cumulativeSum = newCol.cumulativeSum;
-
+    public addCumulativeSum(): void {
+        const newCol = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+        this.cumulativeSum = newCol?.cumulativeSum;
     }
 
     handleCumulativeSum() {
-        const newCol: Column = this.controller.params.currentQuery.find(c => {
-            return this.selectedColumn.column_name === c.column_name &&
-                this.selectedColumn.table_id === c.table_id &&
-                this.selectedColumn.display_name.default === c.display_name.default;
-        });
+        const newCol = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
         newCol.cumulativeSum = this.cumulativeSum;
 
         /**
@@ -286,8 +262,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.display.between = handler.between;
             this.display.filterValue = !_.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
             this.display.calendar = _.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
-            this.display.switchButton = _.isEqual(filter.value, 'not_null');
-            this.display.filterButton = !_.isEqual(filter.value, 'not_null');
+            this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty');
+            this.display.filterButton = filter.value == 'not_null' || filter.value == 'not_null_nor_empty' || filter.value == 'null_or_empty' ? false : true ;
             this.limitSelectionFields = handler.limitFields === 1 ? 1 : 50;
             this.filter.switch = handler.switchBtn;
 
@@ -319,7 +295,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     /**Gestiona las agregaciones de la columna seleccionada */
-    handleAggregationType(column: Column) {
+    public handleAggregationType(): void {
+        const column = this.selectedColumn;
+
         const matchingQuery = this.controller.params.currentQuery.find((c: any) =>
             c.table_id === column.table_id &&
             c.column_name === column.column_name &&
@@ -364,68 +342,69 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
     }
 
-    handleDataFormatTypes(column: Column) {
+    public findColumn(column: Column, columns: any[]) {
+        const found = columns.find((c: any) => 
+            column.table_id === c.table_id &&
+            column.column_name === c.column_name &&
+            column.display_name.default === c.display_name.default
+        );
+
+        return found;
+    }
+
+    handleDataFormatTypes() {
+        const column = this.selectedColumn;
+
         let tmpDateFormat = '';
+    
         if (this.controller.params.panel.content) {
-            const found = this.controller.params.currentQuery
-                .find(c => c.table_id   === column.table_id  && c.column_name === column.column_name  && c.display_name.default === column.display_name.default )
-                .format;
-            if (found) {
-                this.formatDate = { display_name: '', value: found, selected: true };
+            const foundColumn = this.findColumn(column, this.controller.params.currentQuery);
+            const foundFormat = foundColumn?.format;
+
+            if (foundColumn && foundFormat) {
+                this.formatDate = { display_name: '', value: foundFormat, selected: true };
                 this.addFormatDate();
-                this.controller.params.currentQuery.find(c => {
-                    return  column.table_id === c.table_id  &&  column.column_name === c.column_name && c.display_name.default === column.display_name.default ;
-                }).format = found;
-                return;
+                foundColumn.format = foundFormat;
             } else {
                 // Si encara no hem carregat les dades a this.select
                 const queryFromServer = this.controller.params.panel.content.query.query.fields;
-                let dateFormat = queryFromServer.filter(c => c.column_name === column.column_name && c.table_id === column.table_id  && c.display_name.default === column.display_name.default )[0];
-                if (dateFormat && dateFormat.format) {
-                    tmpDateFormat = dateFormat.format;
-                } else {
-                    tmpDateFormat = 'No';
-                }
+                const dateFormat = this.findColumn(column, queryFromServer)?.format;
+                tmpDateFormat = dateFormat || 'No';
 
                 this.formatDate = { display_name: '', value: tmpDateFormat, selected: true };
-                this.addFormatDate()
-                this.controller.params.currentQuery.find(c => column.column_name === c.column_name && column.table_id === c.table_id  && c.display_name.default === column.display_name.default).format = tmpDateFormat;
-                return;
+                this.addFormatDate();
+
+                const foundColumn = this.findColumn(column, this.controller.params.currentQuery);
+
+                if (foundColumn) {
+                    foundColumn.format = tmpDateFormat;
+                }
             }
         } else {
-            const found = this.controller.params.currentQuery.find( c => c.column_name === column.column_name && c.table_id === column.table_id  && c.display_name.default === column.display_name.default );
-            let tmpDateFormat = '';
-            if (!found || !found.format) {
-                tmpDateFormat = 'No';
-                this.formatDate = { display_name: '', value: 'No', selected: true };
-                this.addFormatDate();
-            } else {
-                tmpDateFormat = found.format;
-                this.formatDate = { display_name: '', value: tmpDateFormat, selected: true };
-                this.addFormatDate();
-            }
-            this.controller.params.currentQuery.find(c => {
-                return column.column_name === c.column_name && column.table_id === c.table_id && c.display_name.default === column.display_name.default;
-            }).format = tmpDateFormat;
+            const foundColumn = this.findColumn(column, this.controller.params.currentQuery);            
+            tmpDateFormat = foundColumn?.format || 'No';
 
+            this.formatDate = { display_name: '', value: tmpDateFormat, selected: true };
+            this.addFormatDate();
+
+            foundColumn.format = tmpDateFormat;
         }
     }
 
-    handleOrdTypes(column: Column) {
+    old_handleOrdTypes(column: Column) {
 
         let addOrd: Column;
 
         if (this.controller.params.panel.content) {
 
             const queryFromServer = this.controller.params.panel.content.query.query.fields;
-            const found = this.controller.params.currentQuery.find(c => c.column_name === column.column_name && c.table_id === column.table_id  && c.display_name.default === column.display_name.default).ordenation_type;
+            const found = this.controller.params.currentQuery.find(c => c.column_name === column.column_name && c.table_id === column.table_id  && c.display_name.default === column.display_name.default)?.ordenation_type;
             if (found) {
                 this.ordenationTypes.forEach(o => {
                     o.value !== column.ordenation_type ? o.selected = false : o.selected = true;
                 });
 
                 this.controller.params.currentQuery.find(c => c.column_name === column.column_name && c.table_id === column.table_id  && c.display_name.default === column.display_name.default).ordenation_type = column.ordenation_type;
-                //addOrd.ordenation_type = column.ordenation_type;
                 return;
             }
 
@@ -458,9 +437,73 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
 
         addOrd = this.controller.params.currentQuery.find(c => c.column_name === column.column_name && c.table_id === column.table_id  && c.display_name.default === column.display_name.default);
-        addOrd.ordenation_type = this.ordenationTypes.filter(ord => ord.selected === true)[0].value;
+
+        if (addOrd) {
+            addOrd.ordenation_type = this.ordenationTypes.filter(ord => ord.selected === true)[0].value;
+        }
 
     }
+
+    public handleOrdTypes(): void {
+        const column = this.selectedColumn;
+
+        if (this.controller.params.panel.content) {
+            const { currentQuery } = this.controller.params;
+            const queryFromServer = this.controller.params.panel.content.query.query.fields;
+            
+            const foundColumn = currentQuery.find(c =>
+                c.column_name === column.column_name &&
+                c.table_id === column.table_id &&
+                c.display_name.default === column.display_name.default
+            );
+    
+            if (foundColumn) {
+                const { ordenation_type } = column;
+                this.ordenationTypes.forEach(o => o.selected = o.value === ordenation_type);
+                foundColumn.ordenation_type = ordenation_type;
+                return;
+            }
+    
+            if (!column.ordenation_type) {
+                column.ordenation_type = 'No';
+            }
+    
+            const ordenation = queryFromServer.find(c =>
+                c.column_name === column.column_name &&
+                c.table_id === column.table_id &&
+                c.display_name.default === column.display_name.default
+            )?.ordenation_type || column.ordenation_type;
+    
+            const selectedOrd = this.ordenationTypes.find(ag => ag.selected);
+            if (selectedOrd && selectedOrd.value !== ordenation) {
+                selectedOrd.selected = false;
+            }
+            const ord = this.ordenationTypes.find(o => o.value === ordenation);
+            if (ord) {
+                ord.selected = true;
+            }
+        } else {
+            this.ordenationTypes = [
+                { display_name: 'Asc', value: 'Asc', selected: false },
+                { display_name: 'Desc', value: 'Desc', selected: false },
+                { display_name: 'No', value: 'No', selected: true }
+            ];
+        }
+    
+        const addOrd = this.controller.params.currentQuery.find(c =>
+            c.column_name === column.column_name &&
+            c.table_id === column.table_id &&
+            c.display_name.default === column.display_name.default
+        );
+    
+        if (addOrd) {
+            const selectedOrder = this.ordenationTypes.find(ord => ord.selected);
+            if (selectedOrder) {
+                addOrd.ordenation_type = selectedOrder.value;
+            }
+        }
+    }
+    
 
     handleInputTypes() {
         const type = this.selectedColumn.column_type;
@@ -491,22 +534,36 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     /** Query per dropdown  */
-    loadDropDrownData() {
+    async loadDropDrownData() {
         this.filterValue.value1 = null;
         this.filterValue.value2 = null;
         if (this.filter.switch) {
+            const column = _.cloneDeep(this.selectedColumn);
+            column.table_id = column.table_id.split('.')[0];
+            column.ordenation_type = 'ASC';
+
             const params = {
-                table: this.selectedColumn.table_id,
+                table: column.table_id,
                 dataSource: this.controller.params.inject.dataSource._id,
                 dashboard: this.controller.params.inject.dashboard_id,
                 panel: this.controller.params.panel._id,
                 forSelector: true,
                 filters: []
             };
-            this.dashboardService.executeQuery(this.queryBuilder.normalQuery([this.selectedColumn], params)).subscribe(
-                res => this.dropDownFields = res[1].map(item => ({ label: item[0], value: item[0] })),
-                err => this.alertService.addError(err)
-            );
+
+            try {
+                const res = await this.dashboardService.executeQuery(this.queryBuilder.normalQuery([column], params)).toPromise();
+                if (res.length > 1) {
+                    for (const item of res[1]) {
+                        if (item[0] === '' || item[0] ) {
+                            this.dropDownFields.push({ label : item[0], value: item[0] });
+                        }
+                    }
+                }
+            } catch (err) {
+                this.alertService.addError(err);
+                throw err;
+            }
         }
     }
 
@@ -554,7 +611,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     /* Close functions */
     closeDialog() {
-
         this.filter.switch = false;
         this.filterSelected = undefined;
         this.filterValue = {};
