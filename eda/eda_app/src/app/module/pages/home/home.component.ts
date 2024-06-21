@@ -68,7 +68,7 @@ export class HomeComponent implements OnInit {
     private setIsObserver = async () => {
         this.groupService.getGroupsByUser().subscribe(
             res => {
-                const user = sessionStorage.getItem('user');
+                const user = localStorage.getItem('user');
                 const userID = JSON.parse(user)._id;
                 this.grups = res;
                 this.isObserver = this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
@@ -78,7 +78,7 @@ export class HomeComponent implements OnInit {
     }
 
     private ifAnonymousGetOut(): void {
-        const user = sessionStorage.getItem('user');
+        const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
 
         if (userName === 'edaanonim' || userName === 'EDA_RO') {
@@ -128,7 +128,7 @@ export class HomeComponent implements OnInit {
                 }
             }
             this.tags = _.uniqBy(this.tags, 'value'); //treiem repetits
-            sessionStorage.setItem('tags', JSON.stringify(this.tags)); //IMPORTANT, guardem tags per sessió! Els recuperem a cada dashboard
+            localStorage.setItem('tags', JSON.stringify(this.tags)); //IMPORTANT, guardem tags per sessió! Els recuperem a cada dashboard
             this.filterDashboards({ label: this.AllTags, value: 1 });
             this.setIsObserver();
         } catch (err) {
@@ -227,7 +227,7 @@ export class HomeComponent implements OnInit {
         result = this.isAdmin ;
         if (result == false) {
             if (dashboard.config.onlyIcanEdit === true) {
-                if ( sessionStorage.getItem('user')  ==  dashboard.user) {
+                if ( localStorage.getItem('user')  ==  dashboard.user) {
                     result = true;
                 }
             } else {

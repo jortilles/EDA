@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
         // this.urlParams = this.route.snapshot.queryParams['params'];
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
 
-        this.email = sessionStorage.getItem('email') || '';
+        this.email = localStorage.getItem('email') || '';
 
         if (this.email.length > 1) {
             this.remember = true;
