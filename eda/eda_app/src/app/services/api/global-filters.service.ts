@@ -101,6 +101,7 @@ export class GlobalFiltersService {
                 if (assertTablesNames.includes(idRelation)) {
                     const assertTable = _.cloneDeep(modelTables.find((t: any) => t.table_name == relation.target_table));
                     assertTable.table_name = idRelation;
+                    assertTable.autorelation = relation.autorelation;
                     assertTable.display_name.default = relation.display_name.default;
                     assertTable.description.default = relation.display_name.default;
                     modelTables.push(assertTable);
@@ -257,6 +258,7 @@ export class GlobalFiltersService {
                         child_id: child_id.trim(),
                         type: 'child',
                         label: childLabel,
+                        autorelation: relation.autorelation,
                         joins
                     };
 
@@ -328,6 +330,7 @@ export class GlobalFiltersService {
             pathList: pathList,
             isGlobal: true,
             applyToAll: globalFilter.applyToAll,
+            autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource
         }
 

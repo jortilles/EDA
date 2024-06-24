@@ -72,13 +72,14 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     addFilter() {
-        const table =  this.selectedColumn.table_id;
+        const table = this.selectedColumn.table_id;
         const column_type  = this.selectedColumn.column_type;
         const column = this.selectedColumn.column_name;
         const type = this.filterSelected.value;
         const selectedRange = this.filter.range;
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
+        const autorelation = this.selectedColumn.autorelation;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -88,6 +89,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             type,
             selectedRange,
             valueListSource,
+            autorelation,
             joins
         });
         

@@ -118,6 +118,7 @@ export const PanelInteractionUtils = {
           assertTable.table_name = column.table_id;
           assertTable.display_name.default = displayName;
           assertTable.description.default = displayName;
+          assertTable.autorelation = relation.autorelation;
           ebp.assertedTables.push(assertTable);
           ebp.tables.push(assertTable);
         }
@@ -187,6 +188,7 @@ export const PanelInteractionUtils = {
             type: 'child',
             label: childLabel,
             child_id: child_id.trim(),
+            autorelation: relation.autorelation,
             joins
           };
 
@@ -287,6 +289,10 @@ export const PanelInteractionUtils = {
                 column.whatif_column = contentColumn.whatif_column || false;
                 column.whatif = contentColumn.whatif || {};
                 column.joins = contentColumn.joins || [];
+                if(column.column_type!= contentColumn.column_type){
+                  column.old_column_type = column.column_type;
+                  column.column_type = contentColumn.column_type;
+                }
                 PanelInteractionUtils.moveItem(ebp, column);
             } else {
                 if(contentColumn.table_id === idTable) {

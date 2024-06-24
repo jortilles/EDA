@@ -10,6 +10,7 @@ interface FilterOptions {
     type: string;
     selectedRange: string;
     valueListSource?: {};
+    autorelation?: boolean;
     joins?: any[];
 }
 @Injectable()
@@ -59,7 +60,7 @@ export class ColumnUtilsService {
     }
     
     public setFilter(options: FilterOptions): object {
-        const { obj, table, column, column_type, type, selectedRange, valueListSource, joins } = options;
+        const { obj, table, column, column_type, type, selectedRange, valueListSource, joins, autorelation } = options;
     
         const values = Object.keys(obj).map((key) => {
             if (!_.isNil(obj[key])) {
@@ -76,6 +77,7 @@ export class ColumnUtilsService {
             filter_type: type,
             filter_elements: values,
             selectedRange: selectedRange,
+            autorelation, 
             joins
         };
     
