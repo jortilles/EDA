@@ -5,11 +5,11 @@ import { VerticaConnection } from './db-systems/vertica-connection';
 import { MysqlConnection } from './db-systems/mysql-connection';
 import { PgConnection } from './db-systems/pg-connection';
 import { AbstractConnection } from './abstract-connection';
-import DataSource from '../../module/datasource/model/datasource.model';
 import { EnCrypterService } from '../encrypter/encrypter.service';
 import { SQLserverConnection } from './db-systems/slqserver-connection';
 import { JSONWebServiceConnection } from './db-systems/json-webservice-connection';
 import { MongoDBConnection } from './db-systems/mongodb-connection';
+import DataSource from '../../module/datasource/model/datasource.model';
 
 export const
     MS_CONNECTION = 'mssql',

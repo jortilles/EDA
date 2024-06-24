@@ -1,7 +1,7 @@
 import { MongoDBBuilderService } from '../../query-builder/qb-systems/mongodb-builder-service';
 import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
-import {MongoClient} from "mongodb";
+import { MongoClient } from "mongodb";
 
 
 export class MongoDBConnection extends AbstractConnection {
@@ -9,20 +9,25 @@ export class MongoDBConnection extends AbstractConnection {
     GetDefaultSchema(): string {
         return 'public';
     }
-    
+
+    private connectUrl: string;
     private queryBuilder: MongoDBBuilderService;
 
     async getclient() {
-        try{
-            const type = this.config.type, host = this.config.host,
-            port = this.config.port, db = this.config.database,
-            user = this.config.user, password = this.config.password;
-            const connection = await MongoClient.connect(
-                `${type}://${user}:${password}@${host}:${port}/${db}?authSource=${db}`,
-                {useNewUrlParser:true,useUnifiedTopology: true} 
-            )
+        try {
+            const type = this.config.type;
+            const host = this.config.host;
+            const port = this.config.port;
+            const db = this.config.database;
+            const user = this.config.user;
+            const password = this.config.password;
+
+            this.connectUrl = `${type}://${user}:${password}@${host}:${port}/${db}?authSource=${db}`;
+
+            const options = { useNewUrlParser: true, useUnifiedTopology: true };
+            const connection = await MongoClient.connect(this.connectUrl, options);
             return connection;
-        }catch(error){
+        } catch (error) {
             throw error;
         }
     }
@@ -30,7 +35,7 @@ export class MongoDBConnection extends AbstractConnection {
     async tryConnection(): Promise<any> {
         try {
             this.client = await this.getclient();
-            console.log('\x1b[32m%s\x1b[0m', 'Connecting to MongoDB🍃 database...\n');            await this.client.connect();
+            console.log('\x1b[32m%s\x1b[0m', 'Connecting to MongoDB🍃 database...\n');
             await this.client.connect();
             this.itsConnected();
             await this.client.close();
@@ -40,7 +45,7 @@ export class MongoDBConnection extends AbstractConnection {
         }
     }
 
-    async generateDataModel(optimize: number, filter: string): Promise<any> {   
+    async generateDataModel(optimize: number, filter: string): Promise<any> {
         try {
             this.client = await this.getclient();
             let tableNames = [];
@@ -54,7 +59,7 @@ export class MongoDBConnection extends AbstractConnection {
             for (let i = 1; i < filters.length; i++) {
                 filter_str += ` OR table_name LIKE '${filters[i].trim()}'`
             }
-            if(filter) filter_str += ' )';
+            if (filter) filter_str += ' )';
 
             /**
              * Build query
@@ -105,7 +110,7 @@ export class MongoDBConnection extends AbstractConnection {
                 }
                 new_table.tableCount = count;
                 tables.push(new_table);
-                if(i> 500){
+                if (i > 500) {
                     console.log('Un datasource no puede tener más de 500 tablas ');
                     i = tableNames.length + 1;
                 }
@@ -129,21 +134,45 @@ export class MongoDBConnection extends AbstractConnection {
         }
     }
 
-    async execQuery(query: string): Promise<any> {
+    async execQuery(query: any): Promise<any> {
+        console.log("QUERY: 🐺", query);
+
+        const client = await this.getclient()
+
         try {
-            console.log("QUERY: 🐺", query);
-            //TODO
-            const mongoDatabase = this.client.db(this.config.database);
-            const result = []
+            // db and collection
+            const database = client.db(this.config.database);
+            const collection = database.collection('xls_'+query.collectionName);
+
+            // prevent to display all the fields with projection (select)
+            const projection = query.columns.reduce((acc: any, field: string) => {
+                acc[field] = 1;
+                return acc;
+            }, {});
+
+            // Exec query
+            const data = await collection.find(query.filters, { projection }).toArray();
             
-            return result
-        } catch (err) {
-            console.log(err);
+            // Format and sort
+            let formatData = [];
+
+            if (data.length > 0) {
+                formatData = data.map(doc => {
+                    const ordenado = query.columns.map(col => doc[col]);
+                    return ordenado;
+                });
+            }
+
+            return formatData;
+        } catch (err){
+            console.error(err);
             throw err;
+        } finally {
+            await client.close();
         }
     }
 
-    
+
     async execSqlQuery(query: string): Promise<any> {
         return this.execQuery(query);
     }
@@ -162,9 +191,7 @@ export class MongoDBConnection extends AbstractConnection {
 
 
     private async countTable(tableName: string, schema: string): Promise<any> {
-        const query = `
-        SELECT count(*) as count from ${schema}.${tableName}
-        `;
+        const query = `SELECT count(*) as count from ${schema}.${tableName}`;
         return new Promise(async (resolve, reject) => {
             try {
                 const count = await this.client.query(query);
@@ -175,10 +202,10 @@ export class MongoDBConnection extends AbstractConnection {
         })
     }
 
-    private async setTable(tableName: string ): Promise<any> {
+    private async setTable(tableName: string): Promise<any> {
         const query = `SELECT column_name, udt_name AS column_type ` +
-        `FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '${tableName}' ` + 
-        `and table_schema = '${this.config.schema || 'public'}' `;
+            `FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '${tableName}' ` +
+            `and table_schema = '${this.config.schema || 'public'}' `;
         return new Promise(async (resolve, reject) => {
             try {
                 const getColumns = await this.client.query(query);
@@ -244,14 +271,14 @@ export class MongoDBConnection extends AbstractConnection {
             .join(' ');
     }
 
-    createTable(queryData: any, user:any): string {
+    createTable(queryData: any, user: any): string {
 
         this.queryBuilder = new MongoDBBuilderService(queryData, { ds: { model: { tables: [] } } }, user._id);
         return this.queryBuilder.createTable(queryData);
     }
 
-    generateInserts(queryData: any, user:any): string {
- 
+    generateInserts(queryData: any, user: any): string {
+
         this.queryBuilder = new MongoDBBuilderService(queryData, { ds: { model: { tables: [] } } }, user._id);
         return this.queryBuilder.generateInserts(queryData);
     }
