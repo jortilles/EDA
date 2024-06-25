@@ -4146,6 +4146,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>DELETE REPORT</target>
   </trans-unit> 
 
+  <trans-unit id="opcionURL">
+    <source>CONFIGURAR ACCIÓN PERSONALIZADA  </source>
+    <target>SET CUSTOM ACTION  </target>
+  </trans-unit> 
+
 </body>
 </file>
 </xliff>

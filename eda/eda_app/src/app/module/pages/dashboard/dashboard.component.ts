@@ -1564,6 +1564,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
+    public openURLConfig() {
+        console.log('holassss')
+    }
+
+
+
     // Others
     public handleSelectedBtn(event): void {
         const groupControl = this.form.get('group');

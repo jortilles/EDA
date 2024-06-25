@@ -4084,7 +4084,12 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="eliminarInforme">
     <source>ELIMINAR INFORME</source>
     <target>USUŃ RAPORT</target>
-  </trans-unit> 
+  </trans-unit>
+
+  <trans-unit id="opcionURL">
+    <source>CONFIGURAR ACCIÓN PERSONALIZADA  </source>
+    <target>USTAW DZIAŁANIE NIESTANDARDOWE  </target>
+  </trans-unit>
   
 </body>
 </file>
