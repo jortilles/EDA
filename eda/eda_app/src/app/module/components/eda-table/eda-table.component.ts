@@ -8,7 +8,6 @@ import es from '@angular/common/locales/es';
 import * as _ from 'lodash';
 import { StyleService } from '@eda/services/service.index';
 import { EdaColumnChartOptions } from './eda-columns/eda-column-chart-options';
-import { EdaColumn } from './eda-columns/eda-column';
 
 @Component({
     selector: 'eda-table',
@@ -49,12 +48,15 @@ export class EdaTableComponent implements OnInit {
     }
 
     handleClick(item: any, colname: string) {
-  
-            if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
-                        const props = this.inject.linkedDashboardProps;
-                        const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
-                        window.open(url, "_blank");
-                    }
+
+        if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
+
+            const props = this.inject.linkedDashboardProps;
+            const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
+
+            window.open(url, "_blank");
+
+        }
     }
 
     getTooltip = (col) => `${col.description}` || ``;
@@ -65,6 +67,7 @@ export class EdaTableComponent implements OnInit {
     }
 
     getStyle(col, rowData) {
+      
         if (this.styles[col.field]) {
 
             let cellClass = null;
@@ -74,7 +77,7 @@ export class EdaTableComponent implements OnInit {
             field = this.getNiceName(field);
             
             if(!parseFloat(rowData[col.field])) cellClass = null;
-            else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[0])) cellClass = `table-gradient-${field}-${0}`;
+            else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[0])) cellClass = `table-gradient-${field}-${0}`
             else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[1])) cellClass = `table-gradient-${field}-${1}`;
             else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[2])) cellClass = `table-gradient-${field}-${2}`;
             else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[3])) cellClass = `table-gradient-${field}-${3}`;
@@ -84,15 +87,6 @@ export class EdaTableComponent implements OnInit {
         }
 
         return null;
-    }
-
-    public getItemStyle(col: EdaColumn, row: any) {
-        const style = col.cellStyle(_.get(row, col.field), row);
-        if (!_.isEmpty(style)) {
-            return style;
-        } else {
-            return {};
-        }
     }
 
     public applyStyles(styles: Array<any>) {

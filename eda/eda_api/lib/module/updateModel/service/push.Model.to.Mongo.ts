@@ -17,10 +17,14 @@ export class pushModelToMongo {
         if (found == null) {
             try {
                 if (model_id !== '111111111111111111111111') {
+                    console.log('El modelo no es el esperado.');
                     res.status(500).json({'status':'ko'})
                 } else {
+                    console.log('data0');
                     const data = await new DataSource(model) ;
+                    console.log('data?');
                     data.save();
+                    console.log('data err')
                 }
                 
             } catch(e) {
@@ -29,8 +33,11 @@ export class pushModelToMongo {
               
         } else {
             try {
+                console.log('El modelo ya existe.....')
                 if (model_ds != null || model_ds != undefined) {
-                    await DataSource.updateOne({_id: model_id}, {ds: model_ds})    
+                    console.log('actualizo.....')
+                    await DataSource.updateOne({_id: model_id}, {ds: model_ds})  
+                    console.log('actualizado.....')
                 } else {
                     res.status(500).json({'status':'ko'})
                 }
