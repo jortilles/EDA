@@ -135,14 +135,12 @@ export class MongoDBConnection extends AbstractConnection {
     }
 
     async execQuery(query: any): Promise<any> {
-        console.log("QUERY: 🐺", query);
-
         const client = await this.getclient()
 
         try {
             // db and collection
             const database = client.db(this.config.database);
-            const collection = database.collection('xls_'+query.collectionName);
+            const collection = database.collection('xls_' + query.collectionName);
 
             // prevent to display all the fields with projection (select)
             const projection = query.columns.reduce((acc: any, field: string) => {
@@ -150,21 +148,48 @@ export class MongoDBConnection extends AbstractConnection {
                 return acc;
             }, {});
 
-            // Exec query
-            const data = await collection.find(query.filters, { projection }).toArray();
-            
+            let data;
             // Format and sort
             let formatData = [];
 
-            if (data.length > 0) {
-                formatData = data.map(doc => {
-                    const ordenado = query.columns.map(col => doc[col]);
-                    return ordenado;
-                });
+            if (query.pipeline) {
+
+                query.pipeline.push({ $project: projection });
+
+                if (query.filters) {
+                    query.pipeline.push({ $match: query.filters });
+                }
+
+                console.log('pipeline----->', JSON.stringify(query.pipeline))
+                data = await collection.aggregate(query.pipeline).toArray();
+
+                if (data.length > 0) {
+                    formatData = data.map(doc => {
+                        const ordenado = query.columns.map(col => {
+                            // Verificar si el campo está en _id (caso de agrupación)
+                            if (doc._id && doc._id.hasOwnProperty(col)) {
+                                return doc._id[col];
+                            }
+                            // De lo contrario, usar el campo de agregación directamente
+                            return doc[col];
+                        });
+                        return ordenado;
+                    });
+                }
+            } else {
+                // Exec query
+                data = await collection.find(query.filters, { projection }).toArray();
+
+                if (data.length > 0) {
+                    formatData = data.map(doc => {
+                        const ordenado = query.columns.map(col => doc[col]);
+                        return ordenado;
+                    });
+                }
             }
 
             return formatData;
-        } catch (err){
+        } catch (err) {
             console.error(err);
             throw err;
         } finally {

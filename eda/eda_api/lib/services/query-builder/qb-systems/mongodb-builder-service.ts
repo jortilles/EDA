@@ -21,11 +21,13 @@ export class MongoDBBuilderService extends QueryBuilderService {
                 collectionName,
                 criteria: {},
                 columns: [],
+                aggregations: {},
                 filters: []
             };
 
-            fields.forEach(column => {
+            fields.forEach((column: any) => {
                 mongoQuery.columns.push(column.column_name);
+
                 // mongoQuery.columns.push(column.column_name);
 
                 // let newColumnObject = {
@@ -46,9 +48,10 @@ export class MongoDBBuilderService extends QueryBuilderService {
             });
 
             mongoQuery.filters = this.getFilters();
-            console.log('FILTEEEEEEEERS');
-            console.log(JSON.stringify(mongoQuery.filters));
-            console.log('==========================');
+
+            mongoQuery.pipeline = this.getPipeline();
+
+
 
             return mongoQuery;
             console.log("Info de la consulta: ", this.queryTODO);
@@ -61,22 +64,22 @@ export class MongoDBBuilderService extends QueryBuilderService {
 
     public getFilters() {
         const filters = this.queryTODO.filters;
-        
+
         const formatedFilter = {
             $and: []
         };
 
         for (const filter of filters) {
-        // if (['=', '!=', '>', '<', '<=', '>=', 'like', 'not_like'].includes(filter)) return 0;
-        // else if (['not_in', 'in'].includes(filter)) return 1;
-        // else if (filter === 'between') return 2;
-        // else if (filter === 'not_null') return 3;
+            // if (['=', '!=', '>', '<', '<=', '>=', 'like', 'not_like'].includes(filter)) return 0;
+            // else if (['not_in', 'in'].includes(filter)) return 1;
+            // else if (filter === 'between') return 2;
+            // else if (filter === 'not_null') return 3;
 
-            
+
             const value = filter.filter_elements[0].value1;
 
             const filterType = filter.filter_type;
-            
+
             if (filterType == '=') {
                 formatedFilter['$and'].push({ [filter.filter_column]: value[0] })
             } else if (filterType == '!=') {
@@ -100,7 +103,7 @@ export class MongoDBBuilderService extends QueryBuilderService {
             } else if (filterType == 'not_in') {
                 formatedFilter['$and'].push({ [filter.filter_column]: { $not: { $in: value } } });
             }
-            
+
             if (filterType == 'not_null') {
                 formatedFilter['$and'].push({ [filter.filter_column]: { $exists: true, $ne: null } });
             }
@@ -136,6 +139,45 @@ export class MongoDBBuilderService extends QueryBuilderService {
         }
     }
 
+    public getPipeline() {
+        const fields = this.queryTODO.fields;
+        const pipeline = {
+            $group: {
+                _id: {}
+            }
+        };
+
+        const agg = {
+            'sum': '$sum',
+            'avg': '$avg',
+            'max': '$max',
+            'min': '$min',
+            'count': '',
+            'count_distinct': '',
+            'none': '',
+        };
+
+        const aggregations = {};
+        for (const column of fields) {
+            if (column.aggregation_type !== 'none') {
+
+                pipeline['$group'][column.column_name] = { [agg[column.aggregation_type]]: `$${column.column_name}` };
+                aggregations[column.aggregation_type] = aggregations[column.aggregation_type] || [];
+                aggregations[column.aggregation_type].push(column.column_name);
+
+                // if (el.aggregation_type === 'count_distinct') {
+                //   columns.push(`ROUND(count(distinct ${table_column})::numeric, ${el.minimumFractionDigits})::float ${whatIfExpression} as "${el.display_name}"`);
+                // } else {
+                // }
+            } else {
+                if (fields.length > 1 || column.column_type != 'numeric') {
+                    pipeline['$group']._id[column.column_name] = `$${column.column_name}`;
+                }
+            }
+        }
+
+        return Object.keys(aggregations).length > 0 ? [pipeline] : undefined;
+    }
 
     public sqlBuilder(userQuery: any, filters: any[]): string {
         let sql_query = '';

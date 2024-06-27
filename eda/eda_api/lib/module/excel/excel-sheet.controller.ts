@@ -4,6 +4,7 @@ import { EnCrypterService } from "../../services/encrypter/encrypter.service";
 import { MongoDBConnection } from "../../services/connection/db-systems/mongodb-connection";
 import DataSource, { IDataSource } from "../datasource/model/datasource.model";
 import ExcelSheetModel from "./model/excel-sheet.model";
+import { AggregationTypes } from "../global/model/aggregation-types";
 
 const databaseUrl = require('../../../config/database.config');
 
@@ -93,9 +94,9 @@ export class ExcelSheetController {
         const propertiesAndTypesArray = Object.entries(propertiesAndTypes).map(([name, type]) => ({ name, type })), columnsEntry = [];
         //Mapeado de las columnas
         propertiesAndTypesArray.forEach((column) => {
-            let newCol = {
+            let newCol: any = {
                 column_name: column.name,
-                column_type: column.type as string,
+                column_type: String(column.type),
                 display_name: {
                     default: column.name,
                     localized: []
@@ -105,15 +106,21 @@ export class ExcelSheetController {
                     localized: []
                 },
                 minimumFractionDigits: 0,
-                aggregation_type: [
-
-                ],
                 column_granted_roles: [],
                 row_granted_roles: [],
                 visible: true,
                 tableCount: 0,
                 valueListSource: {},
             }
+
+            if (newCol.column_type === 'numeric') {
+                newCol.aggregation_type = AggregationTypes.getValuesForNumbers();
+            } else if (newCol.column_type === 'text') {
+                newCol.aggregation_type = AggregationTypes.getValuesForText();
+            } else {
+                newCol.aggregation_type = AggregationTypes.getValuesForOthers();
+            }
+
             columnsEntry.push(newCol);
         });
         //Construcción del objeto table
