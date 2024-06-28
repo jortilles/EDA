@@ -176,11 +176,14 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
             if (!this.controller.params.modeSQL) {
               res.dashboard.config.filters.forEach(filter => {
-
-                if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
-                  disable = false;
+                if(filter.column){
+                  if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
+                    disable = false;
+                  }
+                }else{
+                  console.log('NO SE HA IMPLEMENTADO TODAVÍA INFORMES VINCULADOS CON EL MODO ARBOL.');
+                  console.log(res.dashboard.config.title);
                 }
-
                 this.targetColumn = column.col;
                 this.targetTable = column.table;
 

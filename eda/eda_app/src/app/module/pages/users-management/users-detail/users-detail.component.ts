@@ -76,7 +76,7 @@ export class UsersFitxaComponent extends EdaDialogAbstract {
 
                 this.form.get('role').setValue(rolesNames);
 
-                this.iam = user.email === JSON.parse(sessionStorage.getItem('user')).email;
+                this.iam = user.email === JSON.parse(localStorage.getItem('user')).email;
             }, err => this.alertService.addError(err)
         );
     }

@@ -137,7 +137,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.initializeResponsiveSizes();
         this.initializeGridsterOptions();
         this.initializeForm();
-        let tags = JSON.parse(sessionStorage.getItem('tags'));
+        let tags = JSON.parse(localStorage.getItem('tags'));
         
         if (tags) {
             this.tags = _.uniqBy(tags, 'value');
@@ -553,7 +553,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Dashboard Panels
     private initializePanels(): void {
 
-        const user = sessionStorage.getItem('user');
+        const user = localStorage.getItem('user');
         const userID = JSON.parse(user)._id;
 
         this.inject = {
@@ -607,7 +607,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Dashboard control
     public async setEditMode() {
-        const user = sessionStorage.getItem('user');
+        const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
         const userID = JSON.parse(user)._id;
         this.display_v.edit_mode = (userName !== 'edaanonim') && !(this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0)
@@ -1644,7 +1644,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.selectedTags.push(this.applyNewTag)
             this.addTag = !this.addTag;
             this.tags.push(tag)
-            sessionStorage.setItem('tags', JSON.stringify(this.tags));
+            localStorage.setItem('tags', JSON.stringify(this.tags));
         }
 
     }

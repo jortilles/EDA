@@ -236,7 +236,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     getEditMode() {
-        const user = sessionStorage.getItem('user');
+        const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
         return (userName !== 'edaanonim' && !this.inject.isObserver);
     }
