@@ -578,7 +578,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
     openNewViewDialog() {
         this.viewController = new EdaDialogController({
-            params: { user: sessionStorage.getItem('user'), model_id: this.dataModelService.model_id },
+            params: { user: localStorage.getItem('user'), model_id: this.dataModelService.model_id },
             close: (event, response) => {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
                     this.dataModelService.addView(response);

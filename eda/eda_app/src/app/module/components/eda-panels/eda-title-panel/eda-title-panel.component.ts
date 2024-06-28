@@ -49,7 +49,7 @@ export class EdaTitlePanelComponent implements OnInit {
     }
 
     public setEditMode(): void {
-        const user = sessionStorage.getItem('user');
+        const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
         this.display.editMode = (userName !== 'edaanonim' && !this.inject.isObserver);
     }

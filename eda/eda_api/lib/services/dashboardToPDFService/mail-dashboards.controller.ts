@@ -36,9 +36,9 @@ export class MailDashboardsController {
 
           await page.goto(`${serverConfig.server_baseURL}`)
           await page.evaluate((res) => {
-            sessionStorage.setItem('token', res.token);
-            sessionStorage.setItem('user', JSON.stringify(res.user));
-            sessionStorage.setItem('id', res.user._id)
+            localStorage.setItem('token', res.token);
+            localStorage.setItem('user', JSON.stringify(res.user));
+            localStorage.setItem('id', res.user._id)
           }, res);
 
 

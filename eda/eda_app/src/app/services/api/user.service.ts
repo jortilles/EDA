@@ -82,9 +82,9 @@ export class UserService extends ApiService {
 
     /** Save User and Token in localstorage */
     savingStorage(id: string, token: string, user: User) {
-        sessionStorage.setItem('id', id);
-        sessionStorage.setItem('token', token);
-        sessionStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('id', id);
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
 
         this.user = user;
         this.token = token;
@@ -104,9 +104,9 @@ export class UserService extends ApiService {
     /** Login user into app */
     login(user: User, remember: boolean): Observable<any> {
         if (remember) {
-            sessionStorage.setItem('email', user.email);
+            localStorage.setItem('email', user.email);
         } else {
-            sessionStorage.removeItem('email');
+            localStorage.removeItem('email');
         }
 
         return this.post(`${this.route}/login`, user, true)
@@ -133,7 +133,7 @@ export class UserService extends ApiService {
         return this.get( `${this.route}/refresh-token` )
             .pipe(map((res: any) => {
                     this.token = res.token;
-                    sessionStorage.setItem('token', this.token);
+                    localStorage.setItem('token', this.token);
 
                     return true;
                 })
@@ -152,9 +152,9 @@ export class UserService extends ApiService {
 
     /** Load items localstorage */
     loadStorage() {
-        if (sessionStorage.getItem('token')) {
-            this.token = sessionStorage.getItem('token');
-            this.user = JSON.parse(sessionStorage.getItem('user'));
+        if (localStorage.getItem('token')) {
+            this.token = localStorage.getItem('token');
+            this.user = JSON.parse(localStorage.getItem('user'));
 
             this.getIsAdminUser(this.user._id).subscribe(
                 (value: any) => this.isAdmin = value.isAdmin,
@@ -175,7 +175,7 @@ export class UserService extends ApiService {
 
     /** Verify if user is logged */
     isLogged() {
-        return this.token.length > 5 || !!sessionStorage.getItem('token');
+        return this.token.length > 5 || !!localStorage.getItem('token');
     }
 
     /** Logout user and clean localstorage */
@@ -183,8 +183,8 @@ export class UserService extends ApiService {
         this.user = null;
         this.token = '';
 
-        sessionStorage.removeItem('user');
-        sessionStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
 
         this.router.navigate(['/login']);
     }
@@ -207,11 +207,11 @@ export class UserService extends ApiService {
     }
 
     getUserObject(){
-        return JSON.parse(sessionStorage.getItem('user'));
+        return JSON.parse(localStorage.getItem('user'));
     }
 
     getToken(){
-        return sessionStorage.getItem('token');
+        return localStorage.getItem('token');
     }
 }
 
