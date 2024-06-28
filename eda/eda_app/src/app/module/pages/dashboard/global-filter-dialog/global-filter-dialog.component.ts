@@ -125,6 +125,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
         if (this.globalFilter.isnew) {
             for (const panel of this.allPanels) {
+
+                // Desactivando el panel en caso de que sea de modo SQL.
+                if(panel.content.query.query.queryMode === 'SQL') {
+                    panel.active = false;
+                }
+
                 this.globalFilter.pathList[panel.id] = {
                     selectedTableNodes: {},
                     path: []
@@ -173,9 +179,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public onAddPanelForFilter(panel: any) {
         if (panel.avaliable) {
-            panel.active = !panel.active;
+            if(panel.content.query.query.queryMode != 'SQL') { // los paneles SQL no se pueden activar
+                panel.active = !panel.active;
+            }
             this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
-            
+
             if (panel.active) {
                 this.initTablesForFilter();
                 this.findPanelPathTables();
@@ -283,7 +291,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public findPanelPathTables() {
         for (const panel of this.filteredPanels) {
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
-            
+
             if (this.globalFilter.pathList[panel.id] && this.isEmpty(this.globalFilter.pathList[panel.id].selectedTableNodes)) {
                 const panelQuery = panel.content.query.query;
                 const rootTable = panelQuery.rootTable;
@@ -325,8 +333,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             pathList[panel.id].table_id = table_id;
             pathList[panel.id].path = node.joins || [];
 
-            this.globalFilter.autorelation = node.autorelation; 
-            
+            this.globalFilter.autorelation = node.autorelation;
+
             if (!this.globalFilter.panelList.includes(panel.id)) {
                 this.globalFilter.panelList.push(panel.id);
             }
@@ -409,7 +417,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
             for (const panel of this.allPanels) {
                 panel.content.globalFilterPaths = [];
-    
+
                 this.globalFilter.pathList[panel.id] = {
                     selectedTableNodes: {},
                     path: []
@@ -443,12 +451,12 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             if ((node.joins||[]).length > 0) {
                 for (const join of node.joins) {
                     const table = this.findTable(join[0]?.split('.')[0]);
-    
+
                     if (table) {
                         str += `<strong>${table.display_name.default}</strong>&nbsp <i class="pi pi-angle-right"></i>`
                     }
                 }
-    
+
                 str += `<strong>${node.label}</strong>`;
             } else {
                 str = `<strong>${node.label}</strong>`;
