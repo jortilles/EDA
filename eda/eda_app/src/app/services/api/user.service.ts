@@ -152,7 +152,7 @@ export class UserService extends ApiService {
 
     /** Load items localstorage */
     loadStorage() {
-        if (localStorage.getItem('token')) {
+        if (localStorage.getItem('token') && localStorage.getItem('user') ) {
             this.token = localStorage.getItem('token');
             this.user = JSON.parse(localStorage.getItem('user'));
 

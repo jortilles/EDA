@@ -36,7 +36,9 @@ export const TemaUrl = 'assets/css/colors/sass/default-dark.css';
 export const DEFAULT_BACKGROUND_COLOR: string = '#f1f0f0';
 export const DEFAULT_PANEL_COLOR: string = '#ffffff';
 export const DEFAULT_FONT_COLOR: string = '#455a64'
-export const DEFAULT_FONT_FAMILY: string = 'Questrial';
+export const DEFAULT_FONT_FAMILY: string = 'Montserrat';  /* THIS MUST BE SET ALSO IN  \eda_app\src\assets\sass\css\custom.css */
 export const DEFAULT_FONT_SIZE: number = 0;
 export const DEFAULT_TITLE_ALIGN : string = 'center';
 export const DEFAULT_PANEL_TITLE_ALIGN : string = 'left';
+
+
