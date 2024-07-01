@@ -4172,7 +4172,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>ELIMINAR INFORME</target>
   </trans-unit> 
 
-  <trans-unit id="opcionURL">
+  <trans-unit id="opcionUrls">
     <source>CONFIGURAR ACCIÓN PERSONALIZADA  </source>
     <target>CONFIGURAR ACCIÓ PERSONALITZADA  </target>
   </trans-unit> 

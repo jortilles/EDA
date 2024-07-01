@@ -999,6 +999,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public editStyles() {
         this.display_v.rightSidebar = false;
         const params = this.styles;
+
+        console.log('edit Styles: ', params);
+                                        
         this.editStylesController = new EdaDialogController({
             params,
             close: (event, response) => {
@@ -1550,6 +1553,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public openMailConfig() {
         const params = { dashboard: this.id, config: this.sendViaMailConfig };
+
+        console.log('params de enviar email:',params);
+
         this.display_v.rightSidebar = false;
         this.emailController = new EdaDialogController({
             params,
@@ -1564,8 +1570,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
-    public openURLConfig() {
-        console.log('holassss')
+    public openUrlsConfig() {
+        console.log('configuración de urls')
     }
 
 
