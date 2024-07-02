@@ -43,6 +43,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public emailController: EdaDialogController;
     public saveasController: EdaDialogController;
     public editStylesController: EdaDialogController;
+    public urlsController: EdaDialogController;
     public applyToAllfilter: { present: boolean, refferenceTable: string, id: string };
     public grups: IGroup[] = [];
     public toLitle: boolean = false;
@@ -884,13 +885,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public saveAs() {
+        console.log('saveAs')
         this.display_v.rightSidebar = false;
         const params = {
             dataSource: this.dataSource
         };
+        console.log('saveAs: ', params)
         this.saveasController = new EdaDialogController({
             params,
             close: (event, response) => {
+                console.log('event de saveAs: ', event)
+                console.log('response de saveAs: ', response)
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
                     const ds = { _id: this.dataSource._id };
                     const body = {
@@ -1553,14 +1558,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public openMailConfig() {
         const params = { dashboard: this.id, config: this.sendViaMailConfig };
-
         console.log('params de enviar email:',params);
 
         this.display_v.rightSidebar = false;
         this.emailController = new EdaDialogController({
             params,
             close: (event, response) => {
+                console.log('event: ', event)
+                console.log('response: ', response)
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    console.log('entro al if')
                     this.sendViaMailConfig = response;
                     this.saveDashboard();
                 }
@@ -1572,6 +1579,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public openUrlsConfig() {
         console.log('configuración de urls')
+        const params = {data:'data'}; // any
+        console.log('params de urls desde el dashboard:',params);
+
+
+        this.display_v.rightSidebar = false; // cierra el sidebar
+        this.urlsController = new EdaDialogController({
+            params,
+            close: (event, response) => {
+                console.log('event respuesta: ', event)
+                console.log('response respuesta: ', response)
+                if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
+                    console.log('Confirmando el response: ', response);
+                }
+                this.urlsController = undefined;
+            }
+        })
     }
 
 

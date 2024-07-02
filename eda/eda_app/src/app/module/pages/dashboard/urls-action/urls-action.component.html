@@ -1,1 +1,80 @@
-<p>urls-action works!</p>
+<eda-dialog [inject]="dialog">
+
+    <div body>
+        <div class="card">
+            <p-scrollPanel [style]="{width: '100%', height: '200px'}">
+                    <p-table [value]="urls" dataKey="id" editMode="row">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width:20%">URL</th>
+                                <th style="width:20%">Name</th>
+                                <th style="width:20%">Edición</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-product let-editing="editing" let-ri="rowIndex">
+                            <tr [pEditableRow]="product">
+                                <td style="max-width: 100px;">
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="product.url" required>
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            <a [href]="product.url" target="_blank">{{product.url}}</a>
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td>
+                                    <p-cellEditor>
+                                        <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="product.name" required>
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{product.name}}
+                                        </ng-template>
+                                    </p-cellEditor>
+                                </td>
+                                <td>
+                                    <div class="flex align-items-center justify-content-center gap-2">
+                                        <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(product)" class="p-button-rounded p-button-text"></button>
+                                        <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(product)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                                        <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-refresh" (click)="onRowEditCancel(product, ri)" class="p-button-rounded p-button-text p-button-warning"></button>
+                                        <button *ngIf="editing" pButton pRipple type="button" icon="pi pi-trash" (click)="onRowEditDelete(ri)" class="p-button-rounded p-button-text p-button-danger"></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+            </p-scrollPanel>
+        </div>
+
+        <div style="margin-top: 15px; padding-bottom: 3px;" class="card">
+            <h5 style="padding: 12px;">Configuración de url y nombre de acción personalizada: </h5>
+            <div class="grid">
+                <div class="col-3 flex align-items-center justify-content-center">
+                    <div class="p-fluid w-80">
+                        <div class="field d-flex flex-row align-items-center gap-5">
+                            <label for="URL">URL: </label>
+                            <input pInputText id="url" type="text" required/>
+                        </div>
+                        <div class="field d-flex flex-row align-items-center gap-2">
+                            <label for="Nombre">Nombre: </label>
+                            <input pInputText id="nombre" type="text" required/>
+                        </div>
+                        <p-button label="Agregar url" styleClass="p-button-success"></p-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div footer>
+        <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
+            <button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Confirmar"
+                icon="fa fa-check" id="eda_add_dashboard_confirmar" (click)="urlsConfirmed()"></button>
+            <button type="button" pButton icon="fa fa-times" (click)="closeDialog()"
+                class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn" label="Cancelar"></button>
+        </div>
+    </div>
+
+</eda-dialog>
