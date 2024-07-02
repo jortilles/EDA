@@ -29,7 +29,7 @@
                                             <input pInputText type="text" [(ngModel)]="product.name" required>
                                         </ng-template>
                                         <ng-template pTemplate="output">
-                                            {{product.name}}
+                                            <div>{{product.name}}</div>
                                         </ng-template>
                                     </p-cellEditor>
                                 </td>
@@ -54,13 +54,13 @@
                     <div class="p-fluid w-80">
                         <div class="field d-flex flex-row align-items-center gap-5">
                             <label for="URL">URL: </label>
-                            <input pInputText id="url" type="text" required/>
+                            <input pInputText id="url" type="text" [(ngModel)]="urlAdd" required/>
                         </div>
                         <div class="field d-flex flex-row align-items-center gap-2">
                             <label for="Nombre">Nombre: </label>
-                            <input pInputText id="nombre" type="text" required/>
+                            <input pInputText id="nombre" type="text" [(ngModel)]="nameAdd" required/>
                         </div>
-                        <p-button label="Agregar url" styleClass="p-button-success"></p-button>
+                        <p-button label="Agregar url" styleClass="p-button-success" (click)="addUrlDashboard(urlAdd,nameAdd)"></p-button>
                     </div>
                 </div>
             </div>

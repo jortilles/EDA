@@ -16,6 +16,9 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
   public urls: any[];
   public clonedUrls: { [s: string]: any; } = {};
 
+  public urlAdd: string;
+  public nameAdd: string;
+
   constructor(
     private alertService: AlertService,
     private formBuilder: UntypedFormBuilder
@@ -33,13 +36,13 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
 
   ngOnInit(): void {
     this.urls = [
-      { id: 1, url: 'https://www.web1.com', name: 'Web1' },
-      { id: 2, url: 'https://www.web2.com', name: 'Web2' },
-      { id: 3, url: 'https://www.web3.com', name: 'Web3' },
-      { id: 4, url: 'https://www.web4.com', name: 'Web4' },
-      { id: 5, url: 'https://www.web5.com', name: 'Web5' },
-      { id: 6, url: 'https://www.web6.com', name: 'Web6' },
-      { id: 7, url: 'https://www.web7.com', name: 'Web7' },
+      { id: 0, url: 'https://www.web1.com', name: 'Web1' },
+      { id: 1, url: 'https://www.web2.com', name: 'Web2' },
+      { id: 2, url: 'https://www.web3.com', name: 'Web3' },
+      { id: 3, url: 'https://www.web4.com', name: 'Web4' },
+      { id: 4, url: 'https://www.web5.com', name: 'Web5' },
+      { id: 5, url: 'https://www.web6.com', name: 'Web6' },
+      { id: 6, url: 'https://www.web7.com', name: 'Web7' },
     ]
   }
 
@@ -95,6 +98,16 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
   onRowEditDelete(index: any) {
     delete this.urls[index];
     console.log('Arreglo urls -->', this.urls)
+  }
+
+  addUrlDashboard(url, name) {
+    console.log('Agregando url nueva al dashboard');
+
+    this.urls.push({
+      id: this.urls.length,
+      url: url,
+      name: name,
+    })
   }
 
 }
