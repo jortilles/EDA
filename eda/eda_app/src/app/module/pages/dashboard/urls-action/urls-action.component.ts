@@ -100,14 +100,30 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
     console.log('Arreglo urls -->', this.urls)
   }
 
-  addUrlDashboard(url, name) {
-    console.log('Agregando url nueva al dashboard');
+  addUrlDashboard(url: string, name: string) {
 
-    this.urls.push({
-      id: this.urls.length,
-      url: url,
-      name: name,
-    })
+    // Quizas se deba verificar si es una URL de manera estandarizada - consultar con Juanjo
+
+    if(url === undefined || name===undefined){
+      this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`); // Agregar el texto correcto
+    }
+    else {
+      if(url.length>0 && name.length>0){
+        this.urls.push({
+          id: this.urls.length,
+          url: url,
+          name: name,
+        });
+  
+        this.alertService.addSuccess($localize`:@@dahsboardSaved:Inforsadsardado correctamente`); // Agregar el texto correcto
+      }
+  
+      else {
+        this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`); // Agregar el texto correcto
+      }
+    }
+
+
   }
 
 }
