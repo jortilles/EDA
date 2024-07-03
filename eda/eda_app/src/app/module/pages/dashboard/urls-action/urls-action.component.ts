@@ -26,7 +26,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
     this.dialog = new EdaDialog({
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@opcionUrls:CONFIGURAR ACCIÓN PERSONALIZADA`,
+      title: $localize`:@@opcionUrls:ACCIÓN PERSONALIZADA`,
     });
     this.dialog.style= { width: '70%', height:'55%' };
   }
@@ -102,11 +102,11 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
     console.log('Arreglo urls -->', this.urls)
   }
 
-  addUrlDashboard(url: string, name: string) {
+  addUrlDashboard(url: string, name: string, description: string) {
 
     // Quizas se deba verificar si es una URL de manera estandarizada - consultar con Juanjo
 
-    if(url === undefined || name===undefined){
+    if(url === undefined || name===undefined || description===undefined){
       this.alertService.addError($localize`:@@addUrlDashboardUndefined:VALORES NO DEFINIDOS O FALTA COMPLETAR CAMPOS.`); // Agregar el texto correcto
     }
     else {
@@ -116,22 +116,24 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
         if(this.urls[i].id>mayor) mayor = this.urls[i].id
       }
 
-      if(url.length>0 && name.length>0){
+      if(url.length>0 && name.length>0 && description.length>0){
         this.urls.push({
           id: mayor + 1,
           url: url,
           name: name,
+          description: description,
         });
         console.log('Arreglo urls -->', this.urls)
         this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL AGREGADO CORRECTAMENTE`); // Agregar el texto correcto
+        this.urlAdd=''
+        this.nameAdd=''
+        this.descriptionAdd=''
       }
   
       else {
         this.alertService.addError($localize`:@@urlAddedIncomplete:FORMULARIO DE AGREGADO URL INCOMPLETO`); // Agregar el texto correcto
       }
     }
-
-
   }
 
 }

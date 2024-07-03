@@ -4173,8 +4173,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit> 
 
   <trans-unit id="opcionUrls">
-    <source>CONFIGURAR ACCIÓN PERSONALIZADA  </source>
-    <target>CONFIGURAR ACCIÓ PERSONALITZADA  </target>
+    <source>ACCIÓN PERSONALIZADA</source>
+    <target>ACCIÓ PERSONALITZADA</target>
   </trans-unit> 
 
   <trans-unit id="urlEditSave">

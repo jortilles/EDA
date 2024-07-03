@@ -6,7 +6,7 @@
                     <p-table [value]="urls" dataKey="id" editMode="row">
                         <ng-template pTemplate="header">
                             <tr>
-                                <th style="width:20%">Name</th>
+                                <th style="width:20%">Acción</th>
                                 <th style="width:20%">Descripción</th>
                                 <th style="width:20%">Edición</th>
                             </tr>
@@ -49,20 +49,24 @@
             </p-scrollPanel>
         </div>
 
-        <div style="margin-top: 15px; padding-bottom: 3px;" class="card">
+        <div class="card mt-15 pb-3">
             <h5 style="padding: 12px;">Configuración de url y nombre de acción personalizada: </h5>
-            <div class="grid">
-                <div class="col-3 flex align-items-center justify-content-center">
-                    <div class="p-fluid w-80">
-                        <div class="field d-flex flex-row align-items-center gap-5">
+            <div class="grid pl-5">
+                <div class="flex align-items-center justify-content-center">
+                    <div class="p-fluid">
+                        <div class="field d-flex flex-row align-items-center gap-2">
                             <label for="URL">URL: </label>
-                            <input pInputText id="url" type="text" [(ngModel)]="urlAdd" required/>
+                            <input class="w-60" pInputText id="url" type="text" [(ngModel)]="urlAdd"/>
                         </div>
                         <div class="field d-flex flex-row align-items-center gap-2">
                             <label for="Nombre">Nombre: </label>
-                            <input pInputText id="nombre" type="text" [(ngModel)]="nameAdd" required/>
+                            <input class="w-60" pInputText id="nombre" type="text" [(ngModel)]="nameAdd"/>
                         </div>
-                        <p-button label="Agregar url" styleClass="p-button-success" (click)="addUrlDashboard(urlAdd,nameAdd)"></p-button>
+                        <div class="field d-flex flex-row align-items-center gap-2">
+                            <label for="Nombre">Descripción: </label>
+                            <input class="w-60" pInputText id="description" type="text" [(ngModel)]="descriptionAdd"/>
+                        </div>
+                        <p-button label="Agregar url" styleClass="p-button-success" (click)="addUrlDashboard(urlAdd, nameAdd, descriptionAdd)"></p-button>
                     </div>
                 </div>
             </div>

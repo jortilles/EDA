@@ -4087,8 +4087,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="opcionUrls">
-    <source>CONFIGURAR ACCIÓN PERSONALIZADA  </source>
-    <target>USTAW DZIAŁANIE NIESTANDARDOWE  </target>
+    <source>ACCIÓN PERSONALIZADA</source>
+    <target>DZIAŁANIE NIESTANDARDOWE</target>
   </trans-unit>
 
   <trans-unit id="urlEditSave">
