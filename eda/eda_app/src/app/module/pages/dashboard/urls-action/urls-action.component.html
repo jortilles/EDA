@@ -6,8 +6,8 @@
                     <p-table [value]="urls" dataKey="id" editMode="row">
                         <ng-template pTemplate="header">
                             <tr>
-                                <th style="width:20%">URL</th>
                                 <th style="width:20%">Name</th>
+                                <th style="width:20%">Descripción</th>
                                 <th style="width:20%">Edición</th>
                             </tr>
                         </ng-template>
@@ -16,20 +16,22 @@
                                 <td style="max-width: 100px;">
                                     <p-cellEditor>
                                         <ng-template pTemplate="input">
+                                            <input pInputText type="text" [(ngModel)]="product.name" required>
+                                            <p class="d-inline ml-1 mr-1">URL: </p>
                                             <input pInputText type="text" [(ngModel)]="product.url" required>
                                         </ng-template>
                                         <ng-template pTemplate="output">
-                                            <a [href]="product.url" target="_blank">{{product.url}}</a>
+                                            <button pButton type="button" [label]="product.name" class="p-button-outlined w-100"></button>
                                         </ng-template>
                                     </p-cellEditor>
                                 </td>
                                 <td>
                                     <p-cellEditor>
                                         <ng-template pTemplate="input">
-                                            <input pInputText type="text" [(ngModel)]="product.name" required>
+                                            <input pInputText type="text" [(ngModel)]="product.description" required>
                                         </ng-template>
                                         <ng-template pTemplate="output">
-                                            <div>{{product.name}}</div>
+                                            <div>{{product.description}}</div>
                                         </ng-template>
                                     </p-cellEditor>
                                 </td>

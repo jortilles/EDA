@@ -14,8 +14,9 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
   public urls: any[];
   public clonedUrls: { [s: string]: any; } = {};
 
-  public urlAdd: string;
   public nameAdd: string;
+  public urlAdd: string;
+  public descriptionAdd: string;
 
   constructor(
     private alertService: AlertService,
@@ -32,9 +33,9 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
 
   ngOnInit(): void {
     this.urls = [
-      { id: 0, url: 'https://www.web1.com', name: 'Web1' },
-      { id: 1, url: 'https://www.web2.com', name: 'Web2' },
-      { id: 2, url: 'https://www.web3.com', name: 'Web3' },
+      { id: 0, url: 'https://www.web1.com', name: 'Web1', description: 'Web Number 1'},
+      { id: 1, url: 'https://www.web2.com', name: 'Web2', description: 'Web Number 2' },
+      { id: 2, url: 'https://www.web3.com', name: 'Web3', description: 'Web Number 3' },
     ]
   }
 
@@ -63,21 +64,20 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
 
   onRowEditInit(url:any) {
     this.clonedUrls[url.id] = {...url};
-    console.log(this.clonedUrls)
+    console.log('this.clonedUrls -->',this.clonedUrls)
     console.log('Arreglo urls -->', this.urls)
   }
 
   onRowEditSave(url: any){
-    if(url.name.length>0 && url.url.length>0) {
+    if(url.name.length>0 && url.url.length>0 && url.description.length>0) {
         delete this.clonedUrls[url.id];
         this.alertService.addSuccess($localize`:@@urlEditSave:URL EDITADO CORRECTAMENTE`);
     }
     else {
       this.alertService.addError($localize`:@@urlEditSaveError:FORMULARIO INCORRECTO, COMPLETAR LOS CAMPOS`);
     }
-
+    console.log('this.clonedUrls -->',this.clonedUrls)
     console.log('Arreglo urls -->', this.urls)
-
   }
 
   onRowEditCancel(url: any, index: number){
@@ -85,11 +85,20 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
     delete this.clonedUrls[url.id];
 
     console.log('index: ', index)
+    console.log('this.clonedUrls -->',this.clonedUrls)
     console.log('Arreglo urls -->', this.urls)
   }
 
   onRowEditDelete(index: any) {
-    this.urls = this.urls.filter( e => this.urls[index]!==e);
+    console.log('index: ',index)
+    
+    // comparar los ids del arreglo urls y del objeto de objetos clonedUrls
+    for (let clave in this.clonedUrls){
+      if(this.clonedUrls[clave].id === this.urls[index].id) delete this.clonedUrls[clave];
+    }
+
+    this.urls = this.urls.filter( element => this.urls[index]!==element);
+    console.log('this.clonedUrls -->',this.clonedUrls) // 
     console.log('Arreglo urls -->', this.urls)
   }
 
