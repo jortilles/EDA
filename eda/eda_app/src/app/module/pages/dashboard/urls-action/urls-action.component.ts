@@ -13,6 +13,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
 
   public urls: any[];
   public clonedUrls: { [s: string]: any; } = {};
+  public ejemplo:string = 'hola'
 
   public nameAdd: string;
   public urlAdd: string;
@@ -33,7 +34,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
 
   ngOnInit(): void {
     this.urls = [
-      { id: 0, url: 'https://www.web1.com', name: 'Web1', description: 'Web Number 1'},
+      { id: 0, url: 'https://httpbin.io/ip', name: 'Google', description: 'Prueba google'},
       { id: 1, url: 'https://www.web2.com', name: 'Web2', description: 'Web Number 2' },
       { id: 2, url: 'https://www.web3.com', name: 'Web3', description: 'Web Number 3' },
     ]
@@ -134,6 +135,16 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
         this.alertService.addError($localize`:@@urlAddedIncomplete:FORMULARIO DE AGREGADO URL INCOMPLETO`); // Agregar el texto correcto
       }
     }
+  }
+
+  customAction(url:any){
+    // console.log('acción personalizada', url);
+    fetch(`${url.url}`)
+      .then(response => {
+        const result = response.json();
+        return result
+      })
+      .then(data => console.log(data))
   }
 
 }

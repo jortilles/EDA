@@ -21,7 +21,7 @@
                                             <input pInputText type="text" [(ngModel)]="product.url" required>
                                         </ng-template>
                                         <ng-template pTemplate="output">
-                                            <button pButton type="button" [label]="product.name" class="p-button-outlined w-100"></button>
+                                            <button pButton type="button" [label]="product.name" class="p-button-outlined w-100" (click)="customAction(product)" ></button>
                                         </ng-template>
                                     </p-cellEditor>
                                 </td>
@@ -71,12 +71,11 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <div footer>
         <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-            <button type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Confirmar"
+            <button [disabled]="(clonedUrls | json)!==({}|json)" type="submit" pButton icon="fa fa-save" i18n-label="@@guardarBtn" label="Confirmar"
                 icon="fa fa-check" id="eda_add_dashboard_confirmar" (click)="urlsConfirmed()"></button>
             <button type="button" pButton icon="fa fa-times" (click)="closeDialog()"
                 class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn" label="Cancelar"></button>
