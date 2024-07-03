@@ -4090,7 +4090,32 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>CONFIGURAR ACCIÓN PERSONALIZADA  </source>
     <target>USTAW DZIAŁANIE NIESTANDARDOWE  </target>
   </trans-unit>
-  
+
+  <trans-unit id="urlEditSave">
+    <source>URL EDITADO CORRECTAMENTE</source>
+    <target>URL ZMIENIONO PRAWIDŁOWO</target>
+  </trans-unit>
+
+  <trans-unit id="urlEditSaveError">
+    <source>FORMULARIO INCORRECTO, COMPLETAR LOS CAMPOS</source>
+    <target>NIEPRAWIDŁOWY FORMULARZ, WYPEŁNIJ POLA</target>
+  </trans-unit>
+
+  <trans-unit id="addUrlDashboardUndefined">
+    <source>VALORES NO DEFINIDOS O FALTA COMPLETAR CAMPOS</source>
+    <target>WARTOŚCI NIE ZDEFINIOWANE LUB NIE WYPEŁNIONE POLA</target>
+  </trans-unit>
+
+  <trans-unit id="urlAddedSuccessfully">
+    <source>URL AGREGADO CORRECTAMENTE</source>
+    <target>ADRES URL ZOSTAŁ DODANY POMYŚLNIE</target>
+  </trans-unit>
+
+  <trans-unit id="urlAddedIncomplete">
+    <source>FORMULARIO DE AGREGADO URL INCOMPLETO</source>
+    <target>NIEKOMPLETNY FORMULARZ DODAWANIA ADRESU URL</target>
+  </trans-unit>
+
 </body>
 </file>
 </xliff>

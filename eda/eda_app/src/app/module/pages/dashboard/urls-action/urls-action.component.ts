@@ -1,7 +1,6 @@
 import { Component, AfterViewInit, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { AlertService } from '@eda/services/service.index';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
+import { AlertService } from '@eda/services/service.index';
 
 @Component({
   selector: 'urls-action',
@@ -11,7 +10,6 @@ import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/c
 export class UrlsActionComponent extends EdaDialogAbstract  implements AfterViewInit, OnInit {
 
   public dialog: EdaDialog;
-  public form: UntypedFormGroup;
 
   public urls: any[];
   public clonedUrls: { [s: string]: any; } = {};
@@ -21,8 +19,6 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
 
   constructor(
     private alertService: AlertService,
-    private formBuilder: UntypedFormBuilder
-
   ) { 
     super();
 
@@ -39,10 +35,6 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
       { id: 0, url: 'https://www.web1.com', name: 'Web1' },
       { id: 1, url: 'https://www.web2.com', name: 'Web2' },
       { id: 2, url: 'https://www.web3.com', name: 'Web3' },
-      { id: 3, url: 'https://www.web4.com', name: 'Web4' },
-      { id: 4, url: 'https://www.web5.com', name: 'Web5' },
-      { id: 5, url: 'https://www.web6.com', name: 'Web6' },
-      { id: 6, url: 'https://www.web7.com', name: 'Web7' },
     ]
   }
 
@@ -66,7 +58,8 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  /////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
   onRowEditInit(url:any) {
     this.clonedUrls[url.id] = {...url};
@@ -77,10 +70,10 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
   onRowEditSave(url: any){
     if(url.name.length>0 && url.url.length>0) {
         delete this.clonedUrls[url.id];
-        this.alertService.addSuccess($localize`:@@dahsboardSaved:Inforsadsardado correctamente`); // Agregar el texto correcto
+        this.alertService.addSuccess($localize`:@@urlEditSave:URL EDITADO CORRECTAMENTE`);
     }
     else {
-      this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`); // Agregar el texto correcto
+      this.alertService.addError($localize`:@@urlEditSaveError:FORMULARIO INCORRECTO, COMPLETAR LOS CAMPOS`);
     }
 
     console.log('Arreglo urls -->', this.urls)
@@ -96,7 +89,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
   }
 
   onRowEditDelete(index: any) {
-    delete this.urls[index];
+    this.urls = this.urls.filter( e => this.urls[index]!==e);
     console.log('Arreglo urls -->', this.urls)
   }
 
@@ -105,21 +98,27 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
     // Quizas se deba verificar si es una URL de manera estandarizada - consultar con Juanjo
 
     if(url === undefined || name===undefined){
-      this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`); // Agregar el texto correcto
+      this.alertService.addError($localize`:@@addUrlDashboardUndefined:VALORES NO DEFINIDOS O FALTA COMPLETAR CAMPOS.`); // Agregar el texto correcto
     }
     else {
+      // Hallando el mayor valor de todos los id del arreglo urls para agregar un nuevo elemento con un id de mayor valor.
+      let mayor = 0;
+      for (var i = 0; i < this.urls.length; i++) {
+        if(this.urls[i].id>mayor) mayor = this.urls[i].id
+      }
+
       if(url.length>0 && name.length>0){
         this.urls.push({
-          id: this.urls.length,
+          id: mayor + 1,
           url: url,
           name: name,
         });
-  
-        this.alertService.addSuccess($localize`:@@dahsboardSaved:Inforsadsardado correctamente`); // Agregar el texto correcto
+        console.log('Arreglo urls -->', this.urls)
+        this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL AGREGADO CORRECTAMENTE`); // Agregar el texto correcto
       }
   
       else {
-        this.alertService.addError($localize`:@@IncorrectForm:Formulario incorrecto. Revise los campos obligatorios.`); // Agregar el texto correcto
+        this.alertService.addError($localize`:@@urlAddedIncomplete:FORMULARIO DE AGREGADO URL INCOMPLETO`); // Agregar el texto correcto
       }
     }
 

@@ -38,7 +38,7 @@
                                         <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(product)" class="p-button-rounded p-button-text"></button>
                                         <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(product)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
                                         <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-refresh" (click)="onRowEditCancel(product, ri)" class="p-button-rounded p-button-text p-button-warning"></button>
-                                        <button *ngIf="editing" pButton pRipple type="button" icon="pi pi-trash" (click)="onRowEditDelete(ri)" class="p-button-rounded p-button-text p-button-danger"></button>
+                                        <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-trash" (click)="onRowEditDelete(ri)" class="p-button-rounded p-button-text p-button-danger"></button>
                                     </div>
                                 </td>
                             </tr>
