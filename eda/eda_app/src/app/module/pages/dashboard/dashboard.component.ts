@@ -1579,16 +1579,24 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public openUrlsConfig() {
         console.log('configuración de urls')
-        const params = {data:'data'}; // any
-        console.log('params de urls desde el dashboard:',params);
+
+        const urls = [
+            { id: 0, url: 'https://httpbin.io/ip', name: 'Google', description: 'Prueba google'},
+            { id: 1, url: 'https://catfact.ninja/fact', name: 'Cats API', description: 'Cats test' },
+            { id: 2, url: 'http://localhost:8666/updatemodel/update?tks=2a0d8aac32a50ee19ce273586b108374', name: 'UpdateModel', description: 'Local test updateModel' },
+          ]
+
+        const params = {data:'data', urls: urls}; // any
+        console.log('openUrlsConfig --> Params:',params);
 
 
         this.display_v.rightSidebar = false; // cierra el sidebar
         this.urlsController = new EdaDialogController({
             params,
             close: (event, response) => {
-                console.log('event respuesta: ', event)
-                console.log('response respuesta: ', response)
+                console.log('event respuesta: ', event);
+                console.log('response respuesta: ', response);
+                console.log('-------------------------');
                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
                     console.log('Confirmando el response: ', response);
                 }

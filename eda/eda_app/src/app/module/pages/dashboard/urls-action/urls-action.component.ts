@@ -33,15 +33,17 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
   }
 
   ngOnInit(): void {
-    this.urls = [
-      { id: 0, url: 'https://httpbin.io/ip', name: 'Google', description: 'Prueba google'},
-      { id: 1, url: 'https://www.web2.com', name: 'Web2', description: 'Web Number 2' },
-      { id: 2, url: 'https://www.web3.com', name: 'Web3', description: 'Web Number 3' },
-    ]
+    // this.urls = [
+    //   { id: 0, url: 'https://httpbin.io/ip', name: 'Google', description: 'Prueba google'},
+    //   { id: 1, url: 'https://www.web2.com', name: 'Web2', description: 'Web Number 2' },
+    //   { id: 2, url: 'https://www.web3.com', name: 'Web3', description: 'Web Number 3' },
+    // ]
+    this.urls = this.controller.params.urls;
   }
 
   ngAfterViewInit() {
     console.log('controlador recibido en el componente: ',this.controller.params);
+    console.log('URLS:  ',this.controller.params.urls);
   }
 
   onShow(): void {  
@@ -52,7 +54,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
   }
 
   public urlsConfirmed(): void {
-    let response = {urls: 'Arreglo de urls'};
+    let response = {urls: this.urls};
     this.onClose(EdaDialogCloseEvent.NEW, response);
   }
 
