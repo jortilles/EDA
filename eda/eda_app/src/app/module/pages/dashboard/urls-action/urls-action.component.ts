@@ -1,6 +1,8 @@
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { AlertService } from '@eda/services/service.index';
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'urls-action',
@@ -13,7 +15,6 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
 
   public urls: any[];
   public clonedUrls: { [s: string]: any; } = {};
-  public ejemplo:string = 'hola'
 
   public nameAdd: string;
   public urlAdd: string;
@@ -21,6 +22,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
 
   constructor(
     private alertService: AlertService,
+    private http: HttpClient
   ) { 
     super();
 
@@ -33,17 +35,12 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
   }
 
   ngOnInit(): void {
-    // this.urls = [
-    //   { id: 0, url: 'https://httpbin.io/ip', name: 'Google', description: 'Prueba google'},
-    //   { id: 1, url: 'https://www.web2.com', name: 'Web2', description: 'Web Number 2' },
-    //   { id: 2, url: 'https://www.web3.com', name: 'Web3', description: 'Web Number 3' },
-    // ]
     this.urls = this.controller.params.urls;
   }
 
   ngAfterViewInit() {
     console.log('controlador recibido en el componente: ',this.controller.params);
-    console.log('URLS:  ',this.controller.params.urls);
+    console.log('Componente urls-action:  ',this.controller.params.urls);
   }
 
   onShow(): void {  
@@ -107,10 +104,10 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
 
   addUrlDashboard(url: string, name: string, description: string) {
 
-    // Quizas se deba verificar si es una URL de manera estandarizada - consultar con Juanjo
+    // Confirmar si se debe verificar la URL de manera estandarizada - consultar con Juanjo
 
     if(url === undefined || name===undefined || description===undefined){
-      this.alertService.addError($localize`:@@addUrlDashboardUndefined:VALORES NO DEFINIDOS O FALTA COMPLETAR CAMPOS.`); // Agregar el texto correcto
+      this.alertService.addError($localize`:@@addUrlDashboardUndefined:VALORES NO DEFINIDOS O FALTA COMPLETAR CAMPOS.`);
     }
     else {
       // Hallando el mayor valor de todos los id del arreglo urls para agregar un nuevo elemento con un id de mayor valor.
@@ -127,26 +124,36 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
           description: description,
         });
         console.log('Arreglo urls -->', this.urls)
-        this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL AGREGADO CORRECTAMENTE`); // Agregar el texto correcto
+        this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL AGREGADO CORRECTAMENTE`);
         this.urlAdd=''
         this.nameAdd=''
         this.descriptionAdd=''
       }
   
       else {
-        this.alertService.addError($localize`:@@urlAddedIncomplete:FORMULARIO DE AGREGADO URL INCOMPLETO`); // Agregar el texto correcto
+        this.alertService.addError($localize`:@@urlAddedIncomplete:FORMULARIO DE AGREGADO URL INCOMPLETO`);
       }
     }
   }
 
   customAction(url:any){
-    // console.log('acción personalizada', url);
-    fetch(`${url.url}`)
-      .then(response => {
-        const result = response.json();
-        return result
-      })
-      .then(data => console.log(data))
+    this.http.get(`${url.url}`,
+      { observe: 'response' }
+    )
+    .subscribe(response => {
+      if(response.status===200) {
+        this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL AGREGADO CORRECTAMENTE`); // Agregar el texto correcto
+      }
+      else {
+        this.alertService.addError($localize`:@@urlAddedIncomplete:FORMULARIO DE AGREGADO URL INCOMPLETO`); // Agregar el texto correcto
+      }
+      console.log(response.status);
+
+    }, error => {
+      this.alertService.addError($localize`:@@urlAddedIncomplete:FORMULARIO DE AGREGADO URL INCOMPLETO`); // Agregar el texto correcto
+      console.log('Hay un error ', error.status)
+    } );
+      
   }
 
 }

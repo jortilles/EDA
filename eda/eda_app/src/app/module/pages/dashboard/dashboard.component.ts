@@ -85,6 +85,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public addTag: boolean = false;
     public sendViaMailConfig: any = { enabled: false };
 
+    public urls: any[] = [];
+
 
     // Display Variables
     public display_v = {
@@ -348,6 +350,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private initializeDashboard(): void {
         const me = this;
 
+        console.log('me.route', me.route);
+
         me.route.paramMap.subscribe(
             params => me.id = params.get('id'),
             err => me.alertService.addError(err)
@@ -360,6 +364,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 res => {
                     /** res - retorna 2 objectes, el dashboard i el datasource per separat  */
                     const config = res.dashboard.config;
+                    console.log('res.dashboard.config::::::::: ', res.dashboard.config)
                     // Estableix els permisos d'edició i propietat...
                     this.setEditMode();
                     // Check dashboard owner
@@ -372,11 +377,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.datasourceName = res.datasource.name;
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
                     me.form.controls['visible'].setValue(config.visible);
+                    console.log('valor 0',me.tags)
                     me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
+                    console.log('valor 1',me.tags)
                     me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
+                    console.log('valor 2',me.tags)
                     me.selectedTags = me.selectedTagsForDashboard(me.tags, config.tag)
                     me.refreshTime = config.refreshTime;
                     me.onlyIcanEdit = config.onlyIcanEdit;
+                    me.urls = config['urls'];
+                    if(me.urls===undefined) {
+                        me.urls=[];
+                    }
                     if (me.refreshTime) {
                         this.stopRefresh = false;
                         this.startCountdown(me.refreshTime);
@@ -1461,7 +1473,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     mailingAlertsEnabled: this.getMailingAlertsEnabled(),
                     sendViaMailConfig: this.sendViaMailConfig,
                     onlyIcanEdit: this.onlyIcanEdit,
-                    styles : this.styles
+                    styles : this.styles,
+                    urls: this.urls
 
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
@@ -1578,27 +1591,25 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public openUrlsConfig() {
-        console.log('configuración de urls')
 
-        const urls = [
-            { id: 0, url: 'https://httpbin.io/ip', name: 'Google', description: 'Prueba google'},
-            { id: 1, url: 'https://catfact.ninja/fact', name: 'Cats API', description: 'Cats test' },
-            { id: 2, url: 'http://localhost:8666/updatemodel/update?tks=2a0d8aac32a50ee19ce273586b108374', name: 'UpdateModel', description: 'Local test updateModel' },
-          ]
+        // const urls = [
+        //     { id: 0, url: 'https://httpbin.io/ip', name: 'Google', description: 'Prueba google'},
+        //     { id: 1, url: 'https://catfact.ninja/fact', name: 'Cats API', description: 'Cats test' },
+        //     { id: 2, url: 'http://localhost:8666/updatemodel/update?tks=2a0d8aac32a50ee19ce273586b108374', name: 'UpdateModel', description: 'Local test updateModel' },
+        //   ]
+
+        const urls = this.urls;
+
+        console.log('Aqui 2: ', this.urls)
 
         const params = {data:'data', urls: urls}; // any
-        console.log('openUrlsConfig --> Params:',params);
-
 
         this.display_v.rightSidebar = false; // cierra el sidebar
         this.urlsController = new EdaDialogController({
             params,
             close: (event, response) => {
-                console.log('event respuesta: ', event);
-                console.log('response respuesta: ', response);
-                console.log('-------------------------');
                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
-                    console.log('Confirmando el response: ', response);
+                    this.urls = response.urls;
                 }
                 this.urlsController = undefined;
             }
