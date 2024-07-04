@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { AlertService } from '@eda/services/service.index';
 import { HttpClient } from '@angular/common/http';
@@ -9,13 +9,11 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './urls-action.component.html',
   styleUrls: [],
 })
-export class UrlsActionComponent extends EdaDialogAbstract  implements AfterViewInit, OnInit {
+export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
 
   public dialog: EdaDialog;
-
   public urls: any[];
   public clonedUrls: { [s: string]: any; } = {};
-
   public nameAdd: string;
   public urlAdd: string;
   public descriptionAdd: string;
@@ -25,7 +23,6 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
     private http: HttpClient
   ) { 
     super();
-
     this.dialog = new EdaDialog({
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
@@ -38,12 +35,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
     this.urls = this.controller.params.urls;
   }
 
-  ngAfterViewInit() {
-    console.log('controlador recibido en el componente: ',this.controller.params);
-    console.log('Componente urls-action:  ',this.controller.params.urls);
-  }
-
-  onShow(): void {  
+  onShow(): void {  // funcion que no se borra por el uso de la clase abstracta 
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -59,13 +51,8 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
   onRowEditInit(url:any) {
-    this.clonedUrls[url.id] = {...url};
-    console.log('this.clonedUrls -->',this.clonedUrls)
-    console.log('Arreglo urls -->', this.urls)
+    this.clonedUrls[url.id] = {...url}; // variable de clonacion temporal
   }
 
   onRowEditSave(url: any){
@@ -76,36 +63,25 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
     else {
       this.alertService.addError($localize`:@@urlEditSaveError:FORMULARIO INCORRECTO, COMPLETAR LOS CAMPOS`);
     }
-    console.log('this.clonedUrls -->',this.clonedUrls)
-    console.log('Arreglo urls -->', this.urls)
   }
 
   onRowEditCancel(url: any, index: number){
     this.urls[index] = this.clonedUrls[url.id];
     delete this.clonedUrls[url.id];
-
-    console.log('index: ', index)
-    console.log('this.clonedUrls -->',this.clonedUrls)
-    console.log('Arreglo urls -->', this.urls)
   }
 
   onRowEditDelete(index: any) {
-    console.log('index: ',index)
-    
     // comparar los ids del arreglo urls y del objeto de objetos clonedUrls
     for (let clave in this.clonedUrls){
       if(this.clonedUrls[clave].id === this.urls[index].id) delete this.clonedUrls[clave];
     }
 
     this.urls = this.urls.filter( element => this.urls[index]!==element);
-    console.log('this.clonedUrls -->',this.clonedUrls) // 
-    console.log('Arreglo urls -->', this.urls)
   }
 
   addUrlDashboard(url: string, name: string, description: string) {
 
     // Confirmar si se debe verificar la URL de manera estandarizada - consultar con Juanjo
-
     if(url === undefined || name===undefined || description===undefined){
       this.alertService.addError($localize`:@@addUrlDashboardUndefined:VALORES NO DEFINIDOS O FALTA COMPLETAR CAMPOS.`);
     }
@@ -123,8 +99,9 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
           name: name,
           description: description,
         });
-        console.log('Arreglo urls -->', this.urls)
         this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL AGREGADO CORRECTAMENTE`);
+
+        // Reiniciando los valores de los campos de agregar URL
         this.urlAdd=''
         this.nameAdd=''
         this.descriptionAdd=''
@@ -142,18 +119,16 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements AfterView
     )
     .subscribe(response => {
       if(response.status===200) {
-        this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL AGREGADO CORRECTAMENTE`); // Agregar el texto correcto
+        this.alertService.addSuccess($localize`:@@urlSuccessfulConnection:CONEXIÓN EXITOSA`);
       }
       else {
-        this.alertService.addError($localize`:@@urlAddedIncomplete:FORMULARIO DE AGREGADO URL INCOMPLETO`); // Agregar el texto correcto
+        this.alertService.addError($localize`:@@urlConnectionError:ERROR EN LA CONEXIÓN`);
       }
-      console.log(response.status);
 
     }, error => {
-      this.alertService.addError($localize`:@@urlAddedIncomplete:FORMULARIO DE AGREGADO URL INCOMPLETO`); // Agregar el texto correcto
-      console.log('Hay un error ', error.status)
+      this.alertService.addError($localize`:@@urlConnectionError:ERROR EN LA CONEXIÓN`);
+      console.log('Error en la consulta: ', error.status)
     } );
-      
   }
 
 }

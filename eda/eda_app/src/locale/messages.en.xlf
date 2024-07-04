@@ -4176,6 +4176,16 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>INCOMPLETE URL ADD FORM</target>
   </trans-unit>
 
+  <trans-unit id="urlSuccessfulConnection">
+    <source>CONEXIÓN EXITOSA</source>
+    <target>SUCCESSFUL CONNECTION</target>
+  </trans-unit>
+
+  <trans-unit id="urlConnectionError">
+    <source>ERROR EN LA CONEXIÓN</source>
+    <target>CONNECTION ERROR</target>
+  </trans-unit>
+
 </body>
 </file>
 </xliff>

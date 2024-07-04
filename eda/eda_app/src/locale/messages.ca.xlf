@@ -4201,6 +4201,16 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>FORMULARIO DE AGREGADO URL INCOMPLETO</source>
     <target>FORMULARI D'AGREGAT URL INCOMPLET</target>
   </trans-unit>
+
+  <trans-unit id="urlSuccessfulConnection">
+    <source>CONEXIÓN EXITOSA</source>
+    <target>CONNEXIÓ EXITOSA</target>
+  </trans-unit>
+
+  <trans-unit id="urlConnectionError">
+    <source>ERROR EN LA CONEXIÓN</source>
+    <target>ERROR A LA CONNEXIÓ</target>
+  </trans-unit>
   
 </body>
 </file>

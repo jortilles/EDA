@@ -349,9 +349,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private initializeDashboard(): void {
         const me = this;
-
-        console.log('me.route', me.route);
-
         me.route.paramMap.subscribe(
             params => me.id = params.get('id'),
             err => me.alertService.addError(err)
@@ -364,7 +361,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 res => {
                     /** res - retorna 2 objectes, el dashboard i el datasource per separat  */
                     const config = res.dashboard.config;
-                    console.log('res.dashboard.config::::::::: ', res.dashboard.config)
                     // Estableix els permisos d'edició i propietat...
                     this.setEditMode();
                     // Check dashboard owner
@@ -377,11 +373,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.datasourceName = res.datasource.name;
                     me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
                     me.form.controls['visible'].setValue(config.visible);
-                    console.log('valor 0',me.tags)
                     me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
-                    console.log('valor 1',me.tags)
                     me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
-                    console.log('valor 2',me.tags)
                     me.selectedTags = me.selectedTagsForDashboard(me.tags, config.tag)
                     me.refreshTime = config.refreshTime;
                     me.onlyIcanEdit = config.onlyIcanEdit;
@@ -897,17 +890,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public saveAs() {
-        console.log('saveAs')
         this.display_v.rightSidebar = false;
         const params = {
             dataSource: this.dataSource
         };
-        console.log('saveAs: ', params)
         this.saveasController = new EdaDialogController({
             params,
             close: (event, response) => {
-                console.log('event de saveAs: ', event)
-                console.log('response de saveAs: ', response)
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
                     const ds = { _id: this.dataSource._id };
                     const body = {
@@ -1016,8 +1005,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public editStyles() {
         this.display_v.rightSidebar = false;
         const params = this.styles;
-
-        console.log('edit Styles: ', params);
                                         
         this.editStylesController = new EdaDialogController({
             params,
@@ -1571,16 +1558,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public openMailConfig() {
         const params = { dashboard: this.id, config: this.sendViaMailConfig };
-        console.log('params de enviar email:',params);
-
         this.display_v.rightSidebar = false;
         this.emailController = new EdaDialogController({
             params,
             close: (event, response) => {
-                console.log('event: ', event)
-                console.log('response: ', response)
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    console.log('entro al if')
                     this.sendViaMailConfig = response;
                     this.saveDashboard();
                 }
@@ -1590,21 +1572,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
+    // Funcion que agregar urls para acción personalizada
     public openUrlsConfig() {
-
-        // const urls = [
-        //     { id: 0, url: 'https://httpbin.io/ip', name: 'Google', description: 'Prueba google'},
-        //     { id: 1, url: 'https://catfact.ninja/fact', name: 'Cats API', description: 'Cats test' },
-        //     { id: 2, url: 'http://localhost:8666/updatemodel/update?tks=2a0d8aac32a50ee19ce273586b108374', name: 'UpdateModel', description: 'Local test updateModel' },
-        //   ]
-
         const urls = this.urls;
+        const params = {urls: urls};
 
-        console.log('Aqui 2: ', this.urls)
-
-        const params = {data:'data', urls: urls}; // any
-
-        this.display_v.rightSidebar = false; // cierra el sidebar
+        this.display_v.rightSidebar = false;
         this.urlsController = new EdaDialogController({
             params,
             close: (event, response) => {
