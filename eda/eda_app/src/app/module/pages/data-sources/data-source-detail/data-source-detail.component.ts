@@ -138,30 +138,17 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     new EdaContextMenuItem({
                         label: 'ELIMINAR', command: () => {
                             
-                            let elem : any =  this.permissionsColumn.getContextMenuRow();
-                            
-                            try {
-                                elem = this.permissionsColumn.getContextMenuRow()._id?.reduce((a, b)=> a + b) ;
-                            } catch (e) {
+                            let elem : any =  this.permissionsColumn.getContextMenuRow();  
+                            let  dynValue = this.modelPanel.metadata.model_granted_roles;
 
+                            if(elem.user != undefined ){
+                                dynValue = dynValue.filter( r =>JSON.stringify(r.users) !== JSON.stringify(elem.user)  && JSON.stringify(r.value) !== JSON.stringify(elem.value)  )
                             }
-                            
-                            const dynValue = this.modelPanel.metadata.model_granted_roles.filter(r => r.value !== undefined)
-                            .filter(r => r.value !== "(x => None)" && r.value !== "(~ => All)")
-                            .filter(r => r.value != elem.value );
-                            
-                            const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined && r.users.length > 0  )
-                            .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
-
-                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined && r.groups.length > 0  )
-                            .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
-   
-                            let tmpPermissions = [];
-                            dynValue.forEach(dyn => tmpPermissions.push(dyn))
-                            groups.forEach(group => tmpPermissions.push(group));
-                            users.forEach(user => tmpPermissions.push(user));
-
-                            this.modelPanel.metadata.model_granted_roles = tmpPermissions;
+                            if(elem.group != undefined ){
+                                dynValue = dynValue.filter( r =>JSON.stringify(r.groups) !== JSON.stringify(elem.group)  && JSON.stringify(r.value) !== JSON.stringify(elem.value)  )
+                            }
+          
+                            this.modelPanel.metadata.model_granted_roles = dynValue;
   
                             this.update();
                             this.permissionsColumn._hideContexMenu();
