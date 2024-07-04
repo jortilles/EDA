@@ -16,7 +16,8 @@ export class CleanModel {
             "column": "",
             "global": "",
             "permission": "",
-            "type": ""
+            "type": "",
+            "value":[]
         }
 
         let modelAc = {
@@ -27,7 +28,8 @@ export class CleanModel {
             "column": "",
             "global": "",
             "permission": "",
-            "type": ""
+            "type": "",
+            "value":[]
         }
 
         let groupModel =  {
@@ -38,7 +40,8 @@ export class CleanModel {
             "column": "",
             "global": "",
             "permission": "",
-            "type": ""
+            "type": "",
+            "value":[]
         }
         
         let model_granted_roles = [] ;
@@ -51,7 +54,17 @@ export class CleanModel {
             
             } else {
                 
-                const match = model_granted_roles.find(r => r.table == roles[i].table && r.column == roles[i].column && r.type == roles[i].type )
+                let match = model_granted_roles.find(r => r.table == roles[i].table && r.column == roles[i].column && r.type == roles[i].type   );
+                if( _.isEmpty(match) == false ){
+                    if(roles[i].value && match.value ){
+                        roles[i].value.forEach((e,i)=> {
+                            if( e != match.value[i]){
+                                match =  false;
+                            }
+                        });
+                    }
+                }
+
                 
                 if (_.isEmpty(match) == false && roles[i].type == "users") {
                     if (!match.users.includes(roles[i].users[0])) {match.users.push(roles[i].users[0]) } ;
@@ -74,7 +87,6 @@ export class CleanModel {
                         if (_.isEmpty(model.table) == false) {model_granted_roles.push(model)} ;
                     }
                 }
-
                 }
             }
 

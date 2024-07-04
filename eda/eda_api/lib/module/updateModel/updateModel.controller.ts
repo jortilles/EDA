@@ -118,10 +118,10 @@ export class updateModel {
                                                             await connection.query(' select user_name as name, `table` from sda_def_permissions ')
                                                                 .then(async permi => {
                                                                     let permissions = permi
-                                                                    //select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records where 
-                                                                    await connection.query("select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records ")
+                                                                    //select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records
+                                                                    await connection.query(" select distinct `table`, 'id' as `column`,  `group` from sda_def_permissions  where `group` != ''  ")
                                                                         .then(async permiCol => {
-                                                                            let permissionsColumns = permiCol
+                                                                            let permissionsColumns = permiCol;
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
                                                                             // montamos el modelo
                                                                             console.log('Recuperando usuarios');
