@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+ /*SDA CUSTOM*/ import * as custom from  '../custom/custom' ;
 class TreeNode {
     public value: string;
     public child: Array<TreeNode>
@@ -20,7 +21,6 @@ export abstract class QueryBuilderService {
     public permissions: any[];
 
     constructor(queryTODO: any, dataModel: any, user: any) {
-
         this.queryTODO = queryTODO;
         this.dataModel = dataModel;
         this.user = user._id;
@@ -52,9 +52,7 @@ export abstract class QueryBuilderService {
         const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
-        
-        /** Check dels permisos de columna, si hi ha permisos es posen als filtres */
-        this.permissions = this.getPermissions(modelPermissions, this.tables, origin);
+         this.permissions = this.getTreePermissions(modelPermissions,  this.queryTODO);
         
         // SI USUARIO ES ADMIN VACIAR EL ARRAY PERMISSIONS
         
@@ -63,6 +61,8 @@ export abstract class QueryBuilderService {
         }
         /** joins per els value list */
         let valueListJoins = [];
+
+        //console.log(this.queryTODO);
 
         if (!this.queryTODO.queryMode || this.queryTODO.queryMode == 'EDA') {
             /** Reviso si cap columna de la  consulta es un multivalueliest..... */
@@ -520,13 +520,17 @@ export abstract class QueryBuilderService {
         }
         return  res;
     }
+
+
+
     public getPermissions(modelPermissions, modelTables, originTable) {
       
         originTable = this.cleanOriginTable(originTable);
         let filters = [];
         const permissions = this.getUserPermissions(modelPermissions);
 
-        const relatedTables = this.checkRelatedTables(modelTables, originTable);
+       const relatedTables = this.checkRelatedTables(modelTables, originTable); 
+        //console.log('relatedTables', relatedTables);
 
         let found = -1;
         if (relatedTables !== null && permissions !== null) {
@@ -540,6 +544,7 @@ export abstract class QueryBuilderService {
                     let filter = {
                         filter_table: permission.table,
                         filter_column: permission.column,
+                        filter_dynamic: permission.dynamic?permission.dynamic:false,
                         filter_type: 'in',
                         filter_elements: [{ value1: permission.value }]
                     };
@@ -550,15 +555,62 @@ export abstract class QueryBuilderService {
             });
         }
 
-        //si es admin devuelvo el array vacio porque puede ejecutar cualquier consulta
 
-        //filters = [];
+       // console.log(filters);
+        return filters;
+    }
+
+  /*SDA CUSTOM*/ @custom.queryBuilderServiceCustomGetTreePermissions 
+    public getTreePermissions(modelPermissions,  query) {
+          /**
+         * Tento todos los permisos modelPermissions
+         * Tengo mi consulta query
+         * Tengo que añadir los wheres que tocan a la consulta para implmentar los permisos.
+         **/      
+
+        //console.log('Tree Model permissions');
+        let filters = [];
+        let columns = [];
+       
+        const permissions = this.getUserPermissions(modelPermissions);
+        //console.log('No recursively....');
+
+        query.fields.forEach(f => {
+            columns.push( { table_name:  f.table_id,  column_name: f.column_name } )
+
+        });
+        query.filters.forEach(f => {
+            columns.push( { table_name:  f.filter_table,  column_name: f.filter_column } )
+
+        });
+
+        let found = -1;
+        if (columns.length > 0  && permissions !== null) {
+            permissions.forEach(permission => {
+                found = columns.findIndex((t: any) => t.table_name.split('.')[0] === permission.table);
+                if (found >= 0) {
+                    if(permission.dynamic){
+                            permission.value[0] =  permission.value[0].toString().replace("EDA_USER", this.usercode) 
+                           
+                    }
+                    let filter = {
+                        filter_table: permission.table,
+                        filter_column: permission.column,
+                        filter_type: 'in',
+                        filter_dynamic: permission.dynamic?permission.dynamic:false,
+                        filter_elements: [{ value1: permission.value }]
+                    };
+
+                    filters.push(filter);
+                    found = -1;
+                }
+            });
+        }
 
         return filters;
     }
 
     public getUserPermissions(modelPermissions: any[]) {
-
         const permissions = [];
         modelPermissions.forEach(permission => {
             switch (permission.type) {
@@ -574,7 +626,6 @@ export abstract class QueryBuilderService {
                         }
                     })
             }
-
         });
         return permissions;
     }

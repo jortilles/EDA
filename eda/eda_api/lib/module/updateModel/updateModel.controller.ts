@@ -222,8 +222,8 @@ export class updateModel {
             permission: true,
             type: "anyoneCanSee"
         }
-
-        destGrantedRoles.push(all);
+      // Los permisos determinan que tablas puedo ver.
+      // destGrantedRoles.push(all);
 
         const mongoGroups = await  Group.find();
 
@@ -326,6 +326,7 @@ export class updateModel {
                     none: false,
                     table: line.table,
                     column: line.column,
+                    dynamic: true,
                     global: false,
                     type: "groups",
                     value: [valueAt]
