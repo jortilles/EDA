@@ -75,14 +75,17 @@ export const PanelInteractionUtils = {
       const rootTable = idTables.find((idTable: string) => ebp.rootTable?.table_name == idTable);
       
       if (rootTable) {
-        const dataSource = ebp.inject.dataSource.model.tables;
-  
+
+        // Tablas visibles para el usuario. Visibles una vez aplicada la seguridad
+        const visibleTables = ebp.inject.dataSource.model.tables.filter( t => t.visible == true);
+        const visibleTableNames = visibleTables.map( t=> t.table_name );
         ebp.tableNodes = [];
-    
-        const table = dataSource.find((source) => source.table_name == rootTable);
+        const table = visibleTables.find((source) => source.table_name == rootTable);
         
         if (table) {
-          let isexpandible = table.relations.length > 0;
+          table.relations = table.relations.filter(  r=> visibleTableNames.includes( r.target_table ) );
+
+           const isexpandible = table.relations.length > 0;
     
           let node: any = {
             label: table.display_name.default,
@@ -740,7 +743,8 @@ export const PanelInteractionUtils = {
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
       ebp.rootTable = undefined;
-      ebp.tablesToShow = ebp.tables;
+      ebp.tablesToShow = ebp.inject.dataSource.model.tables.filter( t => t.visible == true);
+      ebp.tablesToShow.sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
 
     } else {
       _.map(ebp.currentQuery, selected => selected.table_id === c.table_id);
