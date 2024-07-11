@@ -31,7 +31,7 @@ import { LocationStrategy, PathLocationStrategy } from '@angular/common';
         CORE_ROUTES,
         HttpClientModule
     ],
-    providers: [ {provide: LocationStrategy, useClass: PathLocationStrategy} ],
+    providers: [ {provide: LocationStrategy, useClass: PathLocationStrategy}  ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
