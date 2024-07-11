@@ -2,7 +2,7 @@
     <!-- ============================================================== -->
     <!-- TITLE  -->
     <!-- ============================================================== -->
-    <div class="col-12" style="padding:2px"  *ngIf="!display_v.panelMode">
+    <div class="col-12" style="padding:2px" >
         <eda-dashboard-panel class="pointer" (click)="setTitle()">
             <div class="d-flex justify-title-content">
                 <h3 *ngIf="!titleClick" class="eda-title"> {{title}} </h3>
@@ -15,7 +15,7 @@
     <!-- ============================================================== -->
     <!-- GLOBAL FILTERS  -->
     <!-- ============================================================== -->
-    <div [ngClass]="{'noShow': display_v.panelMode }" > <!--   panel mode es per quan vull mostrat nomes un panell-->
+    <div > <!--   panel mode es per quan vull mostrat nomes un panell-->
     <div *ngIf="filtersList.length > 0" class="d-flex align-items-end" style="margin: 0.5em; gap: 10px; flex-wrap: wrap;" >
         
         
