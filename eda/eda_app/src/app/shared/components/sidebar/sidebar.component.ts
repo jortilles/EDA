@@ -161,10 +161,10 @@ export class SidebarComponent implements OnInit {
             baseUrl = baseUrl.slice(0, baseUrl.length - 3)
         }
         switch (lan) {
-            case 'EN': window.location.href = baseUrl + 'en/#/home'; break;
-            case 'CAT': window.location.href = baseUrl + 'ca/#/home'; break;
-            case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
-            case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
+            case 'EN': window.location.href = baseUrl + 'en/home'; break;
+            case 'CAT': window.location.href = baseUrl + 'ca/home'; break;
+            case 'ES': window.location.href = baseUrl + 'es/home'; break;
+            case 'PL'  : window.location.href = baseUrl + 'pl/home'; break;
         }
     }
 
