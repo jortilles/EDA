@@ -22,12 +22,17 @@ export class MongoDBBuilderService extends QueryBuilderService {
                 criteria: {},
                 columns: [],
                 aggregations: {},
-                filters: []
+                filters: [],
+                dateFormat: {},
+                dateProjection: {}
             };
 
             fields.forEach((column: any) => {
                 mongoQuery.columns.push(column.column_name);
-
+                
+                if (column.column_type == 'date') {
+                    mongoQuery.dateFormat[column.column_name] = column.format || 'No';
+                }
                 // mongoQuery.columns.push(column.column_name);
 
                 // let newColumnObject = {
@@ -49,9 +54,12 @@ export class MongoDBBuilderService extends QueryBuilderService {
 
             mongoQuery.filters = this.getFilters();
 
-            mongoQuery.pipeline = this.getPipeline();
+            mongoQuery.havingFilters = this.getHavingFilters();
 
-
+            const pipeline = this.getPipeline();
+            mongoQuery.pipeline = pipeline?.pipeline;
+            mongoQuery.aggregations = pipeline?.aggregations;
+            mongoQuery.dateProjection = pipeline?.dateProjection;
 
             return mongoQuery;
             console.log("Info de la consulta: ", this.queryTODO);
@@ -63,8 +71,50 @@ export class MongoDBBuilderService extends QueryBuilderService {
     }
 
     public getFilters() {
-        const filters = this.queryTODO.filters;
+        const columns = this.queryTODO.fields;
 
+        const filters = this.queryTODO.filters.filter((f: any) => {
+            const column = columns.find((c: any) => f.filter_table == c.table_id && f.filter_column == c.column_name);
+            f.column_type = column?.column_type || 'text';
+
+            if (column && column?.aggregation_type && column?.aggregation_type === 'none') {
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        if (filters.length > 0) {
+            return this.formatFilter(filters);
+        } else {
+            return null;
+        }
+
+    }
+
+    public getHavingFilters() {
+        const columns = this.queryTODO.fields;
+        //TO HAVING CLAUSE 
+        const havingFilters = this.queryTODO.filters.filter((f: any) => {
+            const column = columns.find((c: any) => c.table_id === f.filter_table && f.filter_column === c.column_name);
+            f.column_type = column?.column_type || 'text';
+
+            if (column && column?.column_type == 'numeric' && column?.aggregation_type !== 'none') {
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        if (havingFilters.length > 0) {
+            return this.formatFilter(havingFilters);
+        } else {
+            return null;
+        }
+    }
+    
+
+    public formatFilter(filters: any[]) {
         const formatedFilter = {
             $and: []
         };
@@ -74,69 +124,55 @@ export class MongoDBBuilderService extends QueryBuilderService {
             // else if (['not_in', 'in'].includes(filter)) return 1;
             // else if (filter === 'between') return 2;
             // else if (filter === 'not_null') return 3;
-
-
-            const value = filter.filter_elements[0].value1;
-
+            
             const filterType = filter.filter_type;
+            const columnType = filter.column_type;
+            
+            if (!['not_null'].includes(filterType)) {
 
-            if (filterType == '=') {
-                formatedFilter['$and'].push({ [filter.filter_column]: value[0] })
-            } else if (filterType == '!=') {
-                formatedFilter['$and'].push({ [filter.filter_column]: { $ne: value[0] } });
-            } else if (filterType == '>') {
-                formatedFilter['$and'].push({ [filter.filter_column]: { $gt: value[0] } });
-            } else if (filterType == '<') {
-                formatedFilter['$and'].push({ [filter.filter_column]: { $lt: value[0] } });
-            } else if (filterType == '>=') {
-                formatedFilter['$and'].push({ [filter.filter_column]: { $gte: value[0] } });
-            } else if (filterType == '<=') {
-                formatedFilter['$and'].push({ [filter.filter_column]: { $lte: value[0] } });
-            } else if (filterType == 'like') {
-                formatedFilter['$and'].push({ [filter.filter_column]: { $regex: value[0], $options: 'i' } });
-            } else if (filterType == 'not_like') {
-                formatedFilter['$and'].push({ [filter.filter_column]: { $not: { $regex: value[0], $options: 'i' } } });
+                const value = filter.filter_elements[0].value1;
+                const firstValue = columnType == 'numeric' ? Number(value[0]) : value[0];
+
+                if (filterType == '=') {
+                    formatedFilter['$and'].push({ [filter.filter_column]: firstValue })
+                } else if (filterType == '!=') {
+                    formatedFilter['$and'].push({ [filter.filter_column]: { $ne: firstValue } });
+                } else if (filterType == '>') {
+                    formatedFilter['$and'].push({ [filter.filter_column]: { $gt: firstValue } });
+                } else if (filterType == '<') {
+                    formatedFilter['$and'].push({ [filter.filter_column]: { $lt: firstValue } });
+                } else if (filterType == '>=') {
+                    formatedFilter['$and'].push({ [filter.filter_column]: { $gte: firstValue } });
+                } else if (filterType == '<=') {
+                    formatedFilter['$and'].push({ [filter.filter_column]: { $lte: firstValue } });
+                } else if (filterType == 'like') {
+                    formatedFilter['$and'].push({ [filter.filter_column]: { $regex: firstValue, $options: 'i' } });
+                } else if (filterType == 'not_like') {
+                    formatedFilter['$and'].push({ [filter.filter_column]: { $not: { $regex: firstValue, $options: 'i' } } });
+                }
+
+                if (filterType == 'in') {
+                    formatedFilter['$and'].push({ [filter.filter_column]: { $in: value } });
+                } else if (filterType == 'not_in') {
+                    formatedFilter['$and'].push({ [filter.filter_column]: { $not: { $in: value } } });
+                }
+
+                if (filterType == 'between') {
+                    const value2 = filter.filter_elements[1].value2;
+                    const secondValue = columnType == 'numeric' ? Number(value2[0]) : value2[0];
+
+                    formatedFilter['$and'].push({ [filter.filter_column]: { $gte: firstValue, $lte: secondValue } });
+                }
+
+            } else {
+                if (filterType == 'not_null') {
+                    formatedFilter['$and'].push({ [filter.filter_column]: { $exists: true, $ne: null } });
+                }
             }
 
-            if (filterType == 'in') {
-                formatedFilter['$and'].push({ [filter.filter_column]: { $in: value } });
-            } else if (filterType == 'not_in') {
-                formatedFilter['$and'].push({ [filter.filter_column]: { $not: { $in: value } } });
-            }
-
-            if (filterType == 'not_null') {
-                formatedFilter['$and'].push({ [filter.filter_column]: { $exists: true, $ne: null } });
-            }
-
-            return formatedFilter;
-            // switch (filterType) {
-            //     case 0:
-            //         if (filter.filter_type === '!=') {
-            //             filter.filter_type = '<>'
-            //         }
-
-            //         if (filter.filter_type === 'like') {
-            //             return `${colname}  ${filter.filter_type} '%${filter.filter_elements[0].value1}%' `;
-            //         }
-
-            //         if (filter.filter_type === 'not_like') {
-            //             filter.filter_type = 'not like'
-            //             return `${colname}  ${filter.filter_type} '%${filter.filter_elements[0].value1}%' `;
-            //         }
-
-            //         return `${colname}  ${filter.filter_type} ${this.processFilter(filter.filter_elements[0].value1, colType)} `;
-            //     case 1:
-            //         if (filter.filter_type === 'not_in') {
-            //             filter.filter_type = 'not in'
-            //         }
-            //         return `${colname}  ${filter.filter_type} (${this.processFilter(filter.filter_elements[0].value1, colType)}) `;
-            //     case 2:
-            //         return `${colname}  ${filter.filter_type} 
-            //                       ${this.processFilter(filter.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filter.filter_elements[1].value2, colType)}`;
-            //     case 3:
-            //         return `${colname} is not null`;
-            // }
         }
+
+        return formatedFilter;
     }
 
     public getPipeline() {
@@ -152,31 +188,52 @@ export class MongoDBBuilderService extends QueryBuilderService {
             'avg': '$avg',
             'max': '$max',
             'min': '$min',
-            'count': '',
-            'count_distinct': '',
+            'count': '$sum',
+            'count_distinct': '$addToSet',
             'none': '',
         };
 
         const aggregations = {};
+        const dateProjection = {};
         for (const column of fields) {
             if (column.aggregation_type !== 'none') {
 
-                pipeline['$group'][column.column_name] = { [agg[column.aggregation_type]]: `$${column.column_name}` };
+                if (column.aggregation_type == 'count') {
+                    pipeline['$group'][column.column_name] = { '$sum': 1 };
+                } else {
+                    pipeline['$group'][column.column_name] = { [agg[column.aggregation_type]]: `$${column.column_name}` };
+                }
+
                 aggregations[column.aggregation_type] = aggregations[column.aggregation_type] || [];
                 aggregations[column.aggregation_type].push(column.column_name);
-
-                // if (el.aggregation_type === 'count_distinct') {
-                //   columns.push(`ROUND(count(distinct ${table_column})::numeric, ${el.minimumFractionDigits})::float ${whatIfExpression} as "${el.display_name}"`);
-                // } else {
-                // }
             } else {
-                if (fields.length > 1 || column.column_type != 'numeric') {
+
+                if (column.column_type === 'date') {
+                    const format = column.format;
+
+                    if (format == 'year') {
+                        // pipeline['$group'][column.column_name] = { format: "%Y", date: `$${column.column_name}` };
+                        pipeline['$group']._id[column.column_name] = `$${column.column_name}`;
+                        dateProjection[column.column_name] = { $year: `$${column.column_name}` };
+                    } else if (format == 'No') {
+                        dateProjection[column.column_name] = { format: "%Y-%m-%d", date: `$${column.column_name}` }; 
+                    }
+
+                } else if (fields.length > 1 || column.column_type != 'numeric') {
                     pipeline['$group']._id[column.column_name] = `$${column.column_name}`;
                 }
             }
         }
 
-        return Object.keys(aggregations).length > 0 ? [pipeline] : undefined;
+        // if (Object.keys(aggregations).length > 0) {
+            return {
+                aggregations,
+                dateProjection,
+                pipeline: [pipeline]
+            }
+        // } else {
+        //     return undefined;
+        // }
     }
 
     public sqlBuilder(userQuery: any, filters: any[]): string {
@@ -494,7 +551,7 @@ export class MongoDBBuilderService extends QueryBuilderService {
    * @param filter 
    * @returns clausula having en un string.  
    */
-    public getHavingFilters(filters) {
+    public xgetHavingFilters(filters) {
         if (filters.length) {
             let filtersString = `\nhaving 1=1 `;
             filters.forEach(f => {

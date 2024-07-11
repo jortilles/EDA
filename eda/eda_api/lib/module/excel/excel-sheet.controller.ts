@@ -5,6 +5,7 @@ import { MongoDBConnection } from "../../services/connection/db-systems/mongodb-
 import DataSource, { IDataSource } from "../datasource/model/datasource.model";
 import ExcelSheetModel from "./model/excel-sheet.model";
 import { AggregationTypes } from "../global/model/aggregation-types";
+import { DateUtil } from "../../utils/date.util";
 
 const databaseUrl = require('../../../config/database.config');
 
@@ -31,7 +32,7 @@ export class ExcelSheetController {
                 excelDocs.key = excelFields
                 excelDocs.save()
             } else {
-                
+
                 const parsedUrl = new URL(databaseUrl?.url);
                 //Transformar a datasource con todo inicializado a vacio
                 const { host, port, password } = parsedUrl;
@@ -49,11 +50,28 @@ export class ExcelSheetController {
 
                 try {
                     const database = client.db(config.database);
-                    const collection = database.collection('xls_'+excelName);
-                
+                    const collection = database.collection('xls_' + excelName);
+
+                    const formatedFields = JSON.parse(JSON.stringify(excelFields));
+
+                    for (const obj of formatedFields) {
+                        for (let key in obj) {
+                            let field: any = obj[key];
+
+                            if (isNaN(Number(field))) {
+                                const isDateValue = DateUtil.convertDate(field);
+
+                                if (isDateValue) {
+                                    obj[key] = isDateValue; //{ "$date": field }
+                                }
+                            } else {
+                                obj[key] = Number(field);
+                            }
+                        }
+                    }
+
                     // Insertar los datos
-                    const result = await collection.insertMany(excelFields);
-                    console.log('RESULT ---> ', result);
+                    const result = await collection.insertMany(formatedFields);
                 } catch (err) {
                     console.error('JSON to COllection Error: ', err);
                     throw err;
@@ -83,69 +101,81 @@ export class ExcelSheetController {
     }
 
     static async ExcelCollectionToDataSource(excelName, excelFields, optimized, cacheAllowed, res: Response, next: NextFunction) {
-        //Declaramos un objeto que va a contener los tipos y nombres de los campos del Excel
-        const propertiesAndTypes = {};
-        excelFields.forEach(object => {
-            Object.entries(object).forEach(([property, value]) => {
-                if (typeof value === 'number') propertiesAndTypes[property] = 'numeric';
-                if (typeof value === 'string') propertiesAndTypes[property] = 'text';
+        try {
+            //Declaramos un objeto que va a contener los tipos y nombres de los campos del Excel
+            const propertiesAndTypes = {};
+            excelFields.forEach(object => {
+                Object.entries(object).forEach(([property, value]) => {
+
+                    if (!isNaN(Number(value))) {
+                        propertiesAndTypes[property] = 'numeric';
+                    } else {
+                        const isDateValue = DateUtil.convertDate(value);
+
+                        if (isDateValue) {
+                            propertiesAndTypes[property] = 'date';
+                        } else if (typeof value === 'string') {
+                            propertiesAndTypes[property] = 'text';
+                        }
+                    }
+
+                });
             });
-        });
-        const propertiesAndTypesArray = Object.entries(propertiesAndTypes).map(([name, type]) => ({ name, type })), columnsEntry = [];
-        //Mapeado de las columnas
-        propertiesAndTypesArray.forEach((column) => {
-            let newCol: any = {
-                column_name: column.name,
-                column_type: String(column.type),
-                display_name: {
-                    default: column.name,
-                    localized: []
-                },
-                description: {
-                    default: column.name,
-                    localized: []
-                },
-                minimumFractionDigits: 0,
-                column_granted_roles: [],
-                row_granted_roles: [],
-                visible: true,
-                tableCount: 0,
-                valueListSource: {},
-            }
-
-            if (newCol.column_type === 'numeric') {
-                newCol.aggregation_type = AggregationTypes.getValuesForNumbers();
-            } else if (newCol.column_type === 'text') {
-                newCol.aggregation_type = AggregationTypes.getValuesForText();
-            } else {
-                newCol.aggregation_type = AggregationTypes.getValuesForOthers();
-            }
-
-            columnsEntry.push(newCol);
-        });
-        //Construcción del objeto table
-        const dsTableObject =
-            [
-                {
-                    table_name: excelName,
+            const propertiesAndTypesArray = Object.entries(propertiesAndTypes).map(([name, type]) => ({ name, type })), columnsEntry = [];
+            //Mapeado de las columnas
+            propertiesAndTypesArray.forEach((column) => {
+                let newCol: any = {
+                    column_name: column.name,
+                    column_type: String(column.type),
                     display_name: {
-                        default: excelName,
+                        default: column.name,
                         localized: []
                     },
                     description: {
-                        default: excelName,
+                        default: column.name,
                         localized: []
                     },
-                    table_granted_roles: [],
-                    table_type: [],
-                    columns: columnsEntry,
-                    relations: [],
+                    minimumFractionDigits: 0,
+                    column_granted_roles: [],
+                    row_granted_roles: [],
                     visible: true,
                     tableCount: 0,
-                    no_relations: []
+                    valueListSource: {},
                 }
-            ];
-        try {
+
+                if (newCol.column_type === 'numeric') {
+                    newCol.aggregation_type = AggregationTypes.getValuesForNumbers();
+                } else if (newCol.column_type === 'text') {
+                    newCol.aggregation_type = AggregationTypes.getValuesForText();
+                } else {
+                    newCol.aggregation_type = AggregationTypes.getValuesForOthers();
+                }
+
+                columnsEntry.push(newCol);
+            });
+            //Construcción del objeto table
+            const dsTableObject =
+                [
+                    {
+                        table_name: excelName,
+                        display_name: {
+                            default: excelName,
+                            localized: []
+                        },
+                        description: {
+                            default: excelName,
+                            localized: []
+                        },
+                        table_granted_roles: [],
+                        table_type: [],
+                        columns: columnsEntry,
+                        relations: [],
+                        visible: true,
+                        tableCount: 0,
+                        no_relations: []
+                    }
+                ];
+
             if (!databaseUrl?.url) return res.status(400).json({ ok: false, message: 'La connexión a la base de datos no existe' });
             const parsedUrl = new URL(databaseUrl?.url);
             //Transformar a datasource con todo inicializado a vacio
@@ -196,6 +226,7 @@ export class ExcelSheetController {
             });
         } catch (error) {
             console.log("Error al parsear el excel: ", error);
+            throw error;
         }
     }
 

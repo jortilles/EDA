@@ -137,27 +137,51 @@ export class MongoDBConnection extends AbstractConnection {
     async execQuery(query: any): Promise<any> {
         const client = await this.getclient()
 
+        console.log('==============QUERY==============');
+        console.log(JSON.stringify(query));
+        console.log('==============QUERY==============');
+        console.log('==============QUERY==============');
+
         try {
             // db and collection
             const database = client.db(this.config.database);
             const collection = database.collection('xls_' + query.collectionName);
 
+            const aggregations = query.aggregations || {};
+            
             // prevent to display all the fields with projection (select)
             const projection = query.columns.reduce((acc: any, field: string) => {
-                acc[field] = 1;
+                if (aggregations['count_distinct']?.includes(field)) {
+                    acc[field] = { $size: `$${field}` };
+                } else if (!query.dateProjection && query.dateFormat[field] && query.dateFormat[field] == 'No') {
+                    acc[field] = { $dateToString: { format: "%Y-%m-%d", date: `$${field}` } }; 
+                } else if (query.dateProjection && query.dateProjection[field]) {
+                    acc[field] = query.dateProjection[field];
+                } else {
+                    acc[field] = 1;
+                }
                 return acc;
             }, {});
 
-            let data;
+            console.log('PROJECTION --------->', projection);
+            let data: any;
             // Format and sort
             let formatData = [];
 
-            if (query.pipeline) {
+                if (query.dateProjection) {
+                    query.pipeline.unshift({ $project: projection });
+                }
 
                 query.pipeline.push({ $project: projection });
 
+                // Filters always before $group
                 if (query.filters) {
-                    query.pipeline.push({ $match: query.filters });
+                    query.pipeline.unshift({ $match: query.filters });
+                }
+
+                // HavingFilters always after $group
+                if (query.havingFilters) {
+                    query.pipeline.push({ $match: query.havingFilters });
                 }
 
                 console.log('pipeline----->', JSON.stringify(query.pipeline))
@@ -176,17 +200,17 @@ export class MongoDBConnection extends AbstractConnection {
                         return ordenado;
                     });
                 }
-            } else {
-                // Exec query
-                data = await collection.find(query.filters, { projection }).toArray();
+            // } else {
+            //     // Exec query
+            //     data = await collection.find(query.filters, { projection }).toArray();
 
-                if (data.length > 0) {
-                    formatData = data.map(doc => {
-                        const ordenado = query.columns.map(col => doc[col]);
-                        return ordenado;
-                    });
-                }
-            }
+            //     if (data.length > 0) {
+            //         formatData = data.map(doc => {
+            //             const ordenado = query.columns.map(col => doc[col]);
+            //             return ordenado;
+            //         });
+            //     }
+            // }
 
             return formatData;
         } catch (err) {

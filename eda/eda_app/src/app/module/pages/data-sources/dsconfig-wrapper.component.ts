@@ -91,30 +91,29 @@ export class DsConfigWrapperComponent implements OnInit {
 
 	}
 
-	async switchTypes() {
-
-		if (this.form.invalid) { this.alertService.addError('Formulario incorrecto, revise los campos');}
-		else if (this.form.value.type.value !== 'bigquery' && this.form.value.type.value !== 'excel') {
-			this.addDataSource();
-		}
-		else if(this.form.value.type.value === 'excel'){
-			if(!this.form.value?.name) this.alertService.addError("No name provided");
-			  const checker =  await this.checkExcelCollection();
-			  if(checker.existence){
-				this.confirmationService.confirm({
-					message: $localize`:@@confirmationExcelMessage:¿Estás seguro de que quieres sobreescribir este modelo de datos?`,
-					header: $localize`:@@confirmationExcel:Confirmación`,
-					acceptLabel:$localize`:@@si:Si`,
-					rejectLabel:$localize`:@@no:No`,
-					icon: 'pi pi-exclamation-triangle',
-					accept: () =>this.sendJSONCollection(),
-				})
-			  }else this.sendJSONCollection();
-		}
-		else {
-			this.addBigQueryDataSource();
-		}
-	}
+    async switchTypes() {
+        const type = this.form.value.type.value;
+        if (this.form.invalid) { this.alertService.addError('Formulario incorrecto, revise los campos'); }
+        else if (!['bigquery', 'excel'].includes(type)) {
+            this.addDataSource();
+        } else if (type === 'excel') {
+            if (!this.form.value?.name) this.alertService.addError("No name provided");
+            const checker = await this.checkExcelCollection();
+            if (checker.existence) {
+                this.confirmationService.confirm({
+                    message: $localize`:@@confirmationExcelMessage:¿Estás seguro de que quieres sobreescribir este modelo de datos?`,
+                    header: $localize`:@@confirmationExcel:Confirmación`,
+                    acceptLabel: $localize`:@@si:Si`,
+                    rejectLabel: $localize`:@@no:No`,
+                    icon: 'pi pi-exclamation-triangle',
+                    accept: () => this.sendJSONCollection(),
+                })
+            } else this.sendJSONCollection();
+        }
+        else {
+            this.addBigQueryDataSource();
+        }
+    }
 
 	public async addBigQueryDataSource(): Promise<void> {
 		this.spinnerService.on();
@@ -200,6 +199,7 @@ export class DsConfigWrapperComponent implements OnInit {
 					allowCache: this.form.value?.allowCache
 				};
 				const res = await this.excelFormatterService.addNewCollectionFromJSON(fileData).toPromise();
+
 				this.spinnerService.off();
 				this.alertService.addSuccess($localize`:@@CollectionText:Colección creada correctamente`,);
 				this.router.navigate(['/data-source/', res.data_source_id]);
