@@ -16,6 +16,7 @@ import { PagesComponent } from './module/pages/pages.component';
 
 // Services
 import { ServicesModule } from './services/services.module';
+import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 
 
 @NgModule({
@@ -30,7 +31,7 @@ import { ServicesModule } from './services/services.module';
         CORE_ROUTES,
         HttpClientModule
     ],
-    providers: [ ],
+    providers: [ {provide: LocationStrategy, useClass: PathLocationStrategy} ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
