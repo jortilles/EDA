@@ -1254,8 +1254,8 @@ export class DashboardController {
 
 
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {
-      const users = []
-      const roles = []
+      const users = [];
+      const roles = [];
       let anyOne = 'false'
 
       //Get users with permission
@@ -1267,14 +1267,14 @@ export class DashboardController {
             }
             break
           case 'users':
-            permission.users.forEach(user => {
-              if (!users.includes(user)) users.push(user)
+            permission.users.forEach(u => {
+              if ( !users.includes(u.toString()) )  users.push(u.toString());
             })
             break
           case 'groups':
             user.role.forEach(role => {
               if (permission.groups.includes(role)) {
-                if (!roles.includes(role)) roles.push(role)
+                if (!roles.includes(role.toString())) roles.push(role.toString())
               }
             })
         }
