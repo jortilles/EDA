@@ -57,6 +57,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes5:Gráfico de Barras`, value: 'bar', subValue: 'bar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesHistograma:Histograma`, value: 'bar', subValue: 'histogram', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes6:Gráfico de Barras Apiladas`, value: 'bar', subValue: 'stackedbar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypes19:Gráfico de Barras Apiladas al 100%`, value: 'bar', subValue: 'stackedbar100', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes7:Gráfico de Barras Horizontales`, value: 'bar', subValue: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesPyramid:Gráfico de Barras Horizontales Contrapuestas`, value: 'bar', subValue: 'pyramid', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes8:Gráfico de Lineas`, value: 'line', subValue: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -215,8 +216,118 @@ export class ChartUtilsService {
             _output[1] = u
             output =  _output;
 
+        } else if(['bar'].includes(type) && ['stackedbar100'].includes(subType)) {
 
-        } else if (['bar', 'line', 'area', 'horizontalBar', 'barline', 'histogram'  ].includes(type)  &&  dataTypes.length >  1) {
+            const l = serie_idx !== null ? Array.from(new Set(values.map(v => v[label_idx]))) :  Array.from(new Set(dataDescription.numericColumns.map(v => v.name)));
+            const s = serie_idx !== null ? Array.from(new Set(values.map(v => v[serie_idx]))) : Array.from(new Set(values.map(v => v[label_idx])));
+
+            const _output = [[], []];
+            _output[0] = l;
+
+            let total = 0;
+            values.forEach((i,j) => {
+                total = total + i[number_idx];
+            });
+
+            //If are two text series and one number category
+            if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
+                let series = [];
+
+                s.forEach((s) => {
+                    _output[1].push({ data: [], label: s, value: [], mode: 'textTwoNumericOne' });
+                    let serie = values.filter(v => v[serie_idx] === s);
+                    series.push(serie);
+                });
+
+                l.forEach((l) => {
+                    // let data_point = null;
+                    series.forEach((serie, i) => {
+                        const t = serie.filter(s => s[label_idx] === l).map(e => e[number_idx])[0];
+                        t !== undefined ? _output[1][i].data.push(t) : _output[1][i].data.push(0);
+                    });
+                });
+
+                // calibrar los valores al 100%
+                let totales = [];
+                for (var k = 0; k < l.length; k++) totales[k] = 0; // inicializando totales
+                
+                // recolectando todas las sumas
+                _output[1].forEach((e:any) => {
+                    e.data.forEach((v:any,j:number) => {
+                        totales[j]=totales[j]+v;
+                    })
+                })
+
+                // Agregando los valores de porcentaje
+                const _outputTemporal = _output[1];
+
+                _outputTemporal.forEach((e:any, k:number) => {
+                    e.data.forEach((v:any, j:number) => {
+                        if(totales[j]===0) {
+
+                            _output[1][k].value[j]=0;
+                            _output[1][k].data[j]=0;
+                        }
+                        else {
+                            _output[1][k].value[j] = v;
+                            _output[1][k].data[j] = v*100/totales[j];
+                        }
+                    })
+                })
+            }
+
+            //If is one text series and more than two number categories
+            else if (dataDescription.otherColumns.length === 1 && dataDescription.numericColumns.length >= 1) {
+                let series = [];
+                let totalGenerico = [];
+
+                for (var i = 0; i < l.length; i++) {
+                    totalGenerico[i] = 0;
+                }
+
+                let label_idx = idx.label;
+                let serie_idx = idx.label; // El unico valor de texto
+
+                s.forEach((s) => {
+                    _output[1].push({ data: [], label: s , value: [],  mode: 'textOneNumericN' });
+                    let serie = values.filter(v => v[serie_idx] === s);
+                    series.push(serie);
+                });
+
+                series.forEach(v => {
+                    _output[1].forEach(p => {
+
+                        if(v[0][label_idx] === p.label){
+                            p.data = v[0].filter(i => i!==p.label);
+                            p.data.forEach((c, j) => {
+                                if(typeof c !== 'number') {
+                                    p.data[j] = 0
+                                }
+                            })
+                        }
+                    })
+                })
+
+                // calibrar los valores al 100%
+                // Calculando las sumas de cada campo
+                _output[1].forEach((e) => {
+                    e.data.forEach((v,j) => {
+                        totalGenerico[j] = totalGenerico[j] + v
+                    })
+                })
+                
+                // ejecutando el porcentaje 100%
+                _output[1].forEach((e) => {
+                    for (var i = 0; i < l.length; i++) {
+                        e.value[i] = (e.data[i]); // Valor numérico
+                        e.data[i] = ((e.data[i] * 100)/totalGenerico[i]); // Valor numérico en porcetaje
+                    }
+                })
+            }
+
+            output =  _output;
+
+        } else if (['bar', 'line', 'area', 'horizontalBar', 'barline', 'histogram'  ].includes(type)  &&  dataTypes.length >  1 ) {
 
             const l = Array.from(new Set(values.map(v => v[label_idx])));
             const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
@@ -276,12 +387,11 @@ export class ChartUtilsService {
                             pointHoverBorderWidth: 2
                         });
                 });
-
             }
             output =  _output;
 
             /* Histograma  */
-        } else if (  ['bar' ].includes(type)    &&  dataTypes.length ==  1 && dataTypes[0]== 'numeric'   ) {
+        } else if (  ['bar'].includes(type) &&  dataTypes.length ==  1 && dataTypes[0]== 'numeric'   ) {
             let distinctNumbers  = Array.from(new Set(values.map(v => v[number_idx]))).filter(element => {
                 return element !== null;
               });;
@@ -358,7 +468,7 @@ export class ChartUtilsService {
 
 
             output =  _output;
-        }
+        } 
 
         return output;
     }
@@ -561,7 +671,7 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'area', 'bar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid'
+                'pyramid', 'stackedbar100'
             ];
 
 
@@ -591,6 +701,7 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('line'), 1);
             notAllowed.splice(notAllowed.indexOf('area'), 1);
             notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
+            notAllowed.splice(notAllowed.indexOf('stackedbar100'), 1);
         }
         // això es per els histogrames.....
         if (dataDescription.numericColumns.length == 1 && dataDescription.totalColumns == 1 ) {
@@ -601,8 +712,10 @@ export class ChartUtilsService {
         if (dataDescription.numericColumns.length > 1 && dataDescription.otherColumns.length < 2) {
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
             const idx = notAllowed.indexOf('stackedbar');
-            if (idx >= 0) {
+            const idx100 = notAllowed.indexOf('stackedbar100');
+            if (idx >= 0 || idx100 >= 0) {
                 notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
+                notAllowed.splice(notAllowed.indexOf('stackedbar100'), 1);
             }
 
         }
@@ -1188,7 +1301,7 @@ export class ChartUtilsService {
 
                 break;
             case 'bar':
-                if(chartSubType!=='horizontalBar' && chartSubType!=='pyramid'){
+                if(chartSubType!=='horizontalBar' && chartSubType!=='pyramid' && chartSubType!=='stackedbar100'){
                     if(showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
                         dataLabelsObjt =  {
                             anchor: size.height>150?'end':'center',
@@ -1226,7 +1339,6 @@ export class ChartUtilsService {
                         }
                     }else{
                             dataLabelsObjt =   { display: false }
-
                     }
 
                     options.chartOptions = {
@@ -1312,6 +1424,154 @@ export class ChartUtilsService {
                             legend: edaBarLineLegend
                         },
 
+                    };
+
+                } else if(chartSubType=='stackedbar100') {
+                    if(showLabels || showLabelsPercent ){
+                        dataLabelsObjt =  {
+                            anchor: size.height>150?'end':'center',
+                            align:  size.height>150?'top':'center',
+                            display: 'auto',
+                            color: function(context) {
+                                return size.height>150?context.dataset.backgroundColor:'#ffffff';
+                                },
+                            font: {
+                            weight: 'bold',
+                            size:  edaFontSize  ,
+                            },
+                            padding: 2,
+
+                            formatter: (values,ctx) => {
+
+                                const dataIndex = ctx.dataIndex;
+                                const value = ctx.dataset.value[dataIndex];
+                                const percentage = ctx.dataset.data[dataIndex];
+
+                                let res = '';
+                                if( showLabels && showLabelsPercent){
+                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                    if(res == 'NaN'){ res = '';}
+                                    res = res  + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                                }else if(showLabels && !showLabelsPercent){
+                                    res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                    if(res == 'NaN'){ res = '';}
+                                }else if(!showLabels && showLabelsPercent){
+                                    res = percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'   ;
+                                }
+                                return   res;
+                            }
+
+                        }
+                    }else{
+                            dataLabelsObjt =   { display: false }
+                    }
+
+                    options.chartOptions = {
+                        animation: {
+                            duration: 3000
+                        },
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        devicePixelRatio: 2,
+                        tooltips: {
+                            enabled: true,
+                            callbacks: {
+                                title: (tooltipItem, data) => {
+                                    if (data && tooltipItem)
+                                        return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
+                                },
+                                label: (tooltipItem, data) => {
+                                    if (data && tooltipItem) {
+                                        const realData = data.datasets[tooltipItem.datasetIndex].data;
+                                        const total = realData.reduce((a, b) => {
+                                            if(isNaN(a)){a=0;}
+                                            if(isNaN(b)){b=0;}
+                                            return a + b;
+                                        }, 0);
+                                        const elem = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                                        const percentage = elem / total * 100;
+                                        return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
+                                    }
+
+                                },
+
+                                afterLabel: (t, d) => {
+                                },
+                                footer: () => { return linked },
+                            }
+                        },
+                        scales: {
+                            x: {
+                                stacked: stacked || false,
+                                grid: { display: false },
+
+                                ticks: {
+                                    callback: function(val, index) {
+                                        if (this.getLabelForValue(val))
+                                        return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
+                                    },
+                                    fontSize: edaFontSize, fontStyle: edafontStyle,
+                                    fontFamily: styles.fontFamily,
+                                    fontColor: styles.fontColor,
+                                    maxTicksLimit: maxTicksLimit,
+                                    autoSkip: true,
+                                }
+                            },
+
+                            y: {
+                                stacked: stacked || false,
+                                grid: {
+                                    drawBorder: false,
+                                },
+                                display: true,
+                                grace: (showLabels || showLabelsPercent )?'1%': '0%',
+                                ticks: {
+                                    autoSkip: true,
+                                    maxTicksLimit: maxTicksLimitY,
+                                    beginAtZero: true,
+                                    callback: (value) => {
+                                        if (value)
+                                            return isNaN(value) ? value : this.format10thPowers(parseFloat(value)) //.toLocaleString('de-DE', { maximumFractionDigits: 6 });
+                                    },
+                                    fontSize: edaFontSize,
+                                    fontFamily: styles.fontFamily,
+                                    fontColor: styles.fontColor,
+                                }
+                            }
+
+                        },
+                        plugins: {
+                            datalabels: dataLabelsObjt,
+                            legend: edaBarLineLegend,
+                            tooltip: {
+                                mode: 'nearest',
+                                intersect: true,
+                                callbacks : {
+                                    label: function(context) {
+                                        let mode = context.dataset.mode;
+                                        
+                                        if (mode == 'textTwoNumericOne') {
+                                            let dataIndex = context.dataIndex;
+                                            let label = context.label;
+                                            let serie = context.dataset.label;
+                                            let value = context.dataset.value[dataIndex];
+                                            let percentage = context.dataset.data[dataIndex];
+
+                                            return `${serie} : ${parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })} - ${percentage.toFixed(2)}% `;
+
+                                        } else if(mode == 'textOneNumericN') {
+                                            let dataIndex = context.dataIndex;
+                                            let label = context.label;
+                                            let serie = context.dataset.label;
+                                            let value = context.dataset.value[dataIndex];
+                                            let percentage =context.dataset.data[dataIndex];
+
+                                            return `${serie} : ${parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })} - ${percentage.toFixed(2)}% `;
+                                        }
+                                    }
+                                }
+                            }
+                        },
                     };
                 }else{
                     // horizontalBar Since chart.js 3 there is no more horizontal bar. Its just  barchart with horizonal axis
