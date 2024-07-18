@@ -546,6 +546,7 @@ export abstract class QueryBuilderService {
                         filter_column: permission.column,
                         filter_dynamic: permission.dynamic?permission.dynamic:false,
                         filter_type: 'in',
+                        isGlobal: 'security',
                         filter_elements: [{ value1: permission.value }]
                     };
 
@@ -597,6 +598,7 @@ export abstract class QueryBuilderService {
                         filter_table: permission.table,
                         filter_column: permission.column,
                         filter_type: 'in',
+                        isGlobal: 'security',
                         filter_dynamic: permission.dynamic?permission.dynamic:false,
                         filter_elements: [{ value1: permission.value }]
                     };
@@ -991,6 +993,12 @@ export abstract class QueryBuilderService {
     }
 
     public getEqualFilters = (filters) => {
+        /**
+         * LOS FILTROS TIENEN DIFERENTES NIVELES GLOBAL = A NIVEL DE DASHBOARD - LOCAL = A NIVEL DE PANEL - SEGURIDAD = QUE VIENEN DE LA SEGURIDAD
+         * LOS FILTORS SE CONCATENAN CON UN AND NORMALMENTE. PERO SI PONGO FILTROS SOBRE LA MISMA COLUMNA AL MISMO NIVEL (ISGLOBAL) SE CONCATENAN
+         * CON UN OR. QUE ES EL FUNCIONAMIENTO ESPERADO.
+         * 
+          */
         let filterMap = new Map();
         let toRemove = [];
         filters.forEach(filter => {
