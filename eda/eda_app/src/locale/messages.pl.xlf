@@ -3930,6 +3930,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Alias del filtro (opcional)</source>
 <target>Alias ​​filtra (opcjonalnie)</target>
 </trans-unit>
+
+<trans-unit id="DatePickerYearPreviousYearFull">
+  <source>El año pasado, completo</source>
+  <target>W zeszłym roku, kompletne</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

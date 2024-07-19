@@ -240,7 +240,7 @@ export const PanelOptions = {
     if (!panelComponent.panel.content) {
         return panelComponent.alertService.addError(`No tienes contenido para exportar`);
     }
-    const cols = panelComponent.chartUtils.transformDataQueryForTable(panelComponent.chartLabels, panelComponent.chartData);
+    const cols = panelComponent.chartUtils.transformDataQueryForTable(panelComponent.panelChartConfig.noRepetitions, panelComponent.chartLabels, panelComponent.chartData);
     const headers = panelComponent.currentQuery.map(o => o.display_name.default);
 
     if (_.isEqual(fileType, 'excel')) {

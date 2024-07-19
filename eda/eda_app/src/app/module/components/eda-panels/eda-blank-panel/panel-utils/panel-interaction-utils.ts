@@ -75,14 +75,17 @@ export const PanelInteractionUtils = {
       const rootTable = idTables.find((idTable: string) => ebp.rootTable?.table_name == idTable);
       
       if (rootTable) {
-        const dataSource = ebp.inject.dataSource.model.tables;
-  
+
+        // Tablas visibles para el usuario. Visibles una vez aplicada la seguridad
+        const visibleTables = ebp.inject.dataSource.model.tables.filter( t => t.visible == true);
+        const visibleTableNames = visibleTables.map( t=> t.table_name );
         ebp.tableNodes = [];
-    
-        const table = dataSource.find((source) => source.table_name == rootTable);
+        const table = visibleTables.find((source) => source.table_name == rootTable);
         
         if (table) {
-          let isexpandible = table.relations.length > 0;
+          table.relations = table.relations.filter(  r=> visibleTableNames.includes( r.target_table ) );
+
+           const isexpandible = table.relations.length > 0;
     
           let node: any = {
             label: table.display_name.default,
@@ -133,7 +136,10 @@ export const PanelInteractionUtils = {
    * @param expandNode node to find all possible children nodes.
    */ 
   expandTableNode: (ebp: EdaBlankPanelComponent, expandNode: any) => {
+
     const dataSource = ebp.inject.dataSource.model.tables;
+    // Tablas visibles para el usuario. Visibles una vez aplicada la seguridad
+    const visibleTables = ebp.inject.dataSource.model.tables.filter( t => t.visible == true).map( t=>t.table_name);
     /** @rootNode have table_id @childNode have child_id ("table_name.column_name")  */
     const table_id = expandNode.table_id || expandNode.child_id.split('.')[0];
     
@@ -155,59 +161,63 @@ export const PanelInteractionUtils = {
       const childrenId = getAllChildIds(expandNode);
 
       table.relations = table.relations.filter(f=>f.bridge==false );
+
       for (const relation of table.relations) {
-        // Init child_id
-        const child_id = `${relation.target_table}.${relation.target_column[0]}.${relation.source_column[0]}`;
+        if( visibleTables.includes( relation.target_table )){ // Tablas visibles para el usuario. Visibles una vez aplicada la seguridad 
+        
+          // Init child_id
+          const child_id = `${relation.target_table}.${relation.target_column[0]}.${relation.source_column[0]}`;
 
-        /** Checks if the current child_node is included before.
-         * This prevents duplicated paths. */
-        if ((!rootTree.includes(relation.target_table) || relation.autorelation) && !childrenId.includes(child_id)) {
-          // Label to show on the treeComponent 
-          let childLabel = relation.display_name?.default
-          ? `${relation.display_name.default}`
-          : ` ${relation.source_column[0]} - ${relation.target_table} `;
+          /** Checks if the current child_node is included before.
+           * This prevents duplicated paths. */
+          if ((!rootTree.includes(relation.target_table) || relation.autorelation) && !childrenId.includes(child_id)) {
+            // Label to show on the treeComponent 
+            let childLabel = relation.display_name?.default
+            ? `${relation.display_name.default}`
+            : ` ${relation.source_column[0]} - ${relation.target_table} `;
 
-          /** This creates the path to relate this node with the previous tables.
-           * It will be used later to generate the query. */
-          let sourceJoin = relation.source_table+'.'+relation.source_column[0];
-          const joinChildId = child_id.substring(0, child_id.lastIndexOf('.'));
-          let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, joinChildId]]) : [[sourceJoin, joinChildId]];
-          
-          if (!ebp.tables.some((t) => t.table_name == child_id)) {
-            let assertTable = _.cloneDeep(ebp.tables.find((t) => t.table_name == relation.target_table))
-            if (assertTable?.table_name) {
-              assertTable.table_name = child_id;
-              assertTable.display_name.default = childLabel;
-              assertTable.description.default = childLabel;
-              assertTable.autorelation = relation.autorelation;
-              ebp.tables.push(assertTable)
+            /** This creates the path to relate this node with the previous tables.
+             * It will be used later to generate the query. */
+            let sourceJoin = relation.source_table+'.'+relation.source_column[0];
+            const joinChildId = child_id.substring(0, child_id.lastIndexOf('.'));
+            let joins = expandNode.joins ? [].concat(expandNode.joins, [[sourceJoin, joinChildId]]) : [[sourceJoin, joinChildId]];
+            
+            if (!ebp.tables.some((t) => t.table_name == child_id)) {
+              let assertTable = _.cloneDeep(ebp.tables.find((t) => t.table_name == relation.target_table))
+              if (assertTable?.table_name) {
+                assertTable.table_name = child_id;
+                assertTable.display_name.default = childLabel;
+                assertTable.description.default = childLabel;
+                assertTable.autorelation = relation.autorelation;
+                ebp.tables.push(assertTable)
+              }
             }
-          }
-          // Init childNode object
-          let childNode: any = {
-            type: 'child',
-            label: childLabel,
-            child_id: child_id.trim(),
-            autorelation: relation.autorelation,
-            joins
-          };
+            // Init childNode object
+            let childNode: any = {
+              type: 'child',
+              label: childLabel,
+              child_id: child_id.trim(),
+              autorelation: relation.autorelation,
+              joins
+            };
 
-          if (!childNode.parent) childNode.parent = expandNode;
+            if (!childNode.parent) childNode.parent = expandNode;
 
-          // Check if the childNode have more possible paths to explore
-          const isexpandible = ebp.tables.some((source) => {
-            return source.table_name == childNode.child_id &&
-                (source.relations||[]).some((rel: any) => rel.target_table != table_id);
-          });
-          
-          // If it's expandable, we add properties to expand the node. 
-          if (isexpandible && !relation.autorelation) {
-            childNode.expandedIcon = "pi pi-folder-open";
-            childNode.collapsedIcon = "pi pi-folder";
-            childNode.children = [{}];
+            // Check if the childNode have more possible paths to explore
+            const isexpandible = ebp.tables.some((source) => {
+              return source.table_name == childNode.child_id &&
+                  (source.relations||[]).some((rel: any) => rel.target_table != table_id);
+            });
+            
+            // If it's expandable, we add properties to expand the node. 
+            if (isexpandible && !relation.autorelation) {
+              childNode.expandedIcon = "pi pi-folder-open";
+              childNode.collapsedIcon = "pi pi-folder";
+              childNode.children = [{}];
+            }
+            // Finally add this childNode to expandNode. This will create the tree.
+            expandNode.children.push(childNode);
           }
-          // Finally add this childNode to expandNode. This will create the tree.
-          expandNode.children.push(childNode);
         }
       }
 
@@ -254,6 +264,7 @@ export const PanelInteractionUtils = {
                 const column = table.columns?.find(column => column.column_name === filter.filter_column);
                 const columnInQuery = query.some(col => col.column_name === filter.filter_column);
                 if (!filter.isGlobal && !columnInQuery && column) {
+                    column.table_id?column.table_id=column.table_id:column.table_id=filter.filter_table;  /** Si no tengo la tabla se la pongo */
                     ebp.filtredColumns.push(column);
                 }
                 if (!column) {
@@ -400,25 +411,6 @@ export const PanelInteractionUtils = {
           PanelInteractionUtils.loadColumns(ebp, table);
         }
       }
-
-      // for (let i = 0, n = fields.length; i < n; i++) {
-      //   const field = fields[i];
-      //   try{
-      //     if (field) {
-      //       ebp.currentQuery[i].format = field.format;
-      //       ebp.currentQuery[i].cumulativeSum = field.cumulativeSum;
-      //       ebp.currentQuery[i].joins = field.joins;
-      //       if (ebp.currentQuery[i].column_type === 'text' && ![null, 'none'].includes(field.aggregation_type)) {
-      //         ebp.currentQuery[i].column_type = 'numeric';
-      //         ebp.currentQuery[i].old_column_type = 'text';
-      //       }
-      //     }
-      //   }catch(e){
-      //     console.error('ERROR handling current query .... handleCurrentQuery.... did you changed the query model?');
-      //     console.error(e);
-
-      //   }
-      // }
     }
   },
 
@@ -740,7 +732,8 @@ export const PanelInteractionUtils = {
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
       ebp.rootTable = undefined;
-      ebp.tablesToShow = ebp.tables;
+      ebp.tablesToShow = ebp.inject.dataSource.model.tables.filter( t => t.visible == true);
+      ebp.tablesToShow.sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
 
     } else {
       _.map(ebp.currentQuery, selected => selected.table_id === c.table_id);

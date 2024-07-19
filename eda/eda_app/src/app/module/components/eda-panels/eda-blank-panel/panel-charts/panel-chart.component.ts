@@ -191,7 +191,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private renderEdaChart(type: string) {
 
         const isbarline = this.props.edaChart === 'barline';
-        const isstacked = this.props.edaChart === 'stackedbar';
+        const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
 
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         const dataTypes = this.props.query.map(column => column.column_type);
@@ -322,7 +322,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaTableComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = this.initializeTable(type, this.props.config.getConfig());
-        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(  this.props.data.labels, this.props.data.values);
+        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.componentRef.instance.inject.noRepetitions, this.props.data.labels, this.props.data.values);
         const config = this.props.config.getConfig();
 
         if (config) {

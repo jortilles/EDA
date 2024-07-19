@@ -319,6 +319,7 @@ export class DashboardController {
                   }
                 }
               } catch (error) {
+
                 console.log('no pannels in dashboard')
               }
 
@@ -434,6 +435,7 @@ export class DashboardController {
     }
   }
 
+
   /**
    *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario.
    */
@@ -442,48 +444,59 @@ export class DashboardController {
     userGroups: Array<String>,
     user: string
   ) {
-    let forbiddenTables = []
-    const allTables = []
-    let allowedTablesBySecurityForOthers = []
-    let allowedTablesBySecurityForMe = []
+    let forbiddenTables = [];
+    if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.type == "anyoneCanSee" && r.permission == true ).length > 0 ){
+      // En el caso de que cualquier usuario pueda ver el modelo y tengamos un esquema benevolente
+      forbiddenTables = this.getForbiddenTablesOpen( dataModelObject, userGroups, user ); 
+    }else{
+      // En el caso de que tan sólo pueda ver las tablas para las que tengo permiso explicito
+      forbiddenTables = this.getForbiddenTablesClose( dataModelObject, userGroups, user ); 
+    }
+
+    return forbiddenTables;
+  }
+
+
+
+  
+  /**
+   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
+   *  SUPONIENDO QUE PUEDE VER TODAS EN LAS QUE NO HAY SEGURIDAD Y LAS SUYAS FILTRADAS. 
+   *  TAN SÓLO NO VE AQUELLAS EN LAS QUE SE LE HA NEGADO EL ACCESO.
+   */
+  static getForbiddenTablesOpen(
+    dataModelObject: any,
+    userGroups: Array<String>,
+    user: string
+  ) {
+    let forbiddenTables = [];
+    const allTables = [];
+    let allowedTablesBySecurityForOthers = []; // Si otros lo ven. Yo no lo puedo ver (en modelos exclusivos)
+    let allowedTablesBySecurityForMe = [];
     dataModelObject.ds.model.tables.forEach(e => {
       allTables.push(e.table_name)
     })
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (
-        var i = 0;
-        i < dataModelObject.ds.metadata.model_granted_roles.length;
-        i++
-      ) {
+        var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++  ) {
         if (
-          dataModelObject.ds.metadata.model_granted_roles[i].column ===
-          'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission ===
-          false
+          /** Si NO puedo ver la tabla */
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === false
         ) {
-          if (
-            dataModelObject.ds.metadata.model_granted_roles[i].users !==
-            undefined
-          ) {
-            for (
-              var j = 0;
-              j <
-              dataModelObject.ds.metadata.model_granted_roles[i].users.length;
-              j++
-            ) {
+          if ( dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined  ) {
+            for ( var j = 0; j<dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
               if (
-                dataModelObject.ds.metadata.model_granted_roles[i].users[j] ==
-                user
+                dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user
               ) {
-                forbiddenTables.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+                forbiddenTables.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
               }
             }
           }
         }
       }
     }
+
     /** TAULES OCULTES PER EL GRUP */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       for (
@@ -492,69 +505,40 @@ export class DashboardController {
         i++
       ) {
         if (
-          dataModelObject.ds.metadata.model_granted_roles[i].column ===
-          'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission ===
-          false
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === false
         ) {
           if (
             dataModelObject.ds.metadata.model_granted_roles[i].groups !==
             undefined
           ) {
-            for (
-              var j = 0;
-              j <
-              dataModelObject.ds.metadata.model_granted_roles[i].groups.length;
-              j++
-            ) {
-              if (
-                userGroups.includes(
-                  dataModelObject.ds.metadata.model_granted_roles[i].groups[j]
-                )
-              ) {
-                forbiddenTables.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++ ) {
+              if ( userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
+                forbiddenTables.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
               }
             }
           }
         }
       }
     }
+    //console.log('Tablas prohividas para el grupo');
+    //console.log(forbiddenTables);
+
 
     /** allowed tables by security */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for (
-        var i = 0;
-        i < dataModelObject.ds.metadata.model_granted_roles.length;
-        i++
-      ) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
         if (
-          dataModelObject.ds.metadata.model_granted_roles[i].column ===
-          'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
           dataModelObject.ds.metadata.model_granted_roles[i].permission === true
         ) {
           if (
-            dataModelObject.ds.metadata.model_granted_roles[i].users !==
-            undefined
-          ) {
-            for (
-              var j = 0;
-              j <
-              dataModelObject.ds.metadata.model_granted_roles[i].users.length;
-              j++
-            ) {
-              if (
-                dataModelObject.ds.metadata.model_granted_roles[i].users[j] !=
-                user
-              ) {
-                allowedTablesBySecurityForOthers.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
+              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user  ) {
+                allowedTablesBySecurityForOthers.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
               } else {
-                allowedTablesBySecurityForMe.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
               }
             }
           }
@@ -562,40 +546,49 @@ export class DashboardController {
       }
     }
 
-    /** TAULES PERMESES PER EL GRUP */
+    //console.log('Tablas permitidas para otros');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
+    //console.log(allowedTablesBySecurityForMe);
+
+    /** puedo ver la tabla porque puedo ver datos de una columna */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
-      for (
-        var i = 0;
-        i < dataModelObject.ds.metadata.model_granted_roles.length;
-        i++
-      ) {
-        if (
-          dataModelObject.ds.metadata.model_granted_roles[i].column ===
-          'fullTable' &&
-          dataModelObject.ds.metadata.model_granted_roles[i].permission === true
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+        if ( /** puedo ver valores de una columna de la tabla */
+          dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
         ) {
           if (
-            dataModelObject.ds.metadata.model_granted_roles[i].groups !==
-            undefined
-          ) {
-            for (
-              var j = 0;
-              j <
-              dataModelObject.ds.metadata.model_granted_roles[i].groups.length;
-              j++
-            ) {
-              if (
-                !userGroups.includes(
-                  dataModelObject.ds.metadata.model_granted_roles[i].groups[j]
-                )
-              ) {
-                allowedTablesBySecurityForOthers.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
+              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] != user  ) {
+                allowedTablesBySecurityForOthers.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
               } else {
-                allowedTablesBySecurityForMe.push(
-                  dataModelObject.ds.metadata.model_granted_roles[i].table
-                )
+                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+              }
+            }
+          }
+        }
+      }
+    }
+
+    //console.log('Tablas permitidas para otros');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
+    //console.log(allowedTablesBySecurityForMe);
+
+    /** TAULES PERMESES PER EL GRUP */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
+        if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true ) {
+          if (  dataModelObject.ds.metadata.model_granted_roles[i].groups !==  undefined ) {
+            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length;  j++ ) {
+              if ( !userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
+                allowedTablesBySecurityForOthers.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+              } else {
+                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table )
               }
             }
           }
@@ -606,22 +599,135 @@ export class DashboardController {
     const unique = (value, index, self) => {
       return self.indexOf(value) === index
     }
-    let uniquesForbiddenTables = forbiddenTables.filter(unique)
-    allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(
-      unique
-    )
-    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter(unique)
+
+    let uniquesForbiddenTables = forbiddenTables.filter(unique);
+
+
+    allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(  unique   )
+    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter( unique )
+
+    //console.log('Tablas permitidas para otros por grupo');
+    //console.log(allowedTablesBySecurityForOthers);
+    //console.log('Tablas permitidas para mi');
+    //console.log(allowedTablesBySecurityForMe);
+
     allowedTablesBySecurityForMe.forEach(e => {
       allowedTablesBySecurityForOthers = allowedTablesBySecurityForOthers.filter(
         item => item != e
       )
     })
-    uniquesForbiddenTables = uniquesForbiddenTables.concat(
-      allowedTablesBySecurityForOthers
-    )
-    uniquesForbiddenTables = uniquesForbiddenTables.filter(unique)
-    return uniquesForbiddenTables
+    uniquesForbiddenTables = uniquesForbiddenTables.concat(  allowedTablesBySecurityForOthers    );
+    uniquesForbiddenTables = uniquesForbiddenTables.filter(unique);
+
+    return uniquesForbiddenTables;
   }
+
+
+
+
+  /**
+   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario. 
+   *  SUPONIENDO QUE PUEDE VER SOLO AQUELLAS TABLAS PARA LAS QUE TIENE PERMISO EXPLICITO.
+   */
+  static getForbiddenTablesClose(
+    dataModelObject: any,
+    userGroups: Array<String>,
+    user: string
+  ) {
+    const allTables = [];
+    let allowedTablesBySecurityForMe = [];
+    let forbiddenTables = [];
+    dataModelObject.ds.model.tables.forEach(e => {
+      allTables.push(e.table_name)
+    })
+
+    // Aqui marco las tablas que si que puedo ver. El resto están prohividas
+
+    /** allowed tables by security */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+        if (
+          dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true
+        ) {
+          if (
+            dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
+              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user  ) {
+                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+              } 
+            }
+          }
+        }
+      }
+    }
+    //console.log('Tablas que el usuario puede ver', allowedTablesBySecurityForMe );
+
+    /** puedo ver la tabla porque puedo ver datos de una columna */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
+        if ( /** puedo ver valores de una columna de la tabla */
+          dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
+        ) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].users !== undefined ) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
+              if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user  ) {
+                allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
+              }  
+            }
+          }
+        }
+      }
+    }
+    //console.log('Tablas PERMITIDAS   para el usuario porque pueden ver una columna',allowedTablesBySecurityForMe );
+
+
+    /** TAULES PERMESES PER EL GRUP */
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for ( var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length;  i++ ) {
+        if ( dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
+          dataModelObject.ds.metadata.model_granted_roles[i].permission === true ) {
+          if (  dataModelObject.ds.metadata.model_granted_roles[i].groups !==  undefined ) {
+            for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length;  j++ ) {
+              if ( userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
+                allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
+              } 
+            }
+          }
+        }
+      }
+    }
+    
+    // Check if the user has permission to view the table based on column visibility
+    if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++) {
+        // Verify if the user has access to at least one column in the table
+        if (
+          dataModelObject.ds.metadata.model_granted_roles[i].global === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].none === false &&
+          dataModelObject.ds.metadata.model_granted_roles[i].value.length > 0
+        ) {
+          if (dataModelObject.ds.metadata.model_granted_roles[i].groups !== undefined) {
+            for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
+              if (userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
+                allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
+              }  
+            }
+          }
+        }
+      }
+    }
+
+    forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
+    return forbiddenTables;
+  }
+
+
+
+
+
 
   /**
    * Executa una consulta EDA per un dashboard
@@ -650,6 +756,9 @@ export class DashboardController {
         req.user._id
       )
 
+    //console.log('uniquesForbiddenTables', uniquesForbiddenTables);
+    //console.log('req.body.query', req.body.query);
+
 
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
       if(includesAdmin){
@@ -662,9 +771,8 @@ export class DashboardController {
 /* SDA CUSTOM*/        uniquesForbiddenTables = [];
 /* SDA CUSTOM*/      }
 	  
-	  
       
-      let mylabels = []
+      let mylabels = [];
       let myQuery: any
       if (uniquesForbiddenTables.length > 0) {
         myQuery = { fields: [], filters: [] }
@@ -693,7 +801,8 @@ export class DashboardController {
           mylabels.push(req.body.query.fields[c].column_name)
         }
       }
-      
+      myQuery.queryMode = req.body.query.queryMode? req.body.query.queryMode: 'EDA'; /** lo añado siempre */
+      myQuery.rootTable = req.body.query.rootTable? req.body.query.rootTable: ''; /** lo añado siempre */
       myQuery.simple = req.body.query.simple;
       myQuery.queryLimit = req.body.query.queryLimit;
       myQuery.joinType = req.body.query.joinType ? req.body.query.joinType : 'inner';
@@ -921,7 +1030,6 @@ export class DashboardController {
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
     try {
-    console.log('execSqlQuery');
       const connection = await ManagerConnectionService.getConnection(req.body.model_id);
       const dataModel = await connection.getDataSource(req.body.model_id)
 
@@ -1146,8 +1254,8 @@ export class DashboardController {
 
 
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {
-      const users = []
-      const roles = []
+      const users = [];
+      const roles = [];
       let anyOne = 'false'
 
       //Get users with permission
@@ -1159,14 +1267,14 @@ export class DashboardController {
             }
             break
           case 'users':
-            permission.users.forEach(user => {
-              if (!users.includes(user)) users.push(user)
+            permission.users.forEach(u => {
+              if ( !users.includes(u.toString()) )  users.push(u.toString());
             })
             break
           case 'groups':
             user.role.forEach(role => {
               if (permission.groups.includes(role)) {
-                if (!roles.includes(role)) roles.push(role)
+                if (!roles.includes(role.toString())) roles.push(role.toString())
               }
             })
         }

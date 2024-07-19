@@ -4306,6 +4306,11 @@
         <source>Alias del filtro (opcional)</source>
         <target>Alias del filtro (opcional)</target>
       </trans-unit>
+
+      <trans-unit id="DatePickerYearPreviousYearFull">
+        <source>El año pasado, completo</source>
+        <target>El año pasado, completo</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

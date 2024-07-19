@@ -9,10 +9,12 @@ import * as _ from 'lodash';
 import { Column } from '@eda/models/model.index';
 import { EdaColumnNumber } from './eda-columns/eda-column-number';
 import { EdaColumnPercentage } from './eda-columns/eda-column-percentage';
-import { EventEmitter } from '@angular/core';
+import { Output, EventEmitter, Component } from '@angular/core';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
-
-
+import { ToastModule } from 'primeng/toast';
+import { Key } from 'protractor';
+import { FindValueSubscriber } from 'rxjs/internal/operators/find';
+import { values } from 'd3';
 
 interface PivotTableSerieParams {
     mainCol: any,
@@ -66,7 +68,6 @@ export class EdaTable {
     public onlyPercentages: boolean = false;
     public percentageColumns: Array<any> = [];
     public noRepetitions: boolean; 
-
     public origValues: any[] = [];
 
 
@@ -80,6 +81,7 @@ export class EdaTable {
     public SubTotals:string = $localize`:@@SubTotals:SubTotales`;
     public Trend:string = $localize`:@@addtrend:Tendencia`;
 
+
     public constructor(init: Partial<EdaTable>) {
         Object.assign(this, init);
         this.initRows = init['visibleRows'] || 10;
@@ -91,9 +93,6 @@ export class EdaTable {
     }
 
     set value(values: any[]) {
-        if( this.origValues.length == 0 ){
-            this.origValues = _.cloneDeep(values);
-        } 
         this.clear();
         this._value = values;
         /* Inicialitzar filtres */
@@ -111,7 +110,6 @@ export class EdaTable {
         if (this.sortedSerie) {
             this.loadSort();
         }
-
 
     }
 
@@ -225,10 +223,16 @@ export class EdaTable {
         if (this.withColSubTotals) {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
         } 
-
-        if (!this.pivot) {
-            this.noRepeatedRows();
-        }
+        // SDA CUSTOM Este código produce repeticiones en tabnlas normales y tablas cruzadas  Issue 96 y 101
+        // SDA CUSTOM if (this.noRepetitions || !this.noRepetitions) {
+        // SDA CUSTOM    this.noRepeatedRows();
+        // SDA CUSTOM }
+        // Nueva propuesta
+        // if ( !this.pivot) {
+        // console.log('desactivadas las no repeticiones');
+        // this.noRepeatedRows();
+        // }
+        // END SDA CUSTOM
 
     }
 
@@ -534,9 +538,6 @@ export class EdaTable {
     
     noRepeatedRows() {
 
-
-        //esta primera iteración con this.noRepetitions en false se hace para devolver las palabras repetidas al diálogo.
-        //Es una secuencia similar a la de quitar los valores, pero opuesta.
         if (!this.noRepetitions) {
            this.value = this.origValues  ;
         } else {

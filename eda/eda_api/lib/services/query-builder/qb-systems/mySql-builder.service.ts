@@ -414,7 +414,11 @@ export class MySqlBuilderService extends QueryBuilderService {
    */
     public filterToString(filterObject: any): any {
       const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
-      const colType = filterObject.filter_column_type;
+      let colType = filterObject.filter_column_type;
+
+      if( filterObject.filter_dynamic == true){
+        colType = 'dynamic';
+      }
 
       if (!column.hasOwnProperty('minimumFractionDigits')) {
         column.minimumFractionDigits = 0;
@@ -436,6 +440,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             return `${colname}  ${filterObject.filter_type} '%${filterObject.filter_elements[0].value1}%' `;
           }   
           return `${colname}  ${filterObject.filter_type} ${this.processFilter(filterObject.filter_elements[0].value1, colType)} `;
+          // in values
         case 1:
           if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
           return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
@@ -607,6 +612,7 @@ public getHavingColname(column: any){
     if (!Array.isArray(filter)) {
       switch (columnType) {
         case 'text': return `'${filter}'`;
+        case 'dynamic': return filter ;
         //case 'text': return `'${filter}'`;
         case 'numeric': return filter;
         case 'date': return `STR_TO_DATE('${filter}','%Y-%m-%d')`
@@ -630,6 +636,11 @@ public getHavingColname(column: any){
           }
         }
       });
+
+      
+      if(columnType == 'dynamic'){
+        return filter;
+      }
 
       return str.substring(0, str.length - 1);
     }

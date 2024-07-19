@@ -15,17 +15,12 @@ export class UsersLlistaComponent implements OnInit {
     public userFitxa: EdaDialogController;
     public table: EdaTable;
     public users: User[] = [];
-/* SDA CUSTOM */ public protectedUsers: any = ["135792467811111111111111","135792467811111111111112"]
 
 
     constructor( private userService: UserService,
                  private spinnerService: SpinnerService,
                  private alertService: AlertService) {
-/* SDA CUSTOM*/         let cellStyle = (value, row) => {
-/* SDA CUSTOM*/             let style: any = {};
-/* SDA CUSTOM*/             if (row.protected) style = { opacity: '0.5' };
-/* SDA CUSTOM*/             return style;          
-/* SDA CUSTOM*/         };            
+
         this.table = new EdaTable({
             alertService: this.alertService,
             search: true,
@@ -43,10 +38,10 @@ export class UsersLlistaComponent implements OnInit {
                 ]
             }),
             cols: [
-/* SDA CUSTOM*/ new EdaColumnContextMenu({disabled : (row) =>  row.protected, cellStyle}),
-/* SDA CUSTOM*/ new EdaColumnText({field: 'email', header: $localize`:@@groups1:EMAIL`, cellStyle }),
-/* SDA CUSTOM*/ new EdaColumnText({field: 'role',  header: $localize`:@@groups2:GRUPOS`, cellStyle}),
-/* SDA CUSTOM*/ new EdaColumnText({field: 'auth',  header: $localize`:@@groups3:AUTH`, cellStyle})
+                new EdaColumnContextMenu(),
+                new EdaColumnText({field: 'email', header: $localize`:@@groups1:EMAIL`}),
+                new EdaColumnText({field: 'role',  header: $localize`:@@groups2:GRUPOS`}),
+                new EdaColumnText({field: 'auth',  header: $localize`:@@groups3:AUTH`})
             ],
             autolayout:false
         });
@@ -63,11 +58,9 @@ export class UsersLlistaComponent implements OnInit {
                     const stringGroups = [];
                     stringGroups.push(_.map(user.role, 'name'));
                     user.role = stringGroups.join(', ');
-/* SDA CUSTOM */    user.protected = this.protectedUsers.includes(user._id); //introducimos el valor de los usuarios protegidos
                 }
                 this.table.value = users;
-            }
-            , (err) => {
+            }, (err) => {
                 this.alertService.addError(err)
             }
         );
