@@ -40,7 +40,9 @@ export class LoginComponent implements OnInit {
                 { name: 'Català', code: 'CAT' },
                 { name: 'Español', code: 'ES' },
                 { name: 'English', code: 'EN' },
-                { name: 'Polski', code: 'PL' }
+               /*SDA CUSTOM  { name: 'Polski', code: 'PL' }*/
+                /*SDA CUSTOM */ { name: 'Galego', code: 'GL' }
+
             ]
     }
 

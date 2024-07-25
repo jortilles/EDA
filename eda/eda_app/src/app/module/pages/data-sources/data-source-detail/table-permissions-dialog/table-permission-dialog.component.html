@@ -5,7 +5,7 @@
 
       <div class="col-12">
 
-        <div style="margin: 1em;">
+        <!-- SDA CUSTOM --><div *ngIf="dataSourceService.model_id!='111111111111111111111111'" style="margin: 1em;">
           <p-radioButton name="groupname" value="users" [label]="usersLabel" [(ngModel)]="type"
             (onClick)="resetValues()">
           </p-radioButton>
@@ -33,7 +33,7 @@
         </p-multiSelect>
       </div>
 
-     
+
 
       <!-- COMMON -->
 

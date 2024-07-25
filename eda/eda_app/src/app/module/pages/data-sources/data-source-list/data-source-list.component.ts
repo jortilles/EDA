@@ -9,7 +9,8 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'app-data-source-list',
-    templateUrl: './data-source-list.component.html',
+    // SDA CUSTOM - Change default template
+    /*SDA CUSTOM*/ templateUrl: './sda-data-source-list.component.html',
     styleUrls: ['./data-source-list.component.css']
 })
 export class DataSourceListComponent implements OnInit, OnDestroy {
@@ -25,6 +26,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     public updateModelSTR = $localize`:@@updateModel:Actualizar modelo de datos desde la base de datos origen para buscar nuevas tablas y columnas`;
     public deleteModelSTR = $localize`:@@deleteModel:Borrar modelo de datos`;
     public unsaved : string;
+    /*SDA CUSTOM*/ public isSda : Boolean ;
 
 
     constructor(public dataModelService: DataSourceService,
@@ -44,19 +46,19 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.getDataSourceId();
+      /*SDA CUSTOM*/ this.isSda = (this.id == '111111111111111111111111');
+      this.getDataSourceId();
         this.dataModelService.currentTreeData.subscribe(
             (data) => this.treeData = data,
             (err) => this.alertService.addError(err)
         );
-        
         this.dataModelService.unsaved.subscribe(
             (data) => {
                 this.unsaved = data ? $localize`:@@notSavedChanges:Hay cambios sin guardar...` : ''
             },
             (err) => this.alertService.addError(err)
         )
-        this.dataModelService.getModelById(this.id);        
+        this.dataModelService.getModelById(this.id);
     }
 
     ngOnDestroy(): void {
@@ -75,7 +77,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
 
     deleteDatasource() {
 
-        const options = 
+        const options =
         {
             title: $localize`:@@Sure:¿Estás seguro?`,
             text: $localize`:@@SureInfo:Estás a punto de borrar el modelo de datos y todos los dashboards asociados, el cambio es irreversible`,
@@ -140,7 +142,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
         this.spinnerService.on();
         this.dataModelService.realoadModelFromDb(this.id).subscribe(
             () => {
-                this.refreshModel(); 
+                this.refreshModel();
                 this.alertService.addSuccess($localize`:@@UpdateModelSucess:Modelo actualizado correctamente`);
                 this.spinnerService.off()},
             err => {

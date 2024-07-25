@@ -191,7 +191,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private renderEdaChart(type: string) {
 
         const isbarline = this.props.edaChart === 'barline';
-        const isstacked = this.props.edaChart === 'stackedbar';
+        const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
 
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         const dataTypes = this.props.query.map(column => column.column_type);
@@ -233,9 +233,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart,  values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
 
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
         const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
 
-        const manySeries = chartData[1].length > 10 ? true : false;
+        const manySeries = chartData[1]?.length > 10 ? true : false;
+
         const styles:StyleConfig = {
             fontFamily: this.fontFamily,
             fontSize: this.fontSize,
@@ -243,7 +248,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
       
       
-        const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
+        const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart);
 
@@ -269,7 +274,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartOptions = config.chartOptions;
         chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
         
-        if(!chartData[1][0].backgroundColor){
+        if(!chartData[1][0]?.backgroundColor){
             chartData[1].forEach(( e,i) => {
                 try{
                     e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
@@ -379,7 +384,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private renderEdaKpi() {
         let chartConfig: any = {};
         chartConfig.value = this.props.data.values[0][0];
-        chartConfig.header = this.props.query[0].display_name.default;
+        chartConfig.header = this.props.query[0]?.display_name?.default;
         const config: any = this.props.config;
         let alertLimits = [];
         try{
@@ -661,8 +666,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     public updateComponent() {
-        if (this.componentRef) {
-            this.componentRef.instance.updateChart();
+        if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
+            try {
+                this.componentRef.instance?.updateChart();
+            } catch(err) {
+                console.error(err);
+            }
         }
     }
 

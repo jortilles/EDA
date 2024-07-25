@@ -30,7 +30,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { MessagesModule } from 'primeng/messages';
-import {MessageModule} from 'primeng/message';
+import { MessageModule } from 'primeng/message';
 import { ListboxModule } from 'primeng/listbox';
 import { TreeModule } from 'primeng/tree';
 import { TieredMenuModule } from 'primeng/tieredmenu';
@@ -40,15 +40,13 @@ import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
 import { AccordionModule } from 'primeng/accordion';
 import { TooltipModule } from 'primeng/tooltip';
-import {OrderListModule} from 'primeng/orderlist';
-import {InputNumberModule} from 'primeng/inputnumber';
-import {ToolbarModule} from 'primeng/toolbar';
-import {EditorModule} from 'primeng/editor';
-import {ToggleButtonModule} from 'primeng/togglebutton';
-import {SliderModule }  from 'primeng/slider';
-
-
-
+import { OrderListModule } from 'primeng/orderlist';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { ToolbarModule } from 'primeng/toolbar';
+import { EditorModule } from 'primeng/editor';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { SliderModule } from 'primeng/slider';
+import { TreeSelectModule } from 'primeng/treeselect';
 
 @NgModule({
     providers: [ConfirmationService, MessageService],
@@ -61,6 +59,8 @@ import {SliderModule }  from 'primeng/slider';
         SidebarModule,
         ButtonModule,
         RadioButtonModule,
+        TreeSelectModule,
+        TreeModule,
         SlideMenuModule,
         DropdownModule,
         MultiSelectModule,

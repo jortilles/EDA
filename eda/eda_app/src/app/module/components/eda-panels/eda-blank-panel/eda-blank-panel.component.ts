@@ -30,6 +30,8 @@ import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 import { ActivatedRoute } from '@angular/router';
 
+import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
+
 export interface IPanelAction {
     code: string;
     data: any;
@@ -125,6 +127,7 @@ export class EdaBlankPanelComponent implements OnInit {
     /** Query Variables */
     public tables: any[] = [];
     public tablesToShow: any[] = [];
+    public assertedTables: any[] = [];
     public columns: any[] = [];
     public aggregationsTypes: any[] = [];
     public filtredColumns: Column[] = [];
@@ -134,7 +137,15 @@ export class EdaBlankPanelComponent implements OnInit {
     public queryLimit: number;
     public joinType: string = 'inner';
 
-    public modeSQL: boolean;
+    public queryModes: any[] = [
+        { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+        { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
+        { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
+    ];
+    public selectedQueryMode: string = 'EDA2';
+
+    // Depreacted use selectedQueryMode instead of
+    // public modeSQL: boolean;
     public sqlOriginTables: {}[];
     public sqlOriginTable: any;
 
@@ -148,6 +159,12 @@ export class EdaBlankPanelComponent implements OnInit {
     public globalFilters: any[] = [];
     public filterValue: any = {};
 
+    public loadingNodes: boolean = false;
+    public rootTable: any;
+    public tableNodes: any = [];
+    public selectedTableNode: any;
+    public nodeJoins: any[] = [];
+
     public color: any = { r: 255, g: 0, b: 0.3 };
 
     /*Deep copies for panel and color configuration to recover panel when edit changes are cancelled*/
@@ -155,7 +172,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public colorsDeepCopy: any = {};
 
     public queryFromServer: string = '';
-    public showHiddId: boolean;
+/* SDA CUSTOM  */    public showHiddId: boolean;
 
     // join types 
     joinTypeOptions: any[] = [
@@ -198,7 +215,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
         this.index = 0;
         this.modeSQL = false;
 
@@ -207,20 +223,32 @@ export class EdaBlankPanelComponent implements OnInit {
         /**If panel comes from server */
         if (this.panel.content) {
             try{
-                const query = this.panel.content.query;
-                    
-                if (query.query.modeSQL) {
-                    this.modeSQL = true;
-                    this.currentSQLQuery = query.query.SQLexpression;
-                    this.sqlOriginTable = this.tables.filter(t => t.table_name === query.query.fields[0].table_id)
-                        .map(table => {
-                            return { label: table.display_name.default, value: table.table_name }
-                        })[0];
+                const contentQuery = this.panel.content.query;
+
+                const modeSQL = contentQuery.query.modeSQL; // Comptabilitzar dashboard antics sense queryMode informat
+                let queryMode = contentQuery.query.queryMode;
+
+                if (!queryMode) {
+                    queryMode = modeSQL ? 'SQL' : 'EDA';
+                }
+
+                this.selectedQueryMode = queryMode;
+
+                if (queryMode == 'EDA2') {
+                    this.rootTable = contentQuery.query.rootTable;
+                }
+
+                if (modeSQL || queryMode=='SQL') {
+                    this.currentSQLQuery = contentQuery.query.SQLexpression;
+
+                    this.sqlOriginTable = this.tables.filter(t => t.table_name === contentQuery.query.fields[0].table_id)
+                        .map(table => ({ label: table.display_name.default, value: table.table_name }))[0];
                 }
 
                 this.loadChartsData(this.panel.content);
-            }catch(e){
+            } catch(e){
                 console.error('Error loading panen conent.....');
+                throw e;
             }
         }
 
@@ -233,6 +261,68 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
+    }
+
+    /**
+     * When selecting a node from the tree, it loads the columns to display.
+     * @param event selected node. Can be rootNode (table_id) or childNode (child_id).
+     */
+    public tableNodeSelect(event: any): void {
+        // clean columns filter.
+        this.inputs.findColumn.reset();
+
+        if (this.currentQuery.length == 0) {
+            this.nodeJoins = [];
+            this.rootTable = undefined;
+        }
+
+        const node = event?.node;
+        if (node) {
+            this.selectedTableNode = event.node;
+            let table_id = node.table_id || node.child_id //.split('.')[0];
+
+            PanelInteractionUtils.loadColumns(this, this.findTable(table_id));
+
+            if (node.joins) {
+                // Add the sourceJoins from this node.
+                // When select a column then will add this join to this column for generate the query
+                this.nodeJoins.push(node.joins);
+            }
+        }
+    }
+
+    /**
+     * Expand table relations
+     * @param event node to expand. Empty for nodes without more paths.
+    */
+    public tableNodeExpand(event: any): void {
+        this.loadingNodes = true;
+
+        const node = event?.node;
+
+        if (node) {
+            PanelInteractionUtils.expandTableNode(this, node);
+        }
+
+        this.loadingNodes = false;
+    }
+
+    public checkNodeSelected(node: any) {
+        if (node?.child_id) {
+            const nodeJoins = JSON.stringify((node.joins || ['root'])[0]);
+            const nodeTableId = node.child_id;
+
+
+            return this.currentQuery.some((query: any) => {
+                const queryJoins = JSON.stringify((query.joins || ['root'])[0]);
+                return query.table_id === nodeTableId && queryJoins === nodeJoins;
+            }) || this.filtredColumns.some((filter: any) => {
+                const filterJoins = JSON.stringify((filter.joins || ['root'])[0]);
+                return filter.table_id === nodeTableId && filterJoins === nodeJoins;
+            });
+        } else {
+            return false;
+        }
     }
 
     getEditMode() {
@@ -258,7 +348,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     col.display_name.default = `${origin.display_name.default}(${col.whatif.operator}${col.whatif.value})`;
                 }
             };
-        
+
             if (!column) {
                 for (const col of this.getWhatIfColumns()) {
                     updateDisplayName(col);
@@ -319,8 +409,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public setTablesData = () => {
         const tables = TableUtils.getTablesData(this.inject.dataSource.model.tables, this.inject.applyToAllfilter);
-        this.tables = _.cloneDeep(tables.allTables);
-        this.tablesToShow = _.cloneDeep(tables.tablesToShow);
+        this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
+        this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
     }
 
@@ -342,7 +432,7 @@ export class EdaBlankPanelComponent implements OnInit {
             try {
                 const response = await QueryUtils.switchAndRun(this, panelContent.query);
                 this.chartLabels = this.chartUtils.uniqueLabels(response[0]);
-                this.chartData = response[1];
+                this.chartData = response[1].map(item => item.map(a => a == null ? NULL_VALUE : a)); // canviem els null per valor customitzable
                 this.buildGlobalconfiguration(panelContent);
             } catch (err) {
                 this.alertService.addError(err);
@@ -357,74 +447,49 @@ export class EdaBlankPanelComponent implements OnInit {
      */
 
     public buildGlobalconfiguration(panelContent: any) {
-        if (!panelContent.query.query.modeSQL) {
-            try{
-                const queryTables = [...new Set(panelContent.query.query.fields.map((field: any) => field.table_id))];
+        const modeSQL = panelContent.query.query.modeSQL;
+        const queryMode = this.selectedQueryMode;
+        this.showHiddenColumn = true;
 
-                for (const idTable of queryTables) {
-                    const table = this.tables.find(t => t.table_name === idTable);
-                    // Init columns from table
-                    PanelInteractionUtils.loadColumns(this, table);
+        if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
 
-                    for (const contentColumn of panelContent.query.query.fields) {
-                        const column = this.columns.find(c =>
-                            c.table_id === contentColumn.table_id &&
-                            c.column_name === contentColumn.column_name &&
-                            c.display_name.default === contentColumn.display_name
-                        );
-                        
-                        if (column) {
-                            column.whatif_column = contentColumn.whatif_column || false;
-                            column.whatif = contentColumn.whatif || {};
-                            PanelInteractionUtils.moveItem(this, column);
-                        } else {
-                            if(contentColumn.table_id === idTable) {
-                                let duplicatedColumn = _.cloneDeep(
-                                    this.currentQuery.find(c =>
-                                        c.table_id === contentColumn.table_id &&
-                                        c.column_name === contentColumn.column_name
-                                    )
-                                );
-
-                                if(!duplicatedColumn){
-                                    duplicatedColumn = _.cloneDeep(
-                                        this.columns.find(c =>
-                                            c.table_id === contentColumn.table_id &&
-                                            c.column_name === contentColumn.column_name
-                                        )
-                                    );
-                                }
-
-                                if(duplicatedColumn){
-                                    duplicatedColumn.display_name.default = contentColumn.display_name;
-                                    duplicatedColumn.whatif_column = contentColumn.whatif_column || false;
-                                    duplicatedColumn.whatif = contentColumn.whatif || {};
-                                    PanelInteractionUtils.handleAggregationType4DuplicatedColumns(this, duplicatedColumn);
-                                    // Moc la columna directament perque es una duplicada.... o no....
-                                    this.currentQuery.push(duplicatedColumn);
-                                }
-                            }
-                        }
+            try {
+                if (queryMode == 'EDA2') {
+                    this.rootTable = this.tables.find((t) => t.table_name == this.rootTable);
+                    // Assert Relation Tables
+                    const currentQuery = panelContent.query.query.fields;
+                    for (const column of currentQuery) {
+                        PanelInteractionUtils.assertTable(this, column);
                     }
 
-                } 
-                this.columns = this.columns.filter((c) => !c.isdeleted);
+                    PanelInteractionUtils.handleCurrentQuery2(this);
+                    this.reloadTablesData();
+                    PanelInteractionUtils.loadTableNodes(this);
+                    this.userSelectedTable = undefined;
+                    this.columns = [];
+                } else {
+                    PanelInteractionUtils.handleCurrentQuery(this);
+                    this.columns = this.columns.filter((c) => !c.isdeleted);
+                }
+                
+                
             } catch(e) {
                 console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
                 console.error(e);
+                throw e;
             }
         }
 
         this.queryLimit = panelContent.query.query.queryLimit;
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
-        PanelInteractionUtils.handleCurrentQuery(this);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
         PanelInteractionUtils.verifyData(this);
 
         const config = ChartsConfigUtils.recoverConfig(panelContent.chart, panelContent.query.output.config);
         this.changeChartType(panelContent.chart, panelContent.edaChart, config);
 
+        this.showHiddenColumn = false;
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
     }
@@ -434,15 +499,18 @@ export class EdaBlankPanelComponent implements OnInit {
      * Updates panel content with actual state
      */
     public savePanel() {
-
         this.panel.title = this.pdialog.getTitle();
 
+        if (this.panel?.content) {
+            this.panel.content.query.query.queryMode = this.selectedQueryMode;
+            this.panel.content.query.query.rootTable = this.rootTable;
+        }
 
-        if (!_.isEmpty(this.graficos) || this.modeSQL) {
+        if (!_.isEmpty(this.graficos) || this.selectedQueryMode == 'SQL') {
 
             this.display_v.saved_panel = true;
 
-            const query = this.initObjectQuery(this.modeSQL);
+            const query = this.initObjectQuery();
             const chart = this.chartForm.value.chart.value ? this.chartForm.value.chart.value : this.chartForm.value.chart;
             const edaChart = this.panelChart.props.edaChart;
 
@@ -452,7 +520,6 @@ export class EdaBlankPanelComponent implements OnInit {
             if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
-
         } else {
             this.display_v.saved_panel = false;
         }
@@ -464,8 +531,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     }
 
-    public initObjectQuery(modeSQL: boolean) {
-        if (modeSQL) {
+    public initObjectQuery() {
+        if (this.selectedQueryMode == 'SQL') {
             return QueryUtils.initSqlQuery(this);
         } else {
             return QueryUtils.initEdaQuery(this)
@@ -568,6 +635,18 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
+    public getUserSelectedTable(): any {
+        let selectedTable: any;
+        if (this.selectedQueryMode !== 'EDA2') {
+          selectedTable = this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0];
+          if (!selectedTable) selectedTable = this.tablesToShow.filter(table => table.table_name === this.userSelectedTable.split('.')[0])[0];
+        } else {
+          selectedTable = this.tables.find((table) => table.table_name === this.userSelectedTable);
+        }
+
+        return selectedTable;
+    }
+
     /**
      * 
      */
@@ -582,7 +661,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onColumnInputKey(event: any) {
         if (!_.isNil(this.userSelectedTable)) {
-            PanelInteractionUtils.loadColumns(this, this.tablesToShow.filter(table => table.table_name === this.userSelectedTable)[0]);
+            const selectedTable = this.getUserSelectedTable();
+            PanelInteractionUtils.loadColumns(this, selectedTable) ;
             if (event.target.value) {
                 this.columns = this.columns
                     .filter(col => col.display_name.default.toLowerCase().includes(event.target.value.toLowerCase()));
@@ -599,28 +679,25 @@ export class EdaBlankPanelComponent implements OnInit {
             //Reordeno
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
-            transferArrayItem(event.previousContainer.data,
-                event.container.data,
-                event.previousIndex,
-                event.currentIndex);
-                //obor dialeg o filre
-                if(event.container.element.nativeElement.className.toString().includes( 'select-list') ) {                
-                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex] );
-                }else{       
-                    this.openColumnDialog( <Column><unknown>event.container.data[event.currentIndex]  , true);
-                   // Trec la agregació si puc.
-                    try{
-                        const c:Column = <Column><unknown>event.container.data[event.currentIndex];
-                        c.aggregation_type.forEach( e=> e.selected = false);
-                        c.aggregation_type.map( e=> e.value == 'none'? e.selected = true:true );
-                    }catch(e){
-                        console.log('no llego')
-                    }
-                    
+            transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+            //obor dialeg o filre
+            const column = <Column><unknown>event.container.data[event.currentIndex];
+            if(event.container.element.nativeElement.className.toString().includes('select-list')) {
+                this.moveItem(column);
+                this.openColumnDialog(column);
+            } else {
+                this.openColumnDialog(column, true);
+                // Trec la agregació si puc.
+                try{
+                    const c:Column = <Column><unknown>event.container.data[event.currentIndex];
+                    c.aggregation_type.forEach( e=> e.selected = false);
+                    c.aggregation_type.map( e=> e.value == 'none'? e.selected = true:true );
+                }catch(e){
+                    console.error(e)
+                    throw e;
                 }
+            }
         }
-
-
     }
 
 
@@ -634,13 +711,19 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param isFilter is filter column or normal column
      */
     public openColumnDialog(column: Column, isFilter?: boolean): void {
+
         this.disableBtnSave();
+
+        if (column.table_id !== this.rootTable?.table_name) {
+            column.joins = (column.joins||[]).length == 0 ? this.nodeJoins[this.nodeJoins.length-1] : column.joins;
+        }
+
         const p = {
             selectedColumn: _.cloneDeep(column),
             currentQuery: this.currentQuery,
             inject: this.inject,
             panel: this.panel,
-            table: this.findTable(column.table_id),
+            table: this.findTable(column.table_id)?.display_name?.default,
             filters: this.selectedFilters,
             connectionProperties: this.connectionProperties
         };
@@ -675,6 +758,17 @@ export class EdaBlankPanelComponent implements OnInit {
 
                             if (field.old_column_type === 'text' && aggregationSelected.value === 'none') {
                                 field.column_type = 'text';
+                                field.old_column_type = 'numeric';
+                            }
+
+                            if (field.column_type === 'date' && aggregationSelected.value !== 'none') {
+                                field.old_column_type = 'date';
+                                field.column_type = 'numeric';
+                            }
+
+                            if (field.old_column_type === 'date' && aggregationSelected.value === 'none') {
+                                field.column_type = 'date';
+                                field.old_column_type = 'numeric';
                             }
                         } 
                     }
@@ -700,6 +794,7 @@ export class EdaBlankPanelComponent implements OnInit {
                             }
                         });
                     }
+
                     this.filterController = undefined;
                 }
             });
@@ -710,22 +805,28 @@ export class EdaBlankPanelComponent implements OnInit {
      * find table by name
      * @param t table name
      */
-    private findTable(t: string): string {
-        return this.tables.find(table => table.table_name === t).display_name.default;
+    private findTable(t: string): any {
+        return this.tables.find(table => table.table_name === t);
     }
 
     /**
-     * Sets global filter (called from dashboardComponent)
+     * Adds or Updates a globalFilter (called from dashboardComponent)
      * @param filter filter so set
      */
-    public setGlobalFilter(filter) {
-        if (filter.filter_elements[0].value1.length === 0) {
-            let filters = this.globalFilters;
-            this.globalFilters = filters.filter(f => f.filter_id !== filter.filter_id);
+    public assertGlobalFilter(_filter: any) {
+        const globalFilter = _.cloneDeep(_filter);
+
+        if (_filter.pathList && _filter.pathList[this.panel.id]) {
+            globalFilter.joins = _filter.pathList[this.panel.id].path
+            globalFilter.filter_table = _filter.pathList[this.panel.id].table_id;
+        }
+        const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
+
+        if (filterInx != -1) {
+            this.globalFilters.splice(this.globalFilters[filterInx], 1);
+            this.globalFilters.push(globalFilter);
         } else {
-            let filters = this.globalFilters;
-            this.globalFilters = filters.filter(f => f.filter_id !== filter.filter_id)
-            this.globalFilters.push(filter)
+            this.globalFilters.push(globalFilter);
         }
     }
 
@@ -757,20 +858,25 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.saved_panel = false;
         this.columns = [];
         this.currentQuery = [];
-        if (this.panelDeepCopy.query) {
 
+        if (this.panelDeepCopy.query) {
             this.panelDeepCopy.query.query.filters = this.mergeFilters(this.panelDeepCopy.query.query.filters, this.globalFilters);
+
             this.filtredColumns = [];
             //Reassing sqlQuery -if exists
             this.currentSQLQuery = this.panelDeepCopy.query.query.SQLexpression;
-            this.modeSQL = this.panelDeepCopy.query.query.modeSQL;
+
+            const queryMode = this.panelDeepCopy.query.query.queryMode;
+            const modeSQL = this.panelDeepCopy.query.query.modeSQL;
+
+            this.selectedQueryMode = _.isNil(queryMode) ? (modeSQL ? 'SQL' : 'EDA') : queryMode;
+            this.rootTable = this.panelDeepCopy.rootTable;
         }
 
         this.loadChartsData(this.panelDeepCopy);
         this.userSelectedTable = undefined;
         this.tablesToShow = this.tables;
         this.display_v.chart = '';
-        // this.index = this.modeSQL ? 1 : 0;
         this.display_v.page_dialog = false;
     }
 
@@ -986,13 +1092,19 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public runManualQuery = () => QueryUtils.runManualQuery(this);
 
-    public moveItem = (column: any) => PanelInteractionUtils.moveItem(this, column);
+    public moveItem = (column: any) => {
+        PanelInteractionUtils.moveItem(this, column);
+
+        if (this.selectedQueryMode == 'EDA2' && this.currentQuery.length === 1) {
+            PanelInteractionUtils.loadTableNodes(this);
+       }
+    }
 
     public searchRelations = (c: Column) => PanelInteractionUtils.searchRelations(this, c);
 
     public loadColumns = (table: any) => PanelInteractionUtils.loadColumns(this, table);
 
-    public removeColumn = (c: Column, list?: string) => PanelInteractionUtils.removeColumn(this, c, list);
+    public removeColumn = (c: Column, list?: string, event?: Event) => PanelInteractionUtils.removeColumn(this, c, list);
 
     public getOptionDescription = (value: string): string => EbpUtils.getOptionDescription(value);
 
@@ -1007,11 +1119,6 @@ export class EdaBlankPanelComponent implements OnInit {
         if (this.panel.content) {
             return this.panel.content.chart;
         } else return null;
-    }
-
-    public switchAndBuildQuery() {
-        if (!this.modeSQL) return QueryUtils.initEdaQuery(this);
-        else return QueryUtils.initSqlQuery(this);
     }
 
     /** duplica un patell del dashboard i el posiciona un punt per sota del origina./ */
@@ -1065,24 +1172,28 @@ export class EdaBlankPanelComponent implements OnInit {
         this.queryFromServer = '';
         this.currentQuery = [];
         this.filtredColumns = [];
-        this.modeSQL = true;
+        this.selectedQueryMode = 'SQL';
     }
 
-    public async changeQueryMode(): Promise<void> {
-
+    public changeQueryMode(): void {
+        this.index = 0;
         this.currentSQLQuery = '';
         this.currentQuery = [];
         this.filtredColumns = [];
         this.display_v.btnSave = true;
+        this.rootTable = undefined;
+        this.action.emit({ code: 'QUERYMODE', data: { queryMode: this.selectedQueryMode, panel: this.panel } })
     }
 
     public accopen(e){
 
-    }
+    public accopen(e) { }
+
     /** This funciton return the display name for a given table. Its used for the query resumen      */
-    public getNiceTableName(  table ){
-         return this.tables.find( t => t.table_name === table).display_name.default;
+    public getNiceTableName(table: any) {
+        return this.tables.find( t => t.table_name === table)?.display_name?.default;
     }
+
 
     public onWhatIfDialog(): void {
         this.display_v.whatIf_dialog = true;
@@ -1092,4 +1203,107 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.whatIf_dialog = false;
     }
     
+    public getColumnJoins(column: Column) {
+        let pathStr = '';
+        if (column.joins?.length > 0) {
+
+
+            for (const path of column.joins) {
+                const table = (path[0]||'');
+                let tableName = this.getNiceTableName(table);
+                if (!tableName) tableName = this.getNiceTableName(table.split('.')[0]);
+
+                pathStr += ` ${tableName} <i class="pi pi-angle-right"></i> `;
+            }
+        } else if (column.valueListSource) {
+            const tableName = this.getNiceTableName(column.valueListSource.target_table);
+            if (tableName) pathStr += ` ${tableName} → `;
+        }
+
+
+        return pathStr
+    }
+
+    public getFilterJoins(filter: any) {
+        let pathStr = '';
+        if (filter.joins?.length > 0) {
+
+            for (const path of filter.joins) {
+                const table = (path[0]||'');
+                let tableName = this.getNiceTableName(table);
+                if (!tableName) tableName = this.getNiceTableName(table.split('.')[0]);
+
+                pathStr += ` ${tableName} <i class="pi pi-angle-right"></i> `;
+            }
+        } else if (filter.valueListSource) {
+            const tableName = this.getNiceTableName(filter.valueListSource.target_table);
+            if (tableName) pathStr += ` ${tableName} → `;
+        }
+
+        return pathStr
+    }
+
+    public getDisplayFilterStr(filter: any) {
+        let str = '';
+
+        const table = this.findTable(filter.filter_table.split('.')[0]);
+
+        if (table.table_name) {
+            const tableName = table.display_name?.default;
+            const columnName = table.columns.find((c) => c.column_name == filter.filter_column)?.display_name?.default;
+
+            const values = filter.filter_elements[0]?.value1;
+            const values2 = filter.filter_elements[1]?.value2;
+            let valueStr = '';
+
+            if (values) {
+                if (values.length == 1 && !['in', 'not_in'].includes(filter.filter_type)) {
+                    valueStr = `"${values[0]}"`;
+                }  else if (values.length > 1 || ['in', 'not_in'].includes(filter.filter_type)) {
+                    valueStr = `[${values.map((v: string) => (`"${v}"`) ).join(', ')}]`;
+                }
+
+                if (values2) {
+                    if (values2.length == 1) {
+                        valueStr = `AND "${values2[0]}"`;
+                    }  else if (values2.length > 1) {
+                        valueStr = `AND [${values2.map((v: string) => (`"${v}"`) ).join(', ')}]`;
+                    }
+                }
+
+            }
+
+
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}`;
+        }
+
+
+        return str;
+    }
+
+
+    public onWhatIfDialog(): void {
+        this.display_v.whatIf_dialog = true;
+    }
+
+    public onCloseWhatIfDialog(): void {
+        this.display_v.whatIf_dialog = false;
+    }
+
+    public disableRunQuery(): boolean {
+        let disable = false;
+
+        if (this.selectedQueryMode !== 'SQL') {
+            if (this.currentQuery.length === 0 && this.index === 0) {
+                disable = true;
+            }
+        } else {
+            if (_.isNil(this.sqlOriginTables)) {
+                disable = true;
+            }
+        }
+
+        return disable;
+    }
+
 }

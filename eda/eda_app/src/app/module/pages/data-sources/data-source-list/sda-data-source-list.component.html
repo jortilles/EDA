@@ -1,0 +1,54 @@
+<div class="grid">
+
+  <div class="col-4 ui-sm-12">
+      <p-card>
+
+
+          <div class="wraper">
+              <div style="margin: 0.2em; font-size:1.2rem" i18n="Titulo Card|Titulo card@@tituloCard">
+                  Modelo de datos
+              </div>
+              <p style="margin-left: 0.3em;">{{unsaved}}</p>
+
+
+              <button pButton (click)="this.refreshModel()" class="header-button" icon="fa fa-refresh"
+                  iconPos="center" [pTooltip]="refreshSTR">
+              </button>
+
+              <button id="saveModel" pButton (click)="dataModelService.sendModel()" class="header-button"
+                  icon="fa fa-save" iconPos="center" [pTooltip]="saveModelSTR">
+              </button>
+
+              <button  [ngClass]="{'hidden': isSda}" pButton (click)="reLoadModelFromDb()" class="header-button" icon="fa fa-database"
+                  iconPos="center" [pTooltip]="updateModelSTR">
+              </button>
+
+              <button [ngClass]="{'hidden': isSda}" id="deleteModel" pButton (click)="deleteDatasource()" class="header-button" icon="fa fa-trash"
+                  iconPos="center" style="float: right;" [pTooltip]="deleteModelSTR">
+              </button>
+          </div>
+
+
+          <div style="overflow-y: auto; max-height: 60em;">
+
+              <p-tree id="datasource-list" [style]="{'width':'100%'}" [value]="treeData" [filter]="false"
+                  selectionMode="single" [(selection)]="selectedFile" (onNodeSelect)="nodeSelect($event)"
+                  (onNodeUnselect)="nodeUnselect($event)" (onNodeExpand)="nodeSelect($event)">
+
+                  <ng-template let-node pTemplate="selected">
+                      <div style="font-weight:bold;">{{node.label}}</div>
+                  </ng-template>
+                  <ng-template let-node pTemplate="unselected">
+                      <div style="font-weight:lighter; ">{{node.label}}</div>
+                  </ng-template>
+              </p-tree>
+          </div>
+
+      </p-card>
+  </div>
+
+  <div class="col-8  ui-sm-12">
+      <app-data-source-detail (onTableCreated)="reLoadModelFromDb()"></app-data-source-detail>
+  </div>
+
+</div>

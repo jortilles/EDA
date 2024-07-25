@@ -37,40 +37,46 @@ export const QueryUtils = {
    * Switch sql mode or eda mode and run query
    * @param ebp edaBlankPanelComponent
    * @param query query to run
-   * 
+   *
    */
   switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
-    if (ebp.connectionProperties) {
-      query.dashboard.connectionProperties = ebp.connectionProperties;
-    }
-
-    if (!ebp.modeSQL) {
-      const response = await ebp.dashboardService.executeQuery(query).toPromise();
-      return response;
-    } else {
-      const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
-      const numFields = response[0].length;
-      const types = new Array(numFields);
-      types.fill(null);
-      for (let row = 0; row < response[1].length; row++) {
-        response[1][row].forEach((field, i) => {
-          if (types[i] === null) {
-            if (typeof field === 'number') {
-              types[i] = 'numeric';
-            } else if (typeof field === 'string') {
-              types[i] = 'text';
+    try {
+      if (ebp.selectedQueryMode != 'SQL') {
+        const queryData = JSON.parse(JSON.stringify(query));
+        queryData.query.filters = query.query.filters.filter((f) => 
+          (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
+          || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
+        );
+        const response = await ebp.dashboardService.executeQuery(queryData).toPromise();
+        return response;
+      } else {
+        const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
+        const numFields = response[0].length;
+        const types = new Array(numFields);
+        types.fill(null);
+        for (let row = 0; row < response[1].length; row++) {
+          response[1][row].forEach((field, i) => {
+            if (types[i] === null) {
+              if (typeof field === 'number') {
+                types[i] = 'numeric';
+              } else if (typeof field === 'string') {
+                types[i] = 'text';
+              }
             }
+          });
+          if (!types.includes(null)) {
+            break;
           }
-        });
-        if (!types.includes(null)) {
-          break;
         }
+
+        ebp.currentQuery = [];
+        types.forEach((type, i) => {
+          ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
+        });
+        return response;
       }
-      ebp.currentQuery = [];
-      types.forEach((type, i) => {
-        ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
-      });
-      return response;
+    } catch (err) {
+      throw err;
     }
   },
 
@@ -80,7 +86,10 @@ export const QueryUtils = {
     return serverquery;
   },
 
-
+  switchAndBuildQuery: (ebp: EdaBlankPanelComponent) =>  {
+    if (ebp.selectedQueryMode != 'SQL') return QueryUtils.initEdaQuery(ebp);
+    else return QueryUtils.initSqlQuery(ebp);
+  },
 
   /**
  * Runs a query and sets panel chart
@@ -91,14 +100,14 @@ export const QueryUtils = {
     /** gestiona las columnas duplicadas. Si tengo dos columnas con el mismo nombre le añado el sufijo _1, _2, _3.... etc */
     let dup = [];
     let cont = 0;
-    ebp.currentQuery.forEach(a=> { 
+    ebp.currentQuery.forEach(a=> {
       let finder = dup.find(b => b === a.display_name.default);
       if (finder != null) {
         cont = cont + 1
         a.display_name.default = finder + "_" + cont ;
       } else {
         dup.push(a.display_name.default);
-      }  
+      }
      })
 
     ebp.display_v.disablePreview = false;
@@ -113,12 +122,9 @@ export const QueryUtils = {
     }
 
     try {
-
-      // if (ebp.panelChart) ebp.panelChart.destroyComponent();
-
-      const query = ebp.switchAndBuildQuery();
+      const query = QueryUtils.switchAndBuildQuery(ebp);
       /**Add fake column if SQL mode and there isn't fields yet */
-      if (query.query.modeSQL && query.query.fields.length === 0) {
+      if (query.query.queryMode == 'SQL' && query.query.fields.length === 0) {
         query.query.fields.push(QueryUtils.createColumn('custom', null, ebp.sqlOriginTable));
       }
 
@@ -128,7 +134,6 @@ export const QueryUtils = {
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
       ebp.chartData = response[1];       // Chart data
       ebp.ableBtnSave();                 // Button save
-
       /* Labels i Data - Arrays */
       if (!globalFilters) {
 
@@ -148,10 +153,8 @@ export const QueryUtils = {
       ebp.index = 1;
       ebp.display_v.saved_panel = true;
     } catch (err) {
-
       ebp.alertService.addError(err);
       ebp.spinnerService.off();
-
     }
 
   },
@@ -161,13 +164,13 @@ export const QueryUtils = {
   */
   runManualQuery: (ebp: EdaBlankPanelComponent) => {
     /**No check in sql mode */
-    if (ebp.modeSQL) {
+    if (ebp.selectedQueryMode == 'SQL') {
       QueryUtils.runQuery(ebp, false);
       return;
     }
 
     /**
-    * Cumulative sum check 
+    * Cumulative sum check
     */
     const dataDescription = ebp.chartUtils.describeData(ebp.currentQuery, ebp.chartLabels);
     const cumulativeSum = ebp.currentQuery.filter(field => field.column_type === 'date' && field.cumulativeSum === true).length > 0;
@@ -191,9 +194,9 @@ export const QueryUtils = {
       /**
        * If the table row count is greather than the MAX_TABLE_ROWS_FOR_ALERT
        * And there is no aggretation
-       * And there is no limit OR the limit is over the MAX_TABLE_ROWS_FOR_ALERT 
+       * And there is no limit OR the limit is over the MAX_TABLE_ROWS_FOR_ALERT
        */
-      if ( (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT)  && (ebp.selectedFilters.length + aggregations <= 0 )   
+      if ( (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT)  && (ebp.selectedFilters.length + aggregations <= 0 )
             &&  ( ( ebp.queryLimit == undefined  )  ||  (  ebp.queryLimit >  MAX_TABLE_ROWS_FOR_ALERT ) )   ) {
 
         ebp.alertController = new EdaDialogController({
@@ -218,7 +221,6 @@ export const QueryUtils = {
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);
-    
     const params = {
       table: '',
       dataSource: ebp.inject.dataSource._id,
@@ -228,9 +230,10 @@ export const QueryUtils = {
       config: config.getConfig(),
       queryLimit: ebp.queryLimit,
       joinType: ebp.joinType,
+      rootTable: ebp.rootTable?.table_name,
       connectionProperties: ebp.connectionProperties
     };
-    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params);
+    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },
 
 
@@ -248,7 +251,7 @@ export const QueryUtils = {
       config: config.getConfig(),
       connectionProperties: ebp.connectionProperties
     };
-    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, true, ebp.currentSQLQuery);
+    return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode, ebp.currentSQLQuery);
 
   }
 }
