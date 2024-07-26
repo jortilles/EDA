@@ -248,6 +248,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     public loadGlobalFiltersData() {
+
         const params = {
             table: this.targetTable.value,
             dataSource: this.params.dataSource._id,
@@ -257,8 +258,12 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             panel: '',
             filters: []
         };
+        
         //Recupero el alias value para restaurarlo a la hora de editarlo.
-        this.aliasValue = this.params.filter.column.label;
+        if( this.params.filter !== undefined ){
+            this.aliasValue = this.params.filter.column.label;
+        }
+
         this.dashboardService.executeQuery(
             this.queryBuilderService.normalQuery([this.targetCol.value], params)
         ).subscribe(
