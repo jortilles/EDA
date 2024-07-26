@@ -142,7 +142,7 @@ export class EdaBlankPanelComponent implements OnInit {
         { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
         { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
     ];
-    public selectedQueryMode: string = 'EDA2';
+    public selectedQueryMode: string = 'EDA';
 
     // Depreacted use selectedQueryMode instead of
     // public modeSQL: boolean;
@@ -172,7 +172,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public colorsDeepCopy: any = {};
 
     public queryFromServer: string = '';
-/* SDA CUSTOM  */    public showHiddId: boolean;
 
     // join types 
     joinTypeOptions: any[] = [
@@ -216,8 +215,6 @@ export class EdaBlankPanelComponent implements OnInit {
 
     ngOnInit(): void {
         this.index = 0;
-        this.modeSQL = false;
-
         this.setTablesData();
 
         /**If panel comes from server */
@@ -449,7 +446,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public buildGlobalconfiguration(panelContent: any) {
         const modeSQL = panelContent.query.query.modeSQL;
         const queryMode = this.selectedQueryMode;
-        this.showHiddenColumn = true;
 
         if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
 
@@ -489,7 +485,6 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = ChartsConfigUtils.recoverConfig(panelContent.chart, panelContent.query.output.config);
         this.changeChartType(panelContent.chart, panelContent.edaChart, config);
 
-        this.showHiddenColumn = false;
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
     }
@@ -1185,9 +1180,6 @@ export class EdaBlankPanelComponent implements OnInit {
         this.action.emit({ code: 'QUERYMODE', data: { queryMode: this.selectedQueryMode, panel: this.panel } })
     }
 
-    public accopen(e){
-
-    public accopen(e) { }
 
     /** This funciton return the display name for a given table. Its used for the query resumen      */
     public getNiceTableName(table: any) {
@@ -1199,9 +1191,6 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.whatIf_dialog = true;
     }
 
-    public onCloseWhatIfDialog(): void {
-        this.display_v.whatIf_dialog = false;
-    }
     
     public getColumnJoins(column: Column) {
         let pathStr = '';
@@ -1281,10 +1270,6 @@ export class EdaBlankPanelComponent implements OnInit {
         return str;
     }
 
-
-    public onWhatIfDialog(): void {
-        this.display_v.whatIf_dialog = true;
-    }
 
     public onCloseWhatIfDialog(): void {
         this.display_v.whatIf_dialog = false;

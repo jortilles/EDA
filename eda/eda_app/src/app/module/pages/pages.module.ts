@@ -36,9 +36,7 @@ import { SecurityDialogComponent } from './data-sources/data-source-detail/secur
 import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
 import { MailManagementComponent } from './mail-management/mail-management.component';
 import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
-// SDA CUSTOM
-import {AboutComponent} from './about/about.component';
-// END SDA CUSTOM
+
 
 // Routes
 import { PAGES_ROUTES } from './pages.routes';
@@ -93,9 +91,7 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
         DashboardMailDialogComponent,
         SaveAsDialogComponent,
         EditStylesDialogComponent,
-        // SDA CUSTOM
-        AboutComponent
-        // END SDA CUSTOM
+
     ]
 })
 export class PagesModule { }

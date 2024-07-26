@@ -260,12 +260,6 @@
                                     <span i18n="@@atributosH4">Columnas de:</span>
                                     <span class="d-block font-weight-bold" i18n="@@atributosH4interpolation" i18n-title="@@atributsTitle">{{getNiceTableName(userSelectedTable)}}</span>
                                 </h5>
- <!--SDA CUSTOM-->          <div *ngIf="userService.isAdmin && showHiddId">
- <!--SDA CUSTOM-->              <span i18n-title="@@hiddenAttributes" title="Mostrar/ocultar campos ocultos" class="pointer icon-hover" (click)="changeHiddenMode()">
- <!--SDA CUSTOM-->                  <i *ngIf="showHiddenColumn" class="pi pi-eye" style="font-size: 1.5rem"></i>
- <!--SDA CUSTOM-->                  <i *ngIf="!showHiddenColumn" class="pi pi-eye-slash" style="font-size: 1.5rem"></i>
- <!--SDA CUSTOM-->              </span>
- <!--SDA CUSTOM-->          </div>
 
                             </div>
                             <div>
@@ -375,8 +369,8 @@
                                         <p-inputNumber [(ngModel)]="queryLimit" (onInput)="onTopChange()"></p-inputNumber>
                                     </span>
                                 </div>
-                                <!-- SDA CUSTOM div class="col-4 md:col-12 flex infoJoin" -->
-                                <!-- SDA CUSTOM--><div class="col-6 md:col-12 flex infoJoin" >
+                                <div class="col-4 md:col-12 flex infoJoin" >
+
                                     <span i18n="@@joinTypeH4">
                                         Tipo de intersección: &nbsp;
                                     </span>
@@ -388,9 +382,9 @@
                                     </p-selectButton>
                                 </div>
 
-                                <!-- SDA CUSTOM div class="col-2 col-offset-3 md:col-12 infoFiltres d-flex justify-content-end">
+                                <div class="col-2 col-offset-3 md:col-12 infoFiltres d-flex justify-content-end">
                                     <button pButton (click)="onWhatIfDialog()" icon="pi pi-question-circle" class="p-button-info p-button-outlined button-whatif ml-2" label="What IF"></button>
-                                </div-->
+                                </div>
 
                                 <div class="col-12 md:col-12 info-query" *ngIf="currentQuery.length !== 0">
                                     <div #myQuery>

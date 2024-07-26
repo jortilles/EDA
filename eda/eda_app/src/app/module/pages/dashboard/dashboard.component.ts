@@ -58,7 +58,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         public : false,
         readOnly : false
         }
-    public isDashboardCreator: boolean = false; 
 
     // Grid Global Variables
     public inject: InjectEdaPanel;
@@ -757,77 +756,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    // Dashboard Filters
-    public addGlobalFilter(): void {
-        // Check if any panel isn't configurated
-        let voidPanel = false;
-        this.edaPanels.forEach(panel => {
-            if (panel.currentQuery.length === 0) {
-                voidPanel = true;
-            }
-        });
-        if (voidPanel) {
-            this.display_v.rightSidebar = false;
-            Swal.fire({
-                icon: 'success',
-                showConfirmButton: true,
-                title: $localize`:@@AddFiltersWarningTittle:Solo puedes añadir filtros cuando todos los paneles están configurados`,
-                text: $localize`:@@AddFiltersWarningText:Puedes borrar los paneles en blanco o configurarlos`,
-                showCancelButton: false,
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: $localize`:@@AddFiltersWarningButton:Entendido`
-            });
-        } else {
-            this.onFilterConfig(true);
-        }
-    }
-
-    public onFilterConfig(isnew: boolean, filter?: any): void {
-        this.display_v.rightSidebar = false;
-        this.filterController = new EdaDialogController({
-            params: {
-                panels: this.panels,
-                dataSource: this.dataSource,
-                filtersList: this.filtersList,
-                connectionProperties: this.connectionProperties,
-                filter,
-                isnew
-            },
-            close: async (event, response) => {
-                if (_.isEqual(event, EdaDialogCloseEvent.NEW)) {
-                    await this.onGlobalFilter(response.filterList, response.targetTable);
-                    this.reloadOnGlobalFilter();
-                } else if (_.isEqual(event, EdaDialogCloseEvent.UPDATE)) {
-                    this.filtersList = [];
-                    for (let filter of response.filterList) {
-                        await this.onGlobalFilter(filter, filter.table?.value);
-                    }
-                    this.reloadOnGlobalFilter();
-                }
-
-                this.filterController = undefined;
-            }
-        });
-
-        // const params = {
-        //     panels: this.panels,
-        //     dataSource: this.dataSource
-        // };
-        // this.display_v.rightSidebar = false;
-        // this.filterController = new EdaDialogController({
-        //     params,
-        //     close: (event, response) => {
-        //         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-        //             this.onAddGlobalFilter(response.filterList, response.targetTable)
-        //             //not saved alert message
-        //             this.dashboardService._notSaved.next(true);
-        //         }
-        //         this.filterController = undefined;
-        //     }
-        // });
-    }
-
-    private reloadOnGlobalFilter(): void {
+   
     public reloadOnGlobalFilter(): void {
         //not saved alert message
         this.dashboardService._notSaved.next(true);

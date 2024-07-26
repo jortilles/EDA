@@ -258,7 +258,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     };
   }
 
-  /*SDA CUSTOM*/ @custom.muSqlBuilderServiceCustomGetMinFractionDigits
   public getMinFractionDigits(el:any): any{
     if (!el.hasOwnProperty('minimumFractionDigits')) {
       el.minimumFractionDigits = 0;

@@ -613,7 +613,7 @@ export const PanelInteractionUtils = {
 
     // Torna a carregar les columnes de la taula
     const selectedTable = ebp.getUserSelectedTable();
-    /* SDA CUSTOM*/    PanelInteractionUtils.loadColumns(ebp, selectedTable);
+    PanelInteractionUtils.loadColumns(ebp, selectedTable);
   },
 
   /**

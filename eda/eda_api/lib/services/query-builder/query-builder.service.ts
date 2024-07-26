@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
- /*SDA CUSTOM*/ import * as custom from  '../custom/custom' ;
 class TreeNode {
     public value: string;
     public child: Array<TreeNode>
@@ -562,7 +561,6 @@ export abstract class QueryBuilderService {
         return filters;
     }
 
-  /*SDA CUSTOM*/ @custom.queryBuilderServiceCustomGetTreePermissions 
     public getTreePermissions(modelPermissions,  query) {
           /**
          * Tento todos los permisos modelPermissions

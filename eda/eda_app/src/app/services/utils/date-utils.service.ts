@@ -108,20 +108,6 @@ export class DateUtils {
         const monthStart = moment().startOf('month').toDate();
         return [monthStart, today];
     }
-    public setPastMonth(): Array<Date> {
-        const t = new Date();
-        var d = new Date();
-        var newMonth = d.getMonth() - 1;
-        if(newMonth < 0){
-            newMonth += 12;
-            d.setFullYear(d.getFullYear() - 1);
-        }
-        d.setMonth(newMonth);
-        const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
-        const monthEnd = new Date(d.getFullYear(), d.getMonth(), t.getDate() );
-
-        return [monthStart, monthEnd];
-    }
 
     public setPastMonth(): Array<Date> {
         const monthStart = moment().subtract(1,'months').startOf('month').toDate();
@@ -176,11 +162,6 @@ export class DateUtils {
         return [pastYearStart, pastYearEnd];
     }
 
-    public setYearStartPreviousYearFull(): Array<Date> {
-        const pastYearStart = moment().subtract(1,'years').startOf('year').toDate();
-        const pastYearEnd = moment().subtract(1,'years').endOf('year').toDate();
-        return [pastYearStart, pastYearEnd];
-    }
 
     public setLast3(): Array<Date> {
         const today = moment().toDate();

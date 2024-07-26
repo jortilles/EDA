@@ -12,7 +12,7 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'app-data-source-detail',
-    /*SDA CUSTOM*/ templateUrl: './sda-data-source-detail.component.html',
+    templateUrl: './data-source-detail.component.html',
     styleUrls: ['../data-source-list/data-source-list.component.css']
 })
 
@@ -143,9 +143,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                             try {
                                 elem = this.permissionsColumn.getContextMenuRow()._id?.reduce((a, b)=> a + b) ;
                             } catch (e) {
-
-                            if(elem.user != undefined ){
-                                dynValue = dynValue.filter( r =>JSON.stringify(r.users) !== JSON.stringify(elem.user)  && JSON.stringify(r.value) !== JSON.stringify(elem.value)  )
                             }
 
                             const dynValue = this.modelPanel.metadata.model_granted_roles.filter(r => r.value !== undefined)
