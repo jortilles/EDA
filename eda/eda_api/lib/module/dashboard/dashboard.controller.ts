@@ -483,6 +483,17 @@ export class DashboardController {
 
             }
 
+            // Se agrega false a autorelation y bridge
+            toJson.ds.model.tables.forEach(table => {
+              table.relations.forEach(r => {
+                if(r.autorelation == undefined){
+                  r.autorelation = false;
+                }
+                if(r.bridge == undefined){
+                  r.bridge = false;
+                }
+              });
+            });
 
             const ds = {
               _id: datasource._id,
