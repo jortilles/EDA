@@ -101,6 +101,7 @@ export const EbpUtils = {
 
   /** ICONOS PARA LOS TIPOS DE GRÁCIFOS  ICON ICONS */
   getOptionIcon: (value: string): string => {
+
     let description = '';
     switch (value) {
       case 'table':
@@ -173,7 +174,11 @@ export const EbpUtils = {
         description = 'equalizer';
         break;
       case 'bubblechart':
-          description = 'spoke';
+          description = 'bubble_chart';
+        break;
+      case 'radar':
+        description = 'radar';
+        break;
     }
 
     return description;

@@ -436,6 +436,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.display_v.minispinner = false;
             }
         }
+
     }
 
     /**
@@ -579,7 +580,7 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = this.panelChart.getCurrentConfig();
         //W T F F!!!!!!!!!!!=)&/=)!/(!&=)&)!=
         if (config 
-            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid'].includes(config.chartType) 
+            && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType) 
             && config.chartType === this.graficos.chartType ) {
             this.graficos = this.panelChart.getCurrentConfig();
         }

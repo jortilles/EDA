@@ -326,6 +326,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     loadChartTypeProperties() {
         switch (this.chart.chartType) {
+
             case 'bar':
                 if (_.startsWith(this.chart.chartType, 'bar')) {
                     this.direction = { label: 'Vertical', value: 'bar' };

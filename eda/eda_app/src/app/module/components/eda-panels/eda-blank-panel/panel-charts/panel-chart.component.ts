@@ -77,17 +77,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         this.styleProviderService.panelFontColor.subscribe(color => {
             this.fontColor = color;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
 
         this.styleProviderService.panelFontFamily.subscribe(family => {
             this.fontFamily = family;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
 
         this.styleProviderService.panelFontSize.subscribe(size => {
             this.fontSize = size;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram', 'bubblechart','pyramid'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
     }
 
@@ -100,6 +100,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         /**
          * If data change chart type
          */
+
         if (this.props.data && this.props.data.values.length !== 0
             && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
 
@@ -136,7 +137,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (['table', 'crosstable'].includes(type)) {
             this.renderEdaTable(type);
         }
-        if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid'].includes(type)) {
+        if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid', 'radar'].includes(type)) {
             this.renderEdaChart(type);
         }
         if (type === 'kpi') {
@@ -190,6 +191,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
     private renderEdaChart(type: string) {
 
+        // console.log('this.props:  ',this.props)
+
         const isbarline = this.props.edaChart === 'barline';
         const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
 
@@ -198,10 +201,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     
         let values = _.cloneDeep(this.props.data.values);
 
+        // console.log('values:   ', values);
+
         /**
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
+        // console.log('cfg: ',cfg);
             // Si es un histogram faig aixó....        
         if (  (['histogram'].includes(this.props.edaChart))
             && this.props.query.length === 1
@@ -287,8 +293,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                         e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
                 }
 
-                });
-           
+            });
         }
 
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;

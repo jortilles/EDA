@@ -504,11 +504,12 @@
 
                     <div class="col-3 p-offset-1 p-1 edaChartSelector">
                         <form [formGroup]="chartForm">
+
                             <p-dropdown id="chartSelector" [style]="{'width':'100%'}"
                                 [options]="chartTypes"
                                 formControlName="chart"
-                                (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles( chartForm.value.chart.value))
-                                "optionLabel="label"
+                                (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles( chartForm.value.chart.value))"
+                                optionLabel="label"
                                 [autoDisplayFirst]="false">
 
                                 <ng-template pTemplate="selectedItem">
@@ -520,7 +521,6 @@
                                         <span style="vertical-align:middle; margin-left: .5em">
                                             {{chartForm.value.chart.label}}
                                         </span>
-
                                     </div>
                                 </ng-template>
 
@@ -539,10 +539,12 @@
                                         </span>
 
                                         <span i18n="@@tooManyValues" *ngIf='chart.tooManyData' class="edaTooManyData"> -
-                                            Demasiados valores</span>
+                                            Demasiados valores
+                                        </span>
 
                                         <span i18n="@@notAvaliable" *ngIf='chart.ngIf' class="edaTooManyData"> - No
-                                            Disponible</span>
+                                            Disponible
+                                        </span>
                                     </div>
                                 </ng-template>
 
