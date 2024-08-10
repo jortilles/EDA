@@ -13,7 +13,6 @@ import { Injectable } from '@angular/core';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
-import { point } from 'leaflet';
 
 export interface EdaChartType {
     label: string;
@@ -538,7 +537,6 @@ export class ChartUtilsService {
                 notAllowed.splice(notAllowed.indexOf('line'), 1);
                 notAllowed.splice(notAllowed.indexOf('area'), 1);
                 notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
-                // notAllowed.splice(notAllowed.indexOf('radar'), 1);
             }
         if(dataDescription.otherColumns.length===1 && dataDescription.numericColumns.length>=1 && dataDescription.totalColumns>=2 ){
             notAllowed.splice(notAllowed.indexOf('radar'), 1);
