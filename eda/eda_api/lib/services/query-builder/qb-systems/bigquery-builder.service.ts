@@ -31,7 +31,16 @@ export class BigQueryBuilderService extends QueryBuilderService {
     
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType, valueListJoins, schema);
+    let joinString: any[];
+    let alias: any;
+    if (this.queryTODO.joined) {
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      joinString = responseJoins.joinString;
+      alias = responseJoins.aliasTables;
+    } else {
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+    }
+
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -66,6 +75,15 @@ export class BigQueryBuilderService extends QueryBuilderService {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
     if (limit) myQuery += `\nlimit ${limit}`;
+
+    if (alias) {
+      console.log(alias);
+      for (const key in alias) {
+        myQuery = myQuery.split(key).join(`"${alias[key]}"`);
+      }
+    }
+
+
     return myQuery;
   }
 
@@ -177,6 +195,85 @@ export class BigQueryBuilderService extends QueryBuilderService {
 
     return joinString;
   }
+
+
+  
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
+    // Inicialización de variables
+    const joinExists = new Set();
+    const aliasTables = {};
+    const joinString = [];
+    const targetTableJoin = [];
+
+
+    for (const join of joinTree) {
+
+        // División de las partes de la join
+        const sourceLastDotInx = join[0].lastIndexOf('.');
+        // sourceTableAlias === join relation table_id
+        const [sourceTable, sourceColumn] = [join[0].substring(0, sourceLastDotInx), join[0].substring(sourceLastDotInx + 1)];
+        const [targetTable, targetColumn] = join[1].split('.');
+
+        // Construcción de las partes de la join
+        let sourceJoin = `\`${sourceTable}\`.\`${sourceColumn}\``;
+        let targetJoin = `\`${targetTable}\`.\`${targetColumn}\``;
+
+        // Si la join no existe ya, se añade
+        if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
+            joinExists.add(`${sourceJoin}=${targetJoin}`);
+
+
+            let aliasSource;
+            if (sourceJoin.split('.')[0] == targetJoin.split('.')[0]) {
+                aliasSource = `\`${sourceTable}.${sourceColumn}\``;
+            }
+            
+            // Construcción de los alias
+            let alias = `\`${targetTable}.${targetColumn}.${sourceColumn}\``;
+
+            if (aliasSource) {
+                alias = aliasSource;
+            }
+
+            aliasTables[alias] = targetTable;
+            // aliasTables[sourceJoin] = targetTable;
+
+            let aliasTargetTable: string;
+            // targetTable and sourceTable can be the same table (autorelation)
+            if (targetTableJoin.includes(targetTable) || targetTable == sourceTable) {
+                // aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+                aliasTargetTable = `${targetTable}${sourceColumn}`;
+                aliasTables[alias] = aliasTargetTable;
+            }
+
+            let joinStr: string;
+
+            joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
+
+
+            if (aliasTargetTable) {
+                targetJoin = `\`${aliasTargetTable}\`.\`${targetColumn}\``;
+                joinStr = `${joinType} JOIN \`${targetTable}\` \`${aliasTargetTable}\` ON  ${sourceJoin}  =  ${targetJoin} `;
+            } else {
+                joinStr = `${joinType} JOIN \`${targetTable}\` ON  ${sourceJoin} = ${targetJoin} `;
+            }
+
+            // Si la join no se ha incluido ya, se añade al array
+            if (!joinString.includes(joinStr)) {
+                targetTableJoin.push(aliasTargetTable || targetTable);
+                joinString.push(joinStr);
+            }
+        }
+    }
+    
+    return {
+        joinString,
+        aliasTables
+    };
+  }
+
+
+
 
   public getSeparedColumns(origin: string, dest: string[]) {
     const columns = [];
