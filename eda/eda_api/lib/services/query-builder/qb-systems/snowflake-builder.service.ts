@@ -25,8 +25,19 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
     }
 
+
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType,valueListJoins, SCHEMA);
+    let joinString: any[];
+    let alias: any;
+    if (this.queryTODO.joined) {
+      const responseJoins = this.setJoins(joinTree, joinType, SCHEMA, valueListJoins);
+      joinString = responseJoins.joinString;
+      alias = responseJoins.aliasTables;
+    } else {
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, SCHEMA);
+    }
+
+
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -60,6 +71,17 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     if (order_columns_string.length > 0) {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
+
+
+    if (limit) myQuery += `\nlimit ${limit}`;
+
+    if (alias) {
+      console.log(alias);
+      for (const key in alias) {
+        myQuery = myQuery.split(key).join(`"${alias[key]}"`);
+      }
+    }
+
     return myQuery;
   }
 
@@ -164,6 +186,67 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     return joinString;
   }
 
+  
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
+    // Si no se especifica un esquema, se utiliza 'public' por defecto
+    if (!schema || schema === 'null') {
+      schema = 'public';
+    }
+
+    // Inicialización de variables
+    const joinExists = new Set();
+    const aliasTables = {};
+    const joinString = [];
+    const targetTableJoin = [];
+
+    for (const join of joinTree) {
+      // División de las partes de la join
+      const [sourceTable, sourceColumn] = join[0].split('.');
+      const [targetTable, targetColumn] = join[1].split('.');
+
+      // Construcción de las partes de la join
+      const sourceJoin = `"${schema}"."${sourceTable}"."${sourceColumn}"`;
+      let targetJoin = `"${schema}"."${targetTable}"."${targetColumn}"`;
+
+      // Si la join no existe ya, se añade
+      if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
+        joinExists.add(`${sourceJoin}=${targetJoin}`);
+
+        // Construcción de los alias
+        const alias = `"${targetTable}.${targetColumn}"`;
+        aliasTables[alias] = targetTable;
+
+        let aliasTargetTable: string;
+        if (targetTableJoin.includes(targetTable)) {
+          aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+          aliasTables[alias] = aliasTargetTable;
+        }
+
+        let joinStr: string;
+
+        joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
+
+        if (aliasTargetTable) {
+          targetJoin = `"${aliasTargetTable}"."${targetColumn}"`;
+          joinStr = `${joinType} JOIN "${schema}"."${targetTable}" "${aliasTargetTable}" ON ${sourceJoin} = ${targetJoin}`;
+        } else {
+          joinStr = `${joinType} JOIN "${schema}"."${targetTable}" ON ${sourceJoin} = ${targetJoin}`;
+        }
+
+        // Si la join no se ha incluido ya, se añade al array
+        if (!joinString.includes(joinStr)) {
+          targetTableJoin.push(aliasTargetTable || targetTable);
+          joinString.push(joinStr);
+        }
+      }
+    }
+
+    return {
+      joinString,
+      aliasTables
+    };
+  }
+  
   public getSeparedColumns(origin: string, dest: string[]) {
     const columns = [];
     const grouping = [];

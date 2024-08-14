@@ -80,8 +80,7 @@ export class BigQueryBuilderService extends QueryBuilderService {
       for (const key in alias) {
         myQuery = myQuery.split(key).join(`\`${alias[key]}\``);
       }
-    
-
+    }
 
     return myQuery;
   }
