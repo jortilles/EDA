@@ -1,5 +1,6 @@
 import express from 'express';
 import AdminRouter from './module/admin/admin.router';
+import AuthRouter from './module/auth/auth.router';
 import DashboardRouter from './module/dashboard/dashboard.router';
 import AddTableRouter from './module/addtabletomodel/addtable.router';
 import DataSourceRouter from './module/datasource/datasource.router';
@@ -11,6 +12,8 @@ import ThirdPartyRouter from './module/thirdParty/thirdParty.router';
 const router = express.Router();
 
 router.use('/admin', AdminRouter);
+
+router.use('/auth', AuthRouter);
 
 router.use('/dashboard', DashboardRouter);
 

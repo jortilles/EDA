@@ -14,6 +14,8 @@ import Swal from 'sweetalert2';
 export class UserService extends ApiService {
     private route = '/admin/user';
     private routeThirdParty = '/tp/url';
+    private routeGoogle = '/auth/google/login';
+    private routeMicrosoft = '/auth/microsoft/login';
 
     public user: User;
     public isAdmin: boolean;
@@ -55,6 +57,24 @@ export class UserService extends ApiService {
         return this.post(this.route, user);
     }
 
+    /** Jortilles Google Sign In - credential Google*/
+    credentialGoogle(respGoogle: any): Observable<any> {
+        return this.post(this.routeGoogle, {respGoogle: respGoogle}, true)
+            .pipe(map((res:any) => {
+                this.savingStorage(res.id, res.token, res.user);
+                return true;
+            }, (err) => this.alertService.addError(err)))
+    }
+
+    /** Jortilles Azure Microsoft - envio de datos*/
+    responseMicrosoft(respMicrosoft: any): Observable<any> {
+        return this.post(this.routeMicrosoft, {respMicrosoft: respMicrosoft}, true)
+            .pipe(map((res:any) => {
+                this.savingStorage(res.id, res.token, res.user);
+                return true;
+            }, (err) => this.alertService.addError(err)))
+    }
+    
     /** Update User credentials and save in localstorage */
     updateUser(user: User): Observable<any> {
         return this.put(`${this.route}/me/${user._id}`, user).pipe(

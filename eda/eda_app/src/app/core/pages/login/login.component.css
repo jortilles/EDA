@@ -59,3 +59,20 @@
 .language:hover{
     color: blue;
 }
+
+.microsoft{
+    padding: 0;
+    margin: 0;    
+    filter: brightness(100%);
+}
+
+.microsoft:hover{
+    filter: brightness(97%);
+}
+
+.botones-login {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+}
+

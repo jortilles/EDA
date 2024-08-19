@@ -17,6 +17,16 @@ import { PagesComponent } from './module/pages/pages.component';
 // Services
 import { ServicesModule } from './services/services.module';
 
+// Azure - Microsoft
+import { MsalModule, MsalRedirectComponent } from "@azure/msal-angular";
+import { PublicClientApplication } from "@azure/msal-browser";
+import { MICROSOFT_ID, MICROSOFT_AUTHORITY, MICROSOFT_REDIRECT_URI } from '@eda/configs/config';
+
+
+
+const isIE =
+  window.navigator.userAgent.indexOf("MSIE ") > -1 ||
+  window.navigator.userAgent.indexOf("Trident/") > -1;
 
 @NgModule({
     declarations: [AppComponent, PagesComponent],
@@ -28,9 +38,24 @@ import { ServicesModule } from './services/services.module';
         SharedModule,
         ServicesModule,
         CORE_ROUTES,
-        HttpClientModule
+        HttpClientModule,
+        MsalModule.forRoot(
+            new PublicClientApplication({
+              auth: {
+                clientId: MICROSOFT_ID, // Application (client) ID from the app registration
+                authority: MICROSOFT_AUTHORITY, // The Azure cloud instance and the app's sign-in audience (tenant ID, common, organizations, or consumers)
+                redirectUri: MICROSOFT_REDIRECT_URI, // This is your redirect URI
+              },
+              cache: {
+                cacheLocation: "localStorage",
+                storeAuthStateInCookie: isIE, // Set to true for Internet Explorer 11
+              },
+            }),
+            null,
+            null
+          ), 
     ],
     providers: [ ],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent, MsalRedirectComponent ]
 })
 export class AppModule { }
