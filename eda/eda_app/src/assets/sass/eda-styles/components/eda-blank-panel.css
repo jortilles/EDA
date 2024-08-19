@@ -301,6 +301,15 @@ body .ui-accordion .ui-accordion-header a {
 
     cursor: pointer;
     z-index: 99999 !important;
+    max-width: 27%;
+}
+
+.select-box-overlay {
+    width: 92%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .table-box:active {
@@ -558,7 +567,6 @@ body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider  {
  line-height: 22px;
  font-size: 18px;
  color: #455a64;
- /* font-family: 'Questrial'; */
  font-weight: 400;
  box-sizing: border-box;
 

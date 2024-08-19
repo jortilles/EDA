@@ -12,6 +12,9 @@ export const PanelOptions = {
         if (panelComponent.panel.content) {
 
           panelComponent.panelDeepCopy = _.cloneDeep(panelComponent.panel.content, true);
+          if (panelComponent.selectedQueryMode == 'EDA2') {
+            panelComponent.panelDeepCopy.rootTable = _.cloneDeep(panelComponent.rootTable);
+          }
           panelComponent.display_v.disablePreview = false;
 
         } else {
@@ -34,7 +37,7 @@ export const PanelOptions = {
 
         if (Object.entries(panelComponent.graficos).length !== 0 && panelComponent.chartData.length !== 0) {
           
-          if (['line', 'area', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid'].includes(panelComponent.graficos.chartType)) {
+          if (['line', 'area', 'doughnut', 'polarArea', 'bar', 'horizontalBar', 'barline', 'histogram', 'pyramid', 'radar'].includes(panelComponent.graficos.chartType)) {
 
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.chartController = new EdaDialogController({
@@ -184,6 +187,12 @@ export const PanelOptions = {
       icon:"fa fa-external-link",
       command: () => {
         panelComponent.contextMenu.hideContextMenu();
+
+        let queryMode = panelComponent.panel.content.query.query.queryMode;
+        const modeSQL = panelComponent.panel.content.query.query.modeSQL;
+
+        if (!queryMode) queryMode = modeSQL ? 'SQL' : 'EDA';
+
         panelComponent.linkDashboardController = new EdaDialogController({
           params:{
             query : panelComponent.currentQuery,

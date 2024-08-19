@@ -1,4 +1,4 @@
-function Connection(user, host, database, password, port, type, schema, poolLimit, sid, warehouse, ssl?) {
+function Connection(user, host, database, password, port, type, schema, poolLimit, sid, warehouse, ssl?, external?) {
     this.user = user;
     this.host = host;
     this.database = database;
@@ -13,6 +13,7 @@ function Connection(user, host, database, password, port, type, schema, poolLimi
     if(ssl){
         this.ssl = ssl;
     }
+    this.external = external;
 
 }
 

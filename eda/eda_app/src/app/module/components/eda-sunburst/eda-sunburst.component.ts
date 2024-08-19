@@ -215,7 +215,6 @@ export class EdaSunburstComponent implements AfterViewInit {
 
   formatData (data, dataDescription) {
     let result = [];
-    console.log(data);
     data.values.forEach(row => {
       let path = ''
       let element = [];

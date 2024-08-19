@@ -43,5 +43,5 @@ ul li:hover {
   font-size: 1.4em;
   font-weight: bold;
   margin-bottom: .5em;
-  font-family: 'Questrial';
+  font-family: var(--DEFAULT_FONT_FAMILY);  /*'Questrial'; */
 }

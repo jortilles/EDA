@@ -77,17 +77,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         this.styleProviderService.panelFontColor.subscribe(color => {
             this.fontColor = color;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
 
         this.styleProviderService.panelFontFamily.subscribe(family => {
             this.fontFamily = family;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
 
         this.styleProviderService.panelFontSize.subscribe(size => {
             this.fontSize = size;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram', 'bubblechart','pyramid'].includes(this.props.chartType)) this.ngOnChanges(null);
+            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line','area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
         });
     }
 
@@ -100,6 +100,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         /**
          * If data change chart type
          */
+
         if (this.props.data && this.props.data.values.length !== 0
             && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
 
@@ -136,7 +137,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (['table', 'crosstable'].includes(type)) {
             this.renderEdaTable(type);
         }
-        if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid'].includes(type)) {
+        if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid', 'radar'].includes(type)) {
             this.renderEdaChart(type);
         }
         if (type === 'kpi') {
@@ -190,18 +191,23 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
     private renderEdaChart(type: string) {
 
+        // console.log('this.props:  ',this.props)
+
         const isbarline = this.props.edaChart === 'barline';
-        const isstacked = this.props.edaChart === 'stackedbar';
+        const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
 
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         const dataTypes = this.props.query.map(column => column.column_type);
     
         let values = _.cloneDeep(this.props.data.values);
 
+        // console.log('values:   ', values);
+
         /**
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
+        // console.log('cfg: ',cfg);
             // Si es un histogram faig aixó....        
         if (  (['histogram'].includes(this.props.edaChart))
             && this.props.query.length === 1
@@ -233,9 +239,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart,  values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
 
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
         const minMax = this.props.chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
 
-        const manySeries = chartData[1].length > 10 ? true : false;
+        const manySeries = chartData[1]?.length > 10 ? true : false;
+
         const styles:StyleConfig = {
             fontFamily: this.fontFamily,
             fontSize: this.fontSize,
@@ -243,7 +254,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
       
       
-        const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0].name,
+        const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart);
 
@@ -269,7 +280,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartOptions = config.chartOptions;
         chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
         
-        if(!chartData[1][0].backgroundColor){
+        if(!chartData[1][0]?.backgroundColor){
             chartData[1].forEach(( e,i) => {
                 try{
                     e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
@@ -282,8 +293,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                         e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
                 }
 
-                });
-           
+            });
         }
 
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
@@ -379,7 +389,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     private renderEdaKpi() {
         let chartConfig: any = {};
         chartConfig.value = this.props.data.values[0][0];
-        chartConfig.header = this.props.query[0].display_name.default;
+        chartConfig.header = this.props.query[0]?.display_name?.default;
         const config: any = this.props.config;
         let alertLimits = [];
         try{
@@ -661,8 +671,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     public updateComponent() {
-        if (this.componentRef) {
-            this.componentRef.instance.updateChart();
+        if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
+            try {
+                this.componentRef.instance?.updateChart();
+            } catch(err) {
+                console.error(err);
+            }
         }
     }
 

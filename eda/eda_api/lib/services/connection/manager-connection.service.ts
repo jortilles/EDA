@@ -25,10 +25,20 @@ export const
 
 export class ManagerConnectionService {
 
-    static async getConnection(id: string): Promise<AbstractConnection> {
+    static async getConnection(id: string, properties?: any): Promise<AbstractConnection> {
         const datasource = await this.getDataSource(id);
         const config = datasource.ds.connection;
         config.password = EnCrypterService.decode(config.password || ' ');
+
+        // Esto sirve solo para postgres y se pasa con la sintaxis de prostgres. 
+        // Si se quisiera implementar para otras bbdd habría que hacerlo.
+        if (properties) {
+            config.options = '';
+            for (const prop in properties) {
+                // pasamos las custom properties en el parametro options.
+                config.options += ' -c '+ prop + '=' +properties[prop];
+            }
+        }
 
         switch (config.type) {
             case MS_CONNECTION:

@@ -13,7 +13,7 @@ export class PgBuilderService extends QueryBuilderService {
     }
     let myQuery = `SELECT ${columns.join(', ')} \n`
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ?   this.cleanViewString(table.query) : table.name })[0];
-    let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];;
+    let vista = tables.filter(table => table.name === origin).map(table => { return table.query ? true: false })[0];
     if( vista ){  // Es una vista. NO la pongo entre comillas
       myQuery += `FROM ${o}`; 
     }else{  // Es una tabla. La pongo entre comillas
@@ -32,7 +32,15 @@ export class PgBuilderService extends QueryBuilderService {
     }
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+    let joinString: any[];
+    let alias: any;
+    if (this.queryTODO.joined) {
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      joinString = responseJoins.joinString;
+      alias = responseJoins.aliasTables;
+    } else {
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+    }
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -66,6 +74,14 @@ export class PgBuilderService extends QueryBuilderService {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
     if (limit) myQuery += `\nlimit ${limit}`;
+
+    if (alias) {
+      console.log(alias);
+      for (const key in alias) {
+        myQuery = myQuery.split(key).join(`"${alias[key]}"`);
+      }
+    }
+
     return myQuery;
   }
 
@@ -135,6 +151,8 @@ export class PgBuilderService extends QueryBuilderService {
       tmp.push(elem.name);
       joins.push(tmp);
     }
+    
+
 
     joins.forEach(e => {
       for (let i = 0; i < e.length - 1; i++) {
@@ -145,6 +163,7 @@ export class PgBuilderService extends QueryBuilderService {
 
           /**T can be a table or a custom view, if custom view has a query  */
           let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? this.cleanViewString(table.query) : table.name })[0];
+          let view =  tables.filter(table => table.name === e[j]).map(table => { return table.query ? true : false})[0];
           if( valueListJoins.includes(e[j])   ){
             myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
           }else{
@@ -152,20 +171,36 @@ export class PgBuilderService extends QueryBuilderService {
           }
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
-            joinString.push(` ${myJoin} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+            if(!view){
+              //Si no es una vista
+              joinString.push(` ${myJoin} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+            }else{
+              //Si es una vista
+              joinString.push(` ${myJoin} join ${t} on  "${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+            }
+            
           }
           else {
 
-            let join = ` ${myJoin} join "${schema}"."${t}" on`;
+            if(!view){
+              //Si no es una vista
+              let join = ` ${myJoin} join "${schema}"."${t}" on`;
+              joinColumns[0].forEach((_, x) => {
+                join += `  "${schema}"."${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
+              });
+              join = join.slice(0, join.length - 'and'.length);
+              joinString.push(join);
+            }else{
+              //Si es una vista
+              let join = ` ${myJoin} join  ${t}  on`;
+              joinColumns[0].forEach((_, x) => {
+                join += `  "${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
+              });
+              join = join.slice(0, join.length - 'and'.length);
+              joinString.push(join);
+            }
 
-            joinColumns[0].forEach((_, x) => {
 
-              join += `  "${schema}"."${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
-
-            });
-
-            join = join.slice(0, join.length - 'and'.length);
-            joinString.push(join);
 
           }
           joined.push(e[j]);
@@ -175,6 +210,67 @@ export class PgBuilderService extends QueryBuilderService {
 
     return joinString;
   }
+
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
+    // Si no se especifica un esquema, se utiliza 'public' por defecto
+    if (!schema || schema === 'null') {
+      schema = 'public';
+    }
+
+    // Inicialización de variables
+    const joinExists = new Set();
+    const aliasTables = {};
+    const joinString = [];
+    const targetTableJoin = [];
+
+    for (const join of joinTree) {
+      // División de las partes de la join
+      const [sourceTable, sourceColumn] = join[0].split('.');
+      const [targetTable, targetColumn] = join[1].split('.');
+
+      // Construcción de las partes de la join
+      const sourceJoin = `"${schema}"."${sourceTable}"."${sourceColumn}"`;
+      let targetJoin = `"${schema}"."${targetTable}"."${targetColumn}"`;
+
+      // Si la join no existe ya, se añade
+      if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
+        joinExists.add(`${sourceJoin}=${targetJoin}`);
+
+        // Construcción de los alias
+        const alias = `"${targetTable}.${targetColumn}"`;
+        aliasTables[alias] = targetTable;
+
+        let aliasTargetTable: string;
+        if (targetTableJoin.includes(targetTable)) {
+          aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+          aliasTables[alias] = aliasTargetTable;
+        }
+
+        let joinStr: string;
+
+        joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
+
+        if (aliasTargetTable) {
+          targetJoin = `"${aliasTargetTable}"."${targetColumn}"`;
+          joinStr = `${joinType} JOIN "${schema}"."${targetTable}" "${aliasTargetTable}" ON ${sourceJoin} = ${targetJoin}`;
+        } else {
+          joinStr = `${joinType} JOIN "${schema}"."${targetTable}" ON ${sourceJoin} = ${targetJoin}`;
+        }
+
+        // Si la join no se ha incluido ya, se añade al array
+        if (!joinString.includes(joinStr)) {
+          targetTableJoin.push(aliasTargetTable || targetTable);
+          joinString.push(joinStr);
+        }
+      }
+    }
+
+    return {
+      joinString,
+      aliasTables
+    };
+  }
+
 
   public getSeparedColumns(origin: string, dest: string[]) {
     const columns = [];
@@ -307,8 +403,6 @@ export class PgBuilderService extends QueryBuilderService {
     });
     return [columns, grouping];
   }
-
-
 
   /**
    * 

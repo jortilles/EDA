@@ -27,7 +27,7 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
 
     public permission : boolean = true;
     public none : boolean = false;
-    public type : string; 
+    public type : string;
 
     public usersLabel = $localize`:@@usersPermissions:Permisos de usuario`;
     public groupsLabel = $localize`:@@groupsPersmissions:Permisos de grupo`;
@@ -37,8 +37,7 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
     /* filterProps */
     private table: any;
 
-
-    constructor(private dataSourceService: DataSourceService,
+    constructor(public dataSourceService: DataSourceService,
                 private userService: UserService,
                 private groupService: GroupService) {
         super();

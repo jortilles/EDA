@@ -1,0 +1,85 @@
+<!-- ============================================================== -->
+<!-- GLOBAL FILTERS  -->
+<!-- ============================================================== -->
+<div [ngClass]="{'noShow': hideFilters }" >
+    <!--   panel mode es per quan vull mostrat nomes un panell-->
+    <div *ngIf="globalFilters.length > 0" class="d-flex align-items-end" style="margin: 0.5em; gap: 10px; flex-wrap: wrap;" >
+        <button
+            *ngIf="isAdmin || isDashboardCreator || filterButtonVisibility.public"
+            id="dashFilterBtn"
+            [label]="filtrar"
+            pButton pRipple type="button"
+            icon="pi pi-filter"
+            style="height: 36px; min-width: 80px;"
+            (click)="dashboard.reloadPanelsWithTimeOut()"
+            class="p-button-raised p-button-outlined filters-size">
+        </button>
+
+    
+        <div *ngFor="let filter of globalFilters" class="filter-set d-flex align-items-center">
+            <span *ngIf="isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)" class="filter-name filters-size">
+                {{getFilterLabel(filter)}}:
+            </span>
+            
+            
+            <ng-container [ngSwitch]="getFilterType(filter)">
+                <div *ngSwitchCase="'date'">
+                    <eda-date-picker *ngIf="(isAdmin || isDashboardCreator || filter.visible === 'public')"
+                        [autoClear]="true"
+                        [inject]="datePickerConfigs[filter.id]"
+                        (onRemove)="removeGlobalFilter(filter, true)"
+                        (onDatesChanges)="processPickerEvent($event, filter)">
+        
+                        <ng-container footer>
+                            <button id="dashFilterConf"
+                                pButton pRipple type="button"
+                                icon="pi pi-cog"
+                                (click)="onShowGlobalFilter(false, filter)"
+                                class="p-button-rounded p-button-outlined filters-size">
+                            </button>
+                        </ng-container>
+                    </eda-date-picker>
+                </div>
+                <div *ngSwitchDefault>
+                    <!-- {{ filter | json }} -->
+                    <p-multiSelect *ngIf="filter.data"
+                        [options]="filter.data"
+                        [(ngModel)]="filter.selectedItems"
+                        [maxSelectedLabels]="3"
+                        [virtualScroll]="true"
+                        [defaultLabel]="getFilterLabel(filter)"
+                        [disabled]="disableGlobalFilter(filter)"
+                        itemSize="30"
+                        display="chip"
+                        class="customMultiselect filters-size"
+                        [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
+                        [Show]="dropdownFiltersSize(filter)"
+                        (onChange)="setGlobalFilterItems(filter)">
+        
+                        <p-footer>
+                            <button *ngIf="dashboard.canIedit()" id="dashFilterConf"
+                                pButton pRipple type="button"
+                                icon="pi pi-cog"
+                                (click)="onShowGlobalFilter(false, filter)"
+                                class="p-button-rounded p-button-outlined filters-size">
+                            </button>
+                        </p-footer>
+                    </p-multiSelect>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================== -->
+<!-- GLOBAL FILTERS DIALOGS -->
+<!-- ============================================================== -->
+<dashboard-filter-dialog *ngIf="filterController" [controller]="filterController"></dashboard-filter-dialog>
+
+<app-global-filter-dialog *ngIf="globalFilter"
+    [(globalFilter)]="globalFilter"
+    [globalFilterList]="globalFilters"
+    [panels]="dashboard.panels"
+    [dataSource]="dashboard.dataSource"
+    (close)="onCloseGlobalFilter($event)">
+</app-global-filter-dialog>

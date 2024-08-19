@@ -19,6 +19,9 @@ export const EbpUtils = {
       case 'stackedbar':
         str = $localize`:@@chartInfo4:\n Un gráfico combinado necesita una categoría y dos séries numéricas`;
         description += `\n${str}`;
+      case 'stackedbar100':
+        str = $localize`:@@chartInfo4:\n Un gráfico combinado necesita una categoría y dos séries numéricas`;
+        description += `\n${str}`;
         break;
       case 'line':
         str = $localize`:@@chartInfo5:Un gráfico de línea necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
@@ -98,6 +101,7 @@ export const EbpUtils = {
 
   /** ICONOS PARA LOS TIPOS DE GRÁCIFOS  ICON ICONS */
   getOptionIcon: (value: string): string => {
+
     let description = '';
     switch (value) {
       case 'table':
@@ -133,6 +137,9 @@ export const EbpUtils = {
       case 'stackedbar':
         description = 'stacked_bar_chart';
         break
+      case 'stackedbar100':
+        description = 'view_column';
+        break
       case 'polarArea':
         description = 'star';
         break
@@ -167,7 +174,11 @@ export const EbpUtils = {
         description = 'equalizer';
         break;
       case 'bubblechart':
-          description = 'spoke';
+          description = 'bubble_chart';
+        break;
+      case 'radar':
+        description = 'radar';
+        break;
     }
 
     return description;

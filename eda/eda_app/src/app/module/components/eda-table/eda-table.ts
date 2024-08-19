@@ -66,6 +66,7 @@ export class EdaTable {
     public noRepetitions: boolean; 
     public origValues: any[] = [];
 
+
     public autolayout: boolean = true;
     public sortedSerie: any = null;
     public sortedColumn: any = { field: null, order: null };
@@ -223,6 +224,7 @@ export class EdaTable {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
         } 
         if (!this.pivot) {
+        	console.log(' this.noRepeatedRows() DESCOMENTADO');
             this.noRepeatedRows();
         }
 
@@ -831,7 +833,7 @@ export class EdaTable {
             return this.buildSubMapTree(cols[0], cols[1]);
         } else {
             const unsetCols = cols.slice(1);
-            cols[0].forEach(col => {
+            cols[0]?.forEach(col => {
                 map.set(col, this.buildMapRecursive(unsetCols));
             });
         }

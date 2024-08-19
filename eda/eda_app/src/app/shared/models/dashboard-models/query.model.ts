@@ -9,17 +9,20 @@ export interface Query {
     };
     dashboard: {
         dashboard_id: string,
-        panel_id: string
+        panel_id: string,
+        connectionProperties: any
     };
     query: {
         fields: Column[]
         filters: any[],
         simple: boolean,
-        modeSQL: boolean,
+        queryMode: string,
+        // modeSQL: boolean, Deprecated use queryMode instead
         SQLexpression : string,
         queryLimit : number,
         joinType: string,
-        forSelector?: boolean ;
+        forSelector?: boolean,
+        rootTable: string
 
     };
     output: {

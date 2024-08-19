@@ -1,7 +1,7 @@
 {
     "name": "api-eda",
     "version": "2.0.1",
-    "description": "EDA apli package",
+    "description": "EDA api package",
     "main": "index.js",
     "scripts": {
         "start": "nodemon",

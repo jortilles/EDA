@@ -368,8 +368,29 @@ export abstract class AbstractConnection {
         return data_model;
     }
 
-    async getDataSource(id: string) {
-        try {
+    async getDataSource(id: string, properties? : string) {
+        if (properties) {
+            let filterProperties = JSON.parse(properties);
+            let filter = {};
+            for (let key in filterProperties) { 
+                filter[`ds.metadata.external.${key}`] = filterProperties[key];
+            }
+            filter = Object.entries(filter).reduce((acc, [clave, valor]) => {
+                acc[clave] = valor;
+                return acc;
+              }, {});
+            try {
+                return await DataSource.findOne({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))  }, (err, datasource) => {
+                if (err) {
+                    throw Error(err);
+                }
+                return datasource;
+            });
+            } catch (err) {
+                console.log(err)
+            }
+        } else {
+            try {
             return await DataSource.findOne({ _id: id }, (err, datasource) => {
                 if (err) {
                     throw Error(err);
@@ -380,6 +401,8 @@ export abstract class AbstractConnection {
             console.log(err);
             throw err;
         }
+        }
+        
     }
 
 }

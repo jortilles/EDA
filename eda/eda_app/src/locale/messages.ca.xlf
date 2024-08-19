@@ -2066,6 +2066,58 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <context context-type="linenumber">210</context>
 </context-group>
 </trans-unit>
+
+<trans-unit id="saveNewTag" datatype="html">
+<source>Añadir Tag</source>
+<target>Afegir Tag</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.html</context>
+  <context context-type="linenumber">24</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="emptyTag" datatype="html">
+<source>Este tag esta vacío</source>
+<target>Aquest tag és buit</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.ts</context>
+  <context context-type="linenumber">47</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="existentTag" datatype="html">
+<source>Este tag ya existe</source>
+<target>Aquest tag ja existeix</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.ts</context>
+  <context context-type="linenumber">48</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="newTagPlaceholder" datatype="html">
+<source>Añadir nuevo Tag</source>
+<target>Afegir nou Tag</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.html</context>
+  <context context-type="linenumber">19</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="saveTag" datatype="html">
+<source>Guardar Tags</source>
+<target>Guardar Tags</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-list/addTag/add-tag.component.html</context>
+</context-group>
+</trans-unit>
+
+<trans-unit id="addTagDataSource" datatype="html">
+<source>Añadir Tag</source>
+<target>Afegir Tag</target>
+<context-group purpose="location">
+  <context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
+</context-group>
+</trans-unit>
 <trans-unit id="inputNombreEsquemaModel" datatype="html">
 <source>Esquema</source>
 <target>Esquema</target>
@@ -3832,10 +3884,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>GUARDAR COM</target>
   </trans-unit> 
 
-
-
-
-
   <trans-unit id="editStylesTitle">
     <source>EDITAR ESTILOS DEL INFORME</source>
     <target>EDITAR ESTILS DE L'INFORME</target>
@@ -4119,6 +4167,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </target>
 </trans-unit>
 
+  <trans-unit id="eliminarInforme">
+    <source>ELIMINAR INFORME</source>
+    <target>ELIMINAR INFORME</target>
+  </trans-unit> 
+  
 </body>
 </file>
 </xliff>
