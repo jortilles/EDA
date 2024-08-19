@@ -124,32 +124,35 @@ export class updateModel {
                                                                             let permissionsColumns = permiCol;
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
                                                                             // montamos el modelo
-                                                                            console.log('Recuperando usuarios');
-                                                                            try {
-                                                                              crm_to_eda = await userAndGroupsToMongo.crm_to_eda_UsersAndGroups(users_crm, roles)  
-                                                                            } catch (e) {
-                                                                              console.log(e)
-                                                                              res.status(500).json({'status' : 'ko'})
-                                                                            }
-                                                                            
+                                                                            const query='select user_name as name, `table` as tabla , `column` as columna  from sda_def_permissions where stic_permission_source in ("ACL_ALLOW_GROUP_priv", "ACL_ALLOW_OWNER")';
 
-                                                                            console.log('Recuperando roles');
-                                                                            try {
-                                                                            grantedRolesAt = await updateModel.grantedRolesToModel(grantedRoles, tables, permissions, permissionsColumns)
-                                                                            } catch (e) {
-                                                                              console.log(e)
-                                                                              res.status(500).json({'status' : 'ko'})
-                                                                            }
+                                                                            await connection.query(query)
+                                                                              .then(async customUserPermissionsValue => {
 
-                                                                            console.log('Generando el modelo');
-                                                                            
-                                                                            try {
-                                                                            modelToExport = updateModel.createModel(tables, columns, relations, grantedRolesAt, ennumeration, res);
-                                                                            } catch (e) {
-                                                                              console.log(e)
-                                                                              res.status(500).json({'status' : 'ko'})
-                                                                            }                                                                      
+                                                                                let customUserPermissions = customUserPermissionsValue
 
+                                                                                try {
+                                                                                  crm_to_eda = await userAndGroupsToMongo.crm_to_eda_UsersAndGroups(users_crm, roles)  
+                                                                                } catch (e) {
+                                                                                  console.log('Error 1',e);
+                                                                                  res.status(500).json({'status' : 'ko'})
+                                                                                }
+                                                                                try {
+                                                                                  grantedRolesAt = await updateModel.grantedRolesToModel(grantedRoles, tables, permissions, permissionsColumns, customUserPermissions )
+                                                                                } catch (e) {
+                                                                                  console.log('Error 2',e);
+                                                                                  res.status(500).json({'status' : 'ko'})
+                                                                                }
+    
+                                                                                console.log('Generando el modelo');
+                                                                                
+                                                                                try {
+                                                                                modelToExport = updateModel.createModel(tables, columns, relations, grantedRolesAt, ennumeration, res);
+                                                                                } catch (e) {
+                                                                                  console.log('Error 3',e);
+                                                                                  res.status(500).json({'status' : 'ko'})
+                                                                                }                                                                      
+                                                                              })
 
                                                                             connection.end()
                                                                         })
@@ -166,8 +169,7 @@ export class updateModel {
 
         } catch (e) {
             //res.send(500)
-            console.log('error');
-            console.log(e);
+            console.log('Error : ', e);
         }
         
     }
@@ -187,7 +189,7 @@ export class updateModel {
                     columns = [...new Set(dataset.map(item => tabla === item.tabla ? item.column : null))].filter(item => item != null);
                     const sql = ' select ' + columns.toString() + ' from ' + tabla + ' limit 1   \n'
                     let nexSql = sql.replace("select ,", "select ").replace(", from", " from ");
-                    console.log(nexSql);
+                   // console.log(nexSql);
                     await con.query(nexSql).then((ress, errrr) => {
                         if (errrr) throw errrr;
                         //console.log(ress);
@@ -203,13 +205,12 @@ export class updateModel {
     }
 
     /** Genera los roles  */
-    static async grantedRolesToModel(grantedRoles: any, crmTables: any, permissions: any, permissionsColumns: any) {
+    static async grantedRolesToModel(grantedRoles: any, crmTables: any, permissions: any, permissionsColumns: any, customUserPermissions: any) {
         
+
         const destGrantedRoles = [];
-        let gr = {}
-        let gr2 = {}
-        let gr3 = {}
-        let gr4 = {}
+        let gr, gr2, gr3, gr4, gr5 = {};
+    
 
         //con este permiso todos los usuarios pueden ver el modelo
         const all = {
@@ -266,20 +267,18 @@ export class updateModel {
                 permission: true,
                 type: "groups"
 
+                
             }
             //Evitar duplicados
             let found = false;
             try {
                 found = destGrantedRoles.find(e => e.table === line.table && e.groupsName[0] === "EDA_ADMIN")
-            } catch (e) { }
+            } catch (e) { console.log( 'error finding', e) }
 
             if (!found) {
                 destGrantedRoles.push(gr2);
 
-            } else {
-
-            }
-
+            } 
         })
 
 
@@ -303,6 +302,9 @@ export class updateModel {
             destGrantedRoles.push(gr3)
 
         })
+
+
+
 
         permissionsColumns.forEach(line => {
 
@@ -338,7 +340,32 @@ export class updateModel {
             }
 
         })
-        
+
+        customUserPermissions.forEach(line => {
+
+          const found = usersFound.find(i => i.email == line.name)
+
+            if (found) {
+              let valueAt: String = "select `"+ line.columna + "` from " + line.tabla + 
+                  " where `"+ line.columna + "` = 'EDA_USER' " ;
+
+              gr5 = {
+                  users: [found._id],
+                  usersName: [line.name],
+                  none: false,
+                  table: line.tabla,
+                  column: line.columna,
+                  global: false,
+                  permission: true,
+                  dynamic: true,
+                  type: "users",
+                  value: [valueAt]
+              }
+
+              destGrantedRoles.push(gr5);
+            }
+        })
+
         return destGrantedRoles;
     }
 
@@ -531,8 +558,6 @@ export class updateModel {
       
   static async extractJsonModelAndPushToMongo(tables: any,   grantedRoles: any, res: any) {
     
-console.log('la base de datos es :================> ');
-console.log(sinergiaDatabase);
 
     //le damos formato json a nuestras tablas
     let main_model = await JSON.parse(fs.readFileSync('config/base_datamodel.json', 'utf-8'));
@@ -544,16 +569,15 @@ console.log(sinergiaDatabase);
     main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password);
     main_model.ds.model.tables = tables; //añadimos el parámetro en la columna adecuada
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
-    
-    
+        
     try {
         const cleanM = new CleanModel; 
         main_model = await cleanM.cleanModel(main_model);
         fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, (err) => { if (err) {throw err} else { }})
-        await new pushModelToMongo().pushModel(main_model,res)
+        await new pushModelToMongo().pushModel(main_model,res);
         res.status(200).json({'status' : 'ok'})
          } catch (e) {        
-            console.log(e)
+            console.log('Error :',e);
             res.status(500).json({'status' : 'ko'})
         }
       

@@ -18,8 +18,8 @@ export class userAndGroupsToMongo {
     for (let i = 0; i < users.length; i++) {
       let existe = mongoUsers.find(e => e.email == users[i].email)
       if (!existe) {
-        console.log('procesando');
-        console.log(users[i]);
+        //console.log('procesando');
+        //console.log(users[i]);
 
         let user = new User({
           name: users[i].name,
@@ -30,9 +30,8 @@ export class userAndGroupsToMongo {
         })
         try {
           await user.save()
-          console.log(
-            ' usuario ' + user.name + ' introducido correctamente en la bbdd'
-          )
+          //console.log( ' usuario ' + user.name + ' introducido correctamente en la bbdd' ) ;
+          
         } catch (err) {
           console.log(
             'usuario ' +
@@ -42,7 +41,7 @@ export class userAndGroupsToMongo {
         }
       } else {
         await User.findOneAndUpdate({ name: users[i].name }, { password: users[i].password });
-        console.log(' usuario ' + users[i].name + '  ya existe en mongo')
+        // console.log(' usuario ' + users[i].name + '  ya existe en mongo')
       }
     }
 
@@ -77,7 +76,7 @@ export class userAndGroupsToMongo {
           )
         }
       } else {
-        console.log(' grupo ' + unique_groups[i] + ' Ya existe')
+        //console.log(' grupo ' + unique_groups[i] + ' Ya existe')
       }
     }
 
@@ -104,10 +103,10 @@ export class userAndGroupsToMongo {
           a.email !== 'eda@jortilles.com' &&
           a.email !== 'edaanonim@jortilles.com' &&
           existe.active == 0) {
-            console.log("El usuario " + a.name + " ya no está activo y es eliminado")
+            //console.log("El usuario " + a.name + " ya no está activo y es eliminado")
             User.deleteOne({ email: a.email })
               .then(function () {
-                console.log(a.email + ' deleted') // Success
+                //console.log(a.email + ' deleted') // Success
               })
               .catch(function (error) {
                 console.log(error, "no se ha borrado el usuario " + a.email) // Failure
@@ -143,14 +142,27 @@ export class userAndGroupsToMongo {
 
     //empujo el grupo admin para que se inicialize con el admin de eda y el empujo usuario EDA con función de admin
     await mongoGroups.find(i => i.name ===  'EDA_ADMIN').users.push('135792467811111111111111')
-    await mongoUsers.find(i => i.email ===  ('eda@sinergiada.org' || 'eda@jortilles.com') ).role.push('135792467811111111111110')
+    let user = await mongoUsers.find(i => i.email ===  ('eda@jortilles.com') ) ;
+    if(user){
+      user.role.push('135792467811111111111110');
+    }else{
+      user = await mongoUsers.find(i => i.email ===  ('eda@sinergiada.org' ) )
+      if(user){
+        user.role.push('135792467811111111111110');
+      }else{
+        console.log('NO SE HA PODIDO AÑADIR EL ROL AL USUARIO ADMIN <=============================================================================');
+      }
+
+    }
+
+
 
     //guardamos en la bbdd
     await mongoGroups.forEach(async r => {
       try {
         await Group.updateOne({ name: r.name }, { $unset: { users: {} } })
           .then(function () {
-            console.log(r.name + ' Updated') // Success
+            //console.log(r.name + ' Updated') // Success
           })
           .catch(function (error) {
             console.log(error) // Failure
@@ -161,7 +173,7 @@ export class userAndGroupsToMongo {
       try {
         await Group.updateOne({ name: r.name }, { $addToSet: { users: r.users } })
           .then(function () {
-            console.log(r.name + ' Updated') // Success
+            //console.log(r.name + ' Updated') // Success
           })
           .catch(function (error) {
             console.log(error) // Failure
@@ -194,7 +206,7 @@ export class userAndGroupsToMongo {
          try {
           await User.updateOne({ email: y.email }, { $unset : {role: {}} })
           .then(function () {
-            console.log(y.name + ' Unset ') 
+           // console.log(y.name + ' Unset ') 
           })
           .catch(function (error) {
             console.log(error) 
@@ -202,7 +214,7 @@ export class userAndGroupsToMongo {
         
         await User.updateOne({ email: y.email }, { $addToSet : {role: totalRolesIds} })
           .then(function () {
-            console.log(y.name + ' Updated')
+            //console.log(y.name + ' Updated')
           })
           .catch(function (error) {
             console.log(error) 
