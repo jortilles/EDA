@@ -10,6 +10,7 @@ import { LogoImage, SubLogoImage, BackgroundImage } from '@eda/configs/index';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
 import { MsalService } from '@azure/msal-angular';
+import { AuthenticationResult } from '@azure/msal-browser';
 import { GOOGLE_CLIENT_ID } from '@eda/configs/config';
 
 
@@ -86,7 +87,6 @@ export class LoginComponent implements OnInit {
             text: 'continue_with',
             width: 180
         })
-
     }
 
     handleResponseGoogle(respGoogle:any) {
@@ -103,20 +103,11 @@ export class LoginComponent implements OnInit {
     }
 
     loginMicrosoft() {
-        this.authService.loginPopup({
-            scopes: ['User.Read'] // configuración en la aplicación de - Jortilles Web EDA
-        }).subscribe({
-          next: (respMicrosoft) => {
-            // console.log('respMicrosoft: ',respMicrosoft);
-            // this.setLoginDisplay();
-            this.userService.responseMicrosoft(respMicrosoft).subscribe((res) => {
-                // console.log(res);
+
+        this.authService.loginPopup({scopes: ['user.read']}).subscribe((response: AuthenticationResult) => {
+            this.userService.responseMicrosoft(response).subscribe((res) => {
                 this.ngZone.run(() => this.router.navigate([this.returnUrl]))
-            }, err => {
-                console.log('err: ',err)
             })
-          },
-          error: (error) => console.log('error: ',error)
         });
     }
     // setLoginDisplay() {

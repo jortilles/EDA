@@ -67,6 +67,7 @@
 }
 
 .microsoft:hover{
+    cursor: pointer;
     filter: brightness(97%);
 }
 
