@@ -1071,21 +1071,22 @@ export class DashboardController {
         } and Panel:${req.body.dashboard.panel_id}  `
       )
       console.log(query)
-      console.log(
-        '\n-------------------------------------------------------------------------------\n'
-      )
+      console.log('\n-------------------------------------------------------------------------------\n');
 
       /**cached query */
-      let cacheEnabled =
-        dataModelObject.ds.metadata.cache_config &&
-        dataModelObject.ds.metadata.cache_config.enabled === true
+      let cacheEnabled = false;
+        // dataModelObject.ds.metadata.cache_config &&
+        // dataModelObject.ds.metadata.cache_config.enabled === true;
+    
+        console.log('cacheEnabled', cacheEnabled)
       const cachedQuery = cacheEnabled
         ? await CachedQueryService.checkQuery(req.body.model_id, query)
         : null
 
       if (!cachedQuery) {
-        connection.client = await connection.getclient()
-        const getResults = await connection.execQuery(query)
+        connection.client = await connection.getclient();
+        const getResults = await connection.execQuery(query);
+        console.log('getResults', getResults);
 
         let numerics = []
         /** si es oracle   o alguns mysql  haig de fer una merda per tornar els numeros normals. */

@@ -83,7 +83,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const title = this.selectedColumn.display_name.default;
         const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
         this.dialog.title = `${col} ${title} ${from} ${this.controller.params.table}`;
-
+        console.log(this.controller);
         this.carregarValidacions();
 
         const columnType = this.selectedColumn.column_type;
