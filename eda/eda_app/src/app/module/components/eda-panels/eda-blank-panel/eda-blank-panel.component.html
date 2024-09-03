@@ -505,7 +505,8 @@
                 <div class="grid p-0 h-100">
                     <div class="col-8 p-1 preview-chart-box component" style="background-color: var(--panel-color);">
                         <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
-                            style="height: 100%; width: 100%; display:block"></panel-chart>
+                            style="height: 100%; width: 100%; display:block">
+                        </panel-chart>
                     </div>
 
                     <div class="col-3 p-offset-1 p-1 edaChartSelector">
@@ -513,8 +514,8 @@
                             <p-dropdown id="chartSelector" [style]="{'width':'100%'}"
                                 [options]="chartTypes"
                                 formControlName="chart"
-                                (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles( chartForm.value.chart.value))
-                                "optionLabel="label"
+                                (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles( chartForm.value.chart.value))"
+                                optionLabel="label"
                                 [autoDisplayFirst]="false">
 
                                 <ng-template pTemplate="selectedItem">
@@ -526,7 +527,6 @@
                                         <span style="vertical-align:middle; margin-left: .5em">
                                             {{chartForm.value.chart.label}}
                                         </span>
-
                                     </div>
                                 </ng-template>
 
@@ -537,7 +537,6 @@
                                             [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
                                             {{getOptionIcon(chart.subValue)}}
                                         </span>
-
 
                                         <span class="ml-2 "
                                             [ngClass]="{'texto-rallado-alert': chart.ngIf  || chart.tooManyData}">
@@ -557,6 +556,7 @@
                         </form>
                     </div>
                 </div>
+
             </p-tabPanel>
 
         </p-tabView>
