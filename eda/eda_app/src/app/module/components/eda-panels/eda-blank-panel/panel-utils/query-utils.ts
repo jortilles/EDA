@@ -169,7 +169,7 @@ export const QueryUtils = {
       ebp.index = 1;
       ebp.display_v.saved_panel = true;
     } catch (err) {
-      ebp.alertService.addError(err);
+      ebp.alertService.addError(err); 
       ebp.spinnerService.off();
     }
 

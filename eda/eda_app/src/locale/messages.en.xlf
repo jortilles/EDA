@@ -4277,6 +4277,14 @@
         <source>Alias del filtro (opcional)</source>
         <target>Filter alias (optional)</target>
       </trans-unit>
+      <trans-unit id="noDataAllowed">
+        <source>Este panel no está disponible por falta de permisos</source>
+        <target>This panel is not available due to lack of permissions</target>
+      </trans-unit>
+      <trans-unit id="noFilterAllowed">
+        <source>Este panel no está disponible por falta de permisos en un filtro</source>
+        <target>This panel is not available due to lack of permissions on a filter</target>
+      </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>
         <target>Last year, complete</target>

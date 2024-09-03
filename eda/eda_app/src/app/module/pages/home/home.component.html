@@ -147,7 +147,7 @@
                     </h3>
 
                     <div class="d-flex justify-content-between align-items-end">
-                        <span>{{dashboard.user.name}}</span>
+                        <span>{{dashboard.user?.name}}</span>
 
                         <span *ngIf=" !isObserver   &&  canIEdit(dashboard)  " (click)="deleteDashboard(dashboard)" class="pointer">
                             <i class="fa fa-trash" style="font-size: 16px"></i>

@@ -5,3 +5,19 @@
       <img src="assets/images/nodata.png" style="width: 250px;" alt="no data" />
   </div>
 </ng-container>
+
+<ng-container *ngIf="NO_DATA_ALLOWED">
+  <div class="d-flex justify-content-center">
+      <p class="alert alert-danger text-center" style="position: absolute; top: 50%; transform: translateY(-50%); font-size: 12px;">
+        <span i18n="@@noDataAllowed" class="ml-2">Este panel no está disponible por falta de permisos</span>
+      </p>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="NO_FILTER_ALLOWED">
+  <div class="d-flex justify-content-center">
+      <p class="alert alert-danger text-center" style="position: absolute; top: 50%; transform: translateY(-50%); font-size: 12px;">
+        <span i18n="@@noFilterAllowed" class="ml-2">Este panel no está disponible por falta de permisos en un filtro</span>
+      </p>
+    </div>
+</ng-container>

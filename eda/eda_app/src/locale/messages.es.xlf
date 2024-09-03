@@ -3057,7 +3057,7 @@
       <trans-unit id="DatePickerNull">
        <source>Fecha nula</source>
         <target>Fecha nula</target>
-      </trans-unit> 
+      </trans-unit>
 
       <trans-unit id="DateSelectRange">
         <source>Selecciona un rango</source>
@@ -4301,12 +4301,19 @@
         <source>VALORES NULOS O VACÍOS (null or = '')</source>
         <target>VALORES NULOS O VACÍOS (null or = '')</target>
       </trans-unit>
-      
+
       <trans-unit id="aliasValuePh">
         <source>Alias del filtro (opcional)</source>
         <target>Alias del filtro (opcional)</target>
       </trans-unit>
-
+      <trans-unit id="noDataAllowed">
+        <source>Este panel no está disponible por falta de permisos</source>
+        <target>Este panel no está disponible por falta de permisos</target>
+      </trans-unit>
+      <trans-unit id="noFilterAllowed">
+        <source>Este panel no está disponible por falta de permisos en un filtro</source>
+        <target>Este panel no está disponible por falta de permisos en un filtro</target>
+      </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>
         <target>El año pasado, completo</target>
