@@ -1086,7 +1086,6 @@ export class DashboardController {
       if (!cachedQuery) {
         connection.client = await connection.getclient();
         const getResults = await connection.execQuery(query);
-        console.log('getResults', getResults);
 
         let numerics = []
         /** si es oracle   o alguns mysql  haig de fer una merda per tornar els numeros normals. */
