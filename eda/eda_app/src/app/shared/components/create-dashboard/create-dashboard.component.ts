@@ -32,6 +32,7 @@ export class CreateDashboardComponent implements OnInit {
 
     public ngOnInit(): void {
         this.display = true;
+        this.sidebarService.getDataSourceNamesForDashboard();
         this.loadGroups();
     }
 
