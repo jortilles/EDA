@@ -104,11 +104,20 @@ export class PgConnection extends AbstractConnection {
                 let new_table = await this.setTable(tableNames[i]);
                 let count = 0;
                 if (optimize === 1) {
-                    const dbCount = await this.countTable(tableNames[i], `${this.config.schema || 'public'}`);
-                    count = dbCount.rows[0].count;
+                    try{
+                        const dbCount = await this.countTable(tableNames[i], `${this.config.schema || 'public'}`);
+                        count = dbCount.rows[0].count;
+                        new_table.tableCount = count;
+                        tables.push(new_table);
+                    }catch(e){
+                        console.log('la tabla ' + tableNames[i] + 'No se puede consultar. No se añade al listado' );
+                        console.log(e);
+                    }
+                }else{
+                    new_table.tableCount = count;
+                    tables.push(new_table);
                 }
-                new_table.tableCount = count;
-                tables.push(new_table);
+                
                 if(i> 500){
                     console.log('Un datasource no puede tener más de 500 tablas ');
                     i = tableNames.length + 1;
@@ -169,9 +178,7 @@ export class PgConnection extends AbstractConnection {
 
 
     private async countTable(tableName: string, schema: string): Promise<any> {
-        const query = `
-        SELECT count(*) as count from ${schema}.${tableName}
-        `;
+        const query = `SELECT count(*) as count from "${schema}"."${tableName}"  `;
         return new Promise(async (resolve, reject) => {
             try {
                 const count = await this.client.query(query);
