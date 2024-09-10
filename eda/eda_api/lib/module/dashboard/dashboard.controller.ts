@@ -614,14 +614,15 @@ export class DashboardController {
     user: string
   ) {
     let forbiddenTables = [];
-    if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.type == "anyoneCanSee" && r.permission == true ).length > 0 ){
-      // En el caso de que cualquier usuario pueda ver el modelo y tengamos un esquema benevolente
-      forbiddenTables = this.getForbiddenTablesOpen( dataModelObject, userGroups, user ); 
-    }else{
-      // En el caso de que tan sólo pueda ver las tablas para las que tengo permiso explicito
-      forbiddenTables = this.getForbiddenTablesClose( dataModelObject, userGroups, user ); 
-    }
-
+    if(dataModelObject.ds.metadata.model_granted_roles.length > 0 ){ /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
+      if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.type == "anyoneCanSee" && r.permission == true ).length > 0 ){
+        // En el caso de que cualquier usuario pueda ver el modelo y tengamos un esquema benevolente
+        forbiddenTables = this.getForbiddenTablesOpen( dataModelObject, userGroups, user ); 
+      }else{
+        // En el caso de que tan sólo pueda ver las tablas para las que tengo permiso explicito
+        forbiddenTables = this.getForbiddenTablesClose( dataModelObject, userGroups, user ); 
+      }
+  }
     return forbiddenTables;
   }
 
