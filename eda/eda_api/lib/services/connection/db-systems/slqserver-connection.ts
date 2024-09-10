@@ -21,7 +21,8 @@ export class SQLserverConnection extends AbstractConnection {
             database: this.config.database,
             options: {
                 enableArithAbort: true,
-                encrypt: this.config.ssl=='0'?false:true 
+                encrypt: this.config.ssl=='0'?false:true ,
+                trustServerCertificate: true //thanks to phvitres
             }
         }
 

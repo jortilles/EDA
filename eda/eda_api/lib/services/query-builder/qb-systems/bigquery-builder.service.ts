@@ -282,7 +282,15 @@ export class BigQueryBuilderService extends QueryBuilderService {
 
       el.display_name = el.display_name.replace(/ /g, "_");
 
-      const table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
+
+      let table_column;
+
+      if (el.autorelation && !el.valueListSource && !this.queryTODO.forSelector ) {
+
+        table_column = `\`${el.joins[el.joins.length-1][0]}\`.\`${el.column_name}\``;
+      } else {
+        table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
+      }
 
       let whatIfExpression = '';
       if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;

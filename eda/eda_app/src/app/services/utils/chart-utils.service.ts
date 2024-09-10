@@ -108,6 +108,7 @@ export class ChartUtilsService {
         { display_name: $localize`:@@dates7:FECHA COMPLETA`, value: 'timestamp', selected: false },
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
+
     public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
 
 

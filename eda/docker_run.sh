@@ -75,8 +75,7 @@ then
 else
         echo "start node"
         cd /eda/eda_api
-        #npm start >/eda/eda_api/api.log 2>&1
-        npm run start:forever >/eda/eda_api/api.log 2>&1
+        npm run start:pm2 >/eda/eda_api/api.log 2>&1
 fi
 
 echo ""

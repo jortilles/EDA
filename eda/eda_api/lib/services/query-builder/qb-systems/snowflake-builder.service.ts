@@ -200,47 +200,65 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     const targetTableJoin = [];
 
     for (const join of joinTree) {
+
       // División de las partes de la join
-      const [sourceTable, sourceColumn] = join[0].split('.');
+      const sourceLastDotInx = join[0].lastIndexOf('.');
+      // sourceTableAlias === join relation table_id
+      const [sourceTable, sourceColumn] = [join[0].substring(0, sourceLastDotInx), join[0].substring(sourceLastDotInx + 1)];
       const [targetTable, targetColumn] = join[1].split('.');
 
       // Construcción de las partes de la join
-      const sourceJoin = `"${schema}"."${sourceTable}"."${sourceColumn}"`;
-      let targetJoin = `"${schema}"."${targetTable}"."${targetColumn}"`;
+      let sourceJoin = `"${sourceTable}"."${sourceColumn}"`;
+      let targetJoin = `"${targetTable}"."${targetColumn}"`;
 
       // Si la join no existe ya, se añade
       if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
-        joinExists.add(`${sourceJoin}=${targetJoin}`);
+          joinExists.add(`${sourceJoin}=${targetJoin}`);
 
-        // Construcción de los alias
-        const alias = `"${targetTable}.${targetColumn}"`;
-        aliasTables[alias] = targetTable;
 
-        let aliasTargetTable: string;
-        if (targetTableJoin.includes(targetTable)) {
-          aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
-          aliasTables[alias] = aliasTargetTable;
-        }
+          let aliasSource;
+          if (sourceJoin.split('.')[0] == targetJoin.split('.')[0]) {
+              aliasSource = `"${sourceTable}.${sourceColumn}"`;
+          }
+          
+          // Construcción de los alias
+          let alias = `"${targetTable}.${targetColumn}.${sourceColumn}"`;
 
-        let joinStr: string;
+          if (aliasSource) {
+              alias = aliasSource;
+          }
 
-        joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
+          aliasTables[alias] = targetTable;
+          // aliasTables[sourceJoin] = targetTable;
 
-        if (aliasTargetTable) {
-          targetJoin = `"${aliasTargetTable}"."${targetColumn}"`;
-          joinStr = `${joinType} JOIN "${schema}"."${targetTable}" "${aliasTargetTable}" ON ${sourceJoin} = ${targetJoin}`;
-        } else {
-          joinStr = `${joinType} JOIN "${schema}"."${targetTable}" ON ${sourceJoin} = ${targetJoin}`;
-        }
+          let aliasTargetTable: string;
+          // targetTable and sourceTable can be the same table (autorelation)
+          if (targetTableJoin.includes(targetTable) || targetTable == sourceTable) {
+              // aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+              aliasTargetTable = `${targetTable}${sourceColumn}`;
+              aliasTables[alias] = aliasTargetTable;
+          }
 
-        // Si la join no se ha incluido ya, se añade al array
-        if (!joinString.includes(joinStr)) {
-          targetTableJoin.push(aliasTargetTable || targetTable);
-          joinString.push(joinStr);
-        }
+          let joinStr: string;
+
+          joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
+
+
+          if (aliasTargetTable) {
+              targetJoin = `"${aliasTargetTable}"."${targetColumn}"`;
+              joinStr = `${joinType} JOIN "${targetTable}" "${aliasTargetTable}" ON  ${sourceJoin}  =  ${targetJoin} `;
+          } else {
+              joinStr = `${joinType} JOIN "${targetTable}" ON  ${sourceJoin} = ${targetJoin} `;
+          }
+
+          // Si la join no se ha incluido ya, se añade al array
+          if (!joinString.includes(joinStr)) {
+              targetTableJoin.push(aliasTargetTable || targetTable);
+              joinString.push(joinStr);
+          }
       }
-    }
-
+  }
+  
     return {
       joinString,
       aliasTables
@@ -254,7 +272,13 @@ export class SnowFlakeBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
-      const table_column = `"${el.table_id}"."${el.column_name}"`;
+      let table_column;
+
+      if (el.autorelation && !el.valueListSource && !this.queryTODO.forSelector ) {
+        table_column = `"${el.joins[el.joins.length-1][0]}"."${el.column_name}"`;
+      } else {
+        table_column = `"${el.table_id}"."${el.column_name}"`;
+      }
 
       let whatIfExpression = '';
       if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;

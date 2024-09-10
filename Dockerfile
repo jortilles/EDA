@@ -23,7 +23,7 @@ RUN echo "  "
 RUN echo "export LD_LIBRARY_PATH=/eda/oracle/instantclient" >/root/.bashrc
 
 RUN echo n | npm install -g --silent @angular/cli
-RUN npm install -g forever  forever-monitor nodemon http-server   
+RUN npm install -g pm2 nodemon http-server   
 RUN npm install -g  --unsafe-perm puppeteer 
 
 
