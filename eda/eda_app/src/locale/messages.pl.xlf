@@ -4019,67 +4019,67 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 
 <trans-unit id="tituloAbout" datatype="html">
-<source>Enterprise Data Analytics</source>
-<target>Enterprise Data Analytics</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-<context context-type="linenumber">4</context>
-</context-group>
+<source>Edalitics</source>
+<target>Edalitics</target>
 </trans-unit>
 
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
   <source>  
-                <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
-                informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
-                en tus propios servidores o se puede difrutar en su versión SaaS 
-                <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
-                Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
-                configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.  </source>
+                <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> es la plataforma de reporting SaaS que te permite realizar 
+                informes y cuadros de mando de forma sencilla. 
+  </source>
   <target>
-                <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> to aplikacja internetowa typu open source, która umożliwia wykonywanie
-                 graficzne i interaktywne raporty w prosty sposób. EDA to aplikacja, którą można zainstalować
-                 na własnych serwerach lub możesz cieszyć się nim w wersji SaaS
-                 <a class="stronger-paragraph" href="https://www.edalitics.com">Edalityka</a>.
-                 Edalitics pozwala cieszyć się pełną mocą EDA bez konieczności martwienia się o instalacje,
-                 ustawienia, aktualizacje itp. Łączysz swoje źródła danych i tyle.  </target>
-  <context-group purpose="location">
-    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-    <context context-type="linenumber">7</context>
-  </context-group>
+<a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> to platforma raportowania SaaS, która umożliwia wykonywanie
+ raporty i dashboardy w prosty sposób.
+  </target>
 </trans-unit>
 
 
 <trans-unit id="secondAboutParagraph" datatype="html">
   <source>
-                 EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
-                Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
-                funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
-                y el soporte empresarial que ofrece a sus clientes.  </source>
+      Edalitics funciona con el código de 
+      <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a>. 
+      EDA es una aplicación web de código abierto que permite realizar informes gráficos e interactivos. 
+      Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+      configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y ya estás listo para empezar a analizar tu información. 
+  </source>
   <target>
-                 EDA został opracowany przez <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
-                 Jeśli potrzebujesz wsparcia biznesowego, nie wahaj się z nami skontaktować. Podobnie, jeśli chcesz poprosić o nowe
-                 funkcjonalności lub właściwości. Jortilles finansuje rozwój EDA poprzez subskrypcje Edalitics
-                 oraz wsparcie biznesowe, jakie oferuje swoim klientom. </target>
-  <context-group purpose="location">
-    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-    <context context-type="linenumber">15</context>
-  </context-group>
+Edalitics działa z kodem
+ <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a>.
+ EDA to aplikacja internetowa typu open source, która umożliwia tworzenie graficznych i interaktywnych raportów.
+ Edalitics pozwala cieszyć się pełną mocą EDA bez konieczności martwienia się o instalacje,
+ ustawienia, aktualizacje itp. Podłączasz swoje źródła danych i jesteś gotowy, aby rozpocząć analizę swoich informacji.
+  </target>
 </trans-unit>
 
+
 <trans-unit id="thirdAboutParagraph" datatype="html">
+  <source>
+        EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
+        Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
+        funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+        y el soporte empresarial que ofrece a sus clientes. 
+  </source>
+  <target>
+      EDA został opracowany przez <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
+      Jeśli potrzebujesz wsparcia biznesowego, nie wahaj się z nami skontaktować. Podobnie, jeśli chcesz poprosić o nowe
+      funkcjonalności lub właściwości. Jortilles finansuje rozwój EDA poprzez subskrypcje Edalitics
+      oraz wsparcie biznesowe, jakie oferuje swoim klientom.
+  </target>
+</trans-unit>
+
+
+
+<trans-unit id="fourthAboutParagraph" datatype="html">
   <source>
    El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
   </source>
   <target>
    Kod źródłowy EDA jest dostępny na <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
   </target>
-  <context-group purpose="location">
-    <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
-    <context context-type="linenumber">19</context>
-  </context-group>
 </trans-unit>
 
-<trans-unit id="fourthAboutParagraph" datatype="html">
+<trans-unit id="fifthAboutParagraph" datatype="html">
   <source>
    La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
   </source>
@@ -4088,7 +4088,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </target>
 </trans-unit>
 
-<trans-unit id="fifthAboutParagraph" datatype="html">
+<trans-unit id="sixthAboutParagraph" datatype="html">
   <source>
                   Existe un foro donde puedes compartir tu experiencia con la comunidad en  
                 <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Este Link</a>
