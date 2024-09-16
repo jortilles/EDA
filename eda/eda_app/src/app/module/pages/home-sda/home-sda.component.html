@@ -1,0 +1,658 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <!-- New report button -->
+  <div *ngIf="!isObserver">
+    <button
+      type="button"
+      class="btn btn-success stic-button-green"
+      (click)="createDashboard = true"
+    >
+      <i class="fa fa-plus-circle mr-2 fa-lg"></i>
+      <span i18n="@@newReport">Nuevo informe</span>
+    </button>
+  </div>
+
+  <div class="ml-auto" i18n="@@view">Vista</div>
+  <!-- View mode -->
+  <div class="ml-2" id="view-mode">
+    <div class="btn-group" role="group" aria-label="Modo de visualización">
+      <button
+        type="button"
+        class="btn btn-outline-light"
+        [class.active]="viewMode === 'table'"
+        (click)="setViewMode('table')"
+        title="Vista de tabla"
+        i18n-title="@@tableView"
+      >
+        <i class="fa fa-table"></i>
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-light"
+        [class.active]="viewMode === 'card'"
+        (click)="setViewMode('card')"
+        title="Vista de fichas"
+        i18n-title="@@cardView"
+      >
+        <i class="fa fa-th-large"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tags filter -->
+  <div class="ml-auto" id="tag-filter">
+    <div class="dropdown">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="dropdownMenuButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <i class="fa fa-filter"></i>&nbsp;<span i18n="@@tags"> Etiquetas </span>
+        <span
+          *ngIf="selectedTags.length > 0"
+          class="counter bg-warning pull-right"
+          >{{ selectedTags.length }}</span
+        >
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <div class="px-3 py-2">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Buscar etiqueta"
+            [(ngModel)]="tagSearchTerm"
+            (input)="filterTags()"
+            i18n-placeholder="@@tagSearch"
+          />
+        </div>
+        <button
+          class="btn btn-link btn-sm ml-2"
+          *ngIf="selectedTags.length > 0"
+          (click)="clearTagFilter()"
+          i18n="@@removeFilter"
+        >
+          Quitar filtro
+        </button>
+        <div class="dropdown-divider"></div>
+        <div *ngFor="let tag of filteredTags" class="dropdown-item">
+          <div *ngIf="tag.label != null" class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [id]="'tag-' + tag.value"
+              [checked]="selectedTags.includes(tag)"
+              (change)="toggleTagSelection(tag)"
+            />
+
+            <label class="form-check-label" [for]="'tag-' + tag.value">
+              {{ tag.label }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Groups filter-->
+  <div class="ml-2" id="group-filter">
+    <div class="dropdown">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="dropdownGroupButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <i class="fa fa-filter"></i>&nbsp;<span i18n="@@groups"> Grupos </span>
+        <span
+          *ngIf="selectedGroups.length > 0"
+          class="counter bg-warning pull-right"
+          >{{ selectedGroups.length }}</span
+        >
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownGroupButton">
+        <div class="px-3 py-2">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Buscar grupo"
+            [(ngModel)]="groupSearchTerm"
+            (input)="filterGroups()"
+            i18n-placeholder="@@groupSearch"
+          />
+        </div>
+        <button
+          class="btn btn-link btn-sm"
+          *ngIf="selectedGroups.length > 0"
+          (click)="clearGroupFilter()"
+          i18n="@@removeFilter"
+        >
+          Quitar filtro
+        </button>
+        <div class="dropdown-divider"></div>
+        <div *ngFor="let group of filteredGroups" class="dropdown-item">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [id]="'group-' + group.value"
+              [checked]="selectedGroups.includes(group)"
+              (change)="toggleGroupSelection(group)"
+            />
+            <label class="form-check-label" [for]="'group-' + group.value">
+              {{ group.label }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Type filter -->
+  <div id="type-filter" class="ml-2">
+    <div class="dropdown">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="dropdownTypeButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <i class="fa fa-filter"></i>&nbsp; <span i18n="@@type">Tipo</span>
+        <span
+          class="counter bg-warning pull-right"
+          *ngIf="selectedTypes.length > 0"
+          >{{ selectedTypes.length }}</span
+        >
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownTypeButton">
+        <div class="px-3 py-2">
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="typeSearchTerm"
+            (ngModelChange)="filterTypes()"
+            i18n-placeholder="@@typeSearch"
+            placeholder="Buscar tipo"
+          />
+        </div>
+        <button
+          class="btn btn-link btn-sm"
+          *ngIf="selectedTypes.length > 0"
+          (click)="clearTypeFilter()"
+          i18n="@@removeFilter"
+        >
+          Quitar filtro
+        </button>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-item" *ngFor="let type of filteredTypes">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [id]="'type-' + type.type"
+              (change)="toggleTypeSelection(type)"
+              [checked]="selectedTypes.includes(type)"
+            />
+            <label class="form-check-label" [for]="'type-' + type.type">
+              <i [class]="'fa ' + type.icon" [style.color]="type.color"></i>
+              {{ type.label }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Name filter -->
+  <div class="ml-2" id="name-filter">
+    <div class="search-container">
+      <input
+        type="text"
+        class="form-control search-input"
+        id="buscador"
+        name="buscador"
+        [(ngModel)]="searchTerm"
+        (keyup)="filterTitle($event)"
+        i18n-placeholder="@@nameFilter"
+        placeholder="Filtrar por nombre del informe"
+      />
+      <i class="fa fa-search search-icon"></i>
+    </div>
+  </div>
+
+  <div class="ml-2" id="count-indicator">
+    <span
+      id="report-counter"
+      class="badge"
+      [ngClass]="[
+        visibleDashboards.length < allDashboards.length
+          ? 'badge-warning'
+          : 'badge-info'
+      ]"
+    >
+      {{ visibleDashboards.length }} / {{ allDashboards.length }}
+    </span>
+  </div>
+</nav>
+
+<!-- Inicio de la tabla de Bootstrap -->
+<div *ngIf="viewMode === 'table'" class="md-10">
+  <table class="table table-responsive table-striped" id="report-table">
+    <thead>
+      <tr>
+        <th
+          (click)="sortTable('config.title')"
+          [ngClass]="{
+            'sort-asc':
+              sortColumn === 'config.title' && sortDirection === 'asc',
+            'sort-desc':
+              sortColumn === 'config.title' && sortDirection === 'desc'
+          }"
+          i18n="@@reportName"
+          style="min-width: 250px"
+        >
+          Nombre del Informe
+        </th>
+        <th
+          (click)="sortTable('type')"
+          [ngClass]="{
+            'sort-asc': sortColumn === 'type' && sortDirection === 'asc',
+            'sort-desc': sortColumn === 'type' && sortDirection === 'desc'
+          }"
+          i18n="@@type"
+          class="text-center"
+        >
+          Tipo
+        </th>
+        <th i18n="@@groups">Grupos</th>
+        <th
+          (click)="sortTable('config.tag')"
+          [ngClass]="{
+            'sort-asc': sortColumn === 'config.tag' && sortDirection === 'asc',
+            'sort-desc': sortColumn === 'config.tag' && sortDirection === 'desc'
+          }"
+          i18n="@@tags"
+        >
+          Etiquetas
+        </th>
+        <th
+          (click)="sortTable('user.name')"
+          [ngClass]="{
+            'sort-asc': sortColumn === 'user.name' && sortDirection === 'asc',
+            'sort-desc': sortColumn === 'user.name' && sortDirection === 'desc'
+          }"
+          i18n="@@autor"
+          class="text-center"
+        >
+          Autor
+        </th>
+        <th
+          (click)="sortTable('config.createdAt')"
+          [ngClass]="{
+            'sort-asc':
+              sortColumn === 'config.createdAt' && sortDirection === 'asc',
+            'sort-desc':
+              sortColumn === 'config.createdAt' && sortDirection === 'desc'
+          }"
+          i18n="@@createdAt"
+          class="text-center"
+        >
+          Fecha creación
+        </th>
+        <th
+          (click)="sortTable('config.modifiedAt')"
+          [ngClass]="{
+            'sort-asc':
+              sortColumn === 'config.modifiedAt' && sortDirection === 'asc',
+            'sort-desc':
+              sortColumn === 'config.modifiedAt' && sortDirection === 'desc'
+          }"
+          i18n="@@modifiedAt"
+          class="text-center"
+        >
+          Fecha modificación
+        </th>
+        <th
+          i18n="@@privateEdition"
+          class="text-center"
+          (click)="sortTable('config.onlyIcanEdit')"
+          [ngClass]="{
+            'sort-asc':
+              sortColumn === 'config.onlyICanEdit' && sortDirection === 'asc',
+            'sort-desc':
+              sortColumn === 'config.onlyICanEdit' && sortDirection === 'desc'
+          }"
+        >
+          Edición privada
+        </th>
+        <th
+          i18n="@@dataSourceName"
+          (click)="sortTable('config.ds.name')"
+          [ngClass]="{
+            'sort-asc':
+              sortColumn === 'config.ds.name' && sortDirection === 'asc',
+            'sort-desc':
+              sortColumn === 'config.ds.name' && sortDirection === 'desc'
+          }"
+          i18n="@@tags"
+        >
+          Fuente de datos
+        </th>
+
+        <th i18n="@@actions">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        *ngFor="let dashboard of visibleDashboards"
+        [id]="'dashboard-' + dashboard._id"
+        [class.newly-cloned]="dashboard.isNewlyCloned"
+        (dblclick)="goToDashboard(dashboard)"
+      >
+        <td
+          pTooltip="{{ dashboard.config.description }}"
+          tooltipPosition="bottom"
+          [ngClass]="{ 'has-description': dashboard.config.description }"
+        >
+          <div
+            class="dashboard-title-container"
+            (mouseenter)="showEditIcon = true"
+            (mouseleave)="showEditIcon = false"
+          >
+            <div
+              #titleSpan
+              [attr.contenteditable]="isEditing ? true : null"
+              (blur)="updateDashboardTitle(dashboard, $event)"
+              (keydown.enter)="$event.target.blur()"
+            >
+              <a class="report-name" (click)="goToDashboard(dashboard)">{{ dashboard.config.title }}</a> &nbsp;
+              <i
+                *ngIf="dashboard.config.description"
+                class="fa fa-info has-description-icon"
+              ></i>
+              <i
+                *ngIf="canIEdit(dashboard) && !isEditing"
+                class="fa fa-pencil edit-icon"
+                (click)="startEditing(titleSpan)"
+                i18n-title="@@clickToEditName"
+                title="Pulse para editar el nombre"
+              ></i>
+            </div>
+          </div>
+        </td>
+        <td class="text-center">
+          <span
+            class="type-indicator"
+            [style.background-color]="getDashboardTypeColor(dashboard.type)"
+          ></span>
+          {{
+            dashboardTypeTranslations[dashboard.type] || dashboard.type
+              | titlecase
+          }}
+          <!-- test -->
+          <span class="card-text type-container">
+            <ng-container
+              *ngIf="editingTypeId !== dashboard._id; else editTypeTemplateCard"
+            >
+              <i
+                *ngIf="canIEdit(dashboard) && !isEditing"
+                class="fa fa-pencil edit-type-icon"
+                style="opacity: 0"
+                (click)="startEditingType(dashboard)"
+              ></i>
+            </ng-container>
+            <ng-template #editTypeTemplateCard>
+              <select
+                [(ngModel)]="dashboard.type"
+                (change)="updateDashboardType(dashboard, dashboard.type)"
+              >
+              <option *ngFor="let type of dashboardTypes" [value]="type.type" [hidden]="type.type === 'shared' && !isAdmin">
+                  {{ type.label }}
+                </option>
+              </select>
+              <button
+                class="btn btn-sm btn-secondary ml-2"
+                (click)="cancelEditingType()"
+                i18n="@@cancelarBtn"
+              >
+                Cancelar
+              </button>
+            </ng-template>
+          </span>
+          <!-- test -->
+        </td>
+        <td class="small">
+          <span
+            *ngFor="let group of dashboard.group"
+            class="group-label label label-success small"
+          >
+            {{ group.name }}
+          </span>
+        </td>
+        <td>
+          <span *ngIf="dashboard.config.tag" class="tag-label">{{ dashboard.config.tag }}</span>
+        </td>
+        <td class="text-center">{{ dashboard.user?.name }}</td>
+        <td class="text-center">
+          <small>{{
+            dashboard.config.createdAt
+              ? formatDate(dashboard.config.createdAt)
+              : ""
+          }}</small>
+        </td>
+        <td class="text-center">
+          <small>{{
+            dashboard.config.modifiedAt
+              ? formatDate(dashboard.config.modifiedAt)
+              : ""
+          }}</small>
+        </td>
+        <td class="text-center">
+          <p *ngIf="dashboard.config.onlyIcanEdit" class="text-center">
+            <i class="fa fa-check text-success"></i>
+          </p>
+        </td>
+        <td>{{ dashboard.config.ds.name }}</td>
+
+        <td>
+          <div class="btn-group">
+            <button
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
+              (click)="goToDashboard(dashboard)"
+              i18n-title="@@goToDashboard"
+              title="Abrir informe"
+            >
+              <i class="fa fa-eye"></i>
+            </button>
+            <button
+              *ngIf="!isObserver "
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
+              (click)="cloneDashboard(dashboard)"
+              i18n-title="@@cloneReport"
+              title="Clonar informe"
+            >
+              <i class="fa fa-clone"></i>
+            </button>
+            <button
+              *ngIf="!isObserver && canIEdit(dashboard)"
+              class="btn btn-danger btn-sm mr-2 stic-button-red"
+              (click)="deleteDashboard(dashboard)"
+              i18n-title="@@deleteReport"
+              title="Eliminar informe"
+            >
+              <i class="fa fa-trash"></i>
+            </button>
+            <button
+              *ngIf="dashboard.type === 'shared'"
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
+              (click)="copyUrl(dashboard)"
+              i18n-title="@@copyURL"
+              title="Copiar url pública"
+            >
+              <i class="fa fa-link"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+<!-- Fin de la tabla de Bootstrap -->
+
+<div *ngIf="viewMode === 'card'" class="md-10">
+  <div class="card-container">
+    <div *ngFor="let dashboard of visibleDashboards" class="card-wrapper">
+      <div
+        class="card"
+        [id]="'dashboard-' + dashboard._id"
+        [class.newly-cloned]="dashboard.isNewlyCloned"
+        [ngClass]="getDashboardTypeClass(dashboard.type)"
+        (dblclick)="goToDashboard(dashboard)"
+      >
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title" title="{{ dashboard.config.title }}">
+            <div
+              class="dashboard-title-container"
+              (mouseenter)="showEditIcon = true"
+              (mouseleave)="showEditIcon = false"
+              x
+            >
+              <a
+                #titleSpan
+                [attr.contenteditable]="isEditing ? true : null"
+                (blur)="updateDashboardTitle(dashboard, $event)"
+                (keydown.enter)="$event.target.blur()"
+                class="report-name"
+                (click)="goToDashboard(dashboard)"
+                >{{ dashboard.config.title }}</a
+              >
+              <i
+                *ngIf="canIEdit(dashboard) && !isEditing"
+                class="fa fa-pencil edit-icon"
+                (click)="startEditing(titleSpan)"
+                i18n-title="@@clickToEditName"
+                title="Pulse para editar el nombre"
+              ></i>
+            </div>
+          </h5>
+          <span
+            class="datasource-name label label-default small"
+            title="Fuente de datos"
+          >
+            {{ dashboard.config.ds.name }}</span
+          >
+          <p class="card-text type-container">
+            <ng-container
+              *ngIf="editingTypeId !== dashboard._id; else editTypeTemplateCard"
+            >
+              {{ dashboardTypeTranslations[dashboard.type] || dashboard.type }}
+              <i
+                *ngIf="canIEdit(dashboard) && !isEditing"
+                class="fa fa-pencil edit-type-icon"
+                style="opacity: 0"
+                (click)="startEditingType(dashboard)"
+              ></i>
+            </ng-container>
+            <ng-template #editTypeTemplateCard>
+              <select
+                [(ngModel)]="dashboard.type"
+                (change)="updateDashboardType(dashboard, dashboard.type)"
+              >
+              <option *ngFor="let type of dashboardTypes" [value]="type.type" [hidden]="type.type === 'shared' && !isAdmin">                  {{ type.label }}
+                </option>
+              </select>
+              <button
+                class="btn btn-sm btn-secondary ml-2"
+                (click)="cancelEditingType()"
+                i18n="@@cancelarBtn"
+              >
+                Cancelar
+              </button>
+            </ng-template>
+          </p>
+          <p class="card-text">
+            <span
+              *ngFor="let group of dashboard.group"
+              class="group-label label label-success small"
+            >
+              {{ group.name }}
+            </span>
+            <span class="pull-right small">
+              <i class="fa fa-plus text-muted"></i>
+              {{
+                dashboard.config.createdAt
+                  ? formatDate(dashboard.config.createdAt)
+                  : ""
+              }} </span
+            ><br />
+            <span class="pull-right small">
+              <i class="fa fa-pencil text-muted"></i>
+              {{
+                dashboard.config.modifiedAt
+                  ? formatDate(dashboard.config.modifiedAt)
+                  : ""
+              }}
+            </span>
+          </p>
+
+          <p class="card-text">
+            <span *ngIf="dashboard.config.tag" class="tag-label">{{ dashboard.config.tag }}</span>
+          </p>
+          <div class="mt-auto">
+            <button
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
+              (click)="goToDashboard(dashboard)"
+              i18n-title="@@showReport"
+              title="Mostrar informe"
+            >
+              <i class="fa fa-eye"></i>
+            </button>
+            <button
+              *ngIf="!isObserver && canIEdit(dashboard)"
+              class="btn btn-danger btn-sm mr-2 stic-button-red"
+              (click)="deleteDashboard(dashboard)"
+              i18n-title="@@deleteReport"
+              title="Eliminar informe"
+            >
+              <i class="fa fa-trash"></i>
+            </button>
+            <button
+              *ngIf="!isObserver && canIEdit(dashboard)"
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
+              (click)="cloneDashboard(dashboard)"
+              i18n-title="@@cloneReport"
+              title="Clonar informe"
+            >
+              <i class="fa fa-clone"></i>
+            </button>
+            <button
+              *ngIf="dashboard.type === 'shared'"
+              class="btn btn-primary btn-sm mr-2 stic-button-green"
+              (click)="copyUrl(dashboard)"
+              i18n-title="@@copyURL"
+              title="Copiar url pública"
+            >
+              <i class="fa fa-link"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-create-dashboard
+  *ngIf="dashController"
+  [controller]="dashController"
+></app-create-dashboard>
+
+<app-create-dashboard
+  *ngIf="createDashboard"
+  (close)="onCloseCreateDashboard($event)"
+></app-create-dashboard>

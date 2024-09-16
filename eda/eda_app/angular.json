@@ -12,19 +12,19 @@
                 ,
                 "locales": {
                     "es": {
-                        "translation": "src/locale/messages.es.xlf"
+                        "translation": "src/locale/prod_messages.es.xlf"
                     },
                     "en": {
-                        "translation": "src/locale/messages.en.xlf"
+                        "translation": "src/locale/prod_messages.en.xlf"
                     },
                     "ca": {
-                        "translation": "src/locale/messages.ca.xlf"
+                        "translation": "src/locale/prod_messages.ca.xlf"
                     },
                     "pl": {
                         "translation": "src/locale/messages.pl.xlf"
                     }, 
                     "gl": {
-                        "translation": "src/locale/messages.gl.xlf"
+                        "translation": "src/locale/prod_messages.gl.xlf"
                     }
                 }
             },

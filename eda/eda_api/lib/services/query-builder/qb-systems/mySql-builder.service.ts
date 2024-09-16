@@ -83,7 +83,8 @@ export class MySqlBuilderService extends QueryBuilderService {
     return myQuery;
   };
 
-  public getFilters(filters): any {  
+  public getFilters(filters): any { 
+
     if (this.permissions.length > 0) {
       this.permissions.forEach(permission => { filters.push(permission); });
     }
@@ -92,7 +93,6 @@ export class MySqlBuilderService extends QueryBuilderService {
       let equalfilters = this.getEqualFilters(filters);
       filters = filters.filter(f => !equalfilters.toRemove.includes(f.filter_id));
       let filtersString = `\nwhere 1 = 1 `;
-
 
       filters.forEach(f => {
         const column = this.findColumn(f.filter_table, f.filter_column);
@@ -113,6 +113,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
         }
       });
+
 
       /**Allow filter ranges */
       filtersString = this.mergeFilterStrings(filtersString, equalfilters);

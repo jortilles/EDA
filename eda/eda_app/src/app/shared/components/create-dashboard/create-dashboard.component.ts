@@ -18,7 +18,7 @@ export class CreateDashboardComponent implements OnInit {
     public showGroups: boolean = false;
 
     @Output() close: EventEmitter<any> = new EventEmitter();
-    
+
     constructor(
         private formBuilder: FormBuilder,
         private alertService: AlertService,
@@ -101,9 +101,11 @@ export class CreateDashboardComponent implements OnInit {
                     ds,
                     title: this.form.value.name,
                     visible: this.form.value.visible,
-                    tag: null, 
-                    refreshTime:null, 
-                    styles:this.stylesProviderService.generateDefaultStyles()
+                    tag: null,
+                    refreshTime:null,
+                    styles:this.stylesProviderService.generateDefaultStyles(),
+                    /*SDA CUSTOM*/ createdAt: new Date(),
+                    /*SDA CUSTOM*/ modifiedAt: new Date()
                 },
                 group: this.form.value.group
                     ? _.map(this.form.value.group, '_id')

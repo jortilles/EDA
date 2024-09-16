@@ -390,6 +390,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.setEditMode();
                     // Check dashboard owner
                     this.checkVisibility(res.dashboard);
+                    me.setDashboardCreator(res.dashboard);
                     me.title = config.title; // Titul del dashboard, utilitzat per visualització
                     me.gFilter.initGlobalFilters(config.filters||[]); // Filtres del dashboard
                     me.dataSource = res.datasource; // DataSource del dashboard
@@ -412,7 +413,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     // i es crida també des de els subscribe del groupcontroller ... a mes a mes des de la inicilialització del dashboard
                     // per estar segurn que es tenen disponibles.
                     let grp = [];
-                    me.setDashboardCreator(res.dashboard);
                     if (config.visible === 'group' && res.dashboard.group) {
                         grp = res.dashboard.group;
                     }
@@ -1274,4 +1274,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             confirmButtonText: swal.resolveBtnText,
         });
     }
+
+    /**
+     * Filters dashboard visibility types based on user role.
+     *
+     * @returns {SelectItem[]} Array of allowed visibility types.
+     *
+     * @description
+     * Returns all types for admins, excludes 'shared' for non-admins.
+    */
+    /*SDA CUSTOM*/public getFilteredVisibleTypes(): SelectItem[] {
+    /*SDA CUSTOM*/  return this.userService.isAdmin
+    /*SDA CUSTOM*/    ? this.visibleTypes
+    /*SDA CUSTOM*/    : this.visibleTypes.filter(type => type.value !== 'shared');
+    /*SDA CUSTOM*/}
 }

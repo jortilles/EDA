@@ -204,7 +204,6 @@ export class EdaBlankPanelComponent implements OnInit {
 
     ngOnInit(): void {
         this.index = 0;
-        // this.modeSQL = false;
 /* SDA CUSTOM  */ this.showHiddenColumn = false;
 /* SDA CUSTOM  */ this.showIdForHiddenMode();
 
@@ -439,7 +438,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public buildGlobalconfiguration(panelContent: any) {
         const modeSQL = panelContent.query.query.modeSQL;
         const queryMode = this.selectedQueryMode;
-        this.showHiddenColumn = true;
+        /*SDA CUSTOM*/ this.showHiddenColumn = true;
 
         if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
 
@@ -479,7 +478,7 @@ export class EdaBlankPanelComponent implements OnInit {
         const config = ChartsConfigUtils.recoverConfig(panelContent.chart, panelContent.query.output.config);
         this.changeChartType(panelContent.chart, panelContent.edaChart, config);
 
-        this.showHiddenColumn = false;
+        /*SDA CUSTOM*/ this.showHiddenColumn = false;
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
     }
@@ -1236,7 +1235,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         const table = this.findTable(filter.filter_table.split('.')[0]);
 
-        if (table.table_name) {
+        if (table && table.table_name) {
             const tableName = table.display_name?.default;
             const columnName = table.columns.find((c) => c.column_name == filter.filter_column)?.display_name?.default;
 

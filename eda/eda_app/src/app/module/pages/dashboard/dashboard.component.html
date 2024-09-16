@@ -154,7 +154,7 @@
     <div *ngIf="display_v.edit_mode">
         <form [formGroup]="form" *ngIf="canIedit()" >
             <div >
-                <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)">
+                <!-- SDA CUSTOM --> <p-selectButton [options]="getFilteredVisibleTypes()" formControlName="visible" (onChange)="handleSelectedBtn($event)">
                 </p-selectButton>
 
 

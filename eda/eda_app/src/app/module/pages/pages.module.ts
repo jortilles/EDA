@@ -35,9 +35,8 @@ import { SecurityDialogComponent } from './data-sources/data-source-detail/secur
 import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
 import { MailManagementComponent } from './mail-management/mail-management.component';
 import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
-// SDA CUSTOM
-import {AboutComponent} from './about/about.component';
-// END SDA CUSTOM
+
+/*SDA CUSTOM*/ import {AboutComponent} from './about/about.component';
 
 // Routes
 import { PAGES_ROUTES } from './pages.routes';
@@ -45,6 +44,7 @@ import { CalculatedColumnDialogComponent } from './data-sources/data-source-deta
 import { UploadFileComponent } from './data-sources/data-source-detail/upload-file/upload-file.component';
 import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.component';
 import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
+/*SDA CUSTOM*/ import { HomeSdaComponent } from './home-sda/home-sda.component';
 import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.component';
 
 
@@ -91,9 +91,9 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
         DashboardMailDialogComponent,
         SaveAsDialogComponent,
         EditStylesDialogComponent,
-        // SDA CUSTOM
-        AboutComponent
-        // END SDA CUSTOM
+        /*SDA CUSTOM*/ HomeSdaComponent,
+        /*SDA CUSTOM*/ AboutComponent
+
     ]
 })
 export class PagesModule { }
