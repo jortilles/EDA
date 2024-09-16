@@ -43,6 +43,7 @@ export class GlobalFilterComponent implements OnInit {
 
     public initGlobalFilters(filters: any[]): void {
         this.globalFilters = _.cloneDeep(filters);
+        this.isDashboardCreator = this.dashboard.isDashboardCreator;
         this.setFiltersVisibility();
         this.setFilterButtonVisibilty();
     }
@@ -56,11 +57,17 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     // métode per descobrir o amagar el botó de filtrar al dashboard
-    public setFilterButtonVisibilty(): void {
-        const filters = this.globalFilters.filter((f: any) => {
-            return (f.visible == "public" || f.visible == "readOnly")
-        });
-        filters.forEach(a => {
+    private setFilterButtonVisibilty(): void {
+        
+        let myFilters = _.cloneDeep(this.globalFilters);
+        if(!this.isDashboardCreator  || !this.isAdmin){
+            myFilters= myFilters.filter((f: any) => {
+                return (f.visible != "hidden" && f.visible == "readOnly") ||
+                    (f.visible != "hidden" && f.visible == "public")
+            });
+        }
+
+        myFilters.forEach(a => {
             if (a.visible == "public") {
                 this.filterButtonVisibility.public = true;
             } else if (a.visible == "readOnly") {
