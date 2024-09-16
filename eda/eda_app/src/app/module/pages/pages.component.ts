@@ -11,12 +11,12 @@ declare function init_plugins();
 })
 export class PagesComponent implements OnInit {
 
-    backgroundColor : string 
+    backgroundColor : string
     panelMode: boolean = false;
 
     constructor( private router: Router,
-        private route: ActivatedRoute, 
-        private settingSerive: SettingsService, 
+        private route: ActivatedRoute,
+        private settingSerive: SettingsService,
         private styleProviderService : StyleProviderService) {
 
         this.styleProviderService.pageBackground.subscribe((backgroundColor)=>{
@@ -31,9 +31,9 @@ export class PagesComponent implements OnInit {
         init_plugins();
     }
 
-        
+
     private getPanelMode(): void {
-        
+
         this.route.queryParams.subscribe(params => {
             try{
                     if(params['panelMode'] == 'true'){

@@ -9,6 +9,8 @@ export interface IDashboard extends mongoose.Document {
 }
 
 interface IDashboardConfig {
+    createdAt: Date;
+    modifiedAt: Date;
     sendViaMailConfig: any;
     title: string;
     visible: string;

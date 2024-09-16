@@ -24,4 +24,8 @@ router.put('/:id', authGuard, DashboardController.update);
 
 router.delete('/:id', authGuard, DashboardController.delete);
 
+/*SDA CUSTOM*/ router.put('/:id/updateSpecific', authGuard, DashboardController.updateSpecific);
+
+/*SDA CUSTOM*/ router.post('/:id/clone', authGuard, DashboardController.clone);
+
 export default router;

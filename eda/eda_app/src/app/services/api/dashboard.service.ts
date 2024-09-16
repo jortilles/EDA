@@ -50,4 +50,15 @@ export class DashboardService extends ApiService {
         return this.post(`${this.route}clean-refresh`, body);
     }
 
+    /*SDA CUSTOM*/ cloneDashboard(id: string): Observable<any> {
+    /*SDA CUSTOM*/  console.log(`Clonando dashboard con ID: ${id}`);
+    /*SDA CUSTOM*/  return this.post(`${this.route}${id}/clone`, {});
+    /*SDA CUSTOM*/ }
+
+    /*SDA CUSTOM*/ updateDashboardSpecific( id, body ): Observable<any> {
+    /*SDA CUSTOM*/   return this.put( `${this.route}${id}/updateSpecific`, body );
+    /*SDA CUSTOM*/ }
+
+
+
 }

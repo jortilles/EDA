@@ -1274,4 +1274,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             confirmButtonText: swal.resolveBtnText,
         });
     }
+
+    /**
+     * Filters dashboard visibility types based on user role.
+     *
+     * @returns {SelectItem[]} Array of allowed visibility types.
+     *
+     * @description
+     * Returns all types for admins, excludes 'shared' for non-admins.
+    */
+    /*SDA CUSTOM*/public getFilteredVisibleTypes(): SelectItem[] {
+    /*SDA CUSTOM*/  return this.userService.isAdmin
+    /*SDA CUSTOM*/    ? this.visibleTypes
+    /*SDA CUSTOM*/    : this.visibleTypes.filter(type => type.value !== 'shared');
+    /*SDA CUSTOM*/}
 }
