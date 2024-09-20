@@ -66,9 +66,22 @@ export class DataSourceController {
         const filter = DataSourceController.returnExternalFilter(req);
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos
-            const datasources = JSON.stringify(filter) !== '{}' ?
-                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options ).exec() :
-                await DataSource.find({}, '_id ds.metadata.model_name ds.security', options ).exec();
+            /*EDA const datasources = JSON.stringify(filter) !== '{}' ? */
+            /*EDA     await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options ).exec() :*/
+            /*EDA     await DataSource.find({}, '_id ds.metadata.model_name ds.security', options ).exec();*/
+
+            /*Edalitics Free */const userID = req.user._id;
+            /*Edalitics Free */const filters = JSON.stringify(filter) 
+            /*Edalitics Free */let datasources;
+            /*Edalitics Free */if( filters !== '{}'){
+            /*Edalitics Free */    datasources = await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options).exec() ;
+            /*Edalitics Free */}else{                
+            /*Edalitics Free */ if (userID == '135792467811111111111111' ){
+            /*Edalitics Free */    datasources = await DataSource.find( {} , '_id ds.metadata.model_name ds.security', options).exec();
+            /*Edalitics Free */  }else{
+            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[ '135792467811111111111111', userID ] } } , '_id ds.metadata.model_name ds.security', options).exec();
+            /*Edalitics Free */  }
+            /*Edalitics Free */}
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
@@ -99,9 +112,22 @@ export class DataSourceController {
         const filter = DataSourceController.returnExternalFilter(req);
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos
-            const datasources = JSON.stringify(filter) !== '{}' ?
-                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() :
-                await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+            
+            /*EDA const datasources = JSON.stringify(filter) !== '{}' ? */
+            /*EDA await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() : */
+            /*EDA await DataSource.find({}, '_id ds.metadata.model_name ds.melettadata.model_granted_roles ds.metadata.model_owner', options).exec(); */ 
+            /*Edalitics Free */const filters = JSON.stringify(filter) 
+            let datasources;
+            /*Edalitics Free */if( filters !== '{}'){
+            /*Edalitics Free */    datasources = await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() ;
+            /*Edalitics Free */}else{                
+            /*Edalitics Free */ if (userID == '135792467811111111111111' ){
+            /*Edalitics Free */    datasources = await DataSource.find( {} , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+            /*Edalitics Free */  }else{
+            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[ '135792467811111111111111', userID ] } } , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+            /*Edalitics Free */  }
+            /*Edalitics Free */}
+
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
