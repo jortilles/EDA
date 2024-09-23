@@ -17,7 +17,7 @@ const cache_config = require('../../../config/cache.config');
 export class DataSourceController {
 
     static async GetDataSources(req: Request, res: Response, next: NextFunction) {
-
+        console.log('GetDataSources.... migas de pan...');
         // Esto es pare recuperar los filtros externos.
         const filter = DataSourceController.returnExternalFilter(req);
         try {
@@ -61,14 +61,15 @@ export class DataSourceController {
 
     /** aQUSTA FUNCIÓ RETORNA TOTS ELS DATASOURCES */
     static async GetDataSourcesNames(req: Request, res: Response, next: NextFunction) {
+        console.log('GetDataSourcesNames.... migas de pan dos...');
         let options: QueryOptions = {};
         // Esto es pare recuperar los filtros externos.
         const filter = DataSourceController.returnExternalFilter(req);
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos
-            const datasources = JSON.stringify(filter) !== '{}' ?
-                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options ).exec() :
-                await DataSource.find({}, '_id ds.metadata.model_name ds.security', options ).exec();
+            const datasources = JSON.stringify(filter) !== '{}' ? 
+            await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options ).exec() :
+            await DataSource.find({}, '_id ds.metadata.model_name ds.security', options ).exec();
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
@@ -99,9 +100,9 @@ export class DataSourceController {
         const filter = DataSourceController.returnExternalFilter(req);
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos
-            const datasources = JSON.stringify(filter) !== '{}' ?
-                await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() :
-                await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+            const datasources = JSON.stringify(filter) !== '{}' ? 
+            await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() : 
+            await DataSource.find({}, '_id ds.metadata.model_name ds.melettadata.model_granted_roles ds.metadata.model_owner', options).exec(); 
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
@@ -110,9 +111,7 @@ export class DataSourceController {
             for (let i = 0, n = names.length; i < n; i += 1) {
                 const e = names[i];
                 // Si hay permisos de seguridad.....
-                if (e.ds.metadata.model_granted_roles.length > 0) {
-
-
+                if (e.ds.metadata.model_granted_roles?.length > 0) {
                     const users = [];
                     const roles = [];
                     let allCanSee = 'false';
@@ -167,7 +166,6 @@ export class DataSourceController {
     /* Aquesta funció retorna els datasources disponibles per editar al llistat de l'esquerra.
    Aquesta funció sustitueix GetDataSourcesNames en la nova versió on cada usuari por afegir i editar models de dades */
     static async GetDataSourcesNamesForEdit(req: Request, res: Response, next: NextFunction) {
-
         const groups = await Group.find({ users: { $in: req.user._id } }).exec();
         const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
         const output = [];
@@ -181,9 +179,7 @@ export class DataSourceController {
                 const names = JSON.parse(JSON.stringify(ds));
                 for (let i = 0, n = names.length; i < n; i += 1) {
                     const e = names[i];
-
                     output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-
                 }
                 output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :
                     ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
@@ -192,22 +188,14 @@ export class DataSourceController {
 
         } else {
             // Si l'usuari NO es admin retorna els seus.
-            DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_owner', options, (err, ds) => {
+            DataSource.find( { 'ds.metadata.model_owner': { $in:[  req.user._id ] } } , '_id ds.metadata.model_name ds.metadata.model_owner', options, (err, ds) => {
                 if (!ds) {
                     return next(new HttpException(500, 'Error loading DataSources'));
                 }
                 const names = JSON.parse(JSON.stringify(ds));
-
                 for (let i = 0, n = names.length; i < n; i += 1) {
                     const e = names[i];
-                    // Si tenim  propietari....
-                    if (e.ds.metadata.model_owner) {
-                        // Si el model es meu....
-                        if (req.user._id == e.ds.metadata.model_owner) {
-                            output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-                        }
-
-                    }
+                            output.push({ _id: e._id, model_name: e.ds.metadata.model_name });  
                 }
                 output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 : ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0));
                 return res.status(200).json({ ok: true, ds: output });
