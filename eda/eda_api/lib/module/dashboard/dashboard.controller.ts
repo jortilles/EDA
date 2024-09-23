@@ -818,9 +818,36 @@ export class DashboardController {
     })
 
     // Aqui marco las tablas que si que puedo ver. El resto están prohividas
-
-    /** allowed tables by security */
+      /** allowed tables by security */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      // Si el usuario puede ver todo el modelo.
+      if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
+                                                                    && r.permission == true 
+                                                                    && r.users?.includes(user) 
+                                                                ).length > 0 ){
+        // El usuairo puede ver todo.
+        forbiddenTables = [];
+        return forbiddenTables;
+      }
+      // Si el grupo puede ver todo el modelo.
+      let groupCan =  0;
+      userGroups.forEach(
+        group=>{
+          console.log(group);
+          if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
+            && r.permission == true 
+            && r.groups?.includes(group) 
+          ).length > 0 ){
+              // El grupo  puede ver todo.
+              groupCan = 1;
+            }
+        }
+      );
+      if(groupCan==1) {
+        forbiddenTables = [];
+        return forbiddenTables;
+      }
+   
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
