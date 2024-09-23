@@ -49,7 +49,7 @@ export class GoogleController {
                         email: email,
                         password: bcrypt.hashSync(jti, 10),
                         img: picture,
-                        role: '135792467811111111111110' // validar con Juanjo
+                        role: ['135792467811111111111115']  
                     });
                     userToSave.save(async (err, userSaved) => {
                         if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
@@ -63,7 +63,6 @@ export class GoogleController {
                     userEda.name = name;
                     userEda.email = email;
                     userEda.password = bcrypt.hashSync(jti, 10); // validar con Juanjo
-                    userEda.role = '135792467811111111111110';
                     userEda.save(async (err, userSaved) => {
                         if(err) return next(new HttpException(400, 'Some error ocurred while creating the User'));
                         Object.assign(user, userSaved);

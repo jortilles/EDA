@@ -125,7 +125,7 @@ export class DataSourceController {
             /*Edalitics Free */ if (userID == '135792467811111111111111' ){
             /*Edalitics Free */    datasources = await DataSource.find( {} , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
             /*Edalitics Free */  }else{
-            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[ '135792467811111111111111', userID ] } } , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[  userID ] } } , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
             /*Edalitics Free */  }
             /*Edalitics Free */}
 
@@ -163,15 +163,11 @@ export class DataSourceController {
                         }
                     });
                     if (users.includes(userID) || roles.length > 0 || allCanSee == 'true' || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/) {
-                        /**   edalitics free       if (   e.ds.metadata.model_owner == userID   ||   req.user.role.includes('135792467811111111111110')   )  { */
                         output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
                     }
 
                 } else {
-                    /**  // edalitics free     if (   e.ds.metadata.model_owner ==  userID ||   req.user.role.includes('135792467811111111111110')  )  {*/
                     output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-                    /**  // edalitics free   } */
-
                 }
             }
             output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :
