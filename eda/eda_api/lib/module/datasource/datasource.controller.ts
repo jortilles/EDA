@@ -328,7 +328,7 @@ export class DataSourceController {
 
     static async CheckConnection(req: Request, res: Response, next: NextFunction) {
 
-        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice'].includes(req.qs.type)) {
+        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb' ].includes(req.qs.type)) {
 
             next(new HttpException(404, '"Only" postgres, MySQL, oracle, SqlServer, Google BigQuery, Snowflake and Vertica are accepted'));
 
@@ -350,7 +350,8 @@ export class DataSourceController {
     }
 
     static async CheckStoredConnection(req: Request, res: Response, next: NextFunction) {
-        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle'].includes(req.qs.type)) {
+
+        if (!['postgres', 'mysql', 'vertica', 'sqlserver', 'oracle', 'bigquery', 'snowflake', 'jsonwebservice', 'mongodb'].includes(req.qs.type)) {
             next(new HttpException(404, 'Only postgres, MySQL, oracle, SqlServer and Vertica are accepted'));
         } else {
             try {
