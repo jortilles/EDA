@@ -294,7 +294,7 @@ export class UserController {
 
                     user.role = groups;
 
-                    user.password = 'password_protected';
+                    user.password = ':)';
                     return res.status(200).json({ ok: true, user });
                 });
             });
