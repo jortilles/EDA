@@ -88,6 +88,8 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
                 }
             })
         }
+
+        console.log(this.inject);
     }
 
 

@@ -91,7 +91,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     }
 
     onShow(): void {
-
+        console.log(this.controller.params);
         this.panelChartConfig = this.controller.params.config;
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;

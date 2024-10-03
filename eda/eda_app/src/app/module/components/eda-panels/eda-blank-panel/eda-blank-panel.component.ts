@@ -559,7 +559,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
         const chartConfig = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
-
+        console.log('recover chartConfig', chartConfig);
         this.panelChartConfig = new PanelChart({
             query: query,
             data: { labels: chartLabels, values: chartData },

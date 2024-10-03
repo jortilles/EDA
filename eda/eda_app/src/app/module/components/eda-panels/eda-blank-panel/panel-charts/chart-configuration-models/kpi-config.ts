@@ -1,8 +1,10 @@
+import { ChartJsConfig } from "./chart-js-config";
+
 export class KpiConfig {
-  sufix: string;
-  alertLimits : any;
-  constructor(sufix: string, alertLimits:Array<{value:number, operand:string, color:string}>) {
-    this.sufix = sufix;
-    this.alertLimits = alertLimits;
-  }
+    sufix: string = '';
+    alertLimits: any[] = [];
+    edaChart: ChartJsConfig;
+    constructor(init?: Partial<KpiConfig>) {
+        Object.assign(this, init);
+    }
 }

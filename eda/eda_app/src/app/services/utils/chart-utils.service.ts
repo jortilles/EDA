@@ -49,6 +49,9 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes1:Tabla de Datos`, value: 'table', subValue: 'table', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes2:Tabla Cruzada`, value: 'crosstable', subValue: 'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: 'KPI', value: 'kpi', subValue: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPIBAR:KPI + Gráfico de Barras`, value: 'kpibar', subValue: 'kpibar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPILINE:KPI + Gráfico de Lineas`, value: 'kpiline', subValue: 'kpiline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPIAREA:KPI + Gráfico de Áreas`, value: 'kpiline', subValue: 'kpiarea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesDynamicText:Texto Dinámico`, value: 'dynamicText', subValue: 'dynamicText', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes15:Velocímetro`, value: 'knob', subValue: 'knob', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes3:Gráfico de Pastel`, value: 'doughnut', subValue: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -175,7 +178,6 @@ export class ChartUtilsService {
             }
 
             output =  _output;
-            //console.log(JSON.stringify(output));
         } 
         else if (['bar' ].includes(type)  && ['pyramid' ].includes(subType) ) {
             const l = Array.from(new Set(values.map(v => v[label_idx])));
@@ -327,7 +329,7 @@ export class ChartUtilsService {
 
             output =  _output;
 
-        } else if (['bar', 'line', 'area', 'horizontalBar', 'barline', 'histogram' ,'radar' ].includes(type)  &&  dataTypes.length >  1 ) {
+        } else if (['bar', 'kpibar', 'line', 'kpiline', 'area', 'kpiarea', 'horizontalBar', 'barline', 'histogram' ,'radar' ].includes(type)  &&  dataTypes.length >  1 ) {
 
             const l = Array.from(new Set(values.map(v => v[label_idx])));
             const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
@@ -628,7 +630,7 @@ export class ChartUtilsService {
         let notAllowed =
             [
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
-                'doughnut', 'polarArea', 'line', 'area', 'bar', 'histogram',  'funnel', 'bubblechart',
+                'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
                 'pyramid', 'radar', 'stackedbar100'
             ];
@@ -655,9 +657,12 @@ export class ChartUtilsService {
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
             || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4  /* && aggregation */) {
                 notAllowed.splice(notAllowed.indexOf('bar'), 1);
+                notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
                 notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
                 notAllowed.splice(notAllowed.indexOf('line'), 1);
+                notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
                 notAllowed.splice(notAllowed.indexOf('area'), 1);
+                notAllowed.splice(notAllowed.indexOf('kpiarea',), 1);
                 notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
                 notAllowed.splice(notAllowed.indexOf('stackedbar100'), 1);
             }
@@ -754,8 +759,8 @@ export class ChartUtilsService {
      */
     public getTooManyDataForCharts(dataSize: number): any[] {
         let notAllowed =
-            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'doughnut', 'polarArea', 'line', 'bar','histogram',
-                'horizontalBar', 'barline', 'area', 'geoJsonMap', 'coordinateMap', 'radar'];
+            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'doughnut', 'polarArea', 'line', 'kpiline', 'bar', 'kpibar','histogram',
+                'horizontalBar', 'barline', 'area', 'kpiarea', 'geoJsonMap', 'coordinateMap', 'radar'];
 
         //table (at least one column)
         notAllowed.splice(notAllowed.indexOf('table'), 1);
@@ -785,13 +790,16 @@ export class ChartUtilsService {
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
         if (dataSize < 2500) {
             notAllowed.splice(notAllowed.indexOf('bar'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
             notAllowed.splice(notAllowed.indexOf('radar'), 1);
             notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
         }
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
         if (dataSize < 100000) {
             notAllowed.splice(notAllowed.indexOf('line'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
             notAllowed.splice(notAllowed.indexOf('area'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpiarea',), 1);
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
         }
         //Histogram as many as you want.
@@ -1163,10 +1171,9 @@ export class ChartUtilsService {
         const maxTicksLimit = size.width < 200 ? 5 + variador : size.width < 400 ? 12 + variador : size.width < 600 ? 25 + variador : 40 + variador;
         const maxTicksLimitHorizontal = size.height < 200 ? 5 + variador : size.height < 400 ? 12 + variador : size.height < 600 ? 25 + variador : 40 + variador;
         const maxTicksLimitY = size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 4 :  size.height < 250 ? 5 :  size.height < 300 ? 6 :  size.height < 350 ? 8: 10;
-
+        console.log('maxTicksLimitY', maxTicksLimitY)
         /** Defineixo les propietats en funció del tipus de gràfic. */
         let dataLabelsObjt={}
-
         switch (type) {
             case 'doughnut':
             case 'polarArea':
@@ -1187,7 +1194,6 @@ export class ChartUtilsService {
                                     }, 0);
                                     const elem = realData[context.dataIndex];
                                     const percentage = elem / total * 100;
-                                    //console.log( percentage > 10 );
                                     if( chartWidth < 200){
                                         return  percentage > 8 ;
                                     }else{
@@ -1861,6 +1867,8 @@ export class ChartUtilsService {
 
                 }
 
+                console.log(dataLabelsObjt);
+
                 options.chartOptions = {
                     animation: {
                         duration: 3000
@@ -1973,7 +1981,8 @@ export class ChartUtilsService {
             break;
         }
 
-        return options;
+        console.log('return options', options);
+        return JSON.parse(JSON.stringify(options));
     }
 
 }

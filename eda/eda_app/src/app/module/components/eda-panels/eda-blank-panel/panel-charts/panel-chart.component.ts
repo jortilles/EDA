@@ -35,6 +35,7 @@ import { EdaBubblechartComponent } from '@eda/components/eda-d3-bubblechart/eda-
 import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
+import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 
 
 @Component({
@@ -124,6 +125,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getDimensions() {
+        console.log(this.ownRef);
         return { width: this.ownRef.nativeElement.offsetWidth, height: this.ownRef.nativeElement.offsetHeight }
     }
 
@@ -137,12 +139,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (['table', 'crosstable'].includes(type)) {
             this.renderEdaTable(type);
         }
+
         if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid', 'radar'].includes(type)) {
             this.renderEdaChart(type);
         }
-        if (type === 'kpi') {
+
+        if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {
+            this.renderEdaKpiChart();
+        }
+
+        if (type ==='kpi') {
             this.renderEdaKpi();
         }
+
         if (type === 'dynamicText') {
             this.renderEdadynamictext();
         }
@@ -252,7 +261,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             fontSize: this.fontSize,
             fontColor: this.fontColor
         }
-      
       
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
@@ -387,51 +395,141 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
    * Renders a KPIComponent
    */
     private renderEdaKpi() {
-        let chartConfig: any = {};
+        const chartConfig: any = {};
         chartConfig.value = this.props.data.values[0][0];
         chartConfig.header = this.props.query[0]?.display_name?.default;
+
         const config: any = this.props.config;
-        let alertLimits = [];
-        try{
-            alertLimits = config.config.alertLimits;
-        }catch(e){
-            console.log('No alert Limits definied in config... ');
-            console.log(e);
-        }
+        const alertLimits = config?.config?.alertLimits || [];
+
         if (config) {
-            try{
-            chartConfig.sufix = (<KpiConfig>config.getConfig()).sufix;
-            }catch(e){
-                chartConfig.sufix = '';
-                console.log('No sufix defined inc config.... ');
-                console.log(e)
-            }
-                chartConfig.alertLimits = alertLimits;
-         
+            chartConfig.sufix = (<KpiConfig>config.getConfig())?.sufix || '';
+            chartConfig.alertLimits = alertLimits;
+            chartConfig.edaChart =  (<KpiConfig>config.getConfig())?.edaChart;
         } else {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
         }
 
         this.createEdaKpiComponent(chartConfig);
-
     }
 
     /**
      * creates a kpiComponent
      * @param inject 
-     */
-     private createEdaKpiComponent(inject: any) {
-
+    */
+    private createEdaKpiComponent(inject: any) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaKpiComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
-            const kpiConfig = new KpiConfig(data.sufix, inject.alertLimits);
+            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
     }
+
+    /**
+     * Renders a KPIComponent
+    */
+    private renderEdaKpiChart() {
+        console.log('props', this.props);
+
+        // Chart Config
+        const chartType = this.props.chartType.split('kpi')[1];
+        const chartSubType = this.props.edaChart.split('kpi')[1];
+        const cfg: any = this.props.config.getConfig();
+        
+        const chartConfig: any = {};
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const dataTypes = this.props.query.map((column: any) => column.column_type);
+    
+        let values = _.cloneDeep(this.props.data.values);
+
+        const chartData = this.chartUtils.transformDataQuery(chartType, chartSubType,  values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
+        const minMax = chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
+
+        const manySeries = chartData[1]?.length > 10 ? true : false;
+
+        const styles:StyleConfig = {
+            fontFamily: this.fontFamily,
+            fontSize: this.fontSize,
+            fontColor: this.fontColor
+        }
+        
+        console.log('getDimensions', this.getDimensions());
+        const dimensions = this.getDimensions();
+        dimensions.height = !dimensions.width ? 255 : dimensions.height;
+        dimensions.width = !dimensions.width ? 1300 : dimensions.width;
+
+        console.log(dimensions);
+        const chartOptions = this.chartUtils.initChartOptions(
+            chartType, dataDescription.numericColumns[0]?.name,
+            dataDescription.otherColumns, manySeries, false, dimensions, null, 
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, chartSubType
+        );
+        // let chartConfig: any = {};
+        chartConfig.edaChart = {}
+        chartConfig.edaChart.edaChart = chartSubType;
+        chartConfig.edaChart.chartType = chartType;
+        chartConfig.edaChart.chartLabels = chartData[0];
+        chartConfig.edaChart.chartDataset = chartData[1];
+        chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
+        // chartConfig.edaChart.chartColors = this.chartUtils.recoverChartColors(chartType, this.props.config);
+        
+        
+        // KPI Config
+        let kpiValue: number;
+        let kpiLabel = this.props.query.find((c: any) => c.column_type == 'numeric')?.display_name?.default;
+        
+        if (chartData[1][0]?.data) {
+            kpiValue = _.sum(chartData[1][0]?.data);
+        }
+        
+        chartConfig.chartType = this.props.chartType;
+        chartConfig.value = kpiValue;
+        chartConfig.header = kpiLabel;
+
+        const propsConfig: any = this.props.config;
+        const alertLimits = propsConfig?.config?.alertLimits || [];
+
+        if (propsConfig) {
+            chartConfig.sufix = (<KpiConfig>propsConfig.getConfig())?.sufix || '';
+            chartConfig.alertLimits = alertLimits;
+        } else {
+            chartConfig.sufix = '';
+            chartConfig.alertLimits = [];
+        }
+
+        this.createEdaKpiChartComponent(chartConfig);
+    }
+
+    /**
+     * creates a kpiChartComponent
+     * @param inject 
+    */
+    private createEdaKpiChartComponent(inject: any) {
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaKpiComponent);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+
+        console.log('================================')
+        // delete inject.chart
+        console.log('render KPI??', JSON.stringify(inject));
+
+        this.componentRef.instance.onNotify.subscribe(data => {
+            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits||[], edaChart: inject.edaChart });
+            (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
+        })
+        this.configUpdated.emit();
+    }
+
 
    /**
    * Renders a dynamicTextComponent

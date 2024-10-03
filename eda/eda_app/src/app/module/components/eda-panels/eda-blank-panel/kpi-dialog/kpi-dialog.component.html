@@ -1,13 +1,14 @@
 <eda-dialog [inject]="dialog">
   
-  <div body class=grid>
+  <div body class="grid h-100 p-5">
 
     <div class="col-12" style=" background-color: var(--panel-color); margin: 2em; width: 90%; height: 15vh;">
-      <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig">
-      </panel-chart>
+      <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig" class="component"></panel-chart>
     </div>
 
-    <div class="col-12">
+    <hr>
+
+    <div class="col-12 mt-5">
       <h6 i18n="@@kpiAlertH6" class="custom-border-b1">
         Generar alerta
       </h6>
@@ -77,8 +78,8 @@
       </div>
     </div>
     <div class="col-2">
-      <button i18n="@@addAlert" class="btn-sm btn-secondary" i18n-title="@@addAlert" title="Añadir alerta"
-        (click)="addAlert()" [disabled]="color === undefined || operand === undefined"> Añadir alerta
+      <button i18n="@@addAlert" pButton class="btn-sm btn-secondary" i18n-title="@@addAlert" title="Añadir alerta"
+        (click)="addAlert()" [disabled]="color === undefined || operand === undefined" label="Añadir alerta">
       </button>
     </div>
   </div>
