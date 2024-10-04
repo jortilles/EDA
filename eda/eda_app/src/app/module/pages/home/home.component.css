@@ -94,3 +94,27 @@
   width: 260px;
   border:none;
 }
+
+.tutorial-home {
+  margin: 1%;
+}
+
+.title-tutorial {
+  font-size: 3rem;
+  margin: 10px 0px  40px 0px;
+  text-align: center;
+}
+
+.subtitle-tutorial {
+  font-size: 2rem;
+  margin: 10px 0px  40px 0px;
+}
+
+.stronger-paragraph{
+  font-weight: 700;
+  color: #009FC1;
+}
+
+.text-tutorial {
+  font-size: 1.3em;
+}

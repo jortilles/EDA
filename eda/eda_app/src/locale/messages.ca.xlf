@@ -4189,6 +4189,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>ELIMINAR INFORME</source>
     <target>ELIMINAR INFORME</target>
   </trans-unit> 
+
+  <trans-unit id="tutorialHome">
+    <source>Bienvenido al tutorial de Free Edalitics.</source>
+    <target>Benvingut al tutorial de Free Edalitics.</target>
+  </trans-unit> 
   
 </body>
 </file>

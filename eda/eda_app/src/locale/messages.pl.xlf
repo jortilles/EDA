@@ -4103,7 +4103,12 @@ Edalitics działa z kodem
     <source>ELIMINAR INFORME</source>
     <target>USUŃ RAPORT</target>
   </trans-unit> 
-  
+
+  <trans-unit id="tutorialHome">
+    <source>Bienvenido al tutorial de Free Edalitics.</source>
+    <target>Witamy w bezpłatnym samouczku dotyczącym Edalitics.</target>
+  </trans-unit> 
+
 </body>
 </file>
 </xliff>

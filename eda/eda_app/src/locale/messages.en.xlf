@@ -4163,6 +4163,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>DELETE REPORT</target>
   </trans-unit> 
 
+  <trans-unit id="tutorialHome">
+    <source>Bienvenido al tutorial de Free Edalitics.</source>
+    <target>Welcome to the Free Edalitics tutorial.</target>
+  </trans-unit> 
+  
 </body>
 </file>
 </xliff>
