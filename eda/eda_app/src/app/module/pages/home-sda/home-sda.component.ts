@@ -141,6 +141,7 @@ export class HomeSdaComponent implements OnInit {
   public ngOnInit() {
     this.init();
     this.ifAnonymousGetOut();
+    this.setIsObserver();
     this.currentUser = JSON.parse(sessionStorage.getItem("user"));
   }
 
@@ -165,6 +166,7 @@ export class HomeSdaComponent implements OnInit {
         this.grups = res;
         this.isObserver =
           this.grups.filter(group => group.name === "EDA_RO" && group.users.includes(userID)).length !== 0;
+          this.sidebarService.setIsObserver(this.isObserver);
       },
       err => this.alertService.addError(err)
     );
