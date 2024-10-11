@@ -293,7 +293,9 @@ export class EdaTableComponent implements OnInit {
 
         // modificar el true por una variable que se modifica en la edición de valores negativos. 
 
-        if(valor<0 && true) return '#FF0000' 
+        if(valor<0 && this.inject.negativeNumbers) {
+            return '#FF0000' 
+        }
     }
 
 }
