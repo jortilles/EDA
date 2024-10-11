@@ -27,26 +27,13 @@ export class EdaKpiComponent implements OnInit {
     constructor() { }
 
     ngAfterViewInit() {
-        const widthKpiContainer = this.kpiContainer.nativeElement.offsetWidth;
-
-        const heightKpiContainer = this.kpiContainer.nativeElement.offsetHeight;
-
-        const sufixContainerReference = this.sufixContainer.nativeElement;
-
-        if (widthKpiContainer > 0) {
-            this.containerHeight = heightKpiContainer;
-            this.containerWidth = widthKpiContainer;
-        }
-
-        //Auto margin
-        sufixContainerReference.style.margin = "auto"
+        this.initDimensions();
     }
 
     ngOnInit() {;
         try {
             registerLocaleData(es);
 
-            console.log('KPICOMPONENT -> EDACHART',this.inject.edaChart.chartOptions);
             if (this.inject.alertLimits?.length > 0) {
                 this.inject.alertLimits.forEach(alert => {
                     const operand = alert.operand, warningColor = alert.color;
@@ -61,10 +48,25 @@ export class EdaKpiComponent implements OnInit {
                 });
             }
 
-            console.log('onInit inject', this.inject.edaChart.chartOptions);
         } catch (e) {
             console.log('No alert limits defined (alertLimits)');
             console.log(e);
+        }
+    }
+
+    public initDimensions() {
+        if (this.kpiContainer) {
+            const widthKpiContainer = this.kpiContainer.nativeElement.offsetWidth;
+            const heightKpiContainer = this.kpiContainer.nativeElement.offsetHeight;
+            const sufixContainerReference = this.sufixContainer.nativeElement;
+    
+            if (widthKpiContainer > 0) {
+                this.containerHeight = heightKpiContainer;
+                this.containerWidth = widthKpiContainer;
+            }
+    
+            //Auto margin
+            sufixContainerReference.style.margin = "auto"
         }
     }
 
@@ -82,6 +84,8 @@ export class EdaKpiComponent implements OnInit {
      * @returns {string}
     */
     getFontSize(): string {
+        this.initDimensions();
+
         let resultSize: number = this.containerHeight / 2;
         let textLongitude = (this.inject.value + this.inject.sufix).length;
 
@@ -103,19 +107,17 @@ export class EdaKpiComponent implements OnInit {
         if (sufix.length > 3 && this.containerHeight < (resultSize * 4) && this.containerWidth < textWidth) {
             resultSize = resultSize / 1.8;
         }
-        
-        // default font size
-        if (resultSize < 90) resultSize = 90;
+
+        if (this.inject.edaChart) {
+            resultSize = resultSize / 2.5;
+        }
         
         return resultSize.toFixed().toString() + 'px';
     }
 
     public updateChart(): void {
-        console.log('updateChart');
-        console.log(this.edaChartComponent.inject.chartOptions);
         if (this.inject.edaChart && this.edaChartComponent) {
-
-            // this.edaChartComponent.updateChartOptions(this.edaChartComponent.inject.chartOptions);
+            this.edaChartComponent.updateChartOptions(this.edaChartComponent.inject.chartOptions);
         }
     }
 
