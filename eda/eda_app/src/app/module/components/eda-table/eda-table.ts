@@ -224,7 +224,7 @@ export class EdaTable {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
         } 
         if (!this.pivot) {
-        	console.log(' this.noRepeatedRows() DESCOMENTADO');
+        	// console.log(' this.noRepeatedRows() DESCOMENTADO');
             this.noRepeatedRows();
         }
 

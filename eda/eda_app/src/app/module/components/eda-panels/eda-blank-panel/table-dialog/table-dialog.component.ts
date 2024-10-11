@@ -76,7 +76,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
   setChartProperties() {
     this.setCols();
-    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
+    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || []; // si es null regresa vacio
   }
   onShow(): void {
     this.panelChartConfig = this.controller.params.panelChart;
@@ -219,10 +219,10 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     }
   }
 
-  private setCols() {
+  private setCols() {    
 
     if (this.controller.params.panelChart.chartType === 'table') {
-
+      
       if (this.onlyPercentages) {
         this.cols = this.myPanelChartComponent.componentRef.instance.inject.cols.filter(col => col.type === "EdaColumnPercentage");
       }
@@ -257,7 +257,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
       if (this.onlyPercentages) this.cols = [];
     }
-    this.setItems();
+    this.setItems(); // Aqui se busca la modificación de colores
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -286,7 +286,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
     if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
-      this.styles = this.styles.filter(style => style.col !== response.col);
+      this.styles = this.styles.filter(style => style.col !== response.col);      
 
       if (!response.noStyle) {
         if (this.controller.params.panelChart.chartType === 'table') {
