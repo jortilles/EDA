@@ -1,4 +1,4 @@
-function Connection(user, host, database, password, port, type, schema, poolLimit, sid, warehouse, ssl?, external?) {
+/*function Connection(user, host, database, password, port, type, schema, poolLimit, sid, warehouse, ssl?, external?) {
     this.user = user;
     this.host = host;
     this.database = database;
@@ -15,6 +15,26 @@ function Connection(user, host, database, password, port, type, schema, poolLimi
     }
     this.external = external;
 
-}
+}*/
 
-export default Connection;
+
+export default class ConnectionModel {
+    public user: any;
+    public host: any;
+    public database: any;
+    public password: any;
+    public port: any;
+    public type: any;
+    public schema: any;
+    public searchPath: any;
+    public poolLimit: any;
+    public sid: any;
+    public warehouse: any;
+    public ssl: any;
+    public external: any;
+
+    constructor(init: Partial<ConnectionModel>) {
+        Object.assign(this, init);
+    }
+
+}

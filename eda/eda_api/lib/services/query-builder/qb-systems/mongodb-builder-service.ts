@@ -178,19 +178,21 @@ export class MongoDBBuilderService {
         const aggregations = {};
         const dateProjection = {};
         for (const column of fields) {
+            const keyColumn = column.column_name.replaceAll('.', '_');
+            
             if (column.aggregation_type !== 'none') {
 
                 if (column.aggregation_type == 'count') {
-                    pipeline['$group'][column.column_name] = { '$sum': 1 };
+                    pipeline['$group'][keyColumn] = { '$sum': 1 };
                 } else {
-                    pipeline['$group'][column.column_name] = { [agg[column.aggregation_type]]: `$${column.column_name}` };
+                    pipeline['$group'][keyColumn] = { [agg[column.aggregation_type]]: `$${column.column_name}` };
                 }
 
                 aggregations[column.aggregation_type] = aggregations[column.aggregation_type] || [];
                 aggregations[column.aggregation_type].push(column.column_name);
             } else {
 
-                if (column.column_type === 'date') {
+                if (column.column_type === 'date' && !column.column_name.includes('.')) {
                     const format = column.format || 'No';
 
                     if (format == 'year') {
@@ -205,15 +207,25 @@ export class MongoDBBuilderService {
                     }
 
                 } else if (fields.length > 1 || column.column_type != 'numeric') {
-                    pipeline['$group']._id[column.column_name] = `$${column.column_name}`;
+                    pipeline['$group']._id[keyColumn] = `$${column.column_name}`;
                 }
             }
+        }
+
+        // sino hay ninguna agregacion, quitamos el pipeline de agrupar.
+        if (Object.keys(pipeline['$group']).length === 1 && Object.keys(pipeline['$group']['_id']).length === 0) {
+            delete pipeline.$group;
+        }
+
+        const arrayPipeline = [];
+        if (Object.keys(pipeline).length > 0) {
+            arrayPipeline.push(pipeline);
         }
 
         return {
             aggregations,
             dateProjection,
-            pipeline: [pipeline]
+            pipeline: arrayPipeline
         }
     }
 

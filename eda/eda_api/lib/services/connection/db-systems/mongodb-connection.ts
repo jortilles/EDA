@@ -50,9 +50,148 @@ export class MongoDBConnection extends AbstractConnection {
         }
     }
 
-    public async generateDataModel(optimize: number, filters: string, name?: string): Promise<any> {
+    public async xgenerateDataModel(optimize: number, filters: string, name?: string): Promise<any> {
         return '';
     }
+
+    // Función para obtener el tipo de una propiedad
+    public getType(value) {
+        if (Array.isArray(value)) return 'array';
+        if (!isNaN(Number(value))) return 'numeric';
+        if (value instanceof Date) return 'date';
+        if (value instanceof Object) return 'object';
+        if (typeof value == 'string') return 'text';
+        return typeof value;
+    }
+
+    // Función para contar las propiedades, incluyendo propiedades anidadas, y obtener sus tipos
+    public setColumns(collection: any[]) {
+        const properties = [];
+
+        for (const obj of collection) {
+            let newCol: any = {
+                column_name: obj.name,
+                column_type: obj.type,
+                display_name: {
+                    default: obj.name,
+                    localized: []
+                },
+                description: {
+                    default: obj.name,
+                    localized: []
+                },
+                minimumFractionDigits: 0,
+                column_granted_roles: [],
+                row_granted_roles: [],
+                visible: true,
+                tableCount: 0,
+                valueListSource: {},
+            }
+
+            if (newCol.column_name.includes('.')) {
+                newCol.aggregation_type = AggregationTypes.getValuesForOthers();
+            } else if (newCol.column_type === 'numeric') {
+                newCol.aggregation_type = AggregationTypes.getValuesForNumbers();
+            } else if (newCol.column_type === 'text') {
+                newCol.aggregation_type = AggregationTypes.getValuesForText();
+            } else {
+                newCol.aggregation_type = AggregationTypes.getValuesForOthers();
+            }
+
+            properties.push(newCol)
+        }
+
+        return properties;
+    }
+
+    public countProperties(obj, prefix = '') {
+        let properties = [];
+
+        for (let key in obj) {
+            const fullKey = `${prefix}${key}`;
+            const value = obj[key];
+
+            if (key === '_id' && typeof value == 'object') {
+                properties.push({ name: fullKey, type: this.getType(String(value)) });
+            } else if (typeof value === 'object' && value !== null && !Array.isArray(value) && !(value instanceof Date)) {
+                // Si la propiedad es un objeto, profundizamos en él
+                properties = properties.concat(this.countProperties(value, `${fullKey}.`));
+            } else {
+                properties.push({ name: fullKey, type: this.getType(value) });
+            }
+        }
+
+        return properties;
+    }
+
+    public async generateDataModel(optimize: number, filters: string, name?: string) {
+        try {
+            this.client = await this.getclient();
+
+            const db = this.client.db(this.config.database);
+
+            // Obtener todas las colecciones de la base de datos
+            const collections = await db.listCollections().toArray();
+            const collectionsObjects = [];
+
+            for (const collection of collections) {
+                const collectionName = collection.name;
+                console.log(`\nCollection: ${collectionName}`);
+
+                // Obtener una muestra de documentos (limitamos a "sampleSize")
+                const docs = await db.collection(collectionName).find({}).limit(10).toArray();
+
+                if (docs.length > 0) {
+                    let propertyCounts = [];
+                    docs.forEach((doc, index) => {
+                        const properties = this.countProperties(doc);
+                        propertyCounts.push({
+                            docIndex: index,
+                            propertyCount: properties.length,
+                            properties: properties
+                        });
+                    });
+
+                    // Encontrar el documento con más propiedades
+                    const maxPropertyDoc = propertyCounts.reduce((prev, current) => {
+                        return (prev.propertyCount > current.propertyCount) ? prev : current;
+                    });
+
+                    const columns = this.setColumns(maxPropertyDoc.properties); 
+
+                    const newTable = {
+                        table_name: collectionName,
+                        display_name: {
+                            'default': this.normalizeName(collectionName),
+                            'localized': []
+                        },
+                        description: {
+                            'default': `${this.normalizeName(collectionName)}`,
+                            'localized': []
+                        },
+                        table_granted_roles: [],
+                        table_type: [],
+                        columns: columns,
+                        relations: [],
+                        visible: true
+                    };
+
+                    collectionsObjects.push(newTable);
+
+                } else {
+                    console.log("La colección está vacía");
+                }
+            }
+    
+            return collectionsObjects;
+        } catch (err) {
+            console.error(err);
+        } finally {
+            // Cerrar la conexión con MongoDB
+            await this.client.close();
+        }
+    }
+
 
     async execQuery(query: any): Promise<any> {
         const client = await this.getclient()
@@ -60,8 +199,7 @@ export class MongoDBConnection extends AbstractConnection {
         try {
             // db and collection
             const database = client.db(this.config.database);
-            const collection = database.collection('xls_' + query.collectionName);
-
+            const collection = database.collection(query.collectionName);
             const aggregations = query.aggregations || {};
 
             // prevent to display all the fields with projection (select)
@@ -73,7 +211,8 @@ export class MongoDBConnection extends AbstractConnection {
                 } else if (!_.isEmpty(query.dateProjection) && query.dateProjection[field]) {
                     acc[field] = query.dateProjection[field];
                 } else {
-                    acc[field] = 1;
+                    const keyColumn = (<any>field).replaceAll('.', '_');
+                    acc[keyColumn] = '$'+field;
                 }
                 return acc;
             }, {});
@@ -105,16 +244,21 @@ export class MongoDBConnection extends AbstractConnection {
             if (data.length > 0) {
                 formatData = data.map(doc => {
                     const ordenado = query.columns.map(col => {
+                        let key = col.replaceAll('.', '_');
                         // Verificar si el campo está en _id (caso de agrupación)
                         if (doc._id && doc._id.hasOwnProperty(col)) {
                             return doc._id[col];
+                        } else if (doc._id && doc._id.hasOwnProperty(key)) {
+                            return doc._id[key];
                         }
                         // De lo contrario, usar el campo de agregación directamente
-                        return doc[col];
+                        return doc[key];
                     });
                     return ordenado;
                 });
             }
+
+            
             return formatData;
         } catch (err) {
             console.error(err);
@@ -144,6 +288,14 @@ export class MongoDBConnection extends AbstractConnection {
 
     public generateInserts(queryData: any, user: any): string {
         return '';
+    }
+
+    private normalizeName(name: string) {
+        let out = name.split('_').join(' ');
+        return out.toLowerCase()
+            .split(' ')
+            .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+            .join(' ');
     }
 
 

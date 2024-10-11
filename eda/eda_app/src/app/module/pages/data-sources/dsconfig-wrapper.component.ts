@@ -23,6 +23,7 @@ export class DsConfigWrapperComponent implements OnInit {
 		{ name: 'Oracle', value: 'oracle' },
 		{ name: 'BigQuery', value: 'bigquery' },
 		{ name: 'SnowFlake', value: 'snowflake' },
+		{ name: 'MongoDB', value: 'mongodb' },
 		{ name: 'jsonWebService', value: 'jsonwebservice' },
 		{ name: 'Excel', value: 'excel' }
 
