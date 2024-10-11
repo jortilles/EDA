@@ -289,6 +289,11 @@ export class EdaTableComponent implements OnInit {
         return name.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9-_-\wáéíóúüñÁÉÍÓÚÜÑ ]/g, '').replace('_','');
     }
 
-    public getColor(valor: number) { if(valor<0) return '#FF0000' }
+    public getColor(valor: number) { 
+
+        // modificar el true por una variable que se modifica en la edición de valores negativos. 
+
+        if(valor<0 && true) return '#FF0000' 
+    }
 
 }
