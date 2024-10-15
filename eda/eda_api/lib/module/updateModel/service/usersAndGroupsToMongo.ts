@@ -10,7 +10,7 @@
  * 1. Importing users from SinergiaCRM to SinergiaDA, creating or updating as needed.
  * 2. Importing and creating groups from SinergiaCRM roles in SinergiaDA.
  * 3. Synchronizing user-group relationships based on CRM roles and SDA-specific rules.
- * 4. Handling special cases for admin users and SDA-specific groups (prefixed with 'SDA_').
+ * 4. Handling special cases for admin users and SinergiaCRM-specific groups (prefixed with 'SCRM_').
  * 5. Removing inactive users and deleted groups to maintain system consistency.
  * 6. Updating the MongoDB database in SinergiaDA with the synchronized data.
  * 
@@ -127,7 +127,7 @@ export class userAndGroupsToMongo {
 
     // Remove deleted CRM groups
     mongoGroups.forEach(a => {  
-      if( a.name.startsWith('SDA_') ){
+      if( a.name.startsWith('SCRM_') ){
         let existe = crmRoles.find(u => u.name === a.name);
         if(!existe){
           Group.deleteOne( {name: a.name}  ).then( function(){ console.log( a.name +  ' deleted')})
@@ -146,8 +146,8 @@ export class userAndGroupsToMongo {
 
     // Synchronize groups and users
     await mongoGroups.forEach(async (group) => {
-      if (group.name.startsWith('SDA_')) {
-        // For SDA_ groups, maintain SDA users and sync with CRM
+      if (group.name.startsWith('SCRM_')) {
+        // For SCRM_ groups, maintain SDA users and sync with CRM
         const crmUsersInGroup = crmRoles
           .filter(role => role.name === group.name)
           .map(role => mongoUsers.find(u => u.email === role.user_name))
@@ -172,7 +172,7 @@ export class userAndGroupsToMongo {
         group.users = [...group.users, ...newCrmUsersInGroup];
 
       } else {
-        // For non-SDA_ groups, maintain SDA users and update CRM users
+        // For non-SCRM_ groups, maintain SDA users and update CRM users
         group.users = group.users.filter(userId => {
           const user = mongoUsers.find(u => u._id.toString() === userId.toString());
           if (!user) return false;
@@ -188,9 +188,9 @@ export class userAndGroupsToMongo {
     // Update user roles
     await mongoUsers.forEach(async (user) => {
       if( userExistsInCRM( user, crmUsers)) { 
-        // Update CRM users, maintain non-SDA_ roles
+        // Update CRM users, maintain non-SCRM_ roles
         const nonCRMRoles = user.role.filter(roleId => {
-          const group = mongoGroups.find(g => g._id.toString() === roleId.toString() && !g.name.startsWith('SDA_')  );
+          const group = mongoGroups.find(g => g._id.toString() === roleId.toString() && !g.name.startsWith('SCRM_')  );
           return group;
         });
 
