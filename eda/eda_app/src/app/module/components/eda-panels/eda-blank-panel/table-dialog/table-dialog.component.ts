@@ -86,7 +86,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.panelChartConfig = this.controller.params.panelChart;
     if (this.panelChartConfig && this.panelChartConfig.config) {
       const config = (<TableConfig>this.panelChartConfig.config.getConfig());
-      console.log('config: ',config);
       this.row_totals = config.withRowTotals;
       this.col_totals = config.withColTotals;
       this.col_subtotals = config.withColSubTotals;
@@ -152,7 +151,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   private noRepeat() {
 
     const currentConfig = this.myPanelChartComponent.currentConfig;
-    console.log('currentConfig_========>',currentConfig)
     currentConfig.noRepetitions = !currentConfig.noRepetitions;
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.noRepetitions = currentConfig.noRepetitions;
@@ -171,7 +169,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.negativeNumbers = currentConfig.negativeNumbers;
 
-    console.log('negativeNumbers: =-=-=>>>>', this.negativeNumbers);
 
     this.setItems();
   }
