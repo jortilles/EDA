@@ -64,6 +64,7 @@ export class EdaTable {
     public onlyPercentages: boolean = false;
     public percentageColumns: Array<any> = [];
     public noRepetitions: boolean; 
+    public negativeNumbers: boolean; 
     public origValues: any[] = [];
 
 
@@ -197,6 +198,7 @@ export class EdaTable {
     }
 
     checkTotals(event) {
+
         if (this.withRowTotals) {
             this.rowTotals();
         } else {
@@ -224,10 +226,9 @@ export class EdaTable {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
         } 
         if (!this.pivot) {
-        	console.log(' this.noRepeatedRows() DESCOMENTADO');
+        	// console.log(' this.noRepeatedRows() DESCOMENTADO');
             this.noRepeatedRows();
         }
-
     }
 
     deleteRowTotals() {

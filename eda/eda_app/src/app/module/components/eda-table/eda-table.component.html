@@ -70,7 +70,9 @@
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
                             <ng-container *ngSwitchCase="'EdaColumnNumber'">
-                                {{ lodash.get(rowData, col.field) | number:'1.0-10':'es' }}
+                                <span [ngStyle]="{'color': getColor(lodash.get(rowData, col.field))}">
+                                    {{ lodash.get(rowData, col.field) | number:'1.0-10':'es' }}
+                                </span>
                             </ng-container>
                             <!-- ngSwitch NUMBER -->
                             <ng-container *ngSwitchCase="'EdaColumnDate'">
