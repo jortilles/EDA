@@ -292,6 +292,7 @@ export const PanelInteractionUtils = {
                 c.column_name === contentColumn.column_name &&
                 c.display_name.default === contentColumn.display_name
             );
+            column.format = contentColumn.format; // Agregando el Formato
             if (column) {
                 column.whatif_column = contentColumn.whatif_column || false;
                 column.whatif = contentColumn.whatif || {};
