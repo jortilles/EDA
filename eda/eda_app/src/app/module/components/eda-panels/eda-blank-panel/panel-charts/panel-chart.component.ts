@@ -125,7 +125,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getDimensions() {
-        console.log(this.ownRef);
         return { width: this.ownRef.nativeElement.offsetWidth, height: this.ownRef.nativeElement.offsetHeight }
     }
 
@@ -263,8 +262,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
       
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
-            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart);
+            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart, {});
 
 
         /**Add trend datasets*/
@@ -433,8 +432,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * Renders a KPIComponent
     */
     private renderEdaKpiChart() {
-        console.log('props', this.props);
-
         // Chart Config
         const chartType = this.props.chartType.split('kpi')[1];
         const chartSubType = this.props.edaChart.split('kpi')[1];
@@ -462,16 +459,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             fontColor: this.fontColor
         }
         
-        console.log('getDimensions', this.getDimensions());
         const dimensions = this.getDimensions();
         dimensions.height = !dimensions.width ? 255 : dimensions.height;
         dimensions.width = !dimensions.width ? 1300 : dimensions.width;
 
-        console.log(dimensions);
+        const ticksOptions = {
+            xTicksLimit: 5,
+            yTicksLimit: 2,
+            maxRotation: 1,
+            minRotation: 1
+        };
         const chartOptions = this.chartUtils.initChartOptions(
             chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, false, dimensions, null, 
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, chartSubType
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, chartSubType, ticksOptions, false
         );
         // let chartConfig: any = {};
         chartConfig.edaChart = {}
@@ -518,10 +519,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaKpiComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
-
-        console.log('================================')
-        // delete inject.chart
-        console.log('render KPI??', JSON.stringify(inject));
 
         this.componentRef.instance.onNotify.subscribe(data => {
             const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits||[], edaChart: inject.edaChart });

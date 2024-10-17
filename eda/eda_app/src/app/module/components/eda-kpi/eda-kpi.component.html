@@ -11,7 +11,7 @@
         <div class="w-100 d-flex flex-column justify-content-center text-center text-wrap" style="height: auto;">
             <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
         </div>
-        <div style="height: 100%; max-height: 320px; max-width: 1300px;">
+        <div style="height: 75%; max-height: 320px; max-width: 1300px;">
             <!-- {{inject.edaChart?.chartOptions | json}} -->
             <eda-chart #EdaChart [inject]="inject.edaChart"></eda-chart>
         </div>
