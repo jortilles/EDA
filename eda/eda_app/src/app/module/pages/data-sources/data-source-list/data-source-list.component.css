@@ -1,4 +1,4 @@
-:host >>> .fa fa-refresh {
+:host > .fa fa-refresh {
     color: white;
     font-weight: 100;
 }
@@ -9,13 +9,13 @@
     border: none;
 }
 
-:host >>> .pi-caret-down:before {
+:host > .pi-caret-down:before {
     content: "\e906";
     color: rgba(173, 147, 147, 0.712);
     font-size: 14px;
 }
 
-:host >>> .pi-caret-right:before {
+:host > .pi-caret-right:before {
     content: "\e905";
     color: rgba(173, 147, 147, 0.712);
     font-size: 14px;
