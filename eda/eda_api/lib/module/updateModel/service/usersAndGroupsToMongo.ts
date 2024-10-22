@@ -36,6 +36,8 @@ import mongoose, {
 import User, { IUser } from '../../admin/users/model/user.model'
 import Group, { IGroup } from '../../admin/groups/model/group.model'
 
+mongoose.set('useFindAndModify', false);
+
 export class userAndGroupsToMongo {
   static async crm_to_eda_UsersAndGroups(users: any, roles: any) {
     // Sync users and groups from CRM to EDA
