@@ -128,8 +128,8 @@
     <target>Sinergia Data Analytics Logo</target>
   </trans-unit>  <!-- END ABOUT PAGE -->  <!-- PARTIAL SDA DATASOURCE EDIT-->
   <trans-unit id="partialEditDataSourceNotice" datatype="html">
-    <source>Algunas áreas de la configuración de la fuente de datos SinergiaDA se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
-    <target>Some areas of the SinergiaDA data source settings are disabled because they are automatically configured during the data synchronization process with SinergiaCRM.        </target>
+    <source>Algunas áreas de la configuración de la fuente de datos SinergiaCRM se encuentran desactivadas porque se configuran automáticamente durante el proceso de sincronización de datos con SinergiaCRM.</source>
+    <target>Some areas of the SinergiaCRM data source settings are disabled because they are automatically configured during the data synchronization process with SinergiaCRM.        </target>
   </trans-unit>  <!-- END PARTIAL SDA DATASOURCE EDIT-->
   <trans-unit id="DataModelHeader">
     <source> Configurar nuevo orígen de datos </source>

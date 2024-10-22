@@ -142,7 +142,7 @@ export class CleanModel {
             }
             );
 
-            // Recuperando los permisos provenientes de SinergiaDA 
+            // Recuperando los permisos provenientes de SinergiaCRM 
             // la propiedad source --> "EDA" indica que el permiso proviene de la applicacion y no de la base de datos
             if(mgsmap.length!==0) {
                 const userRoles = mgsmap[0].filter( (r:any) => {
