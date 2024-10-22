@@ -108,28 +108,27 @@ export class updateModel {
                                     await connection.query('select "EDA_USER_ROLE" as role, b.name, "" as user_name  from sda_def_groups b union select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g; ')
                                         .then(async role => {
                                             let roles = role;
-                                            await connection.query('  select distinct a.`table`,  "id" as  `column`,  a.`group` from  sda_def_permissions a left join sda_def_security_group_records b on a.`table`  = b.`table` and a.`group`  = b.`group` where a.`group` != ""; ' )
+                                            await connection.query('  select distinct  a.user_name as name, a.`table`,  "id" as  `column`,  a.`group` from  sda_def_permissions a left join sda_def_security_group_records b on a.`table`  = b.`table` and a.`group`  = b.`group` where a.`group` != ""  ; ' )
                                                 .then(async granted => {
-                                                    let grantedRoles = granted;
+                                                    let fullTablePermissionsForRoles = granted;
                                                     //seleccionamos enumeraciones
                                                     await connection.query(' select source_table , source_column , master_table, master_id, master_column, bridge_table, source_bridge, target_bridge, stic_type, info from sda_def_enumerations sde ;')
                                                         .then(async enums => {
                                                             let ennumeration = enums;
                                                             await connection.query(' select user_name as name, `table` from sda_def_permissions ')
                                                                 .then(async permi => {
-                                                                    let permissions = permi
+                                                                    let fullTablePermissionsForUsers = permi
                                                                     //select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records
-                                                                    await connection.query(" select distinct `table`, 'id' as `column`,  `group` from sda_def_permissions  where `group` != ''  ")
+                                                                    await connection.query(" select distinct  user_name as name, `table`, 'id' as `column`,  `group` from sda_def_permissions  where `group` != ''  ")
                                                                         .then(async permiCol => {
-                                                                            let permissionsColumns = permiCol;
+                                                                            let dynamicPermisssionsForGroup = permiCol;
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
                                                                             // montamos el modelo
                                                                             const query='select user_name as name, `table` as tabla , `column` as columna  from sda_def_permissions where stic_permission_source in ("ACL_ALLOW_GROUP_priv", "ACL_ALLOW_OWNER")';
-
                                                                             await connection.query(query)
                                                                               .then(async customUserPermissionsValue => {
 
-                                                                                let customUserPermissions = customUserPermissionsValue
+                                                                                let dynamicPermisssionsForUser = customUserPermissionsValue
 
                                                                                 try {
                                                                                   crm_to_eda = await userAndGroupsToMongo.crm_to_eda_UsersAndGroups(users_crm, roles)  
@@ -138,7 +137,7 @@ export class updateModel {
                                                                                   res.status(500).json({'status' : 'ko'})
                                                                                 }
                                                                                 try {
-                                                                                  grantedRolesAt = await updateModel.grantedRolesToModel(grantedRoles, tables, permissions, permissionsColumns, customUserPermissions )
+                                                                                  grantedRolesAt = await updateModel.grantedRolesToModel(fullTablePermissionsForRoles, tables, fullTablePermissionsForUsers, dynamicPermisssionsForGroup, dynamicPermisssionsForUser )
                                                                                 } catch (e) {
                                                                                   console.log('Error 2',e);
                                                                                   res.status(500).json({'status' : 'ko'})
@@ -205,7 +204,7 @@ export class updateModel {
     }
 
     /** Genera los roles  */
-    static async grantedRolesToModel(grantedRoles: any, crmTables: any, permissions: any, permissionsColumns: any, customUserPermissions: any) {
+    static async grantedRolesToModel(fullTablePermissionsForRoles: any, crmTables: any, fullTablePermissionsForUsers: any, dynamicPermisssionsForGroup: any, dynamicPermisssionsForUser: any) {
         
 
         const destGrantedRoles = [];
@@ -213,22 +212,22 @@ export class updateModel {
     
 
         //con este permiso todos los usuarios pueden ver el modelo
-        const all = {
-            users: ["(~ => All)"],
-            usersName: ["(~ => All)"],
-            none: false,
-            table: "fullModel",
-            column: "fullModel",
-            global: true,
-            permission: true,
-            type: "anyoneCanSee"
-        }
+        // const all = {
+        //     users: ["(~ => All)"],
+        //     usersName: ["(~ => All)"],
+        //     none: false,
+        //     table: "fullModel",
+        //     column: "fullModel",
+        //     global: true,
+        //     permission: true,
+        //     type: "anyoneCanSee"
+        // }
       // Los permisos determinan que tablas puedo ver.
       // destGrantedRoles.push(all);
-
+        const usersFound = await User.find();
         const mongoGroups = await  Group.find();
 
-        grantedRoles.forEach((line) => {
+        fullTablePermissionsForRoles.forEach((line) => {
 
             let match = mongoGroups.filter(i => { return i.name === line.group })
 
@@ -239,7 +238,21 @@ export class updateModel {
                 mongoId = match[0]._id.toString()
                 mongoGroup = match[0].name.toString()
 
-                gr = {
+              if( line.name != null ){
+                  // Si es un grupo convertido en usuario
+                  const found = usersFound.find(i => i.email == line.name)
+                  gr = {
+                    users: [found._id],
+                    usersName: [line.name],
+                    none: false,
+                    table: line.table,
+                    column: "fullTable",
+                    global: true,
+                    permission: true,
+                    type: "users",
+                }
+              }else{
+                  gr = {
                     groups: [mongoId],
                     groupsName: [mongoGroup],
                     none: false,
@@ -249,42 +262,37 @@ export class updateModel {
                     permission: true,
                     type: "groups"
                 }
+            }
+
+
 
                 destGrantedRoles.push(gr);
 
             }
         })
 
-        grantedRoles.forEach(async (line) => {
-
-            gr2 = {
-                groups: ["135792467811111111111110"],
-                groupsName: ["EDA_ADMIN"],
-                none: false,
-                table: line.table,
-                column: "fullTable",
-                global: true,
-                permission: true,
-                type: "groups"
-
-                
-            }
-            //Evitar duplicados
-            let found = false;
-            try {
-                found = destGrantedRoles.find(e => e.table === line.table && e.groupsName[0] === "EDA_ADMIN")
-            } catch (e) { console.log( 'error finding', e) }
-
-            if (!found) {
-                destGrantedRoles.push(gr2);
-
-            } 
-        })
+        // crmTables.forEach(async (line) => {
+        //   if(  line.table.toString().indexOf('sda_l')< 0  && line.table.toString().indexOf('__')< 0    ) {
+        //     // las tablas de soporte no hace falta ponerlas porque luego se ignoran en los permisos.
+        //     // Así generarmos un modelo más ligero.
+        //     gr2 = {
+        //         groups: ["135792467811111111111110"],
+        //         groupsName: ["EDA_ADMIN"],
+        //         none: false,
+        //         table: line.table,
+        //         column: "fullTable",
+        //         global: true,
+        //         permission: true,
+        //         type: "groups"   
+        //     }
+        //         destGrantedRoles.push(gr2);
+        //   }
+        // })
 
 
-        const usersFound = await User.find()
 
-        permissions.forEach(line => {
+
+        fullTablePermissionsForUsers.forEach(line => {
 
             const found = usersFound.find(i => i.email == line.name)
             if (found) {
@@ -306,33 +314,44 @@ export class updateModel {
 
 
 
-        permissionsColumns.forEach(line => {
+        dynamicPermisssionsForGroup.forEach(line => {
 
             const match = mongoGroups.filter(i => { return i.name === line.group })
-
             let mongoId: String;
-
             if (match.length == 1 && line.group !== undefined) {
-                mongoId = match[0]._id.toString()
-
-
+                mongoId = match[0]._id.toString();
                 let group_name: String = " '" + line.group + "' "
                 let table_name: String = " '" + line.table + "' "
                 let valueAt: String = "select record_id from sda_def_security_group_records" +
-                    " where `group` = " + group_name + ' and `table` = ' + table_name
+                    " where `group` = " + group_name + ' and `table` = ' + table_name ;
 
-                gr4 = {
-
-                    groups: [mongoId],
-                    groupsName: [line.group],
-                    none: false,
-                    table: line.table,
-                    column: line.column,
-                    dynamic: true,
-                    global: false,
-                    type: "groups",
-                    value: [valueAt]
-
+                if( line.name != null ){
+                      // Si es un grupo convertido en usuario
+                      const found = usersFound.find(i => i.email == line.name)
+                      gr4 = {
+                        users: [found._id],
+                        usersName: [line.name],
+                        none: false,
+                        table: line.table,
+                        column: line.column,
+                        dynamic: true,
+                        global: false,
+                        type: "users",
+                        value: [valueAt]
+                    }
+                }else{
+                    // Si es un grupo nativo
+                    gr4 = {
+                      groups: [mongoId],
+                      groupsName: [line.group],
+                      none: false,
+                      table: line.table,
+                      column: line.column,
+                      dynamic: true,
+                      global: false,
+                      type: "groups",
+                      value: [valueAt]
+                    }
                 }
 
                 destGrantedRoles.push(gr4)
@@ -341,7 +360,7 @@ export class updateModel {
 
         })
 
-        customUserPermissions.forEach(line => {
+        dynamicPermisssionsForUser.forEach(line => {
 
           const found = usersFound.find(i => i.email == line.name)
 
