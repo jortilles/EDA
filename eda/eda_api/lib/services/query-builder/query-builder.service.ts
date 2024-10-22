@@ -708,7 +708,10 @@ export abstract class QueryBuilderService {
         const schema = this.dataModel.ds.connection.schema;
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         let query = userQuery.SQLexpression;
-
+        
+        // añado un espacio en blanco al final de cada linea para asegurar que no se juntan palabras
+        let reg = new RegExp(`\n`, "g");
+        query = query.replace(reg, ` `);
 
         if (modelPermissions.length > 0) {
 
