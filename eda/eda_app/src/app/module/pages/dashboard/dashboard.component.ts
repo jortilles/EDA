@@ -164,7 +164,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         //JJ: Inicialitzo a false...
         this.dashboardService._notSaved.next(false);
         // this.display_v.notSaved = false;
-        
+
     }
 
     /* Set applyToAllFilters for new panel when it's created */
@@ -1583,6 +1583,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             close: (event, response) => {
                 if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
                     this.urls = response.urls;
+                    this.dashboardService._notSaved.next(true);
                 }
                 this.urlsController = undefined;
             }

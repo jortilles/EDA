@@ -33,6 +33,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
 
   ngOnInit(): void {
     this.urls = this.controller.params.urls;
+    // this.urls = JSON.parse(JSON.stringify(this.controller.params.urls)); // Opcional
   }
 
   onShow(): void {  // funcion que no se borra por el uso de la clase abstracta 
