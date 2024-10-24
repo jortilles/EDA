@@ -108,7 +108,8 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
                 column : this.column.column_name,
                 global : this.all ? true : false,
                 dynamic : this.dynamic, 
-                type : 'users'
+                type : 'users',
+                /*SDA Custom */ source: 'SDA'
             };
         }
         else if(this.type === 'groups'){
@@ -121,7 +122,8 @@ export class ColumnPermissionDialogComponent extends EdaDialogAbstract {
                 column : this.column.column_name,
                 global : this.all ? true : false,
                 dynamic : this.dynamic, 
-                type : 'groups'
+                type : 'groups',
+                /*SDA Custom */ source: 'SDA'
             };
         }
         this.onClose(EdaDialogCloseEvent.NEW, permissionFilter);

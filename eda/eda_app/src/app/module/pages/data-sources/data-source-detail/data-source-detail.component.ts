@@ -97,7 +97,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'Sql Server', value: 'sqlserver' },
         { label: 'MySQL', value: 'mysql' },
         { label: 'Vertica', value: 'vertica' },
-        { label: 'Oracle', value: 'oracle' },
+      /*SDA Custom  { label: 'Oracle', value: 'oracle' },  se quita el conector de oracle. No hay conexiones a oracle*/ 
         { label: 'BigQuery', value: 'bigquery' },
         { label: 'SnowFlake', value: 'snowflake'},
         { label: 'JsonWebService', value: 'jsonwebservice'}

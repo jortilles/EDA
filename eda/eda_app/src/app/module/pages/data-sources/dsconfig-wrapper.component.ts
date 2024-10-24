@@ -19,7 +19,7 @@ export class DsConfigWrapperComponent implements OnInit {
 		{ name: 'Sql Server', value: 'sqlserver' },
 		{ name: 'MySQL', value: 'mysql' },
 		{ name: 'Vertica', value: 'vertica' },
-		{ name: 'Oracle', value: 'oracle' },
+		/* SDA CUSTOM { name: 'Oracle', value: 'oracle' }, NO HAY CONEXION A ORACLE*/
 		{ name: 'BigQuery', value: 'bigquery' },
 		{ name: 'SnowFlake', value: 'snowflake' },
 		{ name: 'jsonWebService', value: 'jsonwebservice' }

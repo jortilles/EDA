@@ -14,15 +14,15 @@ eda-blank-panel :root {
 }
 
 
-.input-icons { 
-    
+.input-icons {
+
     min-width: 95%;
     margin: 0.5em;
     margin-bottom: 0.2em;
 }
-  
-.tab-view .input-icons { 
-    /* width: 100%; 
+
+.tab-view .input-icons {
+    /* width: 100%;
     margin-bottom: 10px;  */
     padding: 2px;
     background: white;
@@ -30,26 +30,26 @@ eda-blank-panel :root {
     overflow-y: auto !important;
     display: block;
     margin-top: 16px;
-} 
-  
-.icon { 
-    padding: 10px; 
-    color: green; 
-    min-width: 50px; 
-    text-align: center; 
-} 
-  
-.input-field { 
+}
+
+.icon {
+    padding: 10px;
+    color: green;
+    min-width: 50px;
+    text-align: center;
+}
+
+.input-field {
     border:solid 1px silver;
     border-radius: 4px;
-    width: 100%; 
-    padding: 7px; 
-    text-align: center; 
-} 
-  
-h2 { 
-    color: green; 
-} 
+    width: 100%;
+    padding: 7px;
+    text-align: center;
+}
+
+h2 {
+    color: green;
+}
 .infoFiltres{
     margin-top:10px;
 }
@@ -195,7 +195,7 @@ body .ui-accordion .ui-accordion-header a {
 .select-list {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    /*SDA CUSTOM*/ flex-wrap: nowrap;
     padding: 2px;
     /* border: solid 1px #ccc; */
     border-radius: 4px;
@@ -204,6 +204,7 @@ body .ui-accordion .ui-accordion-header a {
    /*  overflow: visible; */
     overflow-wrap: anywhere;
     margin-top: 0.5em;
+    /*SDA CUSTOM*/overflow-x:scroll;
 }
 
 .filter-list {
@@ -301,7 +302,7 @@ body .ui-accordion .ui-accordion-header a {
 
     cursor: pointer;
     z-index: 99999 !important;
-    max-width: 27%;
+    /*SDA CUSTOM*/ /* max-width: 27%; */
 }
 
 .select-box-overlay {
@@ -383,7 +384,7 @@ body .ui-accordion .ui-accordion-header a {
 .aggregation-box {
     margin: 1px 1px 0 1px;
     width: 98%;
-    height: 2.5em; 
+    height: 2.5em;
     border: solid 1px rgb(183, 193, 201);
     border-radius: 4px;
     display: flex;
@@ -521,7 +522,7 @@ eda-blank-panel h4 {
 }
 
 .edaChartSelector .p-dropdown-panel .p-dropdown-items-wrapper {
-    overflow: auto; 
+    overflow: auto;
     max-height: 54vh !important;
 }
 

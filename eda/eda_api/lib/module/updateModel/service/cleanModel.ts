@@ -53,8 +53,14 @@ export class CleanModel {
                 model_granted_roles.push(model)
             
             } else {
-                
-                let match = model_granted_roles.find(r => r.table == roles[i].table && r.column == roles[i].column && r.type == roles[i].type   );
+                let match = model_granted_roles.find(r => r.table == roles[i].table 
+                                                    && r.column == roles[i].column 
+                                                    && r.type == roles[i].type  
+                                                    && r.global == roles[i].global  
+                                                    && r.none == roles[i].none  
+                                                    && r.permission == roles[i].permission  
+                                                    && r?.dynamic == roles[i]?.dynamic
+                                                    );
                 if( _.isEmpty(match) == false ){
                     if(roles[i].value && match.value ){
                         roles[i].value.forEach((e,i)=> {
@@ -91,7 +97,7 @@ export class CleanModel {
             }
 
 
-            //recuperamos los model_granted_roles de mongo, donde se han añadido permisos para SDA_*
+            //recuperamos los model_granted_roles de mongo, donde se han añadido permisos para SCRM_*
             const finder = await DataSourceSchema.find({_id: "111111111111111111111111" }) ; 
             let mgs = [];
             const mgsmap = _.cloneDeep(finder.map(e => mgs = e.ds.metadata.model_granted_roles));
@@ -112,23 +118,52 @@ export class CleanModel {
    
 
             function objetosIgualesUsuarios(objetoA: any, objetoB: any): boolean {
-                if (objetoA.users != undefined && objetoB.users != undefined
-                 ) return (
-                    objetoA.users.join(',') === objetoB.users.join(',') &&
-                    objetoA.usersName.join(',') === objetoB.usersName.join(',') &&
-                    objetoA.none === objetoB.none &&
-                    objetoA.table === objetoB.table &&
-                    objetoA.column === objetoB.column &&
-                    objetoA.global === objetoB.global &&
-                    objetoA.permission === objetoB.permission &&
-                    objetoA.type === objetoB.type
-                );
+                if (objetoA.users != undefined && objetoB.users != undefined  && objetoA?.dynamic && objetoB?.dynamic && objetoA?.value && objetoB?.value ){
+                     return (
+                        objetoA.users.join(',') === objetoB.users.join(',') &&
+                        objetoA.usersName.join(',') === objetoB.usersName.join(',') &&
+                        objetoA.none === objetoB.none &&
+                        objetoA.table === objetoB.table &&
+                        objetoA.column === objetoB.column &&
+                        objetoA.global === objetoB.global &&
+                        objetoA.permission === objetoB.permission &&
+                        objetoA.type === objetoB.type &&
+                        objetoA?.dynamic === objetoB?.dynamic &&
+                        objetoA?.value[0] === objetoB?.value[0] 
+                    );
+                }else if (objetoA.users != undefined && objetoB.users != undefined  &&   objetoA?.value && objetoB?.value ){
+                     return (
+                        objetoA.users.join(',') === objetoB.users.join(',') &&
+                        objetoA.usersName.join(',') === objetoB.usersName.join(',') &&
+                        objetoA.none === objetoB.none &&
+                        objetoA.table === objetoB.table &&
+                        objetoA.column === objetoB.column &&
+                        objetoA.global === objetoB.global &&
+                        objetoA.permission === objetoB.permission &&
+                        objetoA.type === objetoB.type &&
+                        objetoA?.value[0] === objetoB?.value[0] 
+                    );
+                  }else if (objetoA.users != undefined && objetoB.users != undefined    ){
+                    return (
+                       objetoA.users.join(',') === objetoB.users.join(',') &&
+                       objetoA.usersName.join(',') === objetoB.usersName.join(',') &&
+                       objetoA.none === objetoB.none &&
+                       objetoA.table === objetoB.table &&
+                       objetoA.column === objetoB.column &&
+                       objetoA.global === objetoB.global &&
+                       objetoA.permission === objetoB.permission &&
+                       objetoA.type === objetoB.type 
+                   );
+                  }
             }
             
+
             // Filtrar objetos únicos grupos
             const objetosUnicosGrupos = model_granted_roles.filter((objeto, index, self) =>
                 self.findIndex(other => objetosIgualesGrupos(objeto, other)) === index
             );
+
+
 
              // Filtrar objetos únicos usuarios
              const objetosUnicosUsuarios = model_granted_roles.filter((objeto, index, self) =>
@@ -137,11 +172,24 @@ export class CleanModel {
             
             model_granted_roles = objetosUnicosGrupos.concat(objetosUnicosUsuarios);
 
-            main_model.ds.metadata.model_granted_roles = model_granted_roles;
-            return main_model;
+            model_granted_roles.forEach( r=> {
+                r.source = 'update_model';
+            }
+            );
 
+            // Recuperando los permisos provenientes de SinergiaCRM 
+            // la propiedad source --> "EDA" indica que el permiso proviene de la applicacion y no de la base de datos
+            if(mgsmap.length!==0) {
+                const userRoles = mgsmap[0].filter( (r:any) => {
+                    return r?.source === 'SDA' && !r.groupsName.find( e => e.startsWith('SCRM_'))
+                });
+
+                // Agregando los permisos agregados previamente en la aplicacion. 
+                const all_roles =   [ ...model_granted_roles, ...userRoles];   
+                main_model.ds.metadata.model_granted_roles = all_roles;
+            } 
+
+            return main_model;
         }
-        
-        
     }
 

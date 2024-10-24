@@ -87,7 +87,8 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
                 column : "fullTable",
                 global : true,
                 permission : this.permission ? true : false,
-                type : 'users'
+                type : 'users',
+              /*SDA Custom */      source: 'SDA'
             };
         }
         else if(this.type === 'groups'){
@@ -99,7 +100,8 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
                 column : "fullTable",
                 global : true,
                 permission : this.permission,
-                type : 'groups'
+                type : 'groups',
+            /*SDA Custom */ source: 'SDA'
             };
         }
         this.onClose(EdaDialogCloseEvent.NEW, permissionFilter);
