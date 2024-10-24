@@ -63,6 +63,32 @@ export class HomeSdaComponent implements OnInit {
     color: string;
   }> = [
     {
+      type: "public",
+      label: $localize`:@@Common:Común`,
+      icon: "fa-circle",
+      color: "#add8e7"
+    },
+    {
+      type: "group",
+      label: $localize`:@@Group:Grupo`,
+      icon: "fa-circle",
+      color: "#ffd971"
+    },
+    {
+      type: "private",
+      label: $localize`:@@Private:Privado`,
+      icon: "fa-circle",
+      color: "#ee4e36"
+    }
+  ];
+  
+  private defaultDashboardTypes: Array<{
+    type: string;
+    label: string;
+    icon: string;
+    color: string;
+  }> = [
+    {
       type: "shared",
       label: $localize`:@@Public:Público`,
       icon: "fa-circle",
@@ -131,6 +157,15 @@ export class HomeSdaComponent implements OnInit {
 
     // Set view mode from local storage or default to table view
     this.viewMode = (localStorage.getItem("preferredViewMode") as "table" | "card") || "table";
+  }
+  
+  private initDashboardTypes(): void {
+    this.dashboardTypes = this.defaultDashboardTypes.filter(type => {
+      if (type.type === 'shared') {
+        return this.isAdmin;
+      }
+      return true;
+    });
 
     this.filteredTypes = [...this.dashboardTypes];
   }
@@ -153,6 +188,7 @@ export class HomeSdaComponent implements OnInit {
     this.initDashboards();
     this.initTags();
     this.initGroups();
+    this.initDashboardTypes(); 
   }
 
   /**
@@ -225,6 +261,7 @@ export class HomeSdaComponent implements OnInit {
         this.isAdmin = res.isAdmin;
         this.IsDataSourceCreator = res.isDataSourceCreator;
 
+        this.initDashboardTypes();
         this.initTags();
         this.initGroups();
         this.filterDashboards();
@@ -240,12 +277,18 @@ export class HomeSdaComponent implements OnInit {
    */
   private initTags(): void {
     const uniqueTags = Array.from(new Set(this.allDashboards.map(db => db.config.tag))).sort();
+    const filteredUniqueTags = uniqueTags.filter(tag => {
+      if (tag === 'shared') {
+        return this.isAdmin;
+      }
+      return true;
+    });
     this.tags = [
       {
         value: null,
         label: this.noTagLabel
       },
-      ...uniqueTags.map(tag => ({
+      ...filteredUniqueTags.map(tag => ({
         value: tag,
         label: tag
       }))
@@ -363,7 +406,13 @@ export class HomeSdaComponent implements OnInit {
    * Filters tags based on the search term.
    */
   public filterTags() {
-    this.filteredTags = this.tags.filter(tag => tag.label.toLowerCase().includes(this.tagSearchTerm.toLowerCase()));
+    this.filteredTags = this.tags
+      .filter(tag => {
+        if (tag.value === 'shared') {
+          return this.isAdmin;
+        }
+        return tag.label.toLowerCase().includes(this.tagSearchTerm.toLowerCase());
+      });
   }
 
 /**

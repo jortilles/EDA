@@ -25,7 +25,8 @@ export class DashboardController {
         privates = await DashboardController.getPrivateDashboards(req);
         group = await DashboardController.getGroupsDashboards(req);
         publics = await DashboardController.getPublicsDashboards();
-        shared = await DashboardController.getSharedDashboards();
+        // Hide public (shared) reports to normal users
+        /*SDA CUSTOM*/ // shared = await DashboardController.getSharedDashboards();
       }
 
       // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
