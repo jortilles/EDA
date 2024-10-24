@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { AlertService } from '@eda/services/service.index';
+import { UrlsService } from '@eda/services/api/urls.service';
 import { HttpClient } from '@angular/common/http';
 
 
@@ -20,7 +21,8 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
 
   constructor(
     private alertService: AlertService,
-    private http: HttpClient
+    private http: HttpClient,
+    private urlsService: UrlsService,
   ) { 
     super();
     this.dialog = new EdaDialog({
@@ -115,21 +117,21 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
   }
 
   customAction(url:any){
-    this.http.get(`${url.url}`,
-      { observe: 'response' }
-    )
-    .subscribe(response => {
-      if(response.status===200) {
-        this.alertService.addSuccess($localize`:@@urlSuccessfulConnection:CONEXIÓN EXITOSA`);
-      }
-      else {
-        this.alertService.addError($localize`:@@urlConnectionError:ERROR EN LA CONEXIÓN`);
-      }
 
-    }, error => {
-      this.alertService.addError($localize`:@@urlConnectionError:ERROR EN LA CONEXIÓN`);
-      console.log('Error en la consulta: ', error.status)
-    } );
+    this.urlsService.checkUrl(url).subscribe(
+      res => {
+        if(res['ok']){
+          this.alertService.addSuccess($localize`:@@urlSuccessfulConnection:CONEXIÓN EXITOSA`);
+        } else {
+          this.alertService.addError($localize`:@@urlConnectionError:ERROR EN LA CONEXIÓN`);
+        }
+      }, 
+      err => {
+        this.alertService.addError($localize`:@@urlConnectionError:ERROR EN LA CONEXIÓN`);
+        console.log('Error en el envio o url incorrecta', err);
+      }
+    )
+      
   }
 
 }
