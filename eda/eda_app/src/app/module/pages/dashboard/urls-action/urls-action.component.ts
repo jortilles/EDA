@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'urls-action',
   templateUrl: './urls-action.component.html',
-  styleUrls: [],
+  styleUrls: ['./url-action.component.css'],
 })
 export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
 
