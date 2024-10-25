@@ -42,6 +42,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public emailController: EdaDialogController;
     public saveasController: EdaDialogController;
     public editStylesController: EdaDialogController;
+    public urlsController: EdaDialogController;
     public applyToAllfilter: { present: boolean, refferenceTable: string, id: string };
     public grups: IGroup[] = [];
     public toLitle: boolean = false;
@@ -82,6 +83,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public applyNewTag: string;
     public addTag: boolean = false;
     public sendViaMailConfig: any = { enabled: false };
+
+    public urls: any[] = [];
 
 
     // Display Variables
@@ -378,7 +381,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private initializeDashboard(): void {
         const me = this;
-
         me.route.paramMap.subscribe(
             params => me.id = params.get('id'),
             err => me.alertService.addError(err)
@@ -406,6 +408,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     me.selectedTags = me.selectedTagsForDashboard(me.tags, config.tag)
                     me.refreshTime = config.refreshTime;
                     me.onlyIcanEdit = config.onlyIcanEdit;
+                    me.urls = config['urls'];
+                    if(me.urls===undefined) {
+                        me.urls=[];
+                    }
                     if (me.refreshTime) {
                         this.stopRefresh = false;
                         this.startCountdown(me.refreshTime);
@@ -926,6 +932,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public editStyles() {
         this.display_v.rightSidebar = false;
         const params = this.styles;
+                                        
         this.editStylesController = new EdaDialogController({
             params,
             close: (event, response) => {
@@ -1090,7 +1097,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     mailingAlertsEnabled: this.getMailingAlertsEnabled(),
                     sendViaMailConfig: this.sendViaMailConfig,
                     onlyIcanEdit: this.onlyIcanEdit,
-                    styles : this.styles
+                    styles : this.styles,
+                    urls: this.urls
 
                 },
                 group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
@@ -1198,6 +1206,26 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
     }
+
+    // Funcion que agregar urls para acción personalizada
+    public openUrlsConfig() {
+        const urls = this.urls;
+        const params = {urls: urls};
+
+        this.display_v.rightSidebar = false;
+        this.urlsController = new EdaDialogController({
+            params,
+            close: (event, response) => {
+                if(!_.isEqual(event, EdaDialogCloseEvent.NONE)){
+                    this.urls = response.urls;
+                    this.dashboardService._notSaved.next(true);
+                }
+                this.urlsController = undefined;
+            }
+        })
+    }
+
+
 
     // Others
     public handleSelectedBtn(event): void {

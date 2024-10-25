@@ -4102,6 +4102,98 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="eliminarInforme">
     <source>ELIMINAR INFORME</source>
     <target>USUŃ RAPORT</target>
+  </trans-unit>
+
+  <trans-unit id="opcionUrls">
+    <source>ACCIÓN PERSONALIZADA</source>
+    <target>DZIAŁANIE NIESTANDARDOWE</target>
+  </trans-unit>
+
+
+
+
+
+
+  <trans-unit id="urlEditSave">
+    <source>URL editado correctamente</source>
+    <target>Adres URL został pomyślnie zmieniony</target>
+  </trans-unit>
+  <trans-unit id="urlEditSaveError">
+    <source>Formulario incompleto, rellene todos los campos</source>
+    <target>Formularz niekompletny, wypełnij wszystkie pola</target>
+  </trans-unit>
+  <trans-unit id="addUrlDashboardUndefined">
+    <source>Faltan rellenar algunos campos</source>
+    <target>Brakuje niektórych pól</target>
+  </trans-unit>
+  <trans-unit id="urlAddedSuccessfully">
+    <source>URL agregado correctamente</source>
+    <target>URL agregado correctamente</target>
+  </trans-unit>
+  <trans-unit id="urlAddedIncomplete">
+    <source>Formulario incompleto</source>
+    <target>Niekompletna forma</target>
+  </trans-unit>
+  <trans-unit id="urlSuccessfulConnection">
+    <source>Llamada EXITOSA</source>
+    <target>UDANE połączenie</target>
+  </trans-unit>
+  <trans-unit id="urlConnectionError">
+    <source>ERROR en la llamada</source>
+    <target>Zadzwoń BŁĄD</target>
+  </trans-unit>
+
+  <trans-unit id="actionUrl">
+    <source>Acción</source>
+    <target>Działanie</target>
+  </trans-unit> 
+
+  <trans-unit id="descriptionUrl">
+    <source>Descripción</source>
+    <target>Opis</target>
+  </trans-unit> 
+
+  <trans-unit id="editionUrl">
+    <source>Edición</source>
+    <target>Wydanie</target>
+  </trans-unit> 
+
+  <trans-unit id="urlTextConfiguration">
+    <source>Configuración de url y nombre de acción personalizada: </source>
+    <target>Niestandardowa nazwa akcji i ustawienia adresu URL: </target>
+  </trans-unit> 
+
+  <trans-unit id="resumeTextConfiguration">
+    <source>Puedes configurar una acción personalizada que quieras ejecutar.  
+Te permite llamar a una URL que haga una acción que quieras invocar. 
+Puede ser una llamada a una api, a un endpoint de una app
+o incluso invocar procesos de carga desde una llamada http. 
+Una vez configurado podrás invocarlo siempre que que quieras desde el botón.</source>
+    <target>Możesz skonfigurować akcję niestandardową, którą chcesz wykonać.
+Umożliwia wywołanie adresu URL, który wykonuje akcję, którą chcesz wywołać.
+Może to być wywołanie API, punktu końcowego aplikacji
+lub nawet wywołać procesy ładowania z wywołania http.
+Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku.</target>
+  </trans-unit> 
+
+  <trans-unit id="urlString">
+    <source>URL: </source>
+    <target>Adres URL: </target>
+  </trans-unit> 
+
+  <trans-unit id="urlName">
+    <source>Nombre: </source>
+    <target>Nazwa: </target>
+  </trans-unit> 
+
+  <trans-unit id="urlDescription">
+    <source>Descripción: </source>
+    <target>Opis: </target>
+  </trans-unit> 
+
+  <trans-unit id="textLabelUrl">
+    <source>Agregar url</source>
+    <target>Dodaj adres URL</target>
   </trans-unit> 
   
 </body>
