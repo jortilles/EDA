@@ -4141,6 +4141,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </target>
 </trans-unit>
 
+
   <trans-unit id="eliminarInforme">
     <source>ELIMINAR INFORME</source>
     <target>DELETE REPORT</target>
@@ -4151,39 +4152,36 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>CUSTOM ACTION</target>
   </trans-unit> 
 
+
+
+
   <trans-unit id="urlEditSave">
-    <source>URL EDITADO CORRECTAMENTE</source>
-    <target>URL EDITED CORRECTLY</target>
+    <source>URL editado correctamente</source>
+    <target>URL correctly edited</target>
   </trans-unit>
-
   <trans-unit id="urlEditSaveError">
-    <source>FORMULARIO INCORRECTO, COMPLETAR LOS CAMPOS</source>
-    <target>INCORRECT FORM, COMPLETE THE FIELDS</target>
+    <source>Formulario incompleto, rellene todos los campos</source>
+    <target>Incomplete form. Fill all the fields</target>
   </trans-unit>
-
   <trans-unit id="addUrlDashboardUndefined">
-    <source>VALORES NO DEFINIDOS O FALTA COMPLETAR CAMPOS</source>
-    <target>VALUES NOT DEFINED OR FIELDS NOT COMPLETED</target>
+    <source>Faltan rellenar algunos campos</source>
+    <target>Incomplete form. Fill all the fields</target>
   </trans-unit>
-
   <trans-unit id="urlAddedSuccessfully">
-    <source>URL AGREGADO CORRECTAMENTE</source>
-    <target>URL ADDED SUCCESSFULLY</target>
+    <source>URL agregado correctamente</source>
+    <target>Correcly added URL</target>
   </trans-unit>
-
   <trans-unit id="urlAddedIncomplete">
-    <source>FORMULARIO DE AGREGADO URL INCOMPLETO</source>
-    <target>INCOMPLETE URL ADD FORM</target>
+    <source>Formulario incompleto</source>
+    <target>Incomplete form. Fill all the fields</target>
   </trans-unit>
-
   <trans-unit id="urlSuccessfulConnection">
-    <source>CONEXIÓN EXITOSA</source>
-    <target>SUCCESSFUL CONNECTION</target>
+    <source>Llamada EXITOSA</source>
+    <target>Success</target>
   </trans-unit>
-
   <trans-unit id="urlConnectionError">
-    <source>ERROR EN LA CONEXIÓN</source>
-    <target>CONNECTION ERROR</target>
+    <source>ERROR en la llamada</source>
+    <target>ERROR</target>
   </trans-unit>
   <trans-unit id="actionUrl">
     <source>Acción</source>

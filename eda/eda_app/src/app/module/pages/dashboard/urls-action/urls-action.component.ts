@@ -28,7 +28,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
     this.dialog = new EdaDialog({
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@opcionUrls:ACCIÓN PERSONALIZADA`,
+      title: $localize`:@@opcionUrls:Acción personalizada`,
     });
     this.dialog.style= { width: '70%', height:'55%' };
   }
@@ -61,10 +61,10 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
   onRowEditSave(url: any){
     if(url.name.length>0 && url.url.length>0 && url.description.length>0) {
         delete this.clonedUrls[url.id];
-        this.alertService.addSuccess($localize`:@@urlEditSave:URL EDITADO CORRECTAMENTE`);
+        this.alertService.addSuccess($localize`:@@urlEditSave:URL editado correctamente`);
     }
     else {
-      this.alertService.addError($localize`:@@urlEditSaveError:FORMULARIO INCORRECTO, COMPLETAR LOS CAMPOS`);
+      this.alertService.addError($localize`:@@urlEditSaveError:Formulario incompleto, rellene todos los campos`);
     }
   }
 
@@ -86,7 +86,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
 
     // Confirmar si se debe verificar la URL de manera estandarizada - consultar con Juanjo
     if(url === undefined || name===undefined || description===undefined){
-      this.alertService.addError($localize`:@@addUrlDashboardUndefined:VALORES NO DEFINIDOS O FALTA COMPLETAR CAMPOS.`);
+      this.alertService.addError($localize`:@@addUrlDashboardUndefined:Faltan rellenar algunos campos`);
     }
     else {
       // Hallando el mayor valor de todos los id del arreglo urls para agregar un nuevo elemento con un id de mayor valor.
@@ -102,7 +102,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
           name: name,
           description: description,
         });
-        this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL AGREGADO CORRECTAMENTE`);
+        this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL agregado correctamente`);
 
         // Reiniciando los valores de los campos de agregar URL
         this.urlAdd=''
@@ -111,7 +111,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
       }
   
       else {
-        this.alertService.addError($localize`:@@urlAddedIncomplete:FORMULARIO DE AGREGADO URL INCOMPLETO`);
+        this.alertService.addError($localize`:@@urlAddedIncomplete:Formulario incompleto`);
       }
     }
   }
@@ -121,13 +121,13 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
     this.urlsService.checkUrl(url).subscribe(
       res => {
         if(res['ok']){
-          this.alertService.addSuccess($localize`:@@urlSuccessfulConnection:CONEXIÓN EXITOSA`);
+          this.alertService.addSuccess($localize`:@@urlSuccessfulConnection:Llamada EXITOSA`);
         } else {
-          this.alertService.addError($localize`:@@urlConnectionError:ERROR EN LA CONEXIÓN`);
+          this.alertService.addError($localize`:@@urlConnectionError:ERROR en la llamada`);
         }
       }, 
       err => {
-        this.alertService.addError($localize`:@@urlConnectionError:ERROR EN LA CONEXIÓN`);
+        this.alertService.addError($localize`:@@urlConnectionError:ERROR en la llamada`);
         console.log('Error en el envio o url incorrecta', err);
       }
     )

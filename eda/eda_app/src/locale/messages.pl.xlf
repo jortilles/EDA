@@ -4091,39 +4091,38 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>DZIAŁANIE NIESTANDARDOWE</target>
   </trans-unit>
 
+
+
+
+
+
   <trans-unit id="urlEditSave">
-    <source>URL EDITADO CORRECTAMENTE</source>
-    <target>URL ZMIENIONO PRAWIDŁOWO</target>
+    <source>URL editado correctamente</source>
+    <target>Adres URL został pomyślnie zmieniony</target>
   </trans-unit>
-
   <trans-unit id="urlEditSaveError">
-    <source>FORMULARIO INCORRECTO, COMPLETAR LOS CAMPOS</source>
-    <target>NIEPRAWIDŁOWY FORMULARZ, WYPEŁNIJ POLA</target>
+    <source>Formulario incompleto, rellene todos los campos</source>
+    <target>Formularz niekompletny, wypełnij wszystkie pola</target>
   </trans-unit>
-
   <trans-unit id="addUrlDashboardUndefined">
-    <source>VALORES NO DEFINIDOS O FALTA COMPLETAR CAMPOS</source>
-    <target>WARTOŚCI NIE ZDEFINIOWANE LUB NIE WYPEŁNIONE POLA</target>
+    <source>Faltan rellenar algunos campos</source>
+    <target>Brakuje niektórych pól</target>
   </trans-unit>
-
   <trans-unit id="urlAddedSuccessfully">
-    <source>URL AGREGADO CORRECTAMENTE</source>
-    <target>ADRES URL ZOSTAŁ DODANY POMYŚLNIE</target>
+    <source>URL agregado correctamente</source>
+    <target>URL agregado correctamente</target>
   </trans-unit>
-
   <trans-unit id="urlAddedIncomplete">
-    <source>FORMULARIO DE AGREGADO URL INCOMPLETO</source>
-    <target>NIEKOMPLETNY FORMULARZ DODAWANIA ADRESU URL</target>
+    <source>Formulario incompleto</source>
+    <target>Niekompletna forma</target>
   </trans-unit>
-
   <trans-unit id="urlSuccessfulConnection">
-    <source>CONEXIÓN EXITOSA</source>
-    <target>UDANE POŁĄCZENIE</target>
+    <source>Llamada EXITOSA</source>
+    <target>UDANE połączenie</target>
   </trans-unit>
-
   <trans-unit id="urlConnectionError">
-    <source>ERROR EN LA CONEXIÓN</source>
-    <target>BŁĄD POŁĄCZENIA</target>
+    <source>ERROR en la llamada</source>
+    <target>Zadzwoń BŁĄD</target>
   </trans-unit>
 
   <trans-unit id="actionUrl">
