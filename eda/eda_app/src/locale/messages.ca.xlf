@@ -4211,6 +4211,59 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>ERROR EN LA CONEXIÓN</source>
     <target>ERROR A LA CONNEXIÓ</target>
   </trans-unit>
+
+  <trans-unit id="actionUrl">
+    <source>Acción</source>
+    <target>Acció</target>
+  </trans-unit> 
+
+  <trans-unit id="descriptionUrl">
+    <source>Descripción</source>
+    <target>Descripció</target>
+  </trans-unit> 
+
+  <trans-unit id="editionUrl">
+    <source>Edición</source>
+    <target>Edició</target>
+  </trans-unit> 
+
+  <trans-unit id="urlTextConfiguration">
+    <source>Configuración de url y nombre de acción personalizada: </source>
+    <target>Configuració d'url i nom d'acció personalitzada: </target>
+  </trans-unit> 
+
+  <trans-unit id="resumeTextConfiguration">
+    <source>Puedes configurar una acción personalizada que quieras ejecutar.  
+Te permite llamar a una URL que haga una acción que quieras invocar. 
+Puede ser una llamada a una api, a un endpoint de una app
+o incluso invocar procesos de carga desde una llamada http. 
+Una vez configurado podrás invocarlo siempre que que quieras desde el botón.</source>
+    <target>Podeu configurar una acció personalitzada que voleu executar.
+Et permet trucar a un URL que faci una acció que vulguis invocar.
+Pot ser una trucada a una api, a un endpoint d'una app
+o fins i tot invocar processos de càrrega des d'una trucada http.
+Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
+  </trans-unit> 
+
+  <trans-unit id="urlString">
+    <source>URL: </source>
+    <target>URL: </target>
+  </trans-unit> 
+
+  <trans-unit id="urlName">
+    <source>Nombre: </source>
+    <target>Nom: </target>
+  </trans-unit> 
+
+  <trans-unit id="urlDescription">
+    <source>Descripción: </source>
+    <target>Descripció: </target>
+  </trans-unit> 
+
+  <trans-unit id="textLabelUrl">
+    <source>Agregar url</source>
+    <target>Afegir url</target>
+  </trans-unit> 
   
 </body>
 </file>

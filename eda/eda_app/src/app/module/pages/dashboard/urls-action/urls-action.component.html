@@ -1,14 +1,14 @@
 <eda-dialog [inject]="dialog">
 
     <div body>
-        <div class="card">
+        <div class="card" *ngIf="urls?.length > 0">
             <p-scrollPanel [style]="{width: '100%', height: '100%'}">
                 <p-table [value]="urls" dataKey="id" editMode="row">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th style="width:40%">Acción</th>
-                            <th style="width:40%">Descripción</th>
-                            <th style="width:20%">Edición</th>
+                            <th i18n="@@actionUrl" style="width:40%">Acción</th>
+                            <th i18n="@@descriptionUrl" style="width:40%">Descripción</th>
+                            <th i18n="@@editionUrl" style="width:20%">Edición</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-action let-editing="editing" let-ri="rowIndex">
@@ -69,12 +69,12 @@
 
                         <div class="row">
                             <div class="col-sm-12">
-                                <h5 style="padding: 12px;">Configuración de url y nombre de acción personalizada: </h5>
+                                <h5 i18n="@@urlTextConfiguration" style="padding: 12px;">Configuración de url y nombre de acción personalizada: </h5>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-3">
-                                <label  for="URL">URL: </label>
+                                <label i18n="@@urlString" for="URL">URL: </label>
                             </div>
                             <div class="col-sm-9">
                                 <input class="col-sm-12" pInputText id="url" type="text" [(ngModel)]="urlAdd" />
@@ -82,7 +82,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-3">
-                                <label   for="Nombre">Nombre: </label>
+                                <label i18n="@@urlName" for="Nombre">Nombre: </label>
                             </div>
                             <div class="col-sm-9">
                                 <input class="col-sm-12" pInputText id="nombre" type="text" [(ngModel)]="nameAdd" />
@@ -90,7 +90,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-3">
-                                <label  for="Nombre">Descripción: </label>
+                                <label i18n="@@urlDescription" for="Nombre">Descripción: </label>
                             </div>
                             <div class="col-sm-9">
                                 <input class="col-sm-12" pInputText id="description" type="text" [(ngModel)]="descriptionAdd" />
@@ -98,7 +98,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
-                                <p-button label="Agregar url" styleClass="p-button-success"
+                                <p-button i18n-label="@@textLabelUrl" label="Agregar url" styleClass="p-button-success"
                                     (click)="addUrlDashboard(urlAdd, nameAdd, descriptionAdd)"></p-button>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
 
 
                     </div>
-                    <div class="col-sm-5  description ">
+                    <div i18n="@@resumeTextConfiguration" class="col-sm-5  description ">
                      
 Puedes configurar una acción personalizada que quieras ejecutar.  
 Te permite llamar a una URL que haga una acción que quieras invocar. 

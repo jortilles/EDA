@@ -4185,6 +4185,50 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>ERROR EN LA CONEXIÓN</source>
     <target>CONNECTION ERROR</target>
   </trans-unit>
+  <trans-unit id="actionUrl">
+    <source>Acción</source>
+    <target>Action</target>
+  </trans-unit> 
+  <trans-unit id="descriptionUrl">
+    <source>Descripción</source>
+    <target>Description</target>
+  </trans-unit> 
+  <trans-unit id="editionUrl">
+    <source>Edición</source>
+    <target>Edition</target>
+  </trans-unit> 
+  <trans-unit id="urlTextConfiguration">
+    <source>Configuración de url y nombre de acción personalizada: </source>
+    <target>Custom Action Name and URL Settings:</target>
+  </trans-unit> 
+  <trans-unit id="resumeTextConfiguration">
+    <source>Puedes configurar una acción personalizada que quieras ejecutar.  
+Te permite llamar a una URL que haga una acción que quieras invocar. 
+Puede ser una llamada a una api, a un endpoint de una app
+o incluso invocar procesos de carga desde una llamada http. 
+Una vez configurado podrás invocarlo siempre que que quieras desde el botón.</source>
+    <target>You can configure a custom action that you want to execute.
+It allows you to call a URL that performs an action you want to invoke.
+It can be a call to an API, an endpoint of an app
+or even invoke loading processes from an http call.
+Once configured you can invoke it whenever you want from the button.</target>
+  </trans-unit> 
+  <trans-unit id="urlString">
+    <source>URL: </source>
+    <target>URL: </target>
+  </trans-unit> 
+  <trans-unit id="urlName">
+    <source>Nombre: </source>
+    <target>Name: </target>
+  </trans-unit> 
+  <trans-unit id="urlDescription">
+    <source>Descripción: </source>
+    <target>Description: </target>
+  </trans-unit> 
+  <trans-unit id="textLabelUrl">
+    <source>Agregar url</source>
+    <target>Add url</target>
+  </trans-unit> 
 
 </body>
 </file>
