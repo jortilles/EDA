@@ -7,7 +7,6 @@ import UploadsRouter from './module/uploads/uploads.router';
 import MailRouter from './module/mail/mail.router';
 import FuncionalidadUrl from './module/funcionalidadUrl/funcionalidadUrl.router';
 import DocuRouter from './routes/api/api-docs'
-import DocuRouter from './routes/api/api-docs';
 import ExcelRouter from './module/excel/excel-sheet.router';
 import ThirdPartyRouter from './module/thirdParty/thirdParty.router';
 
