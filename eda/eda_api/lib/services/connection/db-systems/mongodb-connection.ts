@@ -22,7 +22,12 @@ export class MongoDBConnection extends AbstractConnection {
             const user = this.config.user;
             const password = this.config.password;
 
-            this.connectUrl = `${type}://${user}:${password}@${host}:${port}/${db}?authSource=${db}`;
+            let credentialStr = '';
+            if (user && password) {
+                credentialStr = `${user}:${password}@`;
+            }
+
+            this.connectUrl = `${type}://${credentialStr}${host}:${port}/${db}?authSource=${db}`;
 
             const options = { useNewUrlParser: true, useUnifiedTopology: true };
             const connection = await MongoClient.connect(this.connectUrl, options);

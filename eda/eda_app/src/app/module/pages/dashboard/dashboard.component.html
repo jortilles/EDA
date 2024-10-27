@@ -65,6 +65,12 @@
 <!-- ============================================================== -->
 <save-as-dialog *ngIf="saveasController" [controller]="saveasController"></save-as-dialog>
 
+<!-- ============================================================== -->
+<!-- URLS ACTION -->
+<!-- ============================================================== -->
+
+<urls-action *ngIf="urlsController" [controller]="urlsController"></urls-action>
+
 
 <!-- ============================================================== -->
 <!-- EDIT STYLES -->
@@ -229,6 +235,13 @@
         <div>
             <i class="fa fa-envelope-o"></i>
             <span i18n="@@opcionMail" class="ml-2">ENVIAR POR EMAIL</span>
+        </div>
+    </div>
+
+    <div  class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="openUrlsConfig();">
+        <div>
+            <i class="fa fa-link"></i>
+            <span i18n="@@opcionUrls" class="ml-2">ACCIÓN PERSONALIZADA</span>
         </div>
     </div>
 

@@ -92,13 +92,10 @@ export class EdaTableComponent implements OnInit {
     }
 
     public applyStyles(styles: Array<any>) {
-        //console.log('Los estilos que me llegan son ');
-        //console.log(styles.toString())
 
         const fields = styles.map(style => style.col);
         const limits = {};
 
-        
         //Initialize 
         fields.forEach(field => {
             limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: []};
@@ -292,5 +289,13 @@ export class EdaTableComponent implements OnInit {
         return name.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9-_-\wáéíóúüñÁÉÍÓÚÜÑ ]/g, '').replace('_','');
     }
 
+    public getColor(valor: number) { 
+
+        // modificar el true por una variable que se modifica en la edición de valores negativos. 
+
+        if(valor<0 && this.inject.negativeNumbers) {
+            return '#FF0000' 
+        }
+    }
 
 }

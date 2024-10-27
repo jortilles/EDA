@@ -6,7 +6,8 @@ import AddTableRouter from './module/addtabletomodel/addtable.router';
 import DataSourceRouter from './module/datasource/datasource.router';
 import UploadsRouter from './module/uploads/uploads.router';
 import MailRouter from './module/mail/mail.router';
-import DocuRouter from './routes/api/api-docs';
+import FuncionalidadUrl from './module/funcionalidadUrl/funcionalidadUrl.router';
+import DocuRouter from './routes/api/api-docs'
 import ExcelRouter from './module/excel/excel-sheet.router';
 import ThirdPartyRouter from './module/thirdParty/thirdParty.router';
 
@@ -26,6 +27,8 @@ router.use('/global/upload', UploadsRouter);
 router.use('/addTable', AddTableRouter );
 
 router.use('/mail', MailRouter);
+
+router.use('/funcionalidadUrl', FuncionalidadUrl);
 
 router.use('/excel-sheets',ExcelRouter);
 

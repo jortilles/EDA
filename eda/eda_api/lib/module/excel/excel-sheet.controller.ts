@@ -36,13 +36,14 @@ export class ExcelSheetController {
                 const parsedUrl = new URL(databaseUrl?.url);
                 //Transformar a datasource con todo inicializado a vacio
                 const { host, port, password } = parsedUrl;
+
                 const config = {
                     type: "mongodb",
                     host: host.substring(0, host.indexOf(':')),
                     port: Number(port),
                     database: parsedUrl.pathname.substring(1),
                     user: parsedUrl.username,
-                    password,
+                    password: parsedUrl.password,
                 };
 
                 const mongoConnection = new MongoDBConnection(config);
