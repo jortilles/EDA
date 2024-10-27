@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
-import { AlertService } from '@eda/services/service.index';
+import { DashboardService, AlertService } from '@eda/services/service.index';
 import { UrlsService } from '@eda/services/api/urls.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -21,6 +21,7 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
 
   constructor(
     private alertService: AlertService,
+    public dashboardService: DashboardService,
     private http: HttpClient,
     private urlsService: UrlsService,
   ) { 
@@ -103,6 +104,9 @@ export class UrlsActionComponent extends EdaDialogAbstract  implements OnInit {
           description: description,
         });
         this.alertService.addSuccess($localize`:@@urlAddedSuccessfully:URL agregado correctamente`);
+        //not saved alert message
+        this.dashboardService._notSaved.next(true);
+
 
         // Reiniciando los valores de los campos de agregar URL
         this.urlAdd=''
