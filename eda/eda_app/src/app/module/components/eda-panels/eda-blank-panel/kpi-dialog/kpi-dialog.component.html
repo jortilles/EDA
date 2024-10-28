@@ -2,11 +2,28 @@
   
   <div body class="grid h-100 p-5">
 
-    <div class="col-12" style=" background-color: var(--panel-color); margin: 2em; width: 90%; height: 15vh;">
+    <div class="col-7" style="background-color: var(--panel-color); width: 90%; height: 15vh;">
       <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig" class="component"></panel-chart>
     </div>
 
-    <hr>
+    <div class="col-4 col-offset-1">
+
+        <div class="col-12">
+            <h6 i18n="@@colorsChartH6" class="custom-border-b1">
+                Colores
+            </h6>
+            <div class="grid chart-color-selection">
+                <ng-container *ngFor="let serie of series; let i = index">
+                    <div class=" col-6 ">
+                        <input type="text" pInputText style="width: 40%" [value]="serie.label" disabled="true" [style.border-color]="serie.border" />
+                        <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex" appendTo="body"></p-colorPicker>
+                        <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg" (input)="handleInputColor(serie)" minlength="7" >
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+
+    </div>
 
     <div class="col-12 mt-5">
       <h6 i18n="@@kpiAlertH6" class="custom-border-b1">
@@ -79,7 +96,7 @@
     </div>
     <div class="col-2">
       <button i18n="@@addAlert" pButton class="btn-sm btn-secondary" i18n-title="@@addAlert" title="Añadir alerta"
-        (click)="addAlert()" [disabled]="color === undefined || operand === undefined" label="Añadir alerta">
+        (click)="addAlert()" [disabled]="!color || !operand" label="Añadir alerta">
       </button>
     </div>
   </div>

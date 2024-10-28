@@ -132,7 +132,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * changes chart Type
      */
     public changeChartType() {
-
         const type = this.props.chartType;
 
         if (['table', 'crosstable'].includes(type)) {
@@ -198,9 +197,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type 
      */
     private renderEdaChart(type: string) {
-
-        // console.log('this.props:  ',this.props)
-
         const isbarline = this.props.edaChart === 'barline';
         const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
 
@@ -209,13 +205,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     
         let values = _.cloneDeep(this.props.data.values);
 
-        // console.log('values:   ', values);
-
         /**
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
-        // console.log('cfg: ',cfg);
             // Si es un histogram faig aixó....        
         if (  (['histogram'].includes(this.props.edaChart))
             && this.props.query.length === 1
@@ -287,19 +280,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartOptions = config.chartOptions;
         chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
         
-        if(!chartData[1][0]?.backgroundColor){
+        // chartColors unicamente se reflejan si estan dentro del chartDataset 
+        if (!chartData[1][0]?.backgroundColor){
             chartData[1].forEach(( e,i) => {
                 try{
                     e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
                     e.borderColor = chartConfig.chartColors[i].borderColor;
                 }catch(err){
                     // si tinc una tendencia no tinc color per aquesta grafica. No hauria de ser aixi.....
-                       //console.log('Recuperando color...');
-                        //console.log(this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor);
-                        e.backgroundColor =   this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor;
-                        e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
+                    e.backgroundColor =   this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor;
+                    e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
                 }
-
             });
         }
 
@@ -481,9 +472,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.edaChart.chartLabels = chartData[0];
         chartConfig.edaChart.chartDataset = chartData[1];
         chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
-        // chartConfig.edaChart.chartColors = this.chartUtils.recoverChartColors(chartType, this.props.config);
+        chartConfig.edaChart.chartColors = this.chartUtils.recoverChartColors(chartType, this.props.config) || [];
         
-        
+        // chartColors unicamente se reflejan si estan dentro del chartDataset
+        if (chartConfig.edaChart.chartColors.length>0) {
+            chartConfig.edaChart.chartDataset[0].backgroundColor = chartConfig.edaChart.chartColors[0].backgroundColor;
+            chartConfig.edaChart.chartDataset[0].borderColor = chartConfig.edaChart.chartColors[0].borderColor;
+        }
+
+
         // KPI Config
         let kpiValue: number;
         let kpiLabel = this.props.query.find((c: any) => c.column_type == 'numeric')?.display_name?.default;
@@ -525,6 +522,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
         this.configUpdated.emit();
+
+        // this.componentRef = this.entry.createComponent(EdaChartComponent);
+        // this.componentRef.instance.inject = inject;
+        // this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        // this.configUpdated.emit();
     }
 
 

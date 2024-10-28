@@ -3,7 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
-
+import * as _ from 'lodash';
 
 
 @Component({
@@ -38,7 +38,8 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public selectedUsers: any;
     public disabled: boolean;
     public canIRunAlerts: boolean = false;
-
+    public series: any[] = [];
+    public edaChart: any;
     public display: boolean = false;
 
     constructor(private userService: UserService,) {
@@ -65,7 +66,10 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         this.onClose(EdaDialogCloseEvent.UPDATE,
             {
                 alerts: this.alerts,
-                sufix: this.panelChartComponent.componentRef.instance.inject.sufix
+                sufix: this.panelChartComponent.componentRef.instance.inject.sufix,
+                edaChart: this.edaChart,
+                chartType: this.panelChartConfig.chartType,
+                chartSubType: this.panelChartConfig.edaChart
             });
     }
 
@@ -75,11 +79,26 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
     onShow(): void {
         this.panelChartConfig = this.controller.params.panelChart;
-        const config: any = this.panelChartConfig.config.getConfig();
-        this.alerts = config.alertLimits || []; //deepcopy
+        this.edaChart = this.controller.params.edaChart;
 
+        const config: any = this.panelChartConfig.config.getConfig();
+
+        this.loadChartColors();
+        this.alerts = config.alertLimits || []; //deepcopy
         this.display = true;
-        // this.panelChartComponent.componentRef.instance.updateChart();
+    }
+
+    loadChartColors() {
+        if (this.edaChart) {
+
+            this.series = this.edaChart.chartDataset.map(dataset => ({
+                label: dataset.label,
+                bg: this.rgb2hex(dataset.backgroundColor),
+                border: dataset.borderColor
+            }));
+            
+            this.edaChart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor: s.border }));
+        }
     }
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -103,20 +122,72 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     }
 
     rgb2hex(rgb): string {
-        rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-        return (rgb && rgb.length === 4) ? '#' +
+        if (rgb) {
+            rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+            return (rgb && rgb.length === 4) ? '#' +
             ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
             ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
             ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
+        }
     }
 
     hex2rgb(hex, opacity = 100): string {
-        hex = hex.replace('#', '');
-        const r = parseInt(hex.substring(0, 2), 16);
-        const g = parseInt(hex.substring(2, 4), 16);
-        const b = parseInt(hex.substring(4, 6), 16);
+        if (hex) {
+            hex = hex.replace('#', '');
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            
+            return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
+        }
+    }
 
-        return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
+    handleInputColor(event) {
+        if (this.edaChart.chartDataset) {
+            const newDatasets = [];
+            const dataset = this.edaChart.chartDataset;
+            
+
+            for (let i = 0, n = dataset.length; i < n; i += 1) {
+                if (dataset[i].label === event.label) {
+                    dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
+                    dataset[i].borderColor = this.hex2rgb(event.bg, 100);
+                    this.edaChart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
+                } else {
+                    if (!_.isArray(dataset[i].backgroundColor)) {
+                        dataset[i].backgroundColor = this.edaChart.chartColors[i].backgroundColor;
+                        dataset[i].borderColor = this.edaChart.chartColors[i].backgroundColor;
+                        this.edaChart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
+                    } else {
+                        if (this.edaChart.chartLabels) {
+                            const labels = this.edaChart.chartLabels;
+                            for (let label of labels) {
+                                let inx = labels.indexOf(label);
+                                if (label === event.label && inx > -1) {
+                                    dataset[i].backgroundColor[inx] = this.hex2rgb(event.bg, 90);
+                                    this.edaChart.chartColors[0].backgroundColor[inx] = this.hex2rgb(event.bg, 90);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                newDatasets.push(dataset[i]);
+            }
+
+        } else {
+            if (this.edaChart.chartLabels) {
+                const labels = this.edaChart.chartLabels;
+                for (let i = 0, n = labels.length; i < n; i += 1) {
+                    if (labels[i] === event.label) {
+                        this.edaChart.chartColors[0].backgroundColor[i] = this.hex2rgb(event.bg, 90);
+                    }
+                }
+            }
+        }
+
+        this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
+        this.panelChartComponent.componentRef.instance.updateChart();
     }
 
     openConfigDialog($event, alert) {

@@ -72,9 +72,6 @@ export const PanelOptions = {
             });
 
           } else if (panelComponent.graficos.chartType.includes('kpi')) {
-            console.log('hola');
-            console.log(panelComponent)
-            console.log(panelComponent.panelChart.componentRef.instance)
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.kpiController = new EdaDialogController({
               params: {

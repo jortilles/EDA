@@ -117,7 +117,7 @@ export class EdaKpiComponent implements OnInit {
 
     public updateChart(): void {
         if (this.inject.edaChart && this.edaChartComponent) {
-            this.edaChartComponent.updateChartOptions(this.edaChartComponent.inject.chartOptions);
+            this.edaChartComponent.updateChart();
         }
     }
 

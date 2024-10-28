@@ -37,12 +37,22 @@ export const ChartsConfigUtils = {
         noRepetitions: ebp.panelChart.componentRef.instance.inject.noRepetitions
       }
 
-    } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpi') {
+    } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType.includes('kpi')) {
+        const kpiChart = ebp.panelChart.componentRef.instance.inject.edaChart;
 
-      config = {
-        sufix: ebp.panelChart.componentRef.instance.inject.sufix,
-        alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits
-      }
+        config = {
+            sufix: ebp.panelChart.componentRef.instance.inject.sufix,
+            alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
+            edaChart: {}
+        }
+
+        if (kpiChart.edaChart) {
+            config.edaChart.colors = kpiChart.chartColors;
+            config.edaChart.chartType = ebp.panelChart.props.chartType;
+
+            // colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
+            // chartType: ebp.panelChart.props.chartType, 
+        }
 
     }else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
       config = {
@@ -88,7 +98,6 @@ export const ChartsConfigUtils = {
     * @param type chart type
     */
     setVoidChartConfig: (type: string) => {
-
         if (['table', 'crosstable'].includes(type)) {
 
             return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false);
