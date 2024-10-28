@@ -163,35 +163,51 @@
 </div>
 
 
-
 <app-create-dashboard *ngIf="createDashboard" (close)="onCloseCreateDashboard($event)"></app-create-dashboard>
 
 
-<br><br>
-<div class="tutorial-home">
+<div id="tutorial-home">
     <div>
-        <h2 i18n="@@tutorialHome" class="title-tutorial hover-underline-animation">Bienvenido al tutorial de Free Edalitics.</h2>
+        <h2 i18n="@@tutorialHome" class="title-tutorial hover-underline-animation">Edalitics free</h2>
     </div>
+
     <div>
-        <p class="text-tutorial" i18n="@@firstAboutParagraphSpan" >
-            <a class="stronger-paragraph" href="https://eda.jortilles.com">Free Edalitics</a> les da la bienvenida para la  
-            creación de informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
-            en tus propios servidores o se puede difrutar en su versión SaaS en la nube. 
-            <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> 
-            permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
-            configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.
+        <p class="text-tutorial" i18n="@@firstAboutParagraph" >
+            Edalitics Free es la versión gratuita de Edalitics.
+            Con Edalitics Free podrás disfrutar de toda la potencia de Edalitics para información pública o de uso personal. 
+            <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> es el servicio cloud que ofrece 
+            <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> sobre 
+            <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>. 
+        
+        </p>
+        <p class="text-tutorial" i18n="@@secondAboutParagraph" >
+            Edalitics Free te permite analizar toda la información que quieras de forma gratuita siempre que hagas un uso razonable. 
+            Edalitics te permitirá crear fuentes de datos sobre tus datasets y hacer informes rico a golpe de click.
+        </p>
+        <p class="text-tutorial" i18n="@@thirdAboutParagraph" >
+           Si no sabes cómo usar Edalitics, a continuación te proporcionamos un turorial. 
+           Toda la inforación que necesites está disponible en la <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">documentación</a>
+           o puedes preguntar en los <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussionso">grupos de discusión</a>.
         </p>
     </div>
     <hr>
     <br>
     <h3 class="subtitle-tutorial">Tutorial</h3>
     <div>
-        <p class="text-tutorial" i18n="@@firstAboutParagraphSpan" >
-            Con el tutorial de <a class="stronger-paragraph" href="https://eda.jortilles.com">Free Edalitics</a> aprenderemos a
-            configurar y subir nuestra primera fuente de datos para poder iniciar en la creacion de nuestros primeros informes. 
-        </p>
+
         <div>
-            <p-panel header="Creación de una instancia de fuente de datos">
+            <p-panel header="Para analizar información con Edalitics necesitarás:" id="text-tutorial1"  > 
+                    <ul>
+                        <li><b>Crear una fuente de datos</b>: Conectar tus datos a Edalitics</li>
+                        <li><b>Crear un informe</b>: Analizar  tus datos a Edalitics</li>
+                    </ul>   
+            </p-panel>
+        </div>
+
+        
+        <div>
+            <p-panel header="Creación de una fuente de datos">
+                Para crear una fuente de datos primero tenemos que tenerlos disponibles en una <b>base de datos</b>, un <b>webservice</b> o un archivo <b>excel</b>.
                 <ul>
                     <li> <b>Primero nos dirigimos al sidebar de la izquierda y buscamos la opción: fuente de datos, al desplegarse el menú de opciones vamos por nueva fuente de datos.</b> </li>
                     <li> <b>Ante nosotros tendremos el panel de configuración de nuevo origen de datos: Agregamos los siguientes valores básicos: nombre, tipo de base de datos y servidor.</b> </li>

@@ -4023,15 +4023,20 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Edalitics</target>
 </trans-unit>
 
-<trans-unit id="firstAboutParagraphSpan" datatype="html">
+<trans-unit id="firstAboutParagraph" datatype="html">
   <source>  
-                <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> es la plataforma de reporting SaaS que te permite realizar 
-                informes y cuadros de mando de forma sencilla. 
+        Edalitics Free es la versión gratuita de Edalitics.
+        Con Edalitics Free podrás disfrutar de toda la potencia de Edalitics para información pública o de uso personal. 
+        <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> es el servicio cloud que ofrece 
+        <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> sobre 
+        <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>. 
   </source>
   <target>
-<a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> to platforma raportowania SaaS, która umożliwia wykonywanie
- raporty i dashboardy w prosty sposób.
-  </target>
+          Edalitics Free to darmowa wersja Edalitics.
+          Dzięki Edalitics Free możesz cieszyć się całą mocą Edalitics do celów informacji publicznej lub do użytku osobistego.
+          <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> to oferowana usługa w chmurze
+          <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> o
+          <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>.
 </trans-unit>
 
 
@@ -4104,6 +4109,12 @@ Edalitics działa z kodem
     <target>USUŃ RAPORT</target>
   </trans-unit>
 
+  <trans-unit id="tutorialHome">
+    <source>Edalitics free</source>
+    <target>Edalitics free</target>
+  </trans-unit>
+
+  
   <trans-unit id="opcionUrls">
     <source>ACCIÓN PERSONALIZADA</source>
     <target>DZIAŁANIE NIESTANDARDOWE</target>
@@ -4196,10 +4207,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <target>Dodaj adres URL</target>
   </trans-unit> 
 
-  <trans-unit id="tutorialHome">
-    <source>Bienvenido al tutorial de Free Edalitics.</source>
-    <target>Witamy w bezpłatnym samouczku dotyczącym Edalitics.</target>
-  </trans-unit> 
+
 
 </body>
 </file>

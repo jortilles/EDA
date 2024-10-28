@@ -4111,12 +4111,20 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
   <source>  
-                <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> es la plataforma de reporting SaaS que te permite realizar 
-                informes y cuadros de mando de forma sencilla. 
+
+        Edalitics Free es la versión gratuita de Edalitics.
+        Con Edalitics Free podrás disfrutar de toda la potencia de Edalitics para información pública o de uso personal. 
+        <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> es el servicio cloud que ofrece 
+        <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> sobre 
+        <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>. 
+
   </source>
   <target>
-                <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> és la plataforma de reporting SaaS que et permet realitzar
-                informes i quadres de comandament de forma senzilla.
+        Edalitics Free és la versió gratuïta d'Edalitics.
+        Amb Edalitics Free podreu gaudir de tota la potència d'Edalitics per a informació pública o d'ús personal.
+        <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> és el servei cloud que ofereix
+        <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> sobre
+        <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>.
   </target>
 </trans-unit>
 
@@ -4191,8 +4199,9 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit> 
 
   <trans-unit id="tutorialHome">
-    <source>Bienvenido al tutorial de Free Edalitics.</source>
-    <target>Benvingut al tutorial de Free Edalitics.</target>
+    <source>Edalitics free</source>
+    <target>Edalitics free</target>
+  </trans-unit>
   <trans-unit id="opcionUrls">
     <source>ACCIÓN PERSONALIZADA</source>
     <target>ACCIÓ PERSONALITZADA</target>

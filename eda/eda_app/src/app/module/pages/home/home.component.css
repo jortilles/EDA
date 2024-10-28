@@ -95,26 +95,40 @@
   border:none;
 }
 
-.tutorial-home {
-  margin: 1%;
+#tutorial-home {
+  margin: 3%;
+  font-size: 1.1rem;
+  color:black;
 }
 
-.title-tutorial {
+
+#tutorial-home .title-tutorial {
   font-size: 3rem;
+  font-weight: bold;
+
   margin: 10px 0px  40px 0px;
   text-align: center;
 }
 
-.subtitle-tutorial {
+
+#tutorial-home .subtitle-tutorial {
   font-size: 2rem;
   margin: 10px 0px  40px 0px;
 }
 
-.stronger-paragraph{
+
+#tutorial-home .stronger-paragraph{
   font-weight: 700;
   color: #009FC1;
 }
 
-.text-tutorial {
-  font-size: 1.3em;
+
+#tutorial-home .text-tutorial {
+  font-size: 1.3ren !important;
 }
+
+#text-tutorial1{
+  font-size: 4rem !important;
+  color: black;
+}
+
