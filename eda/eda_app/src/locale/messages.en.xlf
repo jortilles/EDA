@@ -4164,6 +4164,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>DELETE REPORT</target>
   </trans-unit> 
 
+  <trans-unit id="IncorrectFile">
+  <source>Archivo incorrecto, verifique que el formato del archivo sea json o geojson.</source>
+  <target>Bad file, check if the file format is json or geojson.</target>
+  </trans-unit>
+
 </body>
 </file>
 </xliff>

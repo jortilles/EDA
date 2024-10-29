@@ -4103,6 +4103,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>ELIMINAR INFORME</source>
     <target>USUŃ RAPORT</target>
   </trans-unit> 
+
+  <trans-unit id="IncorrectFile">
+  <source>Archivo incorrecto, verifique que el formato del archivo sea json o geojson.</source>
+  <target>Zły plik. Sprawdź, czy format pliku to json lub geojson.</target>
+  </trans-unit>
   
 </body>
 </file>
