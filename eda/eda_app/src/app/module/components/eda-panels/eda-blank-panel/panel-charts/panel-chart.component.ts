@@ -360,6 +360,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.sortedSerie = config.sortedSerie;
         this.componentRef.instance.inject.sortedColumn = config.sortedColumn;
         this.componentRef.instance.inject.noRepetitions = config.noRepetitions;
+        this.componentRef.instance.inject.negativeNumbers = config.negativeNumbers;
         this.configUpdated.emit();
     }
 

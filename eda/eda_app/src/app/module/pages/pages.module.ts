@@ -36,6 +36,7 @@ import { SecurityDialogComponent } from './data-sources/data-source-detail/secur
 import { AlertsManagementComponent } from './alerts-management/alerts-management.component';
 import { MailManagementComponent } from './mail-management/mail-management.component';
 import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
+import { UrlsActionComponent } from './dashboard/urls-action/urls-action.component';
 
 
 // Routes
@@ -91,7 +92,7 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
         DashboardMailDialogComponent,
         SaveAsDialogComponent,
         EditStylesDialogComponent,
-
+        UrlsActionComponent
     ]
 })
 export class PagesModule { }

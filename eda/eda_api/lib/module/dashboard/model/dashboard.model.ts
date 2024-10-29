@@ -18,6 +18,7 @@ interface IDashboardConfig {
     styles:any;
     tag: any;
     external?: any;
+    urls:any;
 }
 
 const DashboardSchema = new mongoose.Schema({
