@@ -4164,6 +4164,22 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>DELETE REPORT</target>
   </trans-unit> 
 
+
+      <trans-unit id="chartTypesKPIBAR">
+        <source>KPI + Gráfico de Barras</source>
+        <target>KPI + Bar chart</target>
+      </trans-unit>
+      
+      <trans-unit id="chartTypesKPILINE">
+        <source>KPI + Gráfico de Lineas</source>
+        <target>KPI + Line chart</target>
+      </trans-unit>
+
+      <trans-unit id="chartTypesKPIAREA">
+        <source>KPI + Gráfico de Áreas</source>
+        <target>KPI + Area chart</target>
+      </trans-unit>
+
 </body>
 </file>
 </xliff>

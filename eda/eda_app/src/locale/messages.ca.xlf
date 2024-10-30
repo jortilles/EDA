@@ -4189,6 +4189,21 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>ELIMINAR INFORME</source>
     <target>ELIMINAR INFORME</target>
   </trans-unit> 
+
+        <trans-unit id="chartTypesKPIBAR">
+        <source>KPI + Gráfico de Barras</source>
+        <target>KPI + Gràfic de barres</target>
+      </trans-unit>
+      
+      <trans-unit id="chartTypesKPILINE">
+        <source>KPI + Gráfico de Lineas</source>
+        <target>KPI + Gràfic de línies</target>
+      </trans-unit>
+
+      <trans-unit id="chartTypesKPIAREA">
+        <source>KPI + Gráfico de Áreas</source>
+        <target>KPI + Gràfic d'àrees</target>
+      </trans-unit>
   
 </body>
 </file>
