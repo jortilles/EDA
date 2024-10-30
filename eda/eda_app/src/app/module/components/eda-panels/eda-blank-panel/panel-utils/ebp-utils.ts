@@ -113,6 +113,13 @@ export const EbpUtils = {
       case 'kpi':
         description = 'attach_money';
         break
+      case 'kpibar':
+        description = 'fa-cubes';
+        break
+      case 'kpiarea':
+      case 'kpiline':
+        description = 'fa-sitemap';
+        break
       case 'dynamicText':
         description = 'text_rotation_none';
         break
@@ -178,6 +185,7 @@ export const EbpUtils = {
         break;
       case 'radar':
         description = 'radar';
+    
         break;
     }
 

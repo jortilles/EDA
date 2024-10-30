@@ -456,7 +456,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const ticksOptions = {
             xTicksLimit: 5,
-            yTicksLimit: 2,
+            yTicksLimit: 0,
             maxRotation: 1,
             minRotation: 1
         };

@@ -527,11 +527,18 @@
                                 <ng-template let-chart pTemplate="item">
                                     <div class="d-flex align-items-center" style="position: relative;height: 25px;"
                                         [attr.title]="chart.tooManyData ? getTooManyDataDescription() : (chart.ngIf) ? getOptionDescription(chart.subValue) : '' ">
-                                        <span class="material-icons"
-                                            [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
-                                            {{getOptionIcon(chart.subValue)}}
-                                        </span>
-
+                                        
+                                        <ng-container *ngIf="!getOptionIcon(chart.subValue).startsWith('fa')">
+                                            <span class="material-icons"
+                                                [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
+                                                {{getOptionIcon(chart.subValue)}}
+                                            </span>
+                                        </ng-container>
+                                        <ng-container *ngIf="getOptionIcon(chart.subValue).startsWith('fa')">
+                                            <i class="fa {{getOptionIcon(chart.subValue)}}"
+                                                [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
+                                            </i>
+                                        </ng-container>
 
                                         <span class="ml-2 "
                                             [ngClass]="{'texto-rallado-alert': chart.ngIf  || chart.tooManyData}">

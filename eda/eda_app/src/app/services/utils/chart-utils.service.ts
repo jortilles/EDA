@@ -653,17 +653,17 @@ export class ChartUtilsService {
         if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1) {
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpiarea',), 1);
         }
         // barchart i horizontalbar  poden ser grafics normals o poden ser histograms....
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
             || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4  /* && aggregation */) {
                 notAllowed.splice(notAllowed.indexOf('bar'), 1);
-                notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
                 notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
                 notAllowed.splice(notAllowed.indexOf('line'), 1);
-                notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
                 notAllowed.splice(notAllowed.indexOf('area'), 1);
-                notAllowed.splice(notAllowed.indexOf('kpiarea',), 1);
                 notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
                 notAllowed.splice(notAllowed.indexOf('stackedbar100'), 1);
             }
@@ -1192,10 +1192,10 @@ export class ChartUtilsService {
             }
         };
 
-        const maxTicksLimit = ticksOptions.xTicksLimit ? ticksOptions.xTicksLimit : (size.width < 200 ? 5 + variador : size.width < 400 ? 12 + variador : size.width < 600 ? 25 + variador : 40 + variador);
+        const maxTicksLimit = ticksOptions.xTicksLimit !== null ? ticksOptions.xTicksLimit : (size.width < 200 ? 5 + variador : size.width < 400 ? 12 + variador : size.width < 600 ? 25 + variador : 40 + variador);
         const maxTicksLimitHorizontal = size.height < 200 ? 5 + variador : size.height < 400 ? 12 + variador : size.height < 600 ? 25 + variador : 40 + variador;
-        const maxTicksLimitY = ticksOptions.yTicksLimit ? ticksOptions.yTicksLimit : (size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 4 :  size.height < 250 ? 5 :  size.height < 300 ? 6 :  size.height < 350 ? 8: 10);
-
+        const maxTicksLimitY = ticksOptions.yTicksLimit !== null ? ticksOptions.yTicksLimit : (size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 4 :  size.height < 250 ? 5 :  size.height < 300 ? 6 :  size.height < 350 ? 8: 10);
+        
         /** Defineixo les propietats en funció del tipus de gràfic. */
         let dataLabelsObjt={}
         switch (type) {
@@ -1400,7 +1400,7 @@ export class ChartUtilsService {
                                 grid: {
                                     drawBorder: false,
                                 },
-                                display: true,
+                                display: maxTicksLimitY !== 0,
                                 beginAtZero: true,
                                 grace: (showLabels || showLabelsPercent )?'1%': '0%',
                                 ticks: {
@@ -1926,12 +1926,12 @@ export class ChartUtilsService {
                             }
                         },
                         y: {
+                            display: maxTicksLimitY !== 0,
                             grid: {
                                 drawBorder: false,
                                 display: true,
                                 zeroLineWidth: 1
-                            }
-                            ,
+                            },
                             id: 'y-axis-0', position: 'left',
                             beginAtZero: true,
                             ticks: {
