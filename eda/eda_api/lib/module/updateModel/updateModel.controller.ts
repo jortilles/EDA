@@ -101,14 +101,14 @@ export class updateModel {
                             where bridge_table   != ''  `).then(async rows => {
                             let relations = rows;
                             //seleccionamos usuarios
-                            await connection.query('SELECT name as name, user_name as email, password as password, active as active FROM  sda_def_users;')
+                            await connection.query('SELECT name as name, user_name as email, password as password, active as active FROM  sda_def_users WHERE password IS NOT NULL ;')
                                 .then(async users => {
                                     let users_crm = users
                                     //seleccionamos roles de EDA
                                     await connection.query('select "EDA_USER_ROLE" as role, b.name, "" as user_name  from sda_def_groups b union select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g; ')
                                         .then(async role => {
                                             let roles = role;
-                                            await connection.query('  select distinct  a.user_name as name, a.`table`,  "id" as  `column`,  a.`group` from  sda_def_permissions a left join sda_def_security_group_records b on a.`table`  = b.`table` and a.`group`  = b.`group` where a.`group` != ""  ; ' )
+                                            await connection.query('  select distinct  a.user_name as name, a.`table`,  "id" as  `column`,  a.`group` from  sda_def_permissions a where a.`group` != ""  ; ' )
                                                 .then(async granted => {
                                                     let fullTablePermissionsForRoles = granted;
                                                     //seleccionamos enumeraciones
