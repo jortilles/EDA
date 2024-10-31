@@ -1384,6 +1384,7 @@ export class ChartUtilsService {
                                 ticks: {
                                     maxRotation: ticksOptions.maxRotation || 45,
                                     minRotation: ticksOptions.minRotation || 45,
+                                    labelOffset:  ticksOptions.labelOffset || 0, 
                                     maxTicksLimit: maxTicksLimit,
                                     fontSize: edaFontSize,
                                     fontStyle: edafontStyle,
@@ -1510,7 +1511,8 @@ export class ChartUtilsService {
                                         if (this.getLabelForValue(val))
                                         return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
                                     },
-                                    fontSize: edaFontSize, fontStyle: edafontStyle,
+                                    fontSize: edaFontSize, 
+                                    fontStyle: edafontStyle,
                                     fontFamily: styles.fontFamily,
                                     fontColor: styles.fontColor,
                                     maxTicksLimit: maxTicksLimit,
@@ -1912,6 +1914,7 @@ export class ChartUtilsService {
                             ticks: {
                                 maxRotation: ticksOptions.maxRotation || 30,
                                 minRotation: ticksOptions.minRotation || 30,
+                                labelOffset:  ticksOptions.labelOffset || 0, 
                                 maxTicksLimit: maxTicksLimit,
                                 callback: function(val, index) {
                                     if (this.getLabelForValue(val))
@@ -1922,6 +1925,8 @@ export class ChartUtilsService {
                                 fontStyle: edafontStyle,
                                 fontFamily: styles.fontFamily,
                                 fontColor: styles.fontColor,
+                                includeBounds:true,
+                                padding: ticksOptions.padding ||0,
                                 beginAtZero: true
                             }
                         },

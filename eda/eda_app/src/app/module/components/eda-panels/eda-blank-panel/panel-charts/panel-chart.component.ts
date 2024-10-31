@@ -453,12 +453,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const dimensions = this.getDimensions();
         dimensions.height = !dimensions.width ? 255 : dimensions.height;
         dimensions.width = !dimensions.width ? 1300 : dimensions.width;
-
+ 
         const ticksOptions = {
-            xTicksLimit: 5,
+            xTicksLimit: 3,
             yTicksLimit: 0,
             maxRotation: 1,
-            minRotation: 1
+            minRotation: 1,
+            labelOffset: 40,
+            padding: -2
         };
         const chartOptions = this.chartUtils.initChartOptions(
             chartType, dataDescription.numericColumns[0]?.name,

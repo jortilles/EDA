@@ -4103,6 +4103,24 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>ELIMINAR INFORME</source>
     <target>USUŃ RAPORT</target>
   </trans-unit> 
+
+    </trans-unit> 
+
+        <trans-unit id="chartTypesKPIBAR">
+        <source>KPI + Gráfico de Barras</source>
+        <target>KPI + Wykres słupkowy</target>
+      </trans-unit>
+      
+      <trans-unit id="chartTypesKPILINE">
+        <source>KPI + Gráfico de Lineas</source>
+        <target>KPI + Wykres liniowy</target>
+      </trans-unit>
+
+      <trans-unit id="chartTypesKPIAREA">
+        <source>KPI + Gráfico de Áreas</source>
+        <target>KPI + Wykres warstwowy</target>
+      </trans-unit>
+
   
 </body>
 </file>
