@@ -88,30 +88,29 @@ export class EdaKpiComponent implements OnInit {
 
         let resultSize: number = this.containerHeight / 2;
         let textLongitude = (this.inject.value + this.inject.sufix).length;
+        const ratio = (  this.containerHeight / this.containerWidth ) ;
 
-        const sufix = this.inject.sufix || ''
+        const sufix = this.inject.sufix || '';
 
-        if (sufix.length > 3) {
-            // Provoco saltos de linea en sufijos largos
-            textLongitude = this.inject.value.toString().length
-        }
+        textLongitude = this.inject.value.toString().length
 
+        // Comprobaciones
         let textWidth = textLongitude * resultSize;
-
-        if (textWidth > this.containerWidth) resultSize = (this.containerWidth / textLongitude) * 1.1;
-
-        if (resultSize > this.containerHeight) resultSize = this.containerHeight;
-
-        if (textLongitude * resultSize > this.containerWidth * 1.2) resultSize = resultSize / 1.5;
-
-        if (sufix.length > 3 && this.containerHeight < (resultSize * 4) && this.containerWidth < textWidth) {
+        // Redimensiono en funcion del ancho
+        if ( ( textWidth > this.containerWidth )  && ( sufix.length < 4 ) ) resultSize = (this.containerWidth / textLongitude) * 1.4;
+        // Redimensiono en función del alto
+        if (resultSize > this.containerHeight   && ratio < 0.4  ) resultSize = this.containerHeight;
+        // Última comprobación
+        if (textLongitude * resultSize > this.containerWidth * 1.2   && ratio < 0.4  )  resultSize = resultSize / 1.5;
+        // Si tengo un sufijo y es muy grande compruebo que no me pase
+        if (sufix.length > 4 && this.containerHeight < (resultSize * 4) && this.containerWidth < textWidth) {
             resultSize = resultSize / 1.8;
         }
-
-        if (this.inject.edaChart) {
-            resultSize = resultSize / 2.5;
+        // Si tengo ung gráfico lo hago más pequeño
+        if (this.showChart) {
+            resultSize = resultSize / 1.8;
         }
-        
+      
         return resultSize.toFixed().toString() + 'px';
     }
 
