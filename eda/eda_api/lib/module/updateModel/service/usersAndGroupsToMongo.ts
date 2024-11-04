@@ -59,8 +59,7 @@ export class userAndGroupsToMongo {
           console.log(
             'usuario ' +
             user.name +
-            ' repetido, no se ha introducido en la bbdd'
-          )
+            ' (Could not insert into the MongoDB database.)'          )
         }
       } else {
         await User.findOneAndUpdate({ name: users[i].name }, { password: users[i].password });

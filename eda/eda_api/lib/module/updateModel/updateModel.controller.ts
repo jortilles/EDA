@@ -119,7 +119,7 @@ export class updateModel {
                                                                 .then(async permi => {
                                                                     let fullTablePermissionsForUsers = permi
                                                                     //select distinct `table`, 'id' as 'column',  `group` from sda_def_security_group_records
-                                                                    await connection.query(" select distinct  user_name as name, `table`, 'id' as `column`,  `group` from sda_def_permissions  where `group` != ''  ")
+                                                                    await connection.query(" select distinct  user_name as name, `table`, 'id' as `column`,   group_concat( distinct `group`) as `group` from sda_def_permissions  where `group` != ''  group by 1,2,3  ")
                                                                         .then(async permiCol => {
                                                                             let dynamicPermisssionsForGroup = permiCol;
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
@@ -143,7 +143,7 @@ export class updateModel {
                                                                                   res.status(500).json({'status' : 'ko'})
                                                                                 }
     
-                                                                                console.log('Generando el modelo');
+                                                                                console.log('Generating model');
                                                                                 
                                                                                 try {
                                                                                 modelToExport = updateModel.createModel(tables, columns, relations, grantedRolesAt, ennumeration, res);
@@ -167,7 +167,6 @@ export class updateModel {
                 })
 
         } catch (e) {
-            //res.send(500)
             console.log('Error : ', e);
         }
         
@@ -188,10 +187,10 @@ export class updateModel {
                     columns = [...new Set(dataset.map(item => tabla === item.tabla ? item.column : null))].filter(item => item != null);
                     const sql = ' select ' + columns.toString() + ' from ' + tabla + ' limit 1   \n'
                     let nexSql = sql.replace("select ,", "select ").replace(", from", " from ");
-                   // console.log(nexSql);
+                   
                     await con.query(nexSql).then((ress, errrr) => {
                         if (errrr) throw errrr;
-                        //console.log(ress);
+                   
                         console.count("Query resuelta satisfactoriamente" );
                     })
                 });
@@ -225,7 +224,7 @@ export class updateModel {
       // Los permisos determinan que tablas puedo ver.
       // destGrantedRoles.push(all);
         const usersFound = await User.find();
-        const mongoGroups = await  Group.find();
+        const mongoGroups = await  Group.find(); 
 
         fullTablePermissionsForRoles.forEach((line) => {
 
@@ -250,7 +249,7 @@ export class updateModel {
                     global: true,
                     permission: true,
                     type: "users",
-                }
+                   }
               }else{
                   gr = {
                     groups: [mongoId],
@@ -261,34 +260,14 @@ export class updateModel {
                     global: true,
                     permission: true,
                     type: "groups"
-                }
-            }
+                    }
+              }
 
 
 
                 destGrantedRoles.push(gr);
-
             }
-        })
-
-        // crmTables.forEach(async (line) => {
-        //   if(  line.table.toString().indexOf('sda_l')< 0  && line.table.toString().indexOf('__')< 0    ) {
-        //     // las tablas de soporte no hace falta ponerlas porque luego se ignoran en los permisos.
-        //     // Así generarmos un modelo más ligero.
-        //     gr2 = {
-        //         groups: ["135792467811111111111110"],
-        //         groupsName: ["EDA_ADMIN"],
-        //         none: false,
-        //         table: line.table,
-        //         column: "fullTable",
-        //         global: true,
-        //         permission: true,
-        //         type: "groups"   
-        //     }
-        //         destGrantedRoles.push(gr2);
-        //   }
-        // })
-
+        });
 
 
 
@@ -306,25 +285,20 @@ export class updateModel {
                     permission: true,
                     type: "users"
                 }
+                destGrantedRoles.push(gr3);
             }
-            destGrantedRoles.push(gr3)
-
         })
-
-
-
 
         dynamicPermisssionsForGroup.forEach(line => {
 
-            const match = mongoGroups.filter(i => { return i.name === line.group })
+            const match = mongoGroups.filter(i => { return i.name === line.group.split(',')[0] })
             let mongoId: String;
             if (match.length == 1 && line.group !== undefined) {
                 mongoId = match[0]._id.toString();
                 let group_name: String = " '" + line.group + "' "
                 let table_name: String = " '" + line.table + "' "
                 let valueAt: String = "select record_id from sda_def_security_group_records" +
-                    " where `group` = " + group_name + ' and `table` = ' + table_name ;
-
+                    " where `group` in  ( " + group_name.split(',').join('\',\'')    + ") and `table` = " + table_name ;
                 if( line.name != null ){
                       // Si es un grupo convertido en usuario
                       const found = usersFound.find(i => i.email == line.name)
@@ -353,21 +327,17 @@ export class updateModel {
                       value: [valueAt]
                     }
                 }
-
+                
                 destGrantedRoles.push(gr4)
-
             }
+        });
 
-        })
 
         dynamicPermisssionsForUser.forEach(line => {
-
           const found = usersFound.find(i => i.email == line.name)
-
             if (found) {
               let valueAt: String = "select `"+ line.columna + "` from " + line.tabla + 
                   " where `"+ line.columna + "` = 'EDA_USER' " ;
-
               gr5 = {
                   users: [found._id],
                   usersName: [line.name],
@@ -380,10 +350,9 @@ export class updateModel {
                   type: "users",
                   value: [valueAt]
               }
-
               destGrantedRoles.push(gr5);
             }
-        })
+        });
 
         return destGrantedRoles;
     }
@@ -405,7 +374,6 @@ export class updateModel {
             visible = false
           }
     
-          //console.log(  res[i].table ); 
           var tabla = {
             table_name: tables[i].table,
             columns: [],
@@ -545,7 +513,6 @@ export class updateModel {
       /** genera las relaciones de una tabla */
       static getRelations(table: string, relations: any) {
 
-        //  console.log('Generating relations for table:  ' + table);
         const destRelations = [];
     
         for (let i = 0; i < relations.length; i++) {
