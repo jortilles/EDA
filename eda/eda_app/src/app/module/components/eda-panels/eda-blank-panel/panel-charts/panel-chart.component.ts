@@ -388,6 +388,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const chartConfig: any = {};
         chartConfig.value = this.props.data.values[0][0];
         chartConfig.header = this.props.query[0]?.display_name?.default;
+        chartConfig.showChart = false;
 
         const config: any = this.props.config;
         const alertLimits = config?.config?.alertLimits || [];
@@ -469,6 +470,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         );
         // let chartConfig: any = {};
         chartConfig.edaChart = {}
+        chartConfig.showChart = true;
         chartConfig.edaChart.edaChart = chartSubType;
         chartConfig.edaChart.chartType = chartType;
         chartConfig.edaChart.chartLabels = chartData[0];

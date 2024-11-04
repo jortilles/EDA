@@ -22,7 +22,7 @@ export class EdaKpiComponent implements OnInit {
     containerHeight: number = 20;
     containerWidth: number = 20;
 
-    public showChart: boolean = true;
+    showChart: boolean = true;
 
     constructor() { }
 

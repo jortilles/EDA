@@ -8,4 +8,5 @@ export class EdaKpi {
     style: any;
     alertLimits : Array<{value:number, operand:string, color:string}>;
     edaChart: EdaChart;
+    showChart: boolean;
 }
