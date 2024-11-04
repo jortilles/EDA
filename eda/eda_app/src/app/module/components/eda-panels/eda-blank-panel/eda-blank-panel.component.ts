@@ -31,6 +31,7 @@ import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 import { ActivatedRoute } from '@angular/router';
 
 import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
+import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 
 export interface IPanelAction {
     code: string;
@@ -556,8 +557,6 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param layout chart layout.
      */
     private renderChart(query: any, chartLabels: any[], chartData: any[], type: string, subType: string, config: ChartConfig) {
-
-
         const chartConfig = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
 
         this.panelChartConfig = new PanelChart({
@@ -613,8 +612,9 @@ export class EdaBlankPanelComponent implements OnInit {
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
 
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
-            // this.panelChart.destroyComponent();
-            const _config = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
+            const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
+            _.merge(_config, config||{});
+            
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
 
@@ -1033,8 +1033,26 @@ export class EdaBlankPanelComponent implements OnInit {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config.alertLimits = response.alerts;
             this.panel.content.query.output.config.sufix = response.sufix;
-            const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+
+            let layout: any;
+            if (response.edaChart) {
+                this.panel.content.query.output.config.colors = response.edaChart.chartColors;
+                this.panel.content.query.output.config.chartType = response.chartType;
+                this.panel.content.query.output.config.chartSubType = response.chartSubType;
+
+                layout = new ChartJsConfig(
+                    response.edaChart.chartColors,
+                    response.edaChart.chartType,
+                    response.edaChart.addTrend,
+                    response.edaChart.addComparative,
+                    response.edaChart.showLabels,
+                    response.edaChart.showLabelsPercent,
+                    response.edaChart.numberOfColumns
+                );
+            }
+            
+            const config = new ChartConfig(new KpiConfig({ sufix: response.sufix, alertLimits: response.alerts, edaChart: layout }));
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, response.chartType, response.chartSubType, config);
             this.dashboardService._notSaved.next(true);
         }
         this.kpiController = undefined;

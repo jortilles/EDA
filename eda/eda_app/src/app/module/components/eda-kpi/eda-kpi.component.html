@@ -1,11 +1,32 @@
-<div class="text-center w-100 h-100 d-flex justify-content-center text-wrap"  #kpiContainer >
-    <div class="pointer" title="Añadir unidades" style="color: var(--panel-font-color); font-family: var(--panel-font-family);" #sufixContainer>
+
+
+<ng-container *ngIf="!inject.showChart">
+    <div #kpiContainer class="w-100 h-100 d-flex justify-content-center text-center text-wrap" >
+        <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="inject.showChart">
+    <div  #kpiContainer class="w-100 h-100">    
+        <div class="w-100 d-flex flex-column justify-content-center text-center text-wrap" style="height: auto;">
+            <ng-container *ngTemplateOutlet="kpiValueContainer;"></ng-container>
+        </div>
+        <div  style="height: 60%; max-height: 320px; max-width: 1300px;">
+            <!-- {{inject.edaChart?.chartOptions | json}} -->
+            <eda-chart #EdaChart [inject]="inject.edaChart"></eda-chart>
+        </div>
+    </div>
+</ng-container>
+
+<ng-template #kpiValueContainer>
+    <div #sufixContainer class="pointer" title="Añadir unidades" style="color: var(--panel-font-color); font-family: var(--panel-font-family);" >
         <div [ngStyle]="getStyle()" (click)="setSufix()">
             {{inject.value | number:'1.0-10':'es' }} {{inject.sufix}}
         </div>
+
         <div *ngIf="!!sufixClick" class="ui-inputgroup w-100">
-            <input type="text" class="w-100" pInputText (focusout)="setSufix()" (keydown.enter)="setSufix()"
-                name=unidades [(ngModel)]="inject.sufix" autofocusOnShow>
+            <input type="text" pInputText class="w-100" [(ngModel)]="inject.sufix" (focusout)="setSufix()" (keydown.enter)="setSufix()" name="unidades" autofocusOnShow>
         </div>
     </div>
-</div>
+</ng-template>
+

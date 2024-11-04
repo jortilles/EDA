@@ -41,7 +41,11 @@ export const PanelOptions = {
 
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.chartController = new EdaDialogController({
-              params: { panelId: _.get(panelComponent.panel, 'id'), chart: panelComponent.graficos, config: panelComponent.panelChartConfig },
+              params: {
+                panelId: _.get(panelComponent.panel, 'id'), 
+                chart: panelComponent.graficos,
+                config: panelComponent.panelChartConfig
+            },
               close: (event, response) => panelComponent.onCloseChartProperties(event, response)
             });
 
@@ -67,14 +71,14 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onCloseMapProperties(event, response) }
             });
 
-          } else if (panelComponent.graficos.chartType === 'kpi') {
-
+          } else if (panelComponent.graficos.chartType.includes('kpi')) {
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.kpiController = new EdaDialogController({
               params: {
                 panelID: _.get(panelComponent.panel, 'id'),
                 panelChart: panelComponent.panelChartConfig,
-                alertLimits: panelComponent.panelChart.componentRef.instance.alertLimits
+                alertLimits: panelComponent.panelChart.componentRef.instance.alertLimits || [],
+                edaChart: panelComponent.panelChart.componentRef.instance.edaChartComponent?.inject
               },
               close: (event, response) => { panelComponent.onCloseKpiProperties(event, response) }
             });
@@ -248,16 +252,29 @@ export const PanelOptions = {
     panelComponent.contextMenu.hideContextMenu();
 },
   generateMenu : (panelComponent : EdaBlankPanelComponent ) => {
-
     const menu = [];
     const editmode = panelComponent.getEditMode();
     const type = panelComponent.getChartType();
-    if(editmode) menu.push(PanelOptions.editQuery(panelComponent));
+    
+    if (editmode) {
+        menu.push(PanelOptions.editQuery(panelComponent));
+    }
+
     menu.push(PanelOptions.editChart(panelComponent));
-    if(editmode && ![ "crosstable", "kpi", "dynamicText"].includes(type) ) {menu.push(PanelOptions.linkPanel(panelComponent)); }
+    
+    if (editmode && type) {
+        if (![ "crosstable", "kpi", "dynamicText"].includes(type) && !type.includes('kpi')) {
+            menu.push(PanelOptions.linkPanel(panelComponent)); 
+        }
+    }
+
     menu.push(PanelOptions.exportExcel(panelComponent));
     menu.push(PanelOptions.duplicatePanel(panelComponent));
-    if(editmode) menu.push(PanelOptions.deletePanel(panelComponent));
+
+
+    if (editmode) {
+        menu.push(PanelOptions.deletePanel(panelComponent));
+    }
 
     return menu;
   }

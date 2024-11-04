@@ -4200,6 +4200,24 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <source>Archivo incorrecto, verifique que el formato del archivo sea json o geojson.</source>
   <target>Zły plik. Sprawdź, czy format pliku to json lub geojson.</target>
   </trans-unit>
+
+    </trans-unit> 
+
+        <trans-unit id="chartTypesKPIBAR">
+        <source>KPI + Gráfico de Barras</source>
+        <target>KPI + Wykres słupkowy</target>
+      </trans-unit>
+      
+      <trans-unit id="chartTypesKPILINE">
+        <source>KPI + Gráfico de Lineas</source>
+        <target>KPI + Wykres liniowy</target>
+      </trans-unit>
+
+      <trans-unit id="chartTypesKPIAREA">
+        <source>KPI + Gráfico de Áreas</source>
+        <target>KPI + Wykres warstwowy</target>
+      </trans-unit>
+
   
 </body>
 </file>

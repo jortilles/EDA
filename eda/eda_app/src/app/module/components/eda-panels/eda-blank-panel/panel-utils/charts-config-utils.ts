@@ -38,12 +38,22 @@ export const ChartsConfigUtils = {
         negativeNumbers: ebp.panelChart.componentRef.instance.inject.negativeNumbers
       }
 
-    } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpi') {
+    } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType.includes('kpi')) {
+        const kpiChart = ebp.panelChart.componentRef.instance.inject.edaChart;
 
-      config = {
-        sufix: ebp.panelChart.componentRef.instance.inject.sufix,
-        alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits
-      }
+        config = {
+            sufix: ebp.panelChart.componentRef.instance.inject.sufix,
+            alertLimits: ebp.panelChart.componentRef.instance.inject.alertLimits,
+            edaChart: {}
+        }
+
+        if (kpiChart.edaChart) {
+            config.edaChart.colors = kpiChart.chartColors;
+            config.edaChart.chartType = ebp.panelChart.props.chartType;
+
+            // colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
+            // chartType: ebp.panelChart.props.chartType, 
+        }
 
     }else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
       config = {
@@ -84,52 +94,47 @@ export const ChartsConfigUtils = {
 
   },
 
-  /**
-  * Returns a configuration object for this type
-  * @param type chart type
-  */
-  setVoidChartConfig: (type: string) => {
+    /**
+    * Returns a configuration object for this type
+    * @param type chart type
+    */
+    setVoidChartConfig: (type: string) => {
+        if (['table', 'crosstable'].includes(type)) {
 
-    if (['table', 'crosstable'].includes(type)) {
+          return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, false);
 
       return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, false);
 
-    }
-    else if (['bar', 'line','area', 'pie', 'doughnut','polarArea', 'barline', 'horizontalBar', 'pyramid', 'histogram', 'radar' ].includes(type)) {
+            return new ChartJsConfig(null, type, false, false, false, false, null);
 
-      return new ChartJsConfig(null, type, false, false,false,false,null);
+        } else if (type === 'parallelSets') {
 
-    } else if (type === 'parallelSets') {
+            return new SankeyConfig([]);
 
-      return new SankeyConfig([]);
+        } else if (type === 'treeMap') {
 
-    } else if (type === 'treeMap') {
+            return new TreeMapConfig([]);
 
-      return new TreeMapConfig([]);
-
-    } else if (type === 'scatterPlot') {
-      return new ScatterConfig([]);
-    }
-    else if (type === 'funnel') {
-      return new FunnelConfig([]);
-    }
-    else if (type === 'bubblechart') {
-      return new BubblechartConfig([]);
-    }
-    else if (type === 'knob') {
-
-      return new KnobConfig(null, null);
-    }
-    else if (type === 'sunburst') {
-      return new SunburstConfig([]);
-    }
-    else if (type === 'kpi'){
-      return new KpiConfig('', []);
-    }
-    else if (type === 'dynamicText'){
-      return new DynamicTextConfig(null);
-    }
-  },
+        } else if (type === 'scatterPlot') {
+            return new ScatterConfig([]);
+        } else if (type === 'funnel') {
+            return new FunnelConfig([]);
+        } else if (type === 'bubblechart') {
+            return new BubblechartConfig([]);
+        } else if (type === 'knob') {
+            return new KnobConfig(null, null);
+        } else if (type === 'sunburst') {
+            return new SunburstConfig([]);
+        } else if (type === 'kpi') {
+            return new KpiConfig();
+        } else if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {
+            return new KpiConfig({
+                edaChart:  new ChartJsConfig(null, type, false, false, false, false, null)
+            });
+        } else if (type === 'dynamicText') {
+            return new DynamicTextConfig(null);
+        }
+    },
 
   recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | KnobConfig | FunnelConfig | BubblechartConfig |SunburstConfig) => {
 
