@@ -58,6 +58,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public componentRef: any;
     public currentConfig: any;
     public NO_DATA: boolean;
+    public NO_DATA_ALLOWED: boolean;
+    public NO_FILTER_ALLOWED: boolean;
 
     /**Styles */
     public fontColor: string;
@@ -95,6 +97,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     ngOnInit(): void {
         this.NO_DATA = false;
+        this.NO_DATA_ALLOWED = false;
+        this.NO_FILTER_ALLOWED = false;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -119,6 +123,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.destroyComponent();
             setTimeout(_ => {
                 this.NO_DATA = true;
+                if( this.props.data?.labels[0]== "noDataAllowed") {
+                    this.NO_DATA = false;    
+                    this.NO_DATA_ALLOWED = true;   
+                    this.NO_FILTER_ALLOWED = false; 
+                }else if( this.props.data?.labels[0]== "noFilterAllowed") {
+                    this.NO_DATA = false;    
+                    this.NO_DATA_ALLOWED = false;    
+                    this.NO_FILTER_ALLOWED = true;
+                }
             })
 
         }
@@ -358,6 +371,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.sortedSerie = config.sortedSerie;
         this.componentRef.instance.inject.sortedColumn = config.sortedColumn;
         this.componentRef.instance.inject.noRepetitions = config.noRepetitions;
+        this.componentRef.instance.inject.ordering = config.ordering;
         this.componentRef.instance.inject.negativeNumbers = config.negativeNumbers;
         this.configUpdated.emit();
     }

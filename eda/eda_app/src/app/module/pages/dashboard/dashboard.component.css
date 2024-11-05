@@ -78,13 +78,13 @@ app-dashboard {
     background-color: white;
 }
 .ui-button-unselected {
- 
+
     color: #adc8d1;
     border: 1px solid #adc8d1;
     background-color: white;
 }
 .ui-button-unvaliable {
-  
+
     color: #bd1913;
     border: 1px solid #bd1913;
     background-color: white;
@@ -129,7 +129,7 @@ app-dashboard {
     color: #bd1913;
     background-color: white;
     box-shadow: 0 0 0 1px #bd1913;
-    
+
 }
 
 .block-options-bg {
@@ -226,13 +226,13 @@ app-dashboard {
 }
 
 
-#myDashboard >>> .p-card .p-card-body {
+#myDashboard > .p-card .p-card-body {
     padding: 0.6em;
     background-color: var(--panel-color);
   }
 
 
-.customMultiselect >>> ::-webkit-scrollbar {
+.customMultiselect > ::-webkit-scrollbar {
         width: 10px;
         height: 9px;
     }
@@ -257,7 +257,7 @@ display:table;
 margin-left:1px !important;
 }
 .filterDialogTitles{
-    font-size: medium; 
+    font-size: medium;
     font-weight: bold;
     margin-bottom: 10px;
 }
@@ -267,7 +267,7 @@ margin-left:1px !important;
 }
 
 
-  
+
 .disabled-div {
     position: absolute;
     top: 0;

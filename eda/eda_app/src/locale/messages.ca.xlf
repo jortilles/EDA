@@ -4305,4 +4305,50 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   
 </body>
 </file>
+      <trans-unit id="filters13">
+        <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
+        <target>VALORS NO NULS NI BUITS (not null and != '')</target>
+      </trans-unit>
+      <trans-unit id="filters14">
+        <source>VALORES NULOS O VACÍOS (null or = '')</source>
+        <target>VALORS NULS O BUITS (null or = '')</target>
+      </trans-unit>
+      <trans-unit id="aliasValuePh">
+        <source>Alias del filtro (opcional)</source>
+        <target>Alias del filtre (opcional)</target>
+      </trans-unit>
+      <trans-unit id="noDataAllowed">
+        <source>Este panel no está disponible por falta de permisos</source>
+        <target>Aquest panell no està disponible per manca de permisos</target>
+      </trans-unit>
+      <trans-unit id="noFilterAllowed">
+        <source>Este panel no está disponible por falta de permisos en un filtro</source>
+        <target>Aquest panell no està disponible per manca de permisos en un filtre</target>
+      </trans-unit>
+      <trans-unit id="DatePickerYearPreviousYearFull">
+        <source>El año pasado, completo</source>
+        <target>L'any passat, complet</target>
+      </trans-unit>
+      <trans-unit id="aplicarBtn">
+        <source>Aplicar</source>
+        <target>Aplicar</target>
+      </trans-unit>
+      <trans-unit id="disenoTablaCruzada">
+        <source>Diseño de la tabla cruzada: </source>
+        <target>Disseny de la taula creuada: </target>
+      </trans-unit>
+      <trans-unit id="messageItemX">
+        <source>Arrastre aquí los campos para el eje vertical de la tabla cruzada</source>
+        <target>Arrossegueu aquí els camps per a l'eix vertical de la taula creuada</target>
+      </trans-unit>
+      <trans-unit id="messageItemY">
+        <source>Arrastre aquí los campos para el eje horizontal de la tabla cruzada</source>
+        <target>Arrossegueu aquí els camps per a l'eix horitzontal de la taula creuada</target>
+      </trans-unit>
+      <trans-unit id="messageItemZ">
+        <source>Arrastre aquí solo los campos numéricos (num) de la tabla cruzada (La suma es la agregación por defecto)</source>
+        <target>Arrossegueu aquí només els camps numèrics (num) de la taula creuada (La suma és l'agregació per defecte)</target>
+      </trans-unit>
+    </body>
+  </file>
 </xliff>

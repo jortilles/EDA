@@ -22,9 +22,11 @@
             </span>
             
             
-            <ng-container [ngSwitch]="getFilterType(filter)">
+            <ng-container 
+            *ngIf="isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)" 
+            [ngSwitch]="getFilterType(filter)" >
                 <div *ngSwitchCase="'date'">
-                    <eda-date-picker *ngIf="(isAdmin || isDashboardCreator || filter.visible === 'public')"
+                    <eda-date-picker 
                         [autoClear]="true"
                         [inject]="datePickerConfigs[filter.id]"
                         (onRemove)="removeGlobalFilter(filter, true)"
@@ -42,7 +44,7 @@
                 </div>
                 <div *ngSwitchDefault>
                     <!-- {{ filter | json }} -->
-                    <p-multiSelect *ngIf="filter.data"
+                    <p-multiSelect *ngIf="filter.data && (isAdmin || isDashboardCreator || filter.visible === 'public' || filter.visible === 'readOnly' ) "
                         [options]="filter.data"
                         [(ngModel)]="filter.selectedItems"
                         [maxSelectedLabels]="3"
