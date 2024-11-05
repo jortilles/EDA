@@ -646,7 +646,6 @@ export class EdaBlankPanelComponent implements OnInit {
         
         if(subType === 'crosstable'){
 
-
             if(this.isNewAxes){
                 this.axes = this.initAxes(this.currentQuery);
                 configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
@@ -656,11 +655,11 @@ export class EdaBlankPanelComponent implements OnInit {
             if( (((config===null) || config['config']['ordering'] === undefined)) ) {
                 this.axes = this.initAxes(this.currentQuery);
                 configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
-            }
-            
-            if(config!==null && config['config']['ordering'].length !==0) {
-                this.axes = config['config']['ordering'][0]['axes']
-                configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
+            } else{
+                if(config!==null && config['config']['ordering'].length !==0) {
+                    this.axes = config['config']['ordering'][0]['axes']
+                    configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
+                }
             }
         }
 
