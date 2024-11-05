@@ -292,8 +292,9 @@ export const PanelInteractionUtils = {
                 c.column_name === contentColumn.column_name &&
                 c.display_name.default === contentColumn.display_name
             );
-            column.format = contentColumn.format; // Agregando el Formato
+            
             if (column) {
+                column.format = contentColumn.hasOwnProperty("format")?contentColumn.format:null ; // Agregando el Formato
                 column.whatif_column = contentColumn.whatif_column || false;
                 column.whatif = contentColumn.whatif || {};
                 column.joins = contentColumn.joins || [];
@@ -324,6 +325,7 @@ export const PanelInteractionUtils = {
                         duplicatedColumn.display_name.default = contentColumn.display_name;
                         duplicatedColumn.whatif_column = contentColumn.whatif_column || false;
                         duplicatedColumn.whatif = contentColumn.whatif || {};
+                        duplicatedColumn.format = contentColumn.hasOwnProperty("format")?contentColumn.format:null ; // Agregando el Formato
                         PanelInteractionUtils.handleAggregationType4DuplicatedColumns(ebp, duplicatedColumn);
                         // Moc la columna directament perque es una duplicada.... o no....
                         ebp.currentQuery.push(duplicatedColumn);

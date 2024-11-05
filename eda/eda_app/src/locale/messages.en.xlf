@@ -4267,8 +4267,6 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>KPI + Area chart</target>
       </trans-unit>
 
-</body>
-</file>
       <trans-unit id="filters13">
         <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
         <target>VALUES NOR NULL NOR EMPTY (not null and != '')</target>

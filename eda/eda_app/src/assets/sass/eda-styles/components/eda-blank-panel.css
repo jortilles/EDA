@@ -195,7 +195,7 @@ body .ui-accordion .ui-accordion-header a {
 .select-list {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    /*SDA CUSTOM*/ flex-wrap: nowrap;
     padding: 2px;
     /* border: solid 1px #ccc; */
     border-radius: 4px;
@@ -204,6 +204,7 @@ body .ui-accordion .ui-accordion-header a {
    /*  overflow: visible; */
     overflow-wrap: anywhere;
     margin-top: 0.5em;
+    /*SDA CUSTOM*/overflow-x:scroll;
 }
 
 .filter-list {
@@ -301,7 +302,7 @@ body .ui-accordion .ui-accordion-header a {
 
     cursor: pointer;
     z-index: 99999 !important;
-    max-width: 27%;
+    /*SDA CUSTOM*/ /* max-width: 27%; */
 }
 
 .select-box-overlay {

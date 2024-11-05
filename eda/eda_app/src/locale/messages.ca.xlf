@@ -4302,9 +4302,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
     <source>Agregar url</source>
     <target>Afegir url</target>
   </trans-unit> 
-  
-</body>
-</file>
+
       <trans-unit id="filters13">
         <source>VALORES NO NULOS NI VACÍOS (not null and != '')</source>
         <target>VALORS NO NULS NI BUITS (not null and != '')</target>
