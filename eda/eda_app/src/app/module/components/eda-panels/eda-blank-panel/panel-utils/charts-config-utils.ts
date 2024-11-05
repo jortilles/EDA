@@ -35,7 +35,8 @@ export const ChartsConfigUtils = {
         sortedColumn: ebp.panelChart.componentRef.instance.inject.sortedColumn,
         styles : ebp.panelChart.componentRef.instance.inject.styles,
         noRepetitions: ebp.panelChart.componentRef.instance.inject.noRepetitions,
-        negativeNumbers: ebp.panelChart.componentRef.instance.inject.negativeNumbers
+        negativeNumbers: ebp.panelChart.componentRef.instance.inject.negativeNumbers,
+        ordering: ebp.panelChart.componentRef.instance.inject.ordering,
       }
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType.includes('kpi')) {
@@ -67,6 +68,7 @@ export const ChartsConfigUtils = {
         logarithmicScale : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
         legendPosition : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.legendPosition : null,
         color : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
+        draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
         
       }
     }else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
@@ -87,8 +89,9 @@ export const ChartsConfigUtils = {
           addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
           addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,
           showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false,
-          showLabelsPercent: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabelsPercent'] : false
-      };
+          showLabelsPercent: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabelsPercent'] : false,
+          numberOfColumns: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['numberOfColumns'] : null
+        };
   }
     return new ChartConfig(config);
 
@@ -101,11 +104,7 @@ export const ChartsConfigUtils = {
     setVoidChartConfig: (type: string) => {
         if (['table', 'crosstable'].includes(type)) {
 
-          return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, false);
-
-      return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, false);
-
-            return new ChartJsConfig(null, type, false, false, false, false, null);
+          return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, false ,  []);
 
         } else if (type === 'parallelSets') {
 

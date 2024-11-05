@@ -188,6 +188,17 @@ export class EdaBlankPanelComponent implements OnInit {
     
     public connectionProperties: any;
 
+
+    // for the drag-drop component
+    public axes:any[]=[]; 
+    public newAxesChanged: boolean = false;
+    public graphicType: string; // extraemos el tipo de gráfico al inicio y al ejecutar
+    public configCrossTable: any;
+    public isNewAxes: boolean = false;
+
+    // Ocultar el boton de ejecutar
+    public hiddenButtonExecuter: boolean = false;
+
     constructor(
         private route: ActivatedRoute,
         public queryBuilder: QueryBuilderService,
@@ -198,7 +209,7 @@ export class EdaBlankPanelComponent implements OnInit {
         public alertService: AlertService,
         public spinnerService: SpinnerService,
         public groupService: GroupService,
-        public userService: UserService
+        public userService: UserService,
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
@@ -259,6 +270,7 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
+
     }
 
     /**
@@ -449,13 +461,14 @@ export class EdaBlankPanelComponent implements OnInit {
         const modeSQL = panelContent.query.query.modeSQL;
         const queryMode = this.selectedQueryMode;
 
+        const currentQuery = panelContent.query.query.fields;
+
         if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
 
             try {
                 if (queryMode == 'EDA2') {
                     this.rootTable = this.tables.find((t) => t.table_name == this.rootTable);
                     // Assert Relation Tables
-                    const currentQuery = panelContent.query.query.fields;
                     for (const column of currentQuery) {
                         PanelInteractionUtils.assertTable(this, column);
                     }
@@ -489,6 +502,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
+
+        this.graphicType = this.chartForm.value.chart.value;// iniciamos el tipo de gráfico crossTable
     }
 
 
@@ -526,6 +541,8 @@ export class EdaBlankPanelComponent implements OnInit {
         //not saved alert message
         this.dashboardService._notSaved.next(true);
 
+        // Se mantiene en falso luego de guardar
+        this.hiddenButtonExecuter = false;
     }
 
     public initObjectQuery() {
@@ -603,6 +620,10 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
+
+        this.configCrossTable = config
+        
+        this.graphicType = type; // Actualizamos el tipo de variable para el componente drag-drop
         this.graficos = {};
         let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
         this.display_v.chart = type;
@@ -610,12 +631,36 @@ export class EdaBlankPanelComponent implements OnInit {
         this.graficos.edaChart = subType;
         this.graficos.addTrend = config && config.getConfig() ? config.getConfig()['addTrend'] : false;
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
-
+        
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             _.merge(_config, config||{});
             
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
+        }
+
+        // Controlar si se ejecuta una tabla cruzada
+        // Se verifica si la longitud de la variable axes
+
+        const configCrossTable = this.panelChartConfig.config.getConfig()
+        
+        if(subType === 'crosstable'){
+
+            if(this.isNewAxes){
+                this.axes = this.initAxes(this.currentQuery);
+                configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
+                this.isNewAxes = false;
+            }
+
+            if( (((config===null) || config['config']['ordering'] === undefined)) ) {
+                this.axes = this.initAxes(this.currentQuery);
+                configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
+            } else{
+                if(config!==null && config['config']['ordering'].length !==0) {
+                    this.axes = config['config']['ordering'][0]['axes']
+                    configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
+                }
+            }
         }
 
     }
@@ -874,6 +919,9 @@ export class EdaBlankPanelComponent implements OnInit {
         this.tablesToShow = this.tables;
         this.display_v.chart = '';
         this.display_v.page_dialog = false;
+
+        // Despues de cancelar, el valor regresa a falso
+        this.hiddenButtonExecuter = false
     }
 
     /**
@@ -913,11 +961,12 @@ export class EdaBlankPanelComponent implements OnInit {
         this.tableController = undefined;
     }
 
-    public onCloseMapProperties(event, response: { color: string, logarithmicScale: boolean, legendPosition: string }): void {
+    public onCloseMapProperties(event, response: { color: string, logarithmicScale: boolean, legendPosition: string, draggable: boolean }): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             this.panel.content.query.output.config.color = response.color;
             this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
             this.panel.content.query.output.config.legendPosition = response.legendPosition;
+            this.panel.content.query.output.config.draggable = response.draggable;
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
@@ -931,7 +980,6 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content.query.output.config.colors = response.colors;
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
             this.dashboardService._notSaved.next(true);
 
         }
@@ -970,6 +1018,7 @@ export class EdaBlankPanelComponent implements OnInit {
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
+
         }
         this.bubblechartController = undefined;
     }
@@ -984,6 +1033,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content.query.output.config.colors = response.colors;
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+
             this.dashboardService._notSaved.next(true);
 
         }
@@ -994,6 +1044,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content.query.output.config.colors = response.colors;
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+
             this.dashboardService._notSaved.next(true);
         }
         // Fa que desapareixi el dialeg
@@ -1022,6 +1073,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.currentQuery, this.chartLabels, this.chartData,
                 this.graficos.chartType, this.graficos.edaChart, ChartsConfigUtils.setConfig(this)
             );
+
 
             this.dashboardService._notSaved.next(true);
         }
@@ -1062,12 +1114,15 @@ export class EdaBlankPanelComponent implements OnInit {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) { 
             const config = new ChartConfig(response.color);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+
             this.dashboardService._notSaved.next(true);
         }
         this.dynamicTextController = undefined;
     }
 
     public handleTabChange(event: any): void {
+        this.hiddenButtonExecuter = !this.hiddenButtonExecuter;
+
         this.index = event.index;
         if (this.index === 1) {
             const content = this.panel.content;
@@ -1092,6 +1147,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 })
             }
         }
+
     }
 
     public onResize(event) {
@@ -1102,9 +1158,53 @@ export class EdaBlankPanelComponent implements OnInit {
     public runQueryFromDashboard = (globalFilters: boolean) => QueryUtils.runQuery(this, globalFilters);
 
     /**
+    * Función que inicializa el axes en su forma básica --> Tabla cruzada básica.
+    */
+    public initAxes(currenQuery) {
+
+        try {
+            
+            let itemX = currenQuery.map( (v: any) => {
+                return {
+                    column_name: v.column_name,
+                    column_type: v.column_type,
+                    description: v.display_name.default,
+                }
+            })
+    
+            let itemY = [];
+            for(let i = (itemX.length - 1); i >= 0; i--) {
+                if(itemX[i].column_type !== 'numeric' && itemY.length===0){
+                    itemY.push(itemX[i]);
+                    itemX.splice(i, 1)
+                }
+            }
+    
+            let itemZ = [];
+            for(let i = (itemX.length - 1); i >= 0; i--) {
+                if(itemX[i].column_type == 'numeric' && itemZ.length===0){
+                    itemZ.push(itemX[i]);
+                    itemX.splice(i, 1)
+                }
+            }
+
+            return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
+            
+        } catch (error) {
+            return []
+        }
+        
+    }
+
+    /**
     * Runs actual query when execute button is pressed to check for heavy queries
     */
-    public runManualQuery = () => QueryUtils.runManualQuery(this);
+    public runManualQuery = () => {
+        this.hiddenButtonExecuter = true;
+        // isNewAxes --> Verifica si la construcción del axes es nueva.
+        this.isNewAxes = true;
+        QueryUtils.runManualQuery(this)
+    };
 
     public moveItem = (column: any) => {
         PanelInteractionUtils.moveItem(this, column);
@@ -1256,7 +1356,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         const table = this.findTable(filter.filter_table.split('.')[0]);
 
-        if (table.table_name) {
+        if (table && table.table_name) {
             const tableName = table.display_name?.default;
             const columnName = table.columns.find((c) => c.column_name == filter.filter_column)?.display_name?.default;
 
@@ -1308,6 +1408,55 @@ export class EdaBlankPanelComponent implements OnInit {
         }
 
         return disable;
+    }
+
+    /**
+    * Funcion que reordena el arreglo currentQuery segun el nuevo valor de ordenamiento de la variable axes devuelta por el componete drag-drop
+    */
+    public newCurrentQuery(currenQuery, axes) {
+
+        let newCurrentQuery = []
+
+        axes[0].itemX.forEach(e => {
+            currenQuery.forEach(cq => {
+                if(e.description===cq.display_name.default) {
+                    newCurrentQuery.push(cq);
+                    return;
+                }
+            });
+        });
+        
+        axes[0].itemY.forEach(e => {
+            currenQuery.forEach(cq => {
+                if(e.description===cq.display_name.default) {
+                    newCurrentQuery.push(cq);
+                    return;
+                }
+            });
+        });
+        
+        axes[0].itemZ.forEach(e => {
+            currenQuery.forEach(cq => {
+                if(e.description===cq.display_name.default) {
+                    newCurrentQuery.push(cq);
+                    return;
+                }
+            });
+        });
+
+        return newCurrentQuery;
+
+    }
+
+    // Funcion que recibe la variable axes moficicada por el componente drag-drop
+    public newAxesOrdering(newAxes) {
+        this.axes = newAxes;
+        this.newAxesChanged = true; // Indica que se utilizara la tabla cruzada generica
+        this.isNewAxes = false;
+        const config = this.panelChartConfig.config.getConfig(); // Adquiera la configuración config
+        this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // Reordeno el currentQuery                
+        config['ordering'] = [{axes: newAxes}]; // Agrego el nuevo axes a la config
+        QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
     }
 
 }

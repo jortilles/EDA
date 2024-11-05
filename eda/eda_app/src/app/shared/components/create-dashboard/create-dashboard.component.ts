@@ -18,7 +18,7 @@ export class CreateDashboardComponent implements OnInit {
     public showGroups: boolean = false;
 
     @Output() close: EventEmitter<any> = new EventEmitter();
-    
+
     constructor(
         private formBuilder: FormBuilder,
         private alertService: AlertService,
