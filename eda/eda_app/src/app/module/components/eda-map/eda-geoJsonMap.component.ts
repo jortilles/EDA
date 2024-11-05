@@ -2,7 +2,7 @@ import { OnInit, Input, AfterViewChecked, SecurityContext } from '@angular/core'
 import { Component, AfterViewInit } from '@angular/core';
 import { MapUtilsService } from '@eda/services/service.index';
 import { EdaMap } from './eda-map';
-import { LatLngExpression } from 'leaflet';
+import { Draggable, LatLngExpression } from 'leaflet';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -42,10 +42,12 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   private serverMap: any = null;
   public color: string = '#006400';
   public logarithmicScale: boolean;
+  public draggable : boolean ;
   public BASE_COLOR: string = '#006400';
   public loading: boolean;
   public legendPosition: string;
   public boundaries: Array<any> = [];
+
 
   constructor(
     private mapUtilsService: MapUtilsService, private _sanitizer: DomSanitizer
@@ -62,8 +64,10 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     }
     this.color = this.inject.color ? this.inject.color : this.BASE_COLOR;
     this.logarithmicScale = this.inject.logarithmicScale ? this.inject.logarithmicScale : false;
+    this.draggable = this.inject.draggable === undefined ? true: this.inject.draggable  ;
     this.legendPosition = this.inject.legendPosition ? this.inject.legendPosition : 'bottomright';
     this.legend = new L.Control({ position: this.legendPosition });
+
   }
 
   ngAfterViewInit(): void {
@@ -140,8 +144,9 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
         minZoom: 0,
         center: this.getCenter(this.inject.data),
         zoom: this.inject.zoom ? this.inject.zoom : 0,
-        dragging: !L.Browser.mobile,
-        tap: !L.Browser.mobile
+        dragging: this.draggable,
+        tap: !L.Browser.mobile,
+        scrollWheelZoom: this.draggable
       });
       this.map.options.minZoom = this.setMinZoom();
       //tiles.addTo(this.map);
@@ -273,7 +278,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   private getColor = (groups: Array<number>, value: number, color: string) => {
     if (!value) return '#eef0f3';
     let group = [value, ...groups].sort((a, b) => a - b).indexOf(value);
-    let shade = group === 0 ? 80 : group === 1 ? 40 : group === 2 ? 0 : group = 3 ? -40 : -80;
+    let shade = group === 0 ? 80 : group === 1 ? 40 : group === 2 ? 0 : group == 3 ? -40 : -80;
     return this.colorShade(color, shade);
   }
 
@@ -317,6 +322,22 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.logarithmicScale = logarithmicScale;
     this.map.removeLayer(this.geoJson);
     this.setGroups();
+    this.initShapesLayer();
+    this.initLegend(this.groups, this.inject.labels[this.dataIndex], this.color);
+  }
+
+  public switchNoMouse(option : boolean) {
+
+    this.draggable = option;
+    this.map.options.dragging = this.draggable;
+    this.map.options.scrollWheelZoom = this.draggable;
+    if (this.draggable) {
+      this.map.dragging.enable();
+      this.map.scrollWheelZoom.enable();
+    } else{
+      this.map.dragging.disable();
+      this.map.scrollWheelZoom.disable();
+    }
     this.initShapesLayer();
     this.initLegend(this.groups, this.inject.labels[this.dataIndex], this.color);
   }

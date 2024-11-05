@@ -68,6 +68,7 @@ export const ChartsConfigUtils = {
         logarithmicScale : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
         legendPosition : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.legendPosition : null,
         color : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
+        draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
         
       }
     }else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {

@@ -9,6 +9,7 @@ export class EdaMap{
   color:string;
   legendPosition:string;
   logarithmicScale : boolean;
+  draggable : boolean;
   labels : Array<string>;
   maps : Array<Object>;
   query: Array<any>;

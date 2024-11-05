@@ -583,6 +583,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.labels = this.props.query.map(field => field.display_name.default);
         inject.maps = this.props.maps;
         inject.query = this.props.query;
+        inject.draggable = this.props.draggable;
         try{
             inject.coordinates = this.props.config['config']['coordinates'];
         }catch{
@@ -607,6 +608,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             inject.legendPosition = this.props.config['config']['legendPosition']  ;
         }catch{
             inject.legendPosition =  'bottomleft';
+        }
+        try{
+            inject.draggable = this.props.config['config']['draggable'];
+        }catch{
+            inject.draggable = true;
         }
         
         inject.linkedDashboard = this.props.linkedDashboardProps;
