@@ -69,13 +69,13 @@ then
         npm install
 fi
 
-if pgrep -x "node" > /dev/null
+if [ $(pm2 pid server)  -gt 0 ]
 then
         echo "node is running"
 else
         echo "start node"
         cd /eda/eda_api
-        npm run start:pm2 >/eda/eda_api/api.log 2>&1
+        npm run start:pm2  
 fi
 
 echo ""

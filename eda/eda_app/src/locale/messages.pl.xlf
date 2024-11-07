@@ -4252,7 +4252,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <source>Arrastre aquí solo los campos numéricos (num) de la tabla cruzada (La suma es la agregación por defecto)</source>
     <target>Przeciągnij tutaj tylko pola numeryczne (num) tabeli krzyżowej (domyślną agregacją jest Suma)</target>
   </trans-unit>
-      <trans-unit id="noMouseH6">
+  <trans-unit id="noMouseH6">
         <source>Activar funciones del mouse</source>
         <target>Aktywuj funkcje myszy</target>
       </trans-unit>   
