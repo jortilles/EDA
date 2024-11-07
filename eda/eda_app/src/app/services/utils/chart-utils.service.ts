@@ -1294,6 +1294,7 @@ export class ChartUtilsService {
                 break;
             case 'bar':
                 if (!['horizontalBar', 'pyramid', 'stackedbar100'].includes(chartSubType)) {
+                    console.log('paso por aqui ' + chartSubType );
 
                     if (showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
                         dataLabelsObjt =  {
@@ -1381,15 +1382,19 @@ export class ChartUtilsService {
                                 grid: { display: false },
 
                                 ticks: {
-                                    maxRotation: ticksOptions.maxRotation || 45,
-                                    minRotation: ticksOptions.minRotation || 45,
+                                    maxRotation: ticksOptions.maxRotation || 30,
+                                    minRotation: ticksOptions.minRotation || 0,
                                     labelOffset:  ticksOptions.labelOffset || 0, 
+                                    padding: ticksOptions.padding ||0,
                                     maxTicksLimit: maxTicksLimit,
                                     fontSize: edaFontSize,
                                     fontStyle: edafontStyle,
                                     fontFamily: styles.fontFamily,
                                     fontColor: styles.fontColor,
-                                    
+                                    callback: function(val, index) {
+                                        if (this.getLabelForValue(val))
+                                            return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
+                                    },
                                     
                                     autoSkip: true,
                                 }
@@ -1425,6 +1430,8 @@ export class ChartUtilsService {
                         },
 
                     };
+
+
 
                 } else if (chartSubType=='stackedbar100') {
                     if(showLabels || showLabelsPercent ){
@@ -1508,8 +1515,12 @@ export class ChartUtilsService {
                                 ticks: {
                                     callback: function(val, index) {
                                         if (this.getLabelForValue(val))
-                                        return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
+                                            return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
                                     },
+                                    maxRotation: ticksOptions.maxRotation || 30,
+                                    minRotation: ticksOptions.minRotation || 0,
+                                    labelOffset:  ticksOptions.labelOffset || 0, 
+                                    padding: ticksOptions.padding ||0,
                                     fontSize: edaFontSize, 
                                     fontStyle: edafontStyle,
                                     fontFamily: styles.fontFamily,
@@ -1676,7 +1687,12 @@ export class ChartUtilsService {
                             x: {
                                 grid: {
                                     drawBorder: false,
-                                    display: true
+                                    display: true,
+                                    callback: function(val, index) {
+                                        if (this.getLabelForValue(val))
+                                        return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 12) + '...') : this.getLabelForValue(val);
+                                    }
+                                    
                                 },
                                 ticks: {
                                     callback: (value) => {
@@ -1753,55 +1769,6 @@ export class ChartUtilsService {
                             radius: 4, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' }
                     },
                     maintainAspectRatio: false,
-                    /*
-                    showLines: true,
-                    spanGaps: true,
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    onHover: (event,chartElement ) => {
-                        //Canviem el cursor de normal a tipus link
-                        chartElement.length == 1 ? 
-                        event.native.target.style.cursor = "pointer" :
-                        event.native.target.style.cursor = "default";
-                    },
-                    tooltips: {
-                        mode: 'nearest',
-                        intersect: false,
-                        callbacks: {
-                            title: (tooltipItem, data) => {
-                                if (data && tooltipItem) {
-                                    return ` ${labelColum[0].name} : ${data.labels[tooltipItem[0].index]}`;
-                                }
-                            },
-
-                            label: (tooltipItem, data) => {
-                                if (data && tooltipItem) {
-                                    const realData = data.datasets[tooltipItem.datasetIndex].data;
-                                    let total = 0;
-                                    for( let i = 0; i< realData.length; i++){
-                                        if(isNaN( parseFloat(realData[i]))){
-                                            total = total;
-                                        }else{
-                                            total = total + parseFloat(realData[i]);
-                                        }
-                                    }
-                                    const elem = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                                    const percentage = elem / total * 100;
-                                    return ` ${data.labels[tooltipItem.index]}, ${numericColumn} : ${parseFloat(elem).toLocaleString('de-DE', { maximumFractionDigits: 6 })} (${percentage.toFixed(2)}%)`;
-                                }
-                            },
-                            footer: () => { return linked },
-                        }
-                    },
-    
-                    elements: {
-                        point: { radius: 0, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
-                        line: {
-                                borderWidth: 1 + (size.width/800),
-                                fill:  chartSubType=='area'?true:false,
-                                tension: 0.4 }
-                    },
-                */
                     plugins: {
                         datalabels: dataLabelsObjt,
                         legend: edaBarLineLegend
@@ -1912,12 +1879,13 @@ export class ChartUtilsService {
                             grid: { display: false, drawOnChartArea: false },
                             ticks: {
                                 maxRotation: ticksOptions.maxRotation || 30,
-                                minRotation: ticksOptions.minRotation || 30,
+                                minRotation: ticksOptions.minRotation || 0,
                                 labelOffset:  ticksOptions.labelOffset || 0, 
+                                padding: ticksOptions.padding ||0,
                                 maxTicksLimit: maxTicksLimit,
                                 callback: function(val, index) {
                                     if (this.getLabelForValue(val))
-                                        return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
+                                        return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
                                 },
                                 autoSkip: true,
                                 fontSize: edaFontSize,
@@ -1925,7 +1893,6 @@ export class ChartUtilsService {
                                 fontFamily: styles.fontFamily,
                                 fontColor: styles.fontColor,
                                 includeBounds:true,
-                                padding: ticksOptions.padding ||0,
                                 beginAtZero: true
                             }
                         },
@@ -1975,7 +1942,9 @@ export class ChartUtilsService {
                 };
             break;
         }
-        return JSON.parse(JSON.stringify(options));
+
+
+        return options;
     }
 
 }
