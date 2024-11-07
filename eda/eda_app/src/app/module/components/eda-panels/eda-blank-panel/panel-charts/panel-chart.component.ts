@@ -282,10 +282,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart, ticksOptions   );
 
 
-
-
-console.log(config);
-
         /**Add trend datasets*/
         cfg = this.props.config.getConfig();
         if (cfg.addTrend && (cfg.chartType === 'line')) {
