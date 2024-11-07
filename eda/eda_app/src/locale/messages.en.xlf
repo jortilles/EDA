@@ -4311,7 +4311,6 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Arrastre aquí solo los campos numéricos (num) de la tabla cruzada (La suma es la agregación por defecto)</source>
         <target>Drag only numeric (num) fields from the crosstab here (Sum is the default aggregation)</target>
       </trans-unit>
-            </trans-unit>  
       <trans-unit id="noMouseH6">
         <source>Activar funciones del mouse</source>
         <target>Activate mouse functions</target>
