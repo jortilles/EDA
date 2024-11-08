@@ -207,9 +207,6 @@ export class DashboardController {
       const shared = []
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'shared') {
-          // Obtain the name of the data source
-          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
-          
           shared.push(dashboard)
         }
       }
