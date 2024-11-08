@@ -35,6 +35,7 @@ import { EdaBubblechartComponent } from '@eda/components/eda-d3-bubblechart/eda-
 import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
+import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 
 
 @Component({
@@ -57,6 +58,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public componentRef: any;
     public currentConfig: any;
     public NO_DATA: boolean;
+    public NO_DATA_ALLOWED: boolean;
+    public NO_FILTER_ALLOWED: boolean;
 
     /**Styles */
     public fontColor: string;
@@ -94,6 +97,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     ngOnInit(): void {
         this.NO_DATA = false;
+        this.NO_DATA_ALLOWED = false;
+        this.NO_FILTER_ALLOWED = false;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -118,6 +123,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.destroyComponent();
             setTimeout(_ => {
                 this.NO_DATA = true;
+                if( this.props.data?.labels[0]== "noDataAllowed") {
+                    this.NO_DATA = false;    
+                    this.NO_DATA_ALLOWED = true;   
+                    this.NO_FILTER_ALLOWED = false; 
+                }else if( this.props.data?.labels[0]== "noFilterAllowed") {
+                    this.NO_DATA = false;    
+                    this.NO_DATA_ALLOWED = false;    
+                    this.NO_FILTER_ALLOWED = true;
+                }
             })
 
         }
@@ -131,18 +145,24 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * changes chart Type
      */
     public changeChartType() {
-
         const type = this.props.chartType;
 
         if (['table', 'crosstable'].includes(type)) {
             this.renderEdaTable(type);
         }
+
         if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline',  'histogram' ,'pyramid', 'radar'].includes(type)) {
             this.renderEdaChart(type);
         }
-        if (type === 'kpi') {
+
+        if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {
+            this.renderEdaKpiChart();
+        }
+
+        if (type ==='kpi') {
             this.renderEdaKpi();
         }
+
         if (type === 'dynamicText') {
             this.renderEdadynamictext();
         }
@@ -190,9 +210,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type 
      */
     private renderEdaChart(type: string) {
-
-        // console.log('this.props:  ',this.props)
-
         const isbarline = this.props.edaChart === 'barline';
         const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
 
@@ -201,13 +218,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     
         let values = _.cloneDeep(this.props.data.values);
 
-        // console.log('values:   ', values);
-
         /**
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
-        // console.log('cfg: ',cfg);
             // Si es un histogram faig aixó....        
         if (  (['histogram'].includes(this.props.edaChart))
             && this.props.query.length === 1
@@ -235,6 +249,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             dataDescription.otherColumns.push(newCol);
             dataDescription.totalColumns++;
 
+
+            
         }
 
         const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart,  values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
@@ -252,11 +268,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             fontSize: this.fontSize,
             fontColor: this.fontColor
         }
-      
+
+
+        const ticksOptions = {
+            maxRotation:30,
+            minRotation: 0,
+            labelOffset: 5,
+            padding: -2
+        };
       
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
-            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps, 
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart);
+            dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart, ticksOptions   );
 
 
         /**Add trend datasets*/
@@ -280,19 +303,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartOptions = config.chartOptions;
         chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
         
-        if(!chartData[1][0]?.backgroundColor){
+        // chartColors unicamente se reflejan si estan dentro del chartDataset 
+        if (!chartData[1][0]?.backgroundColor){
             chartData[1].forEach(( e,i) => {
                 try{
                     e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
                     e.borderColor = chartConfig.chartColors[i].borderColor;
                 }catch(err){
                     // si tinc una tendencia no tinc color per aquesta grafica. No hauria de ser aixi.....
-                       //console.log('Recuperando color...');
-                        //console.log(this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor);
-                        e.backgroundColor =   this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor;
-                        e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
+                    e.backgroundColor =   this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor;
+                    e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
                 }
-
             });
         }
 
@@ -360,6 +381,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.sortedSerie = config.sortedSerie;
         this.componentRef.instance.inject.sortedColumn = config.sortedColumn;
         this.componentRef.instance.inject.noRepetitions = config.noRepetitions;
+        this.componentRef.instance.inject.ordering = config.ordering;
         this.componentRef.instance.inject.negativeNumbers = config.negativeNumbers;
         this.configUpdated.emit();
     }
@@ -388,51 +410,154 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
    * Renders a KPIComponent
    */
     private renderEdaKpi() {
-        let chartConfig: any = {};
+        const chartConfig: any = {};
         chartConfig.value = this.props.data.values[0][0];
         chartConfig.header = this.props.query[0]?.display_name?.default;
+        chartConfig.showChart = false;
+
         const config: any = this.props.config;
-        let alertLimits = [];
-        try{
-            alertLimits = config.config.alertLimits;
-        }catch(e){
-            console.log('No alert Limits definied in config... ');
-            console.log(e);
-        }
+        const alertLimits = config?.config?.alertLimits || [];
+
         if (config) {
-            try{
-            chartConfig.sufix = (<KpiConfig>config.getConfig()).sufix;
-            }catch(e){
-                chartConfig.sufix = '';
-                console.log('No sufix defined inc config.... ');
-                console.log(e)
-            }
-                chartConfig.alertLimits = alertLimits;
-         
+            chartConfig.sufix = (<KpiConfig>config.getConfig())?.sufix || '';
+            chartConfig.alertLimits = alertLimits;
+            chartConfig.edaChart =  (<KpiConfig>config.getConfig())?.edaChart;
         } else {
             chartConfig.sufix = '';
             chartConfig.alertLimits = [];
         }
 
         this.createEdaKpiComponent(chartConfig);
-
     }
 
     /**
      * creates a kpiComponent
      * @param inject 
-     */
-     private createEdaKpiComponent(inject: any) {
-
+    */
+    private createEdaKpiComponent(inject: any) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaKpiComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onNotify.subscribe(data => {
-            const kpiConfig = new KpiConfig(data.sufix, inject.alertLimits);
+            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
     }
+
+    /**
+     * Renders a KPIComponent
+    */
+    private renderEdaKpiChart() {
+        // Chart Config
+        const chartType = this.props.chartType.split('kpi')[1];
+        const chartSubType = this.props.edaChart.split('kpi')[1];
+        const cfg: any = this.props.config.getConfig();
+        
+        const chartConfig: any = {};
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        const dataTypes = this.props.query.map((column: any) => column.column_type);
+    
+        let values = _.cloneDeep(this.props.data.values);
+
+        const chartData = this.chartUtils.transformDataQuery(chartType, chartSubType,  values, dataTypes, dataDescription, false, cfg.numberOfColumns);
+
+        if (chartData.length == 0) {
+            chartData.push([], []);
+        }
+
+        const minMax = chartType !== 'line' ? { min: null, max: null } : this.chartUtils.getMinMax(chartData);
+
+        const manySeries = chartData[1]?.length > 10 ? true : false;
+
+        const styles:StyleConfig = {
+            fontFamily: this.fontFamily,
+            fontSize: this.fontSize,
+            fontColor: this.fontColor
+        }
+        
+        const dimensions = this.getDimensions();
+        dimensions.height = !dimensions.width ? 255 : dimensions.height;
+        dimensions.width = !dimensions.width ? 1300 : dimensions.width;
+ 
+        const ticksOptions = {
+            xTicksLimit: 3,
+            yTicksLimit: 0,
+            maxRotation: 1,
+            minRotation: 1,
+            labelOffset: 40,
+            padding: -2
+        };
+        const chartOptions = this.chartUtils.initChartOptions(
+            chartType, dataDescription.numericColumns[0]?.name,
+            dataDescription.otherColumns, manySeries, false, dimensions, null, 
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, chartSubType, ticksOptions, false
+        );
+        // let chartConfig: any = {};
+        chartConfig.edaChart = {}
+        chartConfig.showChart = true;
+        chartConfig.edaChart.edaChart = chartSubType;
+        chartConfig.edaChart.chartType = chartType;
+        chartConfig.edaChart.chartLabels = chartData[0];
+        chartConfig.edaChart.chartDataset = chartData[1];
+        chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
+        chartConfig.edaChart.chartColors = this.chartUtils.recoverChartColors(chartType, this.props.config) || [];
+        
+        // chartColors unicamente se reflejan si estan dentro del chartDataset
+        if (chartConfig.edaChart.chartColors.length>0) {
+            chartConfig.edaChart.chartDataset[0].backgroundColor = chartConfig.edaChart.chartColors[0].backgroundColor;
+            chartConfig.edaChart.chartDataset[0].borderColor = chartConfig.edaChart.chartColors[0].borderColor;
+        }
+
+
+        // KPI Config
+        let kpiValue: number;
+        let kpiLabel = this.props.query.find((c: any) => c.column_type == 'numeric')?.display_name?.default;
+        
+        if (chartData[1][0]?.data) {
+            kpiValue = _.sum(chartData[1][0]?.data);
+        }
+        
+        chartConfig.chartType = this.props.chartType;
+        chartConfig.value = kpiValue;
+        chartConfig.header = kpiLabel;
+
+        const propsConfig: any = this.props.config;
+        const alertLimits = propsConfig?.config?.alertLimits || [];
+
+        if (propsConfig) {
+            chartConfig.sufix = (<KpiConfig>propsConfig.getConfig())?.sufix || '';
+            chartConfig.alertLimits = alertLimits;
+        } else {
+            chartConfig.sufix = '';
+            chartConfig.alertLimits = [];
+        }
+
+        this.createEdaKpiChartComponent(chartConfig);
+    }
+
+    /**
+     * creates a kpiChartComponent
+     * @param inject 
+    */
+    private createEdaKpiChartComponent(inject: any) {
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaKpiComponent);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject;
+
+        this.componentRef.instance.onNotify.subscribe(data => {
+            const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits||[], edaChart: inject.edaChart });
+            (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
+        })
+        this.configUpdated.emit();
+
+        // this.componentRef = this.entry.createComponent(EdaChartComponent);
+        // this.componentRef.instance.inject = inject;
+        // this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        // this.configUpdated.emit();
+    }
+
 
    /**
    * Renders a dynamicTextComponent
@@ -468,6 +593,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.labels = this.props.query.map(field => field.display_name.default);
         inject.maps = this.props.maps;
         inject.query = this.props.query;
+        inject.draggable = this.props.draggable;
         try{
             inject.coordinates = this.props.config['config']['coordinates'];
         }catch{
@@ -492,6 +618,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             inject.legendPosition = this.props.config['config']['legendPosition']  ;
         }catch{
             inject.legendPosition =  'bottomleft';
+        }
+        try{
+            inject.draggable = this.props.config['config']['draggable'];
+        }catch{
+            inject.draggable = true;
         }
         
         inject.linkedDashboard = this.props.linkedDashboardProps;

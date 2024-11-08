@@ -43,8 +43,8 @@ export const QueryUtils = {
     try {
       if (ebp.selectedQueryMode != 'SQL') {
         const queryData = JSON.parse(JSON.stringify(query));
-        queryData.query.filters = query.query.filters.filter((f) => 
-          (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0) 
+        queryData.query.filters = query.query.filters.filter((f) =>
+          (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0)
           || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
         );
         const response = await ebp.dashboardService.executeQuery(queryData).toPromise();
@@ -138,10 +138,25 @@ export const QueryUtils = {
       if (!globalFilters) {
 
         PanelInteractionUtils.verifyData(ebp);
-        ebp.changeChartType('table', 'table', null);
-        ebp.chartForm.patchValue({
-          chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')
-        });
+
+        // Este if y else permiten mantener el gráfico que ya estaba configurado a pesar de que sean otros datos
+        // en caso de que query no cumpla con el grádico correspondiente, se proyectara una tabla con los datos.
+        if(ebp.chartForm.value.chart===null){
+          ebp.changeChartType('table', 'table', null);
+          ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
+        } 
+
+        else {
+          if(!ebp.chartForm.value.chart.ngIf && !ebp.chartForm.value.chart.tooManyData){
+            ebp.changeChartType(ebp.chartForm.value.chart.value, ebp.chartForm.value.chart.subValue, ebp.panelChartConfig.config);
+            ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.subValue === ebp.chartForm.value.chart.subValue)});
+          }
+          else {
+            ebp.changeChartType('table', 'table', null);
+            ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
+          }
+        }
+
         ebp.spinnerService.off();
 
       } else {
@@ -153,7 +168,7 @@ export const QueryUtils = {
       ebp.index = 1;
       ebp.display_v.saved_panel = true;
     } catch (err) {
-      ebp.alertService.addError(err);
+      ebp.alertService.addError(err); 
       ebp.spinnerService.off();
     }
 
@@ -176,6 +191,7 @@ export const QueryUtils = {
     const cumulativeSum = ebp.currentQuery.filter(field => field.column_type === 'date' && field.cumulativeSum === true).length > 0;
 
     if (dataDescription.otherColumns.length > 1 && cumulativeSum) {
+
       ebp.cumsumAlertController = new EdaDialogController({
         params: null,
         close: (event) => {
@@ -183,6 +199,15 @@ export const QueryUtils = {
         }
       })
     } else {
+
+      // Aparatado que inicia el initAxes en caso el ordering este vacio en la config
+      if(ebp.chartForm.controls.chart.value!==null) {
+        if(ebp.chartForm.controls.chart.value.subValue === 'crosstable' && !ebp.newAxesChanged) {
+          const config = ebp.panelChartConfig.config.getConfig();
+          ebp.axes = ebp.initAxes(ebp.currentQuery);
+          config['ordering'] = [{axes: ebp.axes}];;
+        }
+      }
 
       /**
           * Too much rows check
@@ -199,6 +224,7 @@ export const QueryUtils = {
       if ( (totalTableCount > MAX_TABLE_ROWS_FOR_ALERT)  && (ebp.selectedFilters.length + aggregations <= 0 )
             &&  ( ( ebp.queryLimit == undefined  )  ||  (  ebp.queryLimit >  MAX_TABLE_ROWS_FOR_ALERT ) )   ) {
 
+
         ebp.alertController = new EdaDialogController({
           params: { totalTableCount: totalTableCount },
           close: (event, response) => {
@@ -213,6 +239,8 @@ export const QueryUtils = {
         QueryUtils.runQuery(ebp, false);
       }
     }
+
+    ebp.newAxesChanged = false;
   },
 
 
@@ -221,6 +249,7 @@ export const QueryUtils = {
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);
+
     const params = {
       table: '',
       dataSource: ebp.inject.dataSource._id,

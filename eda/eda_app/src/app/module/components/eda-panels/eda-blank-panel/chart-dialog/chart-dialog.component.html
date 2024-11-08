@@ -6,9 +6,7 @@
 
             <div class="eda-chart-panel col-8" style="height: 80%; margin-left: 6em; margin-top: 4em; background-color: var(--panel-color);">
 
-                <panel-chart *ngIf="!!display" #PanelChartComponent [props]="panelChartConfig"
-                    style="height: 80%; width: 90%; display:block;  margin-top:5em">
-                </panel-chart>
+                <panel-chart *ngIf="!!display" #PanelChartComponent [props]="panelChartConfig" style="height: 80%; width: 90%; display:block;  margin-top:5em"></panel-chart>
 
             </div>
 
@@ -39,8 +37,6 @@
 
 
         </div>
-
-
 
         <div class="col-2 col-offset-8">
             <h6 i18n="@@showLabels" class="custom-border-b1" style="margin-top: 2em;">

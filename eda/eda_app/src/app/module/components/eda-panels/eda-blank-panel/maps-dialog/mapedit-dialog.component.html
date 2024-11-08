@@ -34,7 +34,14 @@
         <p-inputSwitch [(ngModel)]="logarithmicScale" (onChange)="renderMap()">
         </p-inputSwitch>
       </div>
-
+      <h6 i18n="@@noMouseH6" class="custom-border-b1">
+        Activar funciones del mouse
+      </h6>
+      <div class="mb-1">
+        <p-inputSwitch [(ngModel)]="draggable" (onChange)="nullMouseOptions()">
+        </p-inputSwitch>
+      </div>
+      
       <h6 i18n="@@LegendPosition" class="custom-border-b1">
         Posición de la leyenda
       </h6>

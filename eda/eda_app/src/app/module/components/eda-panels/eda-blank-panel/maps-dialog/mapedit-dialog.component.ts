@@ -19,7 +19,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
 
   public color:string = '';
   public logarithmicScale :boolean = false;
-
+  public draggable : boolean;
   public legendPosition : string;
 
   public display:boolean=false;
@@ -37,7 +37,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
   }
 
   saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {color:this.color, logarithmicScale :  this.logarithmicScale, legendPosition : this.legendPosition});
+    this.onClose(EdaDialogCloseEvent.UPDATE, {color:this.color, logarithmicScale : this.logarithmicScale, legendPosition : this.legendPosition, draggable : this.draggable});
   }
 
   handleInputColor() {
@@ -51,6 +51,12 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     leafletMap.changeScale(this.logarithmicScale);
   }
+  
+  nullMouseOptions() {
+    const leafletMap = this.myPanelChartComponent.componentRef.instance;
+    leafletMap.switchNoMouse(this.draggable);
+  }
+
   changeLegend(){
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     leafletMap.changeLegend(this.legendPosition);
@@ -64,6 +70,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     this.legendPosition = this.controller.params.legendPosition;
     this.color= this.controller.params.color;
     this.logarithmicScale = this.controller.params.logarithmicScale;
+    this.draggable = this.controller.params.draggable;
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
   }

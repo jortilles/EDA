@@ -14,6 +14,7 @@ export class PanelChart {
   public linkedDashboardProps : LinkedDashboardProps;
   public addTrend: boolean;
   public noRepetitions: boolean;
+  public draggable: boolean;
 
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);

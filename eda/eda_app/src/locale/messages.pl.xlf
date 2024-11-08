@@ -4020,7 +4020,24 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="tituloAbout" datatype="html">
 <source>Edalitics</source>
-<target>Edalitics</target>
+<target>Edalitisc</target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/about/about.component.html</context>
+<context context-type="linenumber">4</context>
+</context-group>
+  <trans-unit id="noDataAllowed">
+    <source>Este panel no está disponible por falta de permisos</source>
+    <target>Ten Panel nie jest dostępny ze względu na brak uprawnień</target>
+  </trans-unit>
+
+  <trans-unit id="noFilterAllowed">
+    <source>Este panel no está disponible por falta de permisos en un filtro</source>
+    <target>Ten panel jest niedostępny ze względu na brak uprawnień do filtra</target>
+  </trans-unit>
+
+<trans-unit id="DatePickerYearPreviousYearFull">
+  <source>El año pasado, completo</source>
+  <target>W zeszłym roku, kompletne</target>
 </trans-unit>
 
 <trans-unit id="firstAboutParagraph" datatype="html">
@@ -4207,8 +4224,53 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <target>Dodaj adres URL</target>
   </trans-unit> 
 
+  <trans-unit id="IncorrectFile">
+  <source>Archivo incorrecto, verifique que el formato del archivo sea json o geojson.</source>
+  <target>Zły plik. Sprawdź, czy format pliku to json lub geojson.</target>
+  </trans-unit>
 
+    </trans-unit> 
 
+        <trans-unit id="chartTypesKPIBAR">
+        <source>KPI + Gráfico de Barras</source>
+        <target>KPI + Wykres słupkowy</target>
+      </trans-unit>
+      
+      <trans-unit id="chartTypesKPILINE">
+        <source>KPI + Gráfico de Lineas</source>
+        <target>KPI + Wykres liniowy</target>
+      </trans-unit>
+
+      <trans-unit id="chartTypesKPIAREA">
+        <source>KPI + Gráfico de Áreas</source>
+        <target>KPI + Wykres warstwowy</target>
+      </trans-unit>
+
+  
+<trans-unit id="aplicarBtn">
+  <source>Aplicar</source>
+  <target>Stosować</target>
+</trans-unit>
+  <trans-unit id="disenoTablaCruzada">
+    <source>Diseño de la tabla cruzada: </source>
+    <target>Projektowanie stołów krzyżowych: </target>
+  </trans-unit>
+  <trans-unit id="messageItemX">
+    <source>Arrastre aquí los campos para el eje vertical de la tabla cruzada</source>
+    <target>Przeciągnij tutaj pola osi pionowej tabeli krzyżowej</target>
+  </trans-unit>
+  <trans-unit id="messageItemY">
+    <source>Arrastre aquí los campos para el eje horizontal de la tabla cruzada</source>
+    <target>Przeciągnij tutaj pola osi poziomej tabeli krzyżowej</target>
+  </trans-unit>
+  <trans-unit id="messageItemZ">
+    <source>Arrastre aquí solo los campos numéricos (num) de la tabla cruzada (La suma es la agregación por defecto)</source>
+    <target>Przeciągnij tutaj tylko pola numeryczne (num) tabeli krzyżowej (domyślną agregacją jest Suma)</target>
+  </trans-unit>
+  <trans-unit id="noMouseH6">
+        <source>Activar funciones del mouse</source>
+        <target>Aktywuj funkcje myszy</target>
+      </trans-unit>   
 </body>
 </file>
 </xliff>

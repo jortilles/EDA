@@ -102,7 +102,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             const columnName = this.globalFilter.selectedColumn.column_name;
             // Recupero el display name que le haya podido poner.
             const display_name_alias = this.globalFilter.selectedColumn.display_name.default;
+
             this.globalFilter.selectedColumn = _.cloneDeep(this.globalFilter.selectedTable.columns.find((col: any) => col.column_name == columnName));
+
+
             this.getColumnsByTable();
             this.loadColumnValues();
             this.findPanelPathTables();
@@ -153,16 +156,28 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public initTablesForFilter() {
-        const queryTables = [];
-        const excludedTables = this.modelTables.filter((t: any) => t.visible === false).map((t: any) => t.table_name);
+                
+        const queryTables = []; // si aparece
+        const excludedTables = this.modelTables.filter((t: any) => t.visible === false).map((t: any) => t.table_name); // Si aparece
 
-        for (const panel of this.filteredPanels) {
-            //tables const tmpPanel = this.params.panels.find(p => p.id === panel.id);
-            const panelQuery = panel.content.query.query;
-
-            for (const field of panelQuery.fields) {
-                const table_id = field.table_id.split('.')[0];
-                if (!queryTables.includes(table_id)) queryTables.push(table_id);
+       // filteredPanels list is empty because all panels are disabled. 
+        if(this.filteredPanels.length===0){
+            for (const panel of this.allPanels) {
+                const panelQuery = panel.content.query.query;
+    
+                for (const field of panelQuery.fields) {
+                    const table_id = field.table_id.split('.')[0];
+                    if (!queryTables.includes(table_id)) queryTables.push(table_id);
+                }
+            }
+        } else {
+            for (const panel of this.filteredPanels) {
+                const panelQuery = panel.content.query.query;
+    
+                for (const field of panelQuery.fields) {
+                    const table_id = field.table_id.split('.')[0];
+                    if (!queryTables.includes(table_id)) queryTables.push(table_id);
+                }
             }
         }
 
@@ -178,6 +193,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public onAddPanelForFilter(panel: any) {
+
         if (panel.avaliable) {
             if(panel.content.query.query.queryMode != 'SQL') { // los paneles SQL no se pueden activar
                 panel.active = !panel.active;
@@ -187,9 +203,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             if (panel.active) {
                 this.initTablesForFilter();
                 this.findPanelPathTables();
-            } else {
-                this.clearFilterPaths(panel);
-            }
+            } 
+            else this.clearFilterPaths(panel);
         }
 
         if (!panel.avaliable) {

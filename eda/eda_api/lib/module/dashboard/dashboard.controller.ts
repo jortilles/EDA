@@ -15,14 +15,10 @@ const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
-      let admin,
-        privates,
-        group,
-        publics,
-        shared = []
-      const groups = await Group.find({ users: { $in: req.user._id } }).exec()
-      const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0
-      const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0
+      let admin, privates, group, publics, shared = [];
+      const groups = await Group.find({ users: { $in: req.user._id } }).exec();
+      const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
+      const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
 
       if (isAdmin) {
         admin = await DashboardController.getAllDashboardToAdmin(req)
@@ -38,6 +34,10 @@ export class DashboardController {
         /*EDA shared = await DashboardController.getSharedDashboards() */
         /*Edalitics Free */shared = await DashboardController.getSharedDashboards(req)
       }
+
+      // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
+      group = await DashboardController.addGroupInfo(group);
+
       return res.status(200).json({
         ok: true,
         dashboards: privates,
@@ -46,11 +46,20 @@ export class DashboardController {
         shared,
         isAdmin,
         isDataSourceCreator
-      })
+      });
     } catch (err) {
-      console.log(err)
-      next(new HttpException(400, 'Some error ocurred loading dashboards'))
+      console.log(err);
+      next(new HttpException(400, 'Some error occurred loading dashboards'));
     }
+  }
+
+  static async addGroupInfo(dashboards) {
+    for (const dashboard of dashboards) {
+      if (dashboard.group && Array.isArray(dashboard.group)) {
+        dashboard.group = await Group.find({ _id: { $in: dashboard.group } }, 'name').exec();
+      }
+    }
+    return dashboards;
   }
 
   static async getPrivateDashboards(req: Request) {
@@ -58,7 +67,7 @@ export class DashboardController {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
         'config.title config.visible config.tag config.onlyIcanEdit'
-      ).exec()
+      ).populate('user','name').exec()
       const privates = []
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'private') {
@@ -99,7 +108,7 @@ export class DashboardController {
     try {
       const userGroups = await Group.find({
         users: { $in: req.user._id }
-      }).exec()
+      }).exec();
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
         'config.title config.visible group config.tag config.onlyIcanEdit'
@@ -144,8 +153,8 @@ export class DashboardController {
 
 
     } catch (err) {
-      console.log(err)
-      throw new HttpException(400, 'Error loading groups dashboards')
+      console.log(err);
+      throw new HttpException(400, 'Error loading groups dashboards');
     }
   }
 
@@ -156,7 +165,7 @@ export class DashboardController {
         /*EDA{},*/
         /*Edalitics Free */  { user: req.user._id },
         'config.title config.visible config.tag config.onlyIcanEdit'
-      ).exec()
+      ).populate('user','name').exec()
       const publics = []
 
       for (const dashboard of dashboards) {
@@ -200,10 +209,13 @@ export class DashboardController {
         /*EDA{},*/
         /*Edalitics Free */  { user: req.user._id },
         'config.title config.visible config.tag config.onlyIcanEdit'
-      ).exec()
+      ).populate('user','name').exec()
       const shared = []
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'shared') {
+          // Obtain the name of the data source
+          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+          
           shared.push(dashboard)
         }
       }
@@ -267,21 +279,6 @@ export class DashboardController {
             publics.push(dashboard)
             break
           case 'private':
-            dashboard.user = await User.findById(
-              { _id: dashboard.user },
-              'name'
-            ).exec()
-            if (dashboard.user == null) {
-              dashboard.user = new User(
-                {
-                  name: 'N/A',
-                  email: '',
-                  password: '',
-                  img: '',
-                  role: '',
-                  active: ''
-                })
-            };
             privates.push(dashboard)
             break
           case 'group':
@@ -570,12 +567,13 @@ export class DashboardController {
             new HttpException(400, 'Dashboard not exist with this id')
           )
         }
-
         dashboard.config = body.config
         dashboard.group = body.group        
         /**avoid dashboards without name */
         if (dashboard.config.title === null) { dashboard.config.title = '-' };
-
+        
+        
+        
         dashboard.save((err, dashboard) => {
           if (err) {
             return next(new HttpException(500, 'Error updating dashboard'))
@@ -587,6 +585,62 @@ export class DashboardController {
     } catch (err) {
       next(err)
     }
+  }
+  
+    /**
+     * Updates a specific field of a dashboard.
+     * 
+     * @param {Request} req - Express request object
+     * @param {Response} res - Express response object
+     * @param {NextFunction} next - Express next middleware function
+     * 
+     * @description
+     * Expects 'id' in req.params and 'data' (containing 'key' and 'newValue') in req.body.
+     * If 'config.visible' is updated to a value other than 'group', 'group' is set to an empty array.
+     * 
+     * @throws {HttpException} 400 for update errors, 404 if dashboard not found
+     */
+    static async updateSpecific(req: Request, res: Response, next: NextFunction) {
+      try {
+        const { id } = req.params;
+        const { data } = req.body;
+        const { key, newValue } = data;
+
+        let updateObj: any = { [key]: newValue };
+
+        if (key === 'config.visible' && newValue !== 'group') {
+          updateObj = {
+            ...updateObj,
+            group: []
+          };
+        }
+
+        Dashboard.findByIdAndUpdate(
+          id,
+          { $set: updateObj },
+          { new: true, runValidators: true },
+          (err, dashboard) => {
+            if (err) {
+              return next(
+                new HttpException(
+                  400,
+                  'Some error occurred while updating the dashboard'
+                )
+              );
+            }
+
+            if (!dashboard) {
+              return next(
+                new HttpException(404, 'Dashboard not found with this id')
+              );
+            }
+
+            return res.status(200).json({ ok: true, dashboard });
+          }
+        );
+      } catch (err) {
+        next(err);
+      }
   }
 
   static async delete(req: Request, res: Response, next: NextFunction) {
@@ -1018,6 +1072,7 @@ export class DashboardController {
         myQuery.forSelector = false;
       }
 
+
       /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
       if(myQuery.filters){
         for (const filter of myQuery.filters) {
@@ -1090,6 +1145,16 @@ export class DashboardController {
       }) 
 
       myQuery.filters = filters;
+
+
+      if(uniquesForbiddenTables.length > 0){
+        if(   myQuery.filters.filter( f=> uniquesForbiddenTables.includes( f.filter_table.split('.')[0]) ).length > 0 ){
+          console.log('you are not allowed to user this filters');
+          return res.status(200).json([['noFilterAllowed'], [[]]]);
+        }
+
+      }
+
       const query = await connection.getQueryBuilded(
         myQuery,
         dataModelObject,
@@ -1594,6 +1659,7 @@ export class DashboardController {
       data[1] = newRows
     }
   }
+  
 
   static async cleanDashboardCache(req: Request, res: Response, next: NextFunction) {
     let connectionProps: any;
