@@ -102,9 +102,7 @@ export const ChartsConfigUtils = {
     * @param type chart type
     */
     setVoidChartConfig: (type: string) => {
-      console.log( 'setVoidChartCn ', type)
         if (['table', 'crosstable'].includes(type)) {
-
           return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, false ,  []);
         }else if (['bar', 'line', 'area', 'pie', 'doughnut', 'polarArea', 'barline', 'horizontalBar', 'pyramid', 'histogram', 'radar'].includes(type)) {
             return new ChartJsConfig(null, type, false, false, false, false, null);
