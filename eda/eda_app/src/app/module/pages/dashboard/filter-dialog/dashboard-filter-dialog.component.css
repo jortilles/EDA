@@ -11,3 +11,25 @@
     word-break: break-word; /* evita que las palabras largas se desborden */
     margin-top: 0.5em;
 }
+
+.select-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    flex-basis: 0;
+
+    margin: 1px;
+    box-sizing: border-box;
+    border: solid 1px #ccc;
+    border-radius: 4px;
+
+    background:white;
+    color: var(--header-bg-color);
+    font-size: 13px;
+
+    cursor: pointer;
+    z-index: 99999 !important;
+    max-width: 27%; 
+}
