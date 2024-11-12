@@ -3945,6 +3945,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>El año pasado, completo</source>
   <target>W zeszłym roku, kompletne</target>
 </trans-unit>
+<trans-unit id="whereHavingMessage">
+  <source>WHERE: Filtrar antes de agrupar / HAVING: Filtrar una vez agrupado</source>
+  <target>WHERE: Filtruj przed grupowaniem / HAVING: Filtruj po grupowaniu</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

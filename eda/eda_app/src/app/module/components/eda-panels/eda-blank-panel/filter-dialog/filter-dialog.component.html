@@ -89,8 +89,21 @@
             </ng-container>
 
             <ng-container *ngIf="filterSelected!=undefined">
-                <div class="col-12 md:col-2" style="margin-top: 0.2em;">
-                    <h1>HOLA</h1>
+                <div class="col-12 md:col-2" style="margin-top: 0.2em; padding: 0;">
+
+                    <div style="display: flex; align-items: center; justify-content: center; flex-direction: row; margin-left: 5px; margin-top: 10px;">
+
+                        <span style="margin-right: 10px;">
+                            <i class="pi pi-info-circle" style="cursor: pointer; margin-top: -5px;" [pTooltip]="whereHavingMessage" tooltipPosition="top"></i>
+                        </span>
+        
+                        <p-inputSwitch [(ngModel)]="filterBeforeAfter.switch" [disabled]="display.switchButton"
+                            (onChange)="whereHavingSwitch()">
+                        </p-inputSwitch>
+    
+                        <span class="state-label" *ngIf="filterBeforeAfter.switch">Having</span>
+                        <span class="state-label" *ngIf="!filterBeforeAfter.switch">Where</span>
+                    </div>
                 </div>
             </ng-container>
 

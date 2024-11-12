@@ -4319,6 +4319,10 @@
         <source>El año pasado, completo</source>
         <target>El año pasado, completo</target>
       </trans-unit>
+      <trans-unit id="whereHavingMessage">
+        <source>WHERE: Filtrar antes de agrupar / HAVING: Filtrar una vez agrupado</source>
+        <target>WHERE: Filtrar antes de agrupar / HAVING: Filtrar despois de agrupar</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

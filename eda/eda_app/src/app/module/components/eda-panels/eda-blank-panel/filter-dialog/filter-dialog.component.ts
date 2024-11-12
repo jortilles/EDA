@@ -38,11 +38,19 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         selecteds: [],
         range : null
     };
+    public filterBeforeAfter = {
+        switch: false,
+    }
+
     public inputType: string;
     public filterValue: any = {};
     public filterSelected: FilterType;
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
+
+    // Tooltip
+    public whereHavingMessage: string = $localize`:@@whereHavingMessage:WHERE: Filtrar antes de agrupar / HAVING: Filtrar una vez agrupado`;
+
 
     constructor(
         private dashboardService: DashboardService,
@@ -212,6 +220,10 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 throw err;
             }
         }
+    }
+
+    whereHavingSwitch() {
+        console.log('Cambiooooooooo')
     }
 
     processPickerEvent(event){
