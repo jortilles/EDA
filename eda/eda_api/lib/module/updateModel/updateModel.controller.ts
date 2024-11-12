@@ -124,7 +124,7 @@ export class updateModel {
                                                                             let dynamicPermisssionsForGroup = permiCol;
                                                                             /**Ahora que ya tengo todos los datos, monto el modelo */
                                                                             // montamos el modelo
-                                                                            const query='select user_name as name, `table` as tabla , `column` as columna  from sda_def_permissions where stic_permission_source in ("ACL_ALLOW_GROUP_priv", "ACL_ALLOW_OWNER")';
+                                                                            const query='select user_name as name, `table` as tabla , `column` as columna  from sda_def_permissions where stic_permission_source in (  "ACL_ALLOW_OWNER")';
                                                                             await connection.query(query)
                                                                               .then(async customUserPermissionsValue => {
 
@@ -227,16 +227,12 @@ export class updateModel {
         const mongoGroups = await  Group.find(); 
 
         fullTablePermissionsForRoles.forEach((line) => {
-
             let match = mongoGroups.filter(i => { return i.name === line.group })
-
             let mongoId: String;
             let mongoGroup: String;
-
             if (match.length == 1 && line.group !== undefined) {
                 mongoId = match[0]._id.toString()
                 mongoGroup = match[0].name.toString()
-
               if( line.name != null ){
                   // Si es un grupo convertido en usuario
                   const found = usersFound.find(i => i.email == line.name)
@@ -272,7 +268,6 @@ export class updateModel {
 
 
         fullTablePermissionsForUsers.forEach(line => {
-
             const found = usersFound.find(i => i.email == line.name)
             if (found) {
                 gr3 = {
@@ -297,7 +292,7 @@ export class updateModel {
                 mongoId = match[0]._id.toString();
                 let group_name: String = " '" + line.group + "' "
                 let table_name: String = " '" + line.table + "' "
-                let valueAt: String = "select record_id from sda_def_security_group_records" +
+                let valueAt: String = " select record_id from sda_def_security_group_records" +
                     " where `group` in  ( " + group_name.split(',').join('\',\'')    + ") and `table` = " + table_name ;
                 if( line.name != null ){
                       // Si es un grupo convertido en usuario
@@ -312,20 +307,24 @@ export class updateModel {
                         global: false,
                         type: "users",
                         value: [valueAt]
+                      }
+                      let valueAt2: String = " select `id` from " + line.table +      " where `assigned_user_name`  = 'EDA_USER' " ;
+                      gr5 = {
+                        users: [found._id],
+                        usersName: [line.name],
+                        none: false,
+                        table: line.table,
+                        column: "id",
+                        global: false,
+                        permission: true,
+                        dynamic: true,
+                        type: "users",
+                        value: [valueAt2]
                     }
+                  destGrantedRoles.push(gr4);
+                  destGrantedRoles.push(gr5);
                 }else{
-                    // Si es un grupo nativo
-                    gr4 = {
-                      groups: [mongoId],
-                      groupsName: [line.group],
-                      none: false,
-                      table: line.table,
-                      column: line.column,
-                      dynamic: true,
-                      global: false,
-                      type: "groups",
-                      value: [valueAt]
-                    }
+                  console.log('NO DEBERÍ PASAR POR AQUI..... NO DEBERÍA HABER PERMISOS DE GRUPO DIRECTAMENTE');
                 }
                 
                 destGrantedRoles.push(gr4)
