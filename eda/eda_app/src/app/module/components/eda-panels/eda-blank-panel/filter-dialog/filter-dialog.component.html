@@ -11,7 +11,11 @@
 
         <div class="grid col-12 mt-2">
 
-            <div class="col-12 mt-1" [ngClass]="{ 'md:col-6': (!display.between && !display.calendar ) || (!!display.calendar )}">
+            <div 
+                [ngClass]="{ 
+                            'md:col-6': (!display.between && !display.calendar ) || (!!display.calendar ),
+                            'md:col-10': !(!display.between && !display.calendar) || (!!display.calendar) 
+                           }">
 
                 <span class="p-float-label">
 
@@ -30,7 +34,7 @@
 
             <ng-container *ngIf="!display.between">
 
-                <div class="col-12 md:col-6" style="margin-top: 0.2em;">
+                <div class="col-12 md:col-4" style="margin-top: 0.2em;">
 
                     <ng-container *ngIf="!!display.calendar && !filter.switch">
 
@@ -84,117 +88,124 @@
 
             </ng-container>
 
+            <ng-container *ngIf="filterSelected!=undefined">
+                <div class="col-12 md:col-2" style="margin-top: 0.2em;">
+                    <h1>HOLA</h1>
+                </div>
+            </ng-container>
+
             <ng-container *ngIf="!!display.between">
-
-                <ng-container *ngIf="!!display.calendar && !filter.switch">
-
-                    <div class="col-6 mt-3">
-
-                        <div style="margin-top: -0.8em;" >
-
-                            <!-- <label i18n="@@fechaInicioLabel" for="datepicker">
-                                Fecha inicio
-                            </label> -->
-
-                            <eda-date-picker #myCalendar (onDatesChanges)="processPickerEvent($event)">
-                            </eda-date-picker>
-
+                <div class="grid col-12">
+    
+                    <ng-container *ngIf="!!display.calendar && !filter.switch">
+    
+                        <div class="col-6 mt-3">
+    
+                            <div style="margin-top: -0.8em;" >
+    
+                                <!-- <label i18n="@@fechaInicioLabel" for="datepicker">
+                                    Fecha inicio
+                                </label> -->
+    
+                                <eda-date-picker #myCalendar (onDatesChanges)="processPickerEvent($event)">
+                                </eda-date-picker>
+    
+                            </div>
+    
                         </div>
-
-                    </div>
-
-                    <!-- <div class="col-6 mt-3">
-
-                        <div class="form-group mb-0">
-
-                            <label i18n="@@fechaFinalLabel" for="datepicker">
-                                Fecha final
-                            </label>
-
-                            <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value2"
-                                (input)="handleValidForm({value2: $event.target.value})" pInputText required>
-
+    
+                        <!-- <div class="col-6 mt-3">
+    
+                            <div class="form-group mb-0">
+    
+                                <label i18n="@@fechaFinalLabel" for="datepicker">
+                                    Fecha final
+                                </label>
+    
+                                <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value2"
+                                    (input)="handleValidForm({value2: $event.target.value})" pInputText required>
+    
+                            </div>
+    
+                        </div> -->
+    
+                    </ng-container>
+    
+                    <ng-container *ngIf="!display.calendar && !filter.switch">
+    
+                        <div class="col-6 mt-3">
+    
+                            <span class="">
+    
+                                <input id="float-input1" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
+                                    (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+    
+                                <label i18n="@@valor1Label" for="float-input1">
+                                    Valor 1
+                                </label>
+    
+                            </span>
                         </div>
-
-                    </div> -->
-
-                </ng-container>
-
-                <ng-container *ngIf="!display.calendar && !filter.switch">
-
-                    <div class="col-6 mt-3">
-
-                        <span class="">
-
-                            <input id="float-input1" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
-                                (input)="handleValidForm({value1: $event.target.value})" pInputText required>
-
-                            <label i18n="@@valor1Label" for="float-input1">
-                                Valor 1
-                            </label>
-
-                        </span>
-                    </div>
-
-                    <div class="col-6 mt-3">
-
-                        <span class="">
-
-                            <input id="float-input2" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value2"
-                                (input)="handleValidForm({value2: $event.target.value})" pInputText required>
-
-                            <label i18n="@@valor2Label" for="float-input2">
-                                Valor 2
-                            </label>
-
-                        </span>
-
-                    </div>
-
-                </ng-container>
-
-                <ng-container *ngIf="filter.switch">
-
-                    <div class="col-6 mt-3">
-
-                        <div class="form-group mb-0">
-
-                            <label i18n="@@valor1Label" for="multiselect1">
-                                Valor 1
-                            </label>
-
-                            <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value1" id="multiselect1"
-                                [virtualScroll]="true" [itemSize]="34" [filter]="true" [style]="{width: '100%'}"
-                                [panelStyle]="{minWidth:'100%'}"
-                                (onChange)="handleValidForm({value1: filterValue.value1})" defaultLabel="Selecciona..."
-                                [selectionLimit]="limitSelectionFields">
-                            </p-multiSelect>
-
+    
+                        <div class="col-6 mt-3">
+    
+                            <span class="">
+    
+                                <input id="float-input2" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value2"
+                                    (input)="handleValidForm({value2: $event.target.value})" pInputText required>
+    
+                                <label i18n="@@valor2Label" for="float-input2">
+                                    Valor 2
+                                </label>
+    
+                            </span>
+    
                         </div>
-
-                    </div>
-
-                    <div class="col-6 mt-3">
-
-                        <div class="form-group mb-0">
-
-                            <label i18n="@@valor2Label" for="multiselect2">
-                                Valor 2
-                            </label>
-
-                            <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" id="multiselect2"
-                                [virtualScroll]="true" [itemSize]="34" [filter]="true" [style]="{width: '100%'}"
-                                [panelStyle]="{minWidth:'100%'}"
-                                (onChange)="handleValidForm({value2: filterValue.value2})" defaultLabel="Selecciona..."
-                                [selectionLimit]="limitSelectionFields">
-                            </p-multiSelect>
-
+    
+                    </ng-container>
+    
+                    <ng-container *ngIf="filter.switch">
+    
+                        <div class="col-6 mt-3">
+    
+                            <div class="form-group mb-0">
+    
+                                <label i18n="@@valor1Label" for="multiselect1">
+                                    Valor 1
+                                </label>
+    
+                                <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value1" id="multiselect1"
+                                    [virtualScroll]="true" [itemSize]="34" [filter]="true" [style]="{width: '100%'}"
+                                    [panelStyle]="{minWidth:'100%'}"
+                                    (onChange)="handleValidForm({value1: filterValue.value1})" defaultLabel="Selecciona..."
+                                    [selectionLimit]="limitSelectionFields">
+                                </p-multiSelect>
+    
+                            </div>
+    
                         </div>
-
-                    </div>
-
-                </ng-container>
-
+    
+                        <div class="col-6 mt-3">
+    
+                            <div class="form-group mb-0">
+    
+                                <label i18n="@@valor2Label" for="multiselect2">
+                                    Valor 2
+                                </label>
+    
+                                <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" id="multiselect2"
+                                    [virtualScroll]="true" [itemSize]="34" [filter]="true" [style]="{width: '100%'}"
+                                    [panelStyle]="{minWidth:'100%'}"
+                                    (onChange)="handleValidForm({value2: filterValue.value2})" defaultLabel="Selecciona..."
+                                    [selectionLimit]="limitSelectionFields">
+                                </p-multiSelect>
+    
+                            </div>
+    
+                        </div>
+    
+                    </ng-container>
+                </div>
             </ng-container>
 
             <ng-container>
