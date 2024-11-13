@@ -114,9 +114,6 @@ export abstract class QueryBuilderService {
 
         /** ..........................PER ELS VALUE LISTS................................ */
 
-        console.log('queryTODO: ',this.queryTODO);
-
-
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
         // Afegim a dest les taules dels filtres
@@ -277,18 +274,15 @@ export abstract class QueryBuilderService {
             let column =  this.queryTODO.fields.find(c=> f.filter_table == c.table_id && f.filter_column == c.column_name );
             if(column){
                 if(column.hasOwnProperty('aggregation_type')){
-                    return column.aggregation_type==='none' || [ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type) ?true:false;
+                    return column.aggregation_type==='none' || [ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type) ?true:false || f.filterBeforeGrouping;
                 }else{
                     return true;
                 }
             }else{
                 return true;
             }
-            });
+        });
 
-
-
-            
         // para los filtros en los value list
         filters.forEach(f => {
             if (f.valueListSource) {
@@ -298,19 +292,15 @@ export abstract class QueryBuilderService {
             }
         });
 
-
-
-
         //TO HAVING CLAUSE 
         const havingFilters = this.queryTODO.filters.filter(f => {
             const column = this.queryTODO.fields.find(e => e.table_id === f.filter_table &&   f.filter_column === e.column_name);
             if(column){
-            return column.column_type=='numeric' && column.aggregation_type!=='none'?true:false;
+            return (column.column_type=='numeric' && column.aggregation_type!=='none'?true:false) && !f.filterBeforeGrouping;
             }else{
                 return false;
             }
         }).filter(f=> ![ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type));
-
 
         if (this.queryTODO.simple) {
             this.query = this.simpleQuery(columns, origin);
@@ -318,6 +308,7 @@ export abstract class QueryBuilderService {
         } else {
             let tables = this.dataModel.ds.model.tables
                 .map(table => { return { name: table.table_name, query: table.query } });
+            
             this.query = this.normalQuery(columns, origin, dest, joinTree, grouping,  filters, havingFilters,  tables,
                 this.queryTODO.queryLimit,   this.queryTODO.joinType, valueListJoins, this.dataModel.ds.connection.schema, 
                 this.dataModel.ds.connection.database, this.queryTODO.forSelector);
