@@ -114,6 +114,8 @@ export abstract class QueryBuilderService {
 
         /** ..........................PER ELS VALUE LISTS................................ */
 
+        console.log('queryTODO: ',this.queryTODO);
+
 
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 

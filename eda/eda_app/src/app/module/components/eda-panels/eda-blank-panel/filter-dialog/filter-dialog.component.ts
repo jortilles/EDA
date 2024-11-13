@@ -80,6 +80,10 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     addFilter() {
+
+        console.log('this.selectedColumn: ', this.selectedColumn);
+        console.log('this.filterSelected: ', this.filterSelected);
+
         const table = this.selectedColumn.table_id;
         const column_type  = this.selectedColumn.column_type;
         const column = this.selectedColumn.column_name;
@@ -88,6 +92,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
+        const filterBeforeGrouping = !this.whereHavingSwitch();
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -98,10 +103,16 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             selectedRange,
             valueListSource,
             autorelation,
-            joins
+            joins,
+            filterBeforeGrouping,
         });
+
+        console.log('const filter: ', filter);
         
         this.filter.selecteds.push(filter);
+
+        console.log('this.filter: ', this.filter);
+        console.log('this.display: ', this.display);
 
         this.carregarFilters();
 
@@ -223,7 +234,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     whereHavingSwitch() {
-        console.log('Cambiooooooooo')
+        console.log('this.filterBeforeAfter: ', this.filterBeforeAfter)
+        return this.filterBeforeAfter.switch;
     }
 
     processPickerEvent(event){
@@ -250,6 +262,9 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filter.switch = false;
         this.filterSelected = undefined;
         this.filterValue = {};
+
+        console.log('------ this.filter.selecteds ---- ', this.filter.selecteds);
+
         this.onClose(EdaDialogCloseEvent.NONE, this.filter.selecteds);
     }
 
