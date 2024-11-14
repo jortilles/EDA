@@ -270,7 +270,7 @@
                         <p *ngIf="filtre.filter_elements.length === 0" class="d-flex align-items-center">
                             <b class="mr-2">
                                 * {{ controller.params.selectedColumn.display_name.default }} is
-                                {{ filtre.filter_type }}
+                                {{ filtre.filter_type }} ({{filtre.filterBeforeGrouping ? ' WHERE ' : ' HAVING '}})
                             </b>
 
                             <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
