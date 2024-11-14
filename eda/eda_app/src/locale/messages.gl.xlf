@@ -4320,8 +4320,20 @@
         <target>El año pasado, completo</target>
       </trans-unit>
       <trans-unit id="whereHavingMessage">
-        <source>WHERE: Filtrar antes de agrupar / HAVING: Filtrar una vez agrupado</source>
-        <target>WHERE: Filtrar antes de agrupar / HAVING: Filtrar despois de agrupar</target>
+        <source>WHERE : Filtrar antes de agrupar / HAVING : Filtrar una vez agrupado</source>
+        <target>WHERE : Filtrar antes de agrupar / HAVING : Filtrar despois de agrupar</target>
+      </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>WHERE : Primero filtra y luego agrupa</source>
+        <target>WHERE : Filtra primeiro e despois agrupa</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>HAVING : Primero agrupa y luego filtra</source>
+        <target>HAVING : Agrupa primeiro e despois filtra</target>
+      </trans-unit>
+      <trans-unit id="whereHavingMessageLocked">
+        <source>Switch bloqueado</source>
+        <target>Switch bloqueado</target>
       </trans-unit>
     </body>
   </file>

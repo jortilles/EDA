@@ -50,7 +50,10 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public limitSelectionFields: number;
 
     // Tooltip
-    public whereHavingMessage: string = $localize`:@@whereHavingMessage:WHERE: Filtrar antes de agrupar / HAVING: Filtrar una vez agrupado`;
+    public whereHavingMessage: string = $localize`:@@whereHavingMessage:WHERE : Filtrar antes de agrupar / HAVING : Filtrar una vez agrupado`;
+    public whereMessage: string = $localize`:@@whereMessage:WHERE : Primero filtra y luego agrupa`;
+    public havingMessage: string = $localize`:@@havingMessage:HAVING : Primero agrupa y luego filtra`;
+    public whereHavingMessageLocked: string = $localize`:@@whereHavingMessageLocked:Switch bloqueado`;
 
 
     constructor(
@@ -122,6 +125,9 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filterSelected = undefined; // filtre seleccionat cap
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
+
+        this.filterBeforeAfter.switch = false;
+        console.log('this.filterBeforeAfter.switch', this.filterBeforeAfter.switch);
     }
 
     carrega() {

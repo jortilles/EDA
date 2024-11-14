@@ -4316,8 +4316,20 @@
         <target>L'any passat, complet</target>
       </trans-unit>
       <trans-unit id="whereHavingMessage">
-        <source>WHERE: Filtrar antes de agrupar / HAVING: Filtrar una vez agrupado</source>
-        <target>WHERE: Filtrar abans d'agrupar / HAVING: Filtrar un cop agrupat</target>
+        <source>WHERE : Filtrar antes de agrupar / HAVING : Filtrar una vez agrupado</source>
+        <target>WHERE : Filtrar abans d'agrupar / HAVING : Filtrar un cop agrupat</target>
+      </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>WHERE : Primero filtra y luego agrupa</source>
+        <target>WHERE : Primer filtra i després agrupa</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>HAVING : Primero agrupa y luego filtra</source>
+        <target>HAVING : Primer agrupa i després filtra</target>
+      </trans-unit>
+      <trans-unit id="whereHavingMessageLocked">
+        <source>Switch bloqueado</source>
+        <target>Switch bloquejat</target>
       </trans-unit>
     </body>
   </file>

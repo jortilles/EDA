@@ -3946,8 +3946,20 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <target>W zeszłym roku, kompletne</target>
 </trans-unit>
 <trans-unit id="whereHavingMessage">
-  <source>WHERE: Filtrar antes de agrupar / HAVING: Filtrar una vez agrupado</source>
-  <target>WHERE: Filtruj przed grupowaniem / HAVING: Filtruj po grupowaniu</target>
+  <source>WHERE : Filtrar antes de agrupar / HAVING : Filtrar una vez agrupado</source>
+  <target>WHERE : Filtruj przed grupowaniem / HAVING : Filtruj po grupowaniu</target>
+</trans-unit>
+<trans-unit id="whereMessage">
+  <source>WHERE : Primero filtra y luego agrupa</source>
+  <target>WHERE : Najpierw filtruj, a potem grupuj</target>
+</trans-unit>
+<trans-unit id="havingMessage">
+  <source>HAVING : Primero agrupa y luego filtra</source>
+  <target>HAVING : Najpierw grupuj, potem filtruj</target>
+</trans-unit>
+<trans-unit id="whereHavingMessageLocked">
+  <source>Switch bloqueado</source>
+  <target>Zablokowany przełącznik</target>
 </trans-unit>
 </body>
 </file>
