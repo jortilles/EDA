@@ -97,12 +97,17 @@
                             <i class="pi pi-info-circle" style="cursor: pointer; margin-top: -5px;" [pTooltip]="whereHavingMessage" tooltipPosition="top"></i>
                         </span>
         
-                        <p-inputSwitch [(ngModel)]="filterBeforeAfter.switch" [disabled]="display.switchButton"
-                            (onChange)="whereHavingSwitch()">
-                        </p-inputSwitch>
-    
-                        <span class="state-label" *ngIf="filterBeforeAfter.switch">Having</span>
-                        <span class="state-label" *ngIf="!filterBeforeAfter.switch">Where</span>
+                        <i [pTooltip]="'Mensaje que hay que modificar'"  tooltipPosition="top" >
+                            <p-inputSwitch [(ngModel)]="filterBeforeAfter.switch" [disabled]="display.switchButton" 
+                                (onChange)="whereHavingSwitch()">
+                            </p-inputSwitch>
+                        </i>
+
+                        <div [pTooltip]="'Mensaje que hay que modificar'"  tooltipPosition="top">
+                            <span class="state-label" *ngIf="filterBeforeAfter.switch">HAVING</span>
+                            <span class="state-label" *ngIf="!filterBeforeAfter.switch">WHERE</span>
+                        </div>
+
                     </div>
                 </div>
             </ng-container>
@@ -271,7 +276,7 @@
                             <b class="mr-2">
                                 * {{ controller.params.selectedColumn.display_name.default }} is
                                 {{ filtre.filter_type }} ({{filtre.filterBeforeGrouping ? ' WHERE ' : ' HAVING '}})
-                            </b>
+                            </b> <span [pTooltip]="'Mensaje que hay que modificar'"  tooltipPosition="left"><b>({{filtre.filterBeforeGrouping ? ' WHERE ' : ' HAVING '}}) &nbsp;</b></span>
 
                             <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                         </p>
@@ -280,8 +285,8 @@
                             <b class="mr-2">
                                 * {{ controller.params.selectedColumn.display_name.default }}
                                 {{ filtre.filter_type }}
-                                "{{ filtre.filter_elements[0].value1 }}" ({{filtre.filterBeforeGrouping ? ' WHERE ' : ' HAVING '}})
-                            </b>
+                                "{{ filtre.filter_elements[0].value1 }}" 
+                            </b> <span [pTooltip]="'Mensaje que hay que modificar'"  tooltipPosition="left"><b>({{filtre.filterBeforeGrouping ? ' WHERE ' : ' HAVING '}}) &nbsp;</b></span>
 
                             <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                         </p>
@@ -290,8 +295,8 @@
                             <b class="mr-2">
                                 * {{ controller.params.selectedColumn.display_name.default }}
                                 {{ filtre.filter_type }}
-                                "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}" ({{filtre.filterBeforeGrouping ? ' WHERE ' : ' HAVING '}})
-                            </b>
+                                "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
+                            </b> <span [pTooltip]="'Mensaje que hay que modificar'"  tooltipPosition="left"><b>({{filtre.filterBeforeGrouping ? ' WHERE ' : ' HAVING '}}) &nbsp;</b></span>
 
                             <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                         </p>
