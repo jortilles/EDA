@@ -40,6 +40,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     };
     public filterBeforeAfter = {
         switch: false,
+        name: 'WHERE' // Valor por default es WHERE, pero también cambia a HAVING
     }
 
     public inputType: string;
@@ -234,7 +235,14 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     whereHavingSwitch() {
+        if(this.filterBeforeAfter.switch){
+            this.filterBeforeAfter.name = 'HAVING'
+        } else {
+            this.filterBeforeAfter.name = 'WHERE'
+        }
+
         console.log('this.filterBeforeAfter: ', this.filterBeforeAfter)
+
         return this.filterBeforeAfter.switch;
     }
 
