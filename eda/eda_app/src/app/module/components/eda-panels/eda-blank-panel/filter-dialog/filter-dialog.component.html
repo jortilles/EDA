@@ -97,7 +97,7 @@
                             <i class="pi pi-info-circle" style="cursor: pointer; margin-top: -5px;" [pTooltip]="whereHavingMessage" tooltipPosition="top"></i>
                         </span>
         
-                        <p-inputSwitch [(ngModel)]="filterBeforeAfter.switch"
+                        <p-inputSwitch [(ngModel)]="filterBeforeAfter.switch" [disabled]="display.switchButton"
                             (onChange)="whereHavingSwitch()">
                         </p-inputSwitch>
     
