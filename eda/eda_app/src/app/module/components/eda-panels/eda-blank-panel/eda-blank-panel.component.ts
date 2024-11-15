@@ -1204,13 +1204,7 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public runManualQuery = () => {
         this.hiddenButtonExecuter = true;
-
         // Para adquirir los valores de ejecución
-        const config = this.panelChartConfig.config.getConfig(); // Adquiera la configuración config
-        this.currentQuery = this.newCurrentQuery(this.currentQuery, this.initAxes(this.currentQuery)); // Reordeno el currentQuery                
-        config['ordering'] = [{axes: this.initAxes(this.currentQuery)}]; // Agrego el nuevo axes a la config
-        this.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
-
         QueryUtils.runManualQuery(this)
     };
 
