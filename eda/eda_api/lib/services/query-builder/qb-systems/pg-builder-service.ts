@@ -422,7 +422,7 @@ export class PgBuilderService extends QueryBuilderService {
             //  Si no se agrega
             if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric'  ||  // las columnas numericas que no se agregan
               ( el.column_type == 'numeric'  && el.aggregation_type == 'none' ) ){ // a no ser que se diga que no se agrega
-               grouping.push(`\`${el.display_name}\``);
+               grouping.push(`"${el.display_name}"`);
             }
           }
         }
