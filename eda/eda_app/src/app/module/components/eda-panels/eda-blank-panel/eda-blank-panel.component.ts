@@ -642,13 +642,21 @@ export class EdaBlankPanelComponent implements OnInit {
 
         // Referencia a config
         const configCrossTable = this.panelChartConfig.config.getConfig()
-
         
         if(subType === 'crosstable'){
             
             if(config===null){
-                this.axes = this.initAxes(this.currentQuery);
-                configCrossTable['ordering'] = [{axes: this.axes}];
+
+                if(Object.keys(this.copyConfigCrossTable).length !== 0) {
+                    this.axes = this.copyConfigCrossTable['ordering'][0].axes;
+                    configCrossTable['ordering'] = [{axes: this.axes}];
+
+                } else {
+                    this.axes = this.initAxes(this.currentQuery);
+                    configCrossTable['ordering'] = [{axes: this.axes}];
+                }
+
+
             } else {
 
                 if(config['config']['ordering'] === undefined) {
