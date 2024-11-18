@@ -6,18 +6,16 @@ import ManagerConnectionService from '../../services/connection/manager-connecti
 import ConnectionModel from './model/connection.model';
 import { EnCrypterService } from '../../services/encrypter/encrypter.service';
 import BigQueryConfig from './model/BigQueryConfig.model';
-import CachedQuery, { ICachedQuery } from '../../services/cache-service/cached-query.model';
-import { Mongoose, QueryOptions } from 'mongoose';
+import CachedQuery  from '../../services/cache-service/cached-query.model';
+import { QueryOptions } from 'mongoose';
 import { upperCase } from 'lodash';
 import Group from '../../module/admin/groups/model/group.model';
-import { json } from 'body-parser';
 import _ from 'lodash';
 const cache_config = require('../../../config/cache.config');
 
 export class DataSourceController {
 
     static async GetDataSources(req: Request, res: Response, next: NextFunction) {
-        console.log('GetDataSources.... migas de pan...');
         // Esto es pare recuperar los filtros externos.
         const filter = DataSourceController.returnExternalFilter(req);
         try {
@@ -61,7 +59,7 @@ export class DataSourceController {
 
     /** aQUSTA FUNCIÓ RETORNA TOTS ELS DATASOURCES */
     static async GetDataSourcesNames(req: Request, res: Response, next: NextFunction) {
-        console.log('GetDataSourcesNames.... migas de pan dos...');
+        
         let options: QueryOptions = {};
         // Esto es pare recuperar los filtros externos.
         const filter = DataSourceController.returnExternalFilter(req);

@@ -878,7 +878,6 @@ export class DashboardController {
       let groupCan =  0;
       userGroups.forEach(
         group=>{
-          console.log(group);
           if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
             && r.permission == true 
             && r.groups?.includes(group) 
@@ -1165,10 +1164,9 @@ export class DashboardController {
 
       /**cached query */
       let cacheEnabled = false;
-        // dataModelObject.ds.metadata.cache_config &&
-        // dataModelObject.ds.metadata.cache_config.enabled === true;
-    
-        console.log('cacheEnabled', cacheEnabled)
+      dataModelObject.ds.metadata.cache_config &&
+      dataModelObject.ds.metadata.cache_config.enabled === true;
+
       const cachedQuery = cacheEnabled
         ? await CachedQueryService.checkQuery(req.body.model_id, query)
         : null
