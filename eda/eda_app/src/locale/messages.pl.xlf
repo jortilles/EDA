@@ -3946,8 +3946,8 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <target>W zeszłym roku, kompletne</target>
 </trans-unit>
 <trans-unit id="whereHavingMessage">
-  <source>WHERE : Filtrar antes de agrupar / HAVING : Filtrar una vez agrupado</source>
-  <target>WHERE : Filtruj przed grupowaniem / HAVING : Filtruj po grupowaniu</target>
+  <source>WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar una vez agrupado</source>
+  <target>WHERE : Filtruj przed grupowaniem. \nHAVING : Filtruj po grupowaniu</target>
 </trans-unit>
 <trans-unit id="whereMessage">
   <source>WHERE : Primero filtra y luego agrupa</source>

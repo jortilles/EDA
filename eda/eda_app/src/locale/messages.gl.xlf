@@ -4320,8 +4320,8 @@
         <target>El año pasado, completo</target>
       </trans-unit>
       <trans-unit id="whereHavingMessage">
-        <source>WHERE : Filtrar antes de agrupar / HAVING : Filtrar una vez agrupado</source>
-        <target>WHERE : Filtrar antes de agrupar / HAVING : Filtrar despois de agrupar</target>
+        <source>WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar una vez agrupado</source>
+        <target>WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar despois de agrupar</target>
       </trans-unit>
       <trans-unit id="whereMessage">
         <source>WHERE : Primero filtra y luego agrupa</source>

@@ -4316,8 +4316,8 @@
         <target>L'any passat, complet</target>
       </trans-unit>
       <trans-unit id="whereHavingMessage">
-        <source>WHERE : Filtrar antes de agrupar / HAVING : Filtrar una vez agrupado</source>
-        <target>WHERE : Filtrar abans d'agrupar / HAVING : Filtrar un cop agrupat</target>
+        <source>WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar una vez agrupado</source>
+        <target>WHERE : Filtrar abans d'agrupar. \nHAVING : Filtrar un cop agrupat</target>
       </trans-unit>
       <trans-unit id="whereMessage">
         <source>WHERE : Primero filtra y luego agrupa</source>
