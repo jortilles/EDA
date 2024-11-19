@@ -642,6 +642,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         // Referencia a config
         const configCrossTable = this.panelChartConfig.config.getConfig()
+
         
         if(subType === 'crosstable'){
             
@@ -650,19 +651,20 @@ export class EdaBlankPanelComponent implements OnInit {
                 if(Object.keys(this.copyConfigCrossTable).length !== 0) {
                     this.axes = this.copyConfigCrossTable['ordering'][0].axes;
                     configCrossTable['ordering'] = [{axes: this.axes}];
-
                 } else {
                     this.axes = this.initAxes(this.currentQuery);
                     configCrossTable['ordering'] = [{axes: this.axes}];
                 }
 
-
             } else {
-
                 if(config['config']['ordering'] === undefined) {
                     this.axes = this.initAxes(this.currentQuery);
                 } else {
-                    this.axes = config['config']['ordering'][0]['axes']
+                    if(config['config']['ordering'].length === 0) {
+                        this.axes = this.initAxes(this.currentQuery);
+                    } else {
+                        this.axes = config['config']['ordering'][0]['axes']
+                    }
                 }
             }
 
