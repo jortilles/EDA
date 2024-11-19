@@ -213,9 +213,6 @@ export class DashboardController {
       const shared = []
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'shared') {
-          // Obtain the name of the data source
-          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
-          
           shared.push(dashboard)
         }
       }
@@ -887,7 +884,6 @@ export class DashboardController {
       let groupCan =  0;
       userGroups.forEach(
         group=>{
-          console.log(group);
           if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
             && r.permission == true 
             && r.groups?.includes(group) 
@@ -1174,10 +1170,9 @@ export class DashboardController {
 
       /**cached query */
       let cacheEnabled = false;
-        // dataModelObject.ds.metadata.cache_config &&
-        // dataModelObject.ds.metadata.cache_config.enabled === true;
-    
-        console.log('cacheEnabled', cacheEnabled)
+      dataModelObject.ds.metadata.cache_config &&
+      dataModelObject.ds.metadata.cache_config.enabled === true;
+
       const cachedQuery = cacheEnabled
         ? await CachedQueryService.checkQuery(req.body.model_id, query)
         : null

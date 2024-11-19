@@ -193,8 +193,8 @@ export class EdaBlankPanelComponent implements OnInit {
     public axes:any[]=[]; 
     public newAxesChanged: boolean = false;
     public graphicType: string; // extraemos el tipo de gráfico al inicio y al ejecutar
-    public configCrossTable: any;
-    public isNewAxes: boolean = false;
+    public copyConfigCrossTable: any = {};
+
 
     // Ocultar el boton de ejecutar
     public hiddenButtonExecuter: boolean = false;
@@ -620,8 +620,6 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
-
-        this.configCrossTable = config
         
         this.graphicType = type; // Actualizamos el tipo de variable para el componente drag-drop
         this.graficos = {};
@@ -642,25 +640,32 @@ export class EdaBlankPanelComponent implements OnInit {
         // Controlar si se ejecuta una tabla cruzada
         // Se verifica si la longitud de la variable axes
 
+        // Referencia a config
         const configCrossTable = this.panelChartConfig.config.getConfig()
         
         if(subType === 'crosstable'){
+            
+            if(config===null){
 
-            if(this.isNewAxes){
-                this.axes = this.initAxes(this.currentQuery);
-                configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
-                this.isNewAxes = false;
-            }
+                if(Object.keys(this.copyConfigCrossTable).length !== 0) {
+                    this.axes = this.copyConfigCrossTable['ordering'][0].axes;
+                    configCrossTable['ordering'] = [{axes: this.axes}];
 
-            if( (((config===null) || config['config']['ordering'] === undefined)) ) {
-                this.axes = this.initAxes(this.currentQuery);
-                configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
-            } else{
-                if(config!==null && config['config']['ordering'].length !==0) {
+                } else {
+                    this.axes = this.initAxes(this.currentQuery);
+                    configCrossTable['ordering'] = [{axes: this.axes}];
+                }
+
+
+            } else {
+
+                if(config['config']['ordering'] === undefined) {
+                    this.axes = this.initAxes(this.currentQuery);
+                } else {
                     this.axes = config['config']['ordering'][0]['axes']
-                    configCrossTable['ordering'] = [{axes: this.axes}]; // Agrego el nuevo axes a la config
                 }
             }
+
         }
 
     }
@@ -670,7 +675,13 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     public getChartStyles( chart: string) {
         if (this.panel.content && this.panel.content.chart === chart) {
-            return new ChartConfig(this.panel.content.query.output.config);
+
+            if(chart === 'crosstable' && Object.keys(this.copyConfigCrossTable).length !== 0) {
+                return new ChartConfig(this.copyConfigCrossTable);
+            } else {
+                return new ChartConfig(this.panel.content.query.output.config);
+            }
+
         } else {
             return null;
         }
@@ -864,7 +875,7 @@ export class EdaBlankPanelComponent implements OnInit {
         const filterInx = this.globalFilters.findIndex((gf: any) => gf.filter_id === globalFilter.filter_id)
 
         if (filterInx != -1) {
-            this.globalFilters.splice(this.globalFilters[filterInx], 1);
+            this.globalFilters.splice(filterInx, 1);
             this.globalFilters.push(globalFilter);
         } else {
             this.globalFilters.push(globalFilter);
@@ -1165,13 +1176,13 @@ export class EdaBlankPanelComponent implements OnInit {
         try {
             
             let vx = currenQuery.find( (v:any) => v.column_type==='text')
-            let objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.description.default}
+            let objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
             let itemX = [objx]
 
             let itemY = [];
             currenQuery.forEach( (v:any) => {
                 if(v.column_type!=='numeric'){
-                    itemY.push({column_name: v.column_name, column_type: v.column_type, description: v.description.default})
+                    itemY.push({column_name: v.column_name, column_type: v.column_type, description: v.display_name.default})
                 }
             })
             itemY.shift()
@@ -1179,9 +1190,14 @@ export class EdaBlankPanelComponent implements OnInit {
             let itemZ = [];
             currenQuery.forEach( (v:any) => {
                 if(v.column_type==='numeric'){
-                    itemZ.push({column_name: v.column_name, column_type: v.column_type, description: v.description.default})
+                    itemZ.push({column_name: v.column_name, column_type: v.column_type, description: v.display_name.default})
                 }
             })
+
+            if(itemY.length===0){
+                itemY.push(itemZ[0]);
+                itemZ.shift();
+            }
 
             return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
             
@@ -1196,8 +1212,7 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public runManualQuery = () => {
         this.hiddenButtonExecuter = true;
-        // isNewAxes --> Verifica si la construcción del axes es nueva.
-        this.isNewAxes = true;
+        // Para adquirir los valores de ejecución
         QueryUtils.runManualQuery(this)
     };
 
@@ -1447,10 +1462,10 @@ export class EdaBlankPanelComponent implements OnInit {
     public newAxesOrdering(newAxes) {
         this.axes = newAxes;
         this.newAxesChanged = true; // Indica que se utilizara la tabla cruzada generica
-        this.isNewAxes = false;
         const config = this.panelChartConfig.config.getConfig(); // Adquiera la configuración config
         this.currentQuery = this.newCurrentQuery(this.currentQuery, newAxes); // Reordeno el currentQuery                
         config['ordering'] = [{axes: newAxes}]; // Agrego el nuevo axes a la config
+        this.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
     }
 

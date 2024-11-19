@@ -178,6 +178,7 @@ export const QueryUtils = {
   * Runs actual query when execute button is pressed to check for heavy queries
   */
   runManualQuery: (ebp: EdaBlankPanelComponent) => {
+
     /**No check in sql mode */
     if (ebp.selectedQueryMode == 'SQL') {
       QueryUtils.runQuery(ebp, false);
@@ -202,10 +203,12 @@ export const QueryUtils = {
 
       // Aparatado que inicia el initAxes en caso el ordering este vacio en la config
       if(ebp.chartForm.controls.chart.value!==null) {
-        if(ebp.chartForm.controls.chart.value.subValue === 'crosstable' && !ebp.newAxesChanged) {
-          const config = ebp.panelChartConfig.config.getConfig();
-          ebp.axes = ebp.initAxes(ebp.currentQuery);
-          config['ordering'] = [{axes: ebp.axes}];;
+        // Verifica un nuevo cambio en los Axes desde que se inicia la edición de la tabla cruzada
+        if(!ebp.newAxesChanged) {
+          const config = ebp.panelChartConfig.config.getConfig(); // Adquiera la configuración config
+          ebp.currentQuery = ebp.newCurrentQuery(ebp.currentQuery, ebp.initAxes(ebp.currentQuery)); // Reordeno el currentQuery                
+          config['ordering'] = [{axes: ebp.initAxes(ebp.currentQuery)}]; // Agrego el nuevo axes a la config
+          ebp.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
         }
       }
 

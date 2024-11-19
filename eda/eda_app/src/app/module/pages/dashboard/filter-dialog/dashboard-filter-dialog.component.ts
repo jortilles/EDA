@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 @Component({
     selector: 'dashboard-filter-dialog',
     templateUrl: './dashboard-filter-dialog.component.html',
-    styleUrls: ['../dashboard.component.css']
+    styleUrls: ['./dashboard-filter-dialog.component.css']
 })
 
 export class DashboardFilterDialogComponent extends EdaDialogAbstract {

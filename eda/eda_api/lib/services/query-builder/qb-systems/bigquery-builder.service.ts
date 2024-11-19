@@ -302,7 +302,7 @@ export class BigQueryBuilderService extends QueryBuilderService {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='numeric'){
-          columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  , ${el.minimumFractionDigits}) as "${el.display_name}"`);
+          columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  , ${el.minimumFractionDigits})  ${whatIfExpression} as "${el.display_name}"`);
         }else if(el.column_type=='date'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='coordinate'){
@@ -380,8 +380,9 @@ export class BigQueryBuilderService extends QueryBuilderService {
           }
           // GROUP BY
           //  Si es una única columna numérica no se agrega.
-          if(this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric'){
-            grouping.push(`\`${el.display_name}\``);
+          if(this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ||  // las columnas numericas que no se agregan
+            ( el.column_type == 'numeric'  && el.aggregation_type == 'none' ) ){ // a no ser que se diga que no se agrega
+           grouping.push(`\`${el.display_name}\``);
           }
         }
       }

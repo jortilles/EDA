@@ -1166,7 +1166,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 let img = new Image();
                 img.src = dataUrl;
                 img.onload = () => {
-                    let pdf = new jspdf('l', 'pt', [img.width, img.height]);
+                    let pdf = new jspdf();
                     let width = pdf.internal.pageSize.getWidth();
                     let height = pdf.internal.pageSize.getHeight();
                     pdf.addImage(img, 'JPEG', 0, 0, width, height);

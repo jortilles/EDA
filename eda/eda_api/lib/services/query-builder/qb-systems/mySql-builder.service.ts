@@ -10,9 +10,9 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
     tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
+    
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
-
 
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
     if (forSelector === true) {
@@ -294,7 +294,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
         }else if(el.column_type=='numeric'){
-          columns.push(`cast( ${el.SQLexpression} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
+          columns.push(`cast( ${el.SQLexpression} as decimal(32,${el.minimumFractionDigits})) ${whatIfExpression}  as \`${el.display_name}\``);
         }else if(el.column_type=='date'){
           columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
         }else if(el.column_type=='coordinate'){
@@ -331,13 +331,13 @@ export class MySqlBuilderService extends QueryBuilderService {
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`cast( count( distinct ${table_column}) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+            columns.push(`cast( count( distinct ${table_column}) as decimal(32,${el.minimumFractionDigits||0}) ) ${whatIfExpression}  as \`${el.display_name}\``);
           } else {
-            columns.push(`cast(${el.aggregation_type}(${table_column}) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+            columns.push(`cast(${el.aggregation_type}(${table_column}) as decimal(32,${el.minimumFractionDigits||0}) )  ${whatIfExpression} as \`${el.display_name}\``);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`cast(${table_column} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
+            columns.push(`cast(${table_column} as decimal(32,${el.minimumFractionDigits})) ${whatIfExpression} as \`${el.display_name}\``);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
@@ -366,7 +366,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
           } else {
 
-              columns.push(`${table_column} as \`${el.display_name}\``);
+              columns.push(`${table_column}  as \`${el.display_name}\``);
 
           }
 
@@ -395,14 +395,15 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
           } else {
             //  Si es una única columna numérica no se agrega.
-            if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
-              grouping.push(`${table_column}`);
+            if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric'  ||  // las columnas numericas que no se agregan
+               ( el.column_type == 'numeric'  && el.aggregation_type == 'none' ) ){ // a no ser que se diga que no se agrega
+              grouping.push(`\`${el.display_name}\``);
             }
           }
         }
       }
     });
-    
+
     return [columns, grouping];
   }
 
