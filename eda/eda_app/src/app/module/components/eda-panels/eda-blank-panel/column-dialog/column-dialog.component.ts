@@ -57,6 +57,17 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
 
+    public filterBeforeAfter = {
+        switch: false,
+        name: 'WHERE' // Valor por default es WHERE, pero también cambia a HAVING
+    }
+
+    // Tooltip
+    public whereHavingMessage: string = $localize`:@@whereHavingMessage:WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar una vez agrupado.`;
+    public whereMessage: string = $localize`:@@whereMessage:WHERE : Primero filtra y luego agrupa`;
+    public havingMessage: string = $localize`:@@havingMessage:HAVING : Primero agrupa y luego filtra`;
+    public whereHavingMessageLocked: string = $localize`:@@whereHavingMessageLocked:Switch bloqueado`;
+
     constructor(
         private dashboardService: DashboardService,
         private chartUtils: ChartUtilsService,
@@ -124,6 +135,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
+        const filterBeforeGrouping = !this.whereHavingSwitch();
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -134,7 +146,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             selectedRange,
             valueListSource,
             autorelation,
-            joins
+            joins,
+            filterBeforeGrouping,
         });
 
         this.filter.selecteds.push(filter);        
@@ -619,5 +632,17 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {
         return this.controller.close(event, response);
+    }
+
+    whereHavingSwitch() {
+        if(this.filterBeforeAfter.switch){
+            this.filterBeforeAfter.name = 'HAVING'
+        } else {
+            this.filterBeforeAfter.name = 'WHERE'
+        }
+
+        console.log('this.filterBeforeAfter: ', this.filterBeforeAfter)
+
+        return this.filterBeforeAfter.switch;
     }
 }
