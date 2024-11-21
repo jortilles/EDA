@@ -1175,9 +1175,11 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public initAxes(currenQuery) {
 
+        console.log('currenQuery: ', currenQuery);
+
         try {
             
-            let vx = currenQuery.find( (v:any) => v.column_type==='text')
+            let vx = currenQuery.find( (v:any) => v.column_type==='text' || v.column_type==='date')
             let objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
             let itemX = [objx]
 
@@ -1200,6 +1202,10 @@ export class EdaBlankPanelComponent implements OnInit {
                 itemY.push(itemZ[0]);
                 itemZ.shift();
             }
+
+            console.log('itemX: ', itemX)
+            console.log('itemY: ', itemY)
+            console.log('itemZ: ', itemZ)
 
             return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
             
