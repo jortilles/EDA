@@ -158,6 +158,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.filterSelected = undefined; // filtre seleccionat cap
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
+
+        this.filterBeforeAfter.switch = false;
     }
 
     removeFilter(item: any) {
