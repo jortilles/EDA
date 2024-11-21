@@ -642,9 +642,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         } else {
             this.filterBeforeAfter.name = 'WHERE'
         }
-
-        console.log('this.filterBeforeAfter: ', this.filterBeforeAfter)
-
         return this.filterBeforeAfter.switch;
     }
 }

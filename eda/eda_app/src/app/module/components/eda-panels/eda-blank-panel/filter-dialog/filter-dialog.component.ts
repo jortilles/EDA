@@ -106,14 +106,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             joins,
             filterBeforeGrouping,
         });
-
-        console.log('const filter: ', filter);
         
         this.filter.selecteds.push(filter);
-
-        console.log('this.filter: ', this.filter);
-        console.log('this.display: ', this.display);
-
         this.carregarFilters();
 
         /* Reset Filter Form */
@@ -123,7 +117,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filter.range = null;
 
         this.filterBeforeAfter.switch = false;
-        console.log('this.filterBeforeAfter.switch', this.filterBeforeAfter.switch);
     }
 
     carrega() {
@@ -242,9 +235,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         } else {
             this.filterBeforeAfter.name = 'WHERE'
         }
-
-        console.log('this.filterBeforeAfter: ', this.filterBeforeAfter)
-
         return this.filterBeforeAfter.switch;
     }
 
@@ -272,9 +262,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filter.switch = false;
         this.filterSelected = undefined;
         this.filterValue = {};
-
-        console.log('------ this.filter.selecteds ---- ', this.filter.selecteds);
-
         this.onClose(EdaDialogCloseEvent.NONE, this.filter.selecteds);
     }
 
