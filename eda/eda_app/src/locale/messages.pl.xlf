@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<xliff version="1.2"
-  xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<xliff version="1.2"  xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en-US" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="placeholderInputUsuario" datatype="html">
@@ -4025,6 +4024,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
 <context context-type="linenumber">4</context>
 </context-group>
+</trans-unit>
   <trans-unit id="noDataAllowed">
     <source>Este panel no está disponible por falta de permisos</source>
     <target>Ten Panel nie jest dostępny ze względu na brak uprawnień</target>
@@ -4054,6 +4054,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
           <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> to oferowana usługa w chmurze
           <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> o
           <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>.
+  </target>
 </trans-unit>
 
 
@@ -4196,7 +4197,8 @@ Edalitics działa z kodem
 Te permite llamar a una URL que haga una acción que quieras invocar. 
 Puede ser una llamada a una api, a un endpoint de una app
 o incluso invocar procesos de carga desde una llamada http. 
-Una vez configurado podrás invocarlo siempre que que quieras desde el botón.</source>
+Una vez configurado podrás invocarlo siempre que que quieras desde el botón.
+</source>
     <target>Możesz skonfigurować akcję niestandardową, którą chcesz wykonać.
 Umożliwia wywołanie adresu URL, który wykonuje akcję, którą chcesz wywołać.
 Może to być wywołanie API, punktu końcowego aplikacji
@@ -4225,15 +4227,15 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   </trans-unit> 
 
   <trans-unit id="IncorrectFile">
-  <source>Archivo incorrecto, verifique que el formato del archivo sea json o geojson.</source>
-  <target>Zły plik. Sprawdź, czy format pliku to json lub geojson.</target>
+    <source>Archivo incorrecto, verifique que el formato del archivo sea json o geojson.</source>
+    <target>Zły plik. Sprawdź, czy format pliku to json lub geojson.</target>
   </trans-unit>
 
 
-        <trans-unit id="chartTypesKPIBAR">
+      <trans-unit id="chartTypesKPIBAR">
         <source>KPI + Gráfico de Barras</source>
         <target>KPI + Wykres słupkowy</target>
-      </trans-unit>
+  </trans-unit>
       
       <trans-unit id="chartTypesKPILINE">
         <source>KPI + Gráfico de Lineas</source>
@@ -4269,7 +4271,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <trans-unit id="noMouseH6">
         <source>Activar funciones del mouse</source>
         <target>Aktywuj funkcje myszy</target>
-  </trans-unit>   
+  </trans-unit> 
 </body>
 </file>
 </xliff>
