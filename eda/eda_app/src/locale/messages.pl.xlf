@@ -4025,6 +4025,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="sourcefile">app/module/pages/about/about.component.html</context>
 <context context-type="linenumber">4</context>
 </context-group>
+</trans-unit>
   <trans-unit id="noDataAllowed">
     <source>Este panel no está disponible por falta de permisos</source>
     <target>Ten Panel nie jest dostępny ze względu na brak uprawnień</target>
