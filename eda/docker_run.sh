@@ -17,6 +17,9 @@ else
         mongod --dbpath eda/mongo/data  --fork --logpath eda/mongo/log
 fi
 
+echo "Asumiendo que los paquetes ya están descargados y instalados"
+
+
 if ! $eda_installed
 then
         mongosh --eval 'db.createCollection("users")' EDA
@@ -48,8 +51,8 @@ then
 
 
         cd /eda/eda_app/
-        npm install --legacy-peer-deps
-        npm run build:prod
+ #       npm install --legacy-peer-deps
+ #       npm run build:prod
         rm  -rf /var/www/html
         cp -r  /eda/eda_app/dist/app-eda  /var/www/html
         cp   /eda/000-default.conf /etc/apache2/sites-available
@@ -66,7 +69,7 @@ fi
 if ! $eda_installed
 then
         cd /eda/eda_api
-        npm install
+ #       npm install
 fi
 
 if [ $(pm2 pid server)  -gt 0 ]
