@@ -4269,7 +4269,7 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <trans-unit id="noMouseH6">
         <source>Activar funciones del mouse</source>
         <target>Aktywuj funkcje myszy</target>
-      </trans-unit>   
+  </trans-unit>   
 </body>
 </file>
 </xliff>
