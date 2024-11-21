@@ -642,6 +642,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
         // Referencia a config
         const configCrossTable = this.panelChartConfig.config.getConfig()
+
         
         if(subType === 'crosstable'){
             
@@ -650,19 +651,20 @@ export class EdaBlankPanelComponent implements OnInit {
                 if(Object.keys(this.copyConfigCrossTable).length !== 0) {
                     this.axes = this.copyConfigCrossTable['ordering'][0].axes;
                     configCrossTable['ordering'] = [{axes: this.axes}];
-
                 } else {
                     this.axes = this.initAxes(this.currentQuery);
                     configCrossTable['ordering'] = [{axes: this.axes}];
                 }
 
-
             } else {
-
                 if(config['config']['ordering'] === undefined) {
                     this.axes = this.initAxes(this.currentQuery);
                 } else {
-                    this.axes = config['config']['ordering'][0]['axes']
+                    if(config['config']['ordering'].length === 0) {
+                        this.axes = this.initAxes(this.currentQuery);
+                    } else {
+                        this.axes = config['config']['ordering'][0]['axes']
+                    }
                 }
             }
 
@@ -1173,9 +1175,11 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public initAxes(currenQuery) {
 
+        console.log('currenQuery: ', currenQuery);
+
         try {
             
-            let vx = currenQuery.find( (v:any) => v.column_type==='text')
+            let vx = currenQuery.find( (v:any) => v.column_type==='text' || v.column_type==='date')
             let objx = {column_name: vx.column_name, column_type: vx.column_type, description: vx.display_name.default}
             let itemX = [objx]
 
@@ -1198,6 +1202,10 @@ export class EdaBlankPanelComponent implements OnInit {
                 itemY.push(itemZ[0]);
                 itemZ.shift();
             }
+
+            console.log('itemX: ', itemX)
+            console.log('itemY: ', itemY)
+            console.log('itemZ: ', itemZ)
 
             return [{ itemX: itemX, itemY: itemY, itemZ: itemZ }]
             
