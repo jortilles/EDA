@@ -1441,11 +1441,9 @@ export class DashboardController {
             for (var i = 0; i < results.length; i++) {
               var e = results[i]
               for (var j = 0; j < e.length; j++) {
-                if(oracleDataTypes[j][0]=='int'  ){
                   if ( results[i][j] ==  eda_api_config.null_value ) {
                     results[i][j] = null;
                   }
-                }
               }
             }
           }
