@@ -567,6 +567,8 @@ export class updateModel {
   /** Formats and pushes the final model to MongoDB */
   static async extractJsonModelAndPushToMongo(tables: any, grantedRoles: any, res: any) {
     // Format tables as JSON
+    console.timeLog("UpdateModel", "(Start JSON formatting)");  // AÑADIR AQUÍ - Línea antes de let main_model
+    
     let main_model = await JSON.parse(fs.readFileSync("config/base_datamodel.json", "utf-8"));
     main_model.ds.connection.host = sinergiaDatabase.sinergiaConn.host;
     main_model.ds.connection.database = sinergiaDatabase.sinergiaConn.database;
@@ -577,19 +579,28 @@ export class updateModel {
     main_model.ds.model.tables = tables;
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
 
+    console.timeLog("UpdateModel", "(Model configuration completed)");  // AÑADIR AQUÍ - Después de asignar todos los valores
+
     try {
       const cleanM = new CleanModel();
+      
       main_model = await cleanM.cleanModel(main_model);
+      console.timeLog("UpdateModel", "(Model cleaning completed)");  // AÑADIR AQUÍ - Después de cleanModel
+
       fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, err => {
         if (err) {
           throw err;
         }
       });
+      console.timeLog("UpdateModel", "(Metadata file written)");  // AÑADIR AQUÍ - Después de writeFile
+
       await new pushModelToMongo().pushModel(main_model, res);
+      // No es necesario añadir timeLog aquí ya que pushModel ya tiene su propio console.timeEnd
+
       res.status(200).json({ status: "ok" });
     } catch (e) {
       console.log("Error :", e);
       res.status(500).json({ status: "ko" });
     }
-  }
+}
 }
