@@ -26,241 +26,219 @@
  * MongoDB database and relies on user and role data structures from SinergiaCRM.
  */
 
-import mongoose, {
-  connections,
-  Model,
-  mongo,
-  Mongoose,
-  QueryOptions
-} from 'mongoose'
-import User, { IUser } from '../../admin/users/model/user.model'
-import Group, { IGroup } from '../../admin/groups/model/group.model'
+import mongoose, { connections, Model, mongo, Mongoose, QueryOptions } from "mongoose";
+import User, { IUser } from "../../admin/users/model/user.model";
+import Group, { IGroup } from "../../admin/groups/model/group.model";
 
-mongoose.set('useFindAndModify', false);
+mongoose.set("useFindAndModify", false);
 
 export class userAndGroupsToMongo {
   static async crm_to_eda_UsersAndGroups(users: any, roles: any) {
-    // Sync users and groups from CRM to EDA
-    let mongoUsers = await User.find()
+      console.time("Total usersAndGroupsToMongo");
+      console.log(`Starting sync: ${users.length} users and ${roles.length} role assignments`);
 
-    // Initialize users
-    for (let i = 0; i < users.length; i++) {
-      let existe = mongoUsers.find(e => e.email == users[i].email)
-      if (!existe) {
-        let user = new User({
-          name: users[i].name,
-          email: users[i].email,
-          password: users[i].password,
-          role: []
-        })
-        try {
-          await user.save()
-        } catch (err) {
-          console.log(
-            'usuario ' +
-            user.name +
-            ' (Could not insert into the MongoDB database.)'          )
-        }
-      } else {
-        await User.findOneAndUpdate({ name: users[i].name }, { password: users[i].password });
-      }
-    }
+      // Sync users and groups from CRM to EDA
+      console.time("Initial User Query");
+      let mongoUsers = await User.find();
+      console.timeEnd("Initial User Query");
+      console.log(`Found ${mongoUsers.length} existing users in MongoDB`);
 
-    // Initialize groups
-    let mongoGroups = await Group.find()
-    mongoUsers = await User.find()
-    const unique_groups = [...new Set(roles.map(item => item.name))]
-
-    for (let i = 0; i < unique_groups.length; i++) {
-      let existe = mongoGroups.find(e => e.name == unique_groups[i])
-      if (
-        !existe &&
-        unique_groups[i] != 'EDA_ADMIN' &&
-        unique_groups[i] != 'EDA_RO' &&
-        unique_groups[i] != 'EDA_DATASOURCE_CREATOR'
-      ) {
-        let group = new Group({
-          role: 'EDA_USER_ROLE',
-          name: unique_groups[i],
-          users: []
-        })
-        try {
-          await group.save()
-          console.log(`Group ${group.name} inserted successfully`)
-        } catch (err) {
-          console.log(`Group ${group.name} already exists, skipped`)
-        }
-      }
-    }
-
-    // Synchronize users and groups
-    await this.syncronizeUsersGroups(mongoUsers, mongoGroups, users, roles);
-  }
-  
-  static async syncronizeUsersGroups(
-    mongoUsers: any,
-    mongoGroups: any,
-    crmUsers: any,
-    crmRoles: any
-  ) {
-    // Remove inactive users from CRM
-    mongoUsers.forEach(a => {
-      let existe = crmUsers.find(u => u.email === a.email);
-      if (existe) {
-        if (
-          a.email !== 'eda@sinergiada.org' &&
-          a.email !== 'eda@jortilles.com' &&
-          a.email !== 'edaanonim@jortilles.com' &&
-          existe.active == 0) {
-            User.deleteOne({ email: a.email })
-              .then(function () {
-              })
-              .catch(function (error) {
-                console.log('Error deleting user:', a.email, 'Details:', error);
-              })
-        }
-      }
-    })
-
-    // Remove deleted CRM groups
-    mongoGroups.forEach(a => {  
-      if( a.name.startsWith('SCRM_') ){
-        let existe = crmRoles.find(u => u.name === a.name);
-        if(!existe){
-          Group.deleteOne( {name: a.name}  ).then( function(){ console.log( a.name +  ' deleted')})
-        }
-      }
-    });
-
-    // Helper functions to check user existence in CRM
-    const userExistsInCRM = (user, crmUsers) => {
-      return crmUsers.some(crmUser => crmUser.email === user.email && crmUser.active == 1); 
-    };
-
-    const userExistedInCRM = (user, crmUsers) => {
-      return crmUsers.some(crmUser => crmUser.email === user.email); 
-    };
-
-    // Synchronize groups and users
-    await mongoGroups.forEach(async (group) => {
-      if (group.name.startsWith('SCRM_')) {
-        // For SCRM_ groups, maintain SDA users and sync with CRM
-        const crmUsersInGroup = crmRoles
-          .filter(role => role.name === group.name)
-          .map(role => mongoUsers.find(u => u.email === role.user_name))
-          .filter(user => user)
-          .map(user => user._id);
-        
-        group.users = [
-          ...group.users.filter(userId => {
-            const user = mongoUsers.find(u => u._id.toString() === userId.toString());
-            return user &&  !userExistsInCRM( user, crmUsers);
-          }),
-          ...crmUsersInGroup
-        ];
-
-        // Add new CRM users to the group
-        const newCrmUsersInGroup = crmRoles
-          .filter(role => role.name === group.name)
-          .map(role => mongoUsers.find(u => u.email === role.user_name &&  userExistsInCRM(u, crmUsers)  ))
-          .filter(user => user && !group.users.includes(user._id))
-          .map(user => user._id);
-          
-        group.users = [...group.users, ...newCrmUsersInGroup];
-
-      } else {
-        // For non-SCRM_ groups, maintain SDA users and update CRM users
-        group.users = group.users.filter(userId => {
-          const user = mongoUsers.find(u => u._id.toString() === userId.toString());
-          if (!user) return false;
-          if (userExistedInCRM(user, crmUsers)) {
-            return userExistsInCRM(user, crmUsers) ;
+      // Initialize users
+      console.time("User Initialization");
+      let usersCreated = 0;
+      let usersUpdated = 0;
+      for (let i = 0; i < users.length; i++) {
+          let existe = mongoUsers.find(e => e.email == users[i].email);
+          if (!existe) {
+              let user = new User({
+                  name: users[i].name,
+                  email: users[i].email,
+                  password: users[i].password,
+                  role: []
+              });
+              try {
+                  await user.save();
+                  usersCreated++;
+              } catch (err) {
+                  console.log('usuario ' + user.name + ' (Could not insert into the MongoDB database.)');
+              }
           } else {
-            return true;
+              await User.findOneAndUpdate({ name: users[i].name }, { password: users[i].password });
+              usersUpdated++;
           }
-        });
       }
-    });
+      console.timeEnd("User Initialization");
+      console.log(`Users processed: ${usersCreated} created, ${usersUpdated} updated`);
 
-    // Update user roles
-    await mongoUsers.forEach(async (user) => {
-      if( userExistsInCRM( user, crmUsers)) { 
-        // Update CRM users, maintain non-SCRM_ roles
-        const nonCRMRoles = user.role.filter(roleId => {
-          const group = mongoGroups.find(g => g._id.toString() === roleId.toString() && !g.name.startsWith('SCRM_')  );
-          return group;
-        });
-
-        // Add CRM roles
-        const crmRolesForUser = crmRoles
-          .filter(role => role.user_name === user.email)
-          .map(role => mongoGroups.find(g => g.name === role.name))
-          .filter(group => group)
-          .map(group => group._id);
-        
-        user.role = [...new Set([...nonCRMRoles, ...crmRolesForUser])];
-      }
-    });
-
-    // Add admin user to EDA_ADMIN group
-    await mongoGroups.find(i => i.name ===  'EDA_ADMIN').users.push('135792467811111111111111')
-    let user = await mongoUsers.find(i => i.email ===  ('eda@jortilles.com') ) ;
-    if(user){
-      user.role.push('135792467811111111111110');
-    }else{
-      user = await mongoUsers.find(i => i.email ===  ('eda@sinergiada.org' ) )
-      if(user){
-        user.role.push('135792467811111111111110');
-      }else{
-        console.log('Error: Failed to assign admin role to user');
-      }
-    }
-
-    // Save changes to database
-    await mongoGroups.forEach(async r => {
-      try {
-        await Group.updateOne({ name: r.name }, { $unset: { users: {} } })
-          .then(function () {
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-      } catch (err) {
-        console.log(err);
-      }
-      try {
-        await Group.updateOne({ name: r.name }, { $addToSet: { users: r.users } })
-          .then(function () {
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-      } catch (err) {
-        console.log(err);
-      }
-    })    
-
-    const newGroupsInMongo =  await Group.find(); 
-    const newGroupsIDInMongo = newGroupsInMongo.map(g=>g._id.toString());
- 
-    // Update user roles
-    await mongoUsers.forEach(async user => {
-      user.role = user.role.filter( r => newGroupsIDInMongo.includes(r.toString() ) )
-      try {
-        await User.updateOne({ email: user.email }, { $unset : {role: {}} })
-          .then(function () {
-          })
-          .catch(function (error) {
-            console.log(error) 
-          })
+      // Initialize groups
+      console.time("Group Initialization");
+      let mongoGroups = await Group.find();
+      mongoUsers = await User.find();
+      const unique_groups = [...new Set(roles.map(item => item.name))];
       
-        await User.updateOne({ email: user.email }, { $addToSet : {role: user.role} })
-          .then(function () {
-          })
-          .catch(function (error) {
-            console.log(error) 
-          })
-      } catch (err) {}
-    })
+      let groupsCreated = 0;
+      for (let i = 0; i < unique_groups.length; i++) {
+          let existe = mongoGroups.find(e => e.name == unique_groups[i]);
+          if (!existe &&
+              unique_groups[i] != 'EDA_ADMIN' &&
+              unique_groups[i] != 'EDA_RO' &&
+              unique_groups[i] != 'EDA_DATASOURCE_CREATOR'
+          ) {
+              let group = new Group({
+                  role: 'EDA_USER_ROLE',
+                  name: unique_groups[i],
+                  users: []
+              });
+              try {
+                  await group.save();
+                  groupsCreated++;
+              } catch (err) {
+                  console.log(`Group ${group.name} already exists, skipped`);
+              }
+          }
+      }
+      console.timeEnd("Group Initialization");
+      console.log(`Groups: ${mongoGroups.length} existing, ${unique_groups.length} unique, ${groupsCreated} created`);
+
+      // Synchronize users and groups
+      console.time("User-Group Synchronization");
+      const stats = await this.syncronizeUsersGroups(mongoUsers, mongoGroups, users, roles);
+      console.timeEnd("User-Group Synchronization");
+      console.log('Synchronization completed:', stats);
+
+      console.timeEnd("Total usersAndGroupsToMongo");
   }
+
+  static async syncronizeUsersGroups(mongoUsers: any, mongoGroups: any, crmUsers: any, crmRoles: any) {
+      let stats = {
+          inactiveUsersRemoved: 0,
+          deletedGroups: 0,
+          groupsUpdated: 0,
+          usersRolesUpdated: 0,
+          groupsSaved: 0,
+          usersSaved: 0
+      };
+
+      // Remove inactive users
+      console.time("Remove Inactive Users");
+      for (const a of mongoUsers) {
+          let existe = crmUsers.find(u => u.email === a.email);
+          if (existe && existe.active == 0 && 
+              !['eda@sinergiada.org', 'eda@jortilles.com', 'edaanonim@jortilles.com'].includes(a.email)) {
+              try {
+                  await User.deleteOne({ email: a.email });
+                  stats.inactiveUsersRemoved++;
+              } catch (error) {
+                  console.log('Error deleting user:', a.email);
+              }
+          }
+      }
+      console.timeEnd("Remove Inactive Users");
+
+      // Remove deleted CRM groups
+      console.time("Process Groups");
+      for (const group of mongoGroups) {
+          if (group.name.startsWith('SCRM_')) {
+              let existe = crmRoles.find(u => u.name === group.name);
+              if (!existe) {
+                  try {
+                      await Group.deleteOne({ name: group.name });
+                      stats.deletedGroups++;
+                  } catch (error) {
+                      console.log('Error deleting group:', group.name);
+                  }
+              }
+
+              // Process SCRM groups
+              const crmUsersInGroup = crmRoles
+                  .filter(role => role.name === group.name)
+                  .map(role => mongoUsers.find(u => u.email === role.user_name))
+                  .filter(user => user)
+                  .map(user => user._id);
+
+              group.users = [
+                  ...group.users.filter(userId => {
+                      const user = mongoUsers.find(u => u._id.toString() === userId.toString());
+                      return user && !userExistsInCRM(user, crmUsers);
+                  }),
+                  ...crmUsersInGroup
+              ];
+
+              const newCrmUsersInGroup = crmRoles
+                  .filter(role => role.name === group.name)
+                  .map(role => mongoUsers.find(u => u.email === role.user_name && userExistsInCRM(u, crmUsers)))
+                  .filter(user => user && !group.users.includes(user._id))
+                  .map(user => user._id);
+
+              group.users = [...new Set([...group.users, ...newCrmUsersInGroup])];
+              stats.groupsUpdated++;
+          } else {
+              group.users = group.users.filter(userId => {
+                  const user = mongoUsers.find(u => u._id.toString() === userId.toString());
+                  if (!user) return false;
+                  return userExistedInCRM(user, crmUsers) ? userExistsInCRM(user, crmUsers) : true;
+              });
+          }
+      }
+      console.timeEnd("Process Groups");
+
+      // Update user roles
+      console.time("Update Roles");
+      for (const user of mongoUsers) {
+          if (userExistsInCRM(user, crmUsers)) {
+              const nonCRMRoles = user.role.filter(roleId => {
+                  const group = mongoGroups.find(g => g._id.toString() === roleId.toString() && !g.name.startsWith('SCRM_'));
+                  return group;
+              });
+
+              const crmRolesForUser = crmRoles
+                  .filter(role => role.user_name === user.email)
+                  .map(role => mongoGroups.find(g => g.name === role.name))
+                  .filter(group => group)
+                  .map(group => group._id);
+
+              user.role = [...new Set([...nonCRMRoles, ...crmRolesForUser])];
+              stats.usersRolesUpdated++;
+          }
+      }
+      console.timeEnd("Update Roles");
+
+      // Save all changes
+      console.time("Save Changes");
+      for (const group of mongoGroups) {
+          try {
+              await Group.updateOne({ name: group.name }, { $unset: { users: {} } });
+              await Group.updateOne({ name: group.name }, { $addToSet: { users: group.users } });
+              stats.groupsSaved++;
+          } catch (err) {
+              console.log(`Error updating group ${group.name}`);
+          }
+      }
+
+      const newGroupsInMongo = await Group.find();
+      const newGroupsIDInMongo = newGroupsInMongo.map(g => g._id.toString());
+
+      for (const user of mongoUsers) {
+          try {
+              user.role = user.role.filter(r => newGroupsIDInMongo.includes(r.toString()));
+              await User.updateOne({ email: user.email }, { $unset: { role: {} } });
+              await User.updateOne({ email: user.email }, { $addToSet: { role: user.role } });
+              stats.usersSaved++;
+          } catch (err) {
+              console.log(`Error updating user ${user.email}`);
+          }
+      }
+      console.timeEnd("Save Changes");
+
+      return stats;
+  }
+}
+
+// Helper functions
+function userExistsInCRM(user: any, crmUsers: any[]) {
+  return crmUsers.some(crmUser => crmUser.email === user.email && crmUser.active == 1);
+}
+
+function userExistedInCRM(user: any, crmUsers: any[]) {
+  return crmUsers.some(crmUser => crmUser.email === user.email);
 }
