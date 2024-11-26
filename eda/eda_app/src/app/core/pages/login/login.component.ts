@@ -1,5 +1,4 @@
 // Variable google
-declare var google: any;
 
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -16,6 +15,7 @@ import { GOOGLE_CLIENT_ID } from '@eda/configs/config';
 
 
 declare function init_plugins();
+declare var google: any;
 
 @Component({
     selector: 'app-login',
@@ -71,6 +71,35 @@ export class LoginComponent implements OnInit {
             this.remember = true;
         }
 
+        this.ensureGoogleScriptReady().then(() => {
+            this.initializeGoogle();
+        }).catch(err => {
+            console.error('Error al inicializar el script de google:', err);
+        });
+
+    }
+
+    // Verifica que el script de Google esté disponible
+    private ensureGoogleScriptReady(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const maxAttempts = 10; // Máximo número de intentos
+            let attempts = 0;
+
+            const interval = setInterval(() => {
+                attempts++;
+                if (window['google'] && google.accounts) {
+                    clearInterval(interval);
+                    resolve();
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(interval);
+                    reject(new Error('Google script is not available'));
+                }
+            }, 100); // Verifica cada 100ms
+            
+        });
+    }
+
+    private initializeGoogle() {
         // callback de google
         google.accounts.id.initialize({
             client_id: GOOGLE_CLIENT_ID, // ocultar en Angular
