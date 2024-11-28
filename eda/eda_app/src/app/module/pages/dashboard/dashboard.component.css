@@ -278,3 +278,9 @@ margin-left:1px !important;
     background-color: rgba(0, 0, 0, 0.2);
     z-index: 99999;
 }
+
+.dashboard-grid {
+    width: 100%;         /* Establece el ancho del área */
+    height: 45rem;       /* Establece una altura fija */
+    margin: 0 auto;      /* Centra el grid en la página */
+    position: relative;  /* Necesario para el posicionamiento absoluto de los ítems dentro del grid */}

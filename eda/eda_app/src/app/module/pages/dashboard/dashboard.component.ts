@@ -1,6 +1,9 @@
 import { DateUtils } from './../../../services/utils/date-utils.service';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
+
 import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
+import { GridsterConfig, GridsterItem, GridType, DisplayGrid } from 'angular-gridster2';
+
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dashboard, EdaPanel, EdaTitlePanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
@@ -66,8 +69,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public panelsCopy: EdaPanel[] = [];
     public screen: number;
     public lanes: number = 40;
-    public gridsterOptions: IGridsterOptions;
-    public gridsterDraggableOptions: IGridsterDraggableOptions;
+    
+    // public gridsterOptions: IGridsterOptions;
+    // public gridsterDraggableOptions: IGridsterDraggableOptions;
+    public gridsterOptions: GridsterConfig;
+    public gridsterDashboard: GridsterItem[];
+
     public gridItemEvent: any;
     public itemOptions = {
         maxWidth: 40,
@@ -162,9 +169,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         //JJ: Inicialitzo a false...
         this.dashboardService._notSaved.next(false);
         // this.display_v.notSaved = false;
+
     }
 
-    /** Selecciona el modo en el que se permitirá hacer consultas. Teniendo en cuenta que no se pueden mezclar consultas de tipo EDA y Abrol en un mismo informe. */
+    /** Selecciona el modo en el que se permitirá hacer consultas. Teniendo en cuenta que no se pueden mezclar consultas de tipo EDA y Arbol en un mismo informe. */
     private setPanelsQueryMode(): void {
         const treeQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA2');
         const standardQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA');
@@ -194,6 +202,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     /* Set applyToAllFilters for new panel when it's created */
     public ngAfterViewInit(): void {
+
         this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
             const globalFilters = this.gFilter?.globalFilters.filter(filter => filter.isGlobal === true);
             const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
@@ -213,9 +222,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
                 });
 
-
             }, 0);
         });
+
     }
 
     public ngOnDestroy() {
@@ -295,13 +304,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.toLitle = false;
             this.toMedium = false;
         }
-/* NO MORE TAMANY MIG
-        if ((window.innerWidth < 1200) && (window.innerWidth > 1000)) {
-            this.lanes = 20;
-            this.toMedium = true;
-            this.toLitle = false;
-        }
-*/
+        /* NO MORE TAMANY MIG
+                if ((window.innerWidth < 1200) && (window.innerWidth > 1000)) {
+                    this.lanes = 20;
+                    this.toMedium = true;
+                    this.toLitle = false;
+                }
+        */
         if (window.innerWidth < 1000) {
             this.lanes = 10;
             this.toLitle = true;
@@ -312,32 +321,50 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private initializeGridsterOptions(): void {
 
         this.gridsterOptions = {
-            lanes: this.lanes,
-            direction: 'vertical',
-            floating: false,
-            dragAndDrop: window.innerWidth > 1000,
-            resizable: window.innerWidth > 1000,
-            resizeHandles: {
-                sw: true,
-                se: true,
+            gridType: GridType.Fit, // Ajusta el tamaño de las celdas automáticamente
+            displayGrid: DisplayGrid.Always, // Muestra las líneas de la cuadrícula
+            pushItems: true, // Empuja otros elementos al arrastrar
+            draggable: {
+                enabled: true, // Habilita el arrastre de los widgets
+                // handle: '.panel-heading' // Restringe el arrastre al encabezado
+              },
+            resizable: {
+            enabled: true // Habilita el redimensionamiento
             },
-            widthHeightRatio: 1,
-            lines: {
-                visible: true,
-                color: '#dbdbdb',
-                width: 1
-            },
-            tolerance: 'pointer',
-            shrink: true,
-            useCSSTransforms: true,
-            responsiveView: true, // turn on adopting items sizes on window resize and enable responsiveOptions
-            responsiveDebounce: 500, // window resize debounce time
-            responsiveSizes: true
+            maxCols: this.lanes, // Columnas máximas
+            minCols: 10, // Columnas mínimas
+            swap: true, // Intercambia widgets al solaparse
+            maxRows: 200, // Filas máximas
+            minRows: 10, // Filas mínimas
         };
 
-        this.gridsterDraggableOptions = {
-            handlerClass: 'panel-heading'
-        };
+        // this.gridsterOptions = {
+        //     lanes: this.lanes,
+        //     direction: 'vertical',
+        //     floating: false,
+        //     dragAndDrop: window.innerWidth > 1000,
+        //     resizable: window.innerWidth > 1000,
+        //     resizeHandles: {
+        //         sw: true,
+        //         se: true,
+        //     },
+        //     widthHeightRatio: 1,
+        //     lines: {
+        //         visible: true,
+        //         color: '#dbdbdb',
+        //         width: 1
+        //     },
+        //     tolerance: 'pointer',
+        //     shrink: true,
+        //     useCSSTransforms: true,
+        //     responsiveView: true, // turn on adopting items sizes on window resize and enable responsiveOptions
+        //     responsiveDebounce: 500, // window resize debounce time
+        //     responsiveSizes: true
+        // };
+
+        // this.gridsterDraggableOptions = {
+        //     handlerClass: 'panel-heading'
+        // };
 
 
     }
@@ -440,8 +467,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                                 resizable: true,
                                 w: 20,
                                 h: 10,
+                                cols: 20,
+                                rows: 10,
                             })
                         );
+
+                        this.gridsterDashboard = me.panels;
+
                         // Check url for filters in params
                         this.gFilter.findGlobalFilterByUrlParams(this.queryParams);
                         this.gFilter.fillFiltersData();
@@ -451,9 +483,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             datasSource: me.dataSource, filters: [], applytoAllFilter: { present: false, refferenceTable: null, id: null }, group: grp
                         });
 
+                        
+
+
                     } else {
                         // Si te panels els carrega
                         me.panels = config.panel;
+                        console.log('ME => panels', me.panels)
+
+                        this.gridsterDashboard = me.panels;
                         // Check url for filters in params
                         this.gFilter.findGlobalFilterByUrlParams(this.queryParams);
                         this.gFilter.fillFiltersData();
@@ -616,17 +654,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 panel.tamanyMobil.y = lastPanel.tamanyMobil.y + lastPanel.tamanyMobil.h;
             }
         }
-/* NO LONGER TAMANY MIG
-        if (this.toMedium) {
-            if (this.panels.length > 0) {
-                const lastPanel = this.panels[this.panels.length - 1];
-                panel.tamanyMig.w = 10;
-                panel.tamanyMig.h = 10;
-                panel.tamanyMig.x = 0;
-                panel.tamanyMig.y = lastPanel.tamanyMig.y + lastPanel.tamanyMig.h;
-            }
-        }
-*/
+        /* NO LONGER TAMANY MIG
+                if (this.toMedium) {
+                    if (this.panels.length > 0) {
+                        const lastPanel = this.panels[this.panels.length - 1];
+                        panel.tamanyMig.w = 10;
+                        panel.tamanyMig.h = 10;
+                        panel.tamanyMig.x = 0;
+                        panel.tamanyMig.y = lastPanel.tamanyMig.y + lastPanel.tamanyMig.h;
+                    }
+                }
+        */
         this.panels.push(panel);
     }
 
@@ -989,6 +1027,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             type: EdaPanelType.BLANK,
             w: 20,
             h: 10,
+            cols: 20,
+            rows: 10,
             resizable: true,
             dragAndDrop: true
         });
@@ -1004,6 +1044,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             type: EdaPanelType.TITLE,
             w: 20,
             h: 1,
+            cols: 20,
+            rows: 1,
             resizable: true,
             dragAndDrop: true,
             fontsize: '22px',

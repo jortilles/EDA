@@ -17,29 +17,29 @@
     <!-- ============================================================== -->
     <app-global-filter #gFilter [dashboard]="this"></app-global-filter>
 
-    <ngx-gridster class="dashboard-grid" [options]="gridsterOptions" [draggableOptions]="gridsterDraggableOptions" #gridster1 >
+    <gridster [options]="gridsterOptions" class="dashboard-grid">
         <!-- Normal Size -->
         <ng-container *ngIf="!toLitle && !toMedium" >
-            <ngx-gridster-item *ngFor="let panel of panels"  [options]="itemOptions" [dragAndDrop]="true" [resizable]="panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y" (change)="itemChange($event, panel)">
+            <gridster-item *ngFor="let panel of panels"  [item]="gridsterDashboard" [dragAndDrop]="true" [resizable]="panel.resizable" [(w)]="panel.w" [(h)]="panel.h" [(x)]="panel.x" [(y)]="panel.y" (change)="itemChange($event, panel)">
                 <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
-            </ngx-gridster-item>
+            </gridster-item>
         </ng-container>
 
         <!-- Mid  Size -->
         <ng-container *ngIf="toMedium">
-            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop" [resizable]="panel.resizable" [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h" [(x)]="panel.tamanyMig.x" [(y)]="panel.tamanyMig.y" (change)="itemChange($event, panel)">
+            <gridster-item *ngFor="let panel of panels" [item]="gridsterDashboard" [dragAndDrop]="panel.dragAndDrop" [resizable]="panel.resizable" [(w)]="panel.tamanyMig.w" [(h)]="panel.tamanyMig.h" [(x)]="panel.tamanyMig.x" [(y)]="panel.tamanyMig.y" (change)="itemChange($event, panel)">
                 <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
-            </ngx-gridster-item>
+            </gridster-item>
         </ng-container>
 
         <!-- Mobile Size -->
         <ng-container *ngIf="toLitle">
-            <ngx-gridster-item *ngFor="let panel of panels" [options]="itemOptions" [dragAndDrop]="panel.dragAndDrop" [resizable]="panel.resizable" [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h" [(x)]="panel.tamanyMobil.x" [(y)]="panel.tamanyMobil.y" (change)="itemChange($event, panel)">
+            <gridster-item *ngFor="let panel of panels" [item]="gridsterDashboard" [dragAndDrop]="panel.dragAndDrop" [resizable]="panel.resizable" [(w)]="panel.tamanyMobil.w" [(h)]="panel.tamanyMobil.h" [(x)]="panel.tamanyMobil.x" [(y)]="panel.tamanyMobil.y" (change)="itemChange($event, panel)">
                 <ng-container *ngTemplateOutlet="panelTemplate; context: {$implicit: panel}"></ng-container>
-            </ngx-gridster-item>
+            </gridster-item>
         </ng-container>
 
-    </ngx-gridster>
+    </gridster>
 
     <ng-template #panelTemplate let-panel>
         <ng-container [ngSwitch]="panel.type">
