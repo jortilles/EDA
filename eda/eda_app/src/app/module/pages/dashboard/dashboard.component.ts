@@ -321,7 +321,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private initializeGridsterOptions(): void {
 
         this.gridsterOptions = {
-            gridType: GridType.Fit, // Ajusta el tamaño de las celdas automáticamente
+            gridType: GridType.ScrollVertical, // Ajusta el tamaño de las celdas automáticamente
             displayGrid: DisplayGrid.Always, // Muestra las líneas de la cuadrícula
             pushItems: true, // Empuja otros elementos al arrastrar
             draggable: {
@@ -331,11 +331,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             resizable: {
             enabled: true // Habilita el redimensionamiento
             },
-            maxCols: this.lanes, // Columnas máximas
-            minCols: 10, // Columnas mínimas
-            swap: true, // Intercambia widgets al solaparse
-            maxRows: 200, // Filas máximas
-            minRows: 10, // Filas mínimas
+            // swap: true, // Intercambia widgets al solaparse
+            scrollToNewItems: false,          // Evitar el scroll automático
+
+            maxCols: 40, // Columnas máximas
+            minCols: 40, // Columnas mínimas
+            // maxRows: 200, // Filas máximas
+            // minRows: 10, // Filas mínimas
         };
 
         // this.gridsterOptions = {
@@ -455,6 +457,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     if (config.visible === 'group' && res.dashboard.group) {
                         grp = res.dashboard.group;
                     }
+
+                    console.log('MIRANDOOOO AJUQI',res.dashboard.config);
 
                     // Si el dashboard no te cap panel es crea un automatic
                     if (!res.dashboard.config.panel) {
@@ -1030,8 +1034,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             cols: 20,
             rows: 10,
             resizable: true,
-            dragAndDrop: true
+            dragAndDrop: true,
+            x: 0,
+            y: 0,
         });
+
+
 
         this.setPanelSizes(panel);
         this.display_v.rightSidebar = false;
