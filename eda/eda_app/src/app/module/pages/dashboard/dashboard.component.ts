@@ -321,23 +321,23 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private initializeGridsterOptions(): void {
 
         this.gridsterOptions = {
-            gridType: GridType.ScrollVertical, // Ajusta el tamaño de las celdas automáticamente
-            displayGrid: DisplayGrid.None, // Muestra las líneas de la cuadrícula
-            pushItems: true, // Empuja otros elementos al arrastrar
+            gridType: GridType.ScrollVertical,
+            displayGrid: DisplayGrid.None,
+            pushItems: true,
+            swap: true, // Intercambia widgets al solaparse
             draggable: {
-                enabled: true, // Habilita el arrastre de los widgets
-                // handle: '.panel-heading' // Restringe el arrastre al encabezado
-              },
-            resizable: {
-            enabled: true // Habilita el redimensionamiento
+                enabled: true,
             },
-            // swap: true, // Intercambia widgets al solaparse
-
-            maxCols: 40, // Columnas máximas
-            minCols: 40, // Columnas mínimas
-            
-            maxRows: 1000, // Filas máximas
-            minRows: 1000, // Filas mínimas
+            resizable: {
+                enabled: true,
+            },
+            maxCols: 40,
+            minCols: 40,
+            maxRows: 1000,
+            minRows: 1000,
+            margin: 10,
+            outerMargin: true,
+            disableWarnings: true,  // Opcional: oculta estos mensajes
         };
 
         // this.gridsterOptions = {
@@ -494,6 +494,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         // Si te panels els carrega
                         me.panels = config.panel;
                         console.log('ME => panels', me.panels)
+
+                        me.panels.forEach( p => {
+
+                            if(p.cols === undefined && p.rows === undefined) {
+                                p.cols = p.w;
+                                p.rows = p.h;
+                            }
+                        })
 
                         this.gridsterDashboard = me.panels;
                         // Check url for filters in params
