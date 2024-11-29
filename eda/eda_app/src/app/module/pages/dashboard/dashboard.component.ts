@@ -322,7 +322,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.gridsterOptions = {
             gridType: GridType.ScrollVertical, // Ajusta el tamaño de las celdas automáticamente
-            displayGrid: DisplayGrid.Always, // Muestra las líneas de la cuadrícula
+            displayGrid: DisplayGrid.None, // Muestra las líneas de la cuadrícula
             pushItems: true, // Empuja otros elementos al arrastrar
             draggable: {
                 enabled: true, // Habilita el arrastre de los widgets
@@ -332,7 +332,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             enabled: true // Habilita el redimensionamiento
             },
             // swap: true, // Intercambia widgets al solaparse
-            scrollToNewItems: false,          // Evitar el scroll automático
 
             maxCols: 40, // Columnas máximas
             minCols: 40, // Columnas mínimas
