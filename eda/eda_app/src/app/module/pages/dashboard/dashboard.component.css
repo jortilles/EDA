@@ -284,8 +284,14 @@ margin-left:1px !important;
     height: 100vh;       /* Establece la altura de la pantalla */
     margin: 0 auto;      /* Centra el grid en la página */
     position: relative;  /* Necesario para el posicionamiento absoluto de los ítems dentro del grid */
+
+    background-color: transparent; /* Fondo transparente */
 }
 
 .gridster-item {
-    border-radius: 10px;  /* Ajusta el valor según el nivel de redondeo que desees */
+    border-radius: 10px; /* Redondeo elegante */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Borde sutil */
+    box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.08); /* Sombra sutil con desplazamiento hacia abajo y a la izquierda */
+    background-color: #fff; /* Fondo blanco para destacar */
+    transition: box-shadow 0.3s ease-in-out; /* Suavidad en el cambio de sombra */
 }
