@@ -335,8 +335,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
             maxCols: 40, // Columnas máximas
             minCols: 40, // Columnas mínimas
-            // maxRows: 200, // Filas máximas
-            // minRows: 10, // Filas mínimas
+            
+            maxRows: 1000, // Filas máximas
+            minRows: 1000, // Filas mínimas
         };
 
         // this.gridsterOptions = {

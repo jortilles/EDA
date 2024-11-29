@@ -281,7 +281,7 @@ margin-left:1px !important;
 
 .dashboard-grid {
     width: 100%;         /* Establece el ancho del área */
-    height: 1000vh;       /* Establece la altura de la pantalla */
+    height: 100vh;       /* Establece la altura de la pantalla */
     margin: 0 auto;      /* Centra el grid en la página */
     position: relative;  /* Necesario para el posicionamiento absoluto de los ítems dentro del grid */
 }
