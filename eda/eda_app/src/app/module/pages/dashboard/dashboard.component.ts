@@ -338,6 +338,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             margin: 10,
             outerMargin: true,
             disableWarnings: true,  // Opcional: oculta estos mensajes
+            disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
+
         };
 
         // this.gridsterOptions = {
