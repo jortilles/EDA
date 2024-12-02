@@ -51,6 +51,12 @@ export class MySqlBuilderService extends QueryBuilderService {
     //HAVING 
     myQuery += this.getHavingFilters(havingFilters);
 
+
+    /**SDA CUSTOM */  if (forSelector === true) {
+    /**SDA CUSTOM */     myQuery += `\n UNION \n SELECT '' `;
+    /**SDA CUSTOM */   }
+
+
     // OrderBy
     const orderColumns = this.queryTODO.fields.map(col => {
       let out;
