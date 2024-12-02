@@ -321,8 +321,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private initializeGridsterOptions(): void {
 
         this.gridsterOptions = {
-            gridType: GridType.ScrollVertical,
-            displayGrid: DisplayGrid.None,
+            gridType: GridType.Fit,
+            displayGrid: DisplayGrid.OnDragAndResize,
             pushItems: true,
             swap: true, // Intercambia widgets al solaparse
             draggable: {
@@ -333,9 +333,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             maxCols: 40,
             minCols: 40,
-            maxRows: 1000,
-            minRows: 1000,
-            margin: 10,
+            maxRows: 200,
+            minRows: 200,
+            margin: 4,
             outerMargin: true,
             disableWarnings: true,  // Opcional: oculta estos mensajes
             disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
