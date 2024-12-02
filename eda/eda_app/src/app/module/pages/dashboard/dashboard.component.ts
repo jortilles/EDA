@@ -335,7 +335,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             minCols: 40,
             maxRows: 200,
             minRows: 200,
-            margin: 4,
+            margin: 0,
             outerMargin: true,
             disableWarnings: true,  // Opcional: oculta estos mensajes
             disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
