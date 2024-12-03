@@ -337,7 +337,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             maxCols: 40,
             minRows: 20,
             maxRows: 300,
-            margin: 0, // Reduce el margen entre celdas
+            margin: 2, // Reduce el margen entre celdas
             fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
             fixedColWidth: 50, // (Opcional) Ajusta también el ancho de las columnas
             disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
@@ -1045,12 +1045,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public onRemovePanel(panel): void {
+
+        console.log('BORRADOOOOO')
         this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
 
         for (let i = 0, n = this.gFilter?.globalFilters.length; i < n; i += 1) {
             const filter = this.gFilter?.globalFilters[i];
             filter.panelList = filter.panelList.filter(id => id !== panel);
         }
+        
+        let valor = this.getBottomMostItem();
+        console.log('El menor valor: ', valor);
+        this.height = (valor.y + valor.rows + 4) * 32;
     }
 
     public onDuplicatePanel(panel): void {
@@ -1308,8 +1314,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         
         let valor = this.getBottomMostItem();
         console.log('El menor valor: ', valor);
-
-        this.height = (valor.y + valor.rows) * 31;
+        this.height = (valor.y + valor.rows + 4) * 32;
 
     }
 
