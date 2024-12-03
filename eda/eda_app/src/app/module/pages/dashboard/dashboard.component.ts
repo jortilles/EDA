@@ -74,7 +74,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // public gridsterDraggableOptions: IGridsterDraggableOptions;
     public gridsterOptions: GridsterConfig;
     public gridsterDashboard: GridsterItem[];
-    public height: number = 650; // Altura inicial del gridster
+    public height: number = 0; // Altura inicial del gridster
 
     public gridItemEvent: any;
     public itemOptions = {
@@ -337,11 +337,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             maxCols: 40,
             minRows: 20,
             maxRows: 300,
-            margin: 2, // Reduce el margen entre celdas
+            margin: 0, // Reduce el margen entre celdas
             fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
             fixedColWidth: 50, // (Opcional) Ajusta también el ancho de las columnas
             disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
             disableScrollVertical: true, // Desactiva scroll horizontal si es necesario
+            itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
+            itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
         };
     }
 
@@ -1279,25 +1281,54 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Podem agafar els events del panel
-    public itemChange($event: any, panel): void {
-        this.gridItemEvent = $event;
-        let found = this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0];
-        if (
-            found
-            && panel.content
-            && !found.panelChart.NO_DATA
-            && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(panel.content.chart))
-            && !$event.isNew) {
-            found.savePanel();
+    // public itemChange($event: any, panel): void {
+    //     console.log('holaaaaaaaaaaaaaaa')
+    //     this.gridItemEvent = $event;
+    //     let found = this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0];
+    //     if (
+    //         found
+    //         && panel.content
+    //         && !found.panelChart.NO_DATA
+    //         && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(panel.content.chart))
+    //         && !$event.isNew) {
+    //         found.savePanel();
+    //     }
+
+    //     // found.onGridsterResize($event);
+    //     if (panel.type === 1) {
+    //         let elements = document.querySelectorAll(`.eda-text-panel`);
+    //         elements.forEach((element) => {
+    //             this.setPanelSize(element);
+    //         });
+    //     }
+    // }
+    onItemChange(item: GridsterItem): void {
+        console.log('Cambio en el ítem:', item);
+        console.log('Todos los valores:', this.dashboard);
+        
+        let valor = this.getBottomMostItem();
+        console.log('El menor valor: ', valor);
+
+        this.height = (valor.y + valor.rows) * 31;
+
+    }
+
+    getBottomMostItem(): GridsterItem | undefined {
+        let bottomMostItem: GridsterItem | undefined;
+        let maxBottom = -1; // Inicializamos con un valor bajo
+
+        for (let item of this.dashboard.panel) {
+            // Calculamos la posición final en Y (bottom) del ítem
+            const bottom = item.y + item.rows;
+
+            // Si el ítem actual es más bajo, lo actualizamos
+            if (bottom > maxBottom) {
+            maxBottom = bottom;
+            bottomMostItem = item;
+            }
         }
 
-        // found.onGridsterResize($event);
-        if (panel.type === 1) {
-            let elements = document.querySelectorAll(`.eda-text-panel`);
-            elements.forEach((element) => {
-                this.setPanelSize(element);
-            });
-        }
+        return bottomMostItem;
     }
 
     public setPanelSize(element): void {
@@ -1429,6 +1460,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             confirmButtonText: swal.resolveBtnText,
         });
     }
+
+
 
 
 }
