@@ -280,12 +280,9 @@ margin-left:1px !important;
 }
 
 .dashboard-grid {
-    width: 100%;         /* Establece el ancho del área */
-    height: 650rem;       /* Establece la altura de la pantalla */
-    margin: 0 auto;      /* Centra el grid en la página */
-    position: relative;  /* Necesario para el posicionamiento absoluto de los ítems dentro del grid */
+    height: 20rem;
 
-    background-color: transparent; /* Fondo transparente */
+    /* background-color: transparent;  */
 }
 
 .gridster-item {

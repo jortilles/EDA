@@ -2,7 +2,7 @@ import { DateUtils } from './../../../services/utils/date-utils.service';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
 
 import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
-import { GridsterConfig, GridsterItem, GridType, DisplayGrid } from 'angular-gridster2';
+import { GridsterConfig, GridsterItem, GridType, DisplayGrid, CompactType } from 'angular-gridster2';
 
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -321,25 +321,26 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private initializeGridsterOptions(): void {
 
         this.gridsterOptions = {
-            gridType: GridType.Fit,
+            gridType: GridType.VerticalFixed, // Configuración para que las filas tengan un tamaño fijo
+            compactType: CompactType.None,
             displayGrid: DisplayGrid.OnDragAndResize,
             pushItems: true,
-            swap: true, // Intercambia widgets al solaparse
+            swap: true,
             draggable: {
                 enabled: true,
             },
             resizable: {
                 enabled: true,
             },
+            minCols: 10,
             maxCols: 40,
-            minCols: 40,
-            maxRows: 200,
-            minRows: 200,
-            margin: 0,
-            outerMargin: true,
-            disableWarnings: true,  // Opcional: oculta estos mensajes
-            disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
-
+            minRows: 20,
+            maxRows: 300,
+            margin: 2, // Reduce el margen entre celdas
+            fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
+            fixedColWidth: 50, // (Opcional) Ajusta también el ancho de las columnas
+            disableWarnings: true,
+            disableScrollHorizontal: true,
         };
 
         // this.gridsterOptions = {
