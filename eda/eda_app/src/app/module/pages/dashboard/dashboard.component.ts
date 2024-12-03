@@ -74,7 +74,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // public gridsterDraggableOptions: IGridsterDraggableOptions;
     public gridsterOptions: GridsterConfig;
     public gridsterDashboard: GridsterItem[];
-    public height: number = 1000;
+    public height: number = 650; // Altura inicial del gridster
 
     public gridItemEvent: any;
     public itemOptions = {
@@ -324,7 +324,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.gridsterOptions = {
             gridType: GridType.VerticalFixed, // Configuración para que las filas tengan un tamaño fijo
             compactType: CompactType.None,
-            displayGrid: DisplayGrid.OnDragAndResize,
+            displayGrid: DisplayGrid.Always,
             pushItems: true,
             swap: true,
             draggable: {
@@ -335,44 +335,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             minCols: 40,
             maxCols: 40,
-            minRows: 10,
+            minRows: 20,
             maxRows: 300,
             margin: 2, // Reduce el margen entre celdas
             fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
             fixedColWidth: 50, // (Opcional) Ajusta también el ancho de las columnas
-            disableWarnings: true,
-            disableScrollHorizontal: true,
+            disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
+            disableScrollVertical: true, // Desactiva scroll horizontal si es necesario
         };
-
-        // this.gridsterOptions = {
-        //     lanes: this.lanes,
-        //     direction: 'vertical',
-        //     floating: false,
-        //     dragAndDrop: window.innerWidth > 1000,
-        //     resizable: window.innerWidth > 1000,
-        //     resizeHandles: {
-        //         sw: true,
-        //         se: true,
-        //     },
-        //     widthHeightRatio: 1,
-        //     lines: {
-        //         visible: true,
-        //         color: '#dbdbdb',
-        //         width: 1
-        //     },
-        //     tolerance: 'pointer',
-        //     shrink: true,
-        //     useCSSTransforms: true,
-        //     responsiveView: true, // turn on adopting items sizes on window resize and enable responsiveOptions
-        //     responsiveDebounce: 500, // window resize debounce time
-        //     responsiveSizes: true
-        // };
-
-        // this.gridsterDraggableOptions = {
-        //     handlerClass: 'panel-heading'
-        // };
-
-
     }
 
     private initializeForm(): void {
@@ -398,9 +368,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (this.grups.length === 0) {
                     this.visibleTypes.splice(1, 1);
                 }
-
-
-
 
                 // pot ser que no estinguin disponibles encara els grups... per això  es crida des de els dos llocs
                 // i es crida també des de aqui.... a mes a mes des de la inicilialització del dashboard
