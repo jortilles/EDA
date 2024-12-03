@@ -74,6 +74,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // public gridsterDraggableOptions: IGridsterDraggableOptions;
     public gridsterOptions: GridsterConfig;
     public gridsterDashboard: GridsterItem[];
+    public height: number = 1000;
 
     public gridItemEvent: any;
     public itemOptions = {
@@ -332,9 +333,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             resizable: {
                 enabled: true,
             },
-            minCols: 10,
+            minCols: 40,
             maxCols: 40,
-            minRows: 20,
+            minRows: 10,
             maxRows: 300,
             margin: 2, // Reduce el margen entre celdas
             fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
