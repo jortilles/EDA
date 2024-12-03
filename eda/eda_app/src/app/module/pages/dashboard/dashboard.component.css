@@ -282,8 +282,7 @@ margin-left:1px !important;
 .dashboard-grid {
     /* height: 20rem; */
     overflow: visible !important; 
-
-    /* background-color: transparent;  */
+    background-color: transparent; 
 }
 
 .gridster-item {

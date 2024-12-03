@@ -324,7 +324,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.gridsterOptions = {
             gridType: GridType.VerticalFixed, // Configuración para que las filas tengan un tamaño fijo
             compactType: CompactType.None,
-            displayGrid: DisplayGrid.Always,
+            displayGrid: DisplayGrid.OnDragAndResize,
             pushItems: true,
             swap: true,
             draggable: {
@@ -335,7 +335,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             minCols: 40,
             maxCols: 40,
-            minRows: 20,
+            minRows: 16, // Para la pantalla de la portatil, se tiene que redimensionar para pantallas mas grandes
             maxRows: 300,
             margin: 2, // Reduce el margen entre celdas
             fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
@@ -1053,7 +1053,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             const filter = this.gFilter?.globalFilters[i];
             filter.panelList = filter.panelList.filter(id => id !== panel);
         }
-        
+
         let valor = this.getBottomMostItem();
         console.log('El menor valor: ', valor);
         this.height = (valor.y + valor.rows + 4) * 32;
