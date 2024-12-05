@@ -4335,17 +4335,9 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Diseño de la tabla cruzada: </source>
         <target>Disseny de la taula creuada: </target>
       </trans-unit>
-      <trans-unit id="messageItemX">
-        <source>Arrastre aquí los campos para el eje vertical de la tabla cruzada</source>
-        <target>Arrossegueu aquí els camps per a l'eix vertical de la taula creuada</target>
-      </trans-unit>
-      <trans-unit id="messageItemY">
-        <source>Arrastre aquí los campos para el eje horizontal de la tabla cruzada</source>
-        <target>Arrossegueu aquí els camps per a l'eix horitzontal de la taula creuada</target>
-      </trans-unit>
-      <trans-unit id="messageItemZ">
-        <source>Arrastre aquí solo los campos numéricos (num) de la tabla cruzada (La suma es la agregación por defecto)</source>
-        <target>Arrossegueu aquí només els camps numèrics (num) de la taula creuada (La suma és l'agregació per defecte)</target>
+      <trans-unit id="messageItemCrosstable">
+        <source>Este eje debe contener al menos un elemento</source>
+        <target>Aquest eix ha de contenir almenys un element</target>
       </trans-unit>
       <trans-unit id="noMouseH6">
         <source>Activar funciones del mouse</source>

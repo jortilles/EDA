@@ -13,9 +13,7 @@ export class DragDropComponent implements OnChanges {
   @Input() axes?:any[];
   @Output() newAxes: EventEmitter<any[]> = new EventEmitter();
   
-  public messageItemX: string = $localize`:@@messageItemX:Arrastre aquí los campos para el eje vertical de la tabla cruzada`;
-  public messageItemY: string = $localize`:@@messageItemY:Arrastre aquí los campos para el eje horizontal de la tabla cruzada`;
-  public messageItemZ: string = $localize`:@@messageItemZ:Arrastre aquí solo los campos numéricos (num) de la tabla cruzada (La suma es la agregación por defecto)`;
+  public messageItemCrosstable: string = $localize`:@@messageItemCrosstable:Este eje debe contener al menos un elemento`;
 
   newAxesOrdering = [];
   itemX = [];
