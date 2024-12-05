@@ -66,7 +66,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public whereHavingMessage: string = $localize`:@@whereHavingMessage:WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar una vez agrupado.`;
     public whereMessage: string = $localize`:@@whereMessage:WHERE : Primero filtra y luego agrupa`;
     public havingMessage: string = $localize`:@@havingMessage:HAVING : Primero agrupa y luego filtra`;
-    public whereHavingMessageLocked: string = $localize`:@@whereHavingMessageLocked:Switch bloqueado`;
 
     constructor(
         private dashboardService: DashboardService,
@@ -277,7 +276,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.display.between = handler.between;
             this.display.filterValue = !_.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
             this.display.calendar = _.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
-            this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty');
+            this.display.switchButton = _.isEqual(filter.value, 'not_null') || _.isEqual(filter.value, 'not_null_nor_empty') || _.isEqual(filter.value, 'null_or_empty'); // se usa para deshabilitar el boton que da las opciones en el selector.
             this.display.filterButton = filter.value == 'not_null' || filter.value == 'not_null_nor_empty' || filter.value == 'null_or_empty' ? false : true ;
             this.limitSelectionFields = handler.limitFields === 1 ? 1 : 50;
             this.filter.switch = handler.switchBtn;

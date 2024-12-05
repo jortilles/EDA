@@ -3957,10 +3957,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>HAVING : Primero agrupa y luego filtra</source>
   <target>HAVING : Najpierw grupuj, potem filtruj</target>
 </trans-unit>
-<trans-unit id="whereHavingMessageLocked">
-  <source>Switch bloqueado</source>
-  <target>Zablokowany przełącznik</target>
-</trans-unit>
 </body>
 </file>
 </xliff>

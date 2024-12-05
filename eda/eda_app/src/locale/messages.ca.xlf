@@ -4327,10 +4327,6 @@
         <source>HAVING : Primero agrupa y luego filtra</source>
         <target>HAVING : Primer agrupa i després filtra</target>
       </trans-unit>
-      <trans-unit id="whereHavingMessageLocked">
-        <source>Switch bloqueado</source>
-        <target>Switch bloquejat</target>
-      </trans-unit>
     </body>
   </file>
 </xliff>
