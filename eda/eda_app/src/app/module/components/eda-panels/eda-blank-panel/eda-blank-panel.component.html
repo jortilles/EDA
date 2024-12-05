@@ -506,7 +506,7 @@
                                 </panel-chart>
                             </div>
                             <div class="row">
-                                <drag-drop *ngIf="graphicType==='crosstable'" [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
+                                <drag-drop *ngIf="graphicType==='crosstable'  && dragAndDropAvailable" [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
                             </div>
                         </div>
 
