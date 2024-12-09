@@ -170,7 +170,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         //JJ: Inicialitzo a false...
         this.dashboardService._notSaved.next(false);
         // this.display_v.notSaved = false;
-
     }
 
     /** Selecciona el modo en el que se permitirá hacer consultas. Teniendo en cuenta que no se pueden mezclar consultas de tipo EDA y Arbol en un mismo informe. */
@@ -295,8 +294,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.stylesProviderService.customCss.subscribe((css) => {
            this.stylesProviderService.setCustomCss(css);
         });
-
-
     }
 
     // Init functions
@@ -627,8 +624,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
         }
     }
+    
 
     private setPanelSizes(panel) {
+
+        console.log('this.toLitle: ', this.toLitle)
+        console.log('this.panels: ', this.panels)
+
 
         if (this.toLitle) {
             if (this.panels.length > 0) {
@@ -650,6 +652,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 }
         */
+
+        // let valor = this.getBottomMostItem();
+        // console.log('El menor valor: ', valor);
+        // this.height = (valor.y + valor.rows + 4) * 32;
+
         this.panels.push(panel);
     }
 
@@ -761,12 +768,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public onResize(event) {
+
         const innerWidth = event.target.innerWidth;
+        console.log('Hola onResize')
+
         if (innerWidth >= 1200) {
             this.lanes = 40;
             this.toLitle = false;
             this.toMedium = false;
-            this.gridster.setOption('lanes', this.lanes).reload();
+            console.log('IGUAL y/o POR arriba del 1200')
+            // this.gridster.setOption('lanes', this.lanes).reload();
             /* NO MORE TAMANY MIG
         } else if ((innerWidth < 1200) && (innerWidth >= 1000)) {
             this.lanes = 20;
@@ -779,7 +790,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.lanes = 10;
             this.toLitle = true;
             this.toMedium = false;
-            this.gridster.setOption('lanes', this.lanes).reload();
+            console.log('POR abajo del 1200')
+            // this.gridster.setOption('lanes', this.lanes).reload();
             this.initMobileSizes();
 
         }
@@ -1006,6 +1018,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Sidebar functions
     public onAddWidget(): void {
+
+        console.log('AGREGANDOOOOOO')
+
         let panel = new EdaPanel({
             id: this.fileUtiles.generateUUID(),
             title: $localize`:@@newPanelTitle2:Nuevo Panel`,
@@ -1019,8 +1034,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             x: 0,
             y: 0,
         });
-
-
 
         this.setPanelSizes(panel);
         this.display_v.rightSidebar = false;
@@ -1064,7 +1077,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public onResetWidgets(): void {
-            // Get the queries in the dashboard for delete it from cache
+        // Get the queries in the dashboard for delete it from cache
         const queries = [];
         this.panels.forEach( p=> {
                 if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
@@ -1243,7 +1256,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
-    // Funcion que agregar urls para acción personalizada
+    // Funcion que agrega urls para acción personalizada
     public openUrlsConfig() {
         const urls = this.urls;
         const params = {urls: urls};
@@ -1260,8 +1273,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         })
     }
-
-
 
     // Others
     public handleSelectedBtn(event): void {
@@ -1306,6 +1317,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     //         });
     //     }
     // }
+
+    // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
     onItemChange(item: GridsterItem): void {
         console.log('Cambio en el Item:', item);
         console.log('Todos los valores => Dashboard:', this.dashboard);
@@ -1313,9 +1326,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         let valor = this.getBottomMostItem();
         console.log('El menor valor: ', valor);
         this.height = (valor.y + valor.rows + 4) * 32;
-
     }
 
+    // Obtiene el item que se encuentra en la parte más inferior del gridster
     getBottomMostItem(): GridsterItem | undefined {
         let bottomMostItem: GridsterItem | undefined;
         let maxBottom = -1; // Inicializamos con un valor bajo
@@ -1331,22 +1344,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         }
 
-        return bottomMostItem;
+        return bottomMostItem; // El item de la posición mas inferior de todo el gridster
     }
 
-    public setPanelSize(element): void {
-        let parentElement = element?.parentNode;
-        if (parentElement) {
-            let parentWidth = parentElement.offsetWidth - 20;
-            let parentHeight = parentElement.offsetHeight - 20;
-            const imgs = element.querySelectorAll('img');
+    // public setPanelSize(element): void {
+    //     let parentElement = element?.parentNode;
+    //     if (parentElement) {
+    //         let parentWidth = parentElement.offsetWidth - 20;
+    //         let parentHeight = parentElement.offsetHeight - 20;
+    //         const imgs = element.querySelectorAll('img');
 
-            imgs.forEach((img) => {
-                img.style.maxHeight = `${parentHeight}px`;
-                img.style.maxWidth = `${parentWidth}px`;
-            })
-        }
-    }
+    //         imgs.forEach((img) => {
+    //             img.style.maxHeight = `${parentHeight}px`;
+    //             img.style.maxWidth = `${parentWidth}px`;
+    //         })
+    //     }
+    // }
 
     public addNewTag() {
         this.addTag = !this.addTag;
