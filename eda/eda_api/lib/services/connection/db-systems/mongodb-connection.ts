@@ -74,7 +74,11 @@ export class MongoDBConnection extends AbstractConnection {
                 } else if (!_.isEmpty(query.dateProjection) && query.dateProjection[field]) {
                     acc[field] = query.dateProjection[field];
                 } else {
-                    acc[field] = 1;
+                    if (query.pipeline[0]['$group']['_id'][field] == `$${field}`) {
+                        acc[field] = `$_id.${field}`;
+                    } else {
+                        acc[field] = 1;
+                    }
                 }
                 return acc;
             }, {});
@@ -99,22 +103,25 @@ export class MongoDBConnection extends AbstractConnection {
                 query.pipeline.push({ $match: query.havingFilters });
             }
 
-            console.log("Info de la consulta: ", JSON.stringify(query.pipeline));
+
 
             
-            let sort : any = {};
-            query.ordenationType.forEach(o => {
-                if(o.ordenationType == 'Desc'){
-                    sort[o.column]= -1 ;
-                    
-                }else  if(o.ordenationType == 'Asc'){
-                    sort[o.column]= 1 ;
-                     
-                }
-            });
+            if (query.ordenationType.some((order) => order.ordenationType != 'NO')) {
+                let $sort = {};
 
-            console.log(sort);
-            data = await collection.aggregate(query.pipeline   ).sort( sort ).toArray();
+                query.ordenationType.forEach(o => {
+                    if (o.ordenationType == 'Desc') {
+                        $sort[o.column] = -1;
+                    } else if (o.ordenationType == 'Asc') {
+                        $sort[o.column] = 1;
+                    }
+                });
+
+                query.pipeline.push({ ['$sort']: $sort });
+            }
+
+            console.log("Info de la consulta: ", JSON.stringify(query.pipeline));
+            data = await collection.aggregate(query.pipeline).toArray();
 
 
             if (data.length > 0) {
