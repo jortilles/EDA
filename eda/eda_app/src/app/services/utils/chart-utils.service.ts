@@ -95,9 +95,9 @@ export class ChartUtilsService {
     ];
 
     public ordenationTypes: OrdenationType[] = [
-        { display_name: 'ASC', value: 'Asc', selected: false },
-        { display_name: 'DESC', value: 'Desc', selected: false },
-        { display_name: 'NO', value: 'No', selected: false }
+        { display_name: 'Asc', value: 'Asc', selected: false },
+        { display_name: 'Desc', value: 'Desc', selected: false },
+        { display_name: 'No', value: 'No', selected: false }
     ];
 
     public formatDates: FormatDates[] = [

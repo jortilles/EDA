@@ -547,21 +547,21 @@ export const PanelInteractionUtils = {
     } else if (!column.ordenation_type) {
       if( column.column_type  === 'numeric'){
         ebp.ordenationTypes = [
-          { display_name: 'ASC', value: 'Asc', selected: false },
-          { display_name: 'DESC', value: 'Desc', selected: true },
-          { display_name: 'NO', value: 'No', selected:false  }
+          { display_name: 'Asc', value: 'Asc', selected: false },
+          { display_name: 'Desc', value: 'Desc', selected: true },
+          { display_name: 'No', value: 'No', selected:false  }
         ];
       }else if( column.column_type  === 'date'){
           ebp.ordenationTypes = [
-            { display_name: 'ASC', value: 'Asc', selected: true },
-            { display_name: 'DESC', value: 'Desc', selected: false },
-            { display_name: 'NO', value: 'No', selected:false  }
+            { display_name: 'Asc', value: 'Asc', selected: true },
+            { display_name: 'Desc', value: 'Desc', selected: false },
+            { display_name: 'No', value: 'No', selected:false  }
           ];
         } else{
         ebp.ordenationTypes = [
-          { display_name: 'ASC', value: 'Asc', selected: false },
-          { display_name: 'DESC', value: 'Desc', selected: false },
-          { display_name: 'NO', value: 'No', selected:true  }
+          { display_name: 'Asc', value: 'Asc', selected: false },
+          { display_name: 'Desc', value: 'Desc', selected: false },
+          { display_name: 'No', value: 'No', selected:true  }
         ];
       }
 
