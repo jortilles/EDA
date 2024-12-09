@@ -322,9 +322,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private initializeGridsterOptions(): void {
 
         this.gridsterOptions = {
-            gridType: GridType.VerticalFixed, // Configuración para que las filas tengan un tamaño fijo
-            compactType: CompactType.None,
-            displayGrid: DisplayGrid.OnDragAndResize,
+            gridType: GridType.VerticalFixed, // Configuración general del Gridster : permite scroll vertical y los items generados son de tamaño fijo.
+            compactType: CompactType.None, // Controla la configuración de compactar en el gridster
+            displayGrid: DisplayGrid.OnDragAndResize, // Permite configurar la rejilla del gridster
             pushItems: true,
             swap: true,
             draggable: {
@@ -339,9 +339,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             maxRows: 300,
             margin: 2, // Reduce el margen entre celdas
             fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
-            fixedColWidth: 50, // (Opcional) Ajusta también el ancho de las columnas
+            fixedColWidth: 50, // Ajusta también el ancho de las columnas
             disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
-            disableScrollVertical: true, // Desactiva scroll horizontal si es necesario
+            disableScrollVertical: true, // Desactiva scroll vertical si es necesario
             itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
             itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
         };
@@ -431,7 +431,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         grp = res.dashboard.group;
                     }
 
-                    console.log('MIRANDOOOO AJUQI',res.dashboard.config);
+                    console.log('MIRANDO AQUI',res.dashboard.config);
 
                     // Si el dashboard no te cap panel es crea un automatic
                     if (!res.dashboard.config.panel) {
@@ -466,7 +466,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     } else {
                         // Si te panels els carrega
                         me.panels = config.panel;
-                        console.log('ME => panels', me.panels)
+                        console.log('ME => panels =>', me.panels)
 
                         me.panels.forEach( p => {
 
@@ -1046,7 +1046,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public onRemovePanel(panel): void {
 
-        console.log('BORRADOOOOO')
         this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
 
         for (let i = 0, n = this.gFilter?.globalFilters.length; i < n; i += 1) {
@@ -1288,7 +1287,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Podem agafar els events del panel
     // public itemChange($event: any, panel): void {
-    //     console.log('holaaaaaaaaaaaaaaa')
     //     this.gridItemEvent = $event;
     //     let found = this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0];
     //     if (
@@ -1309,8 +1307,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     //     }
     // }
     onItemChange(item: GridsterItem): void {
-        console.log('Cambio en el ítem:', item);
-        console.log('Todos los valores:', this.dashboard);
+        console.log('Cambio en el Item:', item);
+        console.log('Todos los valores => Dashboard:', this.dashboard);
         
         let valor = this.getBottomMostItem();
         console.log('El menor valor: ', valor);
@@ -1465,8 +1463,5 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             confirmButtonText: swal.resolveBtnText,
         });
     }
-
-
-
 
 }
