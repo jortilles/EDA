@@ -55,6 +55,7 @@ export class MongoDBConnection extends AbstractConnection {
     }
 
     async execQuery(query: any): Promise<any> {
+        console.log(query);
         const client = await this.getclient()
 
         try {
@@ -100,7 +101,21 @@ export class MongoDBConnection extends AbstractConnection {
 
             console.log("Info de la consulta: ", JSON.stringify(query.pipeline));
 
-            data = await collection.aggregate(query.pipeline).toArray();
+            
+            let sort : any = {};
+            query.ordenationType.forEach(o => {
+                if(o.ordenationType == 'Desc'){
+                    sort[o.column]= -1 ;
+                    
+                }else  if(o.ordenationType == 'Asc'){
+                    sort[o.column]= 1 ;
+                     
+                }
+            });
+
+            console.log(sort);
+            data = await collection.aggregate(query.pipeline   ).sort( sort ).toArray();
+
 
             if (data.length > 0) {
                 formatData = data.map(doc => {
@@ -115,6 +130,8 @@ export class MongoDBConnection extends AbstractConnection {
                     return ordenado;
                 });
             }
+
+        //console.log(formatData);
             return formatData;
         } catch (err) {
             console.error(err);

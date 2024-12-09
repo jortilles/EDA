@@ -25,6 +25,7 @@ export class MongoDBBuilderService {
                 aggregations: {},
                 filters: [],
                 dateFormat: {},
+                ordenationType: [],
                 dateProjection: {}
             };
 
@@ -34,6 +35,13 @@ export class MongoDBBuilderService {
                 if (column.column_type == 'date') {
                     mongoQuery.dateFormat[column.column_name] = column.format || 'No';
                 }
+            });
+            fields.forEach((column: any) => {
+                mongoQuery.ordenationType.push({
+                    column:column.column_name,
+                    ordenationType: column.ordenation_type
+                });
+
             });
 
             mongoQuery.filters = this.getFilters();
