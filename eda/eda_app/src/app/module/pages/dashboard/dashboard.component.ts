@@ -1,7 +1,6 @@
 import { DateUtils } from './../../../services/utils/date-utils.service';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
 
-import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
 import { GridsterConfig, GridsterItem, GridType, DisplayGrid, CompactType } from 'angular-gridster2';
 
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
@@ -29,8 +28,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     //@HostListener('window:resize', ['$event'])
 
     @ViewChild(GlobalFilterComponent, { static: false }) gFilter: GlobalFilterComponent;
-    // Gridster ViewChild
-    @ViewChild(GridsterComponent, { static: false }) gridster: GridsterComponent;
     @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
     private edaPanelsSubscription: Subscription;
 
@@ -68,7 +65,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public panels: EdaPanel[] = [];
     public panelsCopy: EdaPanel[] = [];
     public screen: number;
-    public lanes: number = 40;
     
     // public gridsterOptions: IGridsterOptions;
     // public gridsterDraggableOptions: IGridsterDraggableOptions;
@@ -302,15 +298,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.toLitle = false;
             this.toMedium = false;
         }
-        /* NO MORE TAMANY MIG
-                if ((window.innerWidth < 1200) && (window.innerWidth > 1000)) {
-                    this.lanes = 20;
-                    this.toMedium = true;
-                    this.toLitle = false;
-                }
-        */
+
         if (window.innerWidth < 1000) {
-            this.lanes = 10;
             this.toLitle = true;
             this.toMedium = false;
         }
@@ -493,14 +482,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.setDashboardGrups();
                     }
 
+                    // if (this.toLitle) {
+                    //     this.initMobileSizes();
+                    // }
 
-                    if (this.toLitle) {
-                        this.initMobileSizes();
-                    }
-
-                    if (this.toMedium) {
-                        this.initMediumSizes();
-                    }
+                    // if (this.toMedium) {
+                    //     this.initMediumSizes();
+                    // }
 
                     this.initializePanels();
                     // Fem una copia de seguretat per en cas de desastre :D
@@ -631,31 +619,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('this.toLitle: ', this.toLitle)
         console.log('this.panels: ', this.panels)
 
-
         if (this.toLitle) {
             if (this.panels.length > 0) {
                 const lastPanel = this.panels[this.panels.length - 1];
-                panel.tamanyMobil.w = this.lanes;
+                // panel.tamanyMobil.w = this.lanes;
                 panel.tamanyMobil.h = 10;
                 panel.tamanyMobil.x = 0;
                 panel.tamanyMobil.y = lastPanel.tamanyMobil.y + lastPanel.tamanyMobil.h;
             }
         }
-        /* NO LONGER TAMANY MIG
-                if (this.toMedium) {
-                    if (this.panels.length > 0) {
-                        const lastPanel = this.panels[this.panels.length - 1];
-                        panel.tamanyMig.w = 10;
-                        panel.tamanyMig.h = 10;
-                        panel.tamanyMig.x = 0;
-                        panel.tamanyMig.y = lastPanel.tamanyMig.y + lastPanel.tamanyMig.h;
-                    }
-                }
-        */
-
-        // let valor = this.getBottomMostItem();
-        // console.log('El menor valor: ', valor);
-        // this.height = (valor.y + valor.rows + 4) * 32;
 
         this.panels.push(panel);
     }
@@ -684,8 +656,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.display_v.edit_mode = (userName !== 'edaanonim') && !(this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0)
         this.display_v.anonimous_mode = (userName !== 'edaanonim');
     }
-
-
 
     private setDashboardGrups( ): void {
         const me = this;
@@ -722,50 +692,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Sizes functions
-    private initMobileSizes() {
-        let height = 0;
-        let pannelHeight = 0;
-        for (let i = 0, n = this.panels.length; i < n; i++) {
-            // Init tamanys mobils
-            const panel = this.panels[i];
-            if (panel.tamanyMobil.h == 0) {
-                if (i !== 0) {
-                    panel.tamanyMobil.y = height;
-                }
-                pannelHeight = _.round(panel.h * 1.6);
-                // si el panell es mes gran que la pantalla ho ajusto a la pantalla.
-                // tot això es fa per tenir el tamany d'una cela i multiplicar-ho per el 70% de la pantalla
-                // vertical
-                if ((pannelHeight * (window.innerWidth / this.lanes) > window.innerHeight) && (window.innerHeight > window.innerWidth)) {
-                    pannelHeight = _.round((window.innerHeight / (window.innerWidth / this.lanes)) * 0.8);
-                }
-                //horitzontal
-                if ((pannelHeight * (window.innerWidth / this.lanes) > window.innerHeight) && (window.innerHeight < window.innerWidth)) {
-                    pannelHeight = _.round((window.innerHeight / (window.innerWidth / this.lanes)) * 1.1);
-                }
-
-                panel.tamanyMobil.w = this.lanes;
-                panel.tamanyMobil.h = pannelHeight;
-                panel.tamanyMobil.x = 0;
-                height += pannelHeight;
-            }
-
-        }
-
-    }
-
-    private initMediumSizes() {
-        for (let i = 0, n = this.panels.length; i < n; i++) {
-            // Init tamanys mobils
-            const panel = this.panels[i];
-            if (panel.tamanyMig.h == 0) {
-                panel.tamanyMig.x = _.round(panel.x / 2);
-                panel.tamanyMig.y = _.round(panel.y / 1.5);
-                panel.tamanyMig.w = _.round(panel.w / 2);
-                panel.tamanyMig.h = _.round(panel.h / 1.5);
-            }
-        }
-    }
 
     public onResize(event) {
 
@@ -773,27 +699,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('Hola onResize')
 
         if (innerWidth >= 1200) {
-            this.lanes = 40;
             this.toLitle = false;
             this.toMedium = false;
             console.log('IGUAL y/o POR arriba del 1200')
-            // this.gridster.setOption('lanes', this.lanes).reload();
-            /* NO MORE TAMANY MIG
-        } else if ((innerWidth < 1200) && (innerWidth >= 1000)) {
-            this.lanes = 20;
-            this.toMedium = true;
-            this.toLitle = false;
-            this.gridster.setOption('lanes', this.lanes).reload();
-            this.initMediumSizes();
-        */
         } else {
-            this.lanes = 10;
             this.toLitle = true;
             this.toMedium = false;
             console.log('POR abajo del 1200')
             // this.gridster.setOption('lanes', this.lanes).reload();
-            this.initMobileSizes();
-
         }
     }
 
