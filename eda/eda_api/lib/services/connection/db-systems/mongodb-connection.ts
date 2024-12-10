@@ -104,9 +104,8 @@ export class MongoDBConnection extends AbstractConnection {
             }
 
 
-
             
-            if (query.ordenationType.some((order) => order.ordenationType != 'NO')) {
+            if (query.ordenationType.some((order) => order.ordenationType != 'No')) {
                 let $sort = {};
 
                 query.ordenationType.forEach(o => {
