@@ -61,21 +61,26 @@ export class MongoDBBuilderService {
     }
 
     public getFilters() {
+       
+/*  Alex: Per que vas fer aixó?
         const columns = this.queryTODO.fields;
-
         const filters = this.queryTODO.filters.filter((f: any) => {
+
             const column = columns.find((c: any) => f.filter_table == c.table_id && f.filter_column == c.column_name);
             f.column_type = column?.column_type || 'text';
+            
 
             if (column && column?.aggregation_type && column?.aggregation_type === 'none') {
                 return true;
             } else {
                 return false;
             }
+        
         });
+        */
 
-        if (filters.length > 0) {
-            return this.formatFilter(filters);
+        if (this.queryTODO.filters.length > 0) {
+            return this.formatFilter(this.queryTODO.filters);
         } else {
             return null;
         }
