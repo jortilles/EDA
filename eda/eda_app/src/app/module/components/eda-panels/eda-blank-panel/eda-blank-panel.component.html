@@ -496,22 +496,22 @@
 
             <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA" [disabled]="display_v.disablePreview || currentQuery.length === 0">
                 <div class="grid p-0 h-100">
-                    <div class="col-8 p-1 preview-chart-box component" style="background-color: var(--panel-color);">
+                    <div class="col-8 p-1 component" style="background-color: var(--panel-color);">
 
 
                         <div class="container">
-                            <div class="row">
+                            <div class="row preview-chart-box">
                                 <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
                                     style="height: 100%; width: 100%; display:block">
                                 </panel-chart>
                             </div>
                             <div class="row">
-                                <drag-drop *ngIf="graphicType==='crosstable'" [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
+                                <drag-drop *ngIf="graphicType==='crosstable'  && dragAndDropAvailable" [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
                             </div>
                         </div>
 
-
                     </div>
+
 
                     <div class="col-4 p-offset-1 p-1 edaChartSelector">
                         <div class="grid p-0">

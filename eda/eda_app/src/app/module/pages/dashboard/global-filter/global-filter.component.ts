@@ -376,12 +376,12 @@ export class GlobalFilterComponent implements OnInit {
         if (globalFilter.selectedTable) {
             targetTable = globalFilter.selectedTable.table_name;
             targetColumn = globalFilter.selectedColumn;
-            targetColumn.ordenation_type = 'ASC';
-            // globalFilter.selectedColumn.ordenation_type = 'ASC';
+            targetColumn.ordenation_type = 'Asc';
+            // globalFilter.selectedColumn.ordenation_type = 'Asc';
         } else {
             targetTable = globalFilter.table.value;
             targetColumn = globalFilter.column.value;
-            targetColumn.ordenation_type = 'ASC';
+            targetColumn.ordenation_type = 'Asc';
         }
 
         const queryParams = {

@@ -55,6 +55,7 @@ export class MongoDBConnection extends AbstractConnection {
     }
 
     async execQuery(query: any): Promise<any> {
+        console.log(query);
         const client = await this.getclient()
 
         try {
@@ -73,7 +74,11 @@ export class MongoDBConnection extends AbstractConnection {
                 } else if (!_.isEmpty(query.dateProjection) && query.dateProjection[field]) {
                     acc[field] = query.dateProjection[field];
                 } else {
-                    acc[field] = 1;
+                    if (query.pipeline[0]['$group']['_id'][field] == `$${field}`) {
+                        acc[field] = `$_id.${field}`;
+                    } else {
+                        acc[field] = 1;
+                    }
                 }
                 return acc;
             }, {});
@@ -98,9 +103,25 @@ export class MongoDBConnection extends AbstractConnection {
                 query.pipeline.push({ $match: query.havingFilters });
             }
 
-            console.log("Info de la consulta: ", JSON.stringify(query.pipeline));
 
+            
+            if (query.ordenationType.some((order) => order.ordenationType != 'No')) {
+                let $sort = {};
+
+                query.ordenationType.forEach(o => {
+                    if (o.ordenationType == 'Desc') {
+                        $sort[o.column] = -1;
+                    } else if (o.ordenationType == 'Asc') {
+                        $sort[o.column] = 1;
+                    }
+                });
+
+                query.pipeline.push({ ['$sort']: $sort });
+            }
+
+            console.log("Info de la consulta: ", JSON.stringify(query.pipeline));
             data = await collection.aggregate(query.pipeline).toArray();
+
 
             if (data.length > 0) {
                 formatData = data.map(doc => {
@@ -115,6 +136,8 @@ export class MongoDBConnection extends AbstractConnection {
                     return ordenado;
                 });
             }
+
+        //console.log(formatData);
             return formatData;
         } catch (err) {
             console.error(err);

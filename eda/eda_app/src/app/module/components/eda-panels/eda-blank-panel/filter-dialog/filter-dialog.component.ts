@@ -186,7 +186,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             const column = _.cloneDeep(this.selectedColumn);
             column.table_id = column.table_id.split('.')[0];
             column.joins = [];
-            column.ordenation_type = 'ASC';
+            column.ordenation_type = 'Asc';
 
             const params = {
                 table: column.table_id,
