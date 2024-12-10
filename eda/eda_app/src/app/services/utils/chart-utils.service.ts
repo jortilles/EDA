@@ -783,7 +783,7 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('knob'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
-        if (dataSize < 50) {
+        if (dataSize < 100) {
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
         }
