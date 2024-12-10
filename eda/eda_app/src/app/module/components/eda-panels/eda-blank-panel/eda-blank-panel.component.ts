@@ -196,11 +196,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public copyConfigCrossTable: any = {};
     public dragAndDropAvailable: boolean = false;
 
-
-
-    // Ocultar el boton de ejecutar
-    public hiddenButtonExecuter: boolean = false;
-
     constructor(
         private route: ActivatedRoute,
         public queryBuilder: QueryBuilderService,
@@ -546,8 +541,6 @@ export class EdaBlankPanelComponent implements OnInit {
         //not saved alert message
         this.dashboardService._notSaved.next(true);
 
-        // Se mantiene en falso luego de guardar
-        this.hiddenButtonExecuter = false;
     }
 
     public initObjectQuery() {
@@ -938,8 +931,6 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.chart = '';
         this.display_v.page_dialog = false;
 
-        // Despues de cancelar, el valor regresa a falso
-        this.hiddenButtonExecuter = false
     }
 
     /**
@@ -1139,7 +1130,6 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public handleTabChange(event: any): void {
-        this.hiddenButtonExecuter = !this.hiddenButtonExecuter;
 
         this.index = event.index;
         if (this.index === 1) {
@@ -1230,8 +1220,6 @@ export class EdaBlankPanelComponent implements OnInit {
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
-        this.hiddenButtonExecuter = true;
-        // Para adquirir los valores de ejecución
         QueryUtils.runManualQuery(this)
     };
 
