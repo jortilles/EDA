@@ -72,14 +72,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public gridsterDashboard: GridsterItem[];
     public height: number = 0; // Altura inicial del gridster
 
-    public gridItemEvent: any;
-    public itemOptions = {
-        maxWidth: 40,
-        maxHeight: 200,
-        minWidth: 3,
-        minHeight: 1,
-        resizeHandles: { s: false, e: false, n: false, w: false, se: false, ne: false, sw: false, nw: false },
-    };
     public tag: any;
     public tags: Array<any>;
     public selectedTags: any[];
@@ -1209,28 +1201,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.titleClick = !this.titleClick;
     }
 
-    // Podem agafar els events del panel
-    // public itemChange($event: any, panel): void {
-    //     this.gridItemEvent = $event;
-    //     let found = this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0];
-    //     if (
-    //         found
-    //         && panel.content
-    //         && !found.panelChart.NO_DATA
-    //         && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(panel.content.chart))
-    //         && !$event.isNew) {
-    //         found.savePanel();
-    //     }
-
-    //     // found.onGridsterResize($event);
-    //     if (panel.type === 1) {
-    //         let elements = document.querySelectorAll(`.eda-text-panel`);
-    //         elements.forEach((element) => {
-    //             this.setPanelSize(element);
-    //         });
-    //     }
-    // }
-
     // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
     onItemChange(item: GridsterItem): void {
         console.log('Cambio en el Item:', item);
@@ -1259,20 +1229,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         return bottomMostItem; // El item de la posición mas inferior de todo el gridster
     }
-
-    // public setPanelSize(element): void {
-    //     let parentElement = element?.parentNode;
-    //     if (parentElement) {
-    //         let parentWidth = parentElement.offsetWidth - 20;
-    //         let parentHeight = parentElement.offsetHeight - 20;
-    //         const imgs = element.querySelectorAll('img');
-
-    //         imgs.forEach((img) => {
-    //             img.style.maxHeight = `${parentHeight}px`;
-    //             img.style.maxWidth = `${parentWidth}px`;
-    //         })
-    //     }
-    // }
 
     public addNewTag() {
         this.addTag = !this.addTag;
