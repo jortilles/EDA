@@ -58,9 +58,13 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
 
     public filterBeforeAfter = {
-        switch: false,
-        name: 'WHERE' // Valor por default es WHERE, pero también cambia a HAVING
+        filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
+        elements: [
+            {label: 'WHERE', value: true},
+            {label: 'HAVING', value: false},
+        ],
     }
+    public filterBeforeAfterSelected: any;
 
     // Tooltip
     public whereHavingMessage: string = $localize`:@@whereHavingMessage:WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar una vez agrupado.`;
@@ -85,6 +89,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             title: $localize`:@@col:Atributo`
         });
         this.dialog.style = { width: '85%', height: '75%', top: "-4em", left: '1em' };
+
+        // Inicializando el valor del WHERE / HAVING
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
     }
 
     onShow(): void {
@@ -134,7 +141,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
-        const filterBeforeGrouping = !this.whereHavingSwitch();
+        const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -158,7 +165,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
 
-        this.filterBeforeAfter.switch = false;
+        // Regresando al valor inicial el WHERE / HAVING
+        this.filterBeforeAfter.filterBeforeGrouping = true;
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
     }
 
     removeFilter(item: any) {
@@ -635,12 +644,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         return this.controller.close(event, response);
     }
 
-    whereHavingSwitch() {
-        if(this.filterBeforeAfter.switch){
-            this.filterBeforeAfter.name = 'HAVING'
+    whereHavingSwitch(selected) {
+
+        if(selected.value) {
+            this.filterBeforeAfter.filterBeforeGrouping = true;
+            return true
         } else {
-            this.filterBeforeAfter.name = 'WHERE'
+            this.filterBeforeAfter.filterBeforeGrouping = false;
+            return false
         }
-        return this.filterBeforeAfter.switch;
+
     }
 }
