@@ -88,18 +88,18 @@
 
             </ng-container>
 
-            <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type==='numeric'">
+            <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type==='numeric' && !display.switchButton">
                 <div class="col-12 md:col-2" style="margin-top: 0.2em; padding: 0;">
 
                     <div style="display: flex; align-items: center; justify-content: center; flex-direction: row; margin-left: 5px; margin-top: 10px;">
 
-                        <i [pTooltip]="!display.switchButton ? whereHavingMessage : whereHavingMessageLocked"  tooltipPosition="top" >
-                            <p-inputSwitch [(ngModel)]="filterBeforeAfter.switch" [disabled]="display.switchButton" 
+                        <i [pTooltip]="whereHavingMessage"  tooltipPosition="top" >
+                            <p-inputSwitch [(ngModel)]="filterBeforeAfter.switch" 
                                 (onChange)="whereHavingSwitch()">
                             </p-inputSwitch>
                         </i>
 
-                        <div [pTooltip]="!display.switchButton ? whereHavingMessage : whereHavingMessageLocked"  tooltipPosition="top">
+                        <div [pTooltip]=" whereHavingMessage"  tooltipPosition="top">
                             <span class="state-label" *ngIf="filterBeforeAfter.switch">HAVING</span>
                             <span class="state-label" *ngIf="!filterBeforeAfter.switch">WHERE</span>
                         </div>

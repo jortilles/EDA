@@ -53,7 +53,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public whereHavingMessage: string = $localize`:@@whereHavingMessage:WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar una vez agrupado.`;
     public whereMessage: string = $localize`:@@whereMessage:WHERE : Primero filtra y luego agrupa`;
     public havingMessage: string = $localize`:@@havingMessage:HAVING : Primero agrupa y luego filtra`;
-    public whereHavingMessageLocked: string = $localize`:@@whereHavingMessageLocked:Switch bloqueado`;
 
 
     constructor(
