@@ -38,10 +38,15 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         selecteds: [],
         range : null
     };
+
     public filterBeforeAfter = {
-        switch: false,
-        name: 'WHERE' // Valor por default es WHERE, pero también cambia a HAVING
+        filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
+        elements: [
+            {label: 'WHERE', value: true},
+            {label: 'HAVING', value: false},
+        ],
     }
+    public filterBeforeAfterSelected: any;
 
     public inputType: string;
     public filterValue: any = {};
@@ -73,6 +78,9 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         });
 
         this.dialog.style = { width: '50%', height: '70%', top:"-4em", left:'1em'};
+
+        // Inicializando el valor del WHERE / HAVING
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
     }
 
     onShow(): void {
@@ -83,6 +91,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     addFilter() {
+
         const table = this.selectedColumn.table_id;
         const column_type  = this.selectedColumn.column_type;
         const column = this.selectedColumn.column_name;
@@ -91,7 +100,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
-        const filterBeforeGrouping = !this.whereHavingSwitch();
+        const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -115,7 +124,11 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
 
-        this.filterBeforeAfter.switch = false;
+        console.log('filter: ', filter);
+
+        // Regresando al valor inicial el WHERE / HAVING
+        this.filterBeforeAfter.filterBeforeGrouping = true;
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
     }
 
     carrega() {
@@ -228,13 +241,16 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         }
     }
 
-    whereHavingSwitch() {
-        if(this.filterBeforeAfter.switch){
-            this.filterBeforeAfter.name = 'HAVING'
+    whereHavingSwitch(selected) {
+
+        if(selected.value) {
+            this.filterBeforeAfter.filterBeforeGrouping = true;
+            return true
         } else {
-            this.filterBeforeAfter.name = 'WHERE'
+            this.filterBeforeAfter.filterBeforeGrouping = false;
+            return false
         }
-        return this.filterBeforeAfter.switch;
+
     }
 
     processPickerEvent(event){
