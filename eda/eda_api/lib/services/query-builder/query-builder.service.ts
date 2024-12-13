@@ -279,7 +279,7 @@ export abstract class QueryBuilderService {
                     return true;
                 }
             }else{
-                return true;
+                return f.filterBeforeGrouping;
             }
         });
 
@@ -298,9 +298,10 @@ export abstract class QueryBuilderService {
             if(column){
             return (column.column_type=='numeric' && column.aggregation_type!=='none'?true:false) && !f.filterBeforeGrouping;
             }else{
-                return false;
+                return !f.filterBeforeGrouping;
             }
         }).filter(f=> ![ 'not_null' , 'not_null_nor_empty' , 'null_or_empty'].includes( f.filter_type));
+
 
         if (this.queryTODO.simple) {
             this.query = this.simpleQuery(columns, origin);
