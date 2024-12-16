@@ -576,7 +576,7 @@
 
     <p-footer class="footer" appendTo="body" style="z-index: 10000;">
         <div class="p-dialog-buttonpanel p-widget-content p-helper-clearfix text-right">
-            <button *ngIf="!hiddenButtonExecuter" type="button" pButton (click)="runManualQuery()" [disabled]="disableRunQuery()"
+            <button type="button" pButton (click)="runManualQuery()" [disabled]="disableRunQuery()"
                 icon="fa fa-flask" class="p-button-success ml-2" i18n-label="@@ejecutarBtn" label="Ejecutar">
             </button>
 
