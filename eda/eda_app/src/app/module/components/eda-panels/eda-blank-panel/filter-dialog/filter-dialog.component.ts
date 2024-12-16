@@ -13,7 +13,8 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'app-filter-dialog',
-    templateUrl: './filter-dialog.component.html'
+    templateUrl: './filter-dialog.component.html',
+    styleUrls: ['./filter-dialog.component.css']
 })
 
 export class FilterDialogComponent extends EdaDialogAbstract {
@@ -77,7 +78,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             title: ''
         });
 
-        this.dialog.style = { width: '50%', height: '70%', top:"-4em", left:'1em'};
+        this.dialog.style = { width: '70%', height: '70%', top:"-4em", left:'1em'};
 
         // Inicializando el valor del WHERE / HAVING
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]

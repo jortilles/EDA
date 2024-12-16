@@ -34,7 +34,7 @@
 
             <ng-container *ngIf="!display.between">
 
-                <div class="col-12 md:col-4" style="margin-top: 0.2em;">
+                <div class="col-12 md:col-4" >
 
                     <ng-container *ngIf="!!display.calendar && !filter.switch">
 
@@ -55,7 +55,7 @@
 
                         <span *ngIf="display.filterValue" class="p-float-label">
 
-                            <input id="float-input" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
+                            <input id="float-input" [type]="inputType" class="w-100 selectStyles" [(ngModel)]="filterValue.value1"
                                 (input)="handleValidForm({value1: $event.target.value})" pInputText required>
 
                             <label i18n="@@valorFiltrarLabel" for="float-input">
@@ -89,7 +89,8 @@
             </ng-container>
 
             <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton ">
-                <div class="col-12 md:col-2" style="margin-top: 10px; padding: 0 ;">
+
+                <div class="col-12 md:col-2">
 
                     <span class="p-float-label">
                         <p-dropdown id="types" [options]="filterBeforeAfter.elements" [(ngModel)]="filterBeforeAfterSelected" optionLabel="label"
