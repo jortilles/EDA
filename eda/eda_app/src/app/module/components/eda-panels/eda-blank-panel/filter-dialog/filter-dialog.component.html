@@ -13,8 +13,8 @@
 
             <div 
                 [ngClass]="{ 
-                            'md:col-6': (!display.between && !display.calendar ) || (!!display.calendar ),
-                            'md:col-10': !(!display.between && !display.calendar) || (!!display.calendar) 
+                            'md:col-5': (!display.between && !display.calendar ) || (!!display.calendar ),
+                            'md:col-8': !(!display.between && !display.calendar) || (!!display.calendar) 
                            }">
 
                 <span class="p-float-label">
@@ -34,7 +34,7 @@
 
             <ng-container *ngIf="!display.between">
 
-                <div class="col-12 md:col-4" >
+                <div class="col-12 md:col-3" >
 
                     <ng-container *ngIf="!!display.calendar && !filter.switch">
 
@@ -90,7 +90,7 @@
 
             <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton ">
 
-                <div class="col-12 md:col-2">
+                <div class="col-12 md:col-4">
 
                     <span class="p-float-label">
                         <p-dropdown id="types" [options]="filterBeforeAfter.elements" [(ngModel)]="filterBeforeAfterSelected" optionLabel="label"
@@ -146,7 +146,7 @@
     
                     <ng-container *ngIf="!display.calendar && !filter.switch">
     
-                        <div class="col-6 mt-3">
+                        <div class="col-4 mt-3">
     
                             <span class="">
     
@@ -160,7 +160,7 @@
                             </span>
                         </div>
     
-                        <div class="col-6 mt-3">
+                        <div class="col-4 mt-3">
     
                             <span class="">
     
