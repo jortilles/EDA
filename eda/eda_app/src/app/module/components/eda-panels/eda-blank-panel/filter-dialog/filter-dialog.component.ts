@@ -180,6 +180,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
         if (filter) {
             console.log('ENTRAAA')
+            console.log('selectedColumn ==> ', this.selectedColumn);
             const handler = this.columnUtils.handleFilterChange(filter);
             this.display.between = handler.between;
             this.display.filterValue = !_.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
