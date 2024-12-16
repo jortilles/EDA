@@ -132,7 +132,7 @@
                 </ng-container>
 
 
-                <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton ">
+                <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton && (aggregationSelected.display_name !== 'No')">
 
                     <div class="col-12 md:col-2" style="margin-top: 10px; padding: 0 ;">
 

@@ -50,6 +50,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public formatDates: FormatDates[];
     public formatDate: FormatDates;
     public aggregationsTypes: any[] = [];
+    public aggregationSelected: any;
     public inputType: string;
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
@@ -117,6 +118,12 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.filter.types = allowed;
         }
 
+        // Buscando el valor inicial de agregacion de la columna seleccionada
+        for(let agg of this.selectedColumn.aggregation_type) {
+            if(agg.selected){
+                this.aggregationSelected = _.cloneDeep(agg);
+            }
+        }        
     }
 
     private carregarValidacions(): void {
@@ -181,7 +188,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     }
 
-    addAggregation(type: any) {
+    addAggregation(type: any) {        
+
         this.aggregationsTypes.find((ag: any) => ag.value === type.value).selected = true;
 
         for (let ag of this.aggregationsTypes) {
@@ -199,6 +207,18 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         if (addAggr) {
             addAggr.aggregation_type = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
         }
+
+        // Seteo de aggregationSelected dependiendo de la selección realizada por el usuario
+        this.aggregationSelected = _.cloneDeep(type);
+
+        // En caso no tengamos agregación el selected Where/Having se establece en Where
+        if(this.aggregationSelected.value==='none') {
+            this.whereHavingSwitch({
+                label: 'WHERE',
+                value: true,
+            })
+        }
+
     }
 
     addOrdenation(ord: any) {
