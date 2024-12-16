@@ -44,7 +44,7 @@
                                 Fecha
                             </label>
 
-                            <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
+                            <input id="datepicker" [type]="inputType" class="w-100 selectStyles" [(ngModel)]="filterValue.value1"
                                 (input)="handleValidForm({value1: $event.target.value})" pInputText required > 
 
                         </div>
@@ -68,7 +68,7 @@
 
                     <ng-container *ngIf="filter.switch">
 
-                        <span class="ui-float-label mt-1">
+                        <span class="ui-float-label">
 
                             <p-multiSelect id="float-input" [options]="dropDownFields" [(ngModel)]="filterValue.value1"
                                 [virtualScroll]="true" [itemSize]="34" defaultLabel="Selecciona..."
@@ -150,7 +150,7 @@
     
                             <span class="">
     
-                                <input id="float-input1" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
+                                <input id="float-input1" [type]="inputType" class="w-100 selectStyles" [(ngModel)]="filterValue.value1"
                                     (input)="handleValidForm({value1: $event.target.value})" pInputText required>
     
                                 <label i18n="@@valor1Label" for="float-input1">
@@ -164,7 +164,7 @@
     
                             <span class="">
     
-                                <input id="float-input2" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value2"
+                                <input id="float-input2" [type]="inputType" class="w-100 selectStyles" [(ngModel)]="filterValue.value2"
                                     (input)="handleValidForm({value2: $event.target.value})" pInputText required>
     
                                 <label i18n="@@valor2Label" for="float-input2">
