@@ -175,7 +175,11 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     handleFilterChange(filter: FilterType) {
+
+        console.log('filter ==> ', filter);
+
         if (filter) {
+            console.log('ENTRAAA')
             const handler = this.columnUtils.handleFilterChange(filter);
             this.display.between = handler.between;
             this.display.filterValue = !_.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
@@ -193,6 +197,16 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             if ( !_.isEqual(filter.value, 'between') ) {
                 this.filterValue = {};
             }
+
+            if(['in', 'not_in', 'not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filter.value)) {
+                this.whereHavingSwitch({
+                    label: 'WHERE',
+                    value: true,
+                })
+                console.log('filterBeforeAfterSelected ===>>>', this.filterBeforeAfterSelected);
+                console.log('AQUIIIIII  ;)')
+            }
+
         } else {
             this.resetDisplay();
         }
