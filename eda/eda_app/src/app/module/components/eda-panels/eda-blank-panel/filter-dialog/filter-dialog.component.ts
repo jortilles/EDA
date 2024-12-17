@@ -131,6 +131,9 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filter.range = null;
 
         console.log('filter: ', filter);
+        console.log('this.selectedColumn: ', this.selectedColumn);
+        console.log('this.controller: ', this.controller)
+        console.log('this.controller.params.currentQuery: ', this.controller.params.currentQuery)
 
         // Regresando al valor inicial el WHERE / HAVING
         this.filterBeforeAfter.filterBeforeGrouping = true;

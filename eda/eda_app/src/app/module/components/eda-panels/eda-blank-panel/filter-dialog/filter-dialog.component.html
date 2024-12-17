@@ -88,7 +88,7 @@
 
             </ng-container>
 
-            <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton ">
+            <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton">
 
                 <div class="col-12 md:col-4">
 
@@ -223,25 +223,27 @@
 
             </ng-container>
 
-            <div class="col-12 md:col-4" style="align-self: flex-start;" *ngIf="true">
-                <!-- <h1>HOLA</h1> -->
-
-                <h4 i18n="@@agregacionesH4">
-                    Agregaciones
-                </h4>
-                <hr>
+            <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton && !filterBeforeAfter.filterBeforeGrouping">
+                <div class="col-12 md:col-4" style="align-self: flex-start;">
+                    <!-- <h1>HOLA</h1> -->
     
-                <div class="aggregation-list">
-                    <div class="aggregation-box" *ngFor="let aggregation of aggregationsTypes"
-                        (click)="addAggregation(aggregation)"
-                        [ngClass]="aggregation.selected === true ? 'aggregation-active' : ''">
-    
-                        <span>{{getAggName(aggregation.value)}}</span>
-    
+                    <h4 i18n="@@agregacionesH4">
+                        Agregaciones
+                    </h4>
+                    <hr>
+        
+                    <div class="aggregation-list">
+                        <div class="aggregation-box" *ngFor="let aggregation of aggregationsTypes"
+                            (click)="addAggregation(aggregation)"
+                            [ngClass]="aggregation.selected === true ? 'aggregation-active' : ''">
+        
+                            <span>{{getAggName(aggregation.value)}}</span>
+        
+                        </div>
                     </div>
+    
                 </div>
-
-            </div>
+            </ng-container>
 
         </div>
 
