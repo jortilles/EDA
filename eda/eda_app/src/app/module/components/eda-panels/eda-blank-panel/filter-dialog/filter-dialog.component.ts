@@ -173,7 +173,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
         console.log('this.controller: ', this.controller)
         console.log('this.controller.params.currentQuery: ', this.controller.params.currentQuery)
-        console.log('matchingQuery: ', matchingQuery)
+        console.log('matchingQuery o selectedColumn: ', matchingQuery)
 
         if(this.controller.params.panel.content) {
 
@@ -190,7 +190,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 
                 if (matchingQuery) {
                     this.aggregationsTypes = JSON.parse(JSON.stringify(matchingQuery.aggregation_type));
-                    console.log('this.aggregationsTypes>>>1<<<', this.aggregationsTypes)                    
+                    console.log('this.aggregationsTypes>>>1<<<', this.aggregationsTypes)       
                 }
 
                 return;
@@ -282,6 +282,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                     label: 'WHERE',
                     value: true,
                 })
+                this.filterBeforeAfterSelected = {label: 'WHERE', value: true}
+                
                 console.log('filterBeforeAfterSelected ===>>>', this.filterBeforeAfterSelected);
                 console.log('AQUIIIIII  ;)')
             }
