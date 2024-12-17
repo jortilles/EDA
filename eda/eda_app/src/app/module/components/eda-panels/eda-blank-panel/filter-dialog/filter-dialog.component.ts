@@ -58,7 +58,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
     public aggregationsTypes: any[] = [];
-    public aggregationType: any
+    public aggregationType: any = null;
 
 
     // Tooltip
@@ -111,7 +111,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
         const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping
-        const aggregation_type = this.aggregationType.value;
+        const aggregation_type = this.aggregationType ? this.aggregationType.value : null;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -144,6 +144,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         // Regresando al valor inicial el WHERE / HAVING
         this.filterBeforeAfter.filterBeforeGrouping = true;
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
+        this.aggregationType = null;
     }
 
     carrega() {
