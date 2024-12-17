@@ -93,9 +93,14 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
         // Inicializando el valor del WHERE / HAVING
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
+
+        console.log('aggregationsTypes: ', this.aggregationsTypes); //// VACIOOOO
     }
 
     onShow(): void {
+
+        console.log('hollla')
+
         this.selectedColumn = this.controller.params.selectedColumn;
         const allowed = [];
         const title = this.selectedColumn.display_name.default;
@@ -188,7 +193,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     }
 
-    addAggregation(type: any) {        
+    addAggregation(type: any) {       
+        
+        // console.log('QUE PASA:::',this.aggregationsTypes)
 
         this.aggregationsTypes.find((ag: any) => ag.value === type.value).selected = true;
 
@@ -339,6 +346,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     /**Gestiona las agregaciones de la columna seleccionada */
     public handleAggregationType(): void {
+
         const column = this.selectedColumn;
 
         const matchingQuery = this.controller.params.currentQuery.find((c: any) =>
@@ -347,6 +355,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             c.display_name.default === column.display_name.default
         );
 
+        console.log('column: ', column)
+        console.log('this.controller: ', this.controller)
+        console.log('this.controller.params.currentQuery: ', this.controller.params.currentQuery)
+        console.log('matchingQuery: ', matchingQuery)
+        
         if (this.controller.params.panel.content) {
             const tmpAggTypes = [];
             
@@ -356,16 +369,19 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
             // Si ja s'ha carregat el panell i tenim dades a this.select
             if (selectedAggregation) {
+                
                 tmpAggTypes.push(...column.aggregation_type);
-                  
+                
                 if (matchingQuery) {
                     this.aggregationsTypes = JSON.parse(JSON.stringify(matchingQuery.aggregation_type));
+                    console.log('this.aggregationsTypes>>><<<', this.aggregationsTypes)                    
                 }
 
                 return;
             } else{
                 this.aggregationsTypes = JSON.parse(JSON.stringify(this.controller.params.selectedColumn.aggregation_type));
             }
+
         } else {
             if (!matchingQuery) {
                 const tmpAggTypes = column.aggregation_type.map(agg => ({
@@ -383,6 +399,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         if (matchingQuery) {
             matchingQuery.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
         }
+
     }
 
     public findColumn(column: Column, columns: any[]) {
