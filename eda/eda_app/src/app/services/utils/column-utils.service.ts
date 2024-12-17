@@ -13,6 +13,7 @@ interface FilterOptions {
     autorelation?: boolean;
     joins?: any[];
     filterBeforeGrouping?: boolean;
+    aggregation_type?: string;
 }
 
 @Injectable()
@@ -62,7 +63,7 @@ export class ColumnUtilsService {
     }
     
     public setFilter(options: FilterOptions): object {
-        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping } = options;
+        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type } = options;
 
     
         const values = Object.keys(obj).map((key) => {
@@ -83,6 +84,7 @@ export class ColumnUtilsService {
             autorelation, 
             joins,
             filterBeforeGrouping,
+            aggregation_type,
         };
     
         if (valueListSource) {

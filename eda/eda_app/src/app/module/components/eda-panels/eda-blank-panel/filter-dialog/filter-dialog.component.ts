@@ -58,6 +58,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
     public aggregationsTypes: any[] = [];
+    public aggregationType: any
 
 
     // Tooltip
@@ -98,6 +99,9 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
     addFilter() {
 
+        console.log('this.selectedColumn: ', this.selectedColumn);
+        console.log('this.aggregationType: ', this.aggregationType);
+
         const table = this.selectedColumn.table_id;
         const column_type  = this.selectedColumn.column_type;
         const column = this.selectedColumn.column_name;
@@ -107,6 +111,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
         const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping
+        const aggregation_type = this.aggregationType.value;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -119,6 +124,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             autorelation,
             joins,
             filterBeforeGrouping,
+            aggregation_type,
         });
         
         this.filter.selecteds.push(filter);
@@ -131,9 +137,9 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filter.range = null;
 
         console.log('filter: ', filter);
-        console.log('this.selectedColumn: ', this.selectedColumn);
-        console.log('this.controller: ', this.controller)
-        console.log('this.controller.params.currentQuery: ', this.controller.params.currentQuery)
+        // console.log('this.selectedColumn: ', this.selectedColumn);
+        // console.log('this.controller: ', this.controller)
+        // console.log('this.controller.params.currentQuery: ', this.controller.params.currentQuery)
 
         // Regresando al valor inicial el WHERE / HAVING
         this.filterBeforeAfter.filterBeforeGrouping = true;
@@ -211,7 +217,10 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         // Recarguem les agregacions d'aquella columna + la seleccionada
         this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
 
+        // Obteniendo la agregación seleccionada
+        this.aggregationType = _.cloneDeep(type);
         console.log('this.selectedColumn: ', this.selectedColumn);
+        console.log('this.aggregationType: ', this.aggregationType);
 
     }
 

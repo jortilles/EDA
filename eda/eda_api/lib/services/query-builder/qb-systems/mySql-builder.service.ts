@@ -499,7 +499,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       let filtersString = `\nhaving 1=1 `;
 
       filters.forEach(f => {
-        const column = this.findHavingColumn(f.filter_table, f.filter_column);
+        const column = this.findHavingColumn(f);
         column.autorelation = f.autorelation;
         column.joins = f.joins;
         const colname = this.getHavingColname(column);
@@ -570,7 +570,7 @@ public getHavingColname(column: any){
    * @returns having filters  to string. 
    */
  public havingToString(filterObject: any) {
-    const column = this.findHavingColumn(filterObject.filter_table, filterObject.filter_column);
+    const column = this.findHavingColumn(filterObject);
     column.autorelation = filterObject.autorelation;
     column.joins = filterObject.joins;
 

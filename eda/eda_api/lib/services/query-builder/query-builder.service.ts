@@ -680,8 +680,35 @@ export abstract class QueryBuilderService {
         return col;
     }
 
-    public findHavingColumn(table: string, column: string) {
-        return this.queryTODO.fields.find((f: any)=> f.table_id === table && f.column_name === column);
+    public findHavingColumn( havingFilter:any) {
+
+
+        if(this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
+                                            f.filter === havingFilter.filter_column)){
+            return this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
+                                             f.filter === havingFilter.filter_column);
+        }else{
+            return  { // devolvemos una columna ficticia con los valores que necesitamos para hacer el having
+                table_id: havingFilter.filter_table ,
+                column_name: havingFilter.filter_column,
+                display_name: havingFilter.filter_column,
+                column_type: havingFilter.filter_column_type,
+                old_column_type: havingFilter.filter_column_type,
+                aggregation_type: havingFilter.aggregation_type,
+                ordenation_type: 'Asc',
+                order: 1,
+                column_granted_roles: [],
+                row_granted_roles: [],
+                tableCount: 0,
+                minimumFractionDigits: 0,
+                whatif_column: false,
+                whatif: {},
+                joins: [],
+                autorelation: false
+            }
+        }
+
+        
     }
 
     public setFilterType(filter: string) {
