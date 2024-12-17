@@ -11,6 +11,9 @@ import {
 } from '@eda/services/service.index';
 import * as _ from 'lodash';
 
+import { aggTypes } from 'app/config/aggretation-types';
+
+
 @Component({
     selector: 'app-filter-dialog',
     templateUrl: './filter-dialog.component.html',
@@ -54,6 +57,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     public filterSelected: FilterType;
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
+    public aggregationsTypes: any[] = [];
+
 
     // Tooltip
     public whereHavingMessage: string = $localize`:@@whereHavingMessage:WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar una vez agrupado.`;
@@ -135,6 +140,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     carrega() {
         this.carregarFilters();
         this.handleInputTypes();
+        this.handleAggregationType();
     }
 
     handleInputTypes() {
@@ -149,6 +155,65 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             f.filter_column === this.selectedColumn.column_name &&
             !f.removed
         );
+    }
+
+    handleAggregationType() {
+        const matchingQuery = this.selectedColumn;
+
+
+        console.log('this.controller: ', this.controller)
+        console.log('this.controller.params.currentQuery: ', this.controller.params.currentQuery)
+        console.log('matchingQuery: ', matchingQuery)
+
+        if(this.controller.params.panel.content) {
+
+            const tmpAggTypes = [];
+
+            const selectedAggregation = matchingQuery
+                ? matchingQuery.aggregation_type.find((agg: any) => agg.selected === true)
+                : undefined;
+
+            // Si ja s'ha carregat el panell i tenim dades a this.select
+            if (selectedAggregation) {
+                
+                tmpAggTypes.push(...matchingQuery.aggregation_type);
+                
+                if (matchingQuery) {
+                    this.aggregationsTypes = JSON.parse(JSON.stringify(matchingQuery.aggregation_type));
+                    console.log('this.aggregationsTypes>>>1<<<', this.aggregationsTypes)                    
+                }
+
+                return;
+            } else{
+                this.aggregationsTypes = JSON.parse(JSON.stringify(this.controller.params.selectedColumn.aggregation_type));
+                console.log('this.aggregationsTypes>>>2<<<', this.aggregationsTypes)                    
+
+            }
+
+        }
+
+    }
+    
+    addAggregation(type: any) {
+
+        // Seleccionando la agregación
+        this.aggregationsTypes.find((ag:any) => ag.value === type.value).selected = true;
+
+        for (let ag of this.aggregationsTypes) {
+            if (ag.selected === true && type.value !== ag.value) {
+                ag.selected = false;
+            }
+        }
+
+        // Recarguem les agregacions d'aquella columna + la seleccionada
+        this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
+
+        console.log('this.selectedColumn: ', this.selectedColumn);
+
+    }
+
+    getAggName(value: string) {
+        return aggTypes.filter(agg => agg.value === value)[0].label;
     }
 
 
