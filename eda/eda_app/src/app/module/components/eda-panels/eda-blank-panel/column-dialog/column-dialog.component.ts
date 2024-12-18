@@ -17,7 +17,7 @@ import { aggTypes } from 'app/config/aggretation-types';
 @Component({
     selector: 'app-column-dialog',
     templateUrl: './column-dialog.component.html',
-    styleUrls: []
+    styleUrls: ['./column-dialog.component.css']
 })
 
 export class ColumnDialogComponent extends EdaDialogAbstract {
@@ -93,14 +93,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
         // Inicializando el valor del WHERE / HAVING
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
-
-        console.log('aggregationsTypes: ', this.aggregationsTypes); //// VACIOOOO
     }
 
     onShow(): void {
-
-        console.log('hollla')
-
         this.selectedColumn = this.controller.params.selectedColumn;
         const allowed = [];
         const title = this.selectedColumn.display_name.default;
@@ -195,8 +190,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     addAggregation(type: any) {       
         
-        // console.log('QUE PASA:::',this.aggregationsTypes)
-
         this.aggregationsTypes.find((ag: any) => ag.value === type.value).selected = true;
 
         for (let ag of this.aggregationsTypes) {
@@ -354,11 +347,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             c.column_name === column.column_name &&
             c.display_name.default === column.display_name.default
         );
-
-        console.log('column: ', column)
-        console.log('this.controller: ', this.controller)
-        console.log('this.controller.params.currentQuery: ', this.controller.params.currentQuery)
-        console.log('matchingQuery: ', matchingQuery)
         
         if (this.controller.params.panel.content) {
             const tmpAggTypes = [];
@@ -374,7 +362,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 
                 if (matchingQuery) {
                     this.aggregationsTypes = JSON.parse(JSON.stringify(matchingQuery.aggregation_type));
-                    console.log('this.aggregationsTypes>>><<<', this.aggregationsTypes)                    
                 }
 
                 return;

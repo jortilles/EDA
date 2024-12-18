@@ -94,9 +94,9 @@
 
                         <ng-container *ngIf="!display.calendar && !filter.switch">
 
-                            <span *ngIf="display.filterValue" class="p-float-label mt-1">
+                            <span *ngIf="display.filterValue" class="p-float-label">
 
-                                <input id="float-input" [type]="inputType" class="w-100"
+                                <input id="float-input" [type]="inputType" class="w-100 selectStyles"
                                     [(ngModel)]="filterValue.value1"
                                     (input)="handleValidForm({value1: $event.target.value})" pInputText required>
 
@@ -134,7 +134,7 @@
 
                 <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton && (aggregationSelected.display_name !== 'No')">
 
-                    <div class="col-12 md:col-2" style="margin-top: 10px; padding: 0 ;">
+                    <div class="col-12 md:col-2">
 
                         <span class="p-float-label">
                             <p-dropdown id="types" [options]="filterBeforeAfter.elements" [(ngModel)]="filterBeforeAfterSelected" optionLabel="label"
@@ -230,15 +230,15 @@
     
                                 <div class="form-group mb-0">
     
-                                    <label i18n="@@valor1Label" class="p-float-label" for="float-input1">
+                                    <!-- <label i18n="@@valor1Label" class="p-float-label" for="float-input1">
                                         Valor 1
-                                    </label>
+                                    </label> -->
     
                                     <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value1"
                                         [virtualScroll]="true" [itemSize]="34" [filter]="false" [style]="{width: '100%'}"
                                         [panelStyle]="{minWidth:'100%'}"
                                         (onChange)="handleValidForm({value1: filterValue.value1})"
-                                        defaultLabel="Selecciona..." [selectionLimit]="limitSelectionFields"
+                                        defaultLabel="Selecciona Valor 1" [selectionLimit]="limitSelectionFields"
                                         id="float-input1">
                                     </p-multiSelect>
     
@@ -250,15 +250,15 @@
     
                                 <div class="form-group mb-0">
     
-                                    <label i18n="@@valor2Label" class="p-float-label" for="float-input2">
+                                    <!-- <label i18n="@@valor2Label" class="p-float-label" for="float-input2">
                                         Valor 2
-                                    </label>
+                                    </label> -->
     
                                     <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2"
                                         [virtualScroll]="true" [itemSize]="34" [filter]="false" [style]="{width: '100%'}"
                                         [panelStyle]="{minWidth:'100%'}"
                                         (onChange)="handleValidForm({value2: filterValue.value2})"
-                                        defaultLabel="Selecciona..." [selectionLimit]="limitSelectionFields"
+                                        defaultLabel="Selecciona Valor 2" [selectionLimit]="limitSelectionFields"
                                         id="float-input2">
                                     </p-multiSelect>
     

@@ -99,9 +99,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
     addFilter() {
 
-        console.log('this.selectedColumn: ', this.selectedColumn);
-        console.log('this.aggregationType: ', this.aggregationType);
-
         const table = this.selectedColumn.table_id;
         const column_type  = this.selectedColumn.column_type;
         const column = this.selectedColumn.column_name;
@@ -136,11 +133,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
 
-        console.log('filter: ', filter);
-        // console.log('this.selectedColumn: ', this.selectedColumn);
-        // console.log('this.controller: ', this.controller)
-        // console.log('this.controller.params.currentQuery: ', this.controller.params.currentQuery)
-
         // Regresando al valor inicial el WHERE / HAVING
         this.filterBeforeAfter.filterBeforeGrouping = true;
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
@@ -170,11 +162,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     handleAggregationType() {
         const matchingQuery = this.selectedColumn;
 
-
-        console.log('this.controller: ', this.controller)
-        console.log('this.controller.params.currentQuery: ', this.controller.params.currentQuery)
-        console.log('matchingQuery o selectedColumn: ', matchingQuery)
-
         if(this.controller.params.panel.content) {
 
             const tmpAggTypes = [];
@@ -190,14 +177,11 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 
                 if (matchingQuery) {
                     this.aggregationsTypes = JSON.parse(JSON.stringify(matchingQuery.aggregation_type));
-                    console.log('this.aggregationsTypes>>>1<<<', this.aggregationsTypes)       
                 }
 
                 return;
             } else{
                 this.aggregationsTypes = JSON.parse(JSON.stringify(this.controller.params.selectedColumn.aggregation_type));
-                console.log('this.aggregationsTypes>>>2<<<', this.aggregationsTypes)                    
-
             }
 
         }
@@ -220,8 +204,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
         // Obteniendo la agregación seleccionada
         this.aggregationType = _.cloneDeep(type);
-        console.log('this.selectedColumn: ', this.selectedColumn);
-        console.log('this.aggregationType: ', this.aggregationType);
 
     }
 
@@ -254,11 +236,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
     handleFilterChange(filter: FilterType) {
 
-        console.log('filter ==> ', filter);
-
         if (filter) {
-            console.log('ENTRAAA')
-            console.log('selectedColumn ==> ', this.selectedColumn);
             const handler = this.columnUtils.handleFilterChange(filter);
             this.display.between = handler.between;
             this.display.filterValue = !_.isEqual(this.selectedColumn.column_type, 'date') ? handler.value : false;
@@ -283,9 +261,6 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                     value: true,
                 })
                 this.filterBeforeAfterSelected = {label: 'WHERE', value: true}
-                
-                console.log('filterBeforeAfterSelected ===>>>', this.filterBeforeAfterSelected);
-                console.log('AQUIIIIII  ;)')
             }
 
         } else {

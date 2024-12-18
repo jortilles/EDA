@@ -492,8 +492,6 @@ export class MySqlBuilderService extends QueryBuilderService {
    */
   public getHavingFilters(filters ): any {
 
-    console.log(this.queryTODO);
-
     if (filters.length) {
 
       let filtersString = `\nhaving 1=1 `;
