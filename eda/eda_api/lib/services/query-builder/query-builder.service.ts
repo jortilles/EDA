@@ -688,6 +688,7 @@ export abstract class QueryBuilderService {
             return this.queryTODO.fields.find((f: any)=> f.table_id === havingFilter.filter_table && 
                                              f.filter === havingFilter.filter_column);
         }else{
+
             return  { // devolvemos una columna ficticia con los valores que necesitamos para hacer el having
                 table_id: havingFilter.filter_table ,
                 column_name: havingFilter.filter_column,

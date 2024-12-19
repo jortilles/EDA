@@ -136,7 +136,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         // Regresando al valor inicial el WHERE / HAVING
         this.filterBeforeAfter.filterBeforeGrouping = true;
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
-        this.aggregationType = null;
+        this.aggregationType = {display_name: 'Suma', value: 'sum', selected: true};
+
     }
 
     carrega() {
@@ -171,6 +172,9 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 agg.selected = false;
             }
         }
+
+        // La agregacion none, esta descartada
+        this.aggregationsTypes.pop();
 
     }
     

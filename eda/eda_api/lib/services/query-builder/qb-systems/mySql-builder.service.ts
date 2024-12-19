@@ -552,7 +552,12 @@ public getHavingColname(column: any){
         table_id = column.joins[column.joins.length-1][0];
     }
 
-    colname = `cast(${column.aggregation_type}(\`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    if(column.aggregation_type === 'count_distinct') {
+      colname = `cast( count( distinct \`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    } else {
+      colname = `cast(${column.aggregation_type}(\`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    }
+    
   }else{
     if(column.column_type == 'numeric'){
       colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
