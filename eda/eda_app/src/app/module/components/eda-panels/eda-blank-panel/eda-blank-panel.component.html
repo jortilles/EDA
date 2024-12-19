@@ -386,6 +386,10 @@
                                     <button pButton (click)="onWhatIfDialog()" icon="pi pi-question-circle" class="p-button-info p-button-outlined button-whatif ml-2" label="What IF"></button>
                                 </div>
 
+                                <div class="col-2 col-offset-3 md:col-12 infoFiltres d-flex justify-content-end">
+                                    <button pButton (click)="filterAndOrDialog()" icon="pi pi-filter" class="p-button-info p-button-outlined button-whatif ml-2" label="Filter: And/Or"></button>
+                                </div>
+
                                 <div class="col-12 md:col-12 info-query" *ngIf="currentQuery.length !== 0">
                                     <div #myQuery>
                                         <span i18n="@@consultaH4" class="span-title">
