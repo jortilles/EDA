@@ -37,11 +37,17 @@ export class MongoDBBuilderService {
                 }
             });
             fields.forEach((column: any) => {
-                mongoQuery.ordenationType.push({
-                    column:column.column_name,
-                    ordenationType: column.ordenation_type
-                });
-
+                if( ['Asc','Desc', 'No'].includes(  column.ordenation_type )){
+                    mongoQuery.ordenationType.push({
+                        column:column.column_name,
+                        ordenationType: column.ordenation_type
+                    });
+                }else{ // Si no tengo ordenacion es para un filtro y quiero ordenarlo ascendentemente
+                    mongoQuery.ordenationType.push({
+                        column:column.column_name,
+                        ordenationType: 'Asc'
+                    });
+                }
             });
 
             mongoQuery.filters = this.getFilters();
