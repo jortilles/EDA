@@ -66,6 +66,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         ],
     }
     public filterBeforeAfterSelected: any;
+    public aggregationType: any = null;
 
     // Tooltip
     public whereHavingMessage: string = $localize`:@@whereHavingMessage:WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar una vez agrupado.`;
@@ -148,7 +149,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
-        const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping
+        const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping;
+        const aggregation_type = this.aggregationSelected ? this.aggregationSelected.value : null;
+        
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -161,6 +164,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             autorelation,
             joins,
             filterBeforeGrouping,
+            aggregation_type,
         });
 
         this.filter.selecteds.push(filter);        
@@ -188,7 +192,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
     }
 
-    addAggregation(type: any) {       
+    addAggregation(type: any) {    
         
         this.aggregationsTypes.find((ag: any) => ag.value === type.value).selected = true;
 

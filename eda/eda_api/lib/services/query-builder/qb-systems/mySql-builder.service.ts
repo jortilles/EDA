@@ -543,6 +543,7 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @returns coumn name in string mode for having. 
    */
 public getHavingColname(column: any){
+
   let colname:String  ;
   if( column.computed_column === 'no'  || !column.hasOwnProperty('computed_column') ){
     let table_id = column.table_id;

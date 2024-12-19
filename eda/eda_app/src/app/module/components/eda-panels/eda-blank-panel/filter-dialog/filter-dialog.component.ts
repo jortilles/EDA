@@ -160,30 +160,16 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     handleAggregationType() {
-        const matchingQuery = this.selectedColumn;
 
-        if(this.controller.params.panel.content) {
+        this.aggregationsTypes = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
 
-            const tmpAggTypes = [];
-
-            const selectedAggregation = matchingQuery
-                ? matchingQuery.aggregation_type.find((agg: any) => agg.selected === true)
-                : undefined;
-
-            // Si ja s'ha carregat el panell i tenim dades a this.select
-            if (selectedAggregation) {
-                
-                tmpAggTypes.push(...matchingQuery.aggregation_type);
-                
-                if (matchingQuery) {
-                    this.aggregationsTypes = JSON.parse(JSON.stringify(matchingQuery.aggregation_type));
-                }
-
-                return;
-            } else{
-                this.aggregationsTypes = JSON.parse(JSON.stringify(this.controller.params.selectedColumn.aggregation_type));
+        for (let agg of this.aggregationsTypes) {
+            if(agg.value === 'sum') {
+                agg.selected = true;
+                this.aggregationType = agg; // Obtenemos la agregación por default
+            } else {
+                agg.selected = false;
             }
-
         }
 
     }
