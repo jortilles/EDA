@@ -13,8 +13,8 @@
 
             <div 
                 [ngClass]="{ 
-                            'md:col-5': (!display.between && !display.calendar ) || (!!display.calendar ),
-                            'md:col-9': !(!display.between && !display.calendar) || (!!display.calendar) 
+                            'md:col-4': (!display.between && !display.calendar ) || (!!display.calendar ),
+                            'md:col-8': !(!display.between && !display.calendar) || (!!display.calendar) 
                            }">
 
                 <span class="p-float-label">
@@ -90,7 +90,7 @@
 
             <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton">
 
-                <div class="col-12 md:col-3">
+                <div class="col-12 md:col-4">
 
                     <span class="p-float-label">
                         <p-dropdown id="types" [options]="filterBeforeAfter.elements" [(ngModel)]="filterBeforeAfterSelected" optionLabel="label"
@@ -110,8 +110,16 @@
 
         <div class="grid col-12 mt-2">
 
-            <div class="col-12 md:col-9">
+            <div class="col-12 md:col-8">
                 
+                <div class="row">
+
+                </div>
+
+                <div class="row">
+
+                </div>
+
                 <div class="grid col-12">
                     <ng-container>
                         <div class="col-12 md:col-4">
@@ -261,7 +269,7 @@
 
             </div>
 
-            <div class="col-12 md:col-3">
+            <div class="col-12 md:col-4">
                 <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton && !filterBeforeAfter.filterBeforeGrouping">
                         <!-- <h1>HOLA</h1> -->
         

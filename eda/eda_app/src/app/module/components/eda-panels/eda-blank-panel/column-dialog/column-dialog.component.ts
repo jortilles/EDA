@@ -61,8 +61,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public filterBeforeAfter = {
         filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
         elements: [
-            {label: 'WHERE', value: true},
-            {label: 'HAVING', value: false},
+            {label: 'Aplicar el filtro sobre todos los registros.', value: true},
+            {label: 'Aplicar el filtro sobre los resultados.', value: false},
         ],
     }
     public filterBeforeAfterSelected: any;
