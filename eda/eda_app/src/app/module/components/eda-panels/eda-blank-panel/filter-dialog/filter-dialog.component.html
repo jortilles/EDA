@@ -121,6 +121,7 @@
                 </div>
 
                 <div class="grid col-12">
+
                     <ng-container>
                         <div class="col-12 md:col-4">
                             <div class="grid col-12">
@@ -265,11 +266,69 @@
                         </ng-container>
         
                     </ng-container>
+
+                    <ng-container *ngIf="!display.between">
+                        <div class="col-12 md:col-8">
+                            <!-- IMPORTANTE => Div vacío para mantener la estructura -->
+                        </div>
+                    </ng-container>
+                    
+                    <ng-container>
+                        <div class="col-12">
+
+                            <div *ngIf="filter.forDisplay.length !== 0">
+
+                                <div class="col-12 foot-card">
+                    
+                                    <p-scrollPanel [style]="{width: '100%', height: '150px'}" styleClass="custombar1">
+                    
+                                        <ng-container *ngFor="let filtre of filter.forDisplay">
+                    
+                                            <p *ngIf="filtre.filter_elements.length === 0" class="d-flex align-items-center">
+                                                <b class="mr-2">
+                                                    * {{ controller.params.selectedColumn.display_name.default }} is
+                                                    {{ filtre.filter_type }}
+                                                </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - Aggregation: {{filtre.aggregation_type}} &nbsp;</b></span>
+                    
+                                                <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                                            </p>
+                    
+                                            <p *ngIf="filtre.filter_elements.length === 1" class="d-flex align-items-center">
+                                                <b class="mr-2">
+                                                    * {{ controller.params.selectedColumn.display_name.default }}
+                                                    {{ filtre.filter_type }}
+                                                    "{{ filtre.filter_elements[0].value1 }}" 
+                                                </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - Aggregation: {{filtre.aggregation_type}} &nbsp;</b></span>
+                    
+                                                <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                                            </p>
+                    
+                                            <p *ngIf="filtre.filter_elements.length === 2" class="d-flex align-items-center">
+                                                <b class="mr-2">
+                                                    * {{ controller.params.selectedColumn.display_name.default }}
+                                                    {{ filtre.filter_type }}
+                                                    "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
+                                                </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - Aggregation: {{filtre.aggregation_type}} &nbsp;</b></span>
+                    
+                                                <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                                            </p>
+                    
+                                        </ng-container>
+                    
+                                    </p-scrollPanel>
+                    
+                                </div>
+                    
+                            </div>
+
+                        </div>
+                    </ng-container>
+
                 </div>
 
             </div>
 
-            <div class="col-12 md:col-4">
+            <div class="col-12 md:col-4 mt-3">
                 <ng-container *ngIf="filterSelected!=undefined && selectedColumn.column_type ==='numeric'  && !display.switchButton && !filterBeforeAfter.filterBeforeGrouping">
                         <!-- <h1>HOLA</h1> -->
         
@@ -323,52 +382,6 @@
             </div>
 
         </div> -->
-
-
-        <div *ngIf="filter.forDisplay.length !== 0" class="col-6">
-
-            <div class="col-12 foot-card">
-
-                <p-scrollPanel [style]="{width: '100%', height: '90px'}" styleClass="custombar1">
-
-                    <ng-container *ngFor="let filtre of filter.forDisplay">
-
-                        <p *ngIf="filtre.filter_elements.length === 0" class="d-flex align-items-center">
-                            <b class="mr-2">
-                                * {{ controller.params.selectedColumn.display_name.default }} is
-                                {{ filtre.filter_type }}
-                            </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - Aggregation: {{filtre.aggregation_type}} &nbsp;</b></span>
-
-                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                        </p>
-
-                        <p *ngIf="filtre.filter_elements.length === 1" class="d-flex align-items-center">
-                            <b class="mr-2">
-                                * {{ controller.params.selectedColumn.display_name.default }}
-                                {{ filtre.filter_type }}
-                                "{{ filtre.filter_elements[0].value1 }}" 
-                            </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - Aggregation: {{filtre.aggregation_type}} &nbsp;</b></span>
-
-                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                        </p>
-
-                        <p *ngIf="filtre.filter_elements.length === 2" class="d-flex align-items-center">
-                            <b class="mr-2">
-                                * {{ controller.params.selectedColumn.display_name.default }}
-                                {{ filtre.filter_type }}
-                                "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
-                            </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - Aggregation: {{filtre.aggregation_type}} &nbsp;</b></span>
-
-                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                        </p>
-
-                    </ng-container>
-
-                </p-scrollPanel>
-
-            </div>
-
-        </div>
 
     </div>
 
