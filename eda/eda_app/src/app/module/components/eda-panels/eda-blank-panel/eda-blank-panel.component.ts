@@ -1251,9 +1251,6 @@ export class EdaBlankPanelComponent implements OnInit {
 
             let valueStr = '';
 
-            console.log('values: ',values)
-            console.log('values2: ',values2)
-
             if (values) {
                 if (values.length == 1 && !['in', 'not_in'].includes(filter.filter_type)) {
                     valueStr = `"${values[0]}"`;

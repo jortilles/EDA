@@ -69,9 +69,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public aggregationType: any = null;
 
     // Tooltip
-    public whereHavingMessage: string = $localize`:@@whereHavingMessage:WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar una vez agrupado.`;
-    public whereMessage: string = $localize`:@@whereMessage:WHERE : Primero filtra y luego agrupa`;
-    public havingMessage: string = $localize`:@@havingMessage:HAVING : Primero agrupa y luego filtra`;
+    public whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
+    public havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
 
     constructor(
         private dashboardService: DashboardService,

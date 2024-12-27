@@ -3945,17 +3945,13 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>El año pasado, completo</source>
   <target>W zeszłym roku, kompletne</target>
 </trans-unit>
-<trans-unit id="whereHavingMessage">
-  <source>WHERE : Filtrar antes de agrupar. \nHAVING : Filtrar una vez agrupado</source>
-  <target>WHERE : Filtruj przed grupowaniem. \nHAVING : Filtruj po grupowaniu</target>
-</trans-unit>
 <trans-unit id="whereMessage">
-  <source>WHERE : Primero filtra y luego agrupa</source>
-  <target>WHERE : Najpierw filtruj, a potem grupuj</target>
+  <source>Filtro sobre todos los registros</source>
+  <target>Filtruj według wszystkich rekordów</target>
 </trans-unit>
 <trans-unit id="havingMessage">
-  <source>HAVING : Primero agrupa y luego filtra</source>
-  <target>HAVING : Najpierw grupuj, potem filtruj</target>
+  <source>Filtro sobre los resultados</source>
+  <target>Filtruj wyniki</target>
 </trans-unit>
 </body>
 </file>

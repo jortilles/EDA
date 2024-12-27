@@ -4289,17 +4289,13 @@
         <source>El año pasado, completo</source>
         <target>Last year, complete</target>
       </trans-unit>
-      <trans-unit id="whereHavingMessage">
-        <source>WHERE : Filtrar antes de agrupar. / HAVING : Filtrar una vez agrupado</source>
-        <target>WHERE : Filter before grouping. / HAVING : Filter after grouping</target>
-      </trans-unit>
       <trans-unit id="whereMessage">
-        <source>WHERE : Primero filtra y luego agrupa</source>
-        <target>WHERE : First filter and then group</target>
+        <source>Filtro sobre todos los registros</source>
+        <target>Filter on all records</target>
       </trans-unit>
       <trans-unit id="havingMessage">
-        <source>HAVING : Primero agrupa y luego filtra</source>
-        <target>HAVING : First group and then filter</target>
+        <source>Filtro sobre los resultados</source>
+        <target>Filter on results</target>
       </trans-unit>
     </body>
   </file>
