@@ -1231,6 +1231,7 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public getDisplayFilterStr(filter: any) {
+
         let str = '';
 
         const table = this.findTable(filter.filter_table.split('.')[0]);
@@ -1241,7 +1242,17 @@ export class EdaBlankPanelComponent implements OnInit {
 
             const values = filter.filter_elements[0]?.value1;
             const values2 = filter.filter_elements[1]?.value2;
+
+            // Nomenclatura:  WHERE => Filtro sobre todos los registros | HAVING => Filtro sobre los resultados
+            const filterBeforeGroupingText = filter.filterBeforeGrouping ? 'Filtro sobre todos los registros' : 'Filtro sobre los resultados'
+
+            // Agregación
+            const aggregation = filter.aggregation_type;
+
             let valueStr = '';
+
+            console.log('values: ',values)
+            console.log('values2: ',values2)
 
             if (values) {
                 if (values.length == 1 && !['in', 'not_in'].includes(filter.filter_type)) {
@@ -1260,8 +1271,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
             }
 
-
-            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}`;
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - Aggregation: &nbsp<strong>${aggregation}</strong>&nbsp`;
         }
 
 
