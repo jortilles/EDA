@@ -288,7 +288,7 @@
                                                 <b class="mr-2">
                                                     * {{ controller.params.selectedColumn.display_name.default }} is
                                                     {{ filtre.filter_type }}
-                                                </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - Aggregation: {{filtre.aggregation_type}} &nbsp;</b></span>
+                                                </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - <span i18n="@@AggregationText">Agregación</span>: {{filtre.aggregation_type}} &nbsp;</b></span>
                     
                                                 <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                                             </p>
@@ -298,7 +298,7 @@
                                                     * {{ controller.params.selectedColumn.display_name.default }}
                                                     {{ filtre.filter_type }}
                                                     "{{ filtre.filter_elements[0].value1 }}" 
-                                                </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - Aggregation: {{filtre.aggregation_type}} &nbsp;</b></span>
+                                                </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - <span i18n="@@AggregationText">Agregación</span>: {{filtre.aggregation_type}} &nbsp;</b></span>
                     
                                                 <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                                             </p>
@@ -308,7 +308,7 @@
                                                     * {{ controller.params.selectedColumn.display_name.default }}
                                                     {{ filtre.filter_type }}
                                                     "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
-                                                </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - Aggregation: {{filtre.aggregation_type}} &nbsp;</b></span>
+                                                </b> <span [pTooltip]="filtre.filterBeforeGrouping ? whereMessage : havingMessage"  tooltipPosition="left"><b>[ {{filtre.filterBeforeGrouping ? whereMessage : havingMessage}} ]  - <span i18n="@@AggregationText">Agregación</span>: {{filtre.aggregation_type}} &nbsp;</b></span>
                     
                                                 <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                                             </p>

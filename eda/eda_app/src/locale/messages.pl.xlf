@@ -3953,6 +3953,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>Filtro sobre los resultados</source>
   <target>Filtruj wyniki</target>
 </trans-unit>
+<trans-unit id="aggregationText">
+  <source>Agregación</source>
+  <target>Zbiór</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

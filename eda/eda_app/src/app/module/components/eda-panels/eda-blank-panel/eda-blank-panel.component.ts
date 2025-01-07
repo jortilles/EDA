@@ -124,6 +124,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public ptooltipSQLmode: string = $localize`:@@sqlTooltip:Al cambiar de modo perderás la configuración de la consulta actual`;
 /* SDA CUSTOM  */ public ptooltipHiddenColumn: string = $localize`:@@hiddenColumn:Al cambiar de modo se verán las columnas marcadas como ocultas`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`;
+    public aggregationText: string = $localize`:@@aggregationText:Agregación`;
 
     /** Query Variables */
     public tables: any[] = [];
@@ -1268,7 +1269,10 @@ export class EdaBlankPanelComponent implements OnInit {
 
             }
 
-            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - Aggregation: &nbsp<strong>${aggregation}</strong>&nbsp`;
+            console.log('aggregation: ', aggregation);
+
+
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregation}</strong>&nbsp`;
         }
 
 
