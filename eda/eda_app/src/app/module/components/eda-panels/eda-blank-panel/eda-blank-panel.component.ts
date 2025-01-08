@@ -31,6 +31,9 @@ import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 
 import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
 
+import { aggTypes } from 'app/config/aggretation-types';
+
+
 export interface IPanelAction {
     code: string;
     data: any;
@@ -1269,10 +1272,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
             }
 
-            console.log('aggregation: ', aggregation);
+            const aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
 
-
-            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregation}</strong>&nbsp`;
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
         }
 
 
