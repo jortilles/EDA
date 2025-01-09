@@ -52,6 +52,7 @@ import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
 import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
 import { DragDropComponent } from './drag-drop/drag-drop.component';
 import { FilterAndOrDialogComponent } from './eda-panels/eda-blank-panel/filter-and-or-dialog/filter-and-or-dialog.component';
+import { EdaFilterAndOrComponent } from './eda-filter-and-or/eda-filter-and-or.component';
 
 
 @NgModule({
@@ -102,7 +103,8 @@ import { FilterAndOrDialogComponent } from './eda-panels/eda-blank-panel/filter-
         WhatIfDialogComponent,
         SunburstDialogComponent,
         DragDropComponent,
-        FilterAndOrDialogComponent
+        FilterAndOrDialogComponent,
+        EdaFilterAndOrComponent
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -136,6 +138,7 @@ import { FilterAndOrDialogComponent } from './eda-panels/eda-blank-panel/filter-
         SunburstDialogComponent,
         DragDropComponent,
         FilterAndOrDialogComponent,
+        EdaFilterAndOrComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
