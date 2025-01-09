@@ -633,3 +633,5 @@
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>
 
 <app-whatif-dialog *ngIf="display_v.whatIf_dialog" [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>
+
+<filter-and-or-dialog *ngIf="display_v.filterAndOr_dialog" (close)="onCloseFilterAndOrDialog()"></filter-and-or-dialog>

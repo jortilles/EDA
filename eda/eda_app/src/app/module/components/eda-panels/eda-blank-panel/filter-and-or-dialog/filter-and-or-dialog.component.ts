@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-filter-and-or-dialog',
+  selector: 'filter-and-or-dialog',
   templateUrl: './filter-and-or-dialog.component.html',
   styleUrls: ['./filter-and-or-dialog.component.css']
 })
@@ -17,6 +17,16 @@ export class FilterAndOrDialogComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  public onApplyFilterAndOrDialog() {
+    console.log('desde el hijo: onApplyFilterAndOrDialog')
+    this.close.emit();
+  }
+
+  public oncloseFilterAndOrDialog() {
+    console.log('desde el hijo: oncloseFilterAndOrDialog')
+    this.close.emit();
   }
 
   public disableApply() {

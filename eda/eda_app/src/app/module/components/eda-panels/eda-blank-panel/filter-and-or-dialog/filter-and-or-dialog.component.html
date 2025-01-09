@@ -1,12 +1,10 @@
 
-<h1>hola</h1>
-
-<!-- <eda-dialog2
-    [display] = "display"
-    header = "Filter And / Or" width="50vw" height="50vh"
-    [disableApply]="disableApply()"
-    (apply) = ""
->
+<eda-dialog2
+    [display]="display"
+    header="Filtros (And / OR)" width="50vw" height="50vh"
+    (apply)="onApplyFilterAndOrDialog()"
+    (close)="oncloseFilterAndOrDialog()"
+    >
 
 
-</eda-dialog2> -->
+</eda-dialog2>

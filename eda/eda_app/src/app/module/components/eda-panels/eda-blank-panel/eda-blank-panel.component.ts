@@ -108,7 +108,7 @@ export class EdaBlankPanelComponent implements OnInit {
         disableQueryInfo: true,
         notSaved: false,
         minispinnerSQL: false,
-        filterAndOr: false,
+        filterAndOr_dialog: false,
     };
 
     public index: number;
@@ -1324,8 +1324,8 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public filterAndOrDialog(): void {
-        this.display_v.filterAndOr = true;
-        console.log('filterAndOrDialog Abriendo ==> ', this.display_v.filterAndOr);
+        this.display_v.filterAndOr_dialog = true;
+        console.log('this.display_v.filterAndOr_dialog: ',this.display_v.filterAndOr_dialog)
     }
 
     
@@ -1410,6 +1410,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseWhatIfDialog(): void {
         this.display_v.whatIf_dialog = false;
+    }
+
+    public onCloseFilterAndOrDialog(): void {
+        this.display_v.filterAndOr_dialog = false;
+        console.log('this.display_v.filterAndOr_dialog: ',this.display_v.filterAndOr_dialog)
     }
 
     public disableRunQuery(): boolean {
