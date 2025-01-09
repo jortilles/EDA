@@ -7,8 +7,7 @@ import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 })
 export class FilterAndOrDialogComponent implements OnInit {
 
-  @Input() currentQuery: any[] = [];
-  @Output() currentQueryChange: EventEmitter<any> = new EventEmitter<any>();
+  @Input() selectedFilters: any[] = [];
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
   public display: boolean = false;
@@ -21,6 +20,7 @@ export class FilterAndOrDialogComponent implements OnInit {
 
   public onApplyFilterAndOrDialog() {
     console.log('desde el hijo: onApplyFilterAndOrDialog')
+    console.log('A llegado el currenquery: ', this.selectedFilters)
     this.close.emit();
   }
 
