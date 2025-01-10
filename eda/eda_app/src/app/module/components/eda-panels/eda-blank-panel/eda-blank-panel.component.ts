@@ -1264,12 +1264,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 if (values2) {
                     if (values2.length == 1) {
-                        valueStr = `AND "${values2[0]}"`;
+                        valueStr = `"${values[0]}" AND "${values2[0]}"`;
                     }  else if (values2.length > 1) {
                         valueStr = `AND [${values2.map((v: string) => (`"${v}"`) ).join(', ')}]`;
                     }
                 }
-
             }
 
             let aggregationLabel = '';
@@ -1279,8 +1278,8 @@ export class EdaBlankPanelComponent implements OnInit {
             }
 
             str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
-        }
 
+        }
 
         return str;
     }
