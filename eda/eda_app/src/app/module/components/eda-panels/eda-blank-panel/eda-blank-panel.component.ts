@@ -1272,7 +1272,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
             }
 
-            const aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
+            let aggregationLabel = '';
+
+            if(aggTypes.filter(agg => agg.value === aggregation).length !== 0){
+                aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
+            }
 
             str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
         }
