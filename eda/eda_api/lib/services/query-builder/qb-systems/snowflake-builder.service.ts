@@ -1,9 +1,11 @@
-import { QueryBuilderService } from '../query-builder.service';
+import { EdaQueryParams, QueryBuilderService } from '../query-builder.service';
 import * as _ from 'lodash';
 
 
 export class SnowFlakeBuilderService extends QueryBuilderService {
-
+    public analizedQuery(params: EdaQueryParams) {
+        return [];
+    }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
     tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {

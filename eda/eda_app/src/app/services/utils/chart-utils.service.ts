@@ -48,6 +48,7 @@ export class ChartUtilsService {
 
     public chartTypes: EdaChartType[] = [
         { label: $localize`:@@chartTypes1:Tabla de Datos`, value: 'table', subValue: 'table', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesTableAnalized:Tabla DataQuality`, value: 'table', subValue: 'tableanalized', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes2:Tabla Cruzada`, value: 'crosstable', subValue: 'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: 'KPI', value: 'kpi', subValue: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPIBAR:KPI + Gráfico de Barras`, value: 'kpibar', subValue: 'kpibar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -607,7 +608,7 @@ export class ChartUtilsService {
         return uniqueLabels;
     }
 
-    public transformDataQueryForTable( labels: any[], values: any[]) {
+    public transformDataQueryForTable(labels: any[], values: any[]) {
             const output = [];
             values = values.filter(row => !row.every(element => element === null));
             // Load the Table for a preview
@@ -618,6 +619,8 @@ export class ChartUtilsService {
                 }
                 output.push(obj);
             }
+
+            console.log(output);
             return output;
     }
 

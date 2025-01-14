@@ -1,4 +1,4 @@
-import { QueryBuilderService } from './../query-builder.service';
+import { EdaQueryParams, QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
 
 
@@ -6,6 +6,10 @@ import * as _ from 'lodash';
 export class MySqlBuilderService extends QueryBuilderService {
   parseSchema(tables: string[], schema: string) {
     return tables;
+  }
+
+  public analizedQuery(params: EdaQueryParams) {
+    return [];
   }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 

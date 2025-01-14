@@ -80,6 +80,35 @@ export const QueryUtils = {
     }
   },
 
+  analizedQuery: async (ebp: EdaBlankPanelComponent) => {
+    const query = QueryUtils.initEdaQuery(ebp);
+
+    query.query.filters = query.query.filters.filter((f) =>
+      (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0)
+      || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
+    );
+
+    const response = await ebp.queryService.executeAnalizedQuery(query).toPromise();
+    return response;
+  },
+  
+  transformAnalizedQueryData: (data: any) => {
+    const labels = ['Columna', 'Consulta', 'Valor'];
+    const values = [];
+
+    for (const key in data) {
+
+      for (const valueKey in data[key]) {
+        const value = data[key][valueKey];
+        values.push([key, valueKey, value]);
+      }
+    }
+
+    return {
+      labels,
+      values
+    }
+  },
 
   getQueryFromServer: async (ebp: EdaBlankPanelComponent, query: Query): Promise<string> => {
     const serverquery = await ebp.dashboardService.getBuildedQuery(query).toPromise();
@@ -141,7 +170,7 @@ export const QueryUtils = {
 
         // Este if y else permiten mantener el gráfico que ya estaba configurado a pesar de que sean otros datos
         // en caso de que query no cumpla con el grádico correspondiente, se proyectara una tabla con los datos.
-        if(ebp.chartForm.value.chart===null){
+        if(ebp.chartForm.value.chart===null || ebp.chartForm.value.chart.subValue==='tableanalized'){
           ebp.changeChartType('table', 'table', null);
           ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
         } 

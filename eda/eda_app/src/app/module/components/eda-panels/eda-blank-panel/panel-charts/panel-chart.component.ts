@@ -342,14 +342,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
       * @param inject chart configuration
       */
     private createEdatableComponent(type: string) {
-
         this.entry.clear();
 
-        const factory = this.resolver.resolveComponentFactory(EdaTableComponent);
-        this.componentRef = this.entry.createComponent(factory);
-        this.componentRef.instance.inject = this.initializeTable(type, this.props.config.getConfig());
-        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(  this.props.data.labels, this.props.data.values);
         const config = this.props.config.getConfig();
+        const factory = this.resolver.resolveComponentFactory(EdaTableComponent);
+
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = this.initializeTable(type, config);
+        this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(this.props.data.labels, this.props.data.values);
 
         if (config) {
 
@@ -818,30 +818,39 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param configs 
      */
     private initializeTable(type: string, configs?: any): EdaTable {
+
         const tableColumns = [];
-        for (let i = 0, n = this.props.query.length; i < n; i += 1) {
+        if (this.props.edaChart == 'tableanalized') {
+            configs = configs || {};
+            configs.rows = 25;
+            configs.initRows = 25;
+            configs.visibleRows = 25;
+            for (const label of this.props.data.labels) {
+                tableColumns.push(new EdaColumnText({ header: label, field: label, description: label }));
+            }
+        } else {
+            for (let i = 0, n = this.props.query.length; i < n; i += 1) {
 
-            const label = this.props.data.labels[i];
-            const r: Column = this.props.query[i];
-
-            if (_.isEqual(r.column_type, 'date')) {
-
-                tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label, description: r.description.default }));
-            } else if (_.isEqual(r.column_type, 'numeric')) {
-
-                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default , decimals: r.minimumFractionDigits}))
-            } else if (_.isEqual(r.column_type, 'text')) {
-                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
-            } else if (_.isEqual(r.column_type, 'coordinate')) {
-                tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
+                const label = this.props.data.labels[i];
+                const r: Column = this.props.query[i];
+    
+                if (_.isEqual(r.column_type, 'date')) {
+                    tableColumns.push(new EdaColumnDate({ header: r.display_name.default, field: label, description: r.description.default }));
+                } else if (_.isEqual(r.column_type, 'numeric')) {
+                    tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default , decimals: r.minimumFractionDigits}))
+                } else if (_.isEqual(r.column_type, 'text')) {
+                    tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
+                } else if (_.isEqual(r.column_type, 'coordinate')) {
+                    tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
+                }
             }
         }
+
         if (type === 'table') {
             return new EdaTable({ cols: tableColumns, ...configs });
         } else if (type === 'crosstable') {
             return new EdaTable({ cols: tableColumns, pivot: true, ...configs });
         }
-
     }
 
     /**
