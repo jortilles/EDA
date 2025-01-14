@@ -622,15 +622,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     aggregationItem() {
-
-        console.log('this.selectedColumn', this.selectedColumn);
-        console.log('aggTypes: ', aggTypes);
-
-        let aggregation =  this.selectedColumn.aggregation_type.filter( agg => agg.selected)[0].display_name;
-
-        console.log('aggregation: ', aggregation);
-
-        return aggregation
+        return  this.selectedColumn.aggregation_type.filter( agg => agg.selected)[0].display_name;
     }
 
     processPickerEvent(event) {
