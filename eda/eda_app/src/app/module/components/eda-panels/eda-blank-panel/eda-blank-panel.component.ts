@@ -1264,7 +1264,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 if (values2) {
                     if (values2.length == 1) {
-                        valueStr = `"${values[0]}" AND "${values2[0]}"`;
+                        valueStr = `"${values[0]}" - "${values2[0]}"`;
                     }  else if (values2.length > 1) {
                         valueStr = `AND [${values2.map((v: string) => (`"${v}"`) ).join(', ')}]`;
                     }
