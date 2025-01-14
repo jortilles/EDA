@@ -47,15 +47,16 @@ import {
     SunburstDialogComponent
 
  } from './component.index';
+ 
 import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
 import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
+import { DragDropComponent } from './drag-drop/drag-drop.component';
 
 
 @NgModule({
     imports: [
         CoreModule,
         SharedModule,
-        DragDropModule
     ],
     declarations: [
         EdaBlankPanelComponent,
@@ -96,7 +97,8 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         EdaBubblechartComponent,
         BubblechartDialog,
         EdaSunburstComponent,
-        SunburstDialogComponent
+        SunburstDialogComponent,
+        DragDropComponent
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -125,7 +127,8 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
         FunnelDialog,
         BubblechartDialog,
         EdaSunburstComponent,
-        SunburstDialogComponent
+        SunburstDialogComponent,
+        DragDropComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

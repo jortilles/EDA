@@ -1,0 +1,134 @@
+<div cdkDropListGroup>
+    <div class="container">
+
+      <div class="row" style="max-width: 1140px;">
+
+        <div class="col box-total">
+          <h3  i18n="@@disenoTablaCruzada" >Diseño de la tabla cruzada: </h3>
+
+          <div class="container">
+            <div class="row">
+
+              <div class="col-4 box-vertical">
+
+                <div class="container-1">
+                  <h6 i18n="@@textoTablaCruzadaEjeX" class="description-text1"> • Eje vertical: Arrastre aquí los campos.</h6>
+
+                  <div
+                    class="list-1"
+                    cdkDropList
+                    [cdkDropListData]="itemX"
+                    (cdkDropListDropped)="drop($event)"
+                    >
+                      <p *ngIf="itemX.length < 1" class="item-message">{{messageItemCrosstable}}</p>
+
+                      <div *ngFor="let item of itemX" class="box-1" cdkDrag>
+
+                        <div class="col">
+
+                          <span *ngIf='item.column_type == "text" ' class="mdi mdi-alphabetical" style="margin-right:4px;"></span>
+                          <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
+                          <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
+                          
+                          <span>{{item.description}}</span>
+                        </div>
+                        
+                      </div>
+                      
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="col-8 box-horizontal">
+
+                <div class="container">
+                  <div class="row" >
+
+                    <div class="col p-0" style="height: 69px;">
+
+                      <div class="container-2">
+                        <h6 i18n="@@textoTablaCruzadaEjeY" class="description-text2"> • Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</h6>
+
+                        <div
+                          class="list-2"
+                          cdkDropList
+                          [cdkDropListData]="itemY"
+                          (cdkDropListDropped)="drop($event)"
+                          cdkDropListOrientation="horizontal"
+                          >
+
+                          <p *ngIf="itemY.length < 1" class="item-message">{{messageItemCrosstable}}</p>
+                          <div *ngFor="let item of itemY" class="box-1" cdkDrag>
+                            
+                            <div class="col">
+
+                              <span *ngIf='item.column_type == "text" ' class="mdi mdi-alphabetical" style="margin-right:4px;"></span>
+                              <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
+                              <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
+                              
+                              <span>{{item.description}}</span>
+                            </div>
+                            
+                          </div>         
+
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div class="col p-0">
+
+                      <div class="container-3">
+                        <h6 i18n="@@textoTablaCruzadaEjeZ" class="description-text3"> • Eje numérico: Arrastre aquí solo los campos numéricos.</h6>
+
+                        <div
+                          class="list-3"
+                          cdkDropList
+                          [cdkDropListData]="itemZ"
+                          (cdkDropListDropped)="drop($event)"
+                          cdkDropListOrientation="horizontal"
+                          [cdkDropListEnterPredicate]="isNumeric">
+
+                          <p *ngIf="itemZ.length < 1" class="item-message">{{messageItemCrosstable}}</p>
+                          <div *ngFor="let item of itemZ" class="box-1" cdkDrag>
+                        
+                            <div class="col">
+    
+                              <span *ngIf='item.column_type == "text" ' class="mdi mdi-alphabetical" style="margin-right:4px;"></span>
+                              <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
+                              <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
+                              
+                              <span>{{item.description}}</span>
+                            </div>
+                            
+                          </div>    
+                                                
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="row" style="margin-bottom: 10rem;">
+              <button type="button" pButton (click)="temporalExecution()" [disabled]="!validated"
+                  icon="fa fa-flask" class="p-button-success ml-2" i18n-label="@@aplicarBtn" label="Aplicar">
+              </button>
+            </div>
+
+            
+          </div>
+
+        </div>
+
+
+      </div>
+    </div>
+</div>
+  
