@@ -4315,6 +4315,30 @@
         <source>El año pasado, completo</source>
         <target>L'any passat, complet</target>
       </trans-unit>
+      <trans-unit id="aplicarBtn">
+        <source>Aplicar</source>
+        <target>Aplicar</target>
+      </trans-unit>
+      <trans-unit id="disenoTablaCruzada">
+        <source>Diseño de la tabla cruzada: </source>
+        <target>Disseny de la taula creuada: </target>
+      </trans-unit>
+      <trans-unit id="messageItemCrosstable">
+        <source>Este eje debe contener al menos un elemento</source>
+        <target>Aquest eix ha de contenir almenys un element</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeX">
+        <source> • Eje vertical: Arrastre aquí los campos.</source>
+        <target>• Eix vertical: Arrossegueu aquí els camps.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeY">
+        <source> • Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</source>
+        <target>• Eix horitzontal: Arrossegueu aquí els camps per a l'eix horitzontal de la taula creuada.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeZ">
+        <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
+        <target>• Eix numèric: Arrossegueu aquí només els camps numèrics.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

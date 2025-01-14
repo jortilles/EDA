@@ -3625,7 +3625,7 @@
       </trans-unit>
       <trans-unit id="addOnlyValues">
         <source>Sólo valores</source>
-        <target>Only values</target>
+        <target>Solo valores</target>
       </trans-unit>
 
       <trans-unit id="addValuesPercentages">
@@ -4317,6 +4317,30 @@
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>
         <target>El año pasado, completo</target>
+      </trans-unit>
+      <trans-unit id="aplicarBtn">
+        <source>Aplicar</source>
+        <target>Aplicar</target>
+      </trans-unit>
+      <trans-unit id="disenoTablaCruzada">
+        <source>Diseño de la tabla cruzada: </source>
+        <target>Diseño de la tabla cruzada: </target>
+      </trans-unit>
+      <trans-unit id="messageItemCrosstable">
+        <source>Este eje debe contener al menos un elemento</source>
+        <target>Este eje debe contener al menos un elemento</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeX">
+        <source> • Eje vertical: Arrastre aquí los campos.</source>
+        <target>• Eje vertical: Arrastre aquí los campos.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeY">
+        <source> • Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</source>
+        <target>• Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeZ">
+        <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
+        <target>• Eje numérico: Arrastre aquí solo los campos numéricos.</target>
       </trans-unit>
     </body>
   </file>

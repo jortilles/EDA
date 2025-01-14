@@ -60,14 +60,14 @@ export class EdaTableComponent implements OnInit {
     }
 
     getTooltip = (col) => `${col.description}` || ``;
-    
+
 
     getLinkTooltip(col) {
         return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
     }
 
     getStyle(col, rowData) {
-      
+
         if (this.styles[col.field]) {
 
             let cellClass = null;
@@ -75,7 +75,7 @@ export class EdaTableComponent implements OnInit {
             if(this.inject.pivot) field = this.styles[col.field].value;
 
             field = this.getNiceName(field);
-            
+
             if(!parseFloat(rowData[col.field])) cellClass = null;
             else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[0])) cellClass = `table-gradient-${field}-${0}`
             else if (parseFloat(rowData[col.field]) < parseFloat(this.styles[col.field].ranges[1])) cellClass = `table-gradient-${field}-${1}`;
@@ -90,11 +90,11 @@ export class EdaTableComponent implements OnInit {
     }
 
     public applyStyles(styles: Array<any>) {
- 
+
         const fields = styles.map(style => style.col);
         const limits = {};
 
-        //Initialize 
+        //Initialize
         fields.forEach(field => {
             limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: []};
         });
@@ -125,11 +125,11 @@ export class EdaTableComponent implements OnInit {
         Object.keys(limits).forEach((key, i) => {
 
             const colors = this.generateColor(styles[i].max, styles[i].min, 5);
-  
+
             colors.forEach((color, i) => {
                 const name = this.getNiceName(key)
                 this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color} `);
-                this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
+                this.styleService.setStyles(`.table-gradient-${name}-${i}`,
                 {
                     // color:'',
                     borderWidth: '1px ',
@@ -148,7 +148,7 @@ export class EdaTableComponent implements OnInit {
 
         const fields = styles.map(style => style.col);
         const limits = {};
-        //Initialize 
+        //Initialize
         fields.forEach(field => {
             limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: [], cols:styles.filter(s => s.col === field)[0].cols  };
         });
@@ -165,7 +165,7 @@ export class EdaTableComponent implements OnInit {
                     if (parseFloat(row[col]) > limits[field].max) limits[field].max = parseFloat(row[col]);
                     if (parseFloat(row[col]) < limits[field].min) limits[field].min = parseFloat(row[col]);
                 });
-                
+
             });
 
         });
@@ -184,12 +184,12 @@ export class EdaTableComponent implements OnInit {
         Object.keys(limits).forEach((key, i) => {
 
             const colors = this.generateColor(styles[i].max, styles[i].min, 5);
-  
+
             colors.forEach((color, i) => {
                 const name = this.getNiceName(key)
                 console.log(name)
                 this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color}`);
-                this.styleService.setStyles(`.table-gradient-${name}-${i}`, 
+                this.styleService.setStyles(`.table-gradient-${name}-${i}`,
                 {
                     // color:'',
                     borderWidth: '1px ',

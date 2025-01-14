@@ -500,60 +500,76 @@
 
 
 
-            <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA"
-                [disabled]="display_v.disablePreview || currentQuery.length === 0">
+            <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA" [disabled]="display_v.disablePreview || currentQuery.length === 0">
                 <div class="grid p-0 h-100">
                     <div class="col-8 p-1 preview-chart-box component" style="background-color: var(--panel-color);">
-                        <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
-                            style="height: 100%; width: 100%; display:block">
-                        </panel-chart>
+
+
+                        <div class="container">
+                            <div class="row">
+                                <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
+                                    style="height: 100%; width: 100%; display:block">
+                                </panel-chart>
+                            </div>
+                            <div class="row">
+                                <drag-drop *ngIf="graphicType==='crosstable' && dragAndDropAvailable" [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
+                            </div>
+                        </div>
+
+
                     </div>
 
-                    <div class="col-3 p-offset-1 p-1 edaChartSelector">
-                        <form [formGroup]="chartForm">
-                            <p-dropdown id="chartSelector" [style]="{'width':'100%'}"
-                                [options]="chartTypes"
-                                formControlName="chart"
-                                (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles( chartForm.value.chart.value))"
-                                optionLabel="label"
-                                [autoDisplayFirst]="false">
-
-                                <ng-template pTemplate="selectedItem">
-                                    <div class="chart-item chart-item-value" *ngIf="chartForm.value.chart">
-                                        <i *ngIf="!!chartForm.value.chart.ngIf"
-                                            class="{{chartForm.value.chart.icon}}"
-                                            style="color: #eeac57!important;vertical-align:middle;">
-                                        </i>
-                                        <span style="vertical-align:middle; margin-left: .5em">
-                                            {{chartForm.value.chart.label}}
-                                        </span>
-                                    </div>
-                                </ng-template>
-
-                                <ng-template let-chart pTemplate="item">
-                                    <div class="d-flex align-items-center" style="position: relative;height: 25px;"
-                                        [attr.title]="chart.tooManyData ? getTooManyDataDescription() : (chart.ngIf) ? getOptionDescription(chart.subValue) : '' ">
-                                        <span class="material-icons"
-                                            [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
-                                            {{getOptionIcon(chart.subValue)}}
-                                        </span>
-
-                                        <span class="ml-2 "
-                                            [ngClass]="{'texto-rallado-alert': chart.ngIf  || chart.tooManyData}">
-                                            {{chart.label}}
-                                        </span>
-
-                                        <span i18n="@@tooManyValues" *ngIf='chart.tooManyData' class="edaTooManyData"> -
-                                            Demasiados valores</span>
-
-                                        <span i18n="@@notAvaliable" *ngIf='chart.ngIf' class="edaTooManyData"> - No
-                                            Disponible</span>
-                                    </div>
-                                </ng-template>
-
-                            </p-dropdown>
-
-                        </form>
+                    <div class="col-4 p-offset-1 p-1 edaChartSelector">
+                        <div class="grid p-0">
+                            <div class="col-12">
+                                <form [formGroup]="chartForm">
+                                    <p-dropdown id="chartSelector" [style]="{'width':'100%'}"
+                                        [options]="chartTypes"
+                                        formControlName="chart"
+                                        (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles( chartForm.value.chart.value))
+                                        "optionLabel="label"
+                                        [autoDisplayFirst]="false">
+        
+                                        <ng-template pTemplate="selectedItem">
+                                            <div class="chart-item chart-item-value" *ngIf="chartForm.value.chart">
+                                                <i *ngIf="!!chartForm.value.chart.ngIf"
+                                                    class="{{chartForm.value.chart.icon}}"
+                                                    style="color: #eeac57!important;vertical-align:middle;">
+                                                </i>
+                                                <span style="vertical-align:middle; margin-left: .5em">
+                                                    {{chartForm.value.chart.label}}
+                                                </span>
+        
+                                            </div>
+                                        </ng-template>
+        
+                                        <ng-template let-chart pTemplate="item">
+                                            <div class="d-flex align-items-center" style="position: relative;height: 25px;"
+                                                [attr.title]="chart.tooManyData ? getTooManyDataDescription() : (chart.ngIf) ? getOptionDescription(chart.subValue) : '' ">
+                                                <span class="material-icons"
+                                                    [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
+                                                    {{getOptionIcon(chart.subValue)}}
+                                                </span>
+        
+        
+                                                <span class="ml-2 "
+                                                    [ngClass]="{'texto-rallado-alert': chart.ngIf  || chart.tooManyData}">
+                                                    {{chart.label}}
+                                                </span>
+        
+                                                <span i18n="@@tooManyValues" *ngIf='chart.tooManyData' class="edaTooManyData"> -
+                                                    Demasiados valores</span>
+        
+                                                <span i18n="@@notAvaliable" *ngIf='chart.ngIf' class="edaTooManyData"> - No
+                                                    Disponible</span>
+                                            </div>
+                                        </ng-template>
+        
+                                    </p-dropdown>
+        
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -564,9 +580,9 @@
 
     </div>
 
-    <p-footer class="footer" appendTo="body">
+    <p-footer class="footer" appendTo="body" style="z-index: 10000;">
         <div class="p-dialog-buttonpanel p-widget-content p-helper-clearfix text-right">
-            <button type="button" pButton (click)="runManualQuery()" [disabled]="disableRunQuery()"
+            <button *ngIf="!hiddenButtonExecuter" type="button" pButton (click)="runManualQuery()" [disabled]="disableRunQuery()"
                 icon="fa fa-flask" class="p-button-success ml-2" i18n-label="@@ejecutarBtn" label="Ejecutar">
             </button>
 
