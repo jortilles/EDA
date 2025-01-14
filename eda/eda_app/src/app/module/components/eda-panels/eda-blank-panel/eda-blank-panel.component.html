@@ -380,10 +380,9 @@
                                     <span i18n="@@joinTypeH4">
                                         Tipo de intersección: &nbsp;
                                     </span>
-                                    <p-selectButton [options]="joinTypeOptions" [(ngModel)]="joinType"  (onChange)="onJoinTypeChange()"  optionLabel="icon" optionValue="joinType" >
+                                    <p-selectButton [options]="joinTypeOptions" [(ngModel)]="joinType"  (onChange)="onJoinTypeChange()"  optionLabel="icon" optionValue="joinType">
                                         <ng-template let-item>
-                                            <i [class]="item.icon"></i>
-
+                                            <i [class]="item.icon" [pTooltip]="item.description"></i>
                                         </ng-template>
                                     </p-selectButton>
                                 </div>

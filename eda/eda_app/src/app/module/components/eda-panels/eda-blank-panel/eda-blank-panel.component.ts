@@ -177,9 +177,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     // join types
     joinTypeOptions: any[] = [
-        { icon: 'pi pi-align-left', joinType: 'left' },
-        { icon: 'pi pi-align-center', joinType: 'inner' },
-        { icon: 'pi pi-align-right', joinType: 'right' }
+        { icon: 'pi pi-align-left', joinType: 'left', description: 'Se mostrarán todos los registros de la tabla principal a los que el usuario tenga acceso, y los registros relacionados del resto de tablas.' },
+        { icon: 'pi pi-align-center', joinType: 'inner', description: 'Solo se mostrarán los registros relacionados en ambas tablas a los que el usuario tenga acceso.' },
+        // { icon: 'pi pi-align-right', joinType: 'right' }
         //,         { icon: 'pi pi-align-justify', joinType: 'full outer' }
     ];
 
