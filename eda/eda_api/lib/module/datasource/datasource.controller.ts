@@ -170,6 +170,14 @@ export class DataSourceController {
             }
             output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :
                 ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
+
+
+            /*Edalitics Free */if(output.filter(e=> e._id=='222222222222222222222222').length == 0  ){
+            /*Edalitics Free */    output.push(  { _id: '222222222222222222222222', model_name: 'Demo' } );
+            /*Edalitics Free */}
+            
+
+
             return res.status(200).json({ ok: true, ds: output });
         } catch (e) {
             console.log('Error loading DataSources');
