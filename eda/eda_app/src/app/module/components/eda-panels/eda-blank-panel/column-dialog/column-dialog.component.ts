@@ -621,6 +621,18 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         return aggTypes.filter(agg => agg.value === value)[0].label;
     }
 
+    aggregationItem() {
+
+        console.log('this.selectedColumn', this.selectedColumn);
+        console.log('aggTypes: ', aggTypes);
+
+        let aggregation =  this.selectedColumn.aggregation_type.filter( agg => agg.selected)[0].display_name;
+
+        console.log('aggregation: ', aggregation);
+
+        return aggregation
+    }
+
     processPickerEvent(event) {
         if (event.dates) {
             const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
