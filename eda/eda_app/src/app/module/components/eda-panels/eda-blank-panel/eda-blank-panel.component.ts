@@ -1234,6 +1234,13 @@ export class EdaBlankPanelComponent implements OnInit {
         return pathStr
     }
 
+    public getDisplayAggregation(aggregation: any) {
+        let str = '';
+        const aggregationText = aggTypes.filter(agg => agg.value === aggregation.value)[0].label
+        str = `&nbsp<strong>( ${aggregationText} )</strong>&nbsp`;
+        return str;
+    }
+
     public getDisplayFilterStr(filter: any) {
 
         let str = '';
@@ -1283,6 +1290,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
         return str;
     }
+
+
 
 /* SDA CUSTOM */     public showIdForHiddenMode() {
 /* SDA CUSTOM */         if (this.inject.dataSource._id == "111111111111111111111111") {
