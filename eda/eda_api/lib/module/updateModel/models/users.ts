@@ -10,7 +10,7 @@ export class UserModel {
             password: { type: String, unique: false },
             role: { type: [mongoose.Types.ObjectId] },
             img: { type: String, required: false },
-            active: { type: Number, hidden: true }, //este campo no aparece en mongo, lo retiramos por estética
+            active: { type: Number, hidden: true }, // This field does not appear in Mongo, we remove it by aesthetics
       
           }, { versionKey: false });
       

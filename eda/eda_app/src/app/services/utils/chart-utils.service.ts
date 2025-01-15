@@ -720,8 +720,7 @@ export class ChartUtilsService {
 
         }
         // Crosstable (At least three columns, one numeric)
-        if (dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 0 &&
-            dataDescription.totalColumns - dataDescription.numericColumns.length > 1) {
+        if (dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 0) {
             notAllowed.splice(notAllowed.indexOf('crosstable'), 1);
         }
 

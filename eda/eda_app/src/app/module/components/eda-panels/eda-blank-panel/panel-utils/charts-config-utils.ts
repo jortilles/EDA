@@ -34,7 +34,8 @@ export const ChartsConfigUtils = {
         sortedSerie: ebp.panelChart.componentRef.instance.inject.sortedSerie,
         sortedColumn: ebp.panelChart.componentRef.instance.inject.sortedColumn,
         styles : ebp.panelChart.componentRef.instance.inject.styles,
-        noRepetitions: ebp.panelChart.componentRef.instance.inject.noRepetitions
+        noRepetitions: ebp.panelChart.componentRef.instance.inject.noRepetitions,
+        ordering: ebp.panelChart.componentRef.instance.inject.ordering,
       }
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'kpi') {
@@ -91,7 +92,7 @@ export const ChartsConfigUtils = {
 
     if (['table', 'crosstable'].includes(type)) {
 
-      return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false);
+      return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, []);
 
     }
     else if (['bar', 'line','area', 'pie', 'doughnut','polarArea', 'barline', 'horizontalBar', 'pyramid', 'histogram' ].includes(type)) {

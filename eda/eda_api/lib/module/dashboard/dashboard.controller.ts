@@ -817,7 +817,13 @@ export class DashboardController {
     }
 
     forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
-    return forbiddenTables;
+
+  // Filtra los valores que inicien con: 'sda_l_' en las tablas & los valores que contengan '__' en las tablas.
+  /* SDA CUSTOM*/   let newForbiddenTables = forbiddenTables.filter( table => {
+  /* SDA CUSTOM*/     return ((!table.startsWith('sda_l_') && !table.includes('__')))
+  /* SDA CUSTOM*/   })
+
+    return newForbiddenTables;
   }
 
 
