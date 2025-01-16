@@ -594,18 +594,26 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.maps = this.props.maps;
         inject.query = this.props.query;
         inject.draggable = this.props.draggable;
-        try{
-            inject.coordinates = this.props.config['config']['coordinates'];
+        //Marc
+        inject.zoom = this.props.zoom;
+        inject.coordinates = this.props.coordinates;
+
+
+
+        try {
+            inject.coordinates = this.props.config['config']['coordinates'];                
         }catch{
             inject.coordinates = null ;
         }
-        try{
-            inject.zoom = this.props.config['config']['zoom'];
+        try {
+            if (true) {
+                inject.zoom = this.props.config["config"]["zoom"];
+            } else {}
         }catch{
-            inject.zoom =  null ;
+            inject.zoom =  1 ;
         }
         try{
-            inject.color = this.props.config['config']['color']  ;
+            inject.color = this.props.config['config']['color'];
         }catch{
             inject.color =  '#006400';
         }

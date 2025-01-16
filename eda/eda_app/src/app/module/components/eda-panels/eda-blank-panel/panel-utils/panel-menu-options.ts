@@ -67,7 +67,9 @@ export const PanelOptions = {
                 color: panelComponent.panelChart.componentRef.instance.color,
                 logarithmicScale: panelComponent.panelChart.componentRef.instance.logarithmicScale,
                 legendPosition: panelComponent.panelChart.componentRef.instance.legendPosition,
-                draggable: panelComponent.panelChart.componentRef.instance.draggable
+                draggable: panelComponent.panelChart.componentRef.instance.draggable,
+                zoom: panelComponent.panelChart.componentRef.instance.inject.zoom,
+                coordinates: panelComponent.panelChart.componentRef.instance.inject.coordinates,
               },
               close: (event, response) => { panelComponent.onCloseMapProperties(event, response) }
             });

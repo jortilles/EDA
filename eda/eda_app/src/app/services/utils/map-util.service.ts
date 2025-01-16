@@ -13,6 +13,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class MapUtilsService extends ApiService {
     private route = '/global/upload/readGeoJsonFile';
     private mapsObservables$: {} = {};
+    private coordinates: Array<Array<number>> | null = null;
+    private zoom: number | null = null;
+
 
     constructor(protected http: HttpClient, private _sanitizer: DomSanitizer) {
         super(http);
@@ -121,6 +124,18 @@ export class MapUtilsService extends ApiService {
         return 20 * (val / maxVal) + 5;
     }
 
+    public setCoordinates(coordinates: Array<Array<number>>): void {
+        this.coordinates = coordinates;
+    }
+    public getCoordinates(): Array<Array<number>> | null {
+        return this.coordinates;
+    }
+    public setZoom(zoom: number): void {
+        this.zoom = zoom;
+    }
+    public getZoom():number | null {
+        return this.zoom;
+    }
 
 
 }
