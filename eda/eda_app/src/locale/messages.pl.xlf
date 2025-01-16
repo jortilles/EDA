@@ -3981,6 +3981,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
     <target>• Eix numèric: Arrossegueu aquí només els camps numèrics.</target>
   </trans-unit>
+  <trans-unit id="textBetween">
+    <source>Entre</source>
+    <target>Między</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

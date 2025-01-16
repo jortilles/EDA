@@ -4325,6 +4325,10 @@
         <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
         <target>• Number Axis: Drag only numeric fields here.</target>
       </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Between</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

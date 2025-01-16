@@ -63,6 +63,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     // Tooltip
     public whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
     public havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
+    public textBetween: string = $localize`:@@textBetween:Entre`
 
 
     constructor(
@@ -200,10 +201,18 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     getAggregationText(value: any) {
+
+        console.log('value:::: ', value);
+
         const label = aggTypes.filter(agg => {
             return (agg.value === value.aggregation_type);
         })[0].label;
         return label;
+    }
+
+    getFilterText(value) {
+        if(value.filter_type === 'between') return this.textBetween;
+        return value.filter_type;
     }
 
     removeFilter(item: any) {

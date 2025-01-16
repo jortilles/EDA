@@ -128,6 +128,8 @@ export class EdaBlankPanelComponent implements OnInit {
 /* SDA CUSTOM  */ public ptooltipHiddenColumn: string = $localize`:@@hiddenColumn:Al cambiar de modo se verán las columnas marcadas como ocultas`;
     public ptooltipViewQuery: string = $localize`:@@ptooltipViewQuery:Ver consulta SQL`;
     public aggregationText: string = $localize`:@@aggregationText:Agregación`;
+    public textBetween: string = $localize`:@@textBetween:Entre`
+
 
     /** Query Variables */
     public tables: any[] = [];
@@ -1401,13 +1403,13 @@ export class EdaBlankPanelComponent implements OnInit {
             }
 
             let aggregationLabel = '';
+            if(aggTypes.filter(agg => agg.value === aggregation).length !== 0) aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
 
-            if(aggTypes.filter(agg => agg.value === aggregation).length !== 0){
-                aggregationLabel = aggTypes.filter(agg => agg.value === aggregation)[0].label;
-            }
+            // Agregado de internacionalización del between
+            let filterType = filter.filter_type
+            if(filterType === 'between') filterType = this.textBetween;
 
-            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filter.filter_type}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
-
+            str = `<strong>${tableName}</strong>&nbsp[${columnName}]&nbsp<strong>${filterType}</strong>&nbsp${valueStr}  &nbsp<strong>${filterBeforeGroupingText}</strong>&nbsp - ${this.aggregationText}: &nbsp<strong>${aggregationLabel}</strong>&nbsp`;
         }
 
         return str;

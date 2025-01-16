@@ -4351,6 +4351,10 @@
         <source>Agregación</source>
         <target>Agregació</target>
       </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Entre</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

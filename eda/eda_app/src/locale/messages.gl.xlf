@@ -4355,6 +4355,10 @@
         <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
         <target>• Eixe numérico: arrastra só campos numéricos aquí.</target>
       </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Entre</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
