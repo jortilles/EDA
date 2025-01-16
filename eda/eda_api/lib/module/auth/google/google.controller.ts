@@ -7,6 +7,7 @@ import ServerLogService from '../../../services/server-log/server-log.service';
 
 // Importaciones necesarias
 import User, { IUser } from '../../admin/users/model/user.model';
+import Group, { IGroup } from '../../admin/groups/model/group.model';
 import googleVerify from '../../../guards/google-verify-guard';
 import { UserController } from '../../admin/users/user.controller';
 
@@ -58,6 +59,7 @@ export class GoogleController {
                         token = await jwt.sign({user}, SEED, {expiresIn: 14400})
                         return res.status(200).json({ user, token: token, id: user._id });
                     });
+                    Group.updateOne({ _id: '135792467811111111111115' }, { $addToSet: { users: userToSave._id } });
                 } else {
                     // Si el usuario ya esta registrado, se actualiza algunos datos.
                     userEda.name = name;
