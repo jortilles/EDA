@@ -199,8 +199,11 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         return aggTypes.filter(agg => agg.value === value)[0].label;
     }
 
-    aggregationItem() {
-        return  this.selectedColumn.aggregation_type.filter( agg => agg.selected)[0].display_name;
+    getAggregationText(value: any) {
+        const label = aggTypes.filter(agg => {
+            return (agg.value === value.aggregation_type);
+        })[0].label;
+        return label;
     }
 
     removeFilter(item: any) {
