@@ -59,7 +59,11 @@ export class GoogleController {
                         token = await jwt.sign({user}, SEED, {expiresIn: 14400})
                         return res.status(200).json({ user, token: token, id: user._id });
                     });
-                    Group.updateOne({ _id: '135792467811111111111115' }, { $addToSet: { users: userToSave._id } });
+                    await Group.updateOne({ _id: '135792467811111111111115' }, { $addToSet: { users: userToSave._id } }).then(function () {
+                    })
+                    .catch(function (error) {
+                      console.log('Error updating group ', error);
+                    })
                 } else {
                     // Si el usuario ya esta registrado, se actualiza algunos datos.
                     userEda.name = name;
