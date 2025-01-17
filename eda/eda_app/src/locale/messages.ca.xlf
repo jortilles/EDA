@@ -4112,22 +4112,42 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
   <source>  
 
-        Edalitics Free es la versión gratuita de Edalitics.
-        Con Edalitics Free podrás disfrutar de toda la potencia de Edalitics para información pública o de uso personal. 
-        <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> es el servicio cloud que ofrece 
-        <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> sobre 
-        <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>. 
+            <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
+            informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
+            en tus propios servidores o se puede difrutar en su versión SaaS 
+            <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
+            Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+            configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.
 
   </source>
   <target>
-        Edalitics Free és la versió gratuïta d'Edalitics.
-        Amb Edalitics Free podreu gaudir de tota la potència d'Edalitics per a informació pública o d'ús personal.
-        <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> és el servei cloud que ofereix
-        <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> sobre
-        <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>.
+
+          <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> és una aplicació web de codi lliure que permet realitzar
+          informes gràfics i interactius de forma senzilla. EDA és una aplicació que es pot instal·lar
+          als teus propis servidors o es pot gaudir en la seva versió SaaS
+          <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>.
+          Edalitics permet gaudir de tota la potència d'EDA sense haver de preocupar-te d'instal·lacions,
+          configuracions, actualitzacions, etc. Connectes les teves fonts de dades i llest.
   </target>
 </trans-unit>
 
+<trans-unit id="firstAboutParagraphHome" datatype="html">
+  <source>  
+
+      Toda la potencia de Edalitics para información pública o de uso personal. 
+      <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> es el servicio cloud que ofrece 
+      <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> sobre 
+      <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>. Edalitics Free te permite analizar toda la información que quieras de forma gratuita siempre que hagas un uso razonable.
+  
+
+  </source>
+  <target>
+      Tota la potència d'Edalitics per a informació pública o d'ús personal.
+      <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> és el servei cloud que ofereix
+      <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> sobre
+      <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>. Edalitics Free et permet analitzar tota la informació que vulguis de forma gratuïta sempre que en facis un ús raonable.      
+  </target>
+</trans-unit>
 
 <trans-unit id="secondAboutParagraph" datatype="html">
   <source>
@@ -4147,18 +4167,16 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 
-<trans-unit id="thirdAboutParagraph" datatype="html">
+<trans-unit id="thirdAboutParagraphHome" datatype="html">
   <source>
-        EDA ha sido desarrollado por <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>. 
-        Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
-        funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
-        y el soporte empresarial que ofrece a sus clientes. 
+           A continuación tienes una guía rápida. Toda la inforación que necesites está disponible en la 
+           <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">documentación</a>
+           o puedes pedir ayuda en los <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussionso">grupos de discusión</a>.
   </source>
   <target>
-        EDA ha estat desenvolupat per <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a>.
-        Si necessiteu suport empresarial, no dubteu a contactar amb nosaltres. Així mateix com si voleu sol·licitar-ne de noves
-        funcionalitats o característiques. Jortilles finança el desenvolupament d'EDA mitjançant les subscripcions a Edalitics
-        i el suport empresarial que ofereix als clients.
+A continuació tens una guia ràpida. Tota la informació que necessitis està disponible a la
+ <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">documentació</a>
+ o podeu demanar ajuda als <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussionso">grups de discussió</a>.
   </target>
 </trans-unit>
 

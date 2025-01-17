@@ -95,38 +95,36 @@
   border:none;
 }
 
+
 #tutorial-home {
-  margin: 3%;
-  font-size: 1.1rem;
+  padding: 3%;
+  font-size: 1.5rem !important;
   color:black;
+  background-color: #fff;
 }
+
+.tutorial-text{
+  font-size: 1.3rem !important;
+}
+
 
 
 #tutorial-home .title-tutorial {
   font-size: 3rem;
   font-weight: bold;
 
-  margin: 10px 0px  40px 0px;
-  text-align: center;
+  margin: 40px 0px  40px 0px;
+  text-align: left;
 }
 
-#tutorial-home .subtitle-tutorial {
-  font-size: 2rem;
-  margin: 10px 0px  40px 0px;
-}
 
 #tutorial-home .stronger-paragraph{
   font-weight: 700;
   color: #009FC1;
 }
 
-#tutorial-home .text-tutorial {
-  font-size: 1.3ren !important;
-}
 
-.text-tutorial{
-  font-size: 1.1rem;
-}
+
 
 ::ng-deep .large-header .p-panel-header {
   font-size: 1.3rem;
