@@ -1,0 +1,11 @@
+
+.selectStyles {
+    height: 29px;
+}
+
+@media (min-width: 1371px) {
+    .selectStyles {
+        height: 34px;
+    }
+
+}

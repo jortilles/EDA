@@ -4339,6 +4339,22 @@
         <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
         <target>• Eix numèric: Arrossegueu aquí només els camps numèrics.</target>
       </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>Filtro sobre todos los registros</source>
+        <target>Filtre sobre tots els registres</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>Filtro sobre los resultados</source>
+        <target>Filtre sobre els resultats</target>
+      </trans-unit>
+      <trans-unit id="aggregationText">
+        <source>Agregación</source>
+        <target>Agregació</target>
+      </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Entre</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

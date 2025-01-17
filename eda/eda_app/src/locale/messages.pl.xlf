@@ -3945,6 +3945,18 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <source>El año pasado, completo</source>
   <target>W zeszłym roku, kompletne</target>
 </trans-unit>
+<trans-unit id="whereMessage">
+  <source>Filtro sobre todos los registros</source>
+  <target>Filtruj według wszystkich rekordów</target>
+</trans-unit>
+<trans-unit id="havingMessage">
+  <source>Filtro sobre los resultados</source>
+  <target>Filtruj wyniki</target>
+</trans-unit>
+<trans-unit id="aggregationText">
+  <source>Agregación</source>
+  <target>Zbiór</target>
+</trans-unit>
 <trans-unit id="aplicarBtn">
   <source>Aplicar</source>
   <target>Stosować</target>
@@ -3968,6 +3980,10 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="textoTablaCruzadaEjeZ">
     <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
     <target>• Eix numèric: Arrossegueu aquí només els camps numèrics.</target>
+  </trans-unit>
+  <trans-unit id="textBetween">
+    <source>Entre</source>
+    <target>Między</target>
   </trans-unit>
 </body>
 </file>

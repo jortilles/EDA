@@ -450,9 +450,7 @@
                                                 </span>
 
                                                 <ng-container *ngFor="let aggregation of column.aggregation_type">
-                                                    <span *ngIf="aggregation.selected && aggregation.display_name !== 'no'" class="d-flex align-items-center">
-                                                        ( {{aggregation.display_name}} )
-                                                    </span>
+                                                    <span *ngIf="aggregation.selected && aggregation.display_name !== 'no'" class="d-flex align-items-center" [innerHTML]="getDisplayAggregation(aggregation)"></span>
                                                 </ng-container>
 
                                             </div>
@@ -463,8 +461,6 @@
                                             <h5 i18n="@@resumenFiltrosPanelH6">
                                                 Resumen de filtros del panel
                                             </h5>
-
-
 
                                             <div *ngFor="let filter of selectedFilters" class="d-flex align-items-center">
                                                 <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
@@ -485,6 +481,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
                                 </div>
                             </div>
                         </div>

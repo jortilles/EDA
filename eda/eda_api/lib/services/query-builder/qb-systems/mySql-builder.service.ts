@@ -541,7 +541,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       let filtersString = `\nhaving 1=1 `;
 
       filters.forEach(f => {
-        const column = this.findHavingColumn(f.filter_table, f.filter_column);
+        const column = this.findHavingColumn(f);
         column.autorelation = f.autorelation;
         column.joins = f.joins;
         const colname = this.getHavingColname(column);
@@ -587,6 +587,7 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @returns coumn name in string mode for having. 
    */
 public getHavingColname(column: any){
+
   let colname:String  ;
   if( column.computed_column === 'no'  || !column.hasOwnProperty('computed_column') ){
     let table_id = column.table_id;
@@ -595,7 +596,12 @@ public getHavingColname(column: any){
         table_id = column.joins[column.joins.length-1][0];
     }
 
-    colname = `cast(${column.aggregation_type}(\`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    if(column.aggregation_type === 'count_distinct') {
+      colname = `cast( count( distinct \`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    } else {
+      colname = `cast(${column.aggregation_type}(\`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    }
+    
   }else{
     if(column.column_type == 'numeric'){
       colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
@@ -612,7 +618,7 @@ public getHavingColname(column: any){
    * @returns having filters  to string. 
    */
  public havingToString(filterObject: any) {
-    const column = this.findHavingColumn(filterObject.filter_table, filterObject.filter_column);
+    const column = this.findHavingColumn(filterObject);
     column.autorelation = filterObject.autorelation;
     column.joins = filterObject.joins;
 
