@@ -11,6 +11,8 @@ export class EdaPanel {
     public type: EdaPanelType;
     public w: number;
     public h: number;
+    public cols: number;
+    public rows: number;
     public dragAndDrop: boolean = true;
     public resizable: boolean = true;
     public x: number;

@@ -4,7 +4,9 @@ import { NgModule } from '@angular/core';
 import { CoreModule } from '../../core/core.module';
 import { SharedModule } from '../../shared/shared.module';
 import { ComponentsModule } from '../components/components.module';
-import { GridsterModule } from 'angular2gridster';
+// import { GridsterModule } from 'angular2gridster';
+import { GridsterModule } from 'angular-gridster2';
+
 
 // Component
 import { HomeComponent } from './home/home.component';
@@ -52,7 +54,8 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
 @NgModule({
     imports: [
         CoreModule,
-        GridsterModule.forRoot(),
+        // GridsterModule.forRoot(),
+        GridsterModule,
         SharedModule,
         ComponentsModule,
         PAGES_ROUTES,

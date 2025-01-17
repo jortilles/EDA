@@ -278,3 +278,17 @@ margin-left:1px !important;
     background-color: rgba(0, 0, 0, 0.2);
     z-index: 99999;
 }
+
+.dashboard-grid {
+    /* height: 20rem; */
+    overflow: visible !important; 
+    background-color: transparent; 
+}
+
+.gridster-item {
+    border-radius: 10px; /* Redondeo elegante */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Borde sutil */
+    box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.08); /* Sombra sutil con desplazamiento hacia abajo y a la izquierda */
+    background-color: #fff; /* Fondo blanco para destacar */
+    transition: box-shadow 0.3s ease-in-out; /* Suavidad en el cambio de sombra */
+}

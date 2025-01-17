@@ -1,6 +1,8 @@
 import { DateUtils } from './../../../services/utils/date-utils.service';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewInit, OnDestroy, HostListener } from '@angular/core';
-import { GridsterComponent, IGridsterOptions, IGridsterDraggableOptions } from 'angular2gridster';
+
+import { GridsterConfig, GridsterItem, GridType, DisplayGrid, CompactType } from 'angular-gridster2';
+
 import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dashboard, EdaPanel, EdaTitlePanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
@@ -26,8 +28,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     //@HostListener('window:resize', ['$event'])
 
     @ViewChild(GlobalFilterComponent, { static: false }) gFilter: GlobalFilterComponent;
-    // Gridster ViewChild
-    @ViewChild(GridsterComponent, { static: false }) gridster: GridsterComponent;
     @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
     private edaPanelsSubscription: Subscription;
 
@@ -65,17 +65,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public panels: EdaPanel[] = [];
     public panelsCopy: EdaPanel[] = [];
     public screen: number;
-    public lanes: number = 40;
-    public gridsterOptions: IGridsterOptions;
-    public gridsterDraggableOptions: IGridsterDraggableOptions;
-    public gridItemEvent: any;
-    public itemOptions = {
-        maxWidth: 40,
-        maxHeight: 200,
-        minWidth: 3,
-        minHeight: 1,
-        resizeHandles: { s: false, e: false, n: false, w: false, se: false, ne: false, sw: false, nw: false },
-    };
+    
+    // public gridsterOptions: IGridsterOptions;
+    // public gridsterDraggableOptions: IGridsterDraggableOptions;
+    public gridsterOptions: GridsterConfig;
+    public gridsterDashboard: GridsterItem[];
+    public height: number = 0; // Altura inicial del gridster
+
     public tag: any;
     public tags: Array<any>;
     public selectedTags: any[];
@@ -164,7 +160,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.display_v.notSaved = false;
     }
 
-    /** Selecciona el modo en el que se permitirá hacer consultas. Teniendo en cuenta que no se pueden mezclar consultas de tipo EDA y Abrol en un mismo informe. */
+    /** Selecciona el modo en el que se permitirá hacer consultas. Teniendo en cuenta que no se pueden mezclar consultas de tipo EDA y Arbol en un mismo informe. */
     private setPanelsQueryMode(): void {
         const treeQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA2');
         const standardQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA');
@@ -194,6 +190,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     /* Set applyToAllFilters for new panel when it's created */
     public ngAfterViewInit(): void {
+
         this.edaPanelsSubscription = this.edaPanels.changes.subscribe((comps: QueryList<EdaBlankPanelComponent>) => {
             const globalFilters = this.gFilter?.globalFilters.filter(filter => filter.isGlobal === true);
             const unsetPanels = this.edaPanels.filter(panel => _.isNil(panel.panel.content));
@@ -213,9 +210,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
                 });
 
-
             }, 0);
         });
+
     }
 
     public ngOnDestroy() {
@@ -285,8 +282,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.stylesProviderService.customCss.subscribe((css) => {
            this.stylesProviderService.setCustomCss(css);
         });
-
-
     }
 
     // Init functions
@@ -295,15 +290,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.toLitle = false;
             this.toMedium = false;
         }
-/* NO MORE TAMANY MIG
-        if ((window.innerWidth < 1200) && (window.innerWidth > 1000)) {
-            this.lanes = 20;
-            this.toMedium = true;
-            this.toLitle = false;
-        }
-*/
+
         if (window.innerWidth < 1000) {
-            this.lanes = 10;
             this.toLitle = true;
             this.toMedium = false;
         }
@@ -312,34 +300,29 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     private initializeGridsterOptions(): void {
 
         this.gridsterOptions = {
-            lanes: this.lanes,
-            direction: 'vertical',
-            floating: false,
-            dragAndDrop: window.innerWidth > 1000,
-            resizable: window.innerWidth > 1000,
-            resizeHandles: {
-                sw: true,
-                se: true,
+            gridType: GridType.VerticalFixed, // Configuración general del Gridster : permite scroll vertical y los items generados son de tamaño fijo.
+            compactType: CompactType.None, // Controla la configuración de compactar en el gridster
+            displayGrid: DisplayGrid.OnDragAndResize, // Permite configurar la rejilla del gridster
+            pushItems: true,
+            swap: true,
+            draggable: {
+                enabled: true,
             },
-            widthHeightRatio: 1,
-            lines: {
-                visible: true,
-                color: '#dbdbdb',
-                width: 1
+            resizable: {
+                enabled: true,
             },
-            tolerance: 'pointer',
-            shrink: true,
-            useCSSTransforms: true,
-            responsiveView: true, // turn on adopting items sizes on window resize and enable responsiveOptions
-            responsiveDebounce: 500, // window resize debounce time
-            responsiveSizes: true
+            minCols: 40,
+            maxCols: 40,
+            minRows: 30, // Se puede optimizar para diferentes pantallas, aún así, con 30 funciona bien
+            maxRows: 300,
+            margin: 2, // Reduce el margen entre celdas
+            fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
+            fixedColWidth: 50, // Ajusta también el ancho de las columnas
+            disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
+            disableScrollVertical: true, // Desactiva scroll vertical si es necesario
+            itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
+            itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
         };
-
-        this.gridsterDraggableOptions = {
-            handlerClass: 'panel-heading'
-        };
-
-
     }
 
     private initializeForm(): void {
@@ -365,9 +348,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (this.grups.length === 0) {
                     this.visibleTypes.splice(1, 1);
                 }
-
-
-
 
                 // pot ser que no estinguin disponibles encara els grups... per això  es crida des de els dos llocs
                 // i es crida també des de aqui.... a mes a mes des de la inicilialització del dashboard
@@ -429,6 +409,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         grp = res.dashboard.group;
                     }
 
+                    console.log('MIRANDO AQUI',res.dashboard.config);
+
                     // Si el dashboard no te cap panel es crea un automatic
                     if (!res.dashboard.config.panel) {
                         me.panels.push(
@@ -440,8 +422,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                                 resizable: true,
                                 w: 20,
                                 h: 10,
+                                cols: 20,
+                                rows: 10,
                             })
                         );
+
+                        this.gridsterDashboard = me.panels;
+
                         // Check url for filters in params
                         this.gFilter.findGlobalFilterByUrlParams(this.queryParams);
                         this.gFilter.fillFiltersData();
@@ -451,9 +438,23 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                             datasSource: me.dataSource, filters: [], applytoAllFilter: { present: false, refferenceTable: null, id: null }, group: grp
                         });
 
+                        
+
+
                     } else {
                         // Si te panels els carrega
                         me.panels = config.panel;
+                        console.log('ME => panels =>', me.panels)
+
+                        me.panels.forEach( p => {
+
+                            if(p.cols === undefined && p.rows === undefined) {
+                                p.cols = p.w;
+                                p.rows = p.h;
+                            }
+                        })
+
+                        this.gridsterDashboard = me.panels;
                         // Check url for filters in params
                         this.gFilter.findGlobalFilterByUrlParams(this.queryParams);
                         this.gFilter.fillFiltersData();
@@ -473,14 +474,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.setDashboardGrups();
                     }
 
+                    // if (this.toLitle) {
+                    //     this.initMobileSizes();
+                    // }
 
-                    if (this.toLitle) {
-                        this.initMobileSizes();
-                    }
-
-                    if (this.toMedium) {
-                        this.initMediumSizes();
-                    }
+                    // if (this.toMedium) {
+                    //     this.initMediumSizes();
+                    // }
 
                     this.initializePanels();
                     // Fem una copia de seguretat per en cas de desastre :D
@@ -604,29 +604,23 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
         }
     }
+    
 
     private setPanelSizes(panel) {
+
+        console.log('this.toLitle: ', this.toLitle)
+        console.log('this.panels: ', this.panels)
 
         if (this.toLitle) {
             if (this.panels.length > 0) {
                 const lastPanel = this.panels[this.panels.length - 1];
-                panel.tamanyMobil.w = this.lanes;
+                // panel.tamanyMobil.w = this.lanes;
                 panel.tamanyMobil.h = 10;
                 panel.tamanyMobil.x = 0;
                 panel.tamanyMobil.y = lastPanel.tamanyMobil.y + lastPanel.tamanyMobil.h;
             }
         }
-/* NO LONGER TAMANY MIG
-        if (this.toMedium) {
-            if (this.panels.length > 0) {
-                const lastPanel = this.panels[this.panels.length - 1];
-                panel.tamanyMig.w = 10;
-                panel.tamanyMig.h = 10;
-                panel.tamanyMig.x = 0;
-                panel.tamanyMig.y = lastPanel.tamanyMig.y + lastPanel.tamanyMig.h;
-            }
-        }
-*/
+
         this.panels.push(panel);
     }
 
@@ -654,8 +648,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.display_v.edit_mode = (userName !== 'edaanonim') && !(this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0)
         this.display_v.anonimous_mode = (userName !== 'edaanonim');
     }
-
-
 
     private setDashboardGrups( ): void {
         const me = this;
@@ -692,73 +684,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Sizes functions
-    private initMobileSizes() {
-        let height = 0;
-        let pannelHeight = 0;
-        for (let i = 0, n = this.panels.length; i < n; i++) {
-            // Init tamanys mobils
-            const panel = this.panels[i];
-            if (panel.tamanyMobil.h == 0) {
-                if (i !== 0) {
-                    panel.tamanyMobil.y = height;
-                }
-                pannelHeight = _.round(panel.h * 1.6);
-                // si el panell es mes gran que la pantalla ho ajusto a la pantalla.
-                // tot això es fa per tenir el tamany d'una cela i multiplicar-ho per el 70% de la pantalla
-                // vertical
-                if ((pannelHeight * (window.innerWidth / this.lanes) > window.innerHeight) && (window.innerHeight > window.innerWidth)) {
-                    pannelHeight = _.round((window.innerHeight / (window.innerWidth / this.lanes)) * 0.8);
-                }
-                //horitzontal
-                if ((pannelHeight * (window.innerWidth / this.lanes) > window.innerHeight) && (window.innerHeight < window.innerWidth)) {
-                    pannelHeight = _.round((window.innerHeight / (window.innerWidth / this.lanes)) * 1.1);
-                }
-
-                panel.tamanyMobil.w = this.lanes;
-                panel.tamanyMobil.h = pannelHeight;
-                panel.tamanyMobil.x = 0;
-                height += pannelHeight;
-            }
-
-        }
-
-    }
-
-    private initMediumSizes() {
-        for (let i = 0, n = this.panels.length; i < n; i++) {
-            // Init tamanys mobils
-            const panel = this.panels[i];
-            if (panel.tamanyMig.h == 0) {
-                panel.tamanyMig.x = _.round(panel.x / 2);
-                panel.tamanyMig.y = _.round(panel.y / 1.5);
-                panel.tamanyMig.w = _.round(panel.w / 2);
-                panel.tamanyMig.h = _.round(panel.h / 1.5);
-            }
-        }
-    }
 
     public onResize(event) {
+
         const innerWidth = event.target.innerWidth;
+        console.log('Hola onResize')
+
         if (innerWidth >= 1200) {
-            this.lanes = 40;
             this.toLitle = false;
             this.toMedium = false;
-            this.gridster.setOption('lanes', this.lanes).reload();
-            /* NO MORE TAMANY MIG
-        } else if ((innerWidth < 1200) && (innerWidth >= 1000)) {
-            this.lanes = 20;
-            this.toMedium = true;
-            this.toLitle = false;
-            this.gridster.setOption('lanes', this.lanes).reload();
-            this.initMediumSizes();
-        */
+            console.log('IGUAL y/o POR arriba del 1200')
         } else {
-            this.lanes = 10;
             this.toLitle = true;
             this.toMedium = false;
-            this.gridster.setOption('lanes', this.lanes).reload();
-            this.initMobileSizes();
-
+            console.log('POR abajo del 1200')
+            // this.gridster.setOption('lanes', this.lanes).reload();
         }
     }
 
@@ -983,14 +923,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Sidebar functions
     public onAddWidget(): void {
+
+        console.log('AGREGANDOOOOOO')
+
         let panel = new EdaPanel({
             id: this.fileUtiles.generateUUID(),
             title: $localize`:@@newPanelTitle2:Nuevo Panel`,
             type: EdaPanelType.BLANK,
             w: 20,
             h: 10,
+            cols: 20,
+            rows: 10,
             resizable: true,
-            dragAndDrop: true
+            dragAndDrop: true,
+            x: 0,
+            y: 0,
         });
 
         this.setPanelSizes(panel);
@@ -1004,6 +951,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             type: EdaPanelType.TITLE,
             w: 20,
             h: 1,
+            cols: 20,
+            rows: 1,
             resizable: true,
             dragAndDrop: true,
             fontsize: '22px',
@@ -1014,12 +963,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public onRemovePanel(panel): void {
+
         this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
 
         for (let i = 0, n = this.gFilter?.globalFilters.length; i < n; i += 1) {
             const filter = this.gFilter?.globalFilters[i];
             filter.panelList = filter.panelList.filter(id => id !== panel);
         }
+
+        let valor = this.getBottomMostItem();
+        console.log('El menor valor: ', valor);
+        this.height = (valor.y + valor.rows + 4) * 32;
     }
 
     public onDuplicatePanel(panel): void {
@@ -1028,7 +982,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public onResetWidgets(): void {
-            // Get the queries in the dashboard for delete it from cache
+        // Get the queries in the dashboard for delete it from cache
         const queries = [];
         this.panels.forEach( p=> {
                 if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
@@ -1207,7 +1161,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
 
-    // Funcion que agregar urls para acción personalizada
+    // Funcion que agrega urls para acción personalizada
     public openUrlsConfig() {
         const urls = this.urls;
         const params = {urls: urls};
@@ -1224,8 +1178,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         })
     }
-
-
 
     // Others
     public handleSelectedBtn(event): void {
@@ -1249,40 +1201,33 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         this.titleClick = !this.titleClick;
     }
 
-    // Podem agafar els events del panel
-    public itemChange($event: any, panel): void {
-        this.gridItemEvent = $event;
-        let found = this.edaPanels.filter(edaPanel => edaPanel.panel.id === panel.id)[0];
-        if (
-            found
-            && panel.content
-            && !found.panelChart.NO_DATA
-            && (['parallelSets', 'kpi',  'dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(panel.content.chart))
-            && !$event.isNew) {
-            found.savePanel();
-        }
-
-        // found.onGridsterResize($event);
-        if (panel.type === 1) {
-            let elements = document.querySelectorAll(`.eda-text-panel`);
-            elements.forEach((element) => {
-                this.setPanelSize(element);
-            });
-        }
+    // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
+    onItemChange(item: GridsterItem): void {
+        console.log('Cambio en el Item:', item);
+        console.log('Todos los valores => Dashboard:', this.dashboard);
+        
+        let valor = this.getBottomMostItem();
+        console.log('El menor valor: ', valor);
+        this.height = (valor.y + valor.rows + 4) * 32;
     }
 
-    public setPanelSize(element): void {
-        let parentElement = element?.parentNode;
-        if (parentElement) {
-            let parentWidth = parentElement.offsetWidth - 20;
-            let parentHeight = parentElement.offsetHeight - 20;
-            const imgs = element.querySelectorAll('img');
+    // Obtiene el item que se encuentra en la parte más inferior del gridster
+    getBottomMostItem(): GridsterItem | undefined {
+        let bottomMostItem: GridsterItem | undefined;
+        let maxBottom = -1; // Inicializamos con un valor bajo
 
-            imgs.forEach((img) => {
-                img.style.maxHeight = `${parentHeight}px`;
-                img.style.maxWidth = `${parentWidth}px`;
-            })
+        for (let item of this.dashboard.panel) {
+            // Calculamos la posición final en Y (bottom) del ítem
+            const bottom = item.y + item.rows;
+
+            // Si el ítem actual es más bajo, lo actualizamos
+            if (bottom > maxBottom) {
+            maxBottom = bottom;
+            bottomMostItem = item;
+            }
         }
+
+        return bottomMostItem; // El item de la posición mas inferior de todo el gridster
     }
 
     public addNewTag() {
@@ -1400,6 +1345,5 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             confirmButtonText: swal.resolveBtnText,
         });
     }
-
 
 }
