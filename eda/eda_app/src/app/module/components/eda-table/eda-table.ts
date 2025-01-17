@@ -714,9 +714,14 @@ export class EdaTable {
                 serie.labels.forEach((column, j) => {
                     if (column.isTotal) {
                         column.colspan = numericColumns * 2;
-                    } else if (i !== 0 || j !== 0) {
+                    } else if (i !== 0 && j >= 0) {
                         column.colspan = column.colspan * 2;
                     }
+
+                    if(i===0 && column.rowspan===1) {
+                        column.colspan = column.colspan * 2;
+                    }
+
                 });
             })
         }
@@ -1436,7 +1441,7 @@ export class EdaTable {
             for (let j = 0; j < labels.seriesLabels[i].length * mult; j++) {
                 serie.labels.push({
                     title: labels.seriesLabels[i][j % labels.seriesLabels[i].length], description : labels.axes[0].itemY[i].description,
-                    rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false
+                    rowspan: 1, colspan: colspanDiv / labels.seriesLabels[i].length, sortable: false, metric:labels.axes[0].itemZ[0].description
                 });
             }
             series.push(serie);
@@ -1460,7 +1465,7 @@ export class EdaTable {
 
         //set column name for column labels
         this.series[this.series.length - 1].labels.forEach((label, i) => {
-            label.column = this.cols[i + 1].field;
+            label.column = this.cols[i + (this.cols.length - this.series[this.series.length - 1].labels.length)].field;
             label.sortable = true;
             label.sortState = false;
         });
