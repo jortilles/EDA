@@ -2,6 +2,8 @@ import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/c
 import { Component, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
+import { MapUtilsService } from "@eda/services/service.index";
+
 
 
 
@@ -20,14 +22,14 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
   public logarithmicScale: boolean = false;
   public draggable: boolean;
   public legendPosition: string;
-  
+
   //Marc
   public zoom: number;
   public coordinates: Array<Array<number>>;
 
   public display: boolean = false;
 
-  constructor() {
+  constructor(private mapUtilsService: MapUtilsService) {
     super();
 
     this.dialog = new EdaDialog({
@@ -50,8 +52,11 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
       legendPosition: this.legendPosition,
       draggable: this.draggable,
       zoom: this.myPanelChartComponent.componentRef.instance.inject.zoom,
-      coordinates: this.myPanelChartComponent.componentRef.instance.inject.coordinates,
+      coordinates:
+        this.myPanelChartComponent.componentRef.instance.inject.coordinates,
     });
+    this.mapUtilsService.setZoom(null);
+    this.mapUtilsService.setCoordinates(null);
   }
 
   handleInputColor() {
@@ -79,7 +84,6 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
   closeChartConfig() {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
-
 
   onShow(): void {
     //Funcion llamada al abrir el mapa edit

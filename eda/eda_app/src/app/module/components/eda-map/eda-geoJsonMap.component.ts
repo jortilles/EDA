@@ -169,6 +169,7 @@ export class EdaGeoJsonMapComponent
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {
         minZoom: 0,
+        maxZoom: 10,
         center:
           this.mapUtilsService.getCoordinates() ??
           this.getCenter(this.inject.data),
@@ -179,7 +180,7 @@ export class EdaGeoJsonMapComponent
       });
 
       // Check coords & zoom origin
-      if (this.mapUtilsService.getZoom()) {
+      if (this.mapUtilsService.getZoom() || this.mapUtilsService.getCoordinates()) {
         this.initMapFromPrevMap();
       } else {
         this.initMapFromConfig();
@@ -208,6 +209,7 @@ export class EdaGeoJsonMapComponent
     this.mapUtilsService.setZoom(null);
     this.mapUtilsService.setCoordinates(null);
   };
+  
   private initMapFromConfig = (): void => {
     this.map.on("moveend", (event) => {
       let c = this.map.getCenter();
