@@ -1,11 +1,11 @@
-import { createConnection, createPool, Connection as SqlConnection } from 'mysql2';
+import { createConnection, createPool, Connection as SqlConnection } from 'mysql2/promise';
 import { MySqlBuilderService } from "../../query-builder/qb-systems/mySql-builder.service";
 import { AbstractConnection } from "../abstract-connection";
 import { AggregationTypes } from "../../../module/global/model/aggregation-types";
 import { ConnectionOptions, PoolOptions, Pool } from 'mysql2/typings/mysql';
 import { PoolManagerConnectionSingleton } from '../pool-manager-connection';
 const util = require('util');
-
+/*SDA CUSTOM*/const SCRMConfig=require('../../../../config/sinergiacrm.config.js');
 
 export class MysqlConnection extends AbstractConnection {
     private static instance: MysqlConnection;
@@ -35,12 +35,12 @@ export class MysqlConnection extends AbstractConnection {
                     queueLimit: 0,
                     enableKeepAlive: true,
                     keepAliveInitialDelay: 0
-                };
+                                    };
 
                 poolManager.createPool(this.config.database, mySqlConn);
                 this.pool = poolManager.getPool(this.config.database);
 
-                console.log('neew pool');
+                console.log('new pool');
             }
 
             return this.pool;
@@ -154,20 +154,66 @@ export class MysqlConnection extends AbstractConnection {
             throw err;
         }
     }
-
+    
+    
+    // SDA CUSTOM JCH (add timeout to individual queries)
+    // https://github.com/SinergiaTIC/SinergiaDA/pull/256/files
+    //  async execQuery(query: string): Promise<any> {
+    //      try {
+    //          this.client.query = util.promisify(this.client.query);
+    //          const rows = await this.client.query(query);
+    //          // console.log(this.client.itsConnected());
+    //          // if (!this.pool && this.client.itsConnected() ) this.client.end();
+    //          return rows;
+    //      } catch (err) {
+    //          console.log(err);
+    //          throw err;
+    //      }
+    //  }
+     
+    /**
+    * Executes a MySQL query with a timeout constraint
+    * 
+    * @param query - The SQL query string to execute
+    * @returns Promise that resolves to the query results
+    * @throws Error if query execution fails or times out after 60 seconds
+    */
     async execQuery(query: string): Promise<any> {
         try {
+            // Convert callback-based query to promise-based
             this.client.query = util.promisify(this.client.query);
-            const rows = await this.client.query(query);
-            // console.log(this.client.itsConnected());
-            // if (!this.pool && this.client.itsConnected() ) this.client.end();
+
+            let maxStatementTime = SCRMConfig.sinergiaConn.maxStatementTime ?? 60;
+            console.log(`SET maxStatementTime=${maxStatementTime}`);
+            
+            // Add timeout constraint to the query
+            const queryWithTimeout = `SET STATEMENT max_statement_time=${maxStatementTime} FOR ${query}`;
+
+            // Create timeout promise that rejects after 60 seconds
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => {
+                    reject(new Error(`Query execution timed out after ${maxStatementTime} seconds`));
+                }, (maxStatementTime * 1000));
+            });
+        
+            // Execute query with a race between actual query and timeout
+            const rows = await Promise.race([
+                this.client.query(queryWithTimeout),
+                timeoutPromise
+            ]);
+        
             return rows;
         } catch (err) {
+            if (err.message === 'Query execution timed out after 60 seconds') {
+                // Log specific timeout errors
+                console.error('Query timeout:', query);
+            }
             console.log(err);
             throw err;
         }
 
     }
+    //  END SDA CUSTOM
 
     async execSqlQuery(query: string): Promise<any> {
         return this.execQuery(query);
