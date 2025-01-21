@@ -4373,6 +4373,79 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Activar funciones del mouse</source>
         <target>Activar funcions del mouse</target>       
       </trans-unit>
+      <trans-unit id="tutorialTitleHome">
+        <source>Tutorial</source>
+        <target>Tutorial</target>       
+      </trans-unit>
+      <trans-unit id="tutorialFirstOrdListHome">
+        <source>Para analizar la información con Edalitics necesitarás:
+            <ol>
+                <li><b>Crear una fuente de datos</b>: Conectar tus datos a Edalitics.</li>
+                <li><b>Crear un informe</b>: Analizar  tus datos a Edalitics.</li>
+            </ol>
+        </source>
+        <target>Per analitzar l'informació amb Edalitics necessitaràs:
+            <ol>
+                <li><b>Crear una font de dades</b>: Connectar les teves dades a Edalitics.</li>
+                <li><b>Crear un informe</b>: Analitzar les teves dades a Edalitics.</li>
+            </ol>
+        </target>       
+      </trans-unit>
+<trans-unit id="tutorialFirstParagraphHome" datatype="html">
+  <source>  
+    Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentación</a>.
+    O puedes ver este <a href="https://youtu.be/RFznLe9kxHU" target="_blank">video-tutorial</a>                 
+   </source>
+  <target>
+    Hi ha una explicació més detallada a la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentació</a>.
+    O pots veure aquest<a href="https://youtu.be/RFznLe9kxHU" target="_blank">vídeo-tutorial</a>  
+  </target>
+</trans-unit>
+<trans-unit id="tutorialSecondParagraphHome" datatype="html">
+  <source>  
+    Edalitics permite analizar datos de una <b>base de datos</b>, un <b>webservice</b> o un archivo <b>excel</b>.                
+   </source>
+  <target>
+    Edalitics permet analitzar dades d'una <b>base de dades</b>, un <b>webservice</b> o un arxiu <b>excel</b>.  
+  </target>
+</trans-unit>
+<trans-unit id="tutorialFirstUnordListHome" datatype="html">
+  <source>  
+    <li> En el menú de la izquierda elegimos <b>fuente de datos</b>, al desplegarse el menú:  <b> nueva fuente de datos</b>.</li>
+    <li> Una vez en la configuración el damos un nombre y elegimos el tipo de orígen de datos. </li>
+    <li> Configuramos los datos necesarios. </li>
+    <li> Personalizamos, si queremos, nuestra fuente de datos.</li>
+   </source>
+  <target>
+    <li> Al menú de l'esquerra triem <b>font de dades</b>, en desplegar-se el menú:  <b> nova font de dades</b>.</li>
+    <li> Un cop a la configuració li donem un nom i triem el tipus d'origen de dades. </li>
+    <li> Configurem les dades necessàries. </li>
+    <li> Personalitzem, si volem, la nostra font de dades.</li>
+  </target>
+</trans-unit>
+<trans-unit id="tutorialThirdParagraphHome" datatype="html">
+  <source>  
+    Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentación</a>.
+    O puedes ver este <a href="https://youtu.be/RFznLe9kxHU" target="_blank">video-tutorial</a>                 
+   </source>
+  <target>
+    Hi ha una explicació més detallades a la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentació</a>.
+    O pots veure aquest<a href="https://youtu.be/RFznLe9kxHU" target="_blank">vídeo-tutorial</a>  
+  </target>
+</trans-unit>
+<trans-unit id="tutorialSecondUnordListHome" datatype="html">
+  <source>  
+    <li>En la parte superior de la pantalla tenemos el boton <b>crear nuevo informe</b>, el cual nos abre un pop up que contiene los campos de nuevo nombre de informe y selección de una fuente de datos. </li>
+    <li>Le damos un nombre al informe y elegimos la fuente de datos sobre la que queremos hacer el informe.</li>
+    <li>Agregamos paneles de datos, filtros o textos a nuestro informe. </li>  
+  </source>
+  <target>
+    <li>A la part superior de la pantalla tenim el botó <b>crear nou informe</b>, el qual ens obre un pop up que conté els camps de nou nom d'informe i selecció d'una font de dades. </li>
+    <li>Donem un nom a l'informe i triem la font de dades sobre la qual volem fer l'informe.</li>
+    <li>Agreguem panells de dades, filtres o textos al nostre informe. </li>  
+  </target>
+</trans-unit>
+
     </body>
   </file>
 </xliff>

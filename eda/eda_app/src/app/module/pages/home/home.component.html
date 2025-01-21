@@ -185,10 +185,9 @@
         </p>
     </div>
 
-
-    <h2 class="title-tutorial">Tutorial</h2>
+    <h2 class="title-tutorial" i18n="@@tutorialTitleHome">Tutorial</h2>
     <div>
-        <div class="tutorial-text">
+        <div class="tutorial-text" i18n="@@tutorialFirstOrdListHome">
             Para analizar la información con Edalitics necesitarás:
             <ol>
                 <li><b>Crear una fuente de datos</b>: Conectar tus datos a Edalitics.</li>
@@ -198,10 +197,11 @@
         <div>
             <p-panel header="1. Crear una fuente de datos:" [ngClass]="{'large-header': true}">
                 <div class="tutorial-text">
-                    <p>Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/modelo_de_datos" target="_blank">documentación</a>.
-                        O puedes ver este <a href="https://youtu.be/Px709s0ftiI" target="_blank">video-tutorial</a></p>
-                    <p>Edalitics permite analizar datos de una <b>base de datos</b>, un <b>webservice</b> o un archivo <b>excel</b>.  </p>
-                    <ul>
+                    <p i18n="@@tutorialFirstParagraphHome">Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/modelo_de_datos" target="_blank">documentación</a>.
+                        O puedes ver este <a href="https://youtu.be/Px709s0ftiI" target="_blank">video-tutorial</a>
+                    </p>
+                    <p i18n="@@tutorialSecondParagraphHome">Edalitics permite analizar datos de una <b>base de datos</b>, un <b>webservice</b> o un archivo <b>excel</b>.  </p>
+                    <ul i18n="@@tutorialFirstUnordListHome">
                         <li> En el menú de la izquierda elegimos <b>fuente de datos</b>, al desplegarse el menú:  <b> nueva fuente de datos</b>.</li>
                         <li> Una vez en la configuración el damos un nombre y elegimos el tipo de orígen de datos. </li>
                         <li> Configuramos los datos necesarios. </li>
@@ -217,10 +217,10 @@
         <div>
             <p-panel header="2. Creación de un nuevo informe y paneles de visualización de datos:" [ngClass]="{'large-header': true}">
                 <div class="tutorial-text">
-                    <p>Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentación</a>.
+                    <p i18n="@@tutorialThirdParagraphHome">Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentación</a>.
                         O puedes ver este <a href="https://youtu.be/RFznLe9kxHU" target="_blank">video-tutorial</a>
                     </p> 
-                    <ul>
+                    <ul i18n="@@tutorialSecondUnordListHome">
                         <li>En la parte superior de la pantalla tenemos el boton <b>crear nuevo informe</b>, el cual nos abre un pop up que contiene los campos de nuevo nombre de informe y selección de una fuente de datos. </li>
                         <li>Le damos un nombre al informe y elegimos la fuente de datos sobre la que queremos hacer el informe.</li>
                         <li>Agregamos paneles de datos, filtros o textos a nuestro informe. </li>

@@ -4287,6 +4287,79 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Activar funciones del mouse</source>
         <target>Aktywuj funkcje myszy</target>
   </trans-unit> 
+<trans-unit id="tutorialTitleHome">
+  <source>Tutorial</source>
+  <target>Samouczek</target>       
+</trans-unit>
+<trans-unit id="tutorialFirstOrdListHome">
+  <source>Para analizar la información con Edalitics necesitarás:
+      <ol>
+          <li><b>Crear una fuente de datos</b>: Conectar tus datos a Edalitics.</li>
+          <li><b>Crear un informe</b>: Analizar  tus datos a Edalitics.</li>
+      </ol>
+  </source>
+  <target>Aby analizować informacje za pomocą Edalitics, należy:
+      <ol>
+          <li><b>Tworzenie źródła danych</b>: Połącz swoje dane z Edalitics.</li>
+          <li><b>Tworzenie raportu</b>: Analizuj swoje dane w Edalitics.</li>
+      </ol>
+  </target>       
+</trans-unit>
+<trans-unit id="tutorialFirstParagraphHome" datatype="html">
+  <source>  
+    Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentación</a>.
+    O puedes ver este <a href="https://youtu.be/RFznLe9kxHU" target="_blank">video-tutorial</a>                 
+  </source>
+  <target>
+    Bardziej szczegółowe wyjaśnienie znajduje się w <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">dokumentacja</a>.
+    Możesz też spojrzeć na to<a href="https://youtu.be/RFznLe9kxHU" target="_blank">samouczek wideo</a>  
+  </target>
+</trans-unit>
+<trans-unit id="tutorialSecondParagraphHome" datatype="html">
+  <source>  
+    Edalitics permite analizar datos de una <b>base de datos</b>, un <b>webservice</b> o un archivo <b>excel</b>.                
+  </source>
+  <target>
+    Edalitics pozwala analizować dane pochodzące z <b>baza danych</b>, do  <b>webservice</b> lub plik <b>excel</b>  .  
+  </target>
+</trans-unit>
+<trans-unit id="tutorialFirstUnordListHome" datatype="html">
+  <source>  
+    <li> En el menú de la izquierda elegimos <b>fuente de datos</b>, al desplegarse el menú:  <b> nueva fuente de datos</b>.</li>
+    <li> Una vez en la configuración el damos un nombre y elegimos el tipo de orígen de datos. </li>
+    <li> Configuramos los datos necesarios. </li>
+    <li> Personalizamos, si queremos, nuestra fuente de datos.</li>
+  </source>
+  <target>
+    <li> W menu po lewej stronie wybieramy <b>database</b>, po uruchomieniu menu:  <b> nowa baza danych</b>.</li>
+    <li> W konfiguracji nadajemy nazwę i wybieramy typ źródła danych. </li>
+    <li> Skonfigurowaliśmy niezbędne dane. </li>
+    <li> Dostosowujemy nasze źródło danych, jeśli chcemy.</li>
+  </target>
+</trans-unit>
+<trans-unit id="tutorialThirdParagraphHome" datatype="html">
+  <source>  
+    Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentación</a>.
+    O puedes ver este <a href="https://youtu.be/RFznLe9kxHU" target="_blank">video-tutorial</a>                 
+  </source>
+  <target>
+    Bardziej szczegółowe wyjaśnienie znajduje się w <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">dokumentacja</a>.
+    Możesz też spojrzeć na to<a href="https://youtu.be/RFznLe9kxHU" target="_blank">samouczek wideo</a>  
+  </target>
+</trans-unit>
+<trans-unit id="tutorialSecondUnordListHome" datatype="html">
+  <source>  
+    <li>En la parte superior de la pantalla tenemos el boton <b>crear nuevo informe</b>, el cual nos abre un pop up que contiene los campos de nuevo nombre de informe y selección de una fuente de datos. </li>
+    <li>Le damos un nombre al informe y elegimos la fuente de datos sobre la que queremos hacer el informe.</li>
+    <li>Agregamos paneles de datos, filtros o textos a nuestro informe. </li>  
+  </source>
+  <target>
+    <li>W górnej części ekranu znajduje się przycisk <b>utwórz nowy raport</b>, co otworzy wyskakujące okienko zawierające nową nazwę raportu i pola wyboru źródła danych.</li>
+    <li>Nazywamy raport i wybieramy źródło danych, na podstawie którego chcemy raportować.</li>
+    <li>Dodajemy panele danych, filtry lub teksty do naszego raportu. </li>  
+  </target>
+  </trans-unit>
+
 </body>
 </file>
 </xliff>

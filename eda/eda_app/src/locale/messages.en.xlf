@@ -4339,6 +4339,80 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Activar funciones del mouse</source>
         <target>Activate mouse functions</target>
       </trans-unit>
+      <trans-unit id="tutorialTitleHome">
+        <source>Tutorial</source>
+        <target>Tutorial</target>       
+      </trans-unit>
+      <trans-unit id="tutorialFirstOrdListHome">
+        <source>Para analizar la información con Edalitics necesitarás:
+            <ol>
+                <li><b>Crear una fuente de datos</b>: Conectar tus datos a Edalitics.</li>
+                <li><b>Crear un informe</b>: Analizar  tus datos a Edalitics.</li>
+            </ol>
+        </source>
+        <target>To analyse the information with Edalitics you will need to:
+            <ol>
+                <li><b>Create a data source</b>: Connect your data to Edalitics.</li>
+                <li><b>Create a report</b>: Analyse your data at Edalitics.</li>
+            </ol>
+        </target>       
+      </trans-unit>
+      <trans-unit id="tutorialFirstParagraphHome" datatype="html">
+        <source>  
+          Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentación</a>.
+          O puedes ver este <a href="https://youtu.be/RFznLe9kxHU" target="_blank">video-tutorial</a>                 
+        </source>
+        <target>
+          There is a more detailed explanation in the <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentation</a>.
+          Or you can look at this<a href="https://youtu.be/RFznLe9kxHU" target="_blank">video tutorial</a>  
+        </target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondParagraphHome" datatype="html">
+        <source>  
+          Edalitics permite analizar datos de una <b>base de datos</b>, un <b>webservice</b> o un archivo <b>excel</b>.                
+        </source>
+        <target>
+          Edalitics allows you to analyse data from a <b>database</b>, a <b>webservice</b> or an <b>excel</b> file.  
+        </target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHome" datatype="html">
+        <source>  
+          <li> En el menú de la izquierda elegimos <b>fuente de datos</b>, al desplegarse el menú:  <b> nueva fuente de datos</b>.</li>
+          <li> Una vez en la configuración el damos un nombre y elegimos el tipo de orígen de datos. </li>
+          <li> Configuramos los datos necesarios. </li>
+          <li> Personalizamos, si queremos, nuestra fuente de datos.</li>
+        </source>
+        <target>
+          <li> In the menu on the left we choose <b>database</b>, when the menu is deployed:  <b> new database</b>.</li>
+          <li> Once in the configuration we give a name and choose the type of data source. </li>
+          <li> We set up the necessary data. </li>
+          <li> We customise our data source, if we want to.</li>
+        </target>
+      </trans-unit>
+      <trans-unit id="tutorialThirdParagraphHome" datatype="html">
+        <source>  
+          Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentación</a>.
+          O puedes ver este <a href="https://youtu.be/RFznLe9kxHU" target="_blank">video-tutorial</a>                 
+        </source>
+        <target>
+          There is a more detailed explanation in the <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentation</a>.
+          Or you can look at this<a href="https://youtu.be/RFznLe9kxHU" target="_blank">video tutorial</a>  
+        </target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondUnordListHome" datatype="html">
+        <source>  
+          <li>En la parte superior de la pantalla tenemos el boton <b>crear nuevo informe</b>, el cual nos abre un pop up que contiene los campos de nuevo nombre de informe y selección de una fuente de datos. </li>
+          <li>Le damos un nombre al informe y elegimos la fuente de datos sobre la que queremos hacer el informe.</li>
+          <li>Agregamos paneles de datos, filtros o textos a nuestro informe. </li>  
+        </source>
+        <target>
+          <li>At the top of the screen we have the button <b>create new report</b>, which opens a pop up containing the new report name and data source selection fields.</li>
+          <li>We name the report and choose the data source we want to report on.</li>
+          <li>We add data panels, filters or texts to our report. </li>  
+        </target>
+      </trans-unit>
+
+
     </body>
   </file>
 </xliff>
