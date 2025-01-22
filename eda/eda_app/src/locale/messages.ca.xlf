@@ -4109,6 +4109,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Edalitics</target>
 </trans-unit>
 
+<!-- REVISAR -->
+<!-- 
 <trans-unit id="firstAboutParagraphSpan" datatype="html">
   <source>  
 
@@ -4193,7 +4195,7 @@ A continuació tens una guia ràpida. Tota la informació que necessitis està d
                  Hi ha un fòrum on pots compartir la teva experiència amb la comunitat a
                  <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Aquest Link</a>
   </target>
-</trans-unit>
+</trans-unit> -->
 
   <trans-unit id="eliminarInforme">
     <source>ELIMINAR INFORME</source>
@@ -4514,6 +4516,90 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="tutorialSecondUnordListHomeP3" datatype="html">
         <source>Agregamos paneles de datos, filtros o textos a nuestro informe. </source>
         <target>Agreguem panells de dades, filtres o textos al nostre informe.</target>
+      </trans-unit>
+      <trans-unit id="firstAboutParagraphSpan_1" datatype="html">
+        <source>
+          es una aplicación web de código libre que permite realizar informes gráficos e interactivos de
+          forma sencilla. EDA es una aplicación que se puede instalar en tus propios servidores o se puede difrutar en su versión SaaS
+        </source>
+        <target>
+          és una aplicació web de codi lliure que permet realitzar informes gràfics i interactius de
+          forma senzilla. EDA és una aplicació que es pot instal·lar als teus propis servidors o es pot gaudir en la seva versió SaaS
+        </target>
+      </trans-unit>
+      <trans-unit id="firstAboutParagraphSpan_2" datatype="html">
+        <source>
+          Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+          configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.
+        </source>
+        <target>
+          Edalitics permet gaudir de tota la potència d'EDA sense haver de preocupar-te d'instal·lacions, 
+          configuracions, actualitzacions, etc. Connectes les teves fonts de dades i llest.
+        </target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraph_1" datatype="html">
+        <source>EDA ha sido desarrollado por </source>
+        <target>EDA ha estat desenvolupat per </target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraph_2" datatype="html">
+        <source>
+          Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
+          funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+          y el soporte empresarial que ofrece a sus clientes.
+        </source>
+        <target>
+          Si necessiteu suport empresarial, no dubteu a contactar amb nosaltres. Així mateix com si voleu sol·licitar-ne de noves
+          funcionalitats o característiques. Jortilles finança el desenvolupament d'EDA mitjançant les subscripcions a Edalitics
+          i el suport empresarial que ofereix als clients.        
+        </target>
+      </trans-unit>
+      <trans-unit id="thirdAboutParagraph" datatype="html">
+        <source>El código fuente de EDA está disponible en </source>
+        <target>El codi font d'EDA està disponible a </target>
+      </trans-unit>
+      <trans-unit id="fourthAboutParagraph_1" datatype="html">
+        <source>La documentación de EDA está disponible en </source>
+        <target>La documentació d'EDA està disponible a </target>
+      </trans-unit>
+      <trans-unit id="fourthAboutParagraph_2" datatype="html">
+        <source>Este Link</source>
+        <target>Aquest Link</target>
+      </trans-unit>
+      <trans-unit id="fifthAboutParagraph_1" datatype="html">
+        <source>Existe un foro donde puedes compartir tu experiencia con la comunidad en </source>
+        <target>Hi ha un fòrum on pots compartir la teva experiència amb la comunitat a </target>
+      </trans-unit>
+      <trans-unit id="fifthAboutParagraph_2" datatype="html">
+        <source>Este Link</source>
+        <target>Aquest Link</target>
+      </trans-unit>
+      <trans-unit id="firstAboutVideo_1" datatype="html">
+        <source>Como crear un modelo de datos en </source>
+        <target>Com crear un model de dades a </target>
+      </trans-unit>
+      <trans-unit id="firstAboutVideo_2" datatype="html">
+        <source>La plataforma cloud de</source>
+        <target>La plataforma cloud d'</target>
+      </trans-unit>
+      <trans-unit id="secondAboutVideo_1" datatype="html">
+        <source>Como crear un informe en </source>
+        <target>Com crear un informe a </target>
+      </trans-unit>
+      <trans-unit id="secondAboutVideo_2" datatype="html">
+        <source>La plataforma cloud de </source>
+        <target>La plataforma cloud d'</target>
+      </trans-unit>
+      <trans-unit id="thirdAboutVideo_1" datatype="html">
+        <source>¿Quieres probar </source>
+        <target>Vols provar </target>
+      </trans-unit>
+      <trans-unit id="thirdAboutVideo_2" datatype="html">
+        <source>en el cloud?</source>
+        <target>en el cloud?</target>
+      </trans-unit>
+      <trans-unit id="thirdAboutVideo_3" datatype="html">
+        <source>te permitirá estar siempre a la última sin preocuparte por nada.</source>
+        <target>et permetrà estar sempre a l'última sense preocupar-te per res.</target>
       </trans-unit>
 
 

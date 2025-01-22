@@ -4498,6 +4498,90 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Agregamos paneles de datos, filtros o textos a nuestro informe. </source>
         <target>We add data panels, filters or texts to our report. </target>
       </trans-unit>
+      <trans-unit id="firstAboutParagraphSpan_1" datatype="html">
+        <source>
+          es una aplicación web de código libre que permite realizar informes gráficos e interactivos de
+          forma sencilla. EDA es una aplicación que se puede instalar en tus propios servidores o se puede difrutar en su versión SaaS
+        </source>
+        <target>
+          is an open source web application that allows you to easily create graphical and interactive reports.
+          in a simple way. EDA is an application that can be installed on your own servers or can be enjoyed in its SaaS version.
+        </target>
+      </trans-unit>
+      <trans-unit id="firstAboutParagraphSpan_2" datatype="html">
+        <source>
+          Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+          configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.
+        </source>
+        <target>
+          Edalitics allows you to enjoy the full power of EDA without having to worry about installations, 
+          configurations, updates, etc. You just connect your data sources and that's it.
+        </target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraph_1" datatype="html">
+        <source>EDA ha sido desarrollado por </source>
+        <target>EDA has been developed by </target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraph_2" datatype="html">
+        <source>
+          Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
+          funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+          y el soporte empresarial que ofrece a sus clientes.
+        </source>
+        <target>
+          If you need business support, do not hesitate to contact us. As well as if you want to request new
+          functionalities or features. Jortilles finances the development of EDA through the subscriptions to Edalitics
+          and the business support it offers to its customers.       
+        </target>
+      </trans-unit>
+      <trans-unit id="thirdAboutParagraph" datatype="html">
+        <source>El código fuente de EDA está disponible en </source>
+        <target>The EDA source code is available at </target>
+      </trans-unit>
+      <trans-unit id="fourthAboutParagraph_1" datatype="html">
+        <source>La documentación de EDA está disponible en </source>
+        <target>EDA documentation is available at </target>
+      </trans-unit>
+      <trans-unit id="fourthAboutParagraph_2" datatype="html">
+        <source>Este Link</source>
+        <target>This Link</target>
+      </trans-unit>
+      <trans-unit id="fifthAboutParagraph_1" datatype="html">
+        <source>Existe un foro donde puedes compartir tu experiencia con la comunidad en </source>
+        <target>There is a forum where you can share your experience with the community at </target>
+      </trans-unit>
+      <trans-unit id="fifthAboutParagraph_2" datatype="html">
+        <source>Este Link</source>
+        <target>This Link</target>
+      </trans-unit>
+      <trans-unit id="firstAboutVideo_1" datatype="html">
+        <source>Como crear un modelo de datos en </source>
+        <target>How to create a data model in </target>
+      </trans-unit>
+      <trans-unit id="firstAboutVideo_2" datatype="html">
+        <source>La plataforma cloud de</source>
+        <target>The cloud platform of</target>
+      </trans-unit>
+      <trans-unit id="secondAboutVideo_1" datatype="html">
+        <source>Como crear un informe en </source>
+        <target>How to create a report in </target>
+      </trans-unit>
+      <trans-unit id="secondAboutVideo_2" datatype="html">
+        <source>La plataforma cloud de </source>
+        <target>The cloud platform of</target>
+      </trans-unit>
+      <trans-unit id="thirdAboutVideo_1" datatype="html">
+        <source>¿Quieres probar </source>
+        <target>Would you like to try </target>
+      </trans-unit>
+      <trans-unit id="thirdAboutVideo_2" datatype="html">
+        <source>en el cloud?</source>
+        <target>in the cloud?</target>
+      </trans-unit>
+      <trans-unit id="thirdAboutVideo_3" datatype="html">
+        <source>te permitirá estar siempre a la última sin preocuparte por nada.</source>
+        <target>will allow you to be always up to date without worrying about anything.</target>
+      </trans-unit>
 
     </body>
   </file>
