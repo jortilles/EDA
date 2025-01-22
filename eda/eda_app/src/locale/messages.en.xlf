@@ -4339,79 +4339,165 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Activar funciones del mouse</source>
         <target>Activate mouse functions</target>
       </trans-unit>
+
+      
       <trans-unit id="tutorialTitleHome">
         <source>Tutorial</source>
         <target>Tutorial</target>       
       </trans-unit>
-      <trans-unit id="tutorialFirstOrdListHome">
-        <source>Para analizar la información con Edalitics necesitarás:
-            <ol>
-                <li><b>Crear una fuente de datos</b>: Conectar tus datos a Edalitics.</li>
-                <li><b>Crear un informe</b>: Analizar  tus datos a Edalitics.</li>
-            </ol>
-        </source>
-        <target>To analyse the information with Edalitics you will need to:
-            <ol>
-                <li><b>Create a data source</b>: Connect your data to Edalitics.</li>
-                <li><b>Create a report</b>: Analyse your data at Edalitics.</li>
-            </ol>
-        </target>       
+      <trans-unit id="firstAboutParagraphHome_1" datatype="html">
+        <source>Toda la potencia de Edalitics para información pública o de uso personal. </source>
+        <target>All the power of Edalitics for public information or personal use. </target>
       </trans-unit>
-      <trans-unit id="tutorialFirstParagraphHome" datatype="html">
-        <source>  
-          Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentación</a>.
-          O puedes ver este <a href="https://youtu.be/RFznLe9kxHU" target="_blank">video-tutorial</a>                 
-        </source>
-        <target>
-          There is a more detailed explanation in the <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentation</a>.
-          Or you can look at this<a href="https://youtu.be/RFznLe9kxHU" target="_blank">video tutorial</a>  
-        </target>
+      <trans-unit id="firstAboutParagraphHome_2" datatype="html">
+        <source> es el servicio cloud que ofrece </source>
+        <target> is the cloud service that offers </target>
       </trans-unit>
-      <trans-unit id="tutorialSecondParagraphHome" datatype="html">
-        <source>  
-          Edalitics permite analizar datos de una <b>base de datos</b>, un <b>webservice</b> o un archivo <b>excel</b>.                
-        </source>
-        <target>
-          Edalitics allows you to analyse data from a <b>database</b>, a <b>webservice</b> or an <b>excel</b> file.  
-        </target>
+      <trans-unit id="firstAboutParagraphHome_3" datatype="html">
+        <source> sobre </source>
+        <target> about </target>
       </trans-unit>
-      <trans-unit id="tutorialFirstUnordListHome" datatype="html">
-        <source>  
-          <li> En el menú de la izquierda elegimos <b>fuente de datos</b>, al desplegarse el menú:  <b> nueva fuente de datos</b>.</li>
-          <li> Una vez en la configuración el damos un nombre y elegimos el tipo de orígen de datos. </li>
-          <li> Configuramos los datos necesarios. </li>
-          <li> Personalizamos, si queremos, nuestra fuente de datos.</li>
-        </source>
-        <target>
-          <li> In the menu on the left we choose <b>database</b>, when the menu is deployed:  <b> new database</b>.</li>
-          <li> Once in the configuration we give a name and choose the type of data source. </li>
-          <li> We set up the necessary data. </li>
-          <li> We customise our data source, if we want to.</li>
-        </target>
-      </trans-unit>
-      <trans-unit id="tutorialThirdParagraphHome" datatype="html">
-        <source>  
-          Hay una explicación más detallada en la <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentación</a>.
-          O puedes ver este <a href="https://youtu.be/RFznLe9kxHU" target="_blank">video-tutorial</a>                 
-        </source>
-        <target>
-          There is a more detailed explanation in the <a href="https://edadoc.jortilles.com/#/crear_informes" target="_blank">documentation</a>.
-          Or you can look at this<a href="https://youtu.be/RFznLe9kxHU" target="_blank">video tutorial</a>  
-        </target>
-      </trans-unit>
-      <trans-unit id="tutorialSecondUnordListHome" datatype="html">
-        <source>  
-          <li>En la parte superior de la pantalla tenemos el boton <b>crear nuevo informe</b>, el cual nos abre un pop up que contiene los campos de nuevo nombre de informe y selección de una fuente de datos. </li>
-          <li>Le damos un nombre al informe y elegimos la fuente de datos sobre la que queremos hacer el informe.</li>
-          <li>Agregamos paneles de datos, filtros o textos a nuestro informe. </li>  
-        </source>
-        <target>
-          <li>At the top of the screen we have the button <b>create new report</b>, which opens a pop up containing the new report name and data source selection fields.</li>
-          <li>We name the report and choose the data source we want to report on.</li>
-          <li>We add data panels, filters or texts to our report. </li>  
-        </target>
+      <trans-unit id="firstAboutParagraphHome_4" datatype="html">
+        <source>. Edalitics Free te permite analizar toda la información que quieras de forma gratuita siempre que hagas un uso razonable. </source>
+        <target>. Edalitics Free allows you to analyse as much information as you want for free as long as you make reasonable use of it. </target>
       </trans-unit>
 
+      <trans-unit id="secondAboutParagraphHome_1" datatype="html">
+        <source>A continuación tienes una guía rápida. Toda la información que necesites está disponible en la </source>
+        <target>Below is a quick guide. All the information you need is available at the </target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraphHome_2" datatype="html">
+        <source>documentación</source>
+        <target>documentation</target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraphHome_3" datatype="html">
+        <source> o puedes pedir ayuda en los </source>
+        <target> or you can ask for help at the </target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraphHome_4" datatype="html">
+        <source>grupos de discusión.</source>
+        <target>focus groups.</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstParagraphHome" datatype="html">
+        <source>Para analizar la información con Edalitics necesitarás:</source>
+        <target>To analyse the information with Edalitics you will need:</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstOrdListHome_1" datatype="html">
+        <source>Crear una fuente de datos</source>
+        <target>Create a data source</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstOrdListHome_2" datatype="html">
+        <source>: Conectar tus datos a Edalitics.</source>
+        <target>: Connect your data to Edalitics.</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondOrdListHome_1" datatype="html">
+        <source>Crear un informe</source>
+        <target>Create a report</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondOrdListHome_2" datatype="html">
+        <source>: Analizar  tus datos a Edalitics.</source>
+        <target>: Analyse your data at Edalitics.</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstPPanelParagraph_1" datatype="html">
+        <source>Hay una explicación más detallada en la </source>
+        <target>There is a more detailed explanation in the </target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstPPanelParagraph_2" datatype="html">
+        <source>documentación.</source>
+        <target>documentation.</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstPPanelParagraph_3" datatype="html">
+        <source> O puedes ver este</source>
+        <target> Or you can look at this</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstPPanelParagraph_4" datatype="html">
+        <source> video-tutorial.</source>
+        <target> video tutorial.</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondPPanelParagraph_1" datatype="html">
+        <source>Edalitics permite analizar datos de una </source>
+        <target>Edalitics allows you to analyse data from a </target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondPPanelParagraph_2" datatype="html">
+        <source>base de dades</source>
+        <target>data base</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondPPanelParagraph_3" datatype="html">
+        <source>, un </source>
+        <target>, a  </target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondPPanelParagraph_4" datatype="html">
+        <source>webservice</source>
+        <target>webservice</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondPPanelParagraph_5" datatype="html">
+        <source> o un archivo </source>
+        <target> or a file </target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP1_1" datatype="html">
+        <source>En el menú de la izquierda elegimos </source>
+        <target>In the menu on the left we choose </target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP1_2" datatype="html">
+        <source>fuente de datos</source>
+        <target>source of data</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP1_3" datatype="html">
+        <source>, al desplegarse el menú:</source>
+        <target>, when the menu is displayed:</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP1_4" datatype="html">
+        <source> nueva fuente de datos.</source>
+        <target> new source of data.</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP2" datatype="html">
+        <source>Una vez en la configuración el damos un nombre y elegimos el tipo de orígen de datos. </source>
+        <target>Once in the configuration we give it a name and choose the type of data source. </target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP3" datatype="html">
+        <source>Configuramos los datos necesarios. </source>
+        <target>We set up the necessary data. </target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP4" datatype="html">
+        <source>Personalizamos, si queremos, nuestra fuente de datos.</source>
+        <target>We customise, if we want to, our data source.</target>
+      </trans-unit>
+      <trans-unit id="tutorialThirdPPanelParagraph_1" datatype="html">
+        <source>Hay una explicación más detallada en la </source>
+        <target>There is a more detailed explanation in the </target>
+      </trans-unit>
+      <trans-unit id="tutorialThirdPPanelParagraph_2" datatype="html">
+        <source>documentación.</source>
+        <target>documentation. </target>
+      </trans-unit>
+      <trans-unit id="tutorialThirdPPanelParagraph_3" datatype="html">
+        <source> O puedes ver este </source>
+        <target> Or you can look at this </target>
+      </trans-unit>
+      <trans-unit id="tutorialThirdPPanelParagraph_4" datatype="html">
+        <source>video-tutorial.</source>
+        <target>video tutorial.</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondUnordListHomeP1_1" datatype="html">
+        <source>En la parte superior de la pantalla tenemos el botón </source>
+        <target>At the top of the screen there is the button </target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondUnordListHomeP1_2" datatype="html">
+        <source>crear nuevo informe</source>
+        <target>create new report</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondUnordListHomeP1_3" datatype="html">
+        <source>, el cual nos abre un pop up que contiene los campos de nuevo nombre de informe y selección de una fuente de datos.</source>
+        <target>, which opens a pop up containing the fields for new report name and selection of a data source.</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondUnordListHomeP2" datatype="html">
+        <source>Le damos un nombre al informe y elegimos la fuente de datos sobre la que queremos hacer el informe.</source>
+        <target>We name the report and choose the data source we want to report on.</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondUnordListHomeP3" datatype="html">
+        <source>Agregamos paneles de datos, filtros o textos a nuestro informe. </source>
+        <target>We add data panels, filters or texts to our report. </target>
+      </trans-unit>
 
     </body>
   </file>
