@@ -6,7 +6,7 @@ import { EnCrypterService } from "../../services/encrypter/encrypter.service";
 import { userAndGroupsToMongo } from "./service/usersAndGroupsToMongo";
 import { Enumerations } from "./service/enumerations";
 import { pushModelToMongo } from "./service/push.Model.to.Mongo";
-
+import path from 'path';
 import fs from "fs";
 import { CleanModel } from "./service/cleanModel";
 
@@ -111,17 +111,52 @@ export class updateModel {
               )
               .then(async rows => {
                 let relations = rows;
-                // Select users
+                /*
+                * Retrieves users and their active status based on group membership:
+                * - The sda_def_user_groups view enforces user limitations from SinergiaCRM
+                * - Users are considered active if they either:
+                *   a) Have an entry in sda_def_user_groups
+                *   b) Are marked as active in sda_def_users but don't belong to any group (e.g., administrators)
+                */
                 await connection
-                  .query(
-                    "SELECT name as name, user_name as email, password as password, active as active FROM  sda_def_users WHERE password IS NOT NULL ;"
-                  )
+                  .query(`
+                        SELECT 
+                          u.name,
+                          u.user_name as email,
+                          u.password,
+                          CASE 
+                              WHEN g.user_name IS NOT NULL THEN 1
+                              WHEN (g.user_name IS NULL AND u.active = 1) THEN 1
+                              ELSE 0
+                          END as active
+                        FROM sda_def_users u
+                        LEFT JOIN sda_def_user_groups g ON u.user_name = g.user_name
+                        WHERE u.password IS NOT NULL`
+                      )
                   .then(async users => {
                     let users_crm = users;
-                    // Select EDA roles
+                    /*
+                    * Retrieves EDA roles and groups based on active membership:
+                    * - Only includes groups/roles that have active users in sda_def_user_groups
+                    * - Excludes empty groups from sda_def_groups (which mirrors all SinergiaCRM groups)
+                    * - This ensures roles are only created in SDA when they have assigned users
+                    */
                     await connection
-                      .query(
-                        'select "EDA_USER_ROLE" as role, b.name, "" as user_name  from sda_def_groups b union select "EDA_USER_ROLE" as role, g.name as name , g.user_name from sda_def_user_groups g; '
+                      .query(`
+                         SELECT
+                           "EDA_USER_ROLE" as role,
+                           b.name,
+                           "" as user_name
+                         FROM
+                           sda_def_groups b
+                         INNER JOIN sda_def_user_groups sdug ON sdug.name = b.name
+                         union
+                         SELECT
+                           "EDA_USER_ROLE" as role,
+                           g.name as name ,
+                           g.user_name
+                         FROM
+                           sda_def_user_groups g; `
                       )
                       .then(async role => {
                         let roles = role;
@@ -247,6 +282,15 @@ export class updateModel {
   }
 
   /** Generates and processes model roles */
+  /**
+   * Retrieves the granted roles for a model based on various permissions.
+   * @param fullTablePermissionsForRoles - The permissions for roles with full table access.
+   * @param crmTables - The CRM tables.
+   * @param fullTablePermissionsForUsers - The permissions for users with full table access.
+   * @param dynamicPermisssionsForGroup - The dynamic permissions for groups.
+   * @param dynamicPermisssionsForUser - The dynamic permissions for users.
+   * @returns An array of granted roles for the model.
+   */
   static async grantedRolesToModel(
     fullTablePermissionsForRoles: any,
     crmTables: any,
@@ -263,7 +307,22 @@ export class updateModel {
 
     const usersFound = await User.find();
     const mongoGroups = await Group.find();
-
+ 
+    /**
+     * Checks if there is an existing permission for a full table access.
+     * @param newRole - The new role to check against existing permissions.
+     * @returns True if there is an existing permission, false otherwise.
+     */
+    const hasExistingFullTablePermission = (newRole: any) => {
+        return destGrantedRoles.some(existing => 
+            existing.column === "fullTable" && 
+            existing.table === newRole.table && 
+            existing.type === newRole.type &&
+            existing.users?.toString() === newRole.users?.toString()
+        );
+    };
+ 
+    
     fullTablePermissionsForRoles.forEach(line => {
       let match = mongoGroups.filter(i => {
         return i.name === line.group;
@@ -286,6 +345,11 @@ export class updateModel {
             permission: true,
             type: "users"
           };
+                
+                // Verify duplicates before adding
+                if (!hasExistingFullTablePermission(gr)) {
+                    destGrantedRoles.push(gr);
+                }
         } else {
           gr = {
             groups: [mongoId],
@@ -316,7 +380,10 @@ export class updateModel {
           permission: true,
           type: "users"
         };
+        // Verify duplicates before adding
+        if (!hasExistingFullTablePermission(gr3)) {
         destGrantedRoles.push(gr3);
+        }
       }
     });
 
@@ -367,8 +434,6 @@ export class updateModel {
         } else {
           console.log("Error: Direct group permissions found - not allowed in this context");
         }
-
-        destGrantedRoles.push(gr4);
       }
     });
 
@@ -567,7 +632,11 @@ export class updateModel {
   /** Formats and pushes the final model to MongoDB */
   static async extractJsonModelAndPushToMongo(tables: any, grantedRoles: any, res: any) {
     // Format tables as JSON
-    let main_model = await JSON.parse(fs.readFileSync("config/base_datamodel.json", "utf-8"));
+    console.timeLog("UpdateModel", "(Start JSON formatting)");
+    
+    // Load and configure base model using path library to avoid errors reading the file
+    let main_model = await JSON.parse(fs.readFileSync(path.join(__dirname, '../../../config/base_datamodel.json'), "utf-8"));
+    
     main_model.ds.connection.host = sinergiaDatabase.sinergiaConn.host;
     main_model.ds.connection.database = sinergiaDatabase.sinergiaConn.database;
     main_model.ds.connection.port = sinergiaDatabase.sinergiaConn.port;
@@ -577,14 +646,18 @@ export class updateModel {
     main_model.ds.model.tables = tables;
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
 
+    console.timeLog("UpdateModel", "(Model configuration completed)");
+ 
     try {
       const cleanM = new CleanModel();
       main_model = await cleanM.cleanModel(main_model);
+      console.timeLog("UpdateModel", "(Model cleaning completed)");
       fs.writeFile(`metadata.json`, JSON.stringify(main_model), { encoding: `utf-8` }, err => {
         if (err) {
           throw err;
         }
       });
+      console.timeLog("UpdateModel", "(Metadata file written)");
       await new pushModelToMongo().pushModel(main_model, res);
       res.status(200).json({ status: "ok" });
     } catch (e) {

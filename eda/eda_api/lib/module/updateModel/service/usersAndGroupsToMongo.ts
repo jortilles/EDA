@@ -35,6 +35,7 @@ import mongoose, {
 } from 'mongoose'
 import User, { IUser } from '../../admin/users/model/user.model'
 import Group, { IGroup } from '../../admin/groups/model/group.model'
+import { each } from 'lodash';
 
 mongoose.set('useFindAndModify', false);
 
@@ -202,19 +203,10 @@ export class userAndGroupsToMongo {
       }
     });
 
-    // Add admin user to EDA_ADMIN group
-    await mongoGroups.find(i => i.name ===  'EDA_ADMIN').users.push('135792467811111111111111')
-    let user = await mongoUsers.find(i => i.email ===  ('eda@jortilles.com') ) ;
-    if(user){
-      user.role.push('135792467811111111111110');
-    }else{
-      user = await mongoUsers.find(i => i.email ===  ('eda@sinergiada.org' ) )
-      if(user){
-        user.role.push('135792467811111111111110');
-      }else{
-        console.log('Error: Failed to assign admin role to user');
-      }
-    }
+    // Ensure add all admins to EDA_ADMIN group, this include eda@sinergiada.org
+    let admins = await mongoUsers.filter(i => i.role.includes('135792467811111111111110'));
+    const edaAdminGroup = mongoGroups.find(i => i.name === 'EDA_ADMIN');
+    edaAdminGroup.users = admins.map(admin => admin._id);
 
     // Save changes to database
     await mongoGroups.forEach(async r => {
