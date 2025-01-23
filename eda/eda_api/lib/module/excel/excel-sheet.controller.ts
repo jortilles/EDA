@@ -21,6 +21,7 @@ export class ExcelSheetController {
             const excelName = req.body?.name, optimize = req.body?.optimize, cacheAllowed = req.body?.allowCache;
             let excelFields = req.body?.fields;
 
+
             if (!excelName || !excelFields) {
                 return res.status(400).json({ ok: false, message: 'Nombre o campos incorrectos en la solicitud' });
             }
@@ -44,7 +45,9 @@ export class ExcelSheetController {
                     database: parsedUrl.pathname.substring(1),
                     user: parsedUrl.username,
                     password: parsedUrl.password,
+                    authSource: parsedUrl.search.split('=')[1]
                 };
+
 
                 const mongoConnection = new MongoDBConnection(config);
                 const client = await mongoConnection.getclient();
