@@ -234,7 +234,7 @@ export class DsConfigWrapperComponent implements OnInit {
 			case 'sqlserver':
 				this.form.patchValue({ port: 1433 });
 				break;
-			case 'mongo' && 'excel':
+			case 'mongo': case 'excel':
 				this.form.patchValue({ port: 27017 });
 				break;
 			case 'mysql':
