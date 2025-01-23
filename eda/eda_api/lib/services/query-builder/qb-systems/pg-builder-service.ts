@@ -46,8 +46,30 @@ export class PgBuilderService extends QueryBuilderService {
       return myQuery;
     }
 
+    const countTablesInSQL = (query: string) => {
+        const normalizedQuery = query.toUpperCase();
+    
+        // Expresiones regulares para detectar FROM, JOIN
+        const fromRegex = /\bFROM\b/g;
+        const joinRegex = /\bJOIN\b/g;
+    
+        // Contar
+        const fromCount = (normalizedQuery.match(fromRegex) || []).length;
+        const joinCount = (normalizedQuery.match(joinRegex) || []).length;
+    
+        // Total de tablas implicadas
+        // Cada FROM indica una tabla principal, y cada JOIN indica tablas adicionales
+        const totalTables = fromCount + joinCount;
+    
+        return totalTables;
+    }
+
     const querys: any = {};
     const fromQuery = generateQuery();
+
+    querys['general'] = [
+        `SELECT '${countTablesInSQL(fromQuery)}' AS "count_tables"`
+    ];
 
     for (const col of fields) {
       const diplayName = col.display_name;
@@ -58,10 +80,12 @@ export class PgBuilderService extends QueryBuilderService {
       querys[diplayName] = [];
 
       if (col.column_type == 'text') {
-        // CountNulls
+        // COUNT NULLS
         querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
-        // CountEmpty
+        // COUNT EMPTY
         querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" = '' THEN 1 ELSE 0 END) AS "count_empty" FROM ${mainQuery}`);
+        // COUNT DISTINCT
+        querys[diplayName].push(`SELECT COUNT(DISTINCT "main"."${col.column_name}") AS "count_distinct" FROM ${mainQuery}`);
         // MostDuplicated
         querys[diplayName].push(`
           SELECT STRING_AGG(label_count, ', ') AS most_duplicated
@@ -87,7 +111,7 @@ export class PgBuilderService extends QueryBuilderService {
           ) sub;
         `);
       } else if (col.column_type == 'numeric') {
-        // CountNulls
+        // COUNT NULLS
         querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
         // MAX
         querys[diplayName].push(`SELECT MAX("main"."${col.column_name}") AS "max" FROM ${mainQuery}`);
