@@ -45,6 +45,15 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     };
   }
 
+  ngOnInit() {
+    this.mapUtilsService.mapEditOpen();
+    console.log(this.mapUtilsService.getZoom());
+    console.log(this.mapUtilsService.getCoordinates());
+  }
+  ngOnDestroy(): void {
+    this.mapUtilsService.mapEditClose();
+  }
+
   saveChartConfig() {
     this.onClose(EdaDialogCloseEvent.UPDATE, {
       color: this.color,
@@ -55,8 +64,8 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
       coordinates:
         this.myPanelChartComponent.componentRef.instance.inject.coordinates,
     });
-    this.mapUtilsService.setZoom(null);
     this.mapUtilsService.setCoordinates(null);
+    this.mapUtilsService.setZoom(null);
   }
 
   handleInputColor() {

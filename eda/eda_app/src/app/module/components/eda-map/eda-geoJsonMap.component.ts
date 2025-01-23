@@ -173,19 +173,29 @@ export class EdaGeoJsonMapComponent
         center:
           this.mapUtilsService.getCoordinates() ??
           this.getCenter(this.inject.data),
-        zoom: this.mapUtilsService.getZoom() ?? this.inject.zoom ?? 0,
+        zoom:
+          this.mapUtilsService.getZoom() ??
+          this.inject.zoom ??
+          0,
         dragging: this.draggable,
         tap: !L.Browser.mobile,
         scrollWheelZoom: this.draggable,
       });
 
       // Check coords & zoom origin
-      if (this.mapUtilsService.getZoom() || this.mapUtilsService.getCoordinates()) {
-        this.initMapFromPrevMap();
-      } else {
-        this.initMapFromConfig();
-      }
-
+      this.map.on("moveend", (event) => {
+        let c = this.map.getCenter();
+        this.inject.coordinates = [c.lat, c.lng];
+        if (!this.mapUtilsService.isMapEditOpen()) {
+          this.mapUtilsService.setCoordinates(this.inject.coordinates);
+        }
+      });
+      this.map.on("zoomend", (event) => {
+        this.inject.zoom = this.map.getZoom();
+        if (!this.mapUtilsService.isMapEditOpen()) {
+          this.mapUtilsService.setZoom(this.inject.zoom);
+        }
+      });
       this.map.options.minZoom = 1;
       //tiles.addTo(this.map);
       this.initLegend(
@@ -198,29 +208,8 @@ export class EdaGeoJsonMapComponent
     }
   };
 
-  private initMapFromPrevMap = (): void => {
-    this.map.on("moveend", (event) => {
-      let c = this.map.getCenter();
-      this.inject.coordinates = [c.lat, c.lng];
-    });
-    this.map.on("zoomend", (event) => {
-      this.inject.zoom = this.map.getZoom();
-    });
-    this.mapUtilsService.setZoom(null);
-    this.mapUtilsService.setCoordinates(null);
-  };
+
   
-  private initMapFromConfig = (): void => {
-    this.map.on("moveend", (event) => {
-      let c = this.map.getCenter();
-      this.inject.coordinates = [c.lat, c.lng];
-      this.mapUtilsService.setCoordinates(this.inject.coordinates);
-    });
-    this.map.on("zoomend", (event) => {
-      this.inject.zoom = this.map.getZoom();
-      this.mapUtilsService.setZoom(this.inject.zoom);
-    });
-  };
 
   /*
   private setMinZoom(): number {
