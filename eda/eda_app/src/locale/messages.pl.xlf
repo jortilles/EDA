@@ -4041,108 +4041,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 
-<trans-unit id="firstAboutParagraphSpan" datatype="html">
-  <source>  
-
-            <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
-            informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
-            en tus propios servidores o se puede difrutar en su versión SaaS 
-            <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
-            Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
-            configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.
-
-  </source>
-  <target>
-          <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> to aplikacja internetowa typu open source, która umożliwia wykonywanie
-          raporty graficzne i interaktywne w prosty sposób. EDA to aplikacja, którą można zainstalować
-          na własnych serwerach lub można z niego korzystać w wersji SaaS
-          <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>.
-          Dzięki Edalitics możesz cieszyć się całą mocą EDA bez konieczności martwienia się o instalacje,
-          ustawienia, aktualizacje itp. Łączysz źródła danych i to wszystko.
-
-  </target>
-</trans-unit>
-
-
-<trans-unit id="firstAboutParagraphHome" datatype="html">
-  <source>  
-
-      Toda la potencia de Edalitics para información pública o de uso personal. 
-      <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> es el servicio cloud que ofrece 
-      <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> sobre 
-      <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>. Edalitics Free te permite analizar toda la información que quieras de forma gratuita siempre que hagas un uso razonable.
-
-  </source>
-  <target>
-Cała moc Edalitics do użytku publicznego lub osobistego.
- <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a> to oferowana usługa w chmurze
- <a class="stronger-paragraph" href="https://www.jortilles.com">Jortilles</a> o
- <a class="stronger-paragraph" href="https://eda.jortilles.com">EDA</a>. Dzięki Edalitics Free możesz analizować dowolne informacje za darmo, pod warunkiem, że używasz ich rozsądnie.
-  </target>
-</trans-unit>
-
-
-<trans-unit id="secondAboutParagraph" datatype="html">
-  <source>
-      Edalitics funciona con el código de 
-      <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a>. 
-      EDA es una aplicación web de código abierto que permite realizar informes gráficos e interactivos. 
-      Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
-      configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y ya estás listo para empezar a analizar tu información. 
-  </source>
-  <target>
-Edalitics działa z kodem
- <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a>.
- EDA to aplikacja internetowa typu open source, która umożliwia tworzenie graficznych i interaktywnych raportów.
- Edalitics pozwala cieszyć się pełną mocą EDA bez konieczności martwienia się o instalacje,
- ustawienia, aktualizacje itp. Podłączasz swoje źródła danych i jesteś gotowy, aby rozpocząć analizę swoich informacji.
-  </target>
-</trans-unit>
-
-
-<trans-unit id="thirdAboutParagraphHome" datatype="html">
-  <source>
-           A continuación tienes una guía rápida. Toda la inforación que necesites está disponible en la 
-           <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">documentación</a>
-           o puedes pedir ayuda en los <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussionso">grupos de discusión</a>.
-  </source>
-  <target>
-Oto krótki przewodnik. Wszystkie potrzebne informacje znajdziesz na stronie
- <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">dokumentacja</a>
- lub możesz poprosić o pomoc w <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussionso">grupach dyskusyjnych</a>.
-
-  </target>
-</trans-unit>
-
-
-
-<trans-unit id="fourthAboutParagraph" datatype="html">
-  <source>
-   El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
-  </source>
-  <target>
-   Kod źródłowy EDA jest dostępny na <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
-  </target>
-</trans-unit>
-
-<trans-unit id="fifthAboutParagraph" datatype="html">
-  <source>
-   La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
-  </source>
-  <target>
-  Dokumentacja EDA jest dostępna pod <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Ten link</a>
-  </target>
-</trans-unit>
-
-<trans-unit id="sixthAboutParagraph" datatype="html">
-  <source>
-                  Existe un foro donde puedes compartir tu experiencia con la comunidad en  
-                <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Este Link</a>
-  </source>
-  <target>
-                Istnieje forum, na którym możesz podzielić się swoimi doświadczeniami ze społecznością
-                 <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Ten link</a>
-  </target>
 </trans-unit>
 
   <trans-unit id="eliminarInforme">
@@ -4526,6 +4424,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <trans-unit id="thirdAboutVideo_3" datatype="html">
     <source>te permitirá estar siempre a la última sin preocuparte por nada.</source>
     <target>pozwoli ci być zawsze na bieżąco, nie martwiąc się o nic.</target>
+  </trans-unit>
+  <trans-unit id="tutorialTitleFirstPPanel" datatype="html">
+    <source>1. Crear una fuente de datos:</source>
+    <target>1. utwórz źródło danych:</target>
+  </trans-unit>
+  <trans-unit id="tutorialTitleSecondPPanel" datatype="html">
+    <source>2. Creación de un nuevo informe y paneles de visualización de datos:</source>
+    <target>2. Utworzenie nowego raportu i paneli wizualizacji danych:</target>
   </trans-unit>
 
 </body>

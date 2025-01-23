@@ -4109,94 +4109,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Edalitics</target>
 </trans-unit>
 
-<!-- REVISAR -->
-<!-- 
-<trans-unit id="firstAboutParagraphSpan" datatype="html">
-  <source>  
-
-            <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> es una aplicación web de código libre que permite realizar 
-            informes gráficos e interactivos de forma sencilla. EDA es una aplicación que se puede instalar
-            en tus propios servidores o se puede difrutar en su versión SaaS 
-            <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>. 
-            Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
-            configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.
-
-  </source>
-  <target>
-
-          <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a> és una aplicació web de codi lliure que permet realitzar
-          informes gràfics i interactius de forma senzilla. EDA és una aplicació que es pot instal·lar
-          als teus propis servidors o es pot gaudir en la seva versió SaaS
-          <a class="stronger-paragraph" href="https://www.edalitics.com">Edalitics</a>.
-          Edalitics permet gaudir de tota la potència d'EDA sense haver de preocupar-te d'instal·lacions,
-          configuracions, actualitzacions, etc. Connectes les teves fonts de dades i llest.
-  </target>
-</trans-unit>
-
-
-
-<trans-unit id="secondAboutParagraph" datatype="html">
-  <source>
-      Edalitics funciona con el código de 
-      <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a>. 
-      EDA es una aplicación web de código abierto que permite realizar informes gráficos e interactivos. 
-      Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
-      configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y ya estás listo para empezar a analizar tu información. 
-  </source>
-  <target>
-      Edalitics funciona amb el codi d'
-      <a class="stronger-paragraph" href="https://eda.jortilles.com">Enterprise Data Analytics (EDA)</a>.
-      EDA és una aplicació web de codi obert que permet fer informes gràfics i interactius.
-      Edalitics permet gaudir de tota la potència d'EDA sense haver de preocupar-te d'instal·lacions,
-      configuracions, actualitzacions, etc. Connectes les teves fonts de dades i ja pots començar a analitzar la teva informació.
-  </target>
-</trans-unit>
-
-
-<trans-unit id="thirdAboutParagraphHome" datatype="html">
-  <source>
-           A continuación tienes una guía rápida. Toda la inforación que necesites está disponible en la 
-           <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">documentación</a>
-           o puedes pedir ayuda en los <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussionso">grupos de discusión</a>.
-  </source>
-  <target>
-A continuació tens una guia ràpida. Tota la informació que necessitis està disponible a la
- <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">documentació</a>
- o podeu demanar ajuda als <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussionso">grups de discussió</a>.
-  </target>
-</trans-unit>
-
-
-
-<trans-unit id="fourthAboutParagraph" datatype="html">
-  <source>
-   El código fuente de EDA está disponible en <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
-  </source>
-  <target>
-   El codi font d'EDA està disponible a <a class="stronger-paragraph" href="https://github.com/jortilles/EDA">Github</a>
-  </target>
-</trans-unit>
-
-<trans-unit id="fifthAboutParagraph" datatype="html">
-  <source>
-   La documentación de EDA está disponible en <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Este Link</a>
-  </source>
-  <target>
-  La documentació d'EDA està disponible a <a class="stronger-paragraph" href="https://edadoc.jortilles.com/#/">Aquest Link</a>
-  </target>
-</trans-unit>
-
-<trans-unit id="sixthAboutParagraph" datatype="html">
-  <source>
-                  Existe un foro donde puedes compartir tu experiencia con la comunidad en  
-                <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Este Link</a>
-  </source>
-  <target>
-                 Hi ha un fòrum on pots compartir la teva experiència amb la comunitat a
-                 <a class="stronger-paragraph" href="https://github.com/jortilles/EDA/discussions">Aquest Link</a>
-  </target>
-</trans-unit> -->
-
   <trans-unit id="eliminarInforme">
     <source>ELIMINAR INFORME</source>
     <target>ELIMINAR INFORME</target>
@@ -4438,8 +4350,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Edalitics permet analitzar dades d'una </target>
       </trans-unit>
       <trans-unit id="tutorialSecondPPanelParagraph_2" datatype="html">
-        <source>base de dades</source>
-        <target>base de datos</target>
+        <source>base de datos</source>
+        <target>base de dades</target>
       </trans-unit>
       <trans-unit id="tutorialSecondPPanelParagraph_3" datatype="html">
         <source>, un </source>
@@ -4600,6 +4512,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="thirdAboutVideo_3" datatype="html">
         <source>te permitirá estar siempre a la última sin preocuparte por nada.</source>
         <target>et permetrà estar sempre a l'última sense preocupar-te per res.</target>
+      </trans-unit>
+      <trans-unit id="tutorialTitleFirstPPanel" datatype="html">
+        <source>1. Crear una fuente de datos:</source>
+        <target>1. Crear una font de dades:</target>
+      </trans-unit>
+      <trans-unit id="tutorialTitleSecondPPanel" datatype="html">
+        <source>2. Creación de un nuevo informe y paneles de visualización de datos:</source>
+        <target>2. Creació d'un nou informe i panells de visualizació de dades:</target>
       </trans-unit>
 
 
