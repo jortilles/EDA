@@ -1,0 +1,8 @@
+{
+    "/edapi": {
+      "target": "http://localhost:8666",
+      "secure": false,
+      "changeOrigin": true,
+      "pathRewrite": {"^/edapi" : ""}
+    }
+  }

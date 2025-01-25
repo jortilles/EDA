@@ -29,8 +29,7 @@ import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 import { ActivatedRoute } from '@angular/router';
-
-import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
+import { NULL_VALUE } from '../../../../config/personalitzacio/customizables'
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 import { QueryService } from '@eda/services/api/query.service';
 import { ConfirmationService } from 'primeng/api';
@@ -659,7 +658,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 try {
                     if (!this.display_v.minispinner) this.spinnerService.on();
                     const data = await QueryUtils.analizedQuery(this);
-                    const transformedData = QueryUtils.transformAnalizedQueryData(data);
+                    const transformedData = QueryUtils.transformAnalizedQueryData(this, data);
                     this.renderChart(this.currentQuery, transformedData.labels, transformedData.values, type, subType, _config);
                 } catch(err) {
                     throw err;

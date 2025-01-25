@@ -4,13 +4,14 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve -o --configuration=ca",
-    "start:ca": "ng serve  --configuration=ca",
+    "start:ca": "ng serve -o --configuration=ca",
+    "start:en": "ng serve -o --configuration=en",
     "copy-index": "node scripts/copy-index.js",
     "build:prod": "ng build --configuration production --localize --build-optimizer --vendor-chunk && npm run copy-index",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "int:extract": "ng xi18n --output-path locale"
+    "int:extract": "ng i18n --output-path locale"
   },
   "private": true,
   "dependencies": {
@@ -37,6 +38,7 @@
     "d3-sankey": "^0.12.3",
     "dom-to-image": "^2.5.0",
     "font-awesome": "^4.7.0",
+    "fs-extra": "^3.0.1",
     "glob-parent": "^6.0.1",
     "html2canvas": "^1.0.0-rc.5",
     "jspdf": "^2.5.1",
@@ -54,10 +56,9 @@
     "sweetalert2": "^10.13.3",
     "topojson-client": "^3.1.0",
     "tslib": "^2.0.0",
+    "xliff-simple-merge": "1.2.2",
     "xlsx": "^0.17.1",
-    "zone.js": "^0.12.0",
-    "fs-extra": "^3.0.1",
-    "xliff-simple-merge": "1.2.2"
+    "zone.js": "^0.12.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.2.10",
