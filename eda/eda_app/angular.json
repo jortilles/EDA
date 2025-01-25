@@ -108,27 +108,27 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "app-eda:build"
+                      "buildTarget": "app-eda:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "app-eda:build:production"
+                          "buildTarget": "app-eda:build:production"
                         },
                         "es": {
-                            "browserTarget": "app-eda:build:en"
+                          "buildTarget": "app-eda:build:en"
                         },
                         "ca": {
-                            "browserTarget": "app-eda:build:ca"
+                          "buildTarget": "app-eda:build:ca"
                         },
                         "pl": {
-                            "browserTarget": "app-eda:build:pl"
+                          "buildTarget": "app-eda:build:pl"
                         }
                     }
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "app-eda:build"
+                      "buildTarget": "app-eda:build"
                     }
                 },
                 "test": {
