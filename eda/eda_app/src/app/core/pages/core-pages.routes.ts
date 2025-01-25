@@ -25,4 +25,4 @@ export const coreRoutes: Routes = [
     { path: '**', component: PageNotFoundComponent},
 ];
 
-export const CORE_ROUTES = RouterModule.forRoot( coreRoutes, { useHash: true, onSameUrlNavigation: 'reload', relativeLinkResolution: 'legacy' } );
+export const CORE_ROUTES = RouterModule.forRoot( coreRoutes, { useHash: true, onSameUrlNavigation: 'reload' } );
