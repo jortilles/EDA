@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { UserService } from '../api/user.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class VerifyTokenGuard implements CanActivate {
+export class VerifyTokenGuard  {
 
   constructor(
     public userService: UserService,
