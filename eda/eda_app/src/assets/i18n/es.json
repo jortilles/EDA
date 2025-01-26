@@ -1,0 +1,18 @@
+{
+    "query": {
+        "count_tables": "Tablas implicadas",
+        "count_nulls": "Total nulos",
+        "count_empty": "Total cadenas vacías",
+        "count_distinct": "Total valores distintos",
+        "most_duplicated": "Más duplicado",
+        "least_duplicated": "Menos duplicado",
+        "max": "Valor máximo",
+        "min": "Valor mínimo",
+        "moda_counts": "Moda",
+        "avg": "Media",
+        "median": "Mediana",
+        "median_count_bymonth": "Mediana por mes",
+        "max_bymonth": "Máximos por mes",
+        "min_bymonth": "Mínimos por mes"
+    }
+}

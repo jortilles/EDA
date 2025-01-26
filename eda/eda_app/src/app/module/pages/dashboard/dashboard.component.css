@@ -226,13 +226,13 @@ app-dashboard {
 }
 
 
-#myDashboard >>> .p-card .p-card-body {
+#myDashboard :host ::ng-deep .p-card .p-card-body {
     padding: 0.6em;
     background-color: var(--panel-color);
   }
 
 
-.customMultiselect >>> ::-webkit-scrollbar {
+.customMultiselect :host ::ng-deep ::-webkit-scrollbar {
         width: 10px;
         height: 9px;
     }

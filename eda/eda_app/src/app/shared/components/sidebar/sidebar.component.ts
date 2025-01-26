@@ -6,13 +6,14 @@ import { SidebarService, UserService, AlertService, DataSourceService, StyleProv
 import { LogoSidebar } from '@eda/configs/index';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 import { PipesModule } from '@eda/pipes/pipes.module';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
     selector: 'app-sidebar',
     templateUrl: './sidebar.component.html',
     styleUrls: ['./sidebar.component.css'],
-    imports: [RouterModule, PipesModule],
+    imports: [CommonModule, RouterModule, PipesModule],
     standalone: true,
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

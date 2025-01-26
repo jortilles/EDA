@@ -1,4 +1,4 @@
-import { OnInit, Input, AfterViewChecked, SecurityContext } from '@angular/core';
+import { OnInit, Input, AfterViewChecked, SecurityContext, inject } from '@angular/core';
 import { Component, AfterViewInit } from '@angular/core';
 import { MapUtilsService } from '@eda/services/service.index';
 import { EdaMap } from './eda-map';
@@ -6,7 +6,10 @@ import { Draggable, LatLngExpression } from 'leaflet';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { DomSanitizer } from '@angular/platform-browser';
 
-const L = require('./topoJsonExtention')
+// Deprecated
+// const L = require('./topoJsonExtention')ç
+import * as L from 'leaflet';
+import * as topojson from 'topojson-client';
 @Component({
   selector: 'eda-geomap',
   templateUrl: './eda-geojson-map.component.html',
@@ -48,10 +51,9 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   public legendPosition: string;
   public boundaries: Array<any> = [];
 
+  private _sanitizer = inject(DomSanitizer);
 
-  constructor(
-    private mapUtilsService: MapUtilsService, private _sanitizer: DomSanitizer
-  ) {
+  constructor(private mapUtilsService: MapUtilsService) {
     this.customOptions = { 'className': 'custom', offset: [-20, -20], autoPan: false, closeButton: false };
   }
   ngOnInit(): void {
@@ -66,7 +68,8 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.logarithmicScale = this.inject.logarithmicScale ? this.inject.logarithmicScale : false;
     this.draggable = this.inject.draggable === undefined ? true: this.inject.draggable  ;
     this.legendPosition = this.inject.legendPosition ? this.inject.legendPosition : 'bottomright';
-    this.legend = new L.Control({ position: this.legendPosition });
+    // FixMe
+    // this.legend = new L.Control({ position: this.legendPosition });
 
   }
 
@@ -90,10 +93,11 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     const field = this.serverMap['field'];
     const totalSum = this.inject.data.map(row => row[this.dataIndex]).reduce((a, b) => a + b);
 
-    this.geoJson = new L.TopoJSON(this.shapes, {
-      style: (feature) => this.style(feature, this.color),
-      onEachFeature: this.onEachFeature
-    });
+    // FIXME
+    // this.geoJson = new L.TopoJSON(this.shapes, {
+    //   style: (feature) => this.style(feature, this.color),
+    //   onEachFeature: this.onEachFeature
+    // });
   
     this.geoJson.eachLayer((layer) => {
       this.boundaries.push(layer._bounds);
@@ -145,7 +149,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
         center: this.getCenter(this.inject.data),
         zoom: this.inject.zoom ? this.inject.zoom : 0,
         dragging: this.draggable,
-        tap: !L.Browser.mobile,
+        // tap: !L.Browser.mobile, FIXME
         scrollWheelZoom: this.draggable
       });
       this.map.options.minZoom = this.setMinZoom();
@@ -347,7 +351,9 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.map.removeControl(this.legend);
     // this.setGroups();
     //this.initShapesLayer();
-    this.legend = new L.Control({ position: legendPosition });
+
+    // FIXME
+    // this.legend = new L.Control({ position: legendPosition });
     this.initLegend(this.groups, this.inject.labels[this.dataIndex], this.color);
   }
 

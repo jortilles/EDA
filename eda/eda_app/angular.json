@@ -4,6 +4,14 @@
   "newProjectRoot": "projects",
   "projects": {
     "app-eda": {
+      "i18n": {
+        "sourceLocale": "es",
+        "locales": {
+          "en": "src/locale/messages.en.xlf",
+          "ca": "src/locale/messages.ca.xlf",
+          "pl": "src/locale/messages.pl.xlf"
+        }
+      },
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -11,21 +19,18 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular-devkit/build-angular:browser-esbuild",
           "options": {
             "outputPath": "dist/app-eda",
             "index": "src/index.html",
-            "browser": "src/main.ts",
-            "polyfills": ["zone.js"],
+            "main": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets",
-              {
-                "glob": "**/*",
-                "input": "public",
-                "output": "/public"
-              }
+              "src/assets"
             ],
             "styles": [
               "node_modules/font-awesome/css/font-awesome.css",
@@ -38,8 +43,15 @@
               "node_modules/primeicons/primeicons.css",
               "node_modules/leaflet/dist/leaflet.css"
             ],
-            "scripts": ["node_modules/quill/dist/quill.js"],
-            "localize": ["es", "ca", "en", "pl"]
+            "scripts": [
+            "node_modules/quill/dist/quill.js"
+            ],
+            "localize": [
+              "es",
+              "ca",
+              "en",
+              "pl"
+            ]
           },
           "configurations": {
             "production": {
@@ -63,19 +75,29 @@
               "sourceMap": true
             },
             "ca": {
-              "localize": ["ca"]
+              "localize": [
+                "ca"
+              ]
             },
             "en": {
-              "localize": ["en"]
+              "localize": [
+                "en"
+              ]
             },
             "pl": {
-              "localize": ["pl"]
+              "localize": [
+                "pl"
+              ]
             }
           },
           "defaultConfiguration": "development"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json",
+            "port": 4200
+          },
           "configurations": {
             "production": {
               "buildTarget": "app-eda:build:production"
@@ -101,16 +123,22 @@
             "buildTarget": "app-eda:build",
             "outputPath": "src/locale"
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "i18n": {
-    "sourceLocale": "es",
-    "locales": {
-      "en": "src/locale/messages.en.xlf",
-      "ca": "src/locale/messages.ca.xlf",
-      "pl": "src/locale/messages.pl.xlf"
-    }
+  "cli": {
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }

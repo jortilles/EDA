@@ -76,15 +76,15 @@
 #div_new_dashboard h3{
   font-weight: bold !important;
 }
-#div_new_dashboard >>> .p-card .p-card-body {
-  padding: 0.5em;
+:host ::ng-deep #div_new_dashboard .p-card .p-card-body {
+padding: 0.5em;
 }
 
-#public-list >>> .p-card .p-card-body, 
-#common-list >>> .p-card .p-card-body, 
-#group-list >>> .p-card .p-card-body, 
-#private-list >>> .p-card .p-card-body {
-  padding: 0.8em;
+:host ::ng-deep #public-list .p-card .p-card-body,
+:host ::ng-deep #common-list .p-card .p-card-body,
+:host ::ng-deep #group-list .p-card .p-card-body,
+:host ::ng-deep #private-list .p-card .p-card-body {
+padding: 0.8em;
 }
 
 #buscador{

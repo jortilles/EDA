@@ -3,12 +3,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
+    "allowSyntheticDefaultImports": true
   },
   "files": [
     "src/main.ts",
     "src/polyfills.ts",
-    "src/app/module/components/eda-map/topoJsonExtention.ts"
+    "node_modules/@types/leaflet/index",
   ],
   "include": [
     "src/**/*.d.ts"

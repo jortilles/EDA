@@ -1,9 +1,9 @@
 import { OnInit, Input, AfterViewChecked } from '@angular/core';
 import { Component, AfterViewInit } from '@angular/core';
-import * as L from 'leaflet';
 import { MapUtilsService } from '@eda/services/service.index';
 import { EdaMap } from './eda-map';
 import { LatLngExpression } from 'leaflet';
+import * as L from 'leaflet';
 
 @Component({
   selector: 'eda-map',
@@ -48,7 +48,7 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
         center: this.getCenter(validData),
         zoom: this.inject.zoom ? this.inject.zoom : 12,
         dragging: !L.Browser.mobile,
-        tap: !L.Browser.mobile
+        // tap: !L.Browser.mobile
       });
       const tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
         maxZoom: 19,

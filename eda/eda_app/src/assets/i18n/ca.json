@@ -1,0 +1,18 @@
+{
+    "query": {
+        "count_tables": "Taules implicades",
+        "count_nulls": "Total nulls",
+        "count_empty": "Total cadenes buides",
+        "count_distinct": "Total valors distints",
+        "most_duplicated": "Mes duplicat",
+        "least_duplicated": "Menys duplicat",
+        "max": "Valor màxim",
+        "min": "Valor mínim",
+        "moda_counts": "Moda",
+        "avg": "Mitjana",
+        "median": "Mediana",
+        "median_count_bymonth": "Mediana per mes",
+        "max_bymonth": "Màxims per mes",
+        "min_bymonth": "Mínims per mes"
+    }
+}
