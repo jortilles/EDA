@@ -43,17 +43,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
     public _unsaved = new BehaviorSubject<boolean>(false);
     unsaved = this._unsaved.asObservable();
 
-    private _modelPanel = new BehaviorSubject<EditModelPanel>(
-        {
-            type: '',
-            connection: {
-                type: '', host: '', database: ' ', user: ' ', password: ' ', schema : '', port:null, warehouse:''
-            },
-            metadata: {
-                model_name: ' ', model_granted_roles: [], cache_config:{}, filter:'', tags:[]
-            }
-        }
-    );
+    private _modelPanel = new BehaviorSubject<EditModelPanel>(new EditModelPanel());
     currentModelPanel = this._modelPanel.asObservable();
 
     private _tablePanel = new BehaviorSubject<EditTablePanel>(this.void_tablePanel);    // Manages tables edit information -> used by edit-model.component

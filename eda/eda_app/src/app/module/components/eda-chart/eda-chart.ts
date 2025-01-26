@@ -1,11 +1,14 @@
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
-import { ChartType, ChartDataset, ChartOptions } from 'chart.js';
-
-
+import { ChartType, ChartDataset, ChartOptions, ChartData, ScatterDataPoint, BubbleDataPoint, ChartTypeRegistry } from 'chart.js';
 
 export class EdaChart {
-    public chartType: ChartType | "horizontalBar";
-    public chartData: any[] = [];
+    public chartType: ChartType;
+    // public chartData: ChartData<(ChartType), (number | ScatterDataPoint | BubbleDataPoint), string> [] = [];
+    public chartData: ChartData<keyof ChartTypeRegistry, (number | ScatterDataPoint | BubbleDataPoint)[], string> = {
+        labels: [],
+        datasets: [],
+    };
+    // ChartData<ChartTypeRegistry, (number | ScatterDataPoint | BubbleDataPoint)[], string>
     public chartDataset: ChartDataset[] = [];
     public chartLabels: string[] = [];
     public chartColors: any[] = [];

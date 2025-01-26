@@ -81,7 +81,7 @@
                                 </label> -->
 
                                 <input id="datepicker" [type]="inputType" class="w-100" [(ngModel)]="filterValue.value1"
-                                    (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+                                    (input)="handleValidForm({value1: filterValue.value1})" pInputText required>
                     
 
                             </div>
@@ -94,7 +94,7 @@
 
                                 <input id="float-input" [type]="inputType" class="w-100"
                                     [(ngModel)]="filterValue.value1"
-                                    (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+                                    (input)="handleValidForm({value1: filterValue.value1})" pInputText required>
 
                                 <label i18n="@@valorFiltrarLabel" for="float-input">
                                     Valor a filtrar
@@ -171,7 +171,7 @@
 
                                 <input id="float-input" [type]="inputType" class="w-100"
                                     [(ngModel)]="filterValue.value1"
-                                    (input)="handleValidForm({value1: $event.target.value})" pInputText required>
+                                    (input)="handleValidForm({value1: filterValue.value1})" pInputText required>
 
                                 <label i18n="@@valor1Label" for="float-input">
                                     Valor 1
@@ -187,7 +187,7 @@
 
                                 <input id="float-input" [type]="inputType" class="w-100"
                                     [(ngModel)]="filterValue.value2"
-                                    (input)="handleValidForm({value2: $event.target.value})" pInputText required>
+                                    (input)="handleValidForm({value2: filterValue.value2})" pInputText required>
 
                                 <label i18n="@@valor2Label" for="float-input">
                                     Valor 2
@@ -306,7 +306,7 @@
                                     [autoDisplayFirst]="false"
                                     [showClear]="true"
                                     [style]="{'min-width': '100%'}"
-                                    (onChange)="addFormatDate(format)"
+                                    (onChange)="addFormatDate()"
                                     class="w-100"
                                     appendTo="body">
                                 </p-dropdown>

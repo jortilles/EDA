@@ -1,16 +1,20 @@
 import { DashboardService } from './../../../services/api/dashboard.service';
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { User } from '@eda/models/model.index';
 import { SidebarService, UserService, AlertService, DataSourceService, StyleProviderService } from '@eda/services/service.index';
 import { LogoSidebar } from '@eda/configs/index';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
+import { PipesModule } from '@eda/pipes/pipes.module';
 
 
 @Component({
     selector: 'app-sidebar',
     templateUrl: './sidebar.component.html',
-    styleUrls: ['./sidebar.component.css']
+    styleUrls: ['./sidebar.component.css'],
+    imports: [RouterModule, PipesModule],
+    standalone: true,
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SidebarComponent implements OnInit {
     public user: User;

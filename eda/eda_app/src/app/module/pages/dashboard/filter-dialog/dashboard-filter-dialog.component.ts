@@ -51,7 +51,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     public aliasValue : string = "";
     
     // Global filters vars
-    public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll, visible }> = [];
+    public filtersList: Array<{ table, column, panelList, data, selectedItems, selectedRange, id, isGlobal, applyToAll, visible, isdeleted? }> = [];
 
     //strings
     public header1 : string = $localize`:@@aplyToAllPanelsH5:¿Aplica a todos los paneles?`;
@@ -315,7 +315,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
         this.filtersList.splice(this.filtersList.indexOf(filter), 0);
     }
 
-    public onReorderFilter(event: CdkDragDrop<string[]>): void {
+    public onReorderFilter(event: any): void {
         moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     }
 

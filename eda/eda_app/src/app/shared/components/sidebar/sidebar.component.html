@@ -5,8 +5,7 @@
     </div>
 </ng-container>
 
-<aside id="sidebar" class="left-sidebar" [ngClass]="{'hidden': sidebarService.toggleSideNav}"
-    (window:resize)="getMobileSize($event)">
+<aside id="sidebar" class="left-sidebar" [class.hidden]="sidebarService.toggleSideNav" (window:resize)="getMobileSize($event)">
 
     <ng-container *ngIf="!mobileSize">
         <li class="user-profile text-center" style="list-style: none;">

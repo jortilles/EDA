@@ -28,7 +28,7 @@
     "@fullcalendar/core": "^5.1.0",
     "@types/d3": "^5.16.3",
     "@types/leaflet": "1.9.12",
-    "angular-gridster2": "14.1.5",
+    "angular-gridster2": "17.0.0",
     "canvg": "^3.0.6",
     "chart.js": "3.9.1",
     "chartjs-plugin-datalabels": "^2.2.0",
@@ -44,7 +44,7 @@
     "leaflet": "^1.9.4",
     "lodash": "^4.17.21",
     "moment": "^2.29.3",
-    "ng2-charts": "4.1.1",
+    "ng2-charts": "5.0.4",
     "ngx-csv-parser": "^2.0.0",
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
@@ -72,6 +72,6 @@
     "protractor": "~7.0.0",
     "ts-node": "^9.1.0",
     "tslint": "~6.1.0",
-    "typescript": "5.4.5"
+    "typescript": "^5.4.5"
   }
 }

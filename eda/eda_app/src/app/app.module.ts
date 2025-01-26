@@ -1,36 +1,17 @@
-import { NgModule } from '@angular/core';
-
-// Rutas
-import { CORE_ROUTES } from './core/pages/core-pages.routes';
-
-// Modules
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CoreModule } from './core/core.module';
 import { CorePagesModule } from './core/pages/core-pages.module';
 import { SharedModule } from './shared/shared.module';
-import { HttpClientModule } from '@angular/common/http';
-// Components
+import { ServicesModule } from './services/services.module';
 import { AppComponent } from './app.component';
 import { PagesComponent } from './module/pages/pages.component';
-
-// Services
-import { ServicesModule } from './services/services.module';
-
+import { CommonModule } from '@angular/common';
+import { PrimengModule } from './core/primeng.module';
 
 @NgModule({
-    declarations: [AppComponent, PagesComponent],
-    imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
-        CoreModule,
-        CorePagesModule,
-        SharedModule,
-        ServicesModule,
-        CORE_ROUTES,
-        HttpClientModule
-    ],
-    providers: [ ],
-    bootstrap: [AppComponent]
+  declarations: [],
+  imports: [CommonModule, PrimengModule, CoreModule, CorePagesModule, SharedModule, ServicesModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  bootstrap: [] // No necesitas bootstrap aquí si usas bootstrapApplication
 })
-export class AppModule { }
+export class AppModule {}

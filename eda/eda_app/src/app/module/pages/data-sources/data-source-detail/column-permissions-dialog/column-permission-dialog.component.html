@@ -19,24 +19,24 @@
       <!-- USERS -->
 
       <div *ngIf="type==='users'" class="col-12">
-        <p-multiSelect [options]="users" [(ngModel)]="selectedUsers" [virtualScroll]="true" itemSize="30"
+        <p-multiSelect [options]="users" [(ngModel)]="selectedUsers" [virtualScroll]="true" [itemSize]="30"
           [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }"
-          [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" [defaultLabel]="usersDefaultLabel">
+          [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" [defaultLabel]="usersDefaultLabel">
         </p-multiSelect>
       </div>
 
       <!-- GROUPS -->
       <div *ngIf="type==='groups'" class="col-12">
-        <p-multiSelect [options]="roles" [(ngModel)]="selectedRoles" [virtualScroll]="true" itemSize="30"
+        <p-multiSelect [options]="roles" [(ngModel)]="selectedRoles" [virtualScroll]="true" [itemSize]="30"
           [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }"
-          [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" [defaultLabel]="groupsDefaultLabel">
+          [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" [defaultLabel]="groupsDefaultLabel">
         </p-multiSelect>
       </div>
 
       <div *ngIf="type" class="col-12">
-        <p-multiSelect [options]="values" [(ngModel)]="selectedValues" [virtualScroll]="true" itemSize="30"
+        <p-multiSelect [options]="values" [(ngModel)]="selectedValues" [virtualScroll]="true" [itemSize]="30"
           [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }"
-          [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="ID" [disabled]="all">
+          [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" defaultLabel="ID" [disabled]="all">
         </p-multiSelect>
       </div>
 

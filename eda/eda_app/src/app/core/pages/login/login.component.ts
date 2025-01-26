@@ -15,8 +15,9 @@ declare function init_plugins();
     styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-    public email: string;
-    public remember: boolean;
+    public email: string = '';
+    public password: string = '';
+    public remember: boolean = false;
     public returnUrl: string;
     public urlParams: any;
     public logo: string;
@@ -62,39 +63,39 @@ export class LoginComponent implements OnInit {
 
     }
 
-    public login(form: NgForm) {
+    public login(form: NgForm): void {
         if (form.invalid) {
+            // Puedes agregar una alerta o validación visual aquí si lo deseas
+            Swal.fire('Formulario inválido', 'Por favor completa todos los campos correctamente.', 'warning');
             return;
-        } else {
-            const user = new User(null, form.value.email, form.value.password);
+        }
 
-            this.userService.login(user, form.value.remember).subscribe(
-                () => {
+        const user = new User(null, form.value.email, form.value.password);
 
-                    if (this.urlParams) {
+        this.userService.login(user, form.value.remember).subscribe(
+            () => {
+                if (this.urlParams) {
+                    const params = this.urlParams.split('&');
+                    let newParams: { [key: string]: string } = {};
 
-                        const params = this.urlParams.split('&')
-
-                        let newParams: any = {};
-
-                        for (const param of Object.keys(params)) {
-                            if (params[param].split('=')[1].split('%7C')[1]) {
-                                let paramSplit = params[param].split('=')[1].split('%7C');
-                                newParams[params[param].split('=')[0]] = paramSplit.join('|');
-                            } else {
-                                newParams[params[param].split('=')[0]] = params[param].split('=')[1];
-                            }
+                    for (const param of params) {
+                        const [key, value] = param.split('=');
+                        if (value.includes('%7C')) {
+                            newParams[key] = value.split('%7C').join('|');
+                        } else {
+                            newParams[key] = value;
                         }
-
-                        this.router.navigate([this.returnUrl], { queryParams: newParams });
-                    } else {
-                        this.router.navigate([this.returnUrl]);
                     }
 
-                },
-                err => Swal.fire('Error al iniciar sesión', err.text, 'error')
-            );
-        }
+                    this.router.navigate([this.returnUrl], { queryParams: newParams });
+                } else {
+                    this.router.navigate([this.returnUrl]);
+                }
+            },
+            (err) => {
+                Swal.fire('Error al iniciar sesión', err.error?.message || 'Ha ocurrido un error inesperado', 'error');
+            }
+        );
     }
 
     public redirectLocale(lan:string){

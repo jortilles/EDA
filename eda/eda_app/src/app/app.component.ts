@@ -1,16 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { AlertService, UserService, SpinnerService } from './services/service.index';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 import { PrimeNGConfig } from 'primeng/api';
 
 import * as _ from 'lodash';
+import { PrimengModule } from './core/primeng.module';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styles: [],
+    standalone: true,
+    imports: [CommonModule, RouterModule, PrimengModule, ],
     providers: [MessageService]
 })
 export class AppComponent implements OnInit {

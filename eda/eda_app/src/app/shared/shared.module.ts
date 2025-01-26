@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
 // Module
 import { CoreModule } from '../core/core.module';
@@ -13,19 +13,18 @@ import {
     EdaDialogComponent,
     EdaDialog2Component,
     NavbarComponent,
-    SidebarComponent,
     EdaContextMenuComponent,
     EdaInputComponent,
     EdaDatePickerComponent,
     CreateDashboardComponent,
     EdaFieldComponent
 } from './components/shared-components.index';
+import { PrimengModule } from 'app/core/primeng.module';
 
 @NgModule({
     declarations: [
         EdaPageDialogComponent,
         NavbarComponent,
-        SidebarComponent,
         EdaDialogComponent,
         EdaDialog2Component,
         EdaContextMenuComponent,
@@ -36,13 +35,13 @@ import {
         EdaFieldComponent
     ],
     imports: [
+        PrimengModule,
         CoreModule,
         PipesModule
     ],
     exports: [
         EdaPageDialogComponent,
         NavbarComponent,
-        SidebarComponent,
         EdaDialogComponent,
         PipesModule,
         EdaDialogComponent,
@@ -53,6 +52,7 @@ import {
         EdaDatePickerComponent,
         CreateDashboardComponent,
         EdaFieldComponent
-    ]
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SharedModule {}

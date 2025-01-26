@@ -11,20 +11,18 @@
                 <p style="margin-left: 0.3em;">{{unsaved}}</p> 
 
 
-                <button pButton (click)="this.refreshModel()" class="header-button" icon="fa fa-refresh"
-                    iconPos="center" [pTooltip]="refreshSTR">
+                <button pButton (click)="this.refreshModel()" class="header-button" icon="fa fa-refresh" [pTooltip]="refreshSTR">
                 </button>
 
                 <button id="saveModel" pButton (click)="dataModelService.sendModel()" class="header-button"
-                    icon="fa fa-save" iconPos="center" [pTooltip]="saveModelSTR">
+                    icon="fa fa-save" [pTooltip]="saveModelSTR">
                 </button>
 
-                <button pButton (click)="reLoadModelFromDb()" class="header-button" icon="fa fa-database"
-                    iconPos="center" [pTooltip]="updateModelSTR">
+                <button pButton (click)="reLoadModelFromDb()" class="header-button" icon="fa fa-database" [pTooltip]="updateModelSTR">
                 </button>
 
                 <button id="deleteModel" pButton (click)="deleteDatasource()" class="header-button" icon="fa fa-trash"
-                    iconPos="center" style="float: right;" [pTooltip]="deleteModelSTR">
+                    style="float: right;" [pTooltip]="deleteModelSTR">
                 </button>
             </div>
 

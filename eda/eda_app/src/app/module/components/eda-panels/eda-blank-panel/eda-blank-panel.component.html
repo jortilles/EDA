@@ -80,8 +80,7 @@
 
                             <h6 i18n="@@indicaciones">Indicaciones</h6>
                             <hr>
-                            <p-accordion *ngIf="this.display_v.page_dialog" id="help-text" (onOpen)="accopen($event)"
-                                (onClose)="accopen($event)">
+                            <p-accordion *ngIf="this.display_v.page_dialog" id="help-text">
                                 <p-accordionTab i18n-header="@@informacionGeneral" header="Información general">
                                     <ng-template pTemplate="content">
                                         <p i18n="@@indicaciones1"> Puedes realizar consultas SQL sobre el esquema definido
@@ -275,7 +274,7 @@
                                     (mouseover)="showDescription(column)"
                                     (mouseout)="description=''"
                                     cdkDrag [cdkDragData]="column"
-                                    (cdkDragDropped)="searchRelations(column, $event)"
+                                    (cdkDragDropped)="searchRelations(column)"
                                     [ngStyle]="column.hidden && column.hidden == 1 && {'opacity': '0.5'}">
                                         <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
                                         <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
@@ -291,7 +290,7 @@
                                         (mouseover)="showDescription(column)"
                                         (mouseout)="description=''"
                                         cdkDrag
-                                        (cdkDragDropped)="searchRelations(column, $event)"
+                                        (cdkDragDropped)="searchRelations(column)"
                                         [ngStyle]="column.hidden && column.hidden == 1  && {'opacity': '0.5'} " >
 
                                         <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
@@ -320,7 +319,7 @@
                                 (mouseover)="showDescription(item)"
                                 (mouseout)="description = ''"
                                 cdkDrag
-                                [cdkDragData]="column">
+                                [cdkDragData]="columns">
                                 <div class="col">
 
                                   <span class="fa fa-close pull-right" style="z-index: 9999;" (click)="removeColumn( item, 'select' )"></span>
@@ -348,7 +347,7 @@
                                 <p *ngIf="filtredColumns.length < 1" class="fieldsInfo">{{draggFilters}}</p>
                                 <div class="p-2 select-box text-center" *ngFor="let item of filtredColumns"
                                     (click)="openColumnDialog(item, true)" (mouseover)="showDescription(item)"
-                                    (mouseout)="description = ''" cdkDrag [cdkDragData]="column" >
+                                    (mouseout)="description = ''" cdkDrag [cdkDragData]="columns" >
                                     <div class="col">
                                         <span class="close-thin pointer" (click)="removeColumn( item, 'filter' )"></span>
                                         <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>

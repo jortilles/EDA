@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
 // Modules
 import { CoreModule } from '../../core/core.module';
@@ -48,11 +48,13 @@ import { UploadFileComponent } from './data-sources/data-source-detail/upload-fi
 import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.component';
 import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
 import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.component';
+import { PrimengModule } from 'app/core/primeng.module';
 
 
 
 @NgModule({
     imports: [
+        PrimengModule,
         CoreModule,
         // GridsterModule.forRoot(),
         GridsterModule,
@@ -96,6 +98,7 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
         SaveAsDialogComponent,
         EditStylesDialogComponent,
         UrlsActionComponent
-    ]
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class PagesModule { }

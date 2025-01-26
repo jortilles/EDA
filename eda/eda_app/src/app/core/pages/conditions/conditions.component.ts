@@ -1,9 +1,14 @@
-import {Component} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract} from '@eda/shared/components/shared-components.index';
+import { CoreModule } from 'app/core/core.module';
+import { PrimengModule } from 'app/core/primeng.module';
 
 @Component({
     selector: 'app-conditions',
-    templateUrl: './conditions.component.html'
+    templateUrl: './conditions.component.html',
+    standalone: true,
+    imports: [CoreModule, PrimengModule],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 
 export class ConditionsComponent extends EdaDialogAbstract {

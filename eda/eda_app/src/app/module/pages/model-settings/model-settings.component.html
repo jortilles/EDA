@@ -28,7 +28,7 @@
 
             <div class="col-12 md:col-6">
               <input type="file" #file style="display: none" (change)="onModelFilesAdded()" />
-              <button pButton pRipple type="button" (click)="loadFile()" icon="fa fa-upload" iconPos="center" class="p-button-rounded p-button-outlined"> </button>
+              <button pButton pRipple type="button" (click)="loadFile()" icon="fa fa-upload" class="p-button-rounded p-button-outlined"> </button>
               <ul *ngIf="loadedDM!==null">
                 <div class="col-12" id="dashboardWrapper">
                   <li>
@@ -83,7 +83,7 @@
 
             <div class="col-12 md:col-6">
               <input type="file" #file2 style="display: none" (change)="onDashboardFilesAdded()" />
-              <button pButton pRipple type="button" (click)="loadDBFile()" icon="fa fa-upload" iconPos="center" class="p-button-rounded p-button-outlined"> </button>
+              <button pButton pRipple type="button" (click)="loadDBFile()" icon="fa fa-upload" class="p-button-rounded p-button-outlined"> </button>
               <ul *ngIf="loadedDashboard!==null">
                 <div class="col-12" id="dashboardWrapper">
                   <li>

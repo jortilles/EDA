@@ -37,13 +37,20 @@ export class ProfileComponent implements OnInit {
         }
     }
 
-    selectImage( file: File ) {
-        if ( !file ) {
+    selectImage(event: Event) {
+        const input = event.target as HTMLInputElement;
+        let file: File;
+
+        if (input.files && input.files[0]) {
+            file = input.files[0];
+        }
+
+        if (!file) {
             this.imageUpload = null;
             return;
         }
 
-        if ( file.type.indexOf('image') < 0 ) {
+        if (file.type.indexOf('image') < 0) {
             this.alertService.addError($localize`:@@fileNotPicture:El archivo seleccionado no es una imagen`);
             this.imageUpload = null;
             return;

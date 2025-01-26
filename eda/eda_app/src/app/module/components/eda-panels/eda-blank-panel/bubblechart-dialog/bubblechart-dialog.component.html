@@ -27,8 +27,7 @@
             <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor()" format="hex" appendTo="body">
             </p-colorPicker>
 
-            <input type="text" pInputText class="eda-color-pick" [(ngModel)]="colors[i]"
-              (input)="handleInputColor(label)" minlength="7">
+            <input type="text" pInputText class="eda-color-pick" [(ngModel)]="colors[i]" (input)="handleInputColor()" minlength="7">
 
           </div>
 

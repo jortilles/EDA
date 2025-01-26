@@ -325,7 +325,8 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     }
 
     loadChartTypeProperties() {
-        switch (this.chart.chartType) {
+        const type: any = this.chart.chartType;
+        switch (type) {
 
             case 'bar':
                 if (_.startsWith(this.chart.chartType, 'bar')) {

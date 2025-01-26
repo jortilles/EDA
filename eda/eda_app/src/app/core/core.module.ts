@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
 // Modules
 import { CommonModule } from '@angular/common';
@@ -10,17 +10,16 @@ import { NgChartsModule } from 'ng2-charts';
 @NgModule({
     imports: [
         CommonModule,
-        FormsModule,
-        PrimengModule
+        FormsModule
     ],
     exports: [
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
         HttpClientModule,
-        PrimengModule,
         NgChartsModule,
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 
 export class CoreModule {}

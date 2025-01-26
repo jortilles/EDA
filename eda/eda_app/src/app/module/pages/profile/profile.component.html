@@ -53,7 +53,7 @@
                     <img *ngIf="imageTemp" [src]="imageTemp" class="w-150">
                 </div>
 
-                <input (change)="selectImage( $event.target.files[0] )" type="file" class="mt-1">
+                <input type="file" (change)="selectImage($event)" class="mt-1">
 
                 <br><br>
 

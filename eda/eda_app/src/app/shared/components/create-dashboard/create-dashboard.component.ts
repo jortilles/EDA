@@ -122,7 +122,7 @@ export class CreateDashboardComponent implements OnInit {
         }
     }
 
-    private onClose(res?: any): void {
+    public onClose(res?: any): void {
         this.close.emit(res);
     }
 }

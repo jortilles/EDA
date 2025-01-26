@@ -32,6 +32,8 @@ import { ActivatedRoute } from '@angular/router';
 
 import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
+import { computed } from '@angular/core';
+import { inject } from '@angular/core';
 
 export interface IPanelAction {
     code: string;
@@ -196,11 +198,12 @@ export class EdaBlankPanelComponent implements OnInit {
     public copyConfigCrossTable: any = {};
     public dragAndDropAvailable: boolean = false;
 
+    private route = inject(ActivatedRoute);
+    private formBuilder = inject(UntypedFormBuilder);
+
     constructor(
-        private route: ActivatedRoute,
         public queryBuilder: QueryBuilderService,
         public fileUtiles: FileUtiles,
-        private formBuilder: UntypedFormBuilder,
         public dashboardService: DashboardService,
         public chartUtils: ChartUtilsService,
         public alertService: AlertService,
@@ -210,16 +213,7 @@ export class EdaBlankPanelComponent implements OnInit {
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
-
-        this.route.queryParams.subscribe(params => {
-            try {
-                if (params['cnproperties']) {
-                    this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties'])); 
-                }
-            } catch (err) {
-                console.error('queryParams: '+ err)
-            }
-        });
+        this.connectionProperties = computed(() => this.route.snapshot.paramMap.get('cnproperties'));
     }
 
     ngOnInit(): void {
@@ -726,7 +720,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * Move column with drag and drop
      * @param event 
      */
-    public drop(event: CdkDragDrop<string[]>) {
+    public drop(event: any) {
         if (event.previousContainer === event.container) {
             //Reordeno
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);

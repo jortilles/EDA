@@ -133,7 +133,7 @@
                 <span class="ml-2"> {{addTagString}} </span>
             </div>
             <div>
-                <p-multiSelect class="ml-2" [options]="tags"  [(ngModel)]="selectedTags" [placeholder]="addTagString" showHeader="false" maxSelectedLabels="0" selectedItemsLabel="Show tags"></p-multiSelect>
+                <p-multiSelect class="ml-2" [options]="tags"  [(ngModel)]="selectedTags" [placeholder]="addTagString" showHeader="false" [maxSelectedLabels]="0" selectedItemsLabel="Show tags"></p-multiSelect>
             </div>
             <br>
             <div>
@@ -187,7 +187,7 @@
             <div  *ngIf="display_v.groups" class="ml-3">
                 <br>
                 <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="true"
-                 optionLabel="name" defaultLabel="Elige grupos *" [style]="{ width: '100%' }" itemSize="30" overflow="visible"
+                 optionLabel="name" defaultLabel="Elige grupos *" [style]="{ width: '100%' }" [itemSize]="30" overflow="visible"
                  >
                 </p-multiSelect>
             </div>

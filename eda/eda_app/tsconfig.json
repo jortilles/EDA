@@ -1,43 +1,39 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": "./src",
-    "paths": {
-      "@eda/components/*": [
-        "app/module/components/*"
-      ],
-      "@eda/services/*": [
-        "app/services/*"
-      ],
-      "@eda/models/*": [
-        "app/shared/models/*"
-      ],
-      "@eda/pipes/*": [
-        "app/shared/pipes/*"
-      ],
-      "@eda/shared/*": [
-        "app/shared/*"
-      ],
-      "@eda/configs/*": [
-        "app/config/*"
-      ]
+    "compileOnSave": false,
+    "compilerOptions": {
+      "allowSyntheticDefaultImports": true,
+      "baseUrl": "./src",
+      "paths": {
+        "@eda/components/*": ["app/module/components/*"],
+        "@eda/services/*": ["app/services/*"],
+        "@eda/models/*": ["app/shared/models/*"],
+        "@eda/pipes/*": ["app/shared/pipes/*"],
+        "@eda/shared/*": ["app/shared/*"],
+        "@eda/configs/*": ["app/config/*"]
+      },
+      "outDir": "./dist/out-tsc",
+      "sourceMap": true,
+      "declaration": false,
+      "moduleResolution": "node",
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "importHelpers": true,
+      "module": "esnext", // 🔄 Cambiado a "esnext" para soporte completo en Angular 17
+      "target": "es2022", // ✅ Es válido, pero "esnext" podría ser una opción si planeas usar lo más reciente
+      "typeRoots": ["node_modules/@types"],
+      "types": ["node"],
+      "lib": ["es2022", "dom"],
+      "useDefineForClassFields": false
     },
-    "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
-    "module": "es2020",
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "ES2022",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2018",
-      "dom"
-    ],
-    "useDefineForClassFields": false
-  }
+    "angularCompilerOptions": {
+      "strictTemplates": true,
+      "strictInjectionParameters": true,
+      "strictDomEventTypes": false, // Disable DOM Types
+      "enableI18nLegacyMessageIdFormat": false, // ✅ Angular moderno no necesita IDs legados para i18n
+      "i18nInLocale": "es-ES", // ✅ Cambia esto si quieres otro idioma predeterminado
+      "i18nOutFile": "src/locale/messages.xlf", // ✅ Si deseas extraer mensajes, especifica el archivo de salida
+      "i18nOutFormat": "xlf", // ✅ Especifica el formato de exportación de i18n (por defecto es "xlf")
+      "enableIvy": true // ✅ Ivy debe estar habilitado (por defecto en Angular 17)
+    }
 }
+  

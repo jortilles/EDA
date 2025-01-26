@@ -32,15 +32,15 @@
                         <div class="col-3">
                             <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
                                 *ngIf="globalFilter.selectedColumn?.column_type !== 'date'" [options]="columnValues"
-                                [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" itemSize="30"
+                                [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" [itemSize]="30"
                                 [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
-                                [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto"
+                                [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" defaultLabel="Valor por defecto"
                                 display="chip" appendTo="body">
                             </p-multiSelect>
 
                             <eda-date-picker #myCalendar
                                 *ngIf="globalFilter.selectedColumn?.column_type === 'date'"
-                                [inject]="datePickerConfigs[selectedFilter?.id]"
+                                [inject]="datePickerConfigs[globalFilter?.id]"
                                 [autoClear]="true" (onDatesChanges)="processPickerEvent($event)">
                             </eda-date-picker>
                         </div>
@@ -133,7 +133,7 @@
                         [cdkDropListData]="globalFilterList" (cdkDropListDropped)="onReorderFilter($event)">
                         <ng-container *ngFor="let filter of globalFilterList">
                             <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>
-                                <span class="close-thin pointer" (click)="removeFilter(filter, 'select')"></span>
+                                <span class="close-thin pointer" (click)="removeFilter(filter)"></span>
                                 <!-- [ngClass]="(selectedFilter.table==filter.table) && (selectedFilter.column.label==filter.column.label)?'edaEmfasis':''" -->
                                 <span class="text-center">
                                     {{getFilterLabel(filter)}}

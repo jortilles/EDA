@@ -1,18 +1,19 @@
 
 
 <div class="eda-chart">
-    <canvas *ngIf="!!update" #edaChart=base-chart
-            baseChart
-            [data]="inject.chartData"
-            [datasets]="inject.chartDataset"
-            [labels]="inject.chartLabels"
-            [type]="inject.chartType"
-            [plugins]="chartPlugins"
-            [options]="inject.chartOptions"
-            [colors]="inject.chartColors"
-            [legend]="inject.chartLegend"
-            (chartHover)="chartHovered($event)"
+    <canvas *ngIf="!!update"
+        #edaChart=base-chart
+        baseChart
+        [data]="inject.chartData"
+        [datasets]="inject.chartDataset"
+        [labels]="inject.chartLabels"
+        [type]="inject.chartType"
+        [plugins]="chartPlugins"
+        [options]="inject.chartOptions"
+        [legend]="inject.chartLegend"
+        (chartHover)="chartHovered($event)"
     >
+    <!-- [colors]="inject.chartColors" -->
     </canvas>
 </div>
 

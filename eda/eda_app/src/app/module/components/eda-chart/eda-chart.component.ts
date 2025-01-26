@@ -91,7 +91,7 @@ export class EdaChartComponent implements OnInit, AfterViewInit {
     }
 
 
-    chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void { }
+    chartHovered(event: any): void { }
 
     updateChartOptions(options: any) {
         this.update = false;
