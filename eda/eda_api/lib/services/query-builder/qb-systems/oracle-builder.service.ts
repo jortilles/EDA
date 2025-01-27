@@ -284,7 +284,7 @@ export class OracleBuilderService extends QueryBuilderService {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='numeric'){
-          columns.push(` ROUND(  CAST( ${el.SQLexpression}  as numeric)  ,2)  ${whatIfExpression}  as "${el.display_name}"`);
+          columns.push(` ROUND(  CAST( ${el.SQLexpression}  ${whatIfExpression} as numeric)  , ${el.minimumFractionDigits} )    as "${el.display_name}"`);
         }else if(el.column_type=='date'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='coordinate'){
@@ -323,13 +323,13 @@ export class OracleBuilderService extends QueryBuilderService {
 
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`ROUND(count(distinct ${table_column}) , ${el.minimumFractionDigits}) ${whatIfExpression} as "${el.display_name}"`);
+            columns.push(`ROUND(count(distinct ${table_column})  ${whatIfExpression} , ${el.minimumFractionDigits}) as "${el.display_name}"`);
           } else {
-            columns.push(`ROUND(${el.aggregation_type}(${table_column}), ${el.minimumFractionDigits}) ${whatIfExpression} as "${el.display_name}"`);
+            columns.push(`ROUND(${el.aggregation_type}(${table_column}) ${whatIfExpression}  , ${el.minimumFractionDigits}) as "${el.display_name}"`);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`ROUND(${table_column}, ${el.minimumFractionDigits}) ${whatIfExpression} as "${el.display_name}"`);
+            columns.push(`ROUND(${table_column} ${whatIfExpression}, ${el.minimumFractionDigits})  as "${el.display_name}"`);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {

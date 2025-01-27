@@ -289,7 +289,7 @@ export class SQLserviceBuilderService extends QueryBuilderService {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='numeric'){
-          columns.push(` CAST( ${el.SQLexpression}  AS DECIMAL(32, ${el.minimumFractionDigits})) ${whatIfExpression}  as "${el.display_name}"`);
+          columns.push(` CAST( ${el.SQLexpression} ${whatIfExpression} AS DECIMAL(32, ${el.minimumFractionDigits}))   as "${el.display_name}"`);
         }else if(el.column_type=='date'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='coordinate'){
@@ -327,13 +327,13 @@ export class SQLserviceBuilderService extends QueryBuilderService {
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`CAST(count( distinct ${table_column}) AS DECIMAL(32, ${el.minimumFractionDigits})) ${whatIfExpression} as "${el.display_name}"`);
+            columns.push(`CAST(count( distinct ${table_column}) ${whatIfExpression} AS DECIMAL(32, ${el.minimumFractionDigits}))  as "${el.display_name}"`);
           } else {
-            columns.push(`CAST(${el.aggregation_type}(${table_column}) AS DECIMAL(32, ${el.minimumFractionDigits})) ${whatIfExpression} as "${el.display_name}"`);
+            columns.push(`CAST(${el.aggregation_type}(${table_column}) ${whatIfExpression}  AS DECIMAL(32, ${el.minimumFractionDigits})) as "${el.display_name}"`);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`CAST(${table_column} AS DECIMAL(32, ${el.minimumFractionDigits})) ${whatIfExpression} "${el.display_name}"`);
+            columns.push(`CAST(${table_column} ${whatIfExpression} AS DECIMAL(32, ${el.minimumFractionDigits}))  "${el.display_name}"`);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
