@@ -123,15 +123,20 @@ export class updateModel {
                   .then(async users => {
                     let users_crm = users;
                     /*
-                    * Retrieves EDA roles and groups
+                    * Retrieves EDA roles and groups based on active membership:
+                    * - Only includes groups/roles that have active users in sda_def_user_groups
+                    * - Excludes empty groups from sda_def_groups (which mirrors all SinergiaCRM groups)
+                    * - This ensures roles are only created in SDA when they have assigned users
                     */
                     await connection
                       .query(`
-                      SELECT "EDA_USER_ROLE" AS role, b.name, "" AS user_name 
-                      FROM sda_def_groups b 
-                      UNION 
-                      SELECT "EDA_USER_ROLE" AS role, g.name AS name , g.user_name 
-                      FROM sda_def_user_groups g `
+                        
+                         SELECT
+                           "EDA_USER_ROLE" as role,
+                           g.name as name ,
+                           g.user_name
+                         FROM
+                           sda_def_user_groups g; `
                       )
                       .then(async role => {
                         let roles = role;
