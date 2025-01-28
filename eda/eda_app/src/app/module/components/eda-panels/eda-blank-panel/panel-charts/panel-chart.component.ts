@@ -513,9 +513,23 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         // KPI Config
         let kpiValue: number;
         let kpiLabel = this.props.query.find((c: any) => c.column_type == 'numeric')?.display_name?.default;
-        
+        let decimals = this.props.query.find((c: any) => c.column_type == 'numeric')?.minimumFractionDigits;
+        let agg = this.props.query.find((c: any) => c.column_type == 'numeric')?.aggregation_type.find( (e: any) => e.selected == true )?.value;
+
+
         if (chartData[1][0]?.data) {
+            /* no se hace esto porque no tiene sentido 
+            if(agg == 'avg' ){       kpiValue = _.avg(chartData[1][0]?.data);
+            }else if(agg == 'max' ){ kpiValue = _.max(chartData[1][0]?.data);
+            }else if(agg == 'avg' ){ kpiValue = _.sum(chartData[1][0]?.data);
+            }else if(agg == 'min' ){ kpiValue = _.min(chartData[1][0]?.data);
+            }else{                   kpiValue = _.sum(chartData[1][0]?.data);  } */
+            
             kpiValue = _.sum(chartData[1][0]?.data);
+            if( this.countDecimals(kpiValue) >decimals ){
+                kpiValue = Number(kpiValue.toFixed(decimals)) ;
+            }
+             
         }
         
         chartConfig.chartType = this.props.chartType;
@@ -535,6 +549,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         this.createEdaKpiChartComponent(chartConfig);
     }
+    /**
+     * cuenta los decimales de los números.
+     */
+    private countDecimals (value) {
+        if(Math.floor(value) === value) return 0;
+        return value.toString().split(".")[1].length || 0; 
+    }
+
 
     /**
      * creates a kpiChartComponent
