@@ -4327,6 +4327,14 @@
         <source>Filtro sobre los resultados</source>
         <target>Filtra os resultados</target>
       </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Aplique o filtro en todos os rexistros</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Aplicar o filtro aos resultados</target>
+      </trans-unit>
       <trans-unit id="aggregationText">
         <source>Agregación</source>
         <target>Agregación</target>

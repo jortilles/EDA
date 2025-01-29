@@ -4347,6 +4347,14 @@
         <source>Filtro sobre los resultados</source>
         <target>Filtre sobre els resultats</target>
       </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Aplica el filtre sobre tots els registres</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Aplica el filtre sobre els resultats</target>
+      </trans-unit>
       <trans-unit id="aggregationText">
         <source>Agregación</source>
         <target>Agregació</target>

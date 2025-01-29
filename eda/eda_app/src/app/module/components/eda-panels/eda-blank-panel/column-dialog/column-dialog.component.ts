@@ -58,11 +58,11 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
                                             para los campos numéricos que eligas. Sólo se puede activar si la fecha está agregada por mes, semana o dia.`
 
-    public filterBeforeAfter = {
+    public filterBeforeAfter = {    
         filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
         elements: [
-            {label: 'Aplicar el filtro sobre todos los registros.', value: true},
-            {label: 'Aplicar el filtro sobre los resultados.', value: false},
+            { label: $localize`:@@whereMessageLabel:Aplicar el filtro sobre todos los registros`, value: true },
+            { label: $localize`:@@havingMessageLabel:Aplicar el filtro sobre los resultados`, value: false },
         ],
     }
     public filterBeforeAfterSelected: any;
