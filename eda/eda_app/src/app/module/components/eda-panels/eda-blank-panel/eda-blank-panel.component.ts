@@ -67,6 +67,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public alertController: EdaDialogController;
     public cumsumAlertController : EdaDialogController;
     public mapController: EdaDialogController;
+    public mapCoordController: EdaDialogController;
     public kpiController: EdaDialogController;
     public dynamicTextController: EdaDialogController;
     public sankeyController: EdaDialogController;
@@ -984,6 +985,21 @@ export class EdaBlankPanelComponent implements OnInit {
             this.dashboardService._notSaved.next(true);
         }
         this.mapController = undefined;
+    }
+    public onCloseMapCoordProperties(event, response: { initialColor: string, finalColor: string, logarithmicScale: boolean, draggable: boolean, zoom:number, coordinates: Array<Array<number>> }): void {
+        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            this.panel.content.query.output.config.initialColor = response.initialColor;
+            this.panel.content.query.output.config.finalColor = response.finalColor;
+            this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
+            this.panel.content.query.output.config.draggable = response.draggable;
+            this.panel.content.query.output.config.zoom = response.zoom;
+            this.panel.content.query.output.config.coordinates =
+              response.coordinates;
+            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+            this.dashboardService._notSaved.next(true);
+        }
+        this.mapCoordController = undefined;
     }
 
     public onCloseSankeyProperties(event, response): void {
