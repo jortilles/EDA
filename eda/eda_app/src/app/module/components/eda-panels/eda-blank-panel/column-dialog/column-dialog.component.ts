@@ -14,6 +14,7 @@ import * as _ from 'lodash';
 
 import { aggTypes } from 'app/config/aggretation-types';
 
+
 @Component({
     selector: 'app-column-dialog',
     templateUrl: './column-dialog.component.html',
@@ -73,6 +74,19 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
     public textBetween: string = $localize`:@@textBetween:Entre`
 
+
+    public ranges: number[] = [];
+    public rangeString: string;
+    public selectedRange: string = '';
+    public showRange: boolean = false;
+    public availableRange: boolean = true;
+    public allowedAggregations: boolean = true;
+    public ptooltipViewTextRanges: string = $localize`:@@ptooltipViewTextRanges:Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 `;
+    public ptooltipNotAvailableRanges: string = $localize`:@@ptooltipNotAvailableRanges:No es posible crear un rango nuevo por que ya existe uno configurado`;
+    public rangeDescriptionNumberError: string = $localize`:@@rangeDescriptionNumberError:El correcto orden de los límites del rango van de menor a mayor`;
+    public rangeDescriptionCharacterError: string = $localize`:@@rangeDescriptionCharacterError:El último caracter del rango debe ser un número`;
+
+
     constructor(
         private dashboardService: DashboardService,
         private chartUtils: ChartUtilsService,
@@ -102,8 +116,9 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const title = this.selectedColumn.display_name.default;
         const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
         this.dialog.title = `${col} ${title} ${from} ${this.controller.params.table}`;
-
+        
         this.carregarValidacions();
+        this.verifyRange();
 
         const columnType = this.selectedColumn.column_type;
 
@@ -125,6 +140,17 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 this.aggregationSelected = _.cloneDeep(agg);
             }
         }        
+        if(this.controller.params.currentQuery.find( elemento => elemento.hasOwnProperty('ranges') &&  elemento.ranges.length!==0)) {
+            if(this.selectedColumn.hasOwnProperty('ranges') && this.selectedColumn.ranges.length!==0) {
+                this.availableRange = true;
+            } else {
+                this.availableRange = false;
+            }
+        } else {
+            this.availableRange = true;
+        }
+
+        console.log('selectedColum', this.selectedColumn);
     }
 
     private carregarValidacions(): void {
@@ -695,4 +721,97 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
 
     }
+
+    addRange(rangeString: string) {
+
+        const regexNumber = /^[0-9]/;
+
+        if(regexNumber.test(rangeString[rangeString.length-1])){
+
+            const ranges = rangeString.split(":")
+            .map(item => parseFloat(item.replace(",", ".")));
+
+            for (let i = 0; i < ranges.length-1; i++) {
+                // Verificar si el número actual es menor o igual al anterior
+                if (ranges[i] >= ranges[i + 1]) {
+                    this.ranges=[];
+                    // console.log('El correcto orden de los límites del rango van de menor a mayor')
+                    this.alertService.addError('El correcto orden de los límites del rango van de menor a mayor');
+                    return;
+                }
+            }
+
+            this.ranges = ranges
+            this.showRange = true;
+            this.selectedRange = this.generarStringRango(this.ranges); // extraemos el rango seleccionado
+            this.rangeString = '';
+            this.allowedAggregations = false;
+
+            // Selección de Rango, genera que la agregación sea 'none'
+            const selectionAggregationRange = { value: 'none', display_name: 'No', selected: 'true' };
+            this.addAggregation(selectionAggregationRange);
+
+            // Encuentra la columna de turno y agrega el rango 
+            const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+            addAggr.column_type = 'text';
+            addAggr.ranges = this.ranges;
+        }
+        else {
+            // console.log('El último caracter del rango debe ser un número')
+            this.alertService.addError('El último caracter del rango debe ser un número');
+            return;
+        }
+
+    }
+
+    removeRange() {
+        this.selectedRange='';
+        this.showRange=false;
+        this.allowedAggregations = true;
+        const addAggr = this.findColumn(this.selectedColumn, this.controller.params.currentQuery);
+        addAggr.column_type = 'numeric';
+        this.selectedColumn.column_type = 'numeric';
+        this.rangeString = this.ranges.join(':');
+        addAggr.ranges = [];
+    }
+
+    generarStringRango(rango: number[]): string {
+        let resultado = "";
+    
+        // Agregamos la primera condición
+        resultado += `< ${rango[0]}<br>`;
+        
+        // Creamos las condiciones intermedias
+        for (let i = 0; i < rango.length - 1; i++) {
+            resultado += `${rango[i]} - ${rango[i + 1] - 1}<br>`;
+        }
+        
+        // Agregamos la última condición
+        resultado += `>= ${rango[rango.length - 1]}`;
+        
+        return resultado;
+    }
+
+    verifyRange() {
+
+        if(this.selectedColumn.ranges !== undefined){
+
+            if(this.selectedColumn.ranges.length !==0){
+                this.allowedAggregations = false;
+                this.showRange = true;
+                this.ranges = this.selectedColumn.ranges;
+                this.selectedRange = this.generarStringRango(this.ranges);
+            }
+        }
+    }
+
+    validateInput(event: Event): void {
+        const inputElement = event.target as HTMLInputElement;
+        const validCharacters = /[1234567890.,:-]*/g;
+        inputElement.value = inputElement.value.match(validCharacters)?.join('') || '';
+        // Si el input inicia con (. , :) no se habilitara el botón del rango ni se agregará el signo en el input. Se debe empezar con un número o con un signo (-) y un número para los negativos.
+        if(inputElement.value=== '.' || inputElement.value===',' || inputElement.value===':') inputElement.value = '';
+        this.rangeString = inputElement.value; // Se actualiza ngModel
+    }
+
 }

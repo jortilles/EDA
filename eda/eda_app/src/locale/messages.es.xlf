@@ -4362,6 +4362,34 @@
         <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
         <target>• Eje numérico: Arrastre aquí solo los campos numéricos.</target>
       </trans-unit>
+      <trans-unit id="ptooltipViewTextRanges">
+        <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
+        <target>Al configurar un rango las agregaciones quedarán bloqueadas. Ejemplo de rango válido: 12:18:50:100 </target>
+      </trans-unit>
+      <trans-unit id="rangesExpresionH5">
+        <source>Rangos: </source>
+        <target>Rangos: </target>
+      </trans-unit>
+      <trans-unit id="addRange">
+        <source>Añadir Rango</source>
+        <target>Añadir rango</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB">
+        <source>Rango</source>
+        <target>Rango</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionNumberError">
+        <source>El correcto orden de los límites del rango van de menor a mayor</source>
+        <target>El orden correcto de los límites del rango es de menor a mayor</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionCharacterError">
+        <source>El último caracter del rango debe ser un número</source>
+        <target>El último carácter del rango debe numérico</target>
+      </trans-unit>
+      <trans-unit id="ptooltipNotAvailableRanges">
+        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+        <target>No es posible crear un rango nuevo porque ya existe uno configurado</target>
+      </trans-unit>
       <trans-unit id="textBetween">
         <source>Entre</source>
         <target>Entre</target>

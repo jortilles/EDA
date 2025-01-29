@@ -709,7 +709,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
                 tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default , decimals: r.minimumFractionDigits}))
             } else if (_.isEqual(r.column_type, 'text')) {
-                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
+                let rangeOption = false;
+                if(r.ranges === undefined) {
+                    tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
+                } else {
+                    if(r.ranges.length > 0) {
+                        rangeOption = true;
+                        tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default, rangeOption: rangeOption }));
+                    } else {
+                        tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default, rangeOption: rangeOption }));
+                    }
+                }
             } else if (_.isEqual(r.column_type, 'coordinate')) {
                 tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
             }

@@ -454,6 +454,7 @@ export class EdaBlankPanelComponent implements OnInit {
      */
 
     public buildGlobalconfiguration(panelContent: any) {
+
         const modeSQL = panelContent.query.query.modeSQL;
         const queryMode = this.selectedQueryMode;
         /*SDA CUSTOM*/ this.showHiddenColumn = true;
@@ -466,11 +467,13 @@ export class EdaBlankPanelComponent implements OnInit {
                 if (queryMode == 'EDA2') {
                     this.rootTable = this.tables.find((t) => t.table_name == this.rootTable);
                     // Assert Relation Tables
+                    const currentQuery = panelContent.query.query.fields;
                     for (const column of currentQuery) {
                         PanelInteractionUtils.assertTable(this, column);
                     }
 
                     PanelInteractionUtils.handleCurrentQuery2(this);
+
                     this.reloadTablesData();
                     PanelInteractionUtils.loadTableNodes(this);
                     this.userSelectedTable = undefined;
@@ -487,6 +490,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 throw e;
             }
         }
+
 
         this.queryLimit = panelContent.query.query.queryLimit;
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
@@ -512,6 +516,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * Updates panel content with actual state
      */
     public savePanel() {
+
         this.panel.title = this.pdialog.getTitle();
 
         if (this.panel?.content) {

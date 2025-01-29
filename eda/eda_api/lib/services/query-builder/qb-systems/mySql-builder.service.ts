@@ -14,7 +14,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
-
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
     if (forSelector === true) {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
@@ -65,11 +64,15 @@ export class MySqlBuilderService extends QueryBuilderService {
       } else {
         out = false;
       }
+      if(  col.rangesOrderExpression && col.rangesOrderExpression != undefined && col.ordenation_type !== 'No'){
+        out = `${col.rangesOrderExpression} ${col.ordenation_type}`
+      }
 
       return out;
     }).filter(e => e !== false);
 
     const order_columns_string = orderColumns.join(',');
+
     if (order_columns_string.length > 0) {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     } else if (forSelector === true) {
@@ -83,10 +86,30 @@ export class MySqlBuilderService extends QueryBuilderService {
         myQuery = myQuery.split(key).join(`\`${alias[key]}\``);
       }
     }
-
+  
+    myQuery = this.queryAddedRange(this.queryTODO.fields, myQuery)
 
     return myQuery;
   };
+
+  public queryAddedRange(fields, myQuery) {
+
+    if(fields.find(field => field.ranges.length!==0)) {
+
+      if(fields.find(field => field.aggregation_type === 'count_distinct' || field.aggregation_type === 'sum' || field.aggregation_type === 'count')) {
+        const fieldRango = fields.find(field => field.ranges.length!==0)
+        myQuery = fieldRango.withRanges + myQuery + fieldRango.orderRanges;
+        return myQuery
+      } else {
+        return myQuery
+      }
+      
+    } else {
+      return myQuery
+    }
+
+  }
+
 
   public getFilters(filters, destLongitud, pTable): any { 
 

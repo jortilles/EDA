@@ -8,6 +8,8 @@ import es from '@angular/common/locales/es';
 import * as _ from 'lodash';
 import { StyleService } from '@eda/services/service.index';
 import { EdaColumnChartOptions } from './eda-columns/eda-column-chart-options';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 
 @Component({
     selector: 'eda-table',
@@ -25,7 +27,7 @@ export class EdaTableComponent implements OnInit {
     public colors = {};
     public styles = {};
 
-    constructor(private elementRef: ElementRef, private styleService: StyleService) {
+    constructor(private elementRef: ElementRef, private styleService: StyleService, private sanitizer: DomSanitizer) {
         registerLocaleData(es);
         /** Definim les caracteristiques del gràfic dintre de la taula.......................... */
         this.chartOptions = EdaColumnChartOptions;
@@ -108,7 +110,6 @@ export class EdaTableComponent implements OnInit {
             });
 
         });
-        //console.log(limits);
 
         //Set ranges
         fields.forEach(field => {
@@ -283,5 +284,86 @@ export class EdaTableComponent implements OnInit {
         return name.replace('%', 'percent').replace(/ /g, '').replace(/[^a-zA-Z0-9-_-\wáéíóúüñÁÉÍÓÚÜÑ ]/g, '').replace('_','');
     }
 
+    formatValoresRango(rowData: any, colField: string): SafeHtml  {
+        let valor = _.get(rowData, colField);
+        let str = '';
+
+        const regexNegative = /-\d+/g;
+        const regexPositive = /(?<!-)\b\d+\b/g;
+        let negativos = valor.match(regexNegative)?.map(Number) || [];
+        let positivos = valor.match(regexPositive)?.map(Number) || [];
+
+
+        if(negativos.length === 0) {
+            str = `<span>${valor}</span>`;
+        } else {
+            if(negativos.length === 1) {
+                if(valor.includes('<')) {
+                    valor = negativos[0];
+                    str = `<span>< <span style = "color: red">${valor}</span></span>`;
+                }
+                else if(valor.includes('>=')){
+                    valor = negativos[0];
+                    str = `<span>>= <span style = "color: red">${valor}</span></span>`;
+                }
+                else {
+                    valor = negativos[0];
+                    str = `<span> <span style = "color: red">${valor}</span> <span> - </span> <span>${positivos[0]}</span> </span>`;
+                }
+            } 
+            else {
+                str = `<span> <span style = "color: red">${negativos[0]}</span> <span> - </span> <span style = "color: red">${negativos[1]}</span> </span>`;
+            }
+        }
+        
+        return this.sanitizer.bypassSecurityTrustHtml(str);
+
+    }
+
+    extractNumberRange(input) {
+        const regex = /(?:<|<=|>|>=)?\s*(-?\d+)\s*(?:-|<|<=|>|>=)?\s*(-?\d+)?/;
+        const match = input.trim().match(regex);
+        
+        if (match) {
+          // Determina qué número extraer en base al formato del string
+          if (input.includes('<') || input.includes('>')) {
+            return parseInt(match[1], 10); // Extrae el primer número
+          } else {
+            return match[2] ? parseInt(match[2], 10) : null; // Extrae el segundo número si está presente
+          }
+        }
+        return null; // Si no hay coincidencia
+    }
+
+    customSort(event, cols) {
+        
+        const actualField = event.field;
+        const actualCol = cols.find(col => col.field === actualField)
+        
+        event.data.sort((data1, data2) => {
+            let value1 = data1[event.field];
+            let value2 = data2[event.field];
+            let result = null;
+
+            if (value1 == null && value2 != null)
+                result = -1;
+            else if (value1 != null && value2 == null)
+                result = 1;
+            else if (value1 == null && value2 == null)
+                result = 0;
+            else if (typeof value1 === 'string' && typeof value2 === 'string') {
+                if(actualCol.rangeOption) {
+                    const match1 = this.extractNumberRange(value1)
+                    const match2 = this.extractNumberRange(value2)
+                    result = (match1 < match2) ? -1 : (match1 > match2) ? 1 : 0;
+                } else
+                    result = value1.localeCompare(value2);
+            }
+            else
+                result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
+
+            return (event.order * result);
+        });
+    }
 
 }
