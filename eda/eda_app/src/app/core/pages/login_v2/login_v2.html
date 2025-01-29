@@ -1,0 +1,95 @@
+<div class="relative min-h-screen w-full flex items-center justify-center bg-[#e8f5f5]">
+    <!-- Background Image -->
+    <!-- <div class="absolute inset-0">
+        <img [src]="backgroundImage"
+            alt="Background Pattern" class="object-cover w-full h-full">
+    </div> -->
+
+    <app-particles-background></app-particles-background>
+
+    <!-- Animated gradient orbs -->
+    <div class="absolute inset-0 overflow-hidden">
+        <div
+            class="absolute -left-[10%] top-[20%] w-[500px] h-[500px] bg-blue-200/30 rounded-full blur-3xl animate-blob">
+        </div>
+        <div
+            class="absolute -right-[10%] top-[10%] w-[400px] h-[400px] bg-purple-200/20 rounded-full blur-3xl animate-blob animation-delay-2000">
+        </div>
+        <div
+            class="absolute left-[20%] -bottom-[10%] w-[600px] h-[600px] bg-cyan-200/20 rounded-full blur-3xl animate-blob animation-delay-4000">
+        </div>
+    </div>
+
+    <!-- Login Card -->
+    <div
+        class="relative backdrop-blur-sm bg-white/70 rounded-3xl border border-white/50 shadow-lg p-8 w-[400px] space-y-6">
+        <!-- Logo and Title -->
+        <div class="mb-6 text-center">
+            <div class="flex items-center justify-center mb-2">
+                <img [src]="logo" alt="logo" />
+                <img *ngIf="subLogo" [src]="subLogo" class="w-100" alt="logo" />
+                <!-- <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    class="text-[#00bcd4]">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg> -->
+            </div>
+            <!-- <h1 class="text-xl font-bold text-[#00bcd4]">Enterprise Data Analytics</h1> -->
+        </div>
+
+        <!-- Welcome Text -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800" i18n="@@loginWelcome">Benvingut/da.</h2>
+            <h3 class="text-xl text-gray-800" i18n="Login section title@@loginTitle">Inici de sessió.</h3>
+        </div>
+
+        <!-- Login Form -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+            <div class="space-y-1">
+                <label for="email" class="block text-sm text-gray-600" i18n="@@loginEmailLabel">
+                    Correu electrònic
+                </label>
+                <input type="email" id="email" formControlName="email"
+                    class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]"
+                    placeholder="Usuari">
+            </div>
+
+            <div class="space-y-1">
+                <label for="password" class="block text-sm text-gray-600" i18n="@@loginPasswordLabel">
+                    Contrasenya
+                </label>
+                <input type="password" id="password" formControlName="password"
+                    class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" id="remember" formControlName="remember"
+                    class="rounded border-gray-300 text-blue-500 focus:ring-blue-500/20">
+                <label for="remember" class="text-sm text-gray-600" i18n="@@loginRememberMe">Recorda'm</label>
+            </div>
+
+            <button type="submit"
+                class="w-full py-2 text-white rounded-md bg-[#00bcd4] hover:bg-[#00acc1] transition-colors">
+                <span i18n="@@loginSubmitButton">Entrar</span>
+            </button>
+
+            <!-- <a routerLink="/forgot-password" class="block text-center text-sm text-[#00bcd4] hover:underline" i18n="@@loginForgotPassword">
+                He oblidat la meva contrasenya
+            </a> -->
+            <a routerLink="/forgot-password"
+                class="block text-center text-sm text-blue-600 pointer hover:text-blue-800 hover:underline transition-colors"
+                i18n="@@loginForgotPassword">
+                He oblidat la meva contrasenya
+            </a>
+        </form>
+
+        <!-- Copyright -->
+        <div class="mt-6 text-center text-xs text-gray-500">
+            <span i18n="@@loginCopyright">Copyright ©{{currentYear}} Jortilles S.L.</span>
+        </div>
+    </div>
+</div>

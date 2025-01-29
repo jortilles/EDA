@@ -9,10 +9,12 @@ import { PagesComponent } from '../../module/pages/pages.component';
 
 // Guards
 import { LoginGuardGuard } from '../../services/guards/login-guard.guard';
+import { LoginV2Component } from './login_v2/login_v2';
 
 export const coreRoutes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'login_v2', component: LoginV2Component },
   { path: 'conditions', component: ConditionsComponent },
   { path: 'public/:dashboardID', component: AnonymousLoginComponent },
   {

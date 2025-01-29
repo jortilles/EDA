@@ -16,6 +16,12 @@
 @import url(../css/spinners.css);
 @import url(../css/animate.css);
 @import url(../eda-styles/index-styles.css);
+
+/* TailwindCss */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* customizables variables.  */
 @import url(./custom.css);
 
