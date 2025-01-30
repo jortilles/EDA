@@ -112,26 +112,13 @@ export class updateModel {
               .then(async rows => {
                 let relations = rows;
                 /*
-                * Retrieves users and their active status based on group membership:
-                * - The sda_def_user_groups view enforces user limitations from SinergiaCRM
-                * - Users are considered active if they either:
-                *   a) Have an entry in sda_def_user_groups
-                *   b) Are marked as active in sda_def_users but don't belong to any group (e.g., administrators)
+                * Retrieves users and their active status
                 */
                 await connection
                   .query(`
-                        SELECT 
-                          u.name,
-                          u.user_name as email,
-                          u.password,
-                          CASE 
-                              WHEN g.user_name IS NOT NULL THEN 1
-                              WHEN (g.user_name IS NULL AND u.active = 1) THEN 1
-                              ELSE 0
-                          END as active
-                        FROM sda_def_users u
-                        LEFT JOIN sda_def_user_groups g ON u.user_name = g.user_name
-                        WHERE u.password IS NOT NULL`
+                      SELECT name as name, user_name as email, password as password, active as active 
+                      FROM sda_def_users 
+                      WHERE password IS NOT NULL`
                       )
                   .then(async users => {
                     let users_crm = users;
@@ -143,14 +130,7 @@ export class updateModel {
                     */
                     await connection
                       .query(`
-                         SELECT
-                           "EDA_USER_ROLE" as role,
-                           b.name,
-                           "" as user_name
-                         FROM
-                           sda_def_groups b
-                         INNER JOIN sda_def_user_groups sdug ON sdug.name = b.name
-                         union
+                        
                          SELECT
                            "EDA_USER_ROLE" as role,
                            g.name as name ,
