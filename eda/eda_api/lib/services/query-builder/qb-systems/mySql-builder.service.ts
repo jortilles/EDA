@@ -94,10 +94,10 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   public queryAddedRange(fields, myQuery) {
 
-    if(fields.find(field => field.ranges.length!==0)) {
+    if(fields.find(field => field.ranges?.length > 0)) {
 
       if(fields.find(field => field.aggregation_type === 'count_distinct' || field.aggregation_type === 'sum' || field.aggregation_type === 'count')) {
-        const fieldRango = fields.find(field => field.ranges.length!==0)
+        const fieldRango = fields.find(field => field.ranges.length > 0)
         myQuery = fieldRango.withRanges + myQuery + fieldRango.orderRanges;
         return myQuery
       } else {
