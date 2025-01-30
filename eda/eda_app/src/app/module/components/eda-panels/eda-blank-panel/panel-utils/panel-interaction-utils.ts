@@ -398,7 +398,7 @@ export const PanelInteractionUtils = {
             handleColumn.ranges = contentColumn.ranges || false;
 
             // Si posee Rango el column_type debe ser de tipo 'text'
-            if(handleColumn.ranges.length!==0){
+            if(handleColumn.ranges.length > 0){
               handleColumn.column_type = 'text'
             }
 
