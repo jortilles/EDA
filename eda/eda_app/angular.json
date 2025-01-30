@@ -20,9 +20,6 @@
                     "ca": {
                         "translation": "src/locale/prod_messages.ca.xlf"
                     },
-                    "pl": {
-                        "translation": "src/locale/messages.pl.xlf"
-                    }, 
                     "gl": {
                         "translation": "src/locale/prod_messages.gl.xlf"
                     }
