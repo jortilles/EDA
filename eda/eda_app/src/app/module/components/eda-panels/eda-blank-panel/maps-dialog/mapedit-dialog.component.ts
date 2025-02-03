@@ -47,8 +47,6 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
 
   ngOnInit() {
     this.mapUtilsService.mapEditOpen();
-    console.log(this.mapUtilsService.getZoom());
-    console.log(this.mapUtilsService.getCoordinates());
   }
   ngOnDestroy(): void {
     this.mapUtilsService.mapEditClose();

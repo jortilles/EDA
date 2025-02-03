@@ -18,16 +18,16 @@
         Rango de colores
       </h6>
 
-      <div class="chart-color-selection">
-        <div class="mb-1">
-          <a i18n="@@colorsInitialText" class="col-6" >Color inicial </a>
-          <input type="text" [(ngModel)]="initialColor" class="col-6" pInputText style="width: 100%" (keyup)="handleInputColor()" />
-          <p-colorPicker [(ngModel)]="initialColor" appendTo="body" class="col-2" (onHide)="handleInputColor()"></p-colorPicker>
+      <div class="chart-color-selection" >
+        <div class="mb-1" style="display:grid;grid-template-columns: repeat(3, 1fr);gap: 10px;align-items: center;">
+            <a i18n="@@colorsInitialText"> Color inicial </a>
+            <input type="text" [(ngModel)]="initialColor"  pInputText  (keyup)="handleInputColor()" />
+            <p-colorPicker [(ngModel)]="initialColor" appendTo="body"   (onHide)="handleInputColor()"></p-colorPicker>
         </div>
-        <div class="mb-1">
-          <a i18n="@@colorsFinalText" class="col-6">Color final </a>
-          <input type="text" [(ngModel)]="finalColor" pInputText class="col-6" style="width: 100%" (keyup)="handleInputColor()" />
-          <p-colorPicker [(ngModel)]="finalColor" appendTo="body" class="col-2" (onHide)="handleInputColor()"></p-colorPicker>
+        <div class="mb-1" style="display:grid;grid-template-columns: repeat(3, 1fr);gap: 10px;align-items: center;">
+          <a i18n="@@colorsFinalText" >Color final </a>
+          <input type="text" [(ngModel)]="finalColor" pInputText (keyup)="handleInputColor()" />
+          <p-colorPicker [(ngModel)]="finalColor" appendTo="body" (onHide)="handleInputColor()"></p-colorPicker>
         </div>
       </div>
 

@@ -60,8 +60,7 @@ export class MapCoordDialogComponent extends EdaDialogAbstract {
       logarithmicScale: this.logarithmicScale,
       draggable: this.draggable,
       zoom: this.myPanelChartComponent.componentRef.instance.inject.zoom,
-      coordinates:
-        this.myPanelChartComponent.componentRef.instance.inject.coordinates,
+      coordinates:this.myPanelChartComponent.componentRef.instance.inject.coordinates,
     });
     this.mapUtilsService.setCoordinates(null);
     this.mapUtilsService.setZoom(null);
@@ -70,7 +69,7 @@ export class MapCoordDialogComponent extends EdaDialogAbstract {
   handleInputColor() {
     if (this.initialColor.length > 6 && this.finalColor.length > 6) {
       const leafletMap = this.myPanelChartComponent.componentRef.instance;
-      leafletMap.reStyleCirclesLayer([this.initialColor, this.finalColor]);
+      leafletMap.reDrawCircles([this.initialColor, this.finalColor]);
     }
   }
 
