@@ -28,17 +28,7 @@
             <div class="flex items-center justify-center mb-2">
                 <img [src]="logo" alt="logo" />
                 <img *ngIf="subLogo" [src]="subLogo" class="w-100" alt="logo" />
-                <!-- <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    class="text-[#00bcd4]">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg> -->
             </div>
-            <!-- <h1 class="text-xl font-bold text-[#00bcd4]">Enterprise Data Analytics</h1> -->
         </div>
 
         <!-- Welcome Text -->
@@ -48,10 +38,10 @@
         </div>
 
         <!-- Login Form -->
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()" class="space-y-4">
             <div class="space-y-1">
                 <label for="email" class="block text-sm text-gray-600" i18n="@@loginEmailLabel">
-                    Correu electrònic
+                    Dirección Email
                 </label>
                 <input type="email" id="email" formControlName="email"
                     class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]"
@@ -60,7 +50,7 @@
 
             <div class="space-y-1">
                 <label for="password" class="block text-sm text-gray-600" i18n="@@loginPasswordLabel">
-                    Contrasenya
+                    Contraseña
                 </label>
                 <input type="password" id="password" formControlName="password"
                     class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
@@ -69,7 +59,7 @@
             <div class="flex items-center space-x-2">
                 <input type="checkbox" id="remember" formControlName="remember"
                     class="rounded border-gray-300 text-blue-500 focus:ring-blue-500/20">
-                <label for="remember" class="text-sm text-gray-600" i18n="@@loginRememberMe">Recorda'm</label>
+                <label for="remember" class="text-sm text-gray-600" i18n="@@loginRememberMe">Recuérdame</label>
             </div>
 
             <button type="submit"
@@ -77,9 +67,6 @@
                 <span i18n="@@loginSubmitButton">Entrar</span>
             </button>
 
-            <!-- <a routerLink="/forgot-password" class="block text-center text-sm text-[#00bcd4] hover:underline" i18n="@@loginForgotPassword">
-                He oblidat la meva contrasenya
-            </a> -->
             <a routerLink="/forgot-password"
                 class="block text-center text-sm text-blue-600 pointer hover:text-blue-800 hover:underline transition-colors"
                 i18n="@@loginForgotPassword">

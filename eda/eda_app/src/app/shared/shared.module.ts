@@ -20,6 +20,7 @@ import {
     EdaFieldComponent
 } from './components/shared-components.index';
 import { PrimengModule } from 'app/core/primeng.module';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 
 @NgModule({
     declarations: [
@@ -37,6 +38,7 @@ import { PrimengModule } from 'app/core/primeng.module';
     imports: [
         PrimengModule,
         CoreModule,
+        SweetAlert2Module.forRoot(),
         PipesModule
     ],
     exports: [
