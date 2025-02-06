@@ -776,32 +776,72 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public async onPanelAction(event: IPanelAction): Promise<void> {
-        if (event.code === 'ADDFILTER') {
-            const data = event?.data;
-            const panel = event?.data?.panel;
-            if (!_.isNil(data?.inx)) {
-                const column = event.data.query.find((query: any) => query?.display_name?.default === data.filterBy);
-                const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
-
-                if (column && table) {
-                    let config = this.setPanelsToFilter(panel);
-
-                    let globalFilter = {
-                        id: `${table.table_name}_${column.column_name}`,  //this.fileUtils.generateUUID(),
-                        isGlobal: true,
-                        applyToAll: config.applyToAll,
-                        panelList: config.panelList.map(p => p.id),
-                        table: { label: table.display_name.default, value: table.table_name },
-                        column: { label: column.display_name.default, value: column },
-                        selectedItems: [data.label]
-                    };
-
-                    await this.gFilter.onGlobalFilter(globalFilter, table.table_name);
-                    this.reloadOnGlobalFilter();
+        if (event.code === "ADDFILTER") {
+          const data = event?.data;
+          const panel = event?.data?.panel;
+          if (!_.isNil(data?.inx)) {
+            const column = event.data.query.find(
+              (query: any) => query?.display_name?.default === data.filterBy
+            );
+            const table = this.dataSource.model.tables.find(
+              (table: any) => table.table_name === column?.table_id
+            );
+            if (column && table) {
+              let config = this.setPanelsToFilter(panel);
+              if (this.gFilter.globalFilters.length > 0) {
+                //TENEMOS ALGUN FILTRO APLICADO
+                if (
+                  this.gFilter.globalFilters.find(
+                    (f) =>
+                      f.table.value === table.table_name &&
+                      f.column.value.column_name === column.column_name &&
+                      f.selectedItems.includes(event?.data.label) &&
+                      f.selectedItems.length === 1
+                  )
+                ) {
+                  //QUITAR FILTRO CREADO
+                  let actualFilter = this.gFilter.globalFilters.find(
+                    (f) =>
+                      f.table.value === table.table_name &&
+                      f.column.value.column_name === column.column_name &&
+                      f.selectedItems.includes(event?.data.label) &&
+                      f.selectedItems.length === 1
+                  );
+                  this.gFilter.removeGlobalFilter(actualFilter, true);
+                  this.reloadOnGlobalFilter();
+                } else {
+                  //CREAMOS NUEVO FILTRO
+                  let globalFilter = {
+                    id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
+                    isGlobal: true,
+                    applyToAll: config.applyToAll,
+                    panelList: config.panelList.map((p) => p.id),
+                    table: {label: table.display_name.default,value: table.table_name,},
+                    column: {label: column.display_name.default,value: column,},
+                    selectedItems: [data.label],
+                  };
+                  await this.gFilter.onGlobalFilter(globalFilter,table.table_name);
+                  this.reloadOnGlobalFilter();
                 }
+              } else {
+                // NO HAY NINGÚN FILTRO APLICADO
+                //CREAMOS NUEVO FILTRO
+                let globalFilter = {
+                  id: `${table.table_name}_${column.column_name}`,
+                  isGlobal: true,
+                  applyToAll: config.applyToAll,
+                  panelList: config.panelList.map((p) => p.id),
+                  table: {label: table.display_name.default,value: table.table_name,},
+                  column: { label: column.display_name.default, value: column },
+                  selectedItems: [data.label],
+                };
+                await this.gFilter.onGlobalFilter(globalFilter,table.table_name);
+                this.reloadOnGlobalFilter();
+              }
             }
-        } else if (event.code === 'QUERYMODE') {
-            this.setPanelsQueryMode();
+          }
+        } else if (event.code === "QUERYMODE") {
+          this.setPanelsQueryMode();
         }
     }
 
