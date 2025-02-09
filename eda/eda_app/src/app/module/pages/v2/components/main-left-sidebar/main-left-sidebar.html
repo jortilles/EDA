@@ -1,0 +1,16 @@
+<div class="flex w-[72px] h-full flex-col items-center border-r bg-background p-2">
+    <div class="flex flex-col items-center gap-2">
+      @for (item of navItems; track item.path) {
+        <a 
+          [routerLink]="item.path"
+          class="flex h-12 w-12 items-center justify-center rounded-lg transition-colors hover:bg-muted"
+          [ngClass]="{'bg-muted': item.isActive}"
+        >
+          <eda-icon 
+            [name]="item.icon"
+            [ngClass]="{'text-primary': item.isActive, 'text-muted-foreground': !item.isActive}"
+          />
+        </a>
+      }
+    </div>
+</div>

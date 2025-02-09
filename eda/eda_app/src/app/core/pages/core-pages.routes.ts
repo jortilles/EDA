@@ -8,20 +8,26 @@ import { AnonymousLoginComponent } from '../../module/pages/anonimous-login/anon
 import { PagesComponent } from '../../module/pages/pages.component';
 
 // Guards
-import { LoginGuardGuard } from '../../services/guards/login-guard.guard';
-import { LoginV2Component } from './login_v2/login_v2';
+import { LoginGuardGuard } from '../../services/guards/login-guard.guard'
+import { pagesV2Routes } from 'app/module/pages/v2/pages-v2.routes';
 
 export const coreRoutes: Routes = [
-  { path: '', component: LoginComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'login_v2', component: LoginV2Component },
-  { path: 'conditions', component: ConditionsComponent },
-  { path: 'public/:dashboardID', component: AnonymousLoginComponent },
-  {
-    path: '',
-    component: PagesComponent,
-    canActivate: [LoginGuardGuard],
-    loadChildren: () => import('../../module/pages/pages.module').then(m => m.PagesModule)
-  },
-  { path: '**', component: PageNotFoundComponent }
+    { path: '', component: LoginComponent },
+    { path: 'login', component: LoginComponent },
+    { path: 'v2/login', loadComponent: () => import('./login_v2/login_v2').then(c => c.LoginV2Component) },
+    { path: 'conditions', component: ConditionsComponent },
+    { path: 'public/:dashboardID', component: AnonymousLoginComponent },
+    {
+        path: '',
+        component: PagesComponent,
+        canActivate: [LoginGuardGuard],
+        loadChildren: () => import('../../module/pages/pages.module').then(m => m.PagesModule)
+    },
+    // Rutas internas v2 protegidas por el guard
+    {
+        path: 'v2',
+        canActivate: [LoginGuardGuard],
+        children: pagesV2Routes
+    },
+    { path: '**', component: PageNotFoundComponent }
 ];

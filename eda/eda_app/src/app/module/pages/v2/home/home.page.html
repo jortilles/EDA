@@ -1,0 +1,107 @@
+<div class="flex-1 w-full min-h-screen bg-background">
+  <div class="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 py-8">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <h1 class="text-2xl font-semibold">
+          <eda-icon name="home"/>
+          Els meus informes
+      </h1>
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+        <div class="relative w-full sm:w-[300px]">
+          <eda-icon name="magnifying-glass" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-[65%] text-muted-foreground"/>
+          <input 
+            type="text" 
+            class="w-full rounded-md border border-input bg-background py-2 !pl-9 text-sm"
+            placeholder="Buscador"
+          >
+        </div>
+        <button class="w-full sm:w-auto inline-flex items-center justify-center rounded-md bg-primary pl-2 pr-4 py-2 text-sm font-medium text-primary-foreground">
+          <eda-icon name="plus" class="mr-2"/>
+          Crear nou informe
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="space-y-2 w-full sm:w-auto">
+        <div class="text-sm text-muted-foreground">FILTRAR INFORMES:</div>
+        <div class="flex flex-wrap gap-2">
+          @for (filter of activeFilters; track filter) {
+            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+              {{ filter }}
+              <button class="ml-1 rounded-full hover:bg-muted p-1">×</button>
+            </span>
+          }
+        </div>
+      </div>
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <span class="text-sm text-muted-foreground">ORDENAR INFORMES:</span>
+        <select class="w-full sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm">
+          <option value="date">Data creació (asc.)</option>
+          <option value="name">Nom</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Public Reports -->
+      @if (publicReports$ | async; as reports) {
+        <ng-container *ngTemplateOutlet="reportsTemplate; context: { reports, title: 'PÚBLICS' }"></ng-container>
+      }
+      <!-- Commons -->
+      @if (privateReports$ | async; as reports) {
+        <ng-container *ngTemplateOutlet="reportsTemplate; context: { reports, title: 'COMUNS' }"></ng-container>
+      }
+
+      <!-- Groups -->
+      @if (roleReports$ | async; as reports) {
+        <ng-container *ngTemplateOutlet="reportsTemplate; context: { reports, title: 'ELS MEUS GRUPS' }"></ng-container>
+      }
+      
+      <!-- Private -->
+      @if (sharedReports$ | async; as reports) {
+        <ng-container *ngTemplateOutlet="reportsTemplate; context: { reports, title: 'PRIVATS' }"></ng-container>
+      }
+    </div>
+  </div>
+</div>
+
+
+<!-- Template report card -->
+<ng-template #reportsTemplate let-reports="reports" let-title="title">
+  <div class="space-y-4">
+    <h2 class="text-lg font-semibold">{{ title }}</h2>
+    @for (report of reports; track report._id) {
+      <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div class="px-4 py-2">
+          <h3 class="text-base font-semibold">{{ report.config?.title }}</h3>
+        </div>
+        <div class="flex items-center justify-between border-t px-4 py-2">
+          <div class="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Autor</span>
+              <span>24-01-2025</span>
+              <!-- <span>{{ report.date | date: 'short' }}</span> -->
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="rounded-md p-2 hover:bg-muted">
+              <eda-icon name="plus" class="mr-2"></eda-icon>
+            </button>
+            <button class="rounded-md p-2 hover:bg-muted">
+              <eda-icon name="document-duplicated"></eda-icon>
+            </button>
+            <button class="rounded-md p-2 hover:bg-muted">
+              <eda-icon name="bin"></eda-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+    @empty {
+      <div class="mt-4 rounded-lg bg-muted p-4 text-center text-muted-foreground">
+        Sense contingut
+      </div>
+    }
+  </div>
+</ng-template>
