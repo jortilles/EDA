@@ -10,6 +10,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 // const L = require('./topoJsonExtention')ç
 import * as L from 'leaflet';
 import * as topojson from 'topojson-client';
+
+
 @Component({
   selector: 'eda-geomap',
   templateUrl: './eda-geojson-map.component.html',
@@ -68,7 +70,8 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.logarithmicScale = this.inject.logarithmicScale ? this.inject.logarithmicScale : false;
     this.draggable = this.inject.draggable === undefined ? true: this.inject.draggable  ;
     this.legendPosition = this.inject.legendPosition ? this.inject.legendPosition : 'bottomright';
-    // FixMe
+    // FixMe ARREGLAT
+    this.legend = new (L.Control.extend({options: { position: this.legendPosition },}))();
     // this.legend = new L.Control({ position: this.legendPosition });
 
   }
@@ -94,10 +97,10 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     const totalSum = this.inject.data.map(row => row[this.dataIndex]).reduce((a, b) => a + b);
 
     // FIXME
-    // this.geoJson = new L.TopoJSON(this.shapes, {
-    //   style: (feature) => this.style(feature, this.color),
-    //   onEachFeature: this.onEachFeature
-    // });
+    // this.geoJson = new TopoJSON(this.shapes, {
+    //    style: (feature) => this.style(feature, this.color),
+    //    onEachFeature: this.onEachFeature
+    //  });
   
     this.geoJson.eachLayer((layer) => {
       this.boundaries.push(layer._bounds);
@@ -150,6 +153,8 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
         zoom: this.inject.zoom ? this.inject.zoom : 0,
         dragging: this.draggable,
         // tap: !L.Browser.mobile, FIXME
+        // propiedad tap no existe, a que nos referimos?
+        tapHold: !L.Browser.mobile,
         scrollWheelZoom: this.draggable
       });
       this.map.options.minZoom = this.setMinZoom();
@@ -352,8 +357,9 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     // this.setGroups();
     //this.initShapesLayer();
 
-    // FIXME
+    // FIXME ARREGLAT
     // this.legend = new L.Control({ position: legendPosition });
+    this.legend = new (L.Control.extend({options: { position: this.legendPosition },}))();
     this.initLegend(this.groups, this.inject.labels[this.dataIndex], this.color);
   }
 
