@@ -9,9 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 // Deprecated
 // const L = require('./topoJsonExtention')ç
 import * as L from 'leaflet';
-import * as topojson from 'topojson-client';
-
-
+import { feature } from "topojson-client";
 @Component({
   selector: 'eda-geomap',
   templateUrl: './eda-geojson-map.component.html',
@@ -70,9 +68,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.logarithmicScale = this.inject.logarithmicScale ? this.inject.logarithmicScale : false;
     this.draggable = this.inject.draggable === undefined ? true: this.inject.draggable  ;
     this.legendPosition = this.inject.legendPosition ? this.inject.legendPosition : 'bottomright';
-    // FixMe ARREGLAT
     this.legend = new (L.Control.extend({options: { position: this.legendPosition },}))();
-    // this.legend = new L.Control({ position: this.legendPosition });
 
   }
 
@@ -83,7 +79,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
         .then((element) => {
             this.initMap();
             console.log('map started');
-            this.mapUtilsService.getShapes(this.serverMap['mapID']).subscribe(shapes => {
+          this.mapUtilsService.getShapes(this.serverMap['mapID']).subscribe(shapes => {
               this.shapes = shapes.file;
               this.initShapesLayer();
             });
@@ -96,11 +92,12 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     const field = this.serverMap['field'];
     const totalSum = this.inject.data.map(row => row[this.dataIndex]).reduce((a, b) => a + b);
 
-    // FIXME
-    // this.geoJson = new TopoJSON(this.shapes, {
-    //    style: (feature) => this.style(feature, this.color),
-    //    onEachFeature: this.onEachFeature
-    //  });
+    const geoJsonData = feature(this.shapes, this.shapes.objects.foo);
+
+    this.geoJson = L.geoJson(geoJsonData, {
+      style: (feature) => this.style(feature, this.color),
+      onEachFeature: this.onEachFeature,
+    });
   
     this.geoJson.eachLayer((layer) => {
       this.boundaries.push(layer._bounds);
@@ -356,9 +353,6 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
     this.map.removeControl(this.legend);
     // this.setGroups();
     //this.initShapesLayer();
-
-    // FIXME ARREGLAT
-    // this.legend = new L.Control({ position: legendPosition });
     this.legend = new (L.Control.extend({options: { position: this.legendPosition },}))();
     this.initLegend(this.groups, this.inject.labels[this.dataIndex], this.color);
   }
