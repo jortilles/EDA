@@ -60,18 +60,29 @@ export const ChartsConfigUtils = {
       config = {
         color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : ebp.panelChart.props.config.getConfig()['color']
       }
-    }else if (['coordinatesMap', 'geoJsonMap'].includes(ebp.panelChart.props.chartType)) {
+    } else if (ebp.panelChart.props.chartType === 'geoJsonMap') {
 
       config = {
-        zoom:ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
-        coordinates : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
-        logarithmicScale : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
-        legendPosition : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.legendPosition : null,
-        color : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
+        zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
+        coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
+        logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
+        legendPosition: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.legendPosition : null,
+        color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
         draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
         
       }
-    }else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
+    }  
+    else if (ebp.panelChart.props.chartType === 'coordinatesMap') {
+      config = {
+        zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
+        coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
+        logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
+        initialColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.initialColor : null,
+        finalColor: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.finalColor : null,
+        draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
+        }
+      }
+    else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
       config = {
         colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : []
       }

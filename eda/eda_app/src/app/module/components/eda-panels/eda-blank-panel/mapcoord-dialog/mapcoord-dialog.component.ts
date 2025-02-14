@@ -1,27 +1,28 @@
-import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import { Component, ViewChild } from '@angular/core';
-import { PanelChartComponent } from '../panel-charts/panel-chart.component';
-import { PanelChart } from '../panel-charts/panel-chart';
+import {
+  EdaDialogAbstract,
+  EdaDialogCloseEvent,
+  EdaDialog,
+} from "@eda/shared/components/shared-components.index";
+import { Component, ViewChild } from "@angular/core";
+import { PanelChartComponent } from "../panel-charts/panel-chart.component";
+import { PanelChart } from "../panel-charts/panel-chart";
 import { MapUtilsService } from "@eda/services/service.index";
 
-
-
-
 @Component({
-  selector: "app-mapedit-dialog",
-  templateUrl: "./mapedit-dialog.component.html",
+  selector: "app-mapcoordedit-dialog",
+  templateUrl: "./mapcoord-dialog.component.html",
 })
-export class MapEditDialogComponent extends EdaDialogAbstract {
+export class MapCoordDialogComponent extends EdaDialogAbstract {
   @ViewChild("PanelChartComponent", { static: false })
   myPanelChartComponent: PanelChartComponent;
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
 
-  public color: string = "";
+  public initialColor: string = "";
+  public finalColor: string = "";
   public logarithmicScale: boolean = false;
   public draggable: boolean;
-  public legendPosition: string;
 
   //Marc
   public zoom: number;
@@ -54,22 +55,21 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
 
   saveChartConfig() {
     this.onClose(EdaDialogCloseEvent.UPDATE, {
-      color: this.color,
+      initialColor: this.initialColor,
+      finalColor: this.finalColor,
       logarithmicScale: this.logarithmicScale,
-      legendPosition: this.legendPosition,
       draggable: this.draggable,
       zoom: this.myPanelChartComponent.componentRef.instance.inject.zoom,
-      coordinates:
-        this.myPanelChartComponent.componentRef.instance.inject.coordinates,
+      coordinates:this.myPanelChartComponent.componentRef.instance.inject.coordinates,
     });
     this.mapUtilsService.setCoordinates(null);
     this.mapUtilsService.setZoom(null);
   }
 
   handleInputColor() {
-    if (this.color.length > 6) {
+    if (this.initialColor.length > 6 && this.finalColor.length > 6) {
       const leafletMap = this.myPanelChartComponent.componentRef.instance;
-      leafletMap.reStyleGeoJsonLayer(this.color);
+      leafletMap.reDrawCircles([this.initialColor, this.finalColor]);
     }
   }
 
@@ -83,11 +83,6 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     leafletMap.switchNoMouse(this.draggable);
   }
 
-  changeLegend() {
-    const leafletMap = this.myPanelChartComponent.componentRef.instance;
-    leafletMap.changeLegend(this.legendPosition);
-  }
-
   closeChartConfig() {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
@@ -96,8 +91,8 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     //Funcion llamada al abrir el mapa edit
     this.zoom = this.controller.params.zoom;
     this.coordinates = this.controller.params.coordinates;
-    this.legendPosition = this.controller.params.legendPosition;
-    this.color = this.controller.params.color;
+    this.initialColor = this.controller.params.initialColor;
+    this.finalColor = this.controller.params.finalColor;
     this.logarithmicScale = this.controller.params.logarithmicScale;
     this.draggable = this.controller.params.draggable;
     this.panelChartConfig = this.controller.params.panelChart;
