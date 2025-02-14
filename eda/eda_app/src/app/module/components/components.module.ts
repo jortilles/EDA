@@ -24,6 +24,7 @@ import {
     EdaMapComponent,
     EdaGeoJsonMapComponent,
     MapEditDialogComponent,
+    MapCoordDialogComponent,
     KpiEditDialogComponent,
     dynamicTextDialogComponent,
     EdaD3Component,
@@ -100,7 +101,8 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
         SunburstDialogComponent,
         WhatIfDialogComponent,
         SunburstDialogComponent,
-        DragDropComponent
+        DragDropComponent,
+        MapCoordDialogComponent,
     ],
     exports: [
         EdaBlankPanelComponent,
@@ -132,7 +134,8 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
         SunburstDialogComponent,
         WhatIfDialogComponent,
         SunburstDialogComponent,
-        DragDropComponent
+        DragDropComponent,
+        MapCoordDialogComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

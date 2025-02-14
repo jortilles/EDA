@@ -7,6 +7,8 @@ export class EdaMap{
   zoom : number;
   data : any;
   color:string;
+  initialColor:string;
+  finalColor:string;
   legendPosition:string;
   logarithmicScale : boolean;
   draggable : boolean;

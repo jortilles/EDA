@@ -37,6 +37,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public modelPermissionsController: EdaDialogController;
     public newColController: EdaDialogController;
     public mapController: EdaDialogController;
+    public mapCoordController: EdaDialogController;
     public tagController: EdaDialogController;
     public viewController: EdaDialogController;
     public csvPanelController: EdaDialogController;
@@ -597,6 +598,23 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 this.mapController = undefined;
             }
         })
+    }
+    openNewMapCoordDialog() {
+        this.mapCoordController = new EdaDialogController({
+          params: {},
+          close: (event, response) => {
+            if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+              if (response.newMap) {
+                this.dataModelService.addLinkedToMapColumns(
+                  response.linkedColumns,
+                  response.mapID
+                );
+              }
+              this.dataModelService.updateMaps(response.serverMaps);
+            }
+            this.mapCoordController = undefined;
+          },
+        });
     }
 
     openCSVDialog() {

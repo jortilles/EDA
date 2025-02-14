@@ -616,11 +616,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.maps = this.props.maps;
         inject.query = this.props.query;
         inject.draggable = this.props.draggable;
-        //Marc
         inject.zoom = this.props.zoom;
         inject.coordinates = this.props.coordinates;
-
-
 
         try {
             inject.coordinates = this.props.config['config']['coordinates'];                
@@ -635,7 +632,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             inject.zoom =  1 ;
         }
         try{
-            inject.color = this.props.config['config']['color'];
+            if (type === "geoJsonMap") {
+                inject.color = this.props.config["config"]["color"];
+            } else {
+                inject.initialColor = this.props.config["config"]["initialColor"];
+                inject.finalColor = this.props.config["config"]["finalColor"];
+            }
         }catch{
             inject.color =  '#006400';
         }
@@ -644,8 +646,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }catch{
             inject.logarithmicScale =  false;
         }
-        try{
-            inject.legendPosition = this.props.config['config']['legendPosition']  ;
+        try {
+            if (type === "geoJsonMap") {
+                inject.legendPosition = this.props.config['config']['legendPosition']  ;
+            }
         }catch{
             inject.legendPosition =  'bottomleft';
         }
@@ -669,7 +673,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
     }
-
+    
     private createGeoJsonMapComponent(inject: EdaMap) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaGeoJsonMapComponent);
