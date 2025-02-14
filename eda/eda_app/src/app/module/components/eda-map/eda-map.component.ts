@@ -66,6 +66,7 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
       });
       const tiles = L.tileLayer(
         "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+//        "https://tile.openstreetmap.org/{z}/{x}/{y}.png", alternativa de openstreetmaps
         {
           maxZoom: 19,
           attribution:
