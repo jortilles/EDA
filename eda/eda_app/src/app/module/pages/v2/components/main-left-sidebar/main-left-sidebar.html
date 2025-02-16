@@ -3,13 +3,13 @@
       @for (item of navItems; track item.path) {
         <a 
           [routerLink]="item.path"
-          class="flex h-12 w-12 items-center justify-center rounded-lg transition-colors hover:bg-muted"
-          [ngClass]="{'bg-muted': item.isActive}"
+          class="flex h-12 w-12 items-center justify-center text-center rounded-lg transition-colors hover:bg-muted hover:text-[#00B0BA]"
+          [ngClass]="{
+            'text-white bg-[#00B0BA]': item.isActive,
+            'bg-muted': !item.isActive
+          }"
         >
-          <eda-icon 
-            [name]="item.icon"
-            [ngClass]="{'text-primary': item.isActive, 'text-muted-foreground': !item.isActive}"
-          />
+          <eda-icon [name]="item.icon" class="h-5" />
         </a>
       }
     </div>

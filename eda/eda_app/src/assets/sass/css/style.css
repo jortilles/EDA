@@ -1,28 +1,28 @@
-/**
- * Table Of Content
- *
- * 	1. Globals
- *	2. Headers
- *	3. Navigations
- *	4. Banners
- *	5. Footers
- *	6. app
- *	7. Widgets
- *	8. Custom Templates
- */
-@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700"); 
-
+@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700");
 @import url(../css/icons/material-design-iconic-font/css/materialdesignicons.min.css);
 @import url(../css/spinners.css);
 @import url(../css/animate.css);
 @import url(../eda-styles/index-styles.css);
-
 @import "primeng/resources/primeng.css";
+@import url(./custom.css);
 
 /* TailwindCss */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/**
+* Table Of Content
+*
+* 	1. Globals
+*	2. Headers
+*	3. Navigations
+*	4. Banners
+*	5. Footers
+*	6. app
+*	7. Widgets
+*	8. Custom Templates
+*/
 
 @layer tailwind-base, primeng, tailwind-utilities;
 @layer tailwind-base {
@@ -33,7 +33,7 @@
 @tailwind components;
 @tailwind utilities;
 }
-
+/* PrimaryColor #00B0BA */
 /* TailwinCss Customer layer */
 @layer base {
     :root {
@@ -81,9 +81,6 @@
       --ring: 142.4 71.8% 29.2%;
     }
 }
-
-/* customizables variables.  */
-@import url(./custom.css);
 
 
 html {

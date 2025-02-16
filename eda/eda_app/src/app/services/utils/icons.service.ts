@@ -6,16 +6,16 @@ import { Injectable } from "@angular/core";
 export class IconService {
   private icons = {
     "home": `
-      <svg viewBox="0 0 23 24" xmlns="http://www.w3.org/2000/svg"><g style="stroke:#9a9aaa;stroke-width:2;fill:none;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round" transform="translate(1.9589 1)"><path d="m0 22v-12.14758004l10-9.85241996 10 9.85241996v12.14758004"/><path d="m6.73301373 22v-8h6.26698627v8"/></g></svg>
+      <svg viewBox="0 0 23 24" xmlns="http://www.w3.org/2000/svg"><g style="stroke:currentColor;stroke-width:2;fill:none;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round" transform="translate(1.9589 1)"><path d="m0 22v-12.14758004l10-9.85241996 10 9.85241996v12.14758004"/><path d="m6.73301373 22v-8h6.26698627v8"/></g></svg>
     `,
     "plus": `
       <svg viewBox="0 0 14 13" xmlns="http://www.w3.org/2000/svg">
-        <g style="stroke:#89899e;stroke-width:2;fill:none;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round"><path d="m7.4589 1v11"/><path d="m1.9589 6.5h11"/></g>
+        <g style="stroke:currentColor;stroke-width:2;fill:none;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round"><path d="m7.4589 1v11"/><path d="m1.9589 6.5h11"/></g>
       </svg>
     `,
     "molecula": `
       <svg viewBox="0 0 30 32" xmlns="http://www.w3.org/2000/svg">
-        <g fill="none" fill-rule="evenodd" stroke="#89899e" stroke-width="2" transform="translate(1.9051 1.0108)">
+        <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-width="2" transform="translate(1.9051 1.0108)">
           <circle cx="16" cy="12" r="5.268817"/><circle cx="15.5" cy="25.5" r="3.5"/><circle cx="3" cy="12" r="3"/>
           <circle cx="8" cy="2" r="2"/><circle cx="24" cy="21" r="2"/><circle cx="25" cy="2" r="2"/>
           <path d="m23.842583 3.396382-4.19223 4.642706"/><path d="m11.053763 11.989247-5.290847-.011726"/>
@@ -31,7 +31,7 @@ export class IconService {
     `,
     "settings": `
       <svg viewBox="0 0 24 23" xmlns="http://www.w3.org/2000/svg">
-        <g style="stroke:#89899e;stroke-width:2;fill:none;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round"
+        <g style="stroke:currentColor;stroke-width:2;fill:none;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round"
           transform="translate(1.9589 1)">
           <path d="m18.0607292 8.3125 2.3136458.6890625c.3711458.11010417.625625.45135417.625625.83854167v1.31979163c0 .3871875-.2544792.7284375-.625625.8385417l-2.3136458.6890625c-.1640625.5672917-.3857292 1.1083333-.6657292 1.6151042l1.1469792 2.1204166c.1844791.3397917.1232291.76125-.1509375 1.0346875l-.9333334.9333334c-.2734375.2741666-.6948958.3354166-1.0346875.1509375l-2.1204166-1.1469792c-.5067709.28-1.0478125.5016667-1.6151042.6657292l-.6890625 2.3136458c-.1101042.3711458-.4513542.625625-.8385417.625625h-1.31979163c-.3871875 0-.7284375-.2544792-.83854167-.625625l-.6890625-2.3136458c-.56729167-.1640625-1.10833333-.3857292-1.61510417-.6657292l-2.12041666 1.1469792c-.33979167.1844791-.76125.1232291-1.0346875-.1509375l-.93333334-.9333334c-.27416666-.2734375-.33541666-.6948958-.1509375-1.0346875l1.14697917-2.1204166c-.28-.5067709-.47979167-1.0828125-.66572917-1.6151042l-2.31364583-.6890625c-.37114583-.1101042-.625625-.4513542-.625625-.8385417v-1.31979163c0-.3871875.25447917-.7284375.625625-.83854167l2.31364583-.6890625c.1640625-.56729167.38572917-1.10833333.66572917-1.61510417l-1.14697917-2.12041666c-.18447916-.33979167-.12322916-.76125.1509375-1.0346875l.93333334-.93333334c.2734375-.27416666.69489583-.33541666 1.0346875-.1509375l2.12041666 1.14697917c.50677084-.28 1.0478125-.50166667 1.61510417-.66572917l.6890625-2.31364583c.11010417-.37114583.45135417-.625625.83854167-.625625h1.31979163c.3871875 0 .7284375.25447917.8385417.625625l.6890625 2.31364583c.5672917.1640625 1.1083333.38572917 1.6151042.66572917l2.1204166-1.14697917c.3397917-.18447916.76125-.12322916 1.0346875.1509375l.9333334.93333334c.2741666.2734375.3354166.69489583.1509375 1.0346875l-1.1469792 2.12041666c.28.50677084.5016667 1.0478125.6657292 1.61510417z" />
           <path d="m14.875 10.5c0-2.41645833-1.9585417-4.375-4.375-4.375-2.41645833 0-4.375 1.95854167-4.375 4.375 0 2.4164583 1.95854167 4.375 4.375 4.375 2.4164583 0 4.375-1.9585417 4.375-4.375z" />
@@ -40,7 +40,7 @@ export class IconService {
     `,
     "global": `
       <svg viewBox="0 0 23 22" xmlns="http://www.w3.org/2000/svg">
-        <g fill="none" fill-rule="evenodd" stroke="#89899e" stroke-width="2">
+        <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-width="2">
           <circle cx="11.9589" cy="11" r="10" />
           <circle cx="11.9589" cy="11" r="5" />
           <path d="m15.305533 14.565892 3.589018 3.589017" />
@@ -52,7 +52,7 @@ export class IconService {
     `,
     "logout": `
       <svg viewBox="0 0 21 15" xmlns="http://www.w3.org/2000/svg">
-        <g style="stroke:#89899e;stroke-width:2;fill:none;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round"
+        <g style="stroke:currentColor;stroke-width:2;fill:none;fill-rule:evenodd;stroke-linecap:round;stroke-linejoin:round"
           transform="translate(1.9589 1)">
           <path d="m4.28277328 13h-4.28277328v-13h4.28277328" />
           <path d="m12.3795763 1.5 5 5-5 5" />
@@ -86,7 +86,7 @@ export class IconService {
       </svg>
     `,
     "magnifying-glass": `
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
       </svg>
     `
