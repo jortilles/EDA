@@ -121,17 +121,17 @@ export class MySqlBuilderService extends QueryBuilderService {
         );
         // MostDuplicated
         querys[diplayName].push(
-          "SELECT STRING_AGG(`label_count`, ', ') AS `most_duplicated` FROM (SELECT `main`." + `${col.column_name}`
-          + " || ' (' || COUNT(`main`." + `${ col.column_name }` + ") || ')' AS `label_count` FROM " + 
+          "SELECT GROUP_CONCAT(`label_count`) AS `most_duplicated` FROM (SELECT CONCAT(`main`." + `${col.column_name}`
+          + ", ' (', COUNT(`main`." + `${col.column_name}` + ") , ')') AS `label_count` FROM " + 
           `${mainQuery}` + " GROUP BY `main`." + `${col.column_name}` + " ORDER BY COUNT(`main`." +
           `${col.column_name}` + ") DESC LIMIT 5 ) sub;"
         );
             // LeastDuplicated
         querys[diplayName].push(
-          "SELECT STRING_AGG(`label_count`, ', ') AS `least_duplicated` FROM (SELECT `main`." +
-          `${col.column_name}` + " || ' (' || COUNT(`main`." + `${col.column_name}` +
-          ") || ')' AS `label_count` FROM " + `${mainQuery}` + " GROUP BY `main`." +
-          `${col.column_name}` + " ORDER BY COUNT(`main`." + `${col.column_name}` + ") ASC LIMIT 5 ) sub;"
+          "SELECT GROUP_CONCAT(`label_count`) AS `least_duplicated` FROM (SELECT CONCAT(`main`." + `${col.column_name}`
+          + ", ' (', COUNT(`main`." + `${col.column_name}` + ") , ')') AS `label_count` FROM " + 
+          `${mainQuery}` + " GROUP BY `main`." + `${col.column_name}` + " ORDER BY COUNT(`main`." +
+          `${col.column_name}` + ") ASC LIMIT 5 ) sub;"
         );
               
       } else if (col.column_type == "numeric") {
