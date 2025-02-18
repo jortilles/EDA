@@ -206,7 +206,9 @@ export const QueryUtils = {
     } else {
 
       // Aparatado que inicia el initAxes en caso el ordering este vacio en la config
-      if(ebp.chartForm.controls.chart.value!==null) {
+
+
+      if(ebp.chartForm.controls.chart.value!==null   && ebp.chartForm.controls.chart.value.subValue  == 'crosstable'  ) {
         // Verifica un nuevo cambio en los Axes desde que se inicia la edición de la tabla cruzada
         if(!ebp.newAxesChanged && (!ebp.chartTypes.filter( grafico => grafico.subValue==='crosstable' )[0].ngIf || !ebp.chartTypes.filter( grafico => grafico.subValue==='table' )[0].ngIf)) {
 
