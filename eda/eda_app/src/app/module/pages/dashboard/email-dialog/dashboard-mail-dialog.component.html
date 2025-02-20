@@ -47,8 +47,9 @@
   </div>
 
   <div class="col-12">
-    <h6 i18n="@@noMail">Sin alertas de correo</h6>
-    <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="disabled" tooltipPosition="left">
+    <h6 *ngIf="!enabled" i18n="@@noMail">Sin alertas de correo</h6>
+    <h6 *ngIf="enabled" i18n="@@opcionMail">Enviar per email</h6>
+    <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="enabled" tooltipPosition="left">
     </p-inputSwitch>
   </div>
 
