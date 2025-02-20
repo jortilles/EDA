@@ -52,9 +52,9 @@ export const ChartsConfigUtils = {
         edaChart: {}
       }
 
-      if (kpiChart?.edaChart) {
-        config.edaChart.colors = kpiChart.chartColors;
-        config.edaChart.chartType = ebp.panelChart.props.chartType;
+        if (kpiChart?.hasOwnProperty('edaChart') ) {
+            config.edaChart.colors = kpiChart.chartColors;
+            config.edaChart.chartType = ebp.panelChart.props.chartType;
 
         // colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
         // chartType: ebp.panelChart.props.chartType, 
