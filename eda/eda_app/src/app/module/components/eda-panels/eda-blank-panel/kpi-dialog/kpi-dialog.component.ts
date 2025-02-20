@@ -39,7 +39,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public currentAlert = null;
     public users: any;
     public selectedUsers: any;
-    public disabled: boolean;
+    public enabled: boolean;
     public canIRunAlerts: boolean = false;
     public series: any[] = [];
     public edaChart: any;
@@ -218,7 +218,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
         );
 
 
-        this.disabled = !alert.mailing.enabled;
+        this.enabled = alert.mailing.enabled;
         this.hours = `${alert.mailing.hours || '00'}:${alert.mailing.minutes || '00'}`;
         this.units = alert.mailing.units;
         this.quantity = alert.mailing.quantity;
@@ -244,7 +244,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
             users: this.selectedUsers,
             mailMessage: this.mailMessage,
             lastUpdated: new Date().toISOString(),
-            enabled: !this.disabled
+            enabled: this.enabled
         }
 
         this.currentAlert = null;
