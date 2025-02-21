@@ -1,5 +1,5 @@
 import { toInteger } from "lodash";
-
+import date from 'date-and-time';
 export class SchedulerFunctions {
 
   /**
@@ -29,34 +29,18 @@ export class SchedulerFunctions {
 
   static checkScheduleDays(quantity: number, hours: string, minutes: string, currLastUpdated: string) {
 
-    let now = this.totLocalISOTime(new Date());
-    let date = new Date(Date.parse(now));
-
-    date.setHours( parseInt(hours));
-    date.setMinutes(0);
-
     let lastUpdated = new Date(Date.parse(currLastUpdated));
-    console.log('Ultima actualizacion');
-    console.log(lastUpdated);
-    //console.log('Fecha de referencia');
-    //console.log(date);
-
-    let min = lastUpdated.getMinutes() + parseInt(minutes);
-    let hour = lastUpdated.getHours() + parseInt(hours);
-    let day = lastUpdated.setDate(lastUpdated.getDate() + quantity);
-    let month = lastUpdated.setMonth(lastUpdated.getMonth());
-    let year = lastUpdated.setFullYear(lastUpdated.getFullYear(),month, day);
-
-    let nextUpdate = new Date(year, month, day, hour, min)
-    
-    if(nextUpdate >= date){
+    let nextUpdate =  lastUpdated ;
+    nextUpdate = date.addDays(lastUpdated, quantity);
+    nextUpdate.setHours( parseInt(hours) );
+    nextUpdate.setMinutes(  parseInt(minutes) );
+    const ahora = new Date();
+    if( ahora.getTime()  >= nextUpdate.getTime() ){
       //Se ha recargado hoy...
-      console.log('Actualizando caché a las : ' + date)
-      //console.log(lastUpdated);
-      //console.log(date);
+      console.log('Actualizando caché a las : ' + nextUpdate)
       return true;
     }else{
-      console.log('No se ha actualizado la caché');
+      console.log('No se ha actualizado la caché. se actualizó a las ' + lastUpdated + ' y ahora son las '  + ahora + ' y toca '  + nextUpdate);
       return false;
       }
       

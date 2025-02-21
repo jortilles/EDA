@@ -68,7 +68,6 @@ export class MailDashboardsController {
 
       await loginPage.goto(`${serverConfig.server_apiURL}/admin/user/fake-login/${userMail}/${token}`, { waitUntil: 'networkidle2' })
       await browser.close();
-
     }
     catch (err) {
       throw err;
