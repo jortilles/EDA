@@ -48,7 +48,7 @@ export const ChartsConfigUtils = {
             edaChart: {}
         }
 
-        if (kpiChart.edaChart) {
+        if (kpiChart?.hasOwnProperty('edaChart') ) {
             config.edaChart.colors = kpiChart.chartColors;
             config.edaChart.chartType = ebp.panelChart.props.chartType;
 
