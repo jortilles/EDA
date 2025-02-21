@@ -156,7 +156,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     addPanelToFilter(panel) {
         if (panel.avaliable === false) {
             this.selectPanelToFilter(panel);
-        } else if (panel.active === true) {
+        } else if (panel.active) {
             panel.active = false;
             this.panelstoFilter = this.panelstoFilter.filter(p => p.id !== panel.id);
         } else {

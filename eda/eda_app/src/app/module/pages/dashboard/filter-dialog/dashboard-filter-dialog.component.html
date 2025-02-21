@@ -47,11 +47,13 @@
     <p-card *ngIf="!switchChecked" [header]="header2">
         <div class="grid">
             <div class="col-12">
-                <button *ngFor="let panel of panelsToDisplay" type="button" pButton class="ui-button" style="margin-right: 0.5rem;"
-                [ngClass]="{'ui-button-selected': panel.active, 'ui-button-unselected':!panel.active, 'ui-button-unvaliable':!panel.avaliable}"
-                (click)="addPanelToFilter(panel)" label={{panel.title}}>
+                <ng-container *ngFor="let panel of panelsToDisplay">
+                    <button type="button" pButton class="ui-button" style="margin-right: 0.5rem;"
+                    [ngClass]="{'ui-button-selected': panel.active, 'ui-button-unselected':!panel.active, 'ui-button-unvaliable':!panel.avaliable}"
+                    (click)="addPanelToFilter(panel)" label={{panel.title}}>
+                </button>
+                </ng-container>
 
-            </button>
 
             <div style="margin-top: 1rem;">
                 <span style="margin: 0.5rem;" class="dotgreen"></span>
@@ -138,7 +140,7 @@
                     <div *ngIf="!filter.isdeleted" class="select-box col-3 col-md-2 p-1" cdkDrag>
                         <span class="close-thin pointer" (click)="removeFilter(filter, 'select')"></span>
             
-                        <span class="text-center" [ngClass]="(selectedFilter.table==filter.table) && (selectedFilter.column.label==filter.column.label)?'edaEmfasis':''">
+                        <span class="text-center" [ngClass]="(selectedFilter?.table==filter?.table) && (selectedFilter.column.label==filter.column.label)?'edaEmfasis':''">
                             {{filter.column.label}}
                         </span>
                     </div>
