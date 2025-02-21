@@ -15,23 +15,17 @@ const path = require("path");
 export class MailingService {
 
   static async mailingService() {
-
-    console.log('Maler');
     const newDate = SchedulerFunctions.totLocalISOTime(new Date()) ;
     const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../config/SMPT.config.json"), 'utf-8'));
-
     const transporter = nodemailer.createTransport(config);
     const verify = transporter.verify(async (error, sucess) => {
       if (error) {
         console.log(`\n\x1b[33m\u21AF\x1b[0m \x1b[1mMailing service is not configured properly, please check your configuration file\x1b[0m \x1b[33m\u21AF\x1b[0m\n`);
         console.log(error);
       } else {
-
         console.log(`\n\x1b[34m=====\x1b[0m \x1b[32mMail server is ready to take our messages\x1b[0m \x1b[34m=====\x1b[0m\n`)
-
         this.alertSending(newDate, transporter);
         this.dashboardSending(newDate, transporter);
-
 
       }
     });
@@ -41,37 +35,26 @@ export class MailingService {
 
   static async alertSending(newDate: string, transporter: any) {
     try {
-
       const dashboards = await Dashboard.find({ 'config.mailingAlertsEnabled': true });
       let dashboardsToUpdate = [];
-
       const alerts = MailingService.getAlerts(dashboards);
-
       /**Check alerts  */
       alerts.forEach((alert, i) => {
-
         let shouldUpdate = false;
-
         if (alert.value.mailing.units === 'hours') {
-
           shouldUpdate = SchedulerFunctions.checkScheduleHours(alert.value.mailing.quantity, alert.value.mailing.lastUpdated);
-
         } else if (alert.value.mailing.units === 'days') {
-
           const mailing = alert.value.mailing;
           shouldUpdate = SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated);
-
         }
-
+        // para validar se puede forzar la variable. 
+        // shouldUpdate = true;
         if (shouldUpdate) {
-
           MailingService.mailAlertsSending(alert, transporter);
           alert.value.mailing.lastUpdated = newDate;
-
           /**Push dashboard to update */
           if (!dashboardsToUpdate.map(d => d._id).includes(alert.dashboard_id)) dashboardsToUpdate.push(dashboards.filter(d => d._id === alert.dashboard_id)[0]);
         }
-
       });
 
       /**Update dashbaords */
@@ -93,38 +76,28 @@ export class MailingService {
 
       const dashboards = await Dashboard.find({ 'config.sendViaMailConfig.enabled': true });
       const token = await UserController.provideFakeToken();
-
       let dashboardsToUpdate = [];
 
       dashboards.forEach(dashboard => {
-
         const userMails = dashboard.config.sendViaMailConfig.users.map(user => user.email);
         const dashboardID = dashboard._id;
         let shouldUpdate = false;
-
         if (dashboard.config.sendViaMailConfig.units = 'hours') {
-
           shouldUpdate = SchedulerFunctions.checkScheduleHours(dashboard.config.sendViaMailConfig.quantity, dashboard.config.sendViaMailConfig.lastUpdated);
-
         } else if (dashboard.config.sendViaMailConfig.units = 'minutes') {
           const mailing = dashboard.config.sendViaMailConfig;
           shouldUpdate = SchedulerFunctions.checkScheduleDays(mailing.quantity, mailing.hours, mailing.minutes, mailing.lastUpdated);
-
         }
 
 
         if (shouldUpdate) {
-
           userMails.forEach( mail => {
             MailDashboardsController.sendDashboard(dashboardID, mail, transporter, dashboard.config.sendViaMailConfig.mailMessage, token);
           });
-
           dashboard.config.sendViaMailConfig.lastUpdated = newDate;
-
           if (!dashboardsToUpdate.map(d => d._id).includes(dashboardID)) {
             dashboardsToUpdate.push(dashboard)
           };
-
         }
       });
 
@@ -179,7 +152,7 @@ export class MailingService {
       let condition = MailingService.compareValues(result, alert.value.value, alert.value.operand);
 
       let text = `${alert.value.mailing.mailMessage}\n-------------------------------------------- \n\n` +
-        `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${mailConfig.server_baseURL}dashboard/${alert.query.dashboard.dashboard_id}`
+        `${alert.query.query.fields[0].display_name}: ${result.toLocaleString('de-DE')}\n${mailConfig.server_baseURL}#/dashboard/${alert.query.dashboard.dashboard_id}`
 
       let mailOptions = {
         from: mailConfig.user,
