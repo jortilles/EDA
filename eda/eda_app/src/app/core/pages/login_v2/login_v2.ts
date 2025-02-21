@@ -44,7 +44,7 @@ export class LoginV2Component implements OnInit {
 
         this.route.queryParamMap.subscribe(params => this.urlParams = JSON.parse(JSON.stringify(params)).params.params);
 
-        this.returnUrl = this.route.snapshot.queryParams["returnUrl"] || "/home";
+        this.returnUrl = this.route.snapshot.queryParams["returnUrl"] || "/v2";
 
         const savedEmail = localStorage.getItem("email");
         if (savedEmail) {

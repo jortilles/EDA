@@ -1,0 +1,16 @@
+/* Asegurar que el overlay tenga un fondo sólido */
+.absolute.left-full {
+  background-color: white !important;
+  opacity: 1 !important;
+  z-index: 50;
+}
+
+/* Evitar que el overlay se vuelva transparente al pasar el mouse */
+.absolute.left-full:hover {
+  opacity: 1 !important;
+}
+
+/* Asegurar que los enlaces dentro del overlay tengan color visible */
+.absolute.left-full a {
+  color: black !important;
+}

@@ -1,6 +1,15 @@
 <div class="flex w-full min-h-screen">
     <app-main-left-sidebar class="flex-shrink-0"></app-main-left-sidebar>
     <main class="flex-grow overflow-x-hidden">
-      <router-outlet></router-outlet>
+        <router-outlet></router-outlet>
     </main>
-  </div>
+</div>
+
+  <!-- <div id="main-wrapper" class="flex h-screen">
+    <app-sidebar></app-sidebar>
+    <div id="psl-w" class="flex-1 page-wrapper eda-page-class" [style.backgroundColor]="backgroundColor" [class.noSidebar]="panelMode">
+      <div class="container-fluid h-full">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div> -->
