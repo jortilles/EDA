@@ -243,7 +243,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
             minutes: minutes,
             users: this.selectedUsers,
             mailMessage: this.mailMessage,
-            lastUpdated: new Date().toISOString(),
+            lastUpdated: '2000-01-01T00:00:01.000',
             enabled: this.enabled
         }
 
