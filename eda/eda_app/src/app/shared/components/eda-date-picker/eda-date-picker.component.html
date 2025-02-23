@@ -2,7 +2,6 @@
 	selectionMode="range" [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="1984:2030"
 	[firstDayOfWeek]="firstDayOfWeek" [placeholder]="rangePlaceholder" (onClickOutside)="emitChanges()"
 	(onClose)="emitChanges()" (onFocus)="activate()" (onSelect)="clearRange()" appendTo="body">
-	<!-- [style]="{'width':'10%', 'height':'10%', 'min-width':'0px'}" [inputStyle]="{'width':'100px'}"> -->
 	<p-footer>
 		<div class="col-10">
 			<p-dropdown [options]="ranges" [(ngModel)]="selectedRange" [placeholder]="rangePlaceholder" (onChange)="getRange()"></p-dropdown>

@@ -24,21 +24,15 @@
             [dragAndDrop]="panel.dragAndDrop" 
             [resizable]="panel.resizable">
 
-            <!-- Contenedor principal que ocupa todo el espacio -->
-            <div class="flex flex-col h-full rounded-lg p-6 shadow-sm bg-white">
-              
-              <!-- Header (No debe expandirse) -->
-              <div class="flex justify-between items-center mb-6">
-                <h2 class="text-lg font-medium">Temperatura Mínima</h2>
-                <p-button icon="pi pi-ellipsis-v" styleClass="p-button-text"></p-button>
-              </div>
+            @if (panel.type===0) {
+              <eda-blank-panel #edaPanel [panel]="panel" [inject]="injectEdaPanel" (remove)="onRemovePanel($event)" (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)" >
+              </eda-blank-panel>
+            }
 
-              <!-- Contenedor del gráfico que se ajusta a la altura restante -->
-              <div class="flex-grow bg-gray-50 rounded-lg border border-dashed border-gray-300 flex items-center justify-center">
-                <span class="text-gray-500">Gràfic de temperatura</span>
-              </div>
-
-            </div>
+            @if (panel.type===1) {
+              <eda-title-panel #edaPanel [id]="panel.id" [panel]="panel" [inject]="injectEdaPanel" (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
+              </eda-title-panel>
+            }
 
           </gridster-item>
         }

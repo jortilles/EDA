@@ -1,6 +1,41 @@
 
+<div class="flex flex-col h-full rounded-lg p-6 shadow-sm bg-white">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-lg font-medium"> {{ panel.title || title }}</h2>
+        <p-button icon="pi pi-ellipsis-v" styleClass="p-button-text" (click)="contextMenu.showContextMenu($event)"></p-button>
+    </div>
+
+    <div
+        class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50 border border-dashed border-gray-300"
+        [class.spinner-panel]="display_v.minispinner">
+        <!-- <span class="text-gray-500">Gràfic de temperatura</span> -->
+        <!-- <div class="" [ngClass]="{'spinner-panel': display_v.minispinner}"> -->
+            @if (display_v.saved_panel && !display_v.minispinner) {
+                <div class="p-2 w-full h-full">
+                    <panel-chart #PanelChartComponent
+                        [props]="panelChartConfig"
+                        (configUpdated)="setChartProperties()"
+                        (onChartClick)="onChartClick($event)"
+                        class="component" style="height: 100%; width: 100%; display:block">
+                    </panel-chart>
+                </div>
+            }
+
+            @if (display_v.minispinner) {
+                <div class="grid">
+                    <div class="col-12">
+                        <p-progressSpinner [style]="{width: '5vw', height: '5vh'}" strokeWidth="8" class="" fill="#EEEEEE" animationDuration=".5s">
+                        </p-progressSpinner>
+                    </div>
+                </div>
+            }
+        <!-- </div> -->
+    </div>
+</div>
+
 <!-- Panel Header -->
-<div class="panel-heading d-flex justify-content-between align-items-center">
+<!-- <div class="panel-heading d-flex justify-content-between align-items-center">
     <div>
         <h6 id="p-header" class="panel-title" style="cursor: default">
             {{ panel.title || title }}
@@ -24,10 +59,10 @@
             <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Body of Panel -->
-<div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner}">
+<!-- <div class="panel-body" [ngClass]="{'spinner-panel': display_v.minispinner}">
     <div *ngIf="display_v.saved_panel && !display_v.minispinner" class="p-1" style="height: 100%">
         <panel-chart #PanelChartComponent
             [props]="panelChartConfig"
@@ -43,7 +78,7 @@
             </p-progressSpinner>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Page Dialog -->
 <eda-page-dialog  #pdialog [inject]="{display: this.display_v.page_dialog, title:  this.panel.title.trim().length  > 0  ? panel.title : '\uD83D\uDD89'  }">

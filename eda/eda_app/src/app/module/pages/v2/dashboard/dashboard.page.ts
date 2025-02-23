@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, inject, OnInit, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
@@ -7,15 +7,17 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MenuModule } from 'primeng/menu';
 import { MessageModule } from 'primeng/message';
 import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridsterModule, GridType } from 'angular-gridster2';
-import { DashboardService, FileUtiles } from '@eda/services/service.index';
-import { EdaPanel, EdaPanelType } from '@eda/models/model.index';
+import { DashboardService, FileUtiles, IGroup } from '@eda/services/service.index';
+import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from '../components/dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterV2Component } from '../components/global-filter/global-filter.component';
+import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { ComponentsModule } from '@eda/components/components.module';
 
 @Component({
   selector: 'app-v2-dashboard-page',
   standalone: true,
-  imports: [GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, GlobalFilterV2Component, ButtonModule, DropdownModule, MenuModule, MessageModule],
+  imports: [GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, GlobalFilterV2Component, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -23,7 +25,8 @@ import { GlobalFilterV2Component } from '../components/global-filter/global-filt
 export class DashboardPageV2 implements OnInit {
   @ViewChild(DashboardSidebarComponent) sidebar!: DashboardSidebarComponent;
   @ViewChild(GlobalFilterV2Component) globalFilter: GlobalFilterV2Component;
-
+  @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
+  
   private dashboardService = inject(DashboardService);
   private fileUtils = inject(FileUtiles);
   private route = inject(ActivatedRoute);
@@ -38,6 +41,9 @@ export class DashboardPageV2 implements OnInit {
   dashboard: any;
   dataSource: any;
   panels: any[] = [];
+
+  grups: IGroup[] = [];
+  injectEdaPanel: InjectEdaPanel;
 
   public onlyIcanEdit: boolean = false;
   public refreshTime: number;
@@ -101,6 +107,7 @@ export class DashboardPageV2 implements OnInit {
       this.dashboardId = dashboardId;
       this.dashboard = dashboard;
       this.title = dashboard.config.title;
+      this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
       this.globalFilter.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
 
@@ -118,7 +125,6 @@ export class DashboardPageV2 implements OnInit {
     // me.setDashboardCreator(res.dashboard);
     // me.dataSource = res.datasource; // DataSource del dashboard
     // me.datasourceName = res.datasource.name;
-    // me.applyToAllfilter = config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
     // me.form.controls['visible'].setValue(config.visible);
 
   }
@@ -147,6 +153,16 @@ export class DashboardPageV2 implements OnInit {
       panel.cols = panel.cols || panel.w;
       panel.rows = panel.rows || panel.h;
     }
+
+    const user = localStorage.getItem('user');
+    const userID = JSON.parse(user)._id;
+
+    this.injectEdaPanel = {
+      dataSource: this.dataSource,
+      dashboard_id: this.dashboardId,
+      applyToAllfilter: this.applyToAllfilter,
+      isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
+    }
   }
 
   // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
@@ -163,6 +179,18 @@ export class DashboardPageV2 implements OnInit {
     if (this.sidebar) {
       this.sidebar.showPopover(event);
     }
+  }
+
+  onRemovePanel(panel: any) {
+
+  }
+
+  onPanelAction(action: any) {
+
+  }
+
+  onDuplicatePanel(panel: any) {
+
   }
 
   refreshPanels() {
