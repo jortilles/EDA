@@ -3,6 +3,7 @@
 @import url(../css/spinners.css);
 @import url(../css/animate.css);
 @import url(../eda-styles/index-styles.css);
+@import "primeng/resources/themes/lara-light-blue/theme.css";
 @import "primeng/resources/primeng.css";
 @import url(./custom.css);
 
@@ -272,8 +273,8 @@ body .ui-tree {
     border-radius: 7px;
     color: #fff;
     font-size: 14px;
-    color: var(--header-font-color);
-    background: #414344;
+    /* color: var(--header-font-color);
+    background: #414344; */
 }
 
 .right-sidebar-footer {

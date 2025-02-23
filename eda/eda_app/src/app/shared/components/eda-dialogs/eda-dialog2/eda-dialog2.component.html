@@ -19,9 +19,18 @@
 
     <ng-template pTemplate="footer">
         <hr>
-        <ng-content select="[footer]"></ng-content>
-        <button *ngIf="ifShowApply" [disabled]="disableApply"  pButton icon="fa fa-check" class="p-button-raised p-button-success" label="Confirmar" i18n-label="@@guardarBtn" (click)="onApply()"></button> 
-        <button *ngIf="ifShowClose" pButton icon="fa fa-times" class="p-button-raised p-button-danger" label="Cerrar" i18n-label="@@cerrarBtn" (click)="onClose()"></button> 
+        <div class="flex justify-end p-6 border-t gap-1.5">
+            <ng-content select="[footer]"></ng-content>
+            <!-- <button *ngIf="ifShowApply" [disabled]="disableApply"  pButton icon="fa fa-check" class="p-button-raised p-button-success" label="Confirmar" i18n-label="@@guardarBtn" (click)="onApply()"></button>  -->
+            <!-- <button *ngIf="ifShowClose" pButton icon="fa fa-times" class="p-button-raised p-button-danger" label="Cerrar" i18n-label="@@cerrarBtn" (click)="onClose()"></button> -->
+            
+            <button *ngIf="ifShowClose" class="flex items-center gap-2 px-4 py-2 text-gray-600 bg-gray-200 rounded-md" (click)="onClose()">
+               <i class="fa fa-times"></i> <span>Cerrar</span>
+            </button>
+            <button *ngIf="ifShowApply" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-500 to-green-400 text-white rounded-md" [disabled]="disableApply" (click)="onApply()">
+                <i class="fa fa-check"></i> <span>Confirmar</span>
+            </button>
+        </div>
     </ng-template>
 
 </p-dialog>

@@ -10,7 +10,7 @@
           class="w-12 h-12 rounded-lg hover:bg-[#00BFB3] hover:text-white transition-colors flex items-center justify-center"
           [ngClass]="{
             'text-white bg-[#00BFB3]': item.isActive || item.showOverlay,
-            'bg-muted': !item.isActive
+            'bg-muted': !item.isActive && !item.showOverlay
           }">
           <eda-icon [name]="item.icon" class="h-5" />
           <span class="sr-only">{{item.label}}</span>

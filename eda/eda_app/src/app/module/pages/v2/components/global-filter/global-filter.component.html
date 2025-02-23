@@ -1,0 +1,67 @@
+<div class="flex flex-wrap items-center gap-4">
+  <!-- @if (globalFilters.length > 0) { -->
+    @if (isAdmin || isDashboardCreator || filterButtonVisibility.public) {
+      <button
+        class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+        (click)="dashboard.refreshPanels()">
+        <i class="pi pi-filter"></i>
+        Filtrar
+      </button>
+    }
+
+    @for (filter of globalFilters; track filter.filter_id) {
+      @if (isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)) {
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-gray-500">{{getFilterLabel(filter)}}:</span>
+        </div>
+
+        <p-multiSelect
+          [options]="filter.data"
+          [(ngModel)]="filter.selectedItems"
+          [virtualScroll]="true"
+          [defaultLabel]="getFilterLabel(filter)"
+          [disabled]="disableGlobalFilter(filter)"
+          [itemSize]="30"
+          class="customMultiselect filters-size"
+          [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
+          (onChange)="setGlobalFilterItems(filter)">
+
+          @if (dashboard.isEditable()) {
+            <p-footer>
+              <button id="dashFilterConf"
+                  pButton pRipple type="button"
+                  icon="pi pi-cog"
+                  (click)="onShowGlobalFilter(false, filter)"
+                  class="p-button-rounded p-button-outlined filters-size">
+              </button>
+            </p-footer>
+          }
+
+        </p-multiSelect>
+      }
+
+
+
+      <!-- <span *ngIf="isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)" class="filter-name filters-size">
+        {{getFilterLabel(filter)}}:
+    </span> -->
+    }
+    <!-- 
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-gray-500">SALES REP:</span>
+        <p-dropdown [options]="salesReps" optionLabel="name" placeholder="Seleccionar..."  styleClass="w-[180px]"></p-dropdown>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <p-chip *ngFor="let filter of activeFilters" 
+                [label]="filter"
+                [removable]="true"
+                (onRemove)="removeFilter(filter)"
+                styleClass="bg-primary text-primary-foreground">
+              </p-chip> 
+      </div> -->
+
+    <!-- } -->
+</div>
+
+

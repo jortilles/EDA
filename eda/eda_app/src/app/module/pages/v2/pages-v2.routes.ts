@@ -10,6 +10,10 @@ export const pagesV2Routes: Routes = [
                 path: '',
                 loadComponent: () => import('./home/home.page').then(c => c.HomePageV2)
             },
+            {
+                path: 'dashboard/:id',
+                loadComponent: () => import('./dashboard/dashboard.page').then(c => c.DashboardPageV2)
+            },
         ]
     }
     // {

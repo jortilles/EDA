@@ -31,7 +31,16 @@ export class MainLeftSidebarComponent {
         { path: '/', label: 'DataSource 2', icon: 'plus' },
       ]
     },
-    { path: '/network', icon: 'molecula' },
+    {
+        path: '/network',
+        icon: 'molecula',
+        items: [
+            { path: '/', label: `Gestió d'usuaris`, icon: 'plus' },
+            { path: '/', label: 'Gestió de grups', icon: 'plus' },
+            { path: '/', label: 'Gestió de models', icon: 'plus' },
+            { path: '/', label: `Gestió d'email`, icon: 'plus' },
+        ]
+    },
     { path: '/settings', icon: 'settings' },
     {
       path: '/messages',
@@ -58,7 +67,7 @@ export class MainLeftSidebarComponent {
     // Usa un timeout para evitar que el overlay desaparezca instantáneamente
     item.hideTimeout = setTimeout(() => {
       item.showOverlay = false;
-    }, 200); // Espera 200ms antes de ocultar
+    }, 100); // Espera 200ms antes de ocultar
   }
 
   navigateTo(item: any) {

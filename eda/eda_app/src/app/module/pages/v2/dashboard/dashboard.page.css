@@ -1,0 +1,23 @@
+
+.dashboard-grid {
+    overflow: visible !important; 
+    background-color: transparent; 
+}
+
+.gridster-item {
+  display: flex; /* Permite que el contenido crezca */
+  flex-direction: column; /* Mantiene los elementos alineados verticalmente */
+  height: 100%; /* Ocupa toda la altura del gridster-item */
+  width: 100%; /* (Opcional) Para asegurarse que ocupe todo el ancho */
+
+  border-radius: 0.5rem; /* Redondeo elegante */
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Borde sutil */
+  box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.08); /* Sombra sutil con desplazamiento hacia abajo y a la izquierda */
+  background-color: #fff; /* Fondo blanco para destacar */
+  transition: box-shadow 0.3s ease-in-out; /* Suavidad en el cambio de sombra */
+}
+
+.gridster-content {
+  flex-grow: 1; /* Permite que este div ocupe todo el espacio disponible */
+  overflow: auto; /* (Opcional) Agrega scroll si el contenido es muy grande */
+}
