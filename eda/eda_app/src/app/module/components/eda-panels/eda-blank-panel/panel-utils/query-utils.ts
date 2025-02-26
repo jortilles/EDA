@@ -51,29 +51,36 @@ export const QueryUtils = {
         const response = await ebp.dashboardService.executeQuery(queryData).toPromise();
         return response;
       } else {
-        const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
+        let response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
         const numFields = response[0].length;
         const types = new Array(numFields);
         types.fill(null);
-        for (let row = 0; row < response[1].length; row++) {
-          response[1][row].forEach((field, i) => {
-            if (types[i] === null) {
-              if (typeof field === 'number') {
-                types[i] = 'numeric';
-              } else if (typeof field === 'string') {
-                types[i] = 'text';
-              }
-            }
-          });
-          if (!types.includes(null)) {
-            break;
-          }
-        }
 
-        ebp.currentQuery = [];
-        types.forEach((type, i) => {
-          ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
-        });
+        /** SI NO ESTA FILTRADO POR LA SEGURIDAD */
+        if( response.toString().indexOf( 'noDataAllowed' ) < 1 ) {
+          for (let row = 0; row < response[1].length; row++) {
+            response[1][row].forEach((field, i) => {
+              if (types[i] === null) {
+                if (typeof field === 'number') {
+                  types[i] = 'numeric';
+                } else if (typeof field === 'string') {
+                  types[i] = 'text';
+                }
+              }
+            });
+            if (!types.includes(null)) {
+              break;
+            }
+          }
+
+          ebp.currentQuery = [];
+          types.forEach((type, i) => {
+            ebp.currentQuery.push(QueryUtils.createColumn(response[0][i], type, ebp.sqlOriginTable));
+          });
+        }else{
+          //Not allowed data. Lo convierto en objeto.
+          response = [ ['noDataAllowed'],[]];
+        }
         return response;
       }
     } catch (err) {

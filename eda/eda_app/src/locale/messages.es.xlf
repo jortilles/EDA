@@ -4308,11 +4308,11 @@
       </trans-unit>
       <trans-unit id="noDataAllowed">
         <source>Este panel no está disponible por falta de permisos</source>
-        <target>Este panel no está disponible por falta de permisos</target>
+        <target>Este panel no está disponible por falta de permisos, el informe se abre en modo de solo lectura.</target>
       </trans-unit>
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
-        <target>Este panel no está disponible por falta de permisos en un filtro</target>
+        <target>Este panel no está disponible por falta de permisos en un filtro, el informe se abre en modo de solo lectura.</target>
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>

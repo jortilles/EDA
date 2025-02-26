@@ -4279,11 +4279,11 @@
       </trans-unit>
       <trans-unit id="noDataAllowed">
         <source>Este panel no está disponible por falta de permisos</source>
-        <target>This panel is not available due to lack of permissions</target>
+        <target>This panel is not available due to lack of permissions, the report opens in read-only mode.</target>
       </trans-unit>
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
-        <target>This panel is not available due to lack of permissions on a filter</target>
+        <target>This panel is not available due to lack of permissions on a filter, the report opens in read-only mode.</target>
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>

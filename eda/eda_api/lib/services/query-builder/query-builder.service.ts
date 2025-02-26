@@ -912,7 +912,7 @@ export abstract class QueryBuilderService {
         const origin = table;
         const dest = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
-        const permissions = this.getPermissions(modelPermissions, this.tables, origin);
+        /*SDA CUSTOM security for own tables*/const permissions = this.getPermissions(modelPermissions, this.tables, origin).filter( (p)=> p.filter_table == table );
         const joinType = 'inner'; // es per els permisos. Ha de ser així.
         const valueListJoins = []; // anulat
 

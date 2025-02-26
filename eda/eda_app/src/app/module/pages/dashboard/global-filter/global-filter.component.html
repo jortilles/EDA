@@ -17,13 +17,13 @@
 
     
         <div *ngFor="let filter of globalFilters" class="filter-set d-flex align-items-center">
-            <span *ngIf="isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)" class="filter-name filters-size">
+            <span *ngIf="( isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible) )  &&  filter.selectedColumn.visible " class="filter-name filters-size">
                 {{getFilterLabel(filter)}}:
             </span>
             
             
             <ng-container 
-            *ngIf="isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)" 
+            *ngIf="( isAdmin || isDashboardCreator ||   ['public', 'readOnly'].includes(filter.visible) ) &&  filter.selectedColumn.visible  " 
             [ngSwitch]="getFilterType(filter)" >
                 <div *ngSwitchCase="'date'">
                     <eda-date-picker 
@@ -44,7 +44,7 @@
                 </div>
                 <div *ngSwitchDefault>
                     <!-- {{ filter | json }} -->
-                    <p-multiSelect *ngIf="filter.data && (isAdmin || isDashboardCreator || filter.visible === 'public' || filter.visible === 'readOnly' ) "
+                    <p-multiSelect *ngIf="filter.data && ( isAdmin || isDashboardCreator ||   ['public', 'readOnly'].includes(filter.visible) ) &&  filter.selectedColumn.visible"
                         [options]="filter.data"
                         [(ngModel)]="filter.selectedItems"
                         [maxSelectedLabels]="3"

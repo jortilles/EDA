@@ -751,11 +751,21 @@ public getHavingColname(column: any){
   buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[]) {
 
     let joinString = `( SELECT ${origin}.* from ${origin} `;
-    joinString += joinStrings.join(' ') + ' where ';
+    joinString += joinStrings.join(' ') + ' where 1=1  ';
+
+    const equalfilters = this.getEqualFilters(permissions);
+    permissions = permissions.filter(f => !equalfilters.toRemove.includes(f.filter_id));
+
     permissions.forEach(permission => {
       joinString += ` ${this.filterToString(permission )} and `
     });
-    return `${joinString.slice(0, joinString.lastIndexOf(' and '))} )`;
+    if(permissions.length > 0 && equalfilters.toRemove.length == 0){
+      joinString.slice(0, joinString.lastIndexOf(' and '))
+    }
+    joinString = this.mergeFilterStrings(joinString , equalfilters);
+
+    
+    return `${joinString} )`;
   }
 
   sqlQuery(query: string, filters: any[], filterMarks: string[]): string {

@@ -247,9 +247,13 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 if (modeSQL || queryMode=='SQL') {
                     this.currentSQLQuery = contentQuery.query.SQLexpression;
-
-                    this.sqlOriginTable = this.tables.filter(t => t.table_name === contentQuery.query.fields[0].table_id)
+                    try{
+                        this.sqlOriginTable = this.tables.filter(t => t.table_name === contentQuery.query.fields[0].table_id)
                         .map(table => ({ label: table.display_name.default, value: table.table_name }))[0];
+                    }catch(e){
+                        console.log('Si hay filtros de seguridad puede que no se encuentre la tabla de origen');
+                    }
+
                 }
 
                 this.loadChartsData(this.panel.content);

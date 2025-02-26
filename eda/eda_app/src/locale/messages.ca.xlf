@@ -4305,11 +4305,11 @@
       </trans-unit>
       <trans-unit id="noDataAllowed">
         <source>Este panel no está disponible por falta de permisos</source>
-        <target>Aquest panell no està disponible per manca de permisos</target>
+        <target>Aquest panell no està disponible per manca de permisos, l'informe s'obre en mode de només lectura.</target>
       </trans-unit>
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
-        <target>Aquest panell no està disponible per manca de permisos en un filtre</target>
+        <target>Aquest panell no està disponible per manca de permisos en un filtre, l'informe s'obre en mode de només lectura.</target>
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>
