@@ -921,6 +921,7 @@ export class DashboardController {
 
 
       /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
+      /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro.....*/
       if(myQuery.filters){
         for (const filter of myQuery.filters) {
           if (!filter.filter_column_type) {
@@ -930,6 +931,10 @@ export class DashboardController {
               const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
               filter.filter_column_type = filterColumn?.column_type || 'text';
             }
+          }
+          /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where*/ 
+          if(! filter.hasOwnProperty('filterBeforeGrouping') ){
+            filter.filterBeforeGrouping = true;
           }
         }
       }
@@ -1416,7 +1421,26 @@ export class DashboardController {
         req.body.model_id
       )
       const dataModel = await connection.getDataSource(req.body.model_id)
-      const dataModelObject = JSON.parse(JSON.stringify(dataModel))
+      const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+
+      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
+      /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro.....*/
+      if(req.body.query.filters){
+        for (const filter of req.body.query.filters) {
+          if (!filter.filter_column_type) {
+            const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
+            if (filterTable) {
+              const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
+              filter.filter_column_type = filterColumn?.column_type || 'text';
+            }
+          }
+          /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where*/ 
+          if(! filter.hasOwnProperty('filterBeforeGrouping') ){
+            filter.filterBeforeGrouping = true;
+          }
+        }
+      }
+
       const query = await connection.getQueryBuilded(
         req.body.query,
         dataModelObject,
