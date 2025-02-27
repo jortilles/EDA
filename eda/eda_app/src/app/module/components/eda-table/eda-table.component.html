@@ -21,18 +21,22 @@
             <tr *ngFor="let serie of inject.series">
                 <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan"
                 (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center">
-                    {{label.title}}
-                    <p-sortIcon *ngIf="label.sortable"></p-sortIcon>
+                    <div class="flex align-middle">
+                        {{label.title}}
+                        <p-sortIcon *ngIf="label.sortable"></p-sortIcon>
+                    </div>
                 </th>
             </tr>
 
 
             <tr *ngIf="!inject.pivot" class="header-title">
                 <ng-container *ngFor="let col of inject.cols">
-                <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"
-                    [width]="col.width" [attr.rowspan]="col.rowspan">
-                        {{col.header}}
-                        <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
+                    <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"
+                        [width]="col.width" [attr.rowspan]="col.rowspan">
+                        <div class="flex align-middle">
+                            {{col.header}}
+                            <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
+                        </div>
                     </th>
                 </ng-container>
             </tr>

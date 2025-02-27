@@ -43,7 +43,7 @@ export interface IPanelAction {
 @Component({
     selector: 'eda-blank-panel',
     templateUrl: './eda-blank-panel.component.html',
-    styleUrls: []
+    styleUrls: ['./eda-blank-panel.component.css'],
 })
 export class EdaBlankPanelComponent implements OnInit {
 
@@ -178,9 +178,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     // join types 
     joinTypeOptions: any[] = [
-        { icon: 'pi pi-align-left', joinType: 'left' },
-        { icon: 'pi pi-align-center', joinType: 'inner' },
-        { icon: 'pi pi-align-right', joinType: 'right' }
+        { icon: 'pi pi-align-left', label: 'Left', joinType: 'left' },
+        { icon: 'pi pi-align-center', label: 'Inner', joinType: 'inner' },
+        { icon: 'pi pi-align-right', label: 'Right', joinType: 'right' }
         //,         { icon: 'pi pi-align-justify', joinType: 'full outer' }
     ];
 
@@ -1468,6 +1468,15 @@ export class EdaBlankPanelComponent implements OnInit {
         config['ordering'] = [{axes: newAxes}]; // Agrego el nuevo axes a la config
         this.copyConfigCrossTable = JSON.parse(JSON.stringify(config));
         QueryUtils.runManualQuery(this) // Ejecutando con la nueva configuracion de currentQuery
+    }
+
+    getAttributeTypeIcon(type: string) {
+        const icons = {
+            numeric: 'hashtag',//'text-blue-500',
+            date: 'calendar', //text-green-500',
+            text: 'text' //'text-orange-500' 
+        };
+        return icons[type as keyof typeof icons] || '';
     }
 
 }

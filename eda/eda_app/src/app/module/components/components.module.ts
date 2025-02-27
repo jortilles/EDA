@@ -52,6 +52,7 @@ import { SafeHtmlPipe } from './eda-panels/eda-title-panel/htmlSanitizer.pipe';
 import { DragDropComponent } from './drag-drop/drag-drop.component';
 import { CommonModule } from '@angular/common';
 import { PrimengModule } from 'app/core/primeng.module';
+import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
 
 @NgModule({
@@ -60,6 +61,7 @@ import { PrimengModule } from 'app/core/primeng.module';
         PrimengModule,
         CoreModule,
         SharedModule,
+        IconComponent
     ],
     declarations: [
         EdaBlankPanelComponent,

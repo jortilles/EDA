@@ -79,9 +79,477 @@
         </div>
     </div>
 </div> -->
+<eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="98vw" height="100vh">
+    <!-- <div class="flex h-[800px] w-full flex-col rounded-lg border bg-background"></div> -->
+  <div content class="flex h-full w-full flex-col rounded-lg bg-background">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b px-4 py-2">
+      <h1 class="text-lg font-semibold">
+        {{panel.title.trim().length > 0 ? panel.title : '\uD83D\uDD89'}}
+      </h1>
+      <select class="rounded-md border px-2 py-1">
+        <option value="eda">EDA Mode</option>
+        <option value="analysis">Analysis Mode</option>
+      </select>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1">
+      <!-- Tabs -->
+      <p-tabView [activeIndex]="index" (onChange)="handleTabChange($event)">
+        <p-tabPanel i18n-header="@@vistaSeleccionador" header="{{ selectedQueryMode != 'SQL' ? editQuery : editSQLQuery}}">
+          @if (selectedQueryMode !== 'SQL') {
+            <!-- Edit Query View -->
+            <div class="flex h-full">
+              <!-- Left Sidebar -->
+              <div class="flex w-[500px] border-r">
+                <!-- Entities Section -->
+                <div class="w-1/2 border-r">
+                  <div class="border-b p-3">
+                    <h3 class="text-lg mb-2  font-bold">Entities</h3>
+                    <input class="h-8 w-full rounded-md border px-2" placeholder="Search entities...">
+                  </div>
+                  <div class="h-full overflow-auto">
+                    <div class="space-y-1 p-2">
+                      @for (entity of tablesToShow; track entity.table_name) {
+                      <button class="flex w-full items-center justify-between rounded-md px-3 py-2"
+                        [class.bg-primary]="userSelectedTable === entity.table_name"
+                        [class.text-primary-foreground]="userSelectedTable === entity.table_name"
+                        (click)="loadColumns(entity)"
+                        (mouseover)="showDescription(entity)"
+                        (mouseout)="description=''">
+
+                        <span class="text-left font-bold" [title]="entity.description.default">
+                          {{entity.display_name.default}}
+                        </span>
+                        <eda-icon name="chevron-right"></eda-icon>
+                      </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Attributes Section -->
+                <div class="w-1/2">
+                  <div class="border-b p-3">
+                    <h3 class="text-lg mb-2  font-bold">Attributes</h3>
+                    <input 
+                      class="h-8 w-full rounded-md border px-2" 
+                      placeholder="Search attributes..."
+                    >
+                  </div>
+                  <div class="h-full overflow-auto">
+                    <div 
+                      class="space-y-1 p-2"
+                      cdkDropList
+                      #columnsList="cdkDropList"
+                      [cdkDropListData]="columns"
+                      [cdkDropListConnectedTo]="[selectList, filterList]"
+                    >
+                      @for (attr of columns; track attr.name) {
+                        <div 
+                          class="flex w-full items-center gap-2 rounded-md px-3 py-2  font-bold bg-background hover:bg-muted/50 cursor-move"
+                          cdkDrag
+                          [cdkDragData]="attr"
+                        >
+                          <eda-icon [name]="getAttributeTypeIcon(attr.column_type)"
+                            [class.text-orange-500]="attr.column_type==='text'"
+                            [class.text-green-500]="attr.column_type==='date'"
+                            [class.text-blue-500]="attr.column_type==='numeric'"
+                          ></eda-icon>
+                          {{attr.display_name.default}}
+                          <i class="drag-handle-icon ml-auto"></i>
+                          
+                          <!-- Preview cuando se está arrastrando -->
+                          <div *cdkDragPreview class="flex items-center gap-2 rounded-md px-3 py-2 bg-background border shadow-lg">
+                            <eda-icon [name]="getAttributeTypeIcon(attr.column_type)"
+                              [class.text-orange-500]="attr.column_type==='text'"
+                              [class.text-green-500]="attr.column_type==='date'"
+                              [class.text-blue-500]="attr.column_type==='numeric'"
+                            ></eda-icon>
+                            {{attr.display_name.default}}
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main Content Area -->
+              <div class="flex-1 p-6">
+                <div class="space-y-6">
+                  <!-- Selected Attributes -->
+                  <div>
+                    <h3 class="text-lg mb-4 font-bold">Selected Attributes</h3>
+                    <div 
+                      class="flex gap-1 rounded-lg border p-2 min-h-[55px]"
+                      cdkDropList
+                      #selectList="cdkDropList"
+                      cdkDropListOrientation="horizontal"
+                      [cdkDropListData]="currentQuery"
+                      [cdkDropListConnectedTo]="[columnsList, filterList]"
+                      (cdkDropListDropped)="drop($event)"
+                    >
+                      @for (attr of currentQuery; track attr.display_name.default) {
+                        <div 
+                          class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move min-w-[250px]"
+                          (click)="openColumnDialog(attr)"
+                          (mouseover)="showDescription(attr)"
+                          (mouseout)="description = ''"
+                          cdkDrag
+                          [cdkDragData]="columns"
+                        >
+                          <i class="drag-handle-icon"></i>
+                          <eda-icon [name]="getAttributeTypeIcon(attr.column_type)"
+                            [class.text-orange-500]="attr.column_type==='text'"
+                            [class.text-green-500]="attr.column_type==='date'"
+                            [class.text-blue-500]="attr.column_type==='numeric'"
+                          ></eda-icon>
+                          <!-- <span class="text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  > -->
+                          <span [title]="attr.description.default">{{attr.display_name.default}}</span>
+                          <button 
+                            class="ml-auto rounded-full hover:bg-muted-foreground/20"
+                            (click)="removeColumn(attr)"
+                          >
+                            <i class="fa fa-close"></i>
+                          </button>
+
+                          <!-- Preview cuando se está arrastrando -->
+                          <div *cdkDragPreview class="flex items-center gap-2 rounded-md px-3 py-2 bg-background border shadow-lg">
+                            <eda-icon [name]="getAttributeTypeIcon(attr.column_type)"
+                              [class.text-orange-500]="attr.column_type==='text'"
+                              [class.text-green-500]="attr.column_type==='date'"
+                              [class.text-blue-500]="attr.column_type==='numeric'"
+                            ></eda-icon>
+                            {{attr.display_name.default}}
+                          </div>
+                        </div>
+                      }
+
+                      @if (currentQuery.length === 0) {
+                        <div class=" text-muted-foreground text-center py-4">
+                          {{draggFields}}
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Filter section -->
+                  <div>
+                    <h3 class="text-lg mb-4 font-bold">Filter</h3>
+                    <div 
+                      class="flex gap-1 rounded-lg border p-2 min-h-[55px]"
+                      cdkDropList
+                      #filterList="cdkDropList"
+                      cdkDropListOrientation="horizontal"
+                      [cdkDropListData]="filtredColumns"
+                      [cdkDropListConnectedTo]="[columnsList, selectList]"
+                      (cdkDropListDropped)="drop($event)"
+                    >
+                      @for (attr of filtredColumns; track attr.display_name.default) {
+                        <div 
+                          class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move min-w-[250px]"
+                          cdkDrag
+                          [cdkDragData]="attr"
+                        >
+                          <i class="drag-handle-icon"></i>
+                          <eda-icon [name]="getAttributeTypeIcon(attr.column_type)"
+                            [class.text-orange-500]="attr.column_type==='text'"
+                            [class.text-green-500]="attr.column_type==='date'"
+                            [class.text-blue-500]="attr.column_type==='numeric'"
+                          ></eda-icon>
+                          {{attr.display_name.default}}
+                          <button 
+                            class="ml-auto rounded-full hover:bg-muted-foreground/20"
+                            (click)="removeColumn(attr, 'filter')"
+                            >
+                            <i class="fa fa-close"></i>
+                          </button>
+
+                          <!-- Preview cuando se está arrastrando -->
+                          <div *cdkDragPreview class="flex items-center gap-2 rounded-md px-3 py-2 bg-background border shadow-lg">
+                            <eda-icon [name]="getAttributeTypeIcon(attr.column_type)"
+                              [class.text-orange-500]="attr.column_type==='text'"
+                              [class.text-green-500]="attr.column_type==='date'"
+                              [class.text-blue-500]="attr.column_type==='numeric'"
+                            ></eda-icon>
+                            {{attr.display_name.default}}
+                          </div>
+                        </div>
+                      }
+
+                      @if (filtredColumns.length === 0) {
+                        <div class=" text-muted-foreground text-center py-2">
+                          Drag attributes here to add filters
+                        </div>
+                      }
+                    </div>
+                  </div>
+<!--              <p-selectButton [options]="joinTypeOptions" [(ngModel)]="joinType"  (onChange)="onJoinTypeChange()"  optionLabel="icon" optionValue="joinType" >
+                      <ng-template let-item>
+                          <i [class]="item.icon"></i>
+
+                      </ng-template>
+                  </p-selectButton> -->
+                  
+                  <!-- Join Type -->
+                  <h3 class="text-lg mt-6 mb-2 font-bold">Join Type</h3>
+                  <div class="flex gap-2">
+                    <button *ngFor="let type of joinTypeOptions" class="border px-3 py-1 rounded-lg hover:bg-gray-100">
+                      {{ type.label }}
+                    </button>
+                  </div>
+
+                  <!-- Query Summary -->
+                  <div class="mt-6 border-t pt-4">
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center gap-1">
+                        <h3 class="text-lg font-bold">Query Summary</h3>
+                          <i class="pi pi-info-circle cursor-pointer"
+                            [pTooltip]="ptooltipViewQuery"
+                            (click)="getQuery($event)">
+                          </i>
+                      </span>
+                      <button class="border px-3 py-1 rounded-lg font-bold hover:bg-gray-100"
+                        (click)="onWhatIfDialog()">What If?</button>
+                    </div>
+                    <div class="mt-2 border rounded-lg bg-gray-50 p-4 min-h-[200px]">
+                      @for (attr of currentQuery; track attr.display_name.default) {
+                        <p class="flex items-center">
+                          <strong [innerHTML]="getColumnJoins(attr)"></strong>
+                          <span>
+                            <strong> {{ getNiceTableName(attr.table_id) }} </strong>
+                            <i class="pi pi-angle-right"></i>
+                            {{attr.display_name.default}}
+                          </span>
+                          @for (aggregation of attr.aggregation_type; track aggregation.display_name) {
+                            @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
+                              &nbsp;({{aggregation.display_name}})
+                            }
+                          }
+                        </p>
+                      }
+                    </div>
+                  </div>
+
+
+<!--                                 <div class="col-12 md:col-12 info-query" *ngIf="currentQuery.length !== 0">
+                                    <div #myQuery>
+                                        <span i18n="@@consultaH4" class="span-title">
+                                            Mi consulta
+                                        </span>
+
+                                        <span>
+                                            <i class="pi pi-info-circle" style="cursor: pointer; margin-top: -5px;"
+                                                (click)="getQuery($event)" [pTooltip]="ptooltipViewQuery"></i>
+                                        </span>
+                                    </div>
+
+                                    <hr>
+
+                                    <p-overlayPanel #op [appendTo]="'body'">
+                                      <ng-template pTemplate>
+                                          <div>
+                                              <h6 i18n="@@yourQuerySQL">Mi consulta SQL</h6>
+                                              <div *ngIf="display_v.minispinnerSQL"
+                                                  style="text-align: center; margin: solid 1px grey;">
+
+                                                  <p-progressSpinner *ngIf="display_v.minispinnerSQL"
+                                                      [style]="{width: '4vw', height: '4vh'}" strokeWidth="5" class=""
+                                                      fill="#EEEEEE" animationDuration=".5s">
+                                                  </p-progressSpinner>
+
+                                              </div>
+
+                                              <textarea *ngIf="!display_v.minispinnerSQL" id="query-area" class="sqlInput"
+                                                  rows="10" cols="100" pInputTextarea autoResize="autoResize"
+                                                  [(ngModel)]="queryFromServer"></textarea>
+                                          </div>
+                                          <button type="button" pButton icon="fa fa-database" (click)="migrateQuery()"
+                                              class="p-button-success ml-2" i18n-label="@@openSqlMode"
+                                              label="Abrir en modo SQL" [pTooltip]="ptooltipSQLmode">
+                                          </button>
+                                      </ng-template>
+                                  </p-overlayPanel>
+
+
+                                  <div class="grid">
+
+                                      <div class="col-12 md:col-6 pl-2">
+                                          <h5 i18n="@@resumenAtrH6">
+                                              Resumen de atributos
+                                          </h5>
+
+                                          <div *ngFor="let column of currentQuery" class="d-flex align-items-center">
+
+                                              <strong class="d-flex align-items-center" [innerHTML]="getColumnJoins(column)"></strong>
+
+                                              <span class="d-flex align-items-center">
+                                                  <strong> {{ getNiceTableName(column.table_id) }} </strong>
+                                                  <i class="pi pi-angle-right"></i>
+                                                  {{column.display_name.default}}
+                                              </span>
+
+                                              <ng-container *ngFor="let aggregation of column.aggregation_type">
+                                                  <span *ngIf="aggregation.selected && aggregation.display_name !== 'no'" class="d-flex align-items-center">
+                                                      ( {{aggregation.display_name}} )
+                                                  </span>
+                                              </ng-container>
+
+                                          </div>
+                                      </div>
+
+
+                                      <div class="col-12 md:col-6 pl-2">
+                                          <h5 i18n="@@resumenFiltrosPanelH6">
+                                              Resumen de filtros del panel
+                                          </h5>
+
+
+
+                                          <div *ngFor="let filter of selectedFilters" class="d-flex align-items-center">
+                                              <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
+
+                                              <span class="d-flex align-items-center" [innerHTML]="getDisplayFilterStr(filter)"></span>
+                                          </div>
+                                      </div>
+
+                                      <div class="col-12 md:col-6 pl-2">
+                                          <h5 i18n="@@resumenFiltrosInformeH6">
+                                              Resumen de filtros del informe
+                                          </h5>
+
+                                          <div *ngFor="let filter of globalFilters" class="d-flex align-items-center">
+                                              <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
+
+                                              <span class="d-flex align-items-center" [innerHTML]="getDisplayFilterStr(filter)"></span>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div> -->
+
+                </div>
+              </div>
+            </div>
+          }
+        </p-tabPanel>
+        <p-tabPanel i18n-header="@@vistaPrevia" header="VISTA PREVIA" [disabled]="display_v.disablePreview || currentQuery.length === 0">
+          <!-- Preview View -->
+          <div class="flex h-full max-h-[600px] gap-6 p-6">
+            <div class="flex-1 rounded-lg border p-4 bg-muted/30">
+              <!-- <div class="h-full rounded-lg bg-muted/30"> -->
+                <!-- Preview Chart  -->
+                <panel-chart
+                  class="block h-full w-full"
+                  #panelChartComponentPreview
+                  [props]="panelChartConfig"
+                ></panel-chart>
+                <!-- style="height: 100%; width: 100%; display:block" -->
+              <!-- </div> -->
+            </div>
+            <div class="w-96 space-y-2" [ngClass]="{'w-2/6': graphicType==='crosstable'}">
+              <form [formGroup]="chartForm">
+                <p-dropdown
+                  id="chartSelector"
+                  formControlName="chart"
+                  optionLabel="label"
+                  [style]="{'width':'100%'}"
+                  [options]="chartTypes"
+                  [autoDisplayFirst]="false"
+                  (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))"
+                >
+              
+                  <ng-template pTemplate="selectedItem">
+                    @if (chartForm.value.chart) {
+                      <div class="flex items-center">
+                        @if (!!chartForm.value.chart.ngIf) {
+                          <i class="{{chartForm.value.chart.icon}} text-[#eeac57] align-middle"></i>
+                        }
+                        <span class="material-icons">
+                          {{getOptionIcon(chartForm.value.chart.subValue)}}
+                        </span>
+                        <span class="align-middle ml-2">
+                          {{chartForm.value.chart.label}}
+                        </span>
+                      </div>
+                    }
+                  </ng-template>
+              
+                  <ng-template let-chart pTemplate="item">
+                    <div class="flex items-center relative h-6"
+                      [attr.title]="chart.tooManyData ? getTooManyDataDescription() : (chart.ngIf) ? getOptionDescription(chart.subValue) : ''"
+                    >
+                      <span class="material-icons" [ngClass]="{'orange-alert': chart.ngIf, 'grey-alert': chart.tooManyData}">
+                        {{getOptionIcon(chart.subValue)}}
+                      </span>
+              
+                      <span class="ml-2" [ngClass]="{'texto-rallado-alert': chart.ngIf  || chart.tooManyData}">
+                        {{chart.label}}
+                      </span>
+                      
+                      @if (chart.tooManyData) {
+                        <span i18n="@@tooManyValues" class="edaTooManyData">
+                          - Demasiados valores
+                        </span>
+                      }
+                      
+                      @if (chart.ngIf) {
+                        <span i18n="@@notAvaliable" class="edaTooManyData">
+                          - No Disponible
+                        </span>
+                      }
+                    </div>
+                  </ng-template>
+                </p-dropdown>
+              </form>
+              @if (dragAndDropAvailable && graphicType==='crosstable') {
+                <drag-drop [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
+              }
+            </div>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+  </div>
+
+  <ng-container footer>
+    <!-- <div class="flex items-center justify-end gap-2 border-t p-4"></div> -->
+    <button
+      class="rounded-md px-4 py-2 border"
+      (click)="closeEditarConsulta()">
+      Cancel
+    </button>
+    <button
+      class="rounded-md px-4 py-2 border"
+      [disabled]="display_v.btnSave"
+      (click)="savePanel()">
+      Confirm
+    </button>
+    <button
+      class="rounded-md px-4 py-2 bg-primary text-primary-foreground"
+      [disabled]="disableRunQuery()"
+      (click)="runManualQuery()">
+      Execute
+    </button>
+
+
+    <!-- <button type="button" pButton (click)="runManualQuery()" [disabled]="disableRunQuery()"
+      icon="fa fa-flask" class="p-button-success ml-2" i18n-label="@@ejecutarBtn" label="Ejecutar">
+    </button> -->
+
+    <!-- <button type="submit" pButton (click)="savePanel()" [disabled]="display_v.btnSave" icon="fa fa-check"
+      class="p-button ml-2" i18n-label="@@guardarBtn" label="Confirmar" id="eda_blak_panel_confirmar">
+    </button> -->
+
+    <!-- <button type="button" pButton (click)="closeEditarConsulta()" icon="fa fa-times"
+      class="p-button-danger ml-2" i18n-label="@@cancelarBtn" label="Cancelar" id="eda_blak_panel_cancelar">
+    </button> -->
+  </ng-container>
+</eda-dialog2>
 
 <!-- Page Dialog -->
-<eda-page-dialog  #pdialog [inject]="{display: this.display_v.page_dialog, title:  this.panel.title.trim().length  > 0  ? panel.title : '\uD83D\uDD89'  }">
+<eda-page-dialog #pdialog [inject]="{display: false, title: this.panel.title.trim().length > 0 ? panel.title : '\uD83D\uDD89'}">
     <div (window:resize)="onResize($event)" class="grid">
 
         <div id="queryModelSelector" class="col-12">
@@ -311,9 +779,9 @@
                                     cdkDrag [cdkDragData]="column"
                                     (cdkDragDropped)="searchRelations(column)"
                                     [ngStyle]="column.hidden && column.hidden == 1 && {'opacity': '0.5'}">
-                                        <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                        <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
-                                        <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
+                                        <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical mb-1"></span>
+                                        <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text mb-1"></span>
+                                        <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric mb-1"></span>
                                         <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">
                                             {{column.display_name.default}}
                                         </span>
@@ -328,9 +796,9 @@
                                         (cdkDragDropped)="searchRelations(column)"
                                         [ngStyle]="column.hidden && column.hidden == 1  && {'opacity': '0.5'} " >
 
-                                        <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                        <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
-                                        <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
+                                        <span *ngIf='column.column_type == "text" ' class="mdi  mdi-alphabetical mb-1"></span>
+                                        <span *ngIf='column.column_type == "date" ' class="mdi mdi-calendar-text mb-1"></span>
+                                        <span *ngIf='column.column_type == "numeric" ' class="mdi mdi-numeric mb-1"></span>
                                         <span class="text-left" title="{{column.description.default}}" class="eda-col-class-{{column.column_type}}">
                                             {{column.display_name.default}}
                                         </span>
@@ -358,9 +826,9 @@
                                 <div class="col">
 
                                   <span class="fa fa-close pull-right" style="z-index: 9999;" (click)="removeColumn( item, 'select' )"></span>
-                                  <span *ngIf='item.column_type == "text" ' class="mdi mdi-alphabetical" style="margin-right:4px;"></span>
-                                  <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
-                                  <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
+                                  <span *ngIf='item.column_type == "text" ' class="mdi mdi-alphabetical mb-1"></span>
+                                  <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text mb-1"></span>
+                                  <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric mb-1"></span>
 
 
                                   <span class="text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
@@ -385,9 +853,9 @@
                                     (mouseout)="description = ''" cdkDrag [cdkDragData]="columns" >
                                     <div class="col">
                                         <span class="close-thin pointer" (click)="removeColumn( item, 'filter' )"></span>
-                                        <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical" style="margin-right:4px;"></span>
-                                        <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text" style="margin-right:4px;"></span>
-                                        <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric" style="margin-right:4px;"></span>
+                                        <span *ngIf='item.column_type == "text" ' class="mdi  mdi-alphabetical mb-1"></span>
+                                        <span *ngIf='item.column_type == "date" ' class="mdi mdi-calendar-text mb-1"></span>
+                                        <span *ngIf='item.column_type == "numeric" ' class="mdi mdi-numeric mb-1"></span>
                                         <span  class=" text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  >
                                             {{item.display_name.default}}
                                         </span>

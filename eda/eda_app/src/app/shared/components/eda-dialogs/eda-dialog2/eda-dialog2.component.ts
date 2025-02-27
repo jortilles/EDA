@@ -3,7 +3,12 @@ import { EdaDialog2 } from './eda-dialog2';
 
 @Component({
     selector: 'eda-dialog2',
-    templateUrl: './eda-dialog2.component.html'
+    templateUrl: './eda-dialog2.component.html',
+    styles: `
+      ::ng-deep .p-dialog .p-dialog-footer {
+        padding-bottom: 0.5rem;
+      }
+    `
 })
 export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnDestroy {
     public ifShowApply: boolean;

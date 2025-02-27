@@ -16,11 +16,18 @@ import { IconService } from '@eda/services/utils/icons.service';
       [class.h-6]="size === 'lg'"
       [class.w-6]="size === 'lg'"
     ></span>
-  `
+  `,
+   styles: [`
+    :host {
+      display: flex;
+    }
+  `],
+  host: { 'class': 'eda-icon' }
 })
 export class IconComponent {
     @Input() name!: string;
     @Input() size: 'sm' | 'default' | 'lg' = 'default';
+    // @Input() class!: string;
 
     private iconService = inject(IconService);
     private sanitizer = inject(DomSanitizer);

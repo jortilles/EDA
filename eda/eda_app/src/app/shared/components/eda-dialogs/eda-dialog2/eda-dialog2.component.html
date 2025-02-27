@@ -5,7 +5,7 @@
     [closable]="false"
     [draggable]="false"
     [header]="header"
-    [contentStyle]="{height: '100%'}"
+    [contentStyle]="{height: '100%', 'overflow-y': 'hidden', 'padding-bottom': '0'}"
     [style]="{width, height}"
     appendTo="body">
 
@@ -19,7 +19,7 @@
 
     <ng-template pTemplate="footer">
         <hr>
-        <div class="flex justify-end p-6 border-t gap-1.5">
+        <div class="flex justify-end p-2 border-t gap-1.5">
             <ng-content select="[footer]"></ng-content>
             <!-- <button *ngIf="ifShowApply" [disabled]="disableApply"  pButton icon="fa fa-check" class="p-button-raised p-button-success" label="Confirmar" i18n-label="@@guardarBtn" (click)="onApply()"></button>  -->
             <!-- <button *ngIf="ifShowClose" pButton icon="fa fa-times" class="p-button-raised p-button-danger" label="Cerrar" i18n-label="@@cerrarBtn" (click)="onClose()"></button> -->
