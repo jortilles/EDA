@@ -250,7 +250,7 @@
                                 {{ filtre.filter_type }}
                             </b>
 
-                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                            <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                         </p>
 
                         <p *ngIf="filtre.filter_elements.length === 1" class="d-flex align-items-center">
@@ -260,7 +260,7 @@
                                 "{{ filtre.filter_elements[0].value1 }}"
                             </b>
 
-                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                            <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                         </p>
 
                         <p *ngIf="filtre.filter_elements.length === 2" class="d-flex align-items-center">
@@ -270,7 +270,7 @@
                                 "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
                             </b>
 
-                            <i class="ui-dropdown-clear-icon pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                            <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
                         </p>
 
                     </ng-container>

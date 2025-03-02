@@ -45,6 +45,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     };
     public filterSelected: FilterType;
     public filterValue: any = {};
+    public showFormatDateSection: boolean = false;
 
     public ordenationTypes: OrdenationType[];
     public formatDates: FormatDates[];
@@ -74,7 +75,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
             title: $localize`:@@col:Atributo`
         });
-        this.dialog.style = { width: '85%', height: '75%', top: "-4em", left: '1em' };
+        this.dialog.style = { width: '85%', height: '60%', top: "-4em", left: '1em' };
     }
 
     onShow(): void {
@@ -83,7 +84,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const title = this.selectedColumn.display_name.default;
         const col = $localize`:@@col:Atributo`, from = $localize`:@@table:de la entidad`;
         this.dialog.title = `${col} ${title} ${from} ${this.controller.params.table}`;
-        console.log(this.controller);
         this.carregarValidacions();
 
         const columnType = this.selectedColumn.column_type;
@@ -100,6 +100,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.filter.types = allowed;
         }
 
+        this.showFormatDateSection = columnType == 'date';
     }
 
     private carregarValidacions(): void {
