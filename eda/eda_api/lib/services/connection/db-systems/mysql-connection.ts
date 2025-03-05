@@ -57,28 +57,25 @@ export class MysqlConnection extends AbstractConnection {
         return createConnection(mySqlConn);
     }
 
+    // SDA CUSTOM - Change tryConnection to use mysql2/promise
     async tryConnection(): Promise<any> {
         try {
-            return new Promise((resolve, reject) => {
-                const mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
-                this.client = createConnection(mySqlConn);
-                console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
-                this.client.connect((err:Error , connection: SqlConnection): void => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    if (connection) {
-                        this.itsConnected();
-                        this.client.end();
-                        return resolve(connection);
-                    }
-                });
-            })
+            const mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
+            this.client = await createConnection(mySqlConn);
+            console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
+            this.itsConnected();
 
+            // Close connection
+            await this.client.end();
+
+            return this.client;
+    
         } catch (err) {
+            console.log('\x1b[31m%s\x1b[0m', 'Error connecting to MySQL database\n');
             throw err;
         }
     }
+    // END SDA CUSTOM
 
     async generateDataModel(optimize:number, filter:string): Promise<any> {
         try {
