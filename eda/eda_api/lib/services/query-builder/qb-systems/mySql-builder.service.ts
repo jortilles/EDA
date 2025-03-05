@@ -50,9 +50,9 @@ export class MySqlBuilderService extends QueryBuilderService {
     myQuery += this.getHavingFilters(havingFilters);
 
 
-    /**SDA CUSTOM */  if (forSelector === true) {
-    /**SDA CUSTOM */     myQuery += `\n UNION \n SELECT '' `;
-    /**SDA CUSTOM */   }
+    /**SDA CUSTOM */ // if (forSelector === true) {
+    /**SDA CUSTOM */ //    myQuery += `\n UNION \n SELECT '' `;
+    /**SDA CUSTOM */ //  }
 
 
     // OrderBy
