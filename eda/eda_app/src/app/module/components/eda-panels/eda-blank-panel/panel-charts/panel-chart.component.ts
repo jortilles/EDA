@@ -300,7 +300,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartLabels = chartData[0];
         chartConfig.chartDataset = chartData[1];
         chartConfig.chartOptions = config.chartOptions;
-        const colorArray = this.chartUtils.recoverChartColors(this.props.chartType,this.props.config);
+        const colorArray = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
         if (chartConfig.chartType === "doughnut" || chartConfig.chartType === "polarArea") {
             //Rescatamos los colores y valores por separado del config
             const configData = this.props.config.getConfig()['assignedColors'].flatMap((item) => item[0].value);
@@ -326,19 +326,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     coloresAsignadosBG.push(colorDataMatch);
                     coloresAsignadosBC.push(colorDataMatch);
                 } else if (this.props.config.getConfig()["colors"]) {
-                  //Si la data cargada NO esta en el config, assignamos el color siguiente que le pertoque
+                    //Si la data cargada NO esta en el config, assignamos el color siguiente que le pertoque
                     let nextColorInList = this.props.config.getConfig()["colors"][0].backgroundColor[configColors.length + index] || colorArray[configColors.length + index];
                     coloresAsignadosBG.push(nextColorInList);
                     coloresAsignadosBC.push(nextColorInList);
-                } 
+                }
             });
             //Asignamos colores de
             chartConfig.chartColors = [{backgroundColor: coloresAsignadosBG,borderColor: coloresAsignadosBC,}];
             if (!chartConfig.chartColors.some(obj => (obj.backgroundColor.length > 0) || (obj.borderColor.length > 0))) {
-                chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType,this.props.config);
+                chartConfig.chartColors = colorArray;
             }
         } else {
-          chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType,this.props.config);
+          chartConfig.chartColors = colorArray;
         }
 
         // chartColors unicamente se reflejan si estan dentro del chartDataset 
@@ -354,7 +354,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 }
             });
         }
-        console.log(chartConfig)
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
         this.createEdaChartComponent(chartConfig);
     }
@@ -364,9 +363,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param inject chart configuration
      */
     private createEdaChartComponent(inject: any) {
-        console.log('create')
         this.currentConfig = inject;
-        console.log(this.currentConfig)
       this.entry.clear();
       /** Deprecado en angular 13 */
       //const factory = this.resolver.resolveComponentFactory(EdaChartComponent);
