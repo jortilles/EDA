@@ -58,6 +58,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @Output() remove: EventEmitter<any> = new EventEmitter();
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
+    @Output() d3Action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
 
     /** propietats que s'injecten al dialog amb les propietats específiques de cada gràfic. */
     public configController: EdaDialogController;
@@ -512,7 +513,6 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     public savePanel() {
         this.panel.title = this.pdialog.getTitle();
-
         if (this.panel?.content) {
             this.panel.content.query.query.queryMode = this.selectedQueryMode;
             this.panel.content.query.query.rootTable = this.rootTable;
@@ -573,7 +573,6 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     private renderChart(query: any, chartLabels: any[], chartData: any[], type: string, subType: string, config: ChartConfig) {
         const chartConfig = config || new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
-
         this.panelChartConfig = new PanelChart({
             query: query,
             data: { labels: chartLabels, values: chartData },
@@ -583,7 +582,6 @@ export class EdaBlankPanelComponent implements OnInit {
             maps: this.inject.dataSource.model.maps,
             size: { x: this.panel.w, y: this.panel.h },
             linkedDashboardProps: this.panel.linkedDashboardProps,
-
         });
     }
 
@@ -605,10 +603,26 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public onChartClick(event: any): void {
         const config = this.panelChart.getCurrentConfig();
-        if (config?.chartType == 'doughnut' || config?.chartType == 'polarArea' || config?.chartType == 'bar'   || config?.chartType == 'line'  ) {
+        if (config?.chartType == 'doughnut' || config?.chartType == 'polarArea' || config?.chartType == 'bar' || config?.chartType == 'line' || config?.chartType == 'radar')
+        {
             this.action.emit({ code: 'ADDFILTER', data: {...event, panel: this.panel} });
         }else{
             console.log('No filter here... yet');
+        }
+    }
+
+    public onD3ChartClick(event: any): void {
+        if (
+          this.panelChart.props.chartType == "treeMap" || this.panelChart.props.chartType == "sunburst" ||
+          this.panelChart.props.chartType == "scatterPlot" || this.panelChart.props.chartType == "funnel" ||
+          this.panelChart.props.chartType == "bubblechart" || this.panelChart.props.chartType == "parallelSets"
+        ) {
+          this.d3Action.emit({
+            code: "ADDFILTER",
+            data: { ...event, panel: this.panel },
+          });
+        } else {
+          console.log("No filter here... yet");
         }
     }
 
@@ -618,7 +632,6 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param content panel content
      */
     public changeChartType(type: string, subType: string, config?: ChartConfig) {
-        
         this.graphicType = type; // Actualizamos el tipo de variable para el componente drag-drop
         this.graficos = {};
         let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
@@ -627,6 +640,8 @@ export class EdaBlankPanelComponent implements OnInit {
         this.graficos.edaChart = subType;
         this.graficos.addTrend = config && config.getConfig() ? config.getConfig()['addTrend'] : false;
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
+        this.graficos.assignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
+
         
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
@@ -944,8 +959,16 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 this.graficos = {};
                 this.graficos = _.cloneDeep(properties);
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType };
-                const layout = new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType, this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels, this.graficos.showLabelsPercent,this.graficos.numberOfColumns));
+                let assignedColors = [];
+                this.graficos.chartLabels.forEach((element, index) => {
+                    assignedColors[index] = [{ value: element }, { color: this.graficos.chartColors[0].backgroundColor[index] }]
+                });
+                
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: assignedColors };
+                const layout =
+                    new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
+                    this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
+                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, assignedColors));
 
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
@@ -1103,7 +1126,6 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.panel.content.query.output.config.colors = response.edaChart.chartColors;
                 this.panel.content.query.output.config.chartType = response.chartType;
                 this.panel.content.query.output.config.chartSubType = response.chartSubType;
-
                 layout = new ChartJsConfig(
                     response.edaChart.chartColors,
                     response.edaChart.chartType,
@@ -1111,7 +1133,8 @@ export class EdaBlankPanelComponent implements OnInit {
                     response.edaChart.addComparative,
                     response.edaChart.showLabels,
                     response.edaChart.showLabelsPercent,
-                    response.edaChart.numberOfColumns
+                    response.edaChart.numberOfColumns,
+                    response.edaChart.assignedColors
                 );
             }
             
