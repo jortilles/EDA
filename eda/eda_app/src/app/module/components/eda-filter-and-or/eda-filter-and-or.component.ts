@@ -1,4 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { 
+  Component, 
+  Input, 
+  OnInit,
+} from '@angular/core';
 
 @Component({
   selector: 'eda-filter-and-or',
@@ -8,11 +12,13 @@ import { Component, Input, OnInit } from '@angular/core';
 export class EdaFilterAndOrComponent implements OnInit {
 
   @Input() selectedFilters: any[] = []; // Valor que es 
+  @Input() globalFilters: any[] = []; // Valor que es 
 
   constructor() { }
 
   ngOnInit(): void {
-    console.log('EdaFilterAndOrComponent ->>>>>', this.selectedFilters);
+    console.log('Panel Filter: ', this.selectedFilters);
+    console.log('Global Filter: ', this.globalFilters);
   }
 
 }
