@@ -1294,7 +1294,6 @@ export class ChartUtilsService {
                 break;
             case 'bar':
                 if (!['horizontalBar', 'pyramid', 'stackedbar100'].includes(chartSubType)) {
-                    console.log('paso por aqui ' + chartSubType );
 
                     if (showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
                         dataLabelsObjt =  {
