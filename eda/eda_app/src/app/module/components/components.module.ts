@@ -5,7 +5,8 @@ import { CoreModule } from '../../core/core.module';
 import { SharedModule } from '../../shared/shared.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { EdaBlankPanelComponent } from './eda-panels/eda-blank-panel/eda-blank-panel.component';
-import { PanelChartComponent} from './eda-panels/eda-blank-panel/panel-charts/panel-chart.component'
+import { PanelChartComponent} from './eda-panels/eda-blank-panel/panel-charts/panel-chart.component';
+import { GridsterModule } from 'angular-gridster2';
 
 
 // Component
@@ -59,6 +60,7 @@ import { EdaFilterAndOrComponent } from './eda-filter-and-or/eda-filter-and-or.c
     imports: [
         CoreModule,
         SharedModule,
+        GridsterModule,
     ],
     declarations: [
         EdaBlankPanelComponent,
