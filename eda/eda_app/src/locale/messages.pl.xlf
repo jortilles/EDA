@@ -4338,6 +4338,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <source>Agregamos paneles de datos, filtros o textos a nuestro informe. </source>
     <target>Dodajemy panele danych, filtry lub teksty do naszego raportu. </target>
   </trans-unit>
+      <trans-unit id="tutorialThird_1" datatype="html">
+        <source>Una vez creado un KPI en un informe. </source>
+        <target>Po utworzeniu KPI w raporcie.</target>
+      </trans-unit>
+      <trans-unit id="tutorialThird_2" datatype="html">
+        <source>Se puede definir una alerta que se enviará por email en caso de que la condición del KPI se cumpla.</source>
+        <target>Możesz zdefiniować alert, który zostanie wysłany e-mailem, jeśli spełniony zostanie warunek KPI.</target>
+      </trans-unit>
+      <trans-unit id="tutorialThird_3" datatype="html">
+        <source>Llegará un mail a la hora definida con el texto indicado.</source>
+        <target>Wiadomość e-mail o podanej treści zostanie wysłana o określonej godzinie.</target>
+      </trans-unit>
   <trans-unit id="firstAboutParagraphSpan_1" datatype="html">
     <source>
       es una aplicación web de código libre que permite realizar informes gráficos e interactivos de

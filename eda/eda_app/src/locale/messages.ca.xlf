@@ -4429,6 +4429,18 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Agregamos paneles de datos, filtros o textos a nuestro informe. </source>
         <target>Agreguem panells de dades, filtres o textos al nostre informe.</target>
       </trans-unit>
+      <trans-unit id="tutorialThird_1" datatype="html">
+        <source>Una vez creado un KPI en un informe. </source>
+        <target>Un cop creat un KPI a un informe.</target>
+      </trans-unit>
+      <trans-unit id="tutorialThird_2" datatype="html">
+        <source>Se puede definir una alerta que se enviará por email en caso de que la condición del KPI se cumpla.</source>
+        <target>Es pot definir una alerta que s'enviarà per correu electrònic en cas que la condició del KPI es compleixi.</target>
+      </trans-unit>
+      <trans-unit id="tutorialThird_3" datatype="html">
+        <source>Llegará un mail a la hora definida con el texto indicado.</source>
+        <target>Arribarà un mail a l'hora definida amb el text indicat.</target>
+      </trans-unit>
       <trans-unit id="firstAboutParagraphSpan_1" datatype="html">
         <source>
           es una aplicación web de código libre que permite realizar informes gráficos e interactivos de
