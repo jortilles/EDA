@@ -86,8 +86,9 @@ Some of the dashboads  you can do with EDA:
 
 
 How it works:
-1. Create a [data model] (https://youtu.be/Px709s0ftiI)
-2. Create nice  [reports] (https://youtu.be/RFznLe9kxHU)
+1. Create a [data model](https://youtu.be/Px709s0ftiI)
+2. Create nice [reports](https://youtu.be/RFznLe9kxHU)
+3. Enjoy and share it
 
 
 ## Documentation
