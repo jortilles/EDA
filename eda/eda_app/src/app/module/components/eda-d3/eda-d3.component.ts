@@ -1,4 +1,4 @@
-import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter } from '@angular/core';
 import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
@@ -16,6 +16,7 @@ import * as dataUtils from '../../../services/utils/transform-data-utils';
 export class EdaD3Component implements AfterViewInit, OnInit {
 
   @Input() inject: EdaD3;
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
@@ -75,7 +76,15 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     //Remove metric key and assign value
     const metricKey = keys.splice(this.metricIndex, 1)[0];
 
-    const color = d3.scaleOrdinal(this.firstColLabels, this.colors).unknown("#ccc");
+    //PINTAMOS
+    let configData = [], configColors = [];
+    if (this.inject.assignedColors && this.inject.assignedColors[0][1].color !== undefined) {
+      //SI TENEMOS ASSIGNED COLORS CORRECTAMENTE, RECUPERAMOS SU VALOR
+      configData = this.inject.assignedColors.map(item => item[0].value)
+      configColors = this.inject.assignedColors.map(item => item[1].color)
+    } else {configColors = this.colors}  
+
+    const color = d3.scaleOrdinal(this.firstColLabels, configColors).unknown("#ccc");
 
     let { _nodes, _links } = this.graph(keys, data, metricKey);
 
@@ -116,8 +125,9 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .join("path")
       .attr("d", sankeyLinkHorizontal())
       .on('click', (mouseevent, data) => {
+        if (this.div)
+        this.div.remove();
         if (this.inject.linkedDashboard) {
-
           const props = this.inject.linkedDashboard;
           const value = this.inject.data.values.filter(row => {
             let allIn = true;
@@ -129,12 +139,19 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
           const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
-
+          
+        } else {
+          const dataIndex = (mouseevent.target as SVGRectElement).getAttribute("dataindex");
+          //Passem aquestes dades
+          const label = data.source.name;
+          const value = data.value;
+          const filterBy = this.inject.data.labels[0];
+          this.onClick.emit({ inx: 0, label, value, filterBy });
         }
       })
       .on('mouseover', this.showLinks)
       .on('mouseout', this.hideLinks)
-      .attr("stroke", d => color(d.names[0]))
+      .attr("stroke", d => configColors[configData.findIndex((item) => d.names.includes(item))] || color(d.names[0]))
       .attr("stroke-width", d => d.width)
       .style("mix-blend-mode", "multiply")
       .on('mouseover', (d, data) => {

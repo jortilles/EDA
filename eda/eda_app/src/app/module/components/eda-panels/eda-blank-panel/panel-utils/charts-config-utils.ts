@@ -74,9 +74,9 @@ export const ChartsConfigUtils = {
     } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
       let assignedColors = [];
     
-      if ("treeMap".includes(ebp.panelChart.props.chartType)) {
+      if (["parallelSets", "treeMap"].includes(ebp.panelChart.props.chartType)) {
         //ES TREEMAP
-          ebp.chartData.forEach((element, index) => {
+        ebp.chartData.forEach((element, index) => {
             if (ebp.panelChart.props.config.getConfig().hasOwnProperty('assignedColors') &&
               ebp.panelChart.props.config.getConfig()['assignedColors'].color &&
               ebp.panelChart.props.config.getConfig()['assignedColors'].length > 0) {
@@ -96,7 +96,7 @@ export const ChartsConfigUtils = {
           colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : [],
           assignedColors: assignedColors,
         }
-
+        console.log(config)
       } else { 
         config = {
           colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : [],
