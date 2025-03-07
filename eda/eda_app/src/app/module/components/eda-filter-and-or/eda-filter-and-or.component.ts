@@ -47,24 +47,25 @@ export class EdaFilterAndOrComponent implements OnInit {
       resizable: {
         enabled: false // Elemento para que no se redimensione
       },
-      minCols: 8,
-      maxCols: 8,
+      minCols: 12,
+      maxCols: 12,
       minRows: 30,
       maxRows: 30,
       margin: 0, // Reduce el margen entre celdas
-      fixedRowHeight: 70, // Altura del elemento
-      fixedColWidth: 226.52, // Anchura del elemento
+      fixedRowHeight: 35, // Altura del elemento
+      fixedColWidth: 80, // Anchura del elemento
       // disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
       // disableScrollVertical: true, // Desactiva scroll horizontal si es necesario
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
-      itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
+      itemResizeCallback: (item: GridsterItem) => this.onItemChange(item),
+      gridLinesColor: '#ff0000'
     };
 
     this.dashboard = [
-      { cols: 1, rows: 1, y: 0, x: 0 },
-      { cols: 1, rows: 1, y: 1, x: 0 },
-      { cols: 1, rows: 1, y: 2, x: 0 },
-      { cols: 1, rows: 1, y: 3, x: 0 },
+      { cols: 3, rows: 1, y: 0, x: 0 },
+      { cols: 3, rows: 1, y: 1, x: 0 },
+      { cols: 3, rows: 1, y: 2, x: 0 },
+      { cols: 3, rows: 1, y: 3, x: 0 },
     ];
   }
 

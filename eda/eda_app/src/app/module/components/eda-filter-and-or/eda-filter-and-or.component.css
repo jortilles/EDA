@@ -1,0 +1,21 @@
+
+.gridster {
+    background-color: #dddada; 
+    border: 1px solid #13d60c;  /* Líneas de borde alrededor de cada ítem */
+}
+
+.gridster .gridster-column {
+    border-left: 1px solid red;
+    border-right: 1px solid red;
+    outline: 1px solid red;
+}
+.gridster .gridster-row {
+    border-top: 1px solid red;
+    border-bottom: 1px solid red;
+    outline: 1px solid red;
+}
+
+.gridster-item {
+    background-color: #b4b0b0; /* Cambia este valor por el color que desees */
+    border: 1px solid #d60c0c;  /* Líneas de borde alrededor de cada ítem */
+}
