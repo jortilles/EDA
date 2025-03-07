@@ -33,7 +33,7 @@ export const ChartsConfigUtils = {
         visibleRows: tableRows,
         sortedSerie: ebp.panelChart.componentRef.instance.inject.sortedSerie,
         sortedColumn: ebp.panelChart.componentRef.instance.inject.sortedColumn,
-        styles : ebp.panelChart.componentRef.instance.inject.styles,
+        styles: ebp.panelChart.componentRef.instance.inject.styles,
         noRepetitions: ebp.panelChart.componentRef.instance.inject.noRepetitions,
         negativeNumbers: ebp.panelChart.componentRef.instance.inject.negativeNumbers,
         ordering: ebp.panelChart.componentRef.instance.inject.ordering,
@@ -56,27 +56,53 @@ export const ChartsConfigUtils = {
         // chartType: ebp.panelChart.props.chartType, 
       }
 
-    }else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
+    } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType === 'dynamicText') {
       config = {
         color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : ebp.panelChart.props.config.getConfig()['color']
       }
-    }else if (['coordinatesMap', 'geoJsonMap'].includes(ebp.panelChart.props.chartType)) {
+    } else if (['coordinatesMap', 'geoJsonMap'].includes(ebp.panelChart.props.chartType)) {
 
       config = {
-        zoom:ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
-        coordinates : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
-        logarithmicScale : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
-        legendPosition : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.legendPosition : null,
-        color : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
+        zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
+        coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
+        logarithmicScale: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.logarithmicScale : null,
+        legendPosition: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.legendPosition : null,
+        color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.color : null,
         draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
         
       }
-    }else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
-      config = {
-        colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : []
+    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
+      let assignedColors = [];
+    
+      if ("treeMap".includes(ebp.panelChart.props.chartType)) {
+        //ES TREEMAP
+          ebp.chartData.forEach((element, index) => {
+            if (ebp.panelChart.props.config.getConfig().hasOwnProperty('assignedColors') &&
+              ebp.panelChart.props.config.getConfig()['assignedColors'].color &&
+              ebp.panelChart.props.config.getConfig()['assignedColors'].length > 0) {
+              //TIENE ASSIGNED COLORS CORRECTAMENTE
+              assignedColors[index] = ebp.panelChart.props.config.getConfig()['assignedColors'][index]
+            } else if (ebp.panelChart.props.config.getConfig().hasOwnProperty('colors')) {
+              //SI NO TIENE ASSIGNED COLORS LE AGREGAMOS EL COLORS (INFORMES VIEJOS)
+              assignedColors[index] =
+                [{ value: element.find(innerElement => typeof innerElement === "string") },
+                  {
+                    color: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig()['colors'].length !== 0 ?
+                      ebp.panelChart.props.config.getConfig()['colors'][index] : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors[index] : []
+                  }];
+            }
+          })
+        config = {
+          colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : [],
+          assignedColors: assignedColors,
+        }
+
+      } else { 
+        config = {
+          colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : [],
+        }
       }
     }else if (ebp.panelChart.props.chartType === 'knob') {
-  
       config = {
         color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.color : ebp.panelChart.props.config.getConfig()['color'],
         limits: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.limits : ebp.panelChart.props.config.getConfig()['limits']
@@ -95,7 +121,6 @@ export const ChartsConfigUtils = {
               assignedColors[index] =
                 [{ value: element.find(innerElement => typeof innerElement === "string") },
                 { color: ebp.panelChart.componentRef.instance.inject.chartColors[0].backgroundColor[index] }]
-          
             }
             //Si tiene colors assignados en el config, los recuperamos
             else {   
@@ -122,7 +147,7 @@ export const ChartsConfigUtils = {
           numberOfColumns: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['numberOfColumns'] : null,
           assignedColors:assignedColors,
       };
-  }
+    }
     return new ChartConfig(config);
 
   },

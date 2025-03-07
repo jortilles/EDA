@@ -5,7 +5,6 @@ import * as d3 from 'd3';
 import { TreeMap } from "./eda-treeMap";
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { BaseChartDirective } from "ng2-charts";
 
 
 @Component({
@@ -16,7 +15,6 @@ import { BaseChartDirective } from "ng2-charts";
 })
 export class EdaTreeMap implements AfterViewInit {
   @Input() inject: TreeMap;
-  @ViewChild("treeMap") treeMap: BaseChartDirective;
   @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild("svgContainer", { static: false }) svgContainer: ElementRef;
 
@@ -30,14 +28,13 @@ export class EdaTreeMap implements AfterViewInit {
   metricIndex: number;
   width: number;
   heigth: number;
-
+  leafNum: number = -1;
   constructor() {
     this.update = true;
   }
 
   ngOnInit(): void {
     this.id = `treeMap_${this.inject.id}`;
-
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex =
       this.inject.dataDescription.otherColumns[0].index;
@@ -47,8 +44,8 @@ export class EdaTreeMap implements AfterViewInit {
     this.firstColLabels = [...new Set(this.firstColLabels)];
 
     this.data = this.formatData(this.inject.data);
-
-    this.colors =
+    
+      this.colors =
       this.inject.colors.length > 0
         ? this.inject.colors
         : this.getColors(this.data.children.length, ChartsColors);
@@ -104,10 +101,10 @@ export class EdaTreeMap implements AfterViewInit {
     const maxLength = dataUtils.maxLengthElement([
       firstRow.length,
       secondRow.length,
-      thirdRow.length * (14 / 12),
+      thirdRow.length * (18 / 12),
     ]);
 
-    const pixelWithRate = 7;
+    const pixelWithRate = 8;
     const width = maxLength * pixelWithRate;
 
     return {
@@ -127,10 +124,18 @@ export class EdaTreeMap implements AfterViewInit {
   draw() {
     const width = this.svgContainer.nativeElement.clientWidth - 20,
       height = this.svgContainer.nativeElement.clientHeight - 20;
+    
+    //PINTAMOS
+    let configData = [], configColors = [];
+    if (this.inject.assignedColors && this.inject.assignedColors[0][1].color !== undefined) {
+      //SI TENEMOS ASSIGNED COLORS CORRECTAMENTE, RECUPERAMOS SU VALOR
+      configData = this.inject.assignedColors.map(item => item[0].value)
+      configColors = this.inject.assignedColors.map(item => item[1].color)
+    } else {configColors = this.colors}      
     const color = d3
-      .scaleOrdinal(this.firstColLabels, this.colors)
-      .unknown("#ccc");
-
+        .scaleOrdinal(this.firstColLabels, configColors)
+        .unknown("#ccc");
+    
     const treemap = (data) =>
       d3
         .treemap()
@@ -162,12 +167,18 @@ export class EdaTreeMap implements AfterViewInit {
       .attr("id", (d) => (d.leafUid = this.randomID()))
       .attr("fill", (d) => {
         while (d.depth > 1) d = d.parent;
-        return color(d.data.name);
+        //AQUI SE PONE EL COLOR DEL TREEMAP
+        return configColors[configData.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
       })
       .attr("fill-opacity", 0.6)
+      .attr("dataindex", this.leafNum+=1)
       .attr("width", (d) => d.x1 - d.x0)
       .attr("height", (d) => d.y1 - d.y0)
       .on("click", (mouseevent, data) => {
+        if (this.div)
+          this.div.remove();
+        const dataIndex = (mouseevent.target as SVGRectElement).getAttribute("dataindex");
+        console.log('dataindex', dataIndex)
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
           const value = data.data.name;
@@ -179,12 +190,10 @@ export class EdaTreeMap implements AfterViewInit {
             `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`;
           window.open(url, "_blank");
         } else {
-          console.log(data);
-          console.log(this);
           const label = data.data.name;
           const value = data.value;
-          const filterBy = this.inject.data.labels[0];
-          this.onClick.emit({ inx: 0, label, value, filterBy });
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({ inx: dataIndex, label, value, filterBy});
         }
       })
       .on("mouseover", (d, data) => {
@@ -201,14 +210,14 @@ export class EdaTreeMap implements AfterViewInit {
           .append("div")
           .attr("class", "d3tooltip")
           .style("opacity", 0);
-
+        
         this.div.transition().duration(200).style("opacity", 0.9);
         this.div
           .html(text)
           .style("left", d.pageX - 81 + "px")
           .style("top", d.pageY - 49 + "px")
           .style("width", `${tooltipData.width}px`)
-          .style("height", height);
+          .style("height", 'auto');
       })
       .on("mouseout", (d) => {
         this.div.remove();
@@ -234,12 +243,12 @@ export class EdaTreeMap implements AfterViewInit {
                 .split(/(?=[A-Z][a-z])|\s+/g)
                 .concat(d.data.name.split(/(?=[A-Z][a-z])|\s+/g))
             : d.data.name.split(/(?=[A-Z][a-z])|\s+/g);
-
         value = value.filter((name) => name !== "root" && name !== "Node");
         return value;
       })
       .join("tspan")
       .style("font-size", "var(--panel-big)")
+      .style("pointer-events", "none")
       .style("font-family", "var(--panel-font-family)")
       .attr("fill", "var(--panel-font-color)")
       .attr("x", 3)
@@ -249,9 +258,9 @@ export class EdaTreeMap implements AfterViewInit {
           `${
             <number>(<unknown>(i === nodes.length - 1)) * 0.3 + 1.1 + i * 0.9
           }em`
-      )
-      .attr("fill-opacity", (d, i, nodes) =>
-        i === nodes.length - 1 ? 0.7 : null
+        )
+        .attr("fill-opacity", (d, i, nodes) =>
+          i === nodes.length - 1 ? 0.7 : null
       )
       .text((d) => d);
   }
@@ -322,16 +331,5 @@ export class EdaTreeMap implements AfterViewInit {
     return values;
   }
 
-  updateChartOptions(options: any) {
-    this.update = false;
-    this.treeMap.chart.config.options = options;
-    this.updateChart();
-    setTimeout(() => {
-      this.update = true;
-    }, 0);
-  }
 
-  updateChart() {
-    this.treeMap.chart.update();
-  }
 }

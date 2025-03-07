@@ -613,9 +613,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onD3ChartClick(event: any): void {
         if (
-          this.panelChart.props.chartType == "treeMap" || this.panelChart.props.chartType == "sunburst" ||
-          this.panelChart.props.chartType == "scatterPlot" || this.panelChart.props.chartType == "funnel" ||
-          this.panelChart.props.chartType == "bubblechart" || this.panelChart.props.chartType == "parallelSets"
+            this.panelChart.props.chartType == "treeMap" || this.panelChart.props.chartType == "sunburst" ||
+            this.panelChart.props.chartType == "scatterPlot" || this.panelChart.props.chartType == "funnel" ||
+            this.panelChart.props.chartType == "bubblechart" || this.panelChart.props.chartType == "parallelSets"
         ) {
           this.d3Action.emit({
             code: "ADDFILTER",
@@ -1024,10 +1024,15 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseTreeMapProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
-            this.panel.content.query.output.config.colors = response.colors;
+
+            let assignedColors = [];
+            this.chartData.forEach((element, index) => {
+                assignedColors[index] = [{ value: element[0] }, { color: response.colors[index] }]
+            });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
+            
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
             this.dashboardService._notSaved.next(true);
 
         }

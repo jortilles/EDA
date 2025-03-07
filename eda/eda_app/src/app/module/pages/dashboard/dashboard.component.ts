@@ -778,10 +778,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public async onD3PanelAction(event: IPanelAction): Promise<void> {
     if (event.code === "ADDFILTER") {
-      console.log('estamos en D3')
       const data = event?.data;
       const panel = event?.data?.panel;
+      //NECESITAMOS INDICE?
       if (!_.isNil(data?.inx)) {
+        console.log('estamos en D3')
         const column = event.data.query.find((query: any) => query?.display_name?.default.localeCompare(data.filterBy, undefined, { sensitivity: 'base' }) === 0);
         const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
         if (column && table) {
@@ -865,11 +866,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public async onPanelAction(event: IPanelAction): Promise<void> {
     if (event.code === "ADDFILTER") {
-      console.log(event)
       
       const data = event?.data;
       const panel = event?.data?.panel;
-                    console.log(data);
 
       if (!_.isNil(data?.inx)) {
         let column: any;
@@ -880,8 +879,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         const table = this.dataSource.model.tables.find(
           (table: any) => table.table_name === column?.table_id
         );
-        console.log(column)
-        console.log(table)
         if (column && table) {
           let config = this.setPanelsToFilter(panel);
           if (this.gFilter.globalFilters.length > 0) {
@@ -913,22 +910,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.reloadOnGlobalFilter();
               }
             } else {
-              console.log("no tenemos filtro");
-
               //CREAMOS NUEVO FILTRO EN CHART
               this.lastFilters = this.gFilter.globalFilters.filter(
                 (f) =>
                   f.table.value === table.table_name &&
                   f.column.value.column_name === column.column_name
               );
-              console.log(data)
               this.chartFilter = {
                 id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
                 isGlobal: true,
                 applyToAll: config.applyToAll,
                 panelList: config.panelList.map((p) => p.id),
-                                table: {label: table.display_name.default,value: table.table_name,},
-                                column: {label: column.display_name.default,value: column,},
+                table: {label: table.display_name.default,value: table.table_name,},
+                column: {label: column.display_name.default,value: column,},
                 selectedItems: [data.label],
                 fromChart: true,
               };
@@ -947,7 +941,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             }
           } else {
-              console.log("no tenemos filtro");
               // NO HAY NINGÚN FILTRO APLICADO //CREAMOS NUEVO FILTRO
                 this.chartFilter = {
                   id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),

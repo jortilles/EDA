@@ -101,7 +101,6 @@ export const PanelOptions = {
 
           } 
           else if (panelComponent.graficos.chartType === 'parallelSets') {
-
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.sankeyController = new EdaDialogController({
               params: {
@@ -113,7 +112,6 @@ export const PanelOptions = {
 
           } 
           else if(panelComponent.graficos.chartType === 'treeMap'){
-
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.treeMapController = new EdaDialogController({
               params: {
@@ -122,9 +120,7 @@ export const PanelOptions = {
               },
               close: (event, response) => { panelComponent.onCloseTreeMapProperties(event, response) }
             });
-
           }
-
           else if (panelComponent.graficos.chartType === 'funnel') {
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.funnelController = new EdaDialogController({
