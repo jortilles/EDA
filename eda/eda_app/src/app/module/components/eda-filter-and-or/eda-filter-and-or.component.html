@@ -39,7 +39,7 @@
 <div>
     <gridster class="gridster" [options]="options">
         <gridster-item [item]="item" *ngFor="let item of dashboard" class="gridster-item">
-        <div class="d-flex justify-content-around align-items-center">
+        <div class="d-flex justify-content-between align-items-center">
             <div class="button-holder" *ngIf="!(item.x==0 && item.y==0)">
                 <button
                 mat-mini-fab
@@ -49,7 +49,7 @@
                 <mat-icon>delete</mat-icon>
                 </button>
             </div>
-            <h3>{{item.name}}</h3>
+            <h3>{{item.filter_column}}</h3>
         </div>
         </gridster-item>
     </gridster>

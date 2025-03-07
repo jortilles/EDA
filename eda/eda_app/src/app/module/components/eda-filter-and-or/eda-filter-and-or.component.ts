@@ -62,16 +62,30 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('Panel Filter: ', this.selectedFilters);
     console.log('Global Filter: ', this.globalFilters);
+    console.log('Panel Filter: ', this.selectedFilters);
 
-    this.dashboard = [
-      { cols: 3, rows: 1, y: 0, x: 0, name: 'Edalitics 1' },
-      { cols: 3, rows: 1, y: 1, x: 0, name: 'Edalitics 2' },
-      { cols: 3, rows: 1, y: 2, x: 0, name: 'Edalitics 3'},
-      { cols: 3, rows: 1, y: 3, x: 0, name: 'Edalitics 4'},
-      { cols: 3, rows: 1, y: 4, x: 0, name: 'Edalitics 5'},
-    ];
+    // Integración:
+
+    this.dashboard = [];
+
+    // Agregado de Filtros Globales
+    this.globalFilters.forEach((gf, i) => {
+      this.dashboard.push({cols: 3, rows:1, y:i, x:0, filter_column: gf.filter_column})
+    })
+
+    // Agregado de Filtros de Panel
+    this.selectedFilters.forEach((sf, j) => {
+      this.dashboard.push({cols: 3, rows:1, y: this.globalFilters.length + j, x:0, filter_column: sf.filter_column})
+    })
+
+    // this.dashboard = [
+    //   { cols: 3, rows: 1, y: 0, x: 0, name: 'Edalitics 1' },
+    //   { cols: 3, rows: 1, y: 1, x: 0, name: 'Edalitics 2' },
+    //   { cols: 3, rows: 1, y: 2, x: 0, name: 'Edalitics 3'},
+    //   { cols: 3, rows: 1, y: 3, x: 0, name: 'Edalitics 4'},
+    //   { cols: 3, rows: 1, y: 4, x: 0, name: 'Edalitics 5'},
+    // ];
 
   }
 

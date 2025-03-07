@@ -19,4 +19,5 @@
     background-color: #b4b0b0; /* Cambia este valor por el color que desees */
     border: 1px solid #b87070;  /* Líneas de borde alrededor de cada ítem */
     cursor: pointer;
+    padding: 0 10px;
 }
