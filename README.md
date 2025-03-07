@@ -2,7 +2,6 @@
 
 Enterprise Data Analytics by  [Jortilles](http://eda.jortilles.com)! The easiest analytics tool.
 
-
 ## Get EDA
 
 ```bash
@@ -42,10 +41,13 @@ cd EDA/eda/eda_app
 npm install
 npm start
 ```
+## USE EDA
 
-## Demo
+Just use it.... go to https://free.edalitics.com Edalitics is the SAAS jortilles provides over EDA. 
 
-The easiest way to run and try EDA  is using docker: 
+## Docker
+
+The easiest way to run and try  EDA locally is using docker: 
 
 ```
 docker run -p 80:80 jortilles/eda:latest
@@ -56,31 +58,18 @@ Once the process if finish, just go to **http://localhost**
 * The default user is: **eda@jortilles.com**
 * The default password is: **default**
 
-If you are a Windows user, you can download a Windows bundle from sourceforge:
 
-https://sourceforge.net/projects/enterprise-data-analytics/
+Some of the dashboads  you can do with EDA: 
 
-Download the latest package. unzip it wherever you want and run: run_eda.bat
+![EDA Sample](https://eda.jortilles.com/wp-content/uploads/2021/01/animaged4.gif)
 
-It only has one prerequisite: node.js lts.
-
-It will open several windows. The mongodb database and the web server.
-
-After all, you can go to http: // localhost: 8080 / index.html
+How it works:
+1. Create a [data model] (https://youtu.be/Px709s0ftiI)
+2. Create nice  [reports] (https://youtu.be/RFznLe9kxHU)
 
 
-
-Easily, you can do dashboads as nice as this one: 
-
-![EDA Sample](https://eda.jortilles.com/wp-content/uploads/2020/04/ejemplo_demo_venta.png)
-
-You can see it in action [here](https://www.youtube.com/watch?v=S0wkoeRqz3k&t=5s)
-
-## Technical Documentation
-To see the technical documentation click [here](docs/technical-docs.md) 
-
-## User Documentation
-We just created documentation site http://edadoc.jortilles.com/en/index.html#/
+## Documentation
+You can find EDA's documentation at (http://edadoc.jortilles.com/en/index.html#/)
 
 
 
