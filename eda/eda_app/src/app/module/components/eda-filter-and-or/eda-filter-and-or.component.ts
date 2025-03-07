@@ -58,10 +58,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       // disableScrollVertical: true, // Desactiva scroll horizontal si es necesario
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
       itemResizeCallback: (item: GridsterItem) => this.onItemChange(item),
-      gridLinesColor: '#ff0000'
     };
-
-
   }
 
   ngOnInit(): void {
@@ -69,11 +66,11 @@ export class EdaFilterAndOrComponent implements OnInit {
     console.log('Global Filter: ', this.globalFilters);
 
     this.dashboard = [
-      { cols: 3, rows: 1, y: 0, x: 0 },
-      { cols: 3, rows: 1, y: 1, x: 0 },
-      { cols: 3, rows: 1, y: 2, x: 0 },
-      { cols: 3, rows: 1, y: 3, x: 0 },
-      { cols: 3, rows: 1, y: 4, x: 0 },
+      { cols: 3, rows: 1, y: 0, x: 0, name: 'Edalitics 1' },
+      { cols: 3, rows: 1, y: 1, x: 0, name: 'Edalitics 2' },
+      { cols: 3, rows: 1, y: 2, x: 0, name: 'Edalitics 3'},
+      { cols: 3, rows: 1, y: 3, x: 0, name: 'Edalitics 4'},
+      { cols: 3, rows: 1, y: 4, x: 0, name: 'Edalitics 5'},
     ];
 
   }
