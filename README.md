@@ -1,6 +1,5 @@
 # EDA 
-
-Enterprise Data Analytics by  [Jortilles](http://eda.jortilles.com)! The easiest analytics tool.
+After years of working with complex analytics tools, Jortilles decided to create the easiest reporting tool. So simple that even a five-year-old can handle it. This is Enterprise Data Analytics by  [Jortilles](http://eda.jortilles.com)! The easiest analytics tool.
 
 ![EDA Sample](https://eda.jortilles.com/wp-content/uploads/2021/01/animaged4.gif)
 
