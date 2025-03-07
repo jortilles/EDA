@@ -49,8 +49,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       },
       minCols: 12,
       maxCols: 12,
-      minRows: 30,
-      maxRows: 30,
+      minRows: 14,
+      maxRows: 14,
       margin: 0, // Reduce el margen entre celdas
       fixedRowHeight: 35, // Altura del elemento
       fixedColWidth: 80, // Anchura del elemento
@@ -61,17 +61,21 @@ export class EdaFilterAndOrComponent implements OnInit {
       gridLinesColor: '#ff0000'
     };
 
-    this.dashboard = [
-      { cols: 3, rows: 1, y: 0, x: 0 },
-      { cols: 3, rows: 1, y: 1, x: 0 },
-      { cols: 3, rows: 1, y: 2, x: 0 },
-      { cols: 3, rows: 1, y: 3, x: 0 },
-    ];
+
   }
 
   ngOnInit(): void {
     console.log('Panel Filter: ', this.selectedFilters);
     console.log('Global Filter: ', this.globalFilters);
+
+    this.dashboard = [
+      { cols: 3, rows: 1, y: 0, x: 0 },
+      { cols: 3, rows: 1, y: 1, x: 0 },
+      { cols: 3, rows: 1, y: 2, x: 0 },
+      { cols: 3, rows: 1, y: 3, x: 0 },
+      { cols: 3, rows: 1, y: 4, x: 0 },
+    ];
+
   }
 
   

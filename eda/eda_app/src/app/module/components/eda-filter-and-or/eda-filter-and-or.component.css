@@ -1,21 +1,21 @@
 
 .gridster {
-    background-color: #dddada; 
-    border: 1px solid #13d60c;  /* Líneas de borde alrededor de cada ítem */
+    background-color: transparent; 
+    border: 1px solid #13d60c00;  /* Líneas de borde alrededor de cada ítem */
 }
 
 .gridster .gridster-column {
-    border-left: 1px solid red;
-    border-right: 1px solid red;
-    outline: 1px solid red;
+    border-left: 1px solid rgb(204, 197, 197);
+    border-right: 1px solid rgb(204, 197, 197);;
+    outline: 1px solid rgb(204, 197, 197);;
 }
 .gridster .gridster-row {
-    border-top: 1px solid red;
-    border-bottom: 1px solid red;
-    outline: 1px solid red;
+    border-top: 1px solid rgb(204, 197, 197);;
+    border-bottom: 1px solid rgb(204, 197, 197);;
+    outline: 1px solid rgb(204, 197, 197);
 }
 
 .gridster-item {
     background-color: #b4b0b0; /* Cambia este valor por el color que desees */
-    border: 1px solid #d60c0c;  /* Líneas de borde alrededor de cada ítem */
+    border: 1px solid #b87070;  /* Líneas de borde alrededor de cada ítem */
 }
