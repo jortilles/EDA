@@ -7,7 +7,7 @@ Enterprise Data Analytics by  [Jortilles](http://eda.jortilles.com)! The easiest
 
 ## Get Started.
 
-The easiest way to get started with EDA is to sing up on the free EDA cloud: [free.edalitics](https://free.edalitics.com). If you like it you can always ugrade to a e  [privae edalitics instanc](https://www.edalitics.com/en/edalitics-3/#como-tenerlo). Edalitis is the cloud service over EDA.
+The free EDA cloud: [free.edalitics](https://free.edalitics.com) is the easiest way to get started with EDA. If you like it you can always ugrade to a  [private edalitics instance](https://www.edalitics.com/en/edalitics-3/#como-tenerlo). Edalitis is the cloud service over EDA.
 
 ## Features
   * Create amazing dashboards without technical knowledge. 
@@ -79,7 +79,11 @@ Once the process if finish, just go to **http://localhost**
 
 Some of the dashboads  you can do with EDA: 
 
-![EDA Sample](https://eda.jortilles.com/wp-content/uploads/2021/01/animaged4.gif)
+![EDA Sample](https://www.edalitics.com/wp-content/uploads/2023/02/SuiteCRMUserPerformance.jpeg)
+
+![EDA Samplt](https://www.edalitics.com/wp-content/uploads/2022/03/woocommerce_sales.png)
+
+
 
 How it works:
 1. Create a [data model] (https://youtu.be/Px709s0ftiI)
