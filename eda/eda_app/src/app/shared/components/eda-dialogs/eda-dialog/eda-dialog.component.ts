@@ -25,20 +25,4 @@ export class EdaDialogComponent implements AfterViewInit {
             }, 0);
         });
     }
-
-    // ngDoCheck() {
-    //     this.ngZone.runOutsideAngular(() => {
-    //         setTimeout(() => {
-    //             if (this.dialog !== undefined && this.dialog.container !== undefined) {
-    //                 if (this.height != null && this.dialog.container.offsetHeight !== this.height ||
-    //                     this.width != null && this.dialog.container.offsetWidth !== this.width) {
-    //                     this.dialog.center();
-    //                 }
-    //
-    //                 this.height = this.dialog.container.offsetHeight;
-    //                 this.width = this.dialog.container.offsetWidth;
-    //             }
-    //         }, 10);
-    //     });
-    // }
 }

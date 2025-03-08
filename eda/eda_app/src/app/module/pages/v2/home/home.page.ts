@@ -1,95 +1,225 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { AsyncPipe, CommonModule, DatePipe, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
-import { ReportService } from '@eda/services/api/report.service';
 import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
-import * as _ from 'lodash';
 import { FormsModule } from '@angular/forms';
+import { AlertService, DashboardService } from '@eda/services/service.index';
+import Swal from 'sweetalert2';
+import * as _ from 'lodash';
+import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
+import { CreateDashboardComponent } from '@eda/shared/components/shared-components.index';
 @Component({
-    selector: 'app-v2-home-page',
-    standalone: true,
-    imports: [FormsModule, NgTemplateOutlet, IconComponent],
-    templateUrl: './home.page.html'
+  selector: 'app-v2-home-page',
+  standalone: true,
+  imports: [FormsModule, NgTemplateOutlet, IconComponent, CreateDashboardComponent],
+  templateUrl: './home.page.html'
 })
 export class HomePageV2 implements OnInit {
-    private reportService = inject(ReportService);
-    private router = inject(Router);
+  private createDashboardService = inject(CreateDashboardService);
+  private dashboardService = inject(DashboardService);
+  private alertService = inject(AlertService);
+  private router = inject(Router);
 
-    publicReports: any[] = [];
-    privateReports: any[] = [];
-    roleReports: any[] = [];
-    sharedReports: any[] = [];
+  allDashboards: any[] = [];
+  publicReports: any[] = [];
+  privateReports: any[] = [];
+  roleReports: any[] = [];
+  sharedReports: any[] = [];
+  reportMap: any = {};
 
-    activeFilters: string[] = ['Veure tots', 'Ajuntament'];
+  activeFilters: string[] = ['Veure tots', 'Ajuntament'];
 
-    tags: any[] = [];
-    selectedTags = signal<any[]>([
-        { label: $localize`:@@AllTags:Todos`, value: 1 }
-    ]);
-    isOpenTags = signal(false)
-    searchTagTerm = signal("")
+  tags: any[] = [];
+  selectedTags = signal<any[]>([
+    { label: $localize`:@@AllTags:Todos`, value: 1 }
+  ]);
+  isOpenTags = signal(false)
+  searchTagTerm = signal("")
 
-    constructor() { }
+  constructor() { }
 
-    ngOnInit(): void {
-        this.loadReports();
+  ngOnInit(): void {
+    this.loadReports();
+  }
+
+  private async loadReports() {
+    const { publics, shared, dashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
+    this.publicReports = publics.sort((a, b) => a.config.title.localeCompare(b.config.title));
+    this.privateReports = dashboards.sort((a, b) => a.config.title.localeCompare(b.config.title));
+    this.roleReports = group.sort((a, b) => a.config.title.localeCompare(b.config.title));
+    this.sharedReports = shared.sort((a, b) => a.config.title.localeCompare(b.config.title));
+    this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.sharedReports);
+
+    this.reportMap = {
+      private: this.privateReports,
+      group: this.roleReports,
+      public: this.publicReports,
+      shared: this.sharedReports
+    };
+    this.loadReportTags();
+  }
+
+  private async loadReportTags() {
+    /** Obtener etiquetas únicas */
+    this.tags = _.uniqBy(
+      [...this.privateReports, ...this.publicReports, ...this.roleReports, ...this.sharedReports]
+        .flatMap(db => db.config.tag) // Aplanamos los arrays de tags
+        .filter(tag => tag !== null && tag !== undefined) // Eliminamos valores nulos o indefinidos
+        .flatMap(tag => Array.isArray(tag) ? tag : [tag]) // Si es un array, lo expandimos; si no, lo mantenemos como está
+        .map(tag => typeof tag === 'string' ? { label: tag, value: tag } : tag), // Convertimos en objetos { label, value }
+      'value' // Eliminamos duplicados basados en el valor
+    );
+
+    // Agregar opciones adicionales
+    this.tags.unshift({ label: $localize`:@@NoTag:Sin Etiqueta`, value: 0 });
+    this.tags.push({ label: $localize`:@@AllTags:Todos`, value: 1 });
+  }
+
+  public openReport(report: any) {
+    this.router.navigate(['/v2/dashboard', report._id]);
+  }
+
+  public handleTagSelect(option: any): void {
+    const currentFilters = this.selectedTags()
+    if (currentFilters.some((filter) => filter.value === option.value)) {
+      this.selectedTags.set(currentFilters.filter((filter) => filter.value !== option.value))
+    } else {
+      this.selectedTags.set([...currentFilters, option])
     }
+    this.isOpenTags.set(false)
+  }
 
-    private async loadReports() {
-        const { publics, shared, dashboards, group } = await lastValueFrom(this.reportService.getAllReports());
-        this.publicReports = publics.sort((a, b) => a.config.title.localeCompare(b.config.title));
-        this.privateReports = dashboards.sort((a, b) => a.config.title.localeCompare(b.config.title));
-        this.roleReports = group.sort((a, b) => a.config.title.localeCompare(b.config.title));
-        this.sharedReports = shared.sort((a, b) => a.config.title.localeCompare(b.config.title));
+  public filteredTags(): any[] {
+    return this.tags.filter((option) => option.label.toLowerCase().includes(this.searchTagTerm().toLowerCase()))
+  }
 
-        this.loadReportTags();
-    }
+  public removeTag(filterToRemove: any): void {
+    this.selectedTags.set(this.selectedTags().filter((filter) => filter.value !== filterToRemove.value))
+  }
 
-    private async loadReportTags() {
-        /** Obtener etiquetas únicas */
-        this.tags = _.uniqBy(
-            [...this.privateReports, ...this.publicReports, ...this.roleReports, ...this.sharedReports]
-                .flatMap(db => db.config.tag) // Aplanamos los arrays de tags
-                .filter(tag => tag !== null && tag !== undefined) // Eliminamos valores nulos o indefinidos
-                .flatMap(tag => Array.isArray(tag) ? tag : [tag]) // Si es un array, lo expandimos; si no, lo mantenemos como está
-                .map(tag => typeof tag === 'string' ? { label: tag, value: tag } : tag), // Convertimos en objetos { label, value }
-            'value' // Eliminamos duplicados basados en el valor
+  public toggleDropdownTags(): void {
+    this.isOpenTags.set(!this.isOpenTags())
+  }
+
+  public isTagSelected(optionValue: string): boolean {
+    return this.selectedTags().some(filter => filter.value === optionValue);
+  }
+
+  public onCreateDashboard() {
+    this.createDashboardService.open();
+  }
+
+  /**
+   * Deletes a report after user confirmation.
+   * @param report The report to be deleted
+   */
+  public deleteReport(report: any): void {
+    let text = $localize`:@@deleteDashboardWarning:You are about to delete the report:`;
+    Swal.fire({
+      title: $localize`:@@Sure:Are you sure?`,
+      text: `${text} ${report.config.title}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: $localize`:@@ConfirmDeleteModel:Yes, delete it!`,
+      cancelButtonText: $localize`:@@DeleteGroupCancel:Cancel`,
+    }).then(deleted => {
+      if (deleted.value) {
+        this.dashboardService.deleteDashboard(report._id).subscribe(
+          () => {
+            // Remove the dashboard from allDashboards and visibleDashboards without reordering
+            this.allDashboards = this.allDashboards.filter(d => d._id !== report._id);
+            
+            const targetArray = this.reportMap[report.config.visible];
+            if (targetArray) {
+              // Find the index of the removed report
+              const originalIndex = targetArray.findIndex(d => d._id === report._id);
+
+              if (originalIndex !== -1) {
+                // Remove from the list
+                targetArray.splice(originalIndex, 1);
+              }
+            }
+
+            this.alertService.addSuccess($localize`:@@DashboardDeletedInfo:Report successfully deleted.`);
+          },
+          err => this.alertService.addError(err)
         );
+      }
+    });
+  }
 
-        // Agregar opciones adicionales
-        this.tags.unshift({ label: $localize`:@@NoTag:Sin Etiqueta`, value: 0 });
-        this.tags.push({ label: $localize`:@@AllTags:Todos`, value: 1 });
-    }
+  /**
+ * Clones a report
+ * @param report The report to clone
+ */
+  public cloneReport(report: any): void {
+    this.dashboardService.cloneDashboard(report._id).subscribe(
+      response => {
+        if (response.ok && response.dashboard) {
+          // Create a deep copy of the original report
+          const clonedReport = _.cloneDeep(report);
 
-    public openReport(report: any) {
-        console.log(report);
-        this.router.navigate(['/v2/dashboard', report._id]);
-    }
+          // Update the cloned report data with the server response
+          Object.assign(clonedReport, response.dashboard);
 
-    public handleTagSelect(option: any): void {
-        const currentFilters = this.selectedTags()
-        if (currentFilters.some((filter) => filter.value === option.value)) {
-          this.selectedTags.set(currentFilters.filter((filter) => filter.value !== option.value))
+          // Ensure type and author are correctly assigned
+          clonedReport.type = clonedReport.config.visible;
+          //   clonedReport.user = this.currentUser;
+
+          // Update creation and modification dates
+          clonedReport.config.createdAt = new Date().toISOString();
+          clonedReport.config.modifiedAt = new Date().toISOString();
+
+          const targetArray = this.reportMap[clonedReport.type];
+
+          if (targetArray) {
+            // Find the index of the original report in both lists
+            const originalIndex = targetArray.findIndex(d => d._id === report._id);
+
+            // Insert the cloned report just after the original in both lists
+            if (originalIndex !== -1) {
+              targetArray.splice(originalIndex + 1, 0, clonedReport);
+            } else {
+              targetArray.push(clonedReport);
+            }
+          }
+
+          // Mark the report as newly cloned
+          clonedReport.isNewlyCloned = true;
+
+          // Scroll to the cloned report
+          // setTimeout(() => {
+          //     const element = document.getElementById(`dashboard-${clonedDashboard._id}`);
+          //     if (element) {
+          //         element.scrollIntoView({
+          //             behavior: "smooth",
+          //             block: "center"
+          //         });
+          //     }
+          // }, 100);
+
+          // // Remove the newly cloned mark after 5 seconds
+          // setTimeout(() => {
+          //     clonedDashboard.isNewlyCloned = false;
+          // }, 5000);
+          // TODO
+          //   this.alertService.addSuccess($localize`:@@REPORTCloned:Informe clonado correctamente`);
         } else {
-          this.selectedTags.set([...currentFilters, option])
+          throw new Error($localize`:@@InvalidServerResponse:Respuesta inválida del servidor`);
         }
-        this.isOpenTags.set(false)
+      },
+      error => {
+        console.error($localize`:@@ErrorCloningDashboard:Error al clonar el dashboard:`, error);
+        // TODO
+        // Swal.fire(
+        //   $localize`:@@Error:Error`,
+        //   $localize`:@@CouldNotCloneReport:No se pudo clonar el informe. Por favor, inténtalo de nuevo.`,
+        //   "error"
+        // );
       }
-
-    public filteredTags(): any[] {
-        return this.tags.filter((option) => option.label.toLowerCase().includes(this.searchTagTerm().toLowerCase()))
-    }
-
-    public removeTag(filterToRemove: any): void {
-        this.selectedTags.set(this.selectedTags().filter((filter) => filter.value !== filterToRemove.value))
-      }
-
-    public toggleDropdownTags(): void {
-        this.isOpenTags.set(!this.isOpenTags())
-    }
-
-    public isTagSelected(optionValue: string): boolean {
-        return this.selectedTags().some(filter => filter.value === optionValue);
-    }
+    );
+  }
 }

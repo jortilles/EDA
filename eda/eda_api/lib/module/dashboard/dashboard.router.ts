@@ -336,4 +336,8 @@ router.put('/:id', authGuard, DashboardController.update);
  */
 router.delete('/:id', authGuard, DashboardController.delete);
 
+router.put('/:id/updateSpecific', authGuard, DashboardController.updateSpecific);
+
+router.post('/:id/clone', authGuard, DashboardController.clone);
+
 export default router;

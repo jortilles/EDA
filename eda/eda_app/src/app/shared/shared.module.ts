@@ -16,7 +16,6 @@ import {
     EdaContextMenuComponent,
     EdaInputComponent,
     EdaDatePickerComponent,
-    CreateDashboardComponent,
     EdaFieldComponent
 } from './components/shared-components.index';
 import { PrimengModule } from 'app/core/primeng.module';
@@ -32,7 +31,6 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
         EdaInputComponent,
         FocusOnShowDirective,
         EdaDatePickerComponent,
-        CreateDashboardComponent,
         EdaFieldComponent
     ],
     imports: [
@@ -52,7 +50,6 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
         EdaInputComponent,
         FocusOnShowDirective,
         EdaDatePickerComponent,
-        CreateDashboardComponent,
         EdaFieldComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

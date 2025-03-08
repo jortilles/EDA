@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
     selector: 'app-root',
     templateUrl: './app.component.html',
     standalone: true,
-    imports: [CommonModule, RouterModule, PrimengModule, ],
+    imports: [RouterModule, PrimengModule],
     providers: [MessageService]
 })
 export class AppComponent implements OnInit {

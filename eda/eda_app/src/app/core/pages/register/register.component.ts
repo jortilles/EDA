@@ -33,7 +33,7 @@ export class RegisterComponent implements OnInit {
     }
 
     ngOnInit() {
-        init_plugins();
+        // init_plugins();
     }
 
     isMatch(value1: string, value2: string) {

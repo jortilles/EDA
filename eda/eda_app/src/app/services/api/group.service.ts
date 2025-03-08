@@ -10,7 +10,9 @@ export interface IGroup {
     users: User[];
 }
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class GroupService extends ApiService {
     private route = '/admin/groups';
 

@@ -15,7 +15,8 @@
             placeholder="Buscador"
           >
         </div>
-        <button class="bg-teal-500 hover:bg-teal-600 text-white font-bold px-4 py-2 rounded flex items-center">
+        <button class="bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white font-bold px-4 py-2 rounded flex items-center"
+            (click)="onCreateDashboard()">
           <eda-icon name="plus" size="sm" class="h-4 mr-2"/>
           Crear nou informe
         </button>
@@ -126,10 +127,10 @@
             <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="openReport(report)">
               <eda-icon name="pencil" class="mr-2"></eda-icon>
             </button>
-            <button class="rounded-md p-2 cursor-pointer hover:bg-muted">
+            <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="cloneReport(report)">
               <eda-icon name="document-duplicated"></eda-icon>
             </button>
-            <button class="rounded-md p-2 cursor-pointer hover:bg-muted">
+            <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="deleteReport(report)">
               <eda-icon name="bin"></eda-icon>
             </button>
           </div>
@@ -143,3 +144,6 @@
     }
   </div>
 </ng-template>
+
+
+<!-- <app-create-dashboard></app-create-dashboard> -->

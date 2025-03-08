@@ -1,14 +1,14 @@
-import { Component, ViewEncapsulation } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
 interface NavItem {
   path: string;
-  icon: string;
+  icon?: string;
   isActive?: boolean;
   label?: string;
-  items?: { path: string; label: string; icon: string }[];
+  items?: { path: string; label: string; icon?: string }[];
   showOverlay?: boolean;
   hideTimeout?: any;
 }
@@ -21,36 +21,44 @@ interface NavItem {
   encapsulation: ViewEncapsulation.None
 })
 export class MainLeftSidebarComponent {
+  private router = inject(Router);
+
   navItems: NavItem[] = [
-    { path: '/', icon: 'home', isActive: true },
+    { path: '/v2', icon: 'home', isActive: true },
     {
       path: '/data-source',
       icon: 'plus',
       items: [
-        { path: '/', label: 'DataSource 1', icon: 'plus' },
-        { path: '/', label: 'DataSource 2', icon: 'plus' },
+        { path: '/v2', label: 'Nuevo Dashboard', icon: 'plus' },
+        { path: '/v2', label: 'Nuevo DataSource', icon: 'plus' },
       ]
     },
     {
-        path: '/network',
-        icon: 'molecula',
-        items: [
-            { path: '/', label: `Gestió d'usuaris`, icon: 'plus' },
-            { path: '/', label: 'Gestió de grups', icon: 'plus' },
-            { path: '/', label: 'Gestió de models', icon: 'plus' },
-            { path: '/', label: `Gestió d'email`, icon: 'plus' },
-        ]
-    },
-    { path: '/settings', icon: 'settings' },
-    {
-      path: '/messages',
-      icon: 'global',
+      path: '/network',
+      icon: 'molecula',
       items: [
-        { path: '/', label: 'English', icon: 'plus' },
-        { path: '/', label: 'Español', icon: 'plus' },
-        { path: '/', label: 'Català', icon: 'plus' },
-        { path: '/', label: 'Polski', icon: 'plus' },
+        { path: '/v2/admin/users', label: `Gestión de usuarios`, icon: 'users' },
+        { path: '/v2/admin/groups', label: 'Gestión de grupos', icon: 'rectangle-group' },
+        { path: '/', label: 'Gestión de datasource', icon: 'rectangle-group' },
+        { path: '/', label: 'Data Export/Import', icon: 'arrow-down-on-square-stack' },
+        { path: '/', label: `Gestión de email`, icon: 'at-symbol' },
       ]
+    },
+    {
+      path: '/settings',
+      icon: 'settings',
+      items: [
+        { path: '/', label: 'Perfil', icon: 'profile' },
+        { path: '/', label: 'English', icon: 'en-flag' },
+        { path: '/', label: 'Español', icon: 'es-flag' },
+        { path: '/', label: 'Català', icon: 'cat-flag' },
+        { path: '/', label: 'Polski', icon: 'pl-flag' },
+      ]
+    },
+    {
+      path: '/about',
+      icon: 'global',
+      label: 'Tutorial'
     },
     { path: '/logout', icon: 'logout' },
   ];
@@ -70,7 +78,11 @@ export class MainLeftSidebarComponent {
     }, 100); // Espera 200ms antes de ocultar
   }
 
-  navigateTo(item: any) {
-
+  menuCommand(item: any) {
+    if (item.path) {
+      this.router.navigate([item.path]);
+    } else {
+      console.log('do something else')
+    }
   }
 }

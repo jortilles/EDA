@@ -1,14 +1,23 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
-import { FormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, inject, OnInit, Output } from "@angular/core";
+import { FormBuilder, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from "@angular/forms";
 import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
 import { SelectItem } from "primeng/api";
 import * as _ from 'lodash';
+import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
+import { SharedModule } from "@eda/shared/shared.module";
+import { DropdownModule } from "primeng/dropdown";
+import { ButtonModule } from "primeng/button";
+import { MultiSelectModule } from "primeng/multiselect";
+import { SelectButtonModule } from "primeng/selectbutton";
 
 @Component({
+    standalone: true,
     selector: 'app-create-dashboard',
-    templateUrl: './create-dashboard.component.html'
+    templateUrl: './create-dashboard.component.html',
+    imports: [SharedModule, FormsModule, ReactiveFormsModule, DropdownModule, SelectButtonModule, MultiSelectModule],
 })
 export class CreateDashboardComponent implements OnInit {
+    // private createDashboardService = inject(CreateDashboardService);
     public display: boolean = false;
     public dataSources: any[] = [];
     public form: UntypedFormGroup;
@@ -24,15 +33,17 @@ export class CreateDashboardComponent implements OnInit {
         private alertService: AlertService,
         private groupService: GroupService,
         private dashboardService: DashboardService,
-        private sidebarService: SidebarService,
-        private stylesProviderService: StyleProviderService
+        // private sidebarService: SidebarService,
+        // private stylesProviderService: StyleProviderService
     ) {
         this.initializeForm();
     }
 
     public ngOnInit(): void {
+        console.log('initcreatedashboard')
         this.display = true;
-        this.sidebarService.getDataSourceNamesForDashboard();
+        // TODO
+        // this.sidebarService.getDataSourceNamesForDashboard();
         this.loadGroups();
     }
 
@@ -51,17 +62,17 @@ export class CreateDashboardComponent implements OnInit {
         ];
 
         this.form.controls['visible'].setValue(this.visibleTypes[2].value);
-
-        this.sidebarService.currentDatasourcesDB.subscribe(
-            (res) => {
-                this.dataSources = res;
-                this.dataSources = this.dataSources.sort((a, b) => {
-                    let va = a.model_name.toLowerCase();
-                    let vb = b.model_name.toLowerCase();
-                    return va < vb ?  -1 : va > vb ? 1 : 0
-                });
-            }
-        );
+        // TODO
+        // this.sidebarService.currentDatasourcesDB.subscribe(
+        //     (res) => {
+        //         this.dataSources = res;
+        //         this.dataSources = this.dataSources.sort((a, b) => {
+        //             let va = a.model_name.toLowerCase();
+        //             let vb = b.model_name.toLowerCase();
+        //             return va < vb ?  -1 : va > vb ? 1 : 0
+        //         });
+        //     }
+        // );
     }
 
     private async loadGroups(): Promise<void> {
@@ -104,7 +115,7 @@ export class CreateDashboardComponent implements OnInit {
                     visible: this.form.value.visible,
                     tag: null, 
                     refreshTime:null, 
-                    styles:this.stylesProviderService.generateDefaultStyles(),
+                    styles: null, //TODO this.stylesProviderService.generateDefaultStyles(),
                     external: null
                 },
                 group: this.form.value.group
@@ -123,6 +134,7 @@ export class CreateDashboardComponent implements OnInit {
     }
 
     public onClose(res?: any): void {
+        // this.createDashboardService.close();
         this.close.emit(res);
     }
 }

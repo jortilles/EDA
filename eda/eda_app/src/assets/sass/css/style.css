@@ -39,13 +39,13 @@
 @layer base {
     :root {
       --background: 0 0% 100%;
-      --foreground: 240 10% 3.9%;
+      --primary: 177 100% 37%; /* Color #00BFB3 en formato HSL */
+      --primary-foreground: 0 0% 100%;
+      --ring: 177 100% 37%;
       --card: 0 0% 100%;
       --card-foreground: 240 10% 3.9%;
       --popover: 0 0% 100%;
       --popover-foreground: 240 10% 3.9%;
-      --primary: 142.1 76.2% 36.3%;
-      --primary-foreground: 355.7 100% 97.3%;
       --secondary: 240 4.8% 95.9%;
       --secondary-foreground: 240 5.9% 10%;
       --muted: 240 4.8% 95.9%;
@@ -56,7 +56,7 @@
       --destructive-foreground: 0 0% 98%;
       --border: 240 5.9% 90%;
       --input: 240 5.9% 90%;
-      --ring: 142.1 76.2% 36.3%;
+      --ring: 177 100% 37%;
       --radius: 0.5rem;
     }
    
@@ -67,8 +67,9 @@
       --card-foreground: 0 0% 95%;
       --popover: 0 0% 9%;
       --popover-foreground: 0 0% 95%;
-      --primary: 142.1 70.6% 45.3%;
-      --primary-foreground: 144.9 80.4% 10%;
+      --primary: 177 100% 37%;
+      --primary-foreground: 0 0% 100%;
+      --ring: 177 100% 37%;
       --secondary: 240 3.7% 15.9%;
       --secondary-foreground: 0 0% 98%;
       --muted: 0 0% 15%;
@@ -79,10 +80,13 @@
       --destructive-foreground: 0 85.7% 97.3%;
       --border: 240 3.7% 15.9%;
       --input: 240 3.7% 15.9%;
-      --ring: 142.4 71.8% 29.2%;
     }
 }
 
+body {
+  @apply text-gray-900 dark:text-gray-100;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
 
 html {
     font-size: 13px;

@@ -2,7 +2,9 @@ import {Injectable, Output, EventEmitter} from '@angular/core';
 import {Observable, BehaviorSubject} from 'rxjs';
 import {ApiService} from './api.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class DashboardService extends ApiService {
 
     private route = '/dashboard/';
@@ -48,6 +50,14 @@ export class DashboardService extends ApiService {
 
     cleanCache(body):Observable<any>{
         return this.post(`${this.route}clean-refresh`, body);
+    }
+
+    cloneDashboard(id: string): Observable<any> {
+        return this.post(`${this.route}${id}/clone`, {});
+    }
+
+    updateDashboardSpecific(id: string, body: any): Observable<any> {
+        return this.put(`${this.route}${id}/updateSpecific`, body);
     }
 
 }

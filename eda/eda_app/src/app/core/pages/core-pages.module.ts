@@ -27,14 +27,12 @@ import { PrimengModule } from '../primeng.module';
     ],
     declarations: [
         LoginComponent,
-        RegisterComponent,
         LogoutComponent,
         PageNotFoundComponent,
         AnonymousLoginComponent
     ],
     exports: [
         LoginComponent,
-        RegisterComponent,
         LogoutComponent,
         PageNotFoundComponent,
         AnonymousLoginComponent

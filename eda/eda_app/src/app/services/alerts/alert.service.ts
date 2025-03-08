@@ -3,7 +3,9 @@ import { Subject } from 'rxjs';
 import { Message } from 'primeng/api';
 import * as _ from 'lodash';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class AlertService {
 
     public alerts: Message[] = [];
