@@ -40,7 +40,7 @@ export class MainLeftSidebarComponent {
         { path: '/v2/admin/users', label: `Gestión de usuarios`, icon: 'users' },
         { path: '/v2/admin/groups', label: 'Gestión de grupos', icon: 'rectangle-group' },
         { path: '/', label: 'Gestión de datasource', icon: 'rectangle-group' },
-        { path: '/', label: 'Data Export/Import', icon: 'arrow-down-on-square-stack' },
+        { path: '/v2/admin/models/import-export', label: 'Data Export/Import', icon: 'arrow-down-on-square-stack' },
         { path: '/', label: `Gestión de email`, icon: 'at-symbol' },
       ]
     },

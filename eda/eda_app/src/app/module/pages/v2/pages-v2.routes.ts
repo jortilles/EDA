@@ -23,6 +23,10 @@ export const pagesV2Routes: Routes = [
         loadComponent: () => import('./group-list/group-list.page').then(c => c.GroupListPage)
       },
       {
+        path: 'admin/models/import-export',
+        loadComponent: () => import('./model-import-export/model-import-export.page').then(c => c.ModelImportExportPage)
+      },
+      {
         path: 'dashboard/:id',
         loadComponent: () => import('./dashboard/dashboard.page').then(c => c.DashboardPageV2)
       },

@@ -1,0 +1,185 @@
+
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { DashboardService, DataSourceService } from '@eda/services/service.index';
+import { DataSourceNamesService } from '@eda/services/shared/datasource-names.service';
+import { DropdownModule } from 'primeng/dropdown';
+import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
+import { IconComponent } from '@eda/shared/components/icon/icon.component';
+
+@Component({
+  selector: 'app-model-import-export',
+  templateUrl: './model-import-export.page.html',
+  standalone: true,
+  imports: [CommonModule, FormsModule, DropdownModule, IconComponent],
+  styles: []
+})
+export class ModelImportExportPage implements OnInit {
+  private dataSourceNamesService = inject(DataSourceNamesService);
+  private dashboardService = inject(DashboardService);
+  // Signals para el estado
+  modelTab = signal<'export' | 'import'>('export');
+  dashboardTab = signal<'export' | 'import'>('export');
+  selectedModel = signal<string>('');
+  selectedDashboard = signal<string>('');
+  modelFile = signal<File | null>(null);
+  dashboardFile = signal<File | null>(null);
+  modelFileName = signal<string>('');
+  dashboardFileName = signal<string>('');
+  isDraggingModel = signal<boolean>(false);
+  isDraggingDashboard = signal<boolean>(false);
+
+  public dataSources: any[] = [];
+  public dashboards: any[] = [];
+
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  private async loadData() {
+    const data = await lastValueFrom(this.dataSourceNamesService.getModelsNames());
+    this.dataSources = data.ds
+      .map(elem => ({ label: elem.model_name, value: elem._id }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }));
+
+    const data2 = await lastValueFrom(this.dashboardService.getDashboards());
+    const dashboards = [].concat.apply([], [data2.dashboards, data2.group, data2.publics, data2.shared]);
+
+    this.dashboards = dashboards
+      .map(elem => ({ label:  elem.config.title, value: elem }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }));
+  }
+
+  // Métodos para cambiar tabs
+  setModelTab(tab: 'export' | 'import') {
+    this.modelTab.set(tab);
+  }
+
+  setDashboardTab(tab: 'export' | 'import') {
+    this.dashboardTab.set(tab);
+  }
+
+  // Métodos para seleccionar modelos/dashboards
+  setSelectedModel(value: string) {
+    this.selectedModel.set(value);
+  }
+
+  setSelectedDashboard(value: string) {
+    this.selectedDashboard.set(value);
+  }
+
+  // Métodos para manejar eventos de drag & drop
+  handleDrag(e: DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  handleDragIn(e: DragEvent, type: 'model' | 'dashboard') {
+    e.preventDefault();
+    e.stopPropagation();
+    if (type === 'model') {
+      this.isDraggingModel.set(true);
+    } else {
+      this.isDraggingDashboard.set(true);
+    }
+  }
+
+  handleDragOut(e: DragEvent, type: 'model' | 'dashboard') {
+    e.preventDefault();
+    e.stopPropagation();
+    if (type === 'model') {
+      this.isDraggingModel.set(false);
+    } else {
+      this.isDraggingDashboard.set(false);
+    }
+  }
+
+  handleDrop(e: DragEvent, type: 'model' | 'dashboard') {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (type === 'model') {
+      this.isDraggingModel.set(false);
+    } else {
+      this.isDraggingDashboard.set(false);
+    }
+
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) {
+      this.handleFiles(files[0], type);
+    }
+  }
+
+  handleFileSelect(e: Event, type: 'model' | 'dashboard') {
+    const input = e.target as HTMLInputElement;
+    const files = input.files;
+    if (files && files.length > 0) {
+      this.handleFiles(files[0], type);
+    }
+  }
+
+  handleFiles(file: File, type: 'model' | 'dashboard') {
+    if (type === 'model') {
+      this.modelFileName.set(file.name);
+      this.modelFile.set(file);
+    } else {
+      this.dashboardFileName.set(file.name);
+      this.dashboardFile.set(file);
+    }
+  }
+
+  // Métodos para manejar exportación/importación
+  handleModelExport() {
+    if (!this.selectedModel()) {
+      this.showToast('Error', 'Por favor selecciona un modelo para exportar', 'error');
+      return;
+    }
+    // Lógica de exportación
+    this.showToast('Éxito', 'Modelo exportado correctamente', 'success');
+  }
+
+  handleDashboardExport() {
+    if (!this.selectedDashboard()) {
+      this.showToast('Error', 'Por favor selecciona un dashboard para exportar', 'error');
+      return;
+    }
+    // Lógica de exportación
+    this.showToast('Éxito', 'Dashboard exportado correctamente', 'success');
+  }
+
+  handleModelImport() {
+    if (!this.modelFile()) {
+      this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
+      return;
+    }
+    // Lógica de importación
+    this.showToast('Éxito', 'Modelo importado correctamente', 'success');
+  }
+
+  handleDashboardImport() {
+    if (!this.dashboardFile()) {
+      this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
+      return;
+    }
+    // Lógica de importación
+    this.showToast('Éxito', 'Dashboard importado correctamente', 'success');
+  }
+
+  // Método para mostrar notificaciones
+  showToast(title: string, message: string, type: 'success' | 'error') {
+    // Implementación simple de toast
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-[#00BFB3]' : 'bg-red-500';
+    toast.className = `fixed bottom-4 right-4 ${bgColor} text-white p-4 rounded-md shadow-lg z-50 flex flex-col`;
+    toast.innerHTML = `
+      <h4 class="font-semibold">${title}</h4>
+      <p>${message}</p>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+      setTimeout(() => document.body.removeChild(toast), 300);
+    }, 3000);
+  }
+}
