@@ -12,7 +12,7 @@ import { LoginGuardGuard } from '../../services/guards/login-guard.guard'
 import { pagesV2Routes } from 'app/module/pages/v2/pages-v2.routes';
 
 export const coreRoutes: Routes = [
-    { path: '', component: LoginComponent },
+    { path: '', loadComponent: () => import('./login_v2/login_v2').then(c => c.LoginV2Component) },
     { path: 'login', component: LoginComponent },
     { path: 'v2/login', loadComponent: () => import('./login_v2/login_v2').then(c => c.LoginV2Component) },
     { path: 'conditions', component: ConditionsComponent },
