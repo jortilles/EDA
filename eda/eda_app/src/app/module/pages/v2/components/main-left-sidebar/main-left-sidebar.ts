@@ -48,15 +48,15 @@ export class MainLeftSidebarComponent {
       path: '/settings',
       icon: 'settings',
       items: [
-        { path: '/', label: 'Perfil', icon: 'profile' },
-        { path: '/', label: 'English', icon: 'en-flag' },
-        { path: '/', label: 'Español', icon: 'es-flag' },
-        { path: '/', label: 'Català', icon: 'cat-flag' },
-        { path: '/', label: 'Polski', icon: 'pl-flag' },
+        { path: '/v2/profile', label: 'Perfil', icon: 'profile' },
+        { path: '/', label: 'English', icon: 'en-flag' },//TODO
+        { path: '/', label: 'Español', icon: 'es-flag' },//TODO
+        { path: '/', label: 'Català', icon: 'cat-flag' },//TODO
+        { path: '/', label: 'Polski', icon: 'pl-flag' },//TODO
       ]
     },
     {
-      path: '/about',
+      path: '/v2/about',
       icon: 'global',
       label: 'Tutorial'
     },
@@ -83,6 +83,7 @@ export class MainLeftSidebarComponent {
     if (item.path) {
       this.router.navigate([item.path]);
     } else {
+        // TODO internacionalizacion
       console.log('do something else')
     }
   }
