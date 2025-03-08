@@ -27,6 +27,10 @@ export const pagesV2Routes: Routes = [
         loadComponent: () => import('./model-import-export/model-import-export.page').then(c => c.ModelImportExportPage)
       },
       {
+        path: 'admin/email-settings',
+        loadComponent: () => import('./email-settings/email-settings.page').then(c => c.EmailSettingsPage)
+      },
+      {
         path: 'dashboard/:id',
         loadComponent: () => import('./dashboard/dashboard.page').then(c => c.DashboardPageV2)
       },

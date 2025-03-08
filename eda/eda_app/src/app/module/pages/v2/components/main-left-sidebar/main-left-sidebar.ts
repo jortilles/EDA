@@ -41,7 +41,7 @@ export class MainLeftSidebarComponent {
         { path: '/v2/admin/groups', label: 'Gestión de grupos', icon: 'rectangle-group' },
         { path: '/', label: 'Gestión de datasource', icon: 'rectangle-group' },
         { path: '/v2/admin/models/import-export', label: 'Data Export/Import', icon: 'arrow-down-on-square-stack' },
-        { path: '/', label: `Gestión de email`, icon: 'at-symbol' },
+        { path: '/v2/admin/email-settings', label: `Gestión de email`, icon: 'at-symbol' },
       ]
     },
     {
@@ -79,6 +79,7 @@ export class MainLeftSidebarComponent {
   }
 
   menuCommand(item: any) {
+    console.log('menuCommand', item.path)
     if (item.path) {
       this.router.navigate([item.path]);
     } else {
