@@ -17,12 +17,12 @@
         Colores
       </h6>
 
-      <div class="chart-color-selection">
+      <div class="grid chart-color-selection">
 
         <ng-container *ngFor="let label of labels; let i = index">
 
-          <div class="mb-1">
-
+          <div class="col-6">
+            <span> {{label}} </span>
             <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor(label)" format="hex" appendTo="body">
             </p-colorPicker>
 

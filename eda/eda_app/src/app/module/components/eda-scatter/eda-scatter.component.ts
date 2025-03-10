@@ -41,8 +41,8 @@ export class EdaScatter implements AfterViewInit {
   ngOnInit(): void {
     this.id = `scatterPlot_${this.inject.id}`;
     this.data = this.formatData(this.inject.data);
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors : ChartsColors.map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
-    this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
+    this.colors = this.inject.colors && this.inject.colors.length >= this.data.length ? 
+    this.inject.colors : this.getColors();
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
@@ -70,10 +70,17 @@ export class EdaScatter implements AfterViewInit {
     const width = this.svgContainer.nativeElement.clientWidth - 20;
     const height = this.svgContainer.nativeElement.clientHeight - 20;
     const margin = ({ top: 50, right: 50, bottom: 35, left: 100 });
-    const color = d3.scaleOrdinal(this.firstColLabels, this.colors).unknown(this.colors[0]);
 
-    // const shape = d3.scaleOrdinal(this.data.map(d => d.category), d3.symbols.map(s => d3.symbol().type(s)()));
+    //PINTAMOS
+    let configData = [], configColors = [];
+    if (this.inject.assignedColors && this.inject.assignedColors[this.data.length - 1][1].color !== undefined) {
+      //SI TENEMOS ASSIGNED COLORS CORRECTAMENTE, RECUPERAMOS SU VALOR
+      configData = this.inject.assignedColors.map(item => item[0].value)
+      configColors = this.inject.assignedColors.map(item => item[1].color)
+    } else {configColors = this.colors}  
 
+    const color = d3.scaleOrdinal(this.firstColLabels, configColors).unknown('#ccc');
+  
     const x_range: Array<any> = d3.extent(this.data, (d: any) => d.x);
     const y_range: Array<any> = d3.extent(this.data, (d: any) => d.y);
 
@@ -152,7 +159,11 @@ export class EdaScatter implements AfterViewInit {
       .attr("cx", d => x(d.x))
       .attr("cy", d => y(d.y))
       .attr("r", d => d.radius + 1)
-      .attr("fill", d => color(d.category))
+      //.attr("fill", d => color(d.category))
+      .attr("fill", d => { 
+        while (d.depth > 1) d = d.parent;
+        return configColors[configData.findIndex((item) => d.label.includes(item))] || color(d.label);
+      })
       .on('click', (e, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
@@ -227,6 +238,21 @@ export class EdaScatter implements AfterViewInit {
       })
   }
 
+getColors () {
+     let MAX_ITERATIONS = 1000;
+        let out = [];
+        let col = ChartsColors;
+
+        for (let i = 0; i < MAX_ITERATIONS; i += 50) {
+
+            for (let j = 0; j < col.length; j++) {
+                out.push(`rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 0.8)`);
+            }
+        }
+        return out;
+  }
+
+ 
 
   formatData(data) {
 
