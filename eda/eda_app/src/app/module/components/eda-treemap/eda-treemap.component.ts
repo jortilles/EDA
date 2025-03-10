@@ -51,6 +51,11 @@ export class EdaTreeMap implements AfterViewInit {
         : this.getColors(this.data.children.length, ChartsColors);
   }
 
+  ngOnDestroy(): void {
+    if (this.div)
+      this.div.remove();
+  }
+
   getColors(dataLength, colors) {
     const colorsLength = colors.length;
     let outputColors: Array<any> = colors;
@@ -248,9 +253,10 @@ export class EdaTreeMap implements AfterViewInit {
       })
       .join("tspan")
       .style("font-size", "var(--panel-big)")
+      //REVISAR COLOR
       .style("pointer-events", "none")
+      .attr("fill", "white")
       .style("font-family", "var(--panel-font-family)")
-      .attr("fill", "var(--panel-font-color)")
       .attr("x", 3)
       .attr(
         "y",
