@@ -104,8 +104,6 @@ export const EbpUtils = {
 
     let description = '';
 
-    console.log('value::::: ', value);
-
     switch (value) {
       case 'table':
         description = 'table_chart';

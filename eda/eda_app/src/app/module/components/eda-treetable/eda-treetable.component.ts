@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-eda-treetable',
@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./eda-treetable.component.css']
 })
 export class EdaTreeTable implements OnInit {
+
+  @Input() inject: any; // Podemos crear una clase para categorizar los valores
 
   constructor() { }
 

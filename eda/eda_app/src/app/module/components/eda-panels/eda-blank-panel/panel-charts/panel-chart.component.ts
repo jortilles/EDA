@@ -2,6 +2,9 @@ import { EdaKnob } from './../../../eda-knob/edaKnob';
 import { EdaKnobComponent } from './../../../eda-knob/eda-knob.component';
 import { EdaScatter } from './../../../eda-scatter/eda-scatter.component';
 import { EdaTreeMap } from './../../../eda-treemap/eda-treemap.component';
+
+import { EdaTreeTable } from './../../../eda-treetable/eda-treetable.component';
+
 import { TreeMap } from './../../../eda-treemap/eda-treeMap';
 import { EdaD3Component } from './../../../eda-d3/eda-d3.component';
 import { TableConfig } from './chart-configuration-models/table-config';
@@ -36,6 +39,7 @@ import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
+
 
 
 @Component({
@@ -144,7 +148,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * changes chart Type
      */
+
     public changeChartType() {
+
+        console.log('this.props::::: --- :::::', this.props);
+
         const type = this.props.chartType;
 
         if (['table', 'crosstable'].includes(type)) {
@@ -190,6 +198,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         if (type === 'sunburst') {
             this.renderSunburst();
         }
+        if (type === 'treetable') {
+            this.renderTreetable();
+        }
     }
 
     /**
@@ -197,6 +208,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * @param type table or crosstable
      */
     private renderEdaTable(type) {
+
         if (type === 'table') {
             this.createEdatableComponent(type);
         }
@@ -819,6 +831,25 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
 
+    }
+
+    private renderTreetable() {
+        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+        console.log('==========>>> treetable - dataDescription: ', dataDescription);
+
+        const inject = 100000000000; // Para efectos de prueba
+
+        this.createTreetable(inject)
+
+    }
+
+    private createTreetable(inject: any) {
+        this.entry.clear();
+        const factory = this.resolver.resolveComponentFactory(EdaTreeTable);
+        this.componentRef = this.entry.createComponent(factory);
+        this.componentRef.instance.inject = inject; // se injecta como un input
+
+        console.log('Llega la data: ', inject);
     }
 
     private randomID() {
