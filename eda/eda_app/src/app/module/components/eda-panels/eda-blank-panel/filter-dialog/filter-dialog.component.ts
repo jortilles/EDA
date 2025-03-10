@@ -11,9 +11,13 @@ import {
 } from '@eda/services/service.index';
 import * as _ from 'lodash';
 
+import { aggTypes } from 'app/config/aggretation-types';
+
+
 @Component({
     selector: 'app-filter-dialog',
-    templateUrl: './filter-dialog.component.html'
+    templateUrl: './filter-dialog.component.html',
+    styleUrls: ['./filter-dialog.component.css']
 })
 
 export class FilterDialogComponent extends EdaDialogAbstract {
@@ -38,11 +42,29 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         selecteds: [],
         range : null
     };
+
+    public filterBeforeAfter = {
+        filterBeforeGrouping: true, // valor por defecto true ==> WHERE / valor false ==> HAVING
+        elements: [
+            {label: 'Aplicar el filtro sobre todos los registros.', value: true}, // WHERE
+            {label: 'Aplicar el filtro sobre los resultados.', value: false}, // HAVING
+        ],
+    }
+    public filterBeforeAfterSelected: any;
+
     public inputType: string;
     public filterValue: any = {};
     public filterSelected: FilterType;
     public dropDownFields: SelectItem[] = [];
     public limitSelectionFields: number;
+    public aggregationsTypes: any[] = [];
+    public aggregationType: any = null;
+
+    // Tooltip
+    public whereMessage: string = $localize`:@@whereMessage: Filtro sobre todos los registros`;
+    public havingMessage: string = $localize`:@@havingMessage: Filtro sobre los resultados`;
+    public textBetween: string = $localize`:@@textBetween:Entre`
+
 
     constructor(
         private dashboardService: DashboardService,
@@ -61,7 +83,10 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             title: ''
         });
 
-        this.dialog.style = { width: '50%', height: '70%', top:"-4em", left:'1em'};
+        this.dialog.style = { width: '70%', height: '70%', top:"-4em", left:'1em'};
+
+        // Inicializando el valor del WHERE / HAVING
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
     }
 
     onShow(): void {
@@ -72,6 +97,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     addFilter() {
+
         const table = this.selectedColumn.table_id;
         const column_type  = this.selectedColumn.column_type;
         const column = this.selectedColumn.column_name;
@@ -80,6 +106,8 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         const valueListSource = this.selectedColumn.valueListSource;
         const joins = this.selectedColumn.joins;
         const autorelation = this.selectedColumn.autorelation;
+        const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping
+        const aggregation_type = this.aggregationType ? this.aggregationType.value : null;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -90,11 +118,12 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             selectedRange,
             valueListSource,
             autorelation,
-            joins
+            joins,
+            filterBeforeGrouping,
+            aggregation_type,
         });
         
         this.filter.selecteds.push(filter);
-
         this.carregarFilters();
 
         /* Reset Filter Form */
@@ -102,11 +131,18 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         this.filterSelected = undefined; // filtre seleccionat cap
         this.filterValue = {}; // filtre ningun
         this.filter.range = null;
+
+        // Regresando al valor inicial el WHERE / HAVING
+        this.filterBeforeAfter.filterBeforeGrouping = true;
+        this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
+        this.aggregationType = {display_name: 'Suma', value: 'sum', selected: true};
+
     }
 
     carrega() {
         this.carregarFilters();
         this.handleInputTypes();
+        this.handleAggregationType();
     }
 
     handleInputTypes() {
@@ -123,6 +159,61 @@ export class FilterDialogComponent extends EdaDialogAbstract {
         );
     }
 
+    handleAggregationType() {
+
+        this.aggregationsTypes = JSON.parse(JSON.stringify(this.selectedColumn.aggregation_type));
+
+        for (let agg of this.aggregationsTypes) {
+            if(agg.value === 'sum') {
+                agg.selected = true;
+                this.aggregationType = agg; // Obtenemos la agregación por default
+            } else {
+                agg.selected = false;
+            }
+        }
+
+        // La agregacion none, esta descartada
+        this.aggregationsTypes.pop();
+
+    }
+    
+    addAggregation(type: any) {
+
+        // Seleccionando la agregación
+        this.aggregationsTypes.find((ag:any) => ag.value === type.value).selected = true;
+
+        for (let ag of this.aggregationsTypes) {
+            if (ag.selected === true && type.value !== ag.value) {
+                ag.selected = false;
+            }
+        }
+
+        // Recarguem les agregacions d'aquella columna + la seleccionada
+        this.selectedColumn.aggregation_type = JSON.parse(JSON.stringify(this.aggregationsTypes));
+
+        // Obteniendo la agregación seleccionada
+        this.aggregationType = _.cloneDeep(type);
+
+    }
+
+    getAggName(value: string) {
+        return aggTypes.filter(agg => agg.value === value)[0].label;
+    }
+
+    getAggregationText(value: any) {
+
+        console.log('value:::: ', value);
+
+        const label = aggTypes.filter(agg => {
+            return (agg.value === value.aggregation_type);
+        })[0].label;
+        return label;
+    }
+
+    getFilterText(value) {
+        if(value.filter_type === 'between') return this.textBetween;
+        return value.filter_type;
+    }
 
     removeFilter(item: any) {
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id) ).removed = true;
@@ -147,6 +238,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     }
 
     handleFilterChange(filter: FilterType) {
+
         if (filter) {
             const handler = this.columnUtils.handleFilterChange(filter);
             this.display.between = handler.between;
@@ -165,6 +257,15 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             if ( !_.isEqual(filter.value, 'between') ) {
                 this.filterValue = {};
             }
+
+            if(['in', 'not_in', 'not_null', 'not_null_nor_empty', 'null_or_empty'].includes(filter.value)) {
+                this.whereHavingSwitch({
+                    label: 'WHERE',
+                    value: true,
+                })
+                this.filterBeforeAfterSelected = {label: 'WHERE', value: true}
+            }
+
         } else {
             this.resetDisplay();
         }
@@ -212,6 +313,18 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 throw err;
             }
         }
+    }
+
+    whereHavingSwitch(selected) {
+
+        if(selected.value) {
+            this.filterBeforeAfter.filterBeforeGrouping = true;
+            return true
+        } else {
+            this.filterBeforeAfter.filterBeforeGrouping = false;
+            return false
+        }
+
     }
 
     processPickerEvent(event){

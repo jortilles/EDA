@@ -1,5 +1,5 @@
 <div class="eda-table">
-    <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="inject.rows" [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body" (onPage)="inject.onPage($event)" (onSort)="inject.onSort($event)" [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
+    <p-table #table [columns]="inject.cols" [value]="inject.value" [paginator]="true" [rows]="inject.rows" [rowsPerPageOptions]="[5, 10, 25, 50, 100]" paginatorDropdownAppendTo="body" (onPage)="inject.onPage($event)" (sortFunction)="customSort($event, inject.cols)" [customSort]="true" (onSort)="inject.onSort($event)" [sortField]="inject.sortedColumn ? inject.sortedColumn.field : null"
         [sortOrder]="inject.sortedColumn ? inject.sortedColumn.order : null" [autoLayout]="inject.autolayout">
 
         <!-- Search -->
@@ -59,12 +59,17 @@
                         <ng-container [ngSwitch]="col.type">
                             <!-- ngSwitch TEXT -->
                             <ng-container *ngSwitchCase="'EdaColumnText'">
+
                                 <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)">
                                     {{ lodash.get(rowData, col.field) }}
                                 </div>
 
-                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field">
+                                <div *ngIf="(!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && !col.rangeOption">
                                     {{ lodash.get(rowData, col.field) }}
+                                </div>
+
+                                <div *ngIf="(!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field) && col.rangeOption"
+                                     [innerHTML]="formatValoresRango(rowData, col.field)">
                                 </div>
 
                             </ng-container>

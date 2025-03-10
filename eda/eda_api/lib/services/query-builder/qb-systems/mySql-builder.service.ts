@@ -14,7 +14,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
-
     /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
     if (forSelector === true) {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
@@ -27,12 +26,12 @@ export class MySqlBuilderService extends QueryBuilderService {
     // joined == EDA2
     if (this.queryTODO.joined) {
       /**tree */
-      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins, dest.length);
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
     } else {
       /*EDA Normal*/
-      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema, dest.length);
     }
 
     joinString.forEach(x => {
@@ -40,8 +39,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     });
 
     // WHERE
-    myQuery += this.getFilters(filters);
-
+    myQuery += this.getFilters(filters, dest.length, o);
 
     // GroupBy
     if (grouping.length > 0) {
@@ -50,6 +48,12 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     //HAVING 
     myQuery += this.getHavingFilters(havingFilters);
+
+
+    /**SDA CUSTOM */ // if (forSelector === true) {
+    /**SDA CUSTOM */ //    myQuery += `\n UNION \n SELECT '' `;
+    /**SDA CUSTOM */ //  }
+
 
     // OrderBy
     const orderColumns = this.queryTODO.fields.map(col => {
@@ -60,11 +64,15 @@ export class MySqlBuilderService extends QueryBuilderService {
       } else {
         out = false;
       }
+      if(  col.rangesOrderExpression && col.rangesOrderExpression != undefined && col.ordenation_type !== 'No'){
+        out = `${col.rangesOrderExpression} ${col.ordenation_type}`
+      }
 
       return out;
     }).filter(e => e !== false);
 
     const order_columns_string = orderColumns.join(',');
+
     if (order_columns_string.length > 0) {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     } else if (forSelector === true) {
@@ -78,16 +86,38 @@ export class MySqlBuilderService extends QueryBuilderService {
         myQuery = myQuery.split(key).join(`\`${alias[key]}\``);
       }
     }
-
+  
+    myQuery = this.queryAddedRange(this.queryTODO.fields, myQuery)
 
     return myQuery;
   };
 
-  public getFilters(filters): any { 
+  public queryAddedRange(fields, myQuery) {
 
-    if (this.permissions.length > 0) {
-      this.permissions.forEach(permission => { filters.push(permission); });
+    if(fields.find(field => field.ranges?.length > 0)) {
+
+      if(fields.find(field => field.aggregation_type === 'count_distinct' || field.aggregation_type === 'sum' || field.aggregation_type === 'count')) {
+        const fieldRango = fields.find(field => field.ranges.length > 0)
+        myQuery = fieldRango.withRanges + myQuery + fieldRango.orderRanges;
+        return myQuery
+      } else {
+        return myQuery
+      }
+      
+    } else {
+      return myQuery
     }
+
+  }
+
+
+  public getFilters(filters, destLongitud, pTable): any { 
+
+    /** Si Tenemos Permisos Y No Hay Destino Lo Añado A Los Filtros */
+
+    if ( this.permissions.length > 0 && destLongitud == 0) this.permissions.forEach( permission => { filters.push(permission); });
+    else { this.permissions.forEach( permission => { if( permission.filter_table === pTable ) filters.push(permission);})}
+
     if (filters.length) {
 
       let equalfilters = this.getEqualFilters(filters);
@@ -123,7 +153,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     }
   }
 
-  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema:string): any {
+  public getJoins(joinTree: any[], dest: any[], tables: Array<any>, joinType:string, valueListJoins:Array<any>, schema:string, destLongitud: any): any {
 
     let joins = [];
     let joined = [];
@@ -155,9 +185,28 @@ export class MySqlBuilderService extends QueryBuilderService {
             myJoin = joinType; 
           }
           //Version compatibility string//array
+
+          let agregadoPermisos: any = '';
+          if(destLongitud>0) {
+            let equalfilters : any;
+            let temporalPermissions: any = [];
+  
+            this.permissions.forEach( (p: any) => {
+              if(p.filter_table == e[j]) {
+                temporalPermissions.push(p)
+              }
+            })
+
+            equalfilters = this.getEqualFilters(temporalPermissions);
+            agregadoPermisos = this.mergeFilterStrings('', equalfilters)
+            temporalPermissions = [];
+          }
+          else {agregadoPermisos = ''}
+
+
           if (typeof joinColumns[0] === 'string') {
 
-            joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
+            joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\` ${agregadoPermisos}`);
 
           } else {
 
@@ -170,7 +219,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             });
 
             join = join.slice(0, join.length - 'and'.length);
-            joinString.push(join);
+            joinString.push(join + agregadoPermisos);
 
           }
 
@@ -186,11 +235,11 @@ export class MySqlBuilderService extends QueryBuilderService {
 
 
   
-  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[], destLongitud: any) {
     // Inicialización de variables
     const joinExists = new Set();
     const aliasTables = {};
-    const joinString = [];
+    let joinString = [];
     const targetTableJoin = [];
 
 
@@ -246,9 +295,27 @@ export class MySqlBuilderService extends QueryBuilderService {
                 joinStr = `${joinType} JOIN \`${targetTable}\` ON  ${sourceJoin} = ${targetJoin} `;
             }
 
-            // Si la join no se ha incluido ya, se añade al array
+            // If the join has not already been included, it is added to the array
             if (!joinString.includes(joinStr)) {
                 targetTableJoin.push(aliasTargetTable || targetTable);
+
+                if(destLongitud>0) {
+                  let equalfilters : any;
+                  let agregadoPermisos: any;
+                  let temporalPermissions: any = [];
+        
+                  this.permissions.forEach( (p: any) => {
+                    if(p.filter_table == targetTable) {
+                      temporalPermissions.push(p)
+                    }
+                  })
+
+                  equalfilters = this.getEqualFilters(temporalPermissions);
+                  agregadoPermisos = this.mergeFilterStrings('', equalfilters)
+                  joinStr += agregadoPermisos;
+                  temporalPermissions = [];
+                }
+
                 joinString.push(joinStr);
             }
         }
@@ -497,7 +564,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       let filtersString = `\nhaving 1=1 `;
 
       filters.forEach(f => {
-        const column = this.findHavingColumn(f.filter_table, f.filter_column);
+        const column = this.findHavingColumn(f);
         column.autorelation = f.autorelation;
         column.joins = f.joins;
         const colname = this.getHavingColname(column);
@@ -543,6 +610,7 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @returns coumn name in string mode for having. 
    */
 public getHavingColname(column: any){
+
   let colname:String  ;
   if( column.computed_column === 'no'  || !column.hasOwnProperty('computed_column') ){
     let table_id = column.table_id;
@@ -551,7 +619,12 @@ public getHavingColname(column: any){
         table_id = column.joins[column.joins.length-1][0];
     }
 
-    colname = `cast(${column.aggregation_type}(\`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    if(column.aggregation_type === 'count_distinct') {
+      colname = `cast( count( distinct \`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    } else {
+      colname = `cast(${column.aggregation_type}(\`${table_id}\`.\`${column.column_name}\`) as decimal(32,${column.minimumFractionDigits||0}) ) ` ;
+    }
+    
   }else{
     if(column.column_type == 'numeric'){
       colname = `CAST( ${column.SQLexpression} as decimal(32,${column.minimumFractionDigits}))`;
@@ -568,7 +641,7 @@ public getHavingColname(column: any){
    * @returns having filters  to string. 
    */
  public havingToString(filterObject: any) {
-    const column = this.findHavingColumn(filterObject.filter_table, filterObject.filter_column);
+    const column = this.findHavingColumn(filterObject);
     column.autorelation = filterObject.autorelation;
     column.joins = filterObject.joins;
 
@@ -678,11 +751,21 @@ public getHavingColname(column: any){
   buildPermissionJoin(origin: string, joinStrings: string[], permissions: any[]) {
 
     let joinString = `( SELECT ${origin}.* from ${origin} `;
-    joinString += joinStrings.join(' ') + ' where ';
+    joinString += joinStrings.join(' ') + ' where 1=1  ';
+
+    const equalfilters = this.getEqualFilters(permissions);
+    permissions = permissions.filter(f => !equalfilters.toRemove.includes(f.filter_id));
+
     permissions.forEach(permission => {
       joinString += ` ${this.filterToString(permission )} and `
     });
-    return `${joinString.slice(0, joinString.lastIndexOf(' and '))} )`;
+    if(permissions.length > 0 && equalfilters.toRemove.length == 0){
+      joinString.slice(0, joinString.lastIndexOf(' and '))
+    }
+    joinString = this.mergeFilterStrings(joinString , equalfilters);
+
+    
+    return `${joinString} )`;
   }
 
   sqlQuery(query: string, filters: any[], filterMarks: string[]): string {

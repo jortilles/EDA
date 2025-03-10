@@ -293,6 +293,8 @@ export class DashboardController {
 			
             const includesAdmin = req.user.role.includes("135792467811111111111110")
 
+            let is_filtered = false;
+
             if (!includesAdmin) {
               try {
                 // Poso taules prohivides a false
@@ -300,71 +302,66 @@ export class DashboardController {
                   // Poso taules prohivides a false
                   for (let x = 0; x < toJson.ds.model.tables.length; x++) {
                     try {
-                      if (
-                        uniquesForbiddenTables.includes(
-                          toJson.ds.model.tables[x].table_name
-                        )
-                      ) {
-                        toJson.ds.model.tables[x].visible = false
+                      if ( uniquesForbiddenTables.includes( toJson.ds.model.tables[x].table_name ) ) {
+                        toJson.ds.model.tables[x].visible = false;
                       }
                     } catch (e) {
                       console.log('Error evaluating role permission')
                       console.log(e)
                     }
                   }
-
                   // Oculto columnes als panells
                   for (let i = 0; i < dashboard.config.panel.length; i++) {
                     if (dashboard.config.panel[i].content != undefined) {
-                      let MyFields = []
-                      let notAllowedColumns = []
-                      for (
-                        let c = 0;
-                        c <
-                        dashboard.config.panel[i].content.query.query.fields
-                          .length;
-                        c++
-                      ) {
-                        if (
-                          uniquesForbiddenTables.includes(
-                            dashboard.config.panel[i].content.query.query.fields[
-                              c
-                            ].table_id
-                          )
-                        ) {
+                      let MyFields = [];
+                      let notAllowedColumns = [];
+
+                      for ( let c = 0; c < dashboard.config.panel[i].content.query.query.fields.length; c++ ) {
+                        if ( uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.fields[ c ].table_id.split('.')[0]  ) ) { /** split('.')[0]  esto se hace para el  filtro en modo arbol */
                           notAllowedColumns.push(
-                            dashboard.config.panel[i].content.query.query.fields[
-                            c
-                            ]
+                            dashboard.config.panel[i].content.query.query.fields[ c ]
                           )
                         } else {
                           MyFields.push(
-                            dashboard.config.panel[i].content.query.query.fields[
-                            c
-                            ]
+                            dashboard.config.panel[i].content.query.query.fields[ c ]
                           )
                         }
                       }
                       if (notAllowedColumns.length > 0) {
-                        dashboard.config.panel[
-                          i
-                        ].content.query.query.fields = MyFields
+                        dashboard.config.panel[ i ].content.query.query.fields = MyFields;
+                        is_filtered= true;
+                      }
+                      // SI NO TENGO PERMISOS SOBRE LA TABLA PRINCIPAL DEL ARBOL NO VEO NADA 
+                      if( dashboard.config.panel[i].content.query.query.queryMode == 'EDA2'  &&  uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.rootTable ) ) {
+                        dashboard.config.panel[ i ].content.query.query.fields = [];
+                        is_filtered= true;
+                      }
+
+                      // si no tengo permiso sobre los filtros.
+                      for ( let c = 0; c < dashboard.config.panel[i].content.query.query.filters.length; c++ ) {
+                        if ( uniquesForbiddenTables.includes( dashboard.config.panel[i].content.query.query.filters[c].filter_table.split('.')[0]   ) ) { /** split('.')[0]  esto se hace para el  filtro en modo arbol */
+                          is_filtered= true;
+                        } 
+                      }
+                      if(dashboard.config.panel[i].content.query.query.queryMode == 'SQL'){
+                        for(let j=0; j<uniquesForbiddenTables.length; j++ ){
+                          if ( dashboard.config.panel[i].content.query.query.SQLexpression.toUpperCase().indexOf( uniquesForbiddenTables[j].toUpperCase()   ) > 0  ) {  
+                            is_filtered= true;
+                          } 
+                        }
                       }
                     }
                   }
                 }
               } catch (error) {
-
                 console.log('no pannels in dashboard')
               }
-
             }
-
-
             const ds = {
               _id: datasource._id,
               model: toJson.ds.model,
-              name: toJson.ds.metadata.model_name
+              name: toJson.ds.metadata.model_name,
+              is_filtered: is_filtered
             }
 
             insertServerLog(
@@ -433,6 +430,7 @@ export class DashboardController {
         const createdAt=dashboard.config.createdAt
         dashboard.config = body.config
         dashboard.config.createdAt = createdAt
+        dashboard.user = req.user._id
         dashboard.group = body.group
         /**avoid dashboards without name */
         if (dashboard.config.title === null) { dashboard.config.title = '-' };
@@ -817,7 +815,13 @@ export class DashboardController {
     }
 
     forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
-    return forbiddenTables;
+
+  // Filtra los valores que inicien con: 'sda_l_' en las tablas & los valores que contengan '__' en las tablas.
+  /* SDA CUSTOM*/   let newForbiddenTables = forbiddenTables.filter( table => {
+  /* SDA CUSTOM*/     return ((!table.startsWith('sda_l_') && !table.includes('__')))
+  /* SDA CUSTOM*/   })
+
+    return newForbiddenTables;
   }
 
 
@@ -915,6 +919,7 @@ export class DashboardController {
 
 
       /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
+      /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro.....*/
       if(myQuery.filters){
         for (const filter of myQuery.filters) {
           if (!filter.filter_column_type) {
@@ -924,6 +929,10 @@ export class DashboardController {
               const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
               filter.filter_column_type = filterColumn?.column_type || 'text';
             }
+          }
+          /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where*/ 
+          if(! filter.hasOwnProperty('filterBeforeGrouping') ){
+            filter.filterBeforeGrouping = true;
           }
         }
       }
@@ -1143,6 +1152,7 @@ export class DashboardController {
       /**Security check */
       const allowed = DashboardController.securityCheck(dataModel, req.user)
       if (!allowed) {
+        console.log('SQL Query not allowed by security');
         return next(
           new HttpException(
             500,
@@ -1190,7 +1200,7 @@ export class DashboardController {
           return next(new HttpException(500,'Queries in format "select x from A, B" are not suported'));
         }
 
-        console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
+        console.log('\x1b[32m%s\x1b[0m', `SQL QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
         console.log(query)
         console.log('\n-------------------------------------------------------------------------------\n');
 
@@ -1287,7 +1297,7 @@ export class DashboardController {
             for (var i = 0; i < results.length; i++) {
               var e = results[i]
               for (var j = 0; j < e.length; j++) {
-                if(oracleDataTypes[j][0]=='int'  ){
+                if( oracleDataTypes[j][0] && oracleDataTypes[j][0]=='int'  ){
                   if ( results[i][j] ==  eda_api_config.null_value ) {
                     results[i][j] = null;
                   }
@@ -1410,7 +1420,26 @@ export class DashboardController {
         req.body.model_id
       )
       const dataModel = await connection.getDataSource(req.body.model_id)
-      const dataModelObject = JSON.parse(JSON.stringify(dataModel))
+      const dataModelObject = JSON.parse(JSON.stringify(dataModel));
+
+      /** por compatibilidad. Si no tengo el tipo de columna en el filtro lo añado */
+      /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro.....*/
+      if(req.body.query.filters){
+        for (const filter of req.body.query.filters) {
+          if (!filter.filter_column_type) {
+            const filterTable = dataModelObject.ds.model.tables.find((t) => t.table_name == filter.filter_table.split('.')[0]);
+            if (filterTable) {
+              const filterColumn = filterTable.columns.find((c) => c.column_name == filter.filter_column);
+              filter.filter_column_type = filterColumn?.column_type || 'text';
+            }
+          }
+          /** por compatibilidad. Si no tengo el el tipo de agregación en el filtro lo pongo en el where*/ 
+          if(! filter.hasOwnProperty('filterBeforeGrouping') ){
+            filter.filterBeforeGrouping = true;
+          }
+        }
+      }
+
       const query = await connection.getQueryBuilded(
         req.body.query,
         dataModelObject,

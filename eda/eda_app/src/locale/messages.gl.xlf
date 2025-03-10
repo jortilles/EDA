@@ -3620,7 +3620,7 @@
       </trans-unit>
       <trans-unit id="addOnlyValues">
         <source>Sólo valores</source>
-        <target>Only values</target>
+        <target>Sólo valores</target>
       </trans-unit>
 
       <trans-unit id="addValuesPercentages">
@@ -4259,7 +4259,7 @@
       <trans-unit id="DatePickerNull">
        <source>Fecha nula</source>
         <target>Data nula</target>
-      </trans-unit> 
+      </trans-unit>
 
       <trans-unit id="positionFilterInReport">
         <source>Posición del filtro en el informe</source>
@@ -4302,22 +4302,98 @@
         <source>VALORES NULOS O VACÍOS (null or = '')</source>
         <target>VALORES NULOS OU BALEIROS (null or = '')</target>
       </trans-unit>
-      
+
       <trans-unit id="aliasValuePh">
         <source>Alias del filtro (opcional)</source>
         <target>Filtrar alias (opcional)</target>
       </trans-unit>
       <trans-unit id="noDataAllowed">
         <source>Este panel no está disponible por falta de permisos</source>
-        <target>Este panel non está dispoñible por falta de permisos</target>
+        <target>Este panel non está dispoñible por falta de permisos, o informe ábrese en modo de só lectura.</target>
       </trans-unit>
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
-        <target>Este panel non está dispoñible debido á falta de permisos nun filtro</target>
+        <target>Este panel non está dispoñible debido á falta de permisos nun filtro, o informe ábrese en modo de só lectura.</target>
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>
         <target>El año pasado, completo</target>
+      </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>Filtro sobre todos los registros</source>
+        <target>Filtra todos os rexistros</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>Filtro sobre los resultados</source>
+        <target>Filtra os resultados</target>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Aplique o filtro en todos os rexistros</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Aplicar o filtro aos resultados</target>
+      </trans-unit>
+      <trans-unit id="aggregationText">
+        <source>Agregación</source>
+        <target>Agregación</target>
+      </trans-unit>
+      <trans-unit id="aplicarBtn">
+        <source>Aplicar</source>
+        <target>Solicitar</target>
+      </trans-unit>
+      <trans-unit id="disenoTablaCruzada">
+        <source>Diseño de la tabla cruzada: </source>
+        <target>Deseño de mesas cruzadas: </target>
+      </trans-unit>
+      <trans-unit id="messageItemCrosstable">
+        <source>Este eje debe contener al menos un elemento</source>
+        <target>Este eixe debe conter polo menos un elemento</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeX">
+        <source> • Eje vertical: Arrastre aquí los campos.</source>
+        <target>• Eixe vertical: arrastra os campos aquí.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeY">
+        <source> • Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</source>
+        <target>• Eixe horizontal: arrastra aquí os campos do eixe horizontal da táboa transversal.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeZ">
+        <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
+        <target>• Eixe numérico: arrastra só campos numéricos aquí.</target>
+      </trans-unit>
+      <trans-unit id="ptooltipViewTextRanges">
+        <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
+        <target>Ao configurar un rango, as agregacións bloquearanse. Exemplo dun rango válido: 12:18:50:100 </target>
+      </trans-unit>
+      <trans-unit id="rangesExpresionH5">
+        <source>Rangos: </source>
+        <target>Rangos: </target>
+      </trans-unit>
+      <trans-unit id="addRange">
+        <source>Añadir Rango</source>
+        <target>Engadir Rango</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB">
+        <source>Rango</source>
+        <target>Rango</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionNumberError">
+        <source>El correcto orden de los límites del rango van de menor a mayor</source>
+        <target>A orde correcta dos límites do rango é de menor a maior</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionCharacterError">
+        <source>El último caracter del rango debe ser un número</source>
+        <target>O último carácter do rango debe ser un número</target>
+      </trans-unit>
+      <trans-unit id="ptooltipNotAvailableRanges">
+        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+        <target>Non é posible crear un novo rango porque xa existe un configurado.</target>
+      </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Entre</target>
       </trans-unit>
     </body>
   </file>

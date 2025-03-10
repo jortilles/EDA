@@ -3625,7 +3625,7 @@
       </trans-unit>
       <trans-unit id="addOnlyValues">
         <source>Sólo valores</source>
-        <target>Only values</target>
+        <target>Solo valores</target>
       </trans-unit>
 
       <trans-unit id="addValuesPercentages">
@@ -4308,15 +4308,91 @@
       </trans-unit>
       <trans-unit id="noDataAllowed">
         <source>Este panel no está disponible por falta de permisos</source>
-        <target>Este panel no está disponible por falta de permisos</target>
+        <target>Este panel no está disponible por falta de permisos, el informe se abre en modo de solo lectura.</target>
       </trans-unit>
       <trans-unit id="noFilterAllowed">
         <source>Este panel no está disponible por falta de permisos en un filtro</source>
-        <target>Este panel no está disponible por falta de permisos en un filtro</target>
+        <target>Este panel no está disponible por falta de permisos en un filtro, el informe se abre en modo de solo lectura.</target>
       </trans-unit>
       <trans-unit id="DatePickerYearPreviousYearFull">
         <source>El año pasado, completo</source>
         <target>El año pasado, completo</target>
+      </trans-unit>
+      <trans-unit id="whereMessage">
+        <source>Filtro sobre todos los registros</source>
+        <target>Filtro sobre todos los registros</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>Filtro sobre los resultados</source>
+        <target>Filtro sobre los resultados</target>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Aplicar el filtro sobre todos los registros</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Aplicar el filtro sobre los resultados</target>
+      </trans-unit>
+      <trans-unit id="aggregationText">
+        <source>Agregación</source>
+        <target>Agregación</target>
+      </trans-unit>
+      <trans-unit id="aplicarBtn">
+        <source>Aplicar</source>
+        <target>Aplicar</target>
+      </trans-unit>
+      <trans-unit id="disenoTablaCruzada">
+        <source>Diseño de la tabla cruzada: </source>
+        <target>Diseño de la tabla cruzada: </target>
+      </trans-unit>
+      <trans-unit id="messageItemCrosstable">
+        <source>Este eje debe contener al menos un elemento</source>
+        <target>Este eje debe contener al menos un elemento</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeX">
+        <source> • Eje vertical: Arrastre aquí los campos.</source>
+        <target>• Eje vertical: Arrastre aquí los campos.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeY">
+        <source> • Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</source>
+        <target>• Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeZ">
+        <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
+        <target>• Eje numérico: Arrastre aquí solo los campos numéricos.</target>
+      </trans-unit>
+      <trans-unit id="ptooltipViewTextRanges">
+        <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
+        <target>Al configurar un rango las agregaciones quedarán bloqueadas. Ejemplo de rango válido: 12:18:50:100 </target>
+      </trans-unit>
+      <trans-unit id="rangesExpresionH5">
+        <source>Rangos: </source>
+        <target>Rangos: </target>
+      </trans-unit>
+      <trans-unit id="addRange">
+        <source>Añadir Rango</source>
+        <target>Añadir rango</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB">
+        <source>Rango</source>
+        <target>Rango</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionNumberError">
+        <source>El correcto orden de los límites del rango van de menor a mayor</source>
+        <target>El orden correcto de los límites del rango es de menor a mayor</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionCharacterError">
+        <source>El último caracter del rango debe ser un número</source>
+        <target>El último carácter del rango debe numérico</target>
+      </trans-unit>
+      <trans-unit id="ptooltipNotAvailableRanges">
+        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+        <target>No es posible crear un rango nuevo porque ya existe uno configurado</target>
+      </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Entre</target>
       </trans-unit>
     </body>
   </file>

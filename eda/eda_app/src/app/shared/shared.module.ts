@@ -6,6 +6,8 @@ import { PipesModule } from './pipes/pipes.module';
 
 // Directives
 import { FocusOnShowDirective } from './directives/autofocus.directive';
+import { OnlySignsAndNumbersDirective } from './directives/only-signs-and-numbers.directive';
+
 
 // Components
 import {
@@ -31,9 +33,11 @@ import {
         EdaContextMenuComponent,
         EdaInputComponent,
         FocusOnShowDirective,
+        OnlySignsAndNumbersDirective,
         EdaDatePickerComponent,
         CreateDashboardComponent,
-        EdaFieldComponent
+        EdaFieldComponent,
+        OnlySignsAndNumbersDirective
     ],
     imports: [
         CoreModule,
@@ -50,6 +54,7 @@ import {
         EdaContextMenuComponent,
         EdaInputComponent,
         FocusOnShowDirective,
+        OnlySignsAndNumbersDirective,
         EdaDatePickerComponent,
         CreateDashboardComponent,
         EdaFieldComponent

@@ -35,71 +35,85 @@ import mongoose, {
 } from 'mongoose'
 import User, { IUser } from '../../admin/users/model/user.model'
 import Group, { IGroup } from '../../admin/groups/model/group.model'
+import { each } from 'lodash';
 
 mongoose.set('useFindAndModify', false);
 
 export class userAndGroupsToMongo {
   static async crm_to_eda_UsersAndGroups(users: any, roles: any) {
-    // Sync users and groups from CRM to EDA
     let mongoUsers = await User.find()
-
-    // Initialize users
-    for (let i = 0; i < users.length; i++) {
-      let existe = mongoUsers.find(e => e.email == users[i].email)
-      if (!existe) {
-        let user = new User({
-          name: users[i].name,
-          email: users[i].email,
-          password: users[i].password,
-          role: []
-        })
-        try {
-          await user.save()
-        } catch (err) {
-          console.log(
-            'usuario ' +
-            user.name +
-            ' repetido, no se ha introducido en la bbdd'
-          )
-        }
-      } else {
-        await User.findOneAndUpdate({ name: users[i].name }, { password: users[i].password });
-      }
-    }
-
-    // Initialize groups
     let mongoGroups = await Group.find()
-    mongoUsers = await User.find()
+    
+    // First create/update all groups
     const unique_groups = [...new Set(roles.map(item => item.name))]
-
     for (let i = 0; i < unique_groups.length; i++) {
-      let existe = mongoGroups.find(e => e.name == unique_groups[i])
-      if (
-        !existe &&
-        unique_groups[i] != 'EDA_ADMIN' &&
-        unique_groups[i] != 'EDA_RO' &&
-        unique_groups[i] != 'EDA_DATASOURCE_CREATOR'
-      ) {
-        let group = new Group({
+      if (!mongoGroups.find(e => e.name == unique_groups[i]) &&
+          unique_groups[i] != 'EDA_ADMIN' &&
+          unique_groups[i] != 'EDA_RO' &&
+          unique_groups[i] != 'EDA_DATASOURCE_CREATOR') {
+        const group = new Group({
           role: 'EDA_USER_ROLE',
           name: unique_groups[i],
           users: []
         })
         try {
           await group.save()
-          console.log(
-            ' grupo ' + group.name + ' introducido correctamente en la bbdd'
-          )
         } catch (err) {
-          console.log(
-            'grupo ' + group.name + ' repetido, no se ha introducido en la bbdd'
-          )
+          console.log(`Group ${group.name} already exists, skipped`)
         }
       }
     }
-
-    // Synchronize users and groups
-    await this.syncronizeUsersGroups(mongoUsers, mongoGroups, users, roles);
+    
+    // Update groups list
+    mongoGroups = await Group.find()
+    
+    // Create/update users with their roles
+    for (let i = 0; i < users.length; i++) {
+      const userRoles = roles
+        .filter(role => role.user_name === users[i].email)
+        .map(role => {
+          const group = mongoGroups.find(g => g.name === role.name)
+          return group ? group._id : null
+        })
+        .filter(id => id !== null)
+  
+      let existe = mongoUsers.find(e => e.email == users[i].email)
+      if (!existe) {
+        let user = new User({
+          name: users[i].name,
+          email: users[i].email,
+          password: users[i].password,
+          role: userRoles
+        })
+        try {
+          const savedUser = await user.save()
+          // Update groups with the new user
+          await Group.updateMany(
+            { _id: { $in: userRoles } },
+            { $addToSet: { users: savedUser._id } }
+          )
+        } catch (err) {
+          console.log('Error al insertar usuario ' + user.name)
+        }
+      } else {
+        await User.findOneAndUpdate(
+          { name: users[i].name }, 
+          { 
+            password: users[i].password,
+            $addToSet: { role: { $each: userRoles } }
+          }
+        )
+        // Update groups with existing user
+        await Group.updateMany(
+          { _id: { $in: userRoles } },
+          { $addToSet: { users: existe._id } }
+        )
+      }
+    }
+  
+    // Synchronize the rest of the relationships
+    mongoUsers = await User.find()
+    await this.syncronizeUsersGroups(mongoUsers, mongoGroups, users, roles)
   }
   
   static async syncronizeUsersGroups(
@@ -121,7 +135,7 @@ export class userAndGroupsToMongo {
               .then(function () {
               })
               .catch(function (error) {
-                console.log(error, "no se ha borrado el usuario " + a.email)
+                console.log('Error deleting user:', a.email, 'Details:', error);
               })
         }
       }
@@ -207,19 +221,10 @@ export class userAndGroupsToMongo {
       }
     });
 
-    // Add admin user to EDA_ADMIN group
-    await mongoGroups.find(i => i.name ===  'EDA_ADMIN').users.push('135792467811111111111111')
-    let user = await mongoUsers.find(i => i.email ===  ('eda@jortilles.com') ) ;
-    if(user){
-      user.role.push('135792467811111111111110');
-    }else{
-      user = await mongoUsers.find(i => i.email ===  ('eda@sinergiada.org' ) )
-      if(user){
-        user.role.push('135792467811111111111110');
-      }else{
-        console.log('NO SE HA PODIDO AÑADIR EL ROL AL USUARIO ADMIN <=============================================================================');
-      }
-    }
+    // Ensure add all admins to EDA_ADMIN group, this include eda@sinergiada.org
+    let admins = await mongoUsers.filter(i => i.role.includes('135792467811111111111110'));
+    const edaAdminGroup = mongoGroups.find(i => i.name === 'EDA_ADMIN');
+    edaAdminGroup.users = admins.map(admin => admin._id);
 
     // Save changes to database
     await mongoGroups.forEach(async r => {

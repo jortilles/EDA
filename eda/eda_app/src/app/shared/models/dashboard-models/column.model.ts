@@ -19,4 +19,5 @@ export interface Column {
 /* SDA CUSTOM */    hidden: number;
     autorelation: boolean;
     joins: string[];
+    ranges: number[];
 }

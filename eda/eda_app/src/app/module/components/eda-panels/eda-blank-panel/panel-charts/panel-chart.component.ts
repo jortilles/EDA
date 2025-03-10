@@ -122,11 +122,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.destroyComponent();
             setTimeout(_ => {
                 this.NO_DATA = true;
-                if( this.props.data.labels[0]== "noDataAllowed") {
+                if( this.props.data?.labels[0]== "noDataAllowed") {
                     this.NO_DATA = false;    
                     this.NO_DATA_ALLOWED = true;   
                     this.NO_FILTER_ALLOWED = false; 
-                }else if( this.props.data.labels[0]== "noFilterAllowed") {
+                }else if( this.props.data?.labels[0]== "noFilterAllowed") {
                     this.NO_DATA = false;    
                     this.NO_DATA_ALLOWED = false;    
                     this.NO_FILTER_ALLOWED = true;
@@ -369,6 +369,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.sortedSerie = config.sortedSerie;
         this.componentRef.instance.inject.sortedColumn = config.sortedColumn;
         this.componentRef.instance.inject.noRepetitions = config.noRepetitions;
+        this.componentRef.instance.inject.ordering = config.ordering;
         this.configUpdated.emit();
     }
 
@@ -708,7 +709,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
                 tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default , decimals: r.minimumFractionDigits}))
             } else if (_.isEqual(r.column_type, 'text')) {
-                tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
+                let rangeOption = false;
+                if(r.ranges === undefined) {
+                    tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default }));
+                } else {
+                    if(r.ranges.length > 0) {
+                        rangeOption = true;
+                        tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default, rangeOption: rangeOption }));
+                    } else {
+                        tableColumns.push(new EdaColumnText({ header: r.display_name.default, field: label, description: r.description.default, rangeOption: rangeOption }));
+                    }
+                }
             } else if (_.isEqual(r.column_type, 'coordinate')) {
                 tableColumns.push(new EdaColumnNumber({ header: r.display_name.default, field: label, description: r.description.default }));
             }
