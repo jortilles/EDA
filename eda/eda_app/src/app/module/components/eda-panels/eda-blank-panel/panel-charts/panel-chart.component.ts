@@ -150,9 +150,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      */
 
     public changeChartType() {
-
-        console.log('this.props::::: --- :::::', this.props);
-
         const type = this.props.chartType;
 
         if (['table', 'crosstable'].includes(type)) {
@@ -835,11 +832,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private renderTreetable() {
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
+
+        console.log('<<<>>> : this.props: ', this.props);
         console.log('<<<>>> : dataDescription: ', dataDescription);
 
-        const inject = 100000000000; // Para efectos de prueba
+        let inject = [];
 
-        this.createTreetable(inject)
+        
+
+
+
+
+        // const inject = 100000000000; // Para efectos de prueba
+
+        this.createTreetable(inject);
 
     }
 
