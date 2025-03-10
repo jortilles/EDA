@@ -1,6 +1,6 @@
 import { ChartUtilsService } from '@eda/services/service.index';
 
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
 import { ScatterPlot } from "./eda-scatter";
@@ -20,6 +20,7 @@ export class EdaScatter implements AfterViewInit {
 
   @Input() inject: ScatterPlot;
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   div = null;
 
@@ -31,6 +32,7 @@ export class EdaScatter implements AfterViewInit {
   metricIndex: number;
   width: number;
   heigth: number;
+  leafNum: number = -1;
 
   constructor(private chartUtilService : ChartUtilsService){
 
@@ -46,7 +48,10 @@ export class EdaScatter implements AfterViewInit {
     this.firstColLabels = [...new Set(this.firstColLabels)];
 
   }
-
+  ngOnDestroy(): void {
+    if (this.div)
+      this.div.remove();
+  }
 
   ngAfterViewInit() {
 
@@ -56,7 +61,6 @@ export class EdaScatter implements AfterViewInit {
     if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
       this.draw();
     }
-
   }
 
 
@@ -130,7 +134,7 @@ export class EdaScatter implements AfterViewInit {
     svg.append("g")
       .call(xAxis);
 
-    svg.append("g")
+      svg.append("g")
       .call(yAxis);
 
     svg.append("g")
@@ -139,6 +143,7 @@ export class EdaScatter implements AfterViewInit {
     svg.append("g")
       .attr("stroke-width", 1.5)
       .attr("fill", "var(--panel-font-color)")
+      .attr("dataindex", this.leafNum += 1)
       .attr("font-family", "var(--panel-font-family)")
       .attr("font-size", 10)
       .selectAll("circle")
@@ -157,59 +162,68 @@ export class EdaScatter implements AfterViewInit {
         }
       })
       .on('mouseover', (d, data) => {
-
-
+        
+        
         let categoryText = data.category ? `${this.inject.dataDescription.otherColumns[0].name} : ${data.category} ` : '';
         let serieText = data.category ? `${this.inject.dataDescription.otherColumns[1].name}  : ${data.label}`
-          : `${this.inject.dataDescription.otherColumns[0].name} : ${data.label}`;
+        : `${this.inject.dataDescription.otherColumns[0].name} : ${data.label}`;
         let metricText = data.metricValue ?
-          ` ${this.inject.dataDescription.numericColumns[2].name} :  ${data.metricValue.toLocaleString(undefined, { maximumFractionDigits: 6 })}`
-          : ``;
-
+        ` ${this.inject.dataDescription.numericColumns[2].name} :  ${data.metricValue.toLocaleString(undefined, { maximumFractionDigits: 6 })}`
+        : ``;
+        
         let linkedText = this.inject.linkedDashboard ? `Linked to ${this.inject.linkedDashboard.dashboardName} </h6>` : '';
-
+        
         const maxLength = dataUtils.maxLengthElement([categoryText.length, serieText.length, metricText.length, linkedText.length]);
         const pixelWithRate = 7;
         const width = maxLength * pixelWithRate;
-
+        
         let text = categoryText ? `${categoryText}<br/>` : '';
         text = serieText ? text + `${serieText}<br/>` : text;
         text = metricText ? text + `${metricText}<br/>` : text;
         text = this.inject.linkedDashboard ? text + `<h6> ${linkedText} </h6>` : text;
-
+        
         let height: any = this.inject.linkedDashboard ? 5 : 3;
         height = data.category ? height + 1 + 'em' : height + 'em';
-
+        
         this.div = d3.select("app-root").append('div')
-          .attr('class', 'd3tooltip')
-          .attr('id', 'scatterDiv')
-          .style('opacity', 0);
-
+        .attr('class', 'd3tooltip')
+        .attr('id', 'scatterDiv')
+        .style('opacity', 0);
+        
         this.div.transition()
-          .duration(200)
+        .duration(200)
           .style('opacity', .9);
-        this.div.html(text)
+          this.div.html(text)
           .style('left', (d.pageX - 81) + 'px')
           .style('top', (d.pageY - 49) + 'px')
           .style('width', `${width}px`)
           .style('height', height)
           .style('line-height', 1.1);
-      })
-      .on('mouseout', (d) => {
-        this.div.remove();
+        })
+        .on('mouseout', (d) => {
+          this.div.remove();
       }).on("mousemove", (d, data) => {
         const sizes = this.div.node().getBoundingClientRect();
         this.div
           .style("top", (d.pageY - sizes.height - 7) + "px")
           .style("left", (d.pageX - sizes.width / 2) + "px");
-      }).on('click', (mouseevent, data) => {
-
+        }).on('click', (mouseevent, data) => {
+          
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
           const value = data.category ? data.category : data.label;
           const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
+        }else {
+          console.log(data)
+          const dataIndex = (mouseevent.target as SVGRectElement).getAttribute("dataindex");
+          //Passem aquestes dades
+          const label = data.label;
+          const value = data.radius;
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({inx: 0, label, value, filterBy });
         }
+    
       })
   }
 
