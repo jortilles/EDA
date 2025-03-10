@@ -19,7 +19,6 @@ export class EdaChart {
   showLabels:boolean;
   showLabelsPercent:boolean;
   numberOfColumns: number;
-  // assignedColors: any[];
 
   constructor() { }
 }

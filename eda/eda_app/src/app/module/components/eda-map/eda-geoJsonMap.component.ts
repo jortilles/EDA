@@ -3,6 +3,8 @@ import {
   Input,
   AfterViewChecked,
   SecurityContext,
+  Output,
+  EventEmitter,
 } from "@angular/core";
 import { Component, AfterViewInit } from "@angular/core";
 import { MapUtilsService } from "@eda/services/service.index";
@@ -29,6 +31,7 @@ export class EdaGeoJsonMapComponent
   implements OnInit, AfterViewInit, AfterViewChecked
 {
   @Input() inject: EdaMap;
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   private map: any;
   private geoJson: any;
@@ -129,8 +132,18 @@ export class EdaGeoJsonMapComponent
       layer.on("mouseout", function () {
         layer.closePopup();
       });
-      layer.on("click", () =>
-        this.openLinkedDashboard(layer.feature.properties.name)
+      layer.on("click", (mouseevent, data) => {
+        if (this.inject.linkedDashboard) {
+          this.openLinkedDashboard(layer.feature.properties.name)
+        }
+        else{
+          //Passem aquestes dades
+          const label = layer.feature.properties.name;
+          const value = 0;
+          const filterBy = this.inject.labels[this.inject.data[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({ inx: this.dataIndex, label, value, filterBy });
+        }
+      }
       );
     });
     if (this.map) {

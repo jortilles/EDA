@@ -606,23 +606,18 @@ export class EdaBlankPanelComponent implements OnInit {
         if (config?.chartType == 'doughnut' || config?.chartType == 'polarArea' || config?.chartType == 'bar' || config?.chartType == 'line' || config?.chartType == 'radar')
         {
             this.action.emit({ code: 'ADDFILTER', data: {...event, panel: this.panel} });
-        }else{
-            console.log('No filter here... yet');
         }
-    }
-
-    public onD3ChartClick(event: any): void {
-        if (
-            this.panelChart.props.chartType == "treeMap" || this.panelChart.props.chartType == "sunburst" ||
+        else if (this.panelChart.props.chartType == "treeMap" || this.panelChart.props.chartType == "sunburst" ||
             this.panelChart.props.chartType == "scatterPlot" || this.panelChart.props.chartType == "funnel" ||
-            this.panelChart.props.chartType == "bubblechart" || this.panelChart.props.chartType == "parallelSets"
-        ) {
-          this.d3Action.emit({
-            code: "ADDFILTER",
-            data: { ...event, panel: this.panel },
-          });
-        } else {
-          console.log("No filter here... yet");
+            this.panelChart.props.chartType == "bubblechart" || this.panelChart.props.chartType == "parallelSets" ||
+            this.panelChart.props.chartType == "geoJsonMap") {
+                this.d3Action.emit({
+                code: "ADDFILTER",
+                data: { ...event, panel: this.panel },
+                });
+        }
+        else {
+            console.log('No filter here... yet');
         }
     }
 
@@ -1045,8 +1040,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseFunnelProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-
-            this.panel.content.query.output.config.colors = response.colors;
+            let assignedColors = [];
+            this.chartData.forEach((element, index) => {
+                assignedColors[index] = [{ value: element[0] }, { color: response.colors[index] }]
+            });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 

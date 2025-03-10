@@ -51,7 +51,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     @Input() props: PanelChart;
     @Output() configUpdated: EventEmitter<any> = new EventEmitter<any>(null);
     @Output() onChartClick: EventEmitter<any> = new EventEmitter<any>();
-    @Output() onD3ChartClick: EventEmitter<any> = new EventEmitter<any>();
     @ViewChild('chartComponent', { read: ViewContainerRef, static: true }) entry: ViewContainerRef;
 
 
@@ -705,13 +704,16 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaMapComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
+        //this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        
     }
-
+    
     private createGeoJsonMapComponent(inject: EdaMap) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaGeoJsonMapComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
     private renderParallelSets() {
@@ -735,7 +737,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaD3Component);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onD3ChartClick.emit({...event, query: this.props.query}));
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
 
     }
 
@@ -749,6 +751,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'];
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createFunnelComponent(inject);
@@ -759,7 +762,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaFunnelComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onD3ChartClick.emit({...event, query: this.props.query}));
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
 
     }
 
@@ -784,7 +787,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaBubblechartComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onD3ChartClick.emit({...event, query: this.props.query}));
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
     private renderTreeMap() {
@@ -807,7 +810,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaTreeMap);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onD3ChartClick.emit({...event, query: this.props.query}));
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
     private renderScatter() {
@@ -831,7 +834,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaScatter);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onD3ChartClick.emit({...event, query: this.props.query}));
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
 
@@ -853,7 +856,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaSunburstComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onD3ChartClick.emit({...event, query: this.props.query}));
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
     private randomID() {
