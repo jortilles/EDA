@@ -28,7 +28,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   metricIndex: number;
   width: number;
   heigth: number;
-
+  leafNum: number = -1;
   div = null;
 
 
@@ -121,13 +121,14 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("height", d => d.y1 - d.y0)
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
-
-
-    svg.append("g")
+      
+      
+      svg.append("g")
       .attr("fill", "none")
       .selectAll("g")
       .data(links)
       .join("path")
+      .attr("dataindex", this.leafNum += 1)
       .attr("d", sankeyLinkHorizontal())
       .on('click', (mouseevent, data) => {
         if (this.div)
@@ -151,7 +152,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
           const label = data.source.name;
           const value = data.value;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
-          this.onClick.emit({ inx: 0, label, value, filterBy });
+          this.onClick.emit({ inx: dataIndex, label, value, filterBy });
         }
       })
       .on('mouseover', this.showLinks)

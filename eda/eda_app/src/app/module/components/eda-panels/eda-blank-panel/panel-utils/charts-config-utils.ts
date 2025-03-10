@@ -71,10 +71,10 @@ export const ChartsConfigUtils = {
         draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
         
       }
-    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunbursts"].includes(ebp.panelChart.props.chartType)) {
+    } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst"].includes(ebp.panelChart.props.chartType)) {
       let assignedColors = [];
     
-      if (["parallelSets", "treeMap" , "bubblechart"].includes(ebp.panelChart.props.chartType)) {
+      if (["parallelSets", "treeMap" , "bubblechart", "sunburst"].includes(ebp.panelChart.props.chartType)) {
         //ES TREEMAP
         ebp.chartData.forEach((element, index) => {
             if (ebp.panelChart.props.config.getConfig().hasOwnProperty('assignedColors') &&
@@ -96,6 +96,7 @@ export const ChartsConfigUtils = {
           colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : [],
           assignedColors: assignedColors,
         }
+        if(ebp.panelChart.props.chartType === 'sunburst')
         console.log(config)
       } else { 
         config = {
