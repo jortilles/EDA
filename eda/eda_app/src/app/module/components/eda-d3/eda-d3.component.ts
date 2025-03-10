@@ -150,7 +150,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
           //Passem aquestes dades
           const label = data.source.name;
           const value = data.value;
-          const filterBy = this.inject.data.labels[0];
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
           this.onClick.emit({ inx: 0, label, value, filterBy });
         }
       })

@@ -773,6 +773,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'];
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createBubblechartComponent(inject);

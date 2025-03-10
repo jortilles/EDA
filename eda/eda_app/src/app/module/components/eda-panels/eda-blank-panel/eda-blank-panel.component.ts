@@ -1058,7 +1058,11 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseBubblechartProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config.colors = response.colors;
+            let assignedColors = [];
+            this.chartData.forEach((element, index) => {
+                assignedColors[index] = [{ value: element[0] }, { color: response.colors[index] }]
+            });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
