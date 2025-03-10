@@ -59,6 +59,11 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
   }
 
+  ngOnDestroy(): void {
+    if (this.div)
+      this.div.remove();
+  }
+
 
   draw() {
     const width = this.svgContainer.nativeElement.clientWidth - 20, height = this.svgContainer.nativeElement.clientHeight - 20;
@@ -166,8 +171,8 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         const link = this.inject.linkedDashboard ? `<br/> <h6>${thirdRow}</h6>` : '';
         let text = `${firstRow} <br/> ${secondRow} ${link}`;
 
-        const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (14 / 12)]);
-        const pixelWithRate = 7;
+        const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (18 / 12)]);
+        const pixelWithRate = 8;
         const width = maxLength * pixelWithRate + 10;
         const height = this.inject.linkedDashboard ? '5em' : '4em';
 
@@ -177,7 +182,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
         this.div
           .style('width', `${width}px`)
-          .style('height', height);
+          .style('height', 'auto');
 
         this.div.transition()
           .duration(200)

@@ -183,7 +183,6 @@ export class EdaTreeMap implements AfterViewInit {
         if (this.div)
           this.div.remove();
         const dataIndex = (mouseevent.target as SVGRectElement).getAttribute("dataindex");
-        console.log('dataindex', dataIndex)
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
           const value = data.data.name;
