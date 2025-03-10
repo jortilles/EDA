@@ -835,7 +835,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private renderTreetable() {
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-        console.log('==========>>> treetable - dataDescription: ', dataDescription);
+        console.log('<<<>>> : dataDescription: ', dataDescription);
 
         const inject = 100000000000; // Para efectos de prueba
 
