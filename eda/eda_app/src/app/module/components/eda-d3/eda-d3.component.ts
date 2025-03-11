@@ -131,8 +131,6 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("dataindex", this.leafNum += 1)
       .attr("d", sankeyLinkHorizontal())
       .on('click', (mouseevent, data) => {
-        if (this.div)
-        this.div.remove();
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
           const value = this.inject.data.values.filter(row => {

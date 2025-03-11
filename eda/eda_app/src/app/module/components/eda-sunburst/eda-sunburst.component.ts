@@ -215,6 +215,7 @@ export class EdaSunburstComponent implements AfterViewInit {
             d.value.toLocaleString(undefined, { maximumFractionDigits: 6 })
           )
           .attr("font-family", "var(--panel-font-family)")
+          .attr("pointer-events", "none")
 
           .attr("fill", "var(--panel-font-color)")
         // per posar-ho a dalt de tot

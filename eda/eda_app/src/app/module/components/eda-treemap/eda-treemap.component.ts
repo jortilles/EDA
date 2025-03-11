@@ -137,6 +137,7 @@ export class EdaTreeMap implements AfterViewInit {
       configData = this.inject.assignedColors.map(item => item[0].value)
       configColors = this.inject.assignedColors.map(item => item[1].color)
     } else {configColors = this.colors}      
+    
     const color = d3
         .scaleOrdinal(this.firstColLabels, configColors)
         .unknown("#ccc");
@@ -180,8 +181,6 @@ export class EdaTreeMap implements AfterViewInit {
       .attr("width", (d) => d.x1 - d.x0)
       .attr("height", (d) => d.y1 - d.y0)
       .on("click", (mouseevent, data) => {
-        if (this.div)
-          this.div.remove();
         const dataIndex = (mouseevent.target as SVGRectElement).getAttribute("dataindex");
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
@@ -195,6 +194,7 @@ export class EdaTreeMap implements AfterViewInit {
           window.open(url, "_blank");
         } else {
           const label = data.data.name;
+          // Value y indice necesario?
           const value = data.value;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
           this.onClick.emit({ inx: dataIndex, label, value, filterBy});
