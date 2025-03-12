@@ -4307,6 +4307,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Activar funciones del mouse</source>
         <target>Activate mouse functions</target>
       </trans-unit>
+      <trans-unit id="chartTypesTreeTable">
+        <source>Tabla Árbol</source>
+        <target>Tree Table</target>       
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -827,35 +827,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaSunburstComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
-
     }
 
     private renderTreetable() {
-        const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-
-        console.log('<<<>>> : this.props: ', this.props);
-        console.log('<<<>>> : dataDescription: ', dataDescription);
-
-        let inject = [];
-
-        
-
-
-
-
-        // const inject = 100000000000; // Para efectos de prueba
-
+        const inject = this.props.data;
         this.createTreetable(inject);
-
     }
 
     private createTreetable(inject: any) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaTreeTable);
         this.componentRef = this.entry.createComponent(factory);
-        this.componentRef.instance.inject = inject; // se injecta como un input
-
-        console.log('Llega la data: ', inject);
+        this.componentRef.instance.inject = inject; // inject como input al componente Treetable
     }
 
     private randomID() {

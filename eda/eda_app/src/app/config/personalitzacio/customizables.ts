@@ -41,3 +41,4 @@ export const DEFAULT_FONT_SIZE: number = 0;
 export const DEFAULT_TITLE_ALIGN : string = 'center';
 export const DEFAULT_PANEL_TITLE_ALIGN : string = 'left';
 export const NULL_VALUE : string = 'null' ;
+export const FATHER_ID : number = 0; // Valor id de Padre para el componente Treetable
