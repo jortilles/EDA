@@ -807,8 +807,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             // Borramos del global filter el filtro a borrar fromChart
             this.gFilter.removeGlobalFilter(chartToRemove, true);            
             // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
-            await this.gFilter.onGlobalFilter(this.lastFilters[filterToAddIndx].filter, table.table_name)
-            this.lastFilters.splice(filterToAddIndx, 1);
+            console.log(filterToAddIndx !== -1)
+            if (filterToAddIndx !== -1) { 
+              await this.gFilter.onGlobalFilter(this.lastFilters[filterToAddIndx].filter, table.table_name)
+              this.lastFilters.splice(filterToAddIndx, 1);
+            }
             
             // Actualizamos global filter
               this.reloadOnGlobalFilter(); 
@@ -818,18 +821,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             let actualFilter = this.gFilter.globalFilters.filter(
               (f) =>f.table.value === table.table_name && f.column.value.column_name === column.column_name
             )[0];
-            //Si last filters no tiene uno con la misma label lo guardamos
-            if (!this.lastFilters.includes(actualFilter)) {
-              this.lastFilters.push({filterName: actualFilter.column.label, filter: actualFilter});
-            } else {
-              //Si label es igual lo remplazamos
-              if (this.lastFilters.includes(actualFilter.column.label)) {
-                let filterToRemoveIndx = this.lastFilters.findIndex(element => element.filterName === actualFilter.column.label)
-                this.lastFilters.splice(filterToRemoveIndx, 1);
-                this.lastFilters.push(({ filterName: actualFilter.column.label, filter: actualFilter }));
+            if (actualFilter) {
+              //Si last filters no tiene uno con la misma label lo guardamos
+              if (!this.lastFilters.includes(actualFilter)) {
+                this.lastFilters.push({filterName: actualFilter.column.label, filter: actualFilter});
+              } else {
+                //Si label es igual lo remplazamos
+                if (this.lastFilters.includes(actualFilter.column.label)) {
+                  let filterToRemoveIndx = this.lastFilters.findIndex(element => element.filterName === actualFilter.column.label)
+                  this.lastFilters.splice(filterToRemoveIndx, 1);
+                  this.lastFilters.push(({ filterName: actualFilter.column.label, filter: actualFilter }));
+                }
               }
             }
-            console.log(this.lastFilters)
 
             // Creamos un filtro nuevo con from chart true
             this.chartFilter = {
