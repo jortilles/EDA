@@ -794,21 +794,20 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
       if (column && table) {
         let config = this.setPanelsToFilter(panel);
-
         //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
         if (this.gFilter.globalFilters.length > 0) {
-          //Buscamos si hay un filtro que existe igual al que acabamos de clicar, si lo hay, hay que borrarlo
+          //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla, si lo hay, hay que borrarlo
           let chartToRemove = this.gFilter.globalFilters.find(
             (f) => f.table.value === table.table_name && f.column.value.column_name === column.column_name &&
             f.selectedItems.includes(event?.data.label) && f.selectedItems.length === 1 && f.hasOwnProperty("fromChart")
           );
           if (chartToRemove) {
-            let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label)
+            let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label &&
+              element.filter.table.label === chartToRemove.table.label)
             // Borramos del global filter el filtro a borrar fromChart
             this.gFilter.removeGlobalFilter(chartToRemove, true);            
             // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
-            console.log(filterToAddIndx !== -1)
-            if (filterToAddIndx !== -1) { 
+            if (filterToAddIndx !== -1 ) { 
               await this.gFilter.onGlobalFilter(this.lastFilters[filterToAddIndx].filter, table.table_name)
               this.lastFilters.splice(filterToAddIndx, 1);
             }
