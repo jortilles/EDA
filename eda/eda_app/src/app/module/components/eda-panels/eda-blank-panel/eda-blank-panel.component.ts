@@ -947,6 +947,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 this.graficos = {};
                 this.graficos = _.cloneDeep(properties);
+                
+                // Asignamos AssignedColors en Config en charts creados
                 let assignedColors = [];
                 this.graficos.chartLabels.forEach((element, index) => {
                     assignedColors[index] = [{ value: element }, { color: this.graficos.chartColors[0].backgroundColor[index] }]
@@ -1001,8 +1003,9 @@ export class EdaBlankPanelComponent implements OnInit {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
             let assignedColors = [];
+            let indexChart = this.chartData[0].findIndex(element => typeof element === 'string')
             this.chartData.forEach((element, index) => {
-                assignedColors[index] = [{ value: element[0] }, { color: response.colors[index] }]
+                assignedColors[index] = [{ value: element[indexChart] }, { color: response.colors[index] }]
             });
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
@@ -1016,10 +1019,10 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseTreeMapProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
-
             let assignedColors = [];
+            let indexChart = this.chartData[0].findIndex(element => typeof element === 'string')
             this.chartData.forEach((element, index) => {
-                assignedColors[index] = [{ value: element[0] }, { color: response.colors[index] }]
+                assignedColors[index] = [{ value: element[indexChart] }, { color: response.colors[index] }]
             });
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
             
@@ -1034,8 +1037,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseFunnelProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             let assignedColors = [];
+            let indexChart = this.chartData[0].findIndex(element => typeof element === 'string')
             this.chartData.forEach((element, index) => {
-                assignedColors[index] = [{ value: element[0] }, { color: response.colors[index] }]
+                assignedColors[index] = [{ value: element[indexChart] }, { color: response.colors[index] }]
             });
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
@@ -1050,8 +1054,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseBubblechartProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             let assignedColors = [];
+            let indexChart = this.chartData[0].findIndex(element => typeof element === 'string')
             this.chartData.forEach((element, index) => {
-                assignedColors[index] = [{ value: element[0] }, { color: response.colors[index] }]
+                assignedColors[index] = [{ value: element[indexChart] }, { color: response.colors[index] }]
             });
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
@@ -1069,8 +1074,10 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseScatterProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             let assignedColors = [];
+            let indexChart = this.chartData[0].findIndex(element => typeof element === 'string')
+
             this.chartData.forEach((element, index) => {
-                assignedColors[index] = [{ value: element[0] }, { color: response.colors[index] }]
+                assignedColors[index] = [{ value: element[indexChart] }, { color: response.colors[index] }]
             });
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
@@ -1084,8 +1091,9 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseSunburstProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             let assignedColors = [];
+            let indexChart = this.chartData[0].findIndex(element => typeof element === 'string')
             this.chartData.forEach((element, index) => {
-                assignedColors[index] = [{ value: element[0] }, { color: response.colors[index] }]
+                assignedColors[index] = [{ value: element[indexChart] }, { color: response.colors[index] }]
             });
             this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
             

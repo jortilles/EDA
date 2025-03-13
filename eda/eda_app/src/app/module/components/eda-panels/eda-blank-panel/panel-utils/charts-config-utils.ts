@@ -73,7 +73,8 @@ export const ChartsConfigUtils = {
       }
     } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst"].includes(ebp.panelChart.props.chartType)) {
       let assignedColors = [];
-        ebp.chartData.forEach((element, index) => {
+      ebp.chartData.forEach((element, index) => {
+          //MIRAR TERCERA CONDICIÓN
             if (ebp.panelChart.props.config.getConfig().hasOwnProperty('assignedColors') &&
               ebp.panelChart.props.config.getConfig()['assignedColors'].color &&
               ebp.panelChart.props.config.getConfig()['assignedColors'].length > 0) {
@@ -96,7 +97,8 @@ export const ChartsConfigUtils = {
         if(ebp.panelChart.props.chartType === 'funnel')
         console.log(config)
       
-    }else if (ebp.panelChart.props.chartType === 'knob') {
+    }
+    else if (ebp.panelChart.props.chartType === 'knob') {
       config = {
         color: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.color : ebp.panelChart.props.config.getConfig()['color'],
         limits: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.limits : ebp.panelChart.props.config.getConfig()['limits']
@@ -104,9 +106,9 @@ export const ChartsConfigUtils = {
     } else{
       // Chart.js
       let assignedColors = []
-      //Panel recien creado
+      //Si es panel recien creado no tendra config
       if (!ebp.panelChart.props.hasOwnProperty("config")) { assignedColors = []; }
-      //Panel con colores pero sin [colors]
+      //Panel con colores en el grafico pero sin [colors]
       else {
         ebp.chartData.forEach((element, index) => {
           if ((ebp.panelChart.props.chartType === "doughnut" || ebp.panelChart.props.chartType === "polarArea")) {

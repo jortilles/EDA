@@ -5,6 +5,7 @@ import { sankey as Sankey } from 'd3-sankey';
 import { ChartsColors } from '@eda/configs/index';
 import { EdaD3 } from './eda-d3';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
+import { ChartUtilsService } from '@eda/services/service.index';
 
 
 @Component({
@@ -28,11 +29,10 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   metricIndex: number;
   width: number;
   heigth: number;
-  leafNum: number = -1;
   div = null;
 
 
-  constructor() {
+  constructor(private chartUtilService : ChartUtilsService) {
   }
 
 
@@ -81,15 +81,10 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     //Remove metric key and assign value
     const metricKey = keys.splice(this.metricIndex, 1)[0];
 
-    //PINTAMOS
-    let configData = [], configColors = [];
-    if (this.inject.assignedColors && this.inject.assignedColors[0][1].color !== undefined) {
-      //SI TENEMOS ASSIGNED COLORS CORRECTAMENTE, RECUPERAMOS SU VALOR
-      configData = this.inject.assignedColors.map(item => item[0].value)
-      configColors = this.inject.assignedColors.map(item => item[1].color)
-    } else {configColors = this.colors}  
-
-    const color = d3.scaleOrdinal(this.firstColLabels, configColors).unknown("#ccc");
+    // savedConfig guarda los assignedColors, savedConfig [0] data, savedConfig [1] colores
+    let savedConfig = this.chartUtilService.generateD3AssignedColors(this, this.colors, false); 
+    //Funcion de ordenación de colores de D3
+    const color = d3.scaleOrdinal(this.firstColLabels, savedConfig.colors).unknown("#ccc");
 
     let { _nodes, _links } = this.graph(keys, data, metricKey);
 
@@ -128,7 +123,6 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .selectAll("g")
       .data(links)
       .join("path")
-      .attr("dataindex", this.leafNum += 1)
       .attr("d", sankeyLinkHorizontal())
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
@@ -145,17 +139,21 @@ export class EdaD3Component implements AfterViewInit, OnInit {
           window.open(url, "_blank");
           
         } else {
-          const dataIndex = (mouseevent.target as SVGRectElement).getAttribute("dataindex");
           //Passem aquestes dades
           const label = data.source.name;
-          const value = data.value;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
-          this.onClick.emit({ inx: dataIndex, label, value, filterBy });
+          this.onClick.emit({ label, filterBy });
         }
       })
       .on('mouseover', this.showLinks)
       .on('mouseout', this.hideLinks)
-      .attr("stroke", d => configColors[configData.findIndex((item) => d.names.includes(item))] || color(d.names[0]))
+        .attr("stroke", d => { 
+          //Recuperamos el indice de assignedColors que tiene la data con la que trabajamos
+          let index = savedConfig.data.findIndex((item) => d.names.includes(item))
+          //Devolvemos el color que comparte la data y colors de assignedColors          
+          return savedConfig.colors[index] || color(d.names[0]);
+        })
+        
       .attr("stroke-width", d => d.width)
       .style("mix-blend-mode", "multiply")
       .on('mouseover', (d, data) => {
@@ -173,7 +171,6 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (18 / 12)]);
         const pixelWithRate = 8;
         const width = maxLength * pixelWithRate + 10;
-        const height = this.inject.linkedDashboard ? '5em' : '4em';
 
         this.div = d3.select("body").append('div')
           .attr('class', 'd3tooltip')

@@ -33,7 +33,6 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   labelIndex: number;
   width: number;
   heigth: number;
-  leafNum: number = -1;
 
 
   // div = d3.select("body").append('div')
@@ -174,7 +173,6 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .enter()
       .append('text')
       .attr('class', 'labels')
-      .attr("dataindex", this.leafNum += 1)
       .attr('x', ({ step }) => x(step) + 10)
       .attr('y', 50)
       .text(({ label }) => label)
@@ -190,13 +188,10 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
           const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
         }else{
-          console.log(data)
-          const dataIndex = (mouseevent.target as SVGRectElement).getAttribute("dataindex");
           //Passem aquestes dades
           const label = data.label;
-          const value = data.value;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
-          this.onClick.emit({ inx: dataIndex, label, value, filterBy });
+          this.onClick.emit({label, filterBy });
         }
       });
 

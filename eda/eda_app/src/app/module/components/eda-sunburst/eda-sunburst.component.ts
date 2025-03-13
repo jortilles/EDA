@@ -1,4 +1,5 @@
 /* JJ: La meva merda  */
+import { ChartUtilsService } from '@eda/services/service.index';
 import * as d3 from 'd3'
 import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
@@ -24,9 +25,8 @@ export class EdaSunburstComponent implements AfterViewInit {
   firstColLabels: Array<string>;
   width: number
   heigth: number
-  leafNum: number = -1;
   metricIndex: number
-
+  constructor(private chartUtilService : ChartUtilsService) {}
   ngOnInit (): void {
     this.id = `sunburst_${this.inject.id}` ;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
@@ -34,11 +34,8 @@ export class EdaSunburstComponent implements AfterViewInit {
     this.labels =  this.generateDomain(this.data);
     this.colors = this.inject.colors && this.inject.colors.length > 0 ? 
       this.inject.colors : this.getColors(this.labels.length, ChartsColors);
-    const firstNonNumericColIndex =
-      this.inject.dataDescription.otherColumns[0].index;
-    this.firstColLabels = this.inject.data.values.map(
-      (row) => row[firstNonNumericColIndex]
-    );
+    const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
+    this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
   }
 
@@ -71,17 +68,12 @@ export class EdaSunburstComponent implements AfterViewInit {
           .sum(d => d.value)
           .sort((a, b) => b.value - a.value)
       );
-    
-    
-    //PINTAMOS
-    let configData = [], configColors = [];
-    if (this.inject.assignedColors && this.inject.assignedColors[0][1].color !== undefined) {
-      //SI TENEMOS ASSIGNED COLORS CORRECTAMENTE, RECUPERAMOS SU VALOR
-      configData = this.inject.assignedColors.map(item => item[0].value)
-      configColors = this.inject.assignedColors.map(item => item[1].color)
-    } else {configColors = this.colors}  
+      
+        //Recuperamos el indice de assignedColors que tiene la data con la que trabajamos
+        let savedConfig = this.chartUtilService.generateD3AssignedColors(this, this.colors, false); 
+        //Devolvemos el color que comparte la data y colors de assignedColors    
+        const color = d3.scaleOrdinal(this.firstColLabels, savedConfig.colors).unknown("#ccc");
 
-    const color =d3.scaleOrdinal(this.firstColLabels, configColors).unknown("#ccc");
 
 
     let arc = d3
@@ -146,9 +138,10 @@ export class EdaSunburstComponent implements AfterViewInit {
       )
       .join('path')
       .attr('fill', d => {
-                while (d.depth > 1) d = d.parent;
+        while (d.depth > 1) d = d.parent;
         //AQUI SE PONE EL COLOR DEL TREEMAP
-        return configColors[configData.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
+        let index = savedConfig.data.findIndex((item) => d.data.name.includes(item))
+        return savedConfig.colors[index] || color(d.data.name);
       })
       .attr('d', arc)
       
@@ -173,7 +166,6 @@ export class EdaSunburstComponent implements AfterViewInit {
       )
       .join('path')
       .attr('d', mousearc)
-      .attr("dataindex", this.leafNum += 1)
       .on('mouseenter', (event, d) => {
         // Get the ancestors of the current segment, minus the root
         const sequence = d
@@ -229,15 +221,10 @@ export class EdaSunburstComponent implements AfterViewInit {
           const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
         } else {
-          console.log(data)
-          const dataIndex = (mouseevent.target as SVGRectElement).getAttribute("dataindex");
-
-
           //Passem aquestes dades
           const label = data.data.name;
-          const value = data.data.value;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
-          this.onClick.emit({inx: dataIndex, label, value, filterBy });
+          this.onClick.emit({label, filterBy });
         }
       });
   }

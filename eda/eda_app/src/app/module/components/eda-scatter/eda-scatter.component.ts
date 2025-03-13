@@ -1,5 +1,4 @@
 import { ChartUtilsService } from '@eda/services/service.index';
-
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
@@ -32,7 +31,6 @@ export class EdaScatter implements AfterViewInit {
   metricIndex: number;
   width: number;
   heigth: number;
-  leafNum: number = -1;
 
   constructor(private chartUtilService : ChartUtilsService){
 
@@ -71,16 +69,11 @@ export class EdaScatter implements AfterViewInit {
     const height = this.svgContainer.nativeElement.clientHeight - 20;
     const margin = ({ top: 50, right: 50, bottom: 35, left: 100 });
 
-    //PINTAMOS
-    let configData = [], configColors = [];
-    if (this.inject.assignedColors && this.inject.assignedColors[this.data.length - 1][1].color !== undefined) {
-      //SI TENEMOS ASSIGNED COLORS CORRECTAMENTE, RECUPERAMOS SU VALOR
-      configData = this.inject.assignedColors.map(item => item[0].value)
-      configColors = this.inject.assignedColors.map(item => item[1].color)
-    } else {configColors = this.colors}  
+    // savedConfig guarda los assignedColors, savedConfig [0] data, savedConfig [1] colores
+    let savedConfig = this.chartUtilService.generateD3AssignedColors(this, this.colors, true);
+    //Funcion de ordenación de colores de D3
+    const color = d3.scaleOrdinal(this.firstColLabels, savedConfig.colors).unknown("#ccc");
 
-    const color = d3.scaleOrdinal(this.firstColLabels, configColors).unknown('#ccc');
-  
     const x_range: Array<any> = d3.extent(this.data, (d: any) => d.x);
     const y_range: Array<any> = d3.extent(this.data, (d: any) => d.y);
 
@@ -150,7 +143,6 @@ export class EdaScatter implements AfterViewInit {
     svg.append("g")
       .attr("stroke-width", 1.5)
       .attr("fill", "var(--panel-font-color)")
-      .attr("dataindex", this.leafNum += 1)
       .attr("font-family", "var(--panel-font-family)")
       .attr("font-size", 10)
       .selectAll("circle")
@@ -159,10 +151,12 @@ export class EdaScatter implements AfterViewInit {
       .attr("cx", d => x(d.x))
       .attr("cy", d => y(d.y))
       .attr("r", d => d.radius + 1)
-      //.attr("fill", d => color(d.category))
       .attr("fill", d => { 
         while (d.depth > 1) d = d.parent;
-        return configColors[configData.findIndex((item) => d.label.includes(item))] || color(d.label);
+        //Recuperamos el indice de assignedColors que tiene la data con la que trabajamos
+        let index = savedConfig.data.findIndex((item) => d.label.includes(item))
+        //Devolvemos el color que comparte la data y colors de assignedColors
+        return savedConfig.colors[index] || color(d.label);
       })
       .on('click', (e, data) => {
         if (this.inject.linkedDashboard) {
@@ -226,13 +220,10 @@ export class EdaScatter implements AfterViewInit {
           const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
         }else {
-          console.log(data)
-          const dataIndex = (mouseevent.target as SVGRectElement).getAttribute("dataindex");
           //Passem aquestes dades
           const label = data.label;
-          const value = data.radius;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
-          this.onClick.emit({inx: 0, label, value, filterBy });
+          this.onClick.emit({label, filterBy});
         }
     
       })

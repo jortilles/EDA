@@ -13,6 +13,7 @@ import { EdaBubblechart } from './eda-bubblechart'
 import { ChartsColors } from '@eda/configs/index'
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
+import { ChartUtilsService } from '@eda/services/service.index';
 
 @Component({
   selector: 'eda-bubblechart',
@@ -37,12 +38,11 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   heigth: number;
   event: any;
   d: any;
-  leafNum: number = -1;
   value: any;
   simulation: any;
 
 
-  constructor() { }
+  constructor(private chartUtilService : ChartUtilsService) { }
 
   ngOnInit(): void {
     this.id = `bubblechart_${this.inject.id}`
@@ -125,20 +125,11 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
     // dibujamos márgenes y color
     const width = this.svgContainer.nativeElement.clientWidth - 10, height = this.svgContainer.nativeElement.clientHeight - 10;
-
-//PINTAMOS
-    let configData = [], configColors = [];
-    if (this.inject.assignedColors && this.inject.assignedColors[0][1].color !== undefined) {
-      //SI TENEMOS ASSIGNED COLORS CORRECTAMENTE, RECUPERAMOS SU VALOR
-      configData = this.inject.assignedColors.map(item => item[0].value)
-      configColors = this.inject.assignedColors.map(item => item[1].color)
-    } else {configColors = this.colors}  
-
-    const color =d3.scaleOrdinal(this.firstColLabels, configColors).unknown("#ccc");
-
-
-    //console.log("width: " + width + " height: " + height)
-
+    
+    // savedConfig guarda los assignedColors, savedConfig [0] data, savedConfig [1] colores
+    let savedConfig = this.chartUtilService.generateD3AssignedColors(this, this.colors, false); 
+    //Funcion de ordenación de colores de D3
+    const color = d3.scaleOrdinal(this.firstColLabels, savedConfig.colors).unknown("#ccc");
 
     //llamamos a la libreria de los circulos
     const treemap = data => d3.pack()
@@ -198,7 +189,10 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .attr("id", d => (d.leafUid = this.randomID())) //Crea y assigna una id al azar a cada circulo
       .attr("fill", d => {
         while (d.depth > 1) d = d.parent;
-        return configColors[configData.findIndex((item) => d.data.name.includes(item))] || color(d.data.name); //Rellena al circulo un color al azar
+        //Recuperamos el indice de assignedColors que tiene la data con la que trabajamos
+        let index = savedConfig.data.findIndex((item) => d.data.name.includes(item))
+        //Devolvemos el color que comparte la data y colors de assignedColors
+        return savedConfig.colors[index] || color(d.data.name);
       })
       .attr("class", "node")
       .attr("r", function (d) {
@@ -207,7 +201,6 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
       .style("fill-opacity", 1)
       .attr("stroke", "black")
-      .attr("dataindex", this.leafNum += 1)
       .style("stroke-width", 1)
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
@@ -221,12 +214,10 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
             `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`;
           window.open(url, "_blank");
         } else {
-          const dataIndex = (mouseevent.target as SVGRectElement).getAttribute("dataindex");
           //Passem aquestes dades
           const label = data.data.name;
-          const value = data.data.value;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
-          this.onClick.emit({ inx: dataIndex, label, value, filterBy });
+          this.onClick.emit({label, filterBy });
         }
       })
               .on('mouseover', (d, data) => { 
@@ -243,7 +234,6 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
                 const tooltipData = this.getToolTipData(data);
                 let text = `${tooltipData.firstRow} <br/> ${tooltipData.secondRow}`;
                 text = this.inject.linkedDashboard ? text + `<br/> <h6>  ${tooltipData.thirdRow} </h6>` : text;
-                let height = this.inject.linkedDashboard ? '5em' : '4em';
 
                 //Se crea la etiqueta tooltipData con div
                 this.div = d3.select("app-root").append('div')

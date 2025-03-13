@@ -1,4 +1,5 @@
 
+import { ChartUtilsService } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
@@ -28,27 +29,18 @@ export class EdaTreeMap implements AfterViewInit {
   metricIndex: number;
   width: number;
   heigth: number;
-  leafNum: number = -1;
-  constructor() {
+  constructor(private chartUtilService : ChartUtilsService) {
     this.update = true;
   }
 
   ngOnInit(): void {
     this.id = `treeMap_${this.inject.id}`;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
-    const firstNonNumericColIndex =
-      this.inject.dataDescription.otherColumns[0].index;
-    this.firstColLabels = this.inject.data.values.map(
-      (row) => row[firstNonNumericColIndex]
-    );
+    const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
+    this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
-
     this.data = this.formatData(this.inject.data);
-    
-      this.colors =
-      this.inject.colors.length > 0
-        ? this.inject.colors
-        : this.getColors(this.data.children.length, ChartsColors);
+    this.colors = this.inject.colors.length > 0 ? this.inject.colors: this.getColors(this.data.children.length, ChartsColors);
   }
 
   ngOnDestroy(): void {
@@ -129,18 +121,10 @@ export class EdaTreeMap implements AfterViewInit {
   draw() {
     const width = this.svgContainer.nativeElement.clientWidth - 20,
       height = this.svgContainer.nativeElement.clientHeight - 20;
-    
-    //PINTAMOS
-    let configData = [], configColors = [];
-    if (this.inject.assignedColors && this.inject.assignedColors[0][1].color !== undefined) {
-      //SI TENEMOS ASSIGNED COLORS CORRECTAMENTE, RECUPERAMOS SU VALOR
-      configData = this.inject.assignedColors.map(item => item[0].value)
-      configColors = this.inject.assignedColors.map(item => item[1].color)
-    } else {configColors = this.colors}      
-    
-    const color = d3
-        .scaleOrdinal(this.firstColLabels, configColors)
-        .unknown("#ccc");
+    // savedConfig guarda los assignedColors, savedConfig [0] data, savedConfig [1] colores
+    let savedConfig = this.chartUtilService.generateD3AssignedColors(this, this.colors, false); 
+    //Funcion de ordenación de colores de D3
+    const color = d3.scaleOrdinal(this.firstColLabels, savedConfig.colors).unknown("#ccc");
     
     const treemap = (data) =>
       d3
@@ -172,16 +156,17 @@ export class EdaTreeMap implements AfterViewInit {
       .append("rect")
       .attr("id", (d) => (d.leafUid = this.randomID()))
       .attr("fill", (d) => {
-        while (d.depth > 1) d = d.parent;
         //AQUI SE PONE EL COLOR DEL TREEMAP
-        return configColors[configData.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
+        while (d.depth > 1) d = d.parent;
+        //Recuperamos el indice de assignedColors que tiene la data con la que trabajamos
+        let index = savedConfig.data.findIndex((item) => d.data.name.includes(item))
+        //Devolvemos el color que comparte la data y colors de assignedColors
+        return savedConfig.colors[index] || color(d.data.name);
       })
       .attr("fill-opacity", 0.6)
-      .attr("dataindex", this.leafNum+=1)
       .attr("width", (d) => d.x1 - d.x0)
       .attr("height", (d) => d.y1 - d.y0)
       .on("click", (mouseevent, data) => {
-        const dataIndex = (mouseevent.target as SVGRectElement).getAttribute("dataindex");
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
           const value = data.data.name;
@@ -194,10 +179,8 @@ export class EdaTreeMap implements AfterViewInit {
           window.open(url, "_blank");
         } else {
           const label = data.data.name;
-          // Value y indice necesario?
-          const value = data.value;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
-          this.onClick.emit({ inx: dataIndex, label, value, filterBy});
+          this.onClick.emit({label, filterBy});
         }
       })
       .on("mouseover", (d, data) => {
@@ -207,7 +190,6 @@ export class EdaTreeMap implements AfterViewInit {
         text = this.inject.linkedDashboard
           ? text + `<br/> <h6>  ${tooltipData.thirdRow} </h6>`
           : text;
-        let height = this.inject.linkedDashboard ? "5em" : "4em";
 
         this.div = d3
           .select("app-root")

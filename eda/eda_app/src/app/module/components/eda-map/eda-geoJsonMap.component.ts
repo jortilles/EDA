@@ -139,9 +139,8 @@ export class EdaGeoJsonMapComponent
         else{
           //Passem aquestes dades
           const label = layer.feature.properties.name;
-          const value = 0;
           const filterBy = this.inject.labels[this.inject.data[0].findIndex((element) => typeof element === 'string')]
-          this.onClick.emit({ inx: this.dataIndex, label, value, filterBy });
+          this.onClick.emit({ label, filterBy });
         }
       }
       );
