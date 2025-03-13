@@ -29,7 +29,7 @@ export class MongoDBConnection extends AbstractConnection {
             }
 
             if(authSource == undefined || authSource == null){
-                authSource = 'admin';
+                authSource = 'EDA';
             }
 
             this.connectUrl = `${type}://${credentialStr}${host}:${port}/${db}?authSource=${authSource}`;
