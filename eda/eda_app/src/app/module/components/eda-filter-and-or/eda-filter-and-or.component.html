@@ -9,19 +9,11 @@
         <gridster-item [item]="item" *ngFor="let item of dashboard" class="gridster-item">
         <div class="d-flex justify-content-between align-items-center">
             <div class="button-holder">
-                <!-- <button
-                mat-mini-fab
-                (mousedown)="removeItem($event, item)"
-                (touchstart)="removeItem($event, item)"
-                >
-                <mat-icon>delete</mat-icon>
-                </button> -->
 
                 <p-selectButton 
                     [options]="selectedButton" 
                     [(ngModel)]="item.value"
                 ></p-selectButton>
-
 
             </div>
             <h3>{{item.filter_column}}</h3>
