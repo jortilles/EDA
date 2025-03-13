@@ -28,6 +28,9 @@ export class EdaFilterAndOrComponent implements OnInit {
   options: GridsterConfig;
   dashboard: GridsterItem[];
   itemToPush!: GridsterItemComponent;
+  selectedButton: any[]; 
+  selectedButtonInitialValue: string; // Valor seleccionado por defecto
+
 
   public height: number = 0;
 
@@ -59,24 +62,30 @@ export class EdaFilterAndOrComponent implements OnInit {
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
       itemResizeCallback: (item: GridsterItem) => this.onItemChange(item),
     };
+
+    // Valores and y or
+    this.selectedButton = [ 
+      { label: "AND", value: "and" }, 
+      { label: "OR", value: "or" } 
+    ]; 
+
   }
 
   ngOnInit(): void {
-    console.log('Global Filter: ', this.globalFilters);
-    console.log('Panel Filter: ', this.selectedFilters);
+    // console.log('Global Filter: ', this.globalFilters);
+    // console.log('Panel Filter: ', this.selectedFilters);
 
     // Integración:
-
     this.dashboard = [];
 
     // Agregado de Filtros Globales
     this.globalFilters.forEach((gf, i) => {
-      this.dashboard.push({cols: 3, rows:1, y:i, x:0, filter_column: gf.filter_column})
+      this.dashboard.push({cols: 3, rows:1, y:i, x:0, filter_column: gf.filter_column, value: "and"})
     })
 
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {
-      this.dashboard.push({cols: 3, rows:1, y: this.globalFilters.length + j, x:0, filter_column: sf.filter_column})
+      this.dashboard.push({cols: 3, rows:1, y: this.globalFilters.length + j, x:0, filter_column: sf.filter_column, value: "and"})
     })
 
     // this.dashboard = [
