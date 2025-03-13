@@ -4442,7 +4442,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <source>2. Creación de un nuevo informe y paneles de visualización de datos:</source>
     <target>2. Utworzenie nowego raportu i paneli wizualizacji danych:</target>
   </trans-unit>
-
+      <trans-unit id="tutorialTitleThirdPPanel" datatype="html">
+        <source>3. KPIs y alertas con edalitics:</source>
+        <target>3. KPI i alerty z edalitics:</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

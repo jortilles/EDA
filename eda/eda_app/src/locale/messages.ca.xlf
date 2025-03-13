@@ -4533,7 +4533,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>2. Creación de un nuevo informe y paneles de visualización de datos:</source>
         <target>2. Creació d'un nou informe i panells de visualizació de dades:</target>
       </trans-unit>
-
+      <trans-unit id="tutorialTitleThirdPPanel" datatype="html">
+        <source>3. KPIs y alertas con edalitics:</source>
+        <target>3. KPIs i alertes amb edalitics:</target>
+      </trans-unit>
 
     </body>
   </file>
