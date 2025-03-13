@@ -49,7 +49,7 @@
       </trans-unit>
       <trans-unit id="passwordLogin" datatype="html">
         <source>Contraseña</source>
-        <target>Contrasenya</target>
+        <target>Contraseña</target>
       </trans-unit>
       <trans-unit id="aggTmean">
         <source>Media</source>
