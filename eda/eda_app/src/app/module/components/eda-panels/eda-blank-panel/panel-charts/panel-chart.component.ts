@@ -726,7 +726,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
-        inject.assignedColors = this.props.config.getConfig()['assignedColors'];
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        if (inject.assignedColors.length === 0) {
+            inject.data.values.forEach((element, index) => {
+                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
+            });
+        }
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createParallelSetsComponent(inject);
@@ -751,7 +756,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
-        inject.assignedColors = this.props.config.getConfig()['assignedColors'];
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        if (inject.assignedColors.length === 0) {
+            inject.data.values.forEach((element, index) => {
+                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
+            });
+        }
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createFunnelComponent(inject);
@@ -776,7 +786,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
-        inject.assignedColors = this.props.config.getConfig()['assignedColors'];
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        if (inject.assignedColors.length === 0) {
+            inject.data.values.forEach((element, index) => {
+                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
+            });
+        }
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createBubblechartComponent(inject);
@@ -791,7 +806,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private renderTreeMap() {
-
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         let inject: TreeMap = new TreeMap;
         inject.size = this.props.size;
@@ -799,9 +813,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
-        inject.assignedColors = this.props.config.getConfig()['assignedColors'];
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        if (inject.assignedColors.length === 0) {
+            inject.data.values.forEach((element, index) => {
+                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
+            });
+        }            
         inject.linkedDashboard = this.props.linkedDashboardProps;
-
         this.createTreeMap(inject);
     }
 
@@ -823,7 +841,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
-        inject.assignedColors = this.props.config.getConfig()['assignedColors'];
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        if (inject.assignedColors.length === 0) {
+            inject.data.values.forEach((element, index) => {
+                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
+            });
+        }
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createScatter(inject);
@@ -846,7 +869,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
-        inject.assignedColors = this.props.config.getConfig()['assignedColors'];
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        if (inject.assignedColors.length === 0) {
+            inject.data.values.forEach((element, index) => {
+                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
+            });
+        }
         inject.linkedDashboard = this.props.linkedDashboardProps;
         this.createSunburst(inject);
     }

@@ -25,6 +25,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   svg: any;
   data: any;
   colors: Array<string>;
+  assignedColors: any[];
   firstColLabels: Array<string>;
   metricIndex: number;
   width: number;
@@ -45,7 +46,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
-
+    this.assignedColors = this.inject.assignedColors; 
   }
 
   ngAfterViewInit() {
@@ -81,10 +82,12 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     //Remove metric key and assign value
     const metricKey = keys.splice(this.metricIndex, 1)[0];
 
-    // savedConfig guarda los assignedColors, savedConfig [0] data, savedConfig [1] colores
-    let savedConfig = this.chartUtilService.generateD3AssignedColors(this, this.colors, false); 
+    //Valores de assignedColors separados
+    const valuesTree = this.assignedColors.map((item) => item.value);
+    const colorsTree = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
+    
     //Funcion de ordenación de colores de D3
-    const color = d3.scaleOrdinal(this.firstColLabels, savedConfig.colors).unknown("#ccc");
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree).unknown("#ccc");
 
     let { _nodes, _links } = this.graph(keys, data, metricKey);
 
@@ -148,10 +151,8 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .on('mouseover', this.showLinks)
       .on('mouseout', this.hideLinks)
         .attr("stroke", d => { 
-          //Recuperamos el indice de assignedColors que tiene la data con la que trabajamos
-          let index = savedConfig.data.findIndex((item) => d.names.includes(item))
-          //Devolvemos el color que comparte la data y colors de assignedColors          
-          return savedConfig.colors[index] || color(d.names[0]);
+          //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+          return  colorsTree[valuesTree.findIndex((item) => d.names.includes(item))] || color(d.names[0]);
         })
         
       .attr("stroke-width", d => d.width)

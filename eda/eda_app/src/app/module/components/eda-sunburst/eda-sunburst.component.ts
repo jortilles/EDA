@@ -21,6 +21,7 @@ export class EdaSunburstComponent implements AfterViewInit {
   svg: any
   data: any
   colors: Array<string>
+  assignedColors: any[];
   labels: Array<string>
   firstColLabels: Array<string>;
   width: number
@@ -34,6 +35,7 @@ export class EdaSunburstComponent implements AfterViewInit {
     this.labels =  this.generateDomain(this.data);
     this.colors = this.inject.colors && this.inject.colors.length > 0 ? 
       this.inject.colors : this.getColors(this.labels.length, ChartsColors);
+    this.assignedColors = this.inject.assignedColors; 
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
@@ -69,12 +71,10 @@ export class EdaSunburstComponent implements AfterViewInit {
           .sort((a, b) => b.value - a.value)
       );
       
-        //Recuperamos el indice de assignedColors que tiene la data con la que trabajamos
-        let savedConfig = this.chartUtilService.generateD3AssignedColors(this, this.colors, false); 
-        //Devolvemos el color que comparte la data y colors de assignedColors    
-        const color = d3.scaleOrdinal(this.firstColLabels, savedConfig.colors).unknown("#ccc");
-
-
+    //Funcion de ordenación de colores de D3
+    const valuesSunburst = this.assignedColors.map((item) => item.value);
+    const colorsSunburst = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsSunburst).unknown("#ccc");
 
     let arc = d3
       .arc()
@@ -139,9 +139,8 @@ export class EdaSunburstComponent implements AfterViewInit {
       .join('path')
       .attr('fill', d => {
         while (d.depth > 1) d = d.parent;
-        //AQUI SE PONE EL COLOR DEL TREEMAP
-        let index = savedConfig.data.findIndex((item) => d.data.name.includes(item))
-        return savedConfig.colors[index] || color(d.data.name);
+        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+        return  colorsSunburst[valuesSunburst.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
       })
       .attr('d', arc)
       

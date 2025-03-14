@@ -32,6 +32,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   svg: any;
   data: any;
   colors: Array<string>;
+  assignedColors: any[];
   firstColLabels: Array<string>;
   metricIndex: number;
   width: number;
@@ -56,6 +57,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
     this.colors = this.inject.colors.length > 0 ? this.inject.colors
       : this.getColors(this.data.children.length, ChartsColors);
+    this.assignedColors = this.inject.assignedColors; 
 
   }
 
@@ -126,10 +128,10 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
     // dibujamos márgenes y color
     const width = this.svgContainer.nativeElement.clientWidth - 10, height = this.svgContainer.nativeElement.clientHeight - 10;
     
-    // savedConfig guarda los assignedColors, savedConfig [0] data, savedConfig [1] colores
-    let savedConfig = this.chartUtilService.generateD3AssignedColors(this, this.colors, false); 
     //Funcion de ordenación de colores de D3
-    const color = d3.scaleOrdinal(this.firstColLabels, savedConfig.colors).unknown("#ccc");
+    const valuesBubble = this.assignedColors.map((item) => item.value);
+    const colorsBubble = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsBubble).unknown("#ccc");
 
     //llamamos a la libreria de los circulos
     const treemap = data => d3.pack()
@@ -189,10 +191,8 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .attr("id", d => (d.leafUid = this.randomID())) //Crea y assigna una id al azar a cada circulo
       .attr("fill", d => {
         while (d.depth > 1) d = d.parent;
-        //Recuperamos el indice de assignedColors que tiene la data con la que trabajamos
-        let index = savedConfig.data.findIndex((item) => d.data.name.includes(item))
-        //Devolvemos el color que comparte la data y colors de assignedColors
-        return savedConfig.colors[index] || color(d.data.name);
+        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+        return  colorsBubble[valuesBubble.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
       })
       .attr("class", "node")
       .attr("r", function (d) {

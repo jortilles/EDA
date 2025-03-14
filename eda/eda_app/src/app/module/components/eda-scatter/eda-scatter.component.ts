@@ -27,6 +27,7 @@ export class EdaScatter implements AfterViewInit {
   svg: any;
   data: any;
   colors: Array<string>;
+  assignedColors: any[];
   firstColLabels: Array<string>;
   metricIndex: number;
   width: number;
@@ -44,7 +45,7 @@ export class EdaScatter implements AfterViewInit {
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
-
+    this.assignedColors = this.inject.assignedColors; 
   }
   ngOnDestroy(): void {
     if (this.div)
@@ -69,10 +70,12 @@ export class EdaScatter implements AfterViewInit {
     const height = this.svgContainer.nativeElement.clientHeight - 20;
     const margin = ({ top: 50, right: 50, bottom: 35, left: 100 });
 
-    // savedConfig guarda los assignedColors, savedConfig [0] data, savedConfig [1] colores
-    let savedConfig = this.chartUtilService.generateD3AssignedColors(this, this.colors, true);
+    //Valores de assignedColors separados
+    const valuesScatter = this.assignedColors.map((item) => item.value);
+    const colorsScatter = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
+    
     //Funcion de ordenación de colores de D3
-    const color = d3.scaleOrdinal(this.firstColLabels, savedConfig.colors).unknown("#ccc");
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsScatter).unknown("#ccc");
 
     const x_range: Array<any> = d3.extent(this.data, (d: any) => d.x);
     const y_range: Array<any> = d3.extent(this.data, (d: any) => d.y);
@@ -153,10 +156,8 @@ export class EdaScatter implements AfterViewInit {
       .attr("r", d => d.radius + 1)
       .attr("fill", d => { 
         while (d.depth > 1) d = d.parent;
-        //Recuperamos el indice de assignedColors que tiene la data con la que trabajamos
-        let index = savedConfig.data.findIndex((item) => d.label.includes(item))
-        //Devolvemos el color que comparte la data y colors de assignedColors
-        return savedConfig.colors[index] || color(d.label);
+        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+        return colorsScatter[valuesScatter.findIndex((item) => d.label.includes(item))] || color(d.label);
       })
       .on('click', (e, data) => {
         if (this.inject.linkedDashboard) {

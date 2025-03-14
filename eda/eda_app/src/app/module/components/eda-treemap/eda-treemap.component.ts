@@ -25,6 +25,7 @@ export class EdaTreeMap implements AfterViewInit {
   svg: any;
   data: any;
   colors: Array<string>;
+  assignedColors: any[];
   firstColLabels: Array<string>;
   metricIndex: number;
   width: number;
@@ -40,7 +41,9 @@ export class EdaTreeMap implements AfterViewInit {
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.data = this.formatData(this.inject.data);
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors: this.getColors(this.data.children.length, ChartsColors);
+    this.colors = this.inject.colors.length > 0 ? this.inject.colors : this.getColors(this.data.children.length, ChartsColors);
+    this.assignedColors = this.inject.assignedColors; 
+
   }
 
   ngOnDestroy(): void {
@@ -120,11 +123,14 @@ export class EdaTreeMap implements AfterViewInit {
 
   draw() {
     const width = this.svgContainer.nativeElement.clientWidth - 20,
-      height = this.svgContainer.nativeElement.clientHeight - 20;
-    // savedConfig guarda los assignedColors, savedConfig [0] data, savedConfig [1] colores
-    let savedConfig = this.chartUtilService.generateD3AssignedColors(this, this.colors, false); 
+    height = this.svgContainer.nativeElement.clientHeight - 20;
+
+    //Valores de assignedColors separados
+    const valuesTree = this.assignedColors.map((item) => item.value);
+    const colorsTree = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
+    
     //Funcion de ordenación de colores de D3
-    const color = d3.scaleOrdinal(this.firstColLabels, savedConfig.colors).unknown("#ccc");
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree).unknown("#ccc");
     
     const treemap = (data) =>
       d3
@@ -158,10 +164,8 @@ export class EdaTreeMap implements AfterViewInit {
       .attr("fill", (d) => {
         //AQUI SE PONE EL COLOR DEL TREEMAP
         while (d.depth > 1) d = d.parent;
-        //Recuperamos el indice de assignedColors que tiene la data con la que trabajamos
-        let index = savedConfig.data.findIndex((item) => d.data.name.includes(item))
-        //Devolvemos el color que comparte la data y colors de assignedColors
-        return savedConfig.colors[index] || color(d.data.name);
+        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+        return  colorsTree[valuesTree.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
       })
       .attr("fill-opacity", 0.6)
       .attr("width", (d) => d.x1 - d.x0)

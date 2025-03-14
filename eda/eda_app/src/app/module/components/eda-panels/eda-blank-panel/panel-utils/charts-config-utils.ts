@@ -72,31 +72,10 @@ export const ChartsConfigUtils = {
         
       }
     } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst"].includes(ebp.panelChart.props.chartType)) {
-      let assignedColors = [];
-      ebp.chartData.forEach((element, index) => {
-          //MIRAR TERCERA CONDICIÓN
-            if (ebp.panelChart.props.config.getConfig().hasOwnProperty('assignedColors') &&
-              ebp.panelChart.props.config.getConfig()['assignedColors'].color &&
-              ebp.panelChart.props.config.getConfig()['assignedColors'].length > 0) {
-              //TIENE ASSIGNED COLORS CORRECTAMENTE
-              assignedColors[index] = ebp.panelChart.props.config.getConfig()['assignedColors'][index]
-            } else if (ebp.panelChart.props.config.getConfig().hasOwnProperty('colors')) {
-              //SI NO TIENE ASSIGNED COLORS LE AGREGAMOS EL COLORS (INFORMES VIEJOS)
-              assignedColors[index] =
-                [{ value: element.find(innerElement => typeof innerElement === "string") },
-                  {
-                    color: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig()['colors'].length !== 0 ?
-                      ebp.panelChart.props.config.getConfig()['colors'][index] : ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors[index] : []
-                  }];
-            }
-          })
         config = {
           colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : [],
-          assignedColors: assignedColors,
+          assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
         }
-        if(ebp.panelChart.props.chartType === 'funnel')
-        console.log(config)
-      
     }
     else if (ebp.panelChart.props.chartType === 'knob') {
       config = {
