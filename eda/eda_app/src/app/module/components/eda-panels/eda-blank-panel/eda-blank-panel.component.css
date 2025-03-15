@@ -40,3 +40,8 @@
     height: 100%;
     overflow-y: hidden;
 }
+
+::ng-deep .p-tabview .p-tabview-nav .p-highlight {
+    color: #00BFB3;
+    border-bottom: 2px solid;
+}

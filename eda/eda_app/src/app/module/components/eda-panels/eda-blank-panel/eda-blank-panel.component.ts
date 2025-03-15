@@ -1472,9 +1472,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     getAttributeTypeIcon(type: string) {
         const icons = {
-            numeric: 'hashtag',//'text-blue-500',
-            date: 'calendar', //text-green-500',
-            text: 'text' //'text-orange-500' 
+            numeric: 'mdi-alphabetical',//'text-blue-500',
+            date: 'mdi-calendar-text', //text-green-500',
+            text: 'mdi-alphabetical' //'text-orange-500' 
         };
         return icons[type as keyof typeof icons] || '';
     }
