@@ -24,10 +24,11 @@
             <!-- <button *ngIf="ifShowApply" [disabled]="disableApply"  pButton icon="fa fa-check" class="p-button-raised p-button-success" label="Confirmar" i18n-label="@@guardarBtn" (click)="onApply()"></button>  -->
             <!-- <button *ngIf="ifShowClose" pButton icon="fa fa-times" class="p-button-raised p-button-danger" label="Cerrar" i18n-label="@@cerrarBtn" (click)="onClose()"></button> -->
             
-            <button *ngIf="ifShowClose" class="flex items-center gap-2 px-4 py-2 text-gray-600 bg-gray-200 rounded-md" (click)="onClose()">
-               <i class="fa fa-times"></i> <span>Cerrar</span>
+            <button *ngIf="ifShowClose" class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="onClose()">
+               <i class="fa fa-times"></i>
+               <span i18n-label="@@cancelarBtn">Cancelar</span>
             </button>
-            <button *ngIf="ifShowApply" class="flex items-center gap-2 px-4 py-2 bg-[#00BFB3] hover:bg-[#00BFB3]/90 text-white rounded-md" [disabled]="disableApply" (click)="onApply()">
+            <button *ngIf="ifShowApply" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" [disabled]="disableApply" (click)="onApply()">
                 <i class="fa fa-check"></i> <span>Confirmar</span>
             </button>
         </div>

@@ -1,18 +1,22 @@
 <div class="min-h-screen bg-gray-50">
   <div class="w-full p-6 space-y-6">
-    <!-- Header -->
-    <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-semibold tracking-tight">{{title}}</h1>
-      <button class="w-6 h-6 rounded-full flex items-center justify-center" (click)="showSidebar($event)">
-        <i class="pi pi-ellipsis-v"></i>
-      </button>
-    </div>
+    <div class="rounded-lg p-3 shadow-sm bg-white">
+      <!-- Header -->
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-semibold tracking-tight">{{title}}</h1>
+        <button class="w-6 h-6 rounded-full flex items-center justify-center" (click)="showSidebar($event)">
+          <i class="pi pi-ellipsis-v"></i>
+        </button>
+      </div>
 
-    <!-- Filters Section -->
-    <div class="flex justify-between align-middle rounded-lg p-3 space-y-4 shadow-sm bg-white">
-      <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
-
-      <p-message severity="warn" text="Hi han canvis sense guardar" styleClass="w-full"></p-message>
+      <!-- Filters Section -->
+      <div class="flex justify-between items-center mt-4">
+        <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
+        
+        @if (notSaved) {
+          <p-message severity="warn" i18n="@@notSavedChanges" text="Hi han canvis sense guardar" styleClass="w-full"></p-message>
+        }
+      </div>
     </div>
 
     <div [style.height]="'1000px'">
@@ -45,3 +49,18 @@
 @if (dashboard) {
   <app-dashboard-sidebar [dashboard]="this"></app-dashboard-sidebar>
 }
+
+
+<!-- <div>
+    <span i18n="@@notSavedChanges" class="div-cambios " *ngIf="display_v.notSaved" style="color: var(--panel-font-color);"> Hay cambios sin guardar... </span>
+
+    <button *ngIf="!display_v.hideWheel" (click)="display_v.rightSidebar = true" class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10">
+        <i id="gearButton" class="fa fa-cog text-white" style="font-size: 14px;"></i>
+    </button>
+
+</div>
+
+
+<div  *ngIf="display_v.panelMode" >
+  <a href="https://eda.jortilles.com/">Enterprise Data Analytics</a>
+</div> -->

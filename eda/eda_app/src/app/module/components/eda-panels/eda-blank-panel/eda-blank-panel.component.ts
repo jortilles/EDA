@@ -90,6 +90,7 @@ export class EdaBlankPanelComponent implements OnInit {
     // public actualSize : {litle:boolean, medium:boolean}
 
     /** Page variables */
+    public titleClick: boolean = false;
     public title: string = '';
     // Display variables
     public display_v = {

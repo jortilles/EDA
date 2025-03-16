@@ -27,14 +27,16 @@
           (onChange)="setGlobalFilterItems(filter)">
 
           @if (dashboard.isEditable()) {
-            <p-footer>
+            <ng-template pTemplate="footer">
+
               <button id="dashFilterConf"
-                  pButton pRipple type="button"
-                  icon="pi pi-cog"
-                  (click)="onShowGlobalFilter(false, filter)"
-                  class="p-button-rounded p-button-outlined filters-size">
+                type="button"
+                (click)="onShowGlobalFilter(false, filter)"
+                class="rounded-full border p-2.5 m-2">
+                <eda-icon name="settings"></eda-icon>
+                <!-- <i class="pi pi-cog h-5 w-5"></i> -->
               </button>
-            </p-footer>
+            </ng-template>
           }
 
         </p-multiSelect>

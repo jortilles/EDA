@@ -21,7 +21,7 @@
             <tr *ngFor="let serie of inject.series">
                 <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan"
                 (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center">
-                    <div class="flex align-middle">
+                    <div class="flex items-center">
                         {{label.title}}
                         <p-sortIcon *ngIf="label.sortable"></p-sortIcon>
                     </div>
@@ -33,7 +33,7 @@
                 <ng-container *ngFor="let col of inject.cols">
                     <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"
                         [width]="col.width" [attr.rowspan]="col.rowspan">
-                        <div class="flex align-middle">
+                        <div class="flex items-center">
                             {{col.header}}
                             <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
                         </div>

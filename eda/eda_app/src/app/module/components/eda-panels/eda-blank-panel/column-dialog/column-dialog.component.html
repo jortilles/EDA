@@ -1,86 +1,86 @@
 <eda-dialog [inject]="dialog">
   <!-- class="flex-1 px-6 overflow-y-auto" -->
-    <div body>
-      <div class="grid gap-4"
-        [ngClass]="{
-          'grid-cols-[1fr_1fr_1fr_3fr]': showFormatDateSection,
-          'grid-cols-[1fr_1fr_3fr]': !showFormatDateSection}
-        ">
-        <!-- Agregaciones -->
+  <div body>
+    <div class="grid gap-4"
+      [ngClass]="{
+        'grid-cols-[1fr_1fr_1fr_3fr]': showFormatDateSection,
+        'grid-cols-[1fr_1fr_3fr]': !showFormatDateSection}
+      ">
+      <!-- Agregaciones -->
+      <div class="">
+        <h4 i18n="@@agregacionesH4">Agregaciones</h4>
+        <div class="aggregation-list mt-10">
+          @for (aggregation of aggregationsTypes; track aggregation) {
+            <div class="aggregation-box"
+                (click)="addAggregation(aggregation)"
+                [ngClass]="aggregation.selected === true ? 'aggregation-active' : ''">
+                <span>{{getAggName(aggregation.value)}}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Ordernacion -->
+      <div class="">
+        <h4 i18n="@@ordenacionH4">Ordenación</h4>
+        <div class="aggregation-list mt-10">
+          @for (ordenation of ordenationTypes; track ordenation) {
+            <div class="aggregation-box"
+              (click)="addOrdenation(ordenation)"
+              [ngClass]="ordenation.selected === true ? 'aggregation-active' : ''">
+              <span>{{ordenation.display_name | uppercase}}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- FormatDate -->
+      @if (showFormatDateSection) {
         <div class="">
-          <h4 i18n="@@agregacionesH4">Agregaciones</h4>
+          <h4 i18n="@@dateFormatH4">Format</h4>
           <div class="aggregation-list mt-10">
-            @for (aggregation of aggregationsTypes; track aggregation) {
-              <div class="aggregation-box"
-                  (click)="addAggregation(aggregation)"
-                  [ngClass]="aggregation.selected === true ? 'aggregation-active' : ''">
-                  <span>{{getAggName(aggregation.value)}}</span>
-              </div>
-            }
+            <p-dropdown
+              [(ngModel)]="formatDate"
+              [options]="formatDates"
+              [optionLabel]="'display_name'"
+              [autoDisplayFirst]="false"
+              [showClear]="true"
+              [style]="{'min-width': '100%'}"
+              (onChange)="addFormatDate()"
+              class="w-100"
+              appendTo="body">
+            </p-dropdown>
+          </div>
+
+          <div class="mt-5 ml-4" [pTooltip]="cumulativeSumTooltip" tooltipPosition="left">
+            <h6 i18n="@@cumulativeSum">Suma acumulativa</h6>
+            <p-inputSwitch
+              id="cumulativeSum"
+              [(ngModel)]="cumulativeSum"
+              (onChange)="handleCumulativeSum()"
+              [disabled]="!cumulativeSumAllowed()">
+            </p-inputSwitch>
           </div>
         </div>
+      }
 
-        <!-- Ordernacion -->
-        <div class="">
-          <h4 i18n="@@ordenacionH4">Ordenación</h4>
-          <div class="aggregation-list mt-10">
-            @for (ordenation of ordenationTypes; track ordenation) {
-              <div class="aggregation-box"
-                (click)="addOrdenation(ordenation)"
-                [ngClass]="ordenation.selected === true ? 'aggregation-active' : ''">
-                <span>{{ordenation.display_name | uppercase}}</span>
-              </div>
-            }
-          </div>
-        </div>
+      <!-- Filtros -->
+      <div class="">
+        <h4 i18n="@@filtrarH4">Filtrar</h4>
 
-        <!-- FormatDate -->
-        @if (showFormatDateSection) {
-          <div class="">
-            <h4 i18n="@@dateFormatH4">Format</h4>
-            <div class="aggregation-list mt-10">
-              <p-dropdown
-                [(ngModel)]="formatDate"
-                [options]="formatDates"
-                [optionLabel]="'display_name'"
-                [autoDisplayFirst]="false"
-                [showClear]="true"
-                [style]="{'min-width': '100%'}"
-                (onChange)="addFormatDate()"
-                class="w-100"
-                appendTo="body">
+        <div class="flex flex-col mt-10">
+          <!-- Filter OptionTypes -->
+          <div class="grid grid-cols-2">
+            <span class="p-float-label">
+              <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
+                [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
+                (onChange)="handleFilterChange(filterSelected)">
               </p-dropdown>
-            </div>
-
-            <div class="mt-5 ml-4" [pTooltip]="cumulativeSumTooltip" tooltipPosition="left">
-              <h6 i18n="@@cumulativeSum">Suma acumulativa</h6>
-              <p-inputSwitch
-                id="cumulativeSum"
-                [(ngModel)]="cumulativeSum"
-                (onChange)="handleCumulativeSum()"
-                [disabled]="!cumulativeSumAllowed()">
-              </p-inputSwitch>
-            </div>
-          </div>
-        }
-
-        <!-- Filtros -->
-        <div class="">
-          <h4 i18n="@@filtrarH4">Filtrar</h4>
-
-          <div class="flex flex-col mt-10">
-             <!-- Filter OptionTypes -->
-            <div class="grid grid-cols-2">
-              <span class="p-float-label">
-                <p-dropdown id="types" [options]="filter.types" [(ngModel)]="filterSelected" optionLabel="label"
-                  [autoDisplayFirst]="false" [style]="{'width': '100%'}" [showClear]="true"
-                  (onChange)="handleFilterChange(filterSelected)">
-                </p-dropdown>
-                <label i18n="@@tiposFiltrosLabel" for="types">
-                  Tipos de filtro
-                </label>
-              </span>
-            
+              <label i18n="@@tiposFiltrosLabel" for="types">
+                Tipos de filtro
+              </label>
+            </span>
+          
 
             @if (!display.between) {
               <div class="col-12 md:col-6">
@@ -192,79 +192,79 @@
                 </div>
               }
             }
-            </div>
-            <!-- OptionCheck -->
-            <div class="w-1/2">
-              <div class="flex justify-between items-center">
-                <div class="">
-                  <label i18n="@@optionsLabel" for="filter_options">Opciones</label>
-                  <br>
-                  <p-inputSwitch
-                    id="filter_options"
-                    [(ngModel)]="filter.switch"
-                    [disabled]="display.switchButton"
-                    (onChange)="loadDropDrownData()">
-                  </p-inputSwitch>
-                  <span class="state-label" *ngIf="filter.switch">Si</span>
-                  <span class="state-label" *ngIf="!filter.switch">No</span>
-                </div>
-  
-                <div>
-                  <button class="flex items-center px-4 py-2 border rounded-md" (click)="addFilter()" [disabled]="display.filterButton">
-                    <span i18n-label="@@addFilterBtn">Añadir filtro</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-
-            <!-- Filter List -->
-            @if (filter.forDisplay.length > 0) {
-              <div class="mt-10">
-                <h4 i18n="@@FiltersH4">Filtros</h4>
-                  <div class="w-full mt-10 foot-card">
-                    <p-scrollPanel [style]="{width: '100%', height: '120px'}" styleClass="custombar1">
-                      @for (filtre of filter.forDisplay; track filtre) {
-                        @if (filtre.filter_elements.length === 0) {
-                          <p class="flex items-center">
-                            <b class="m-1">
-                              * {{ selectedColumn.display_name.default }} is
-                              {{ filtre.filter_type }}
-                            </b>
-                            <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                          </p>
-                        }
-    
-                        @if (filtre.filter_elements.length === 1) {
-                          <p class="flex items-center">
-                            <b class="m-1">
-                              * {{ selectedColumn.display_name.default }}
-                              {{ filtre.filter_type }}
-                              "{{ filtre.filter_elements[0].value1 }}"
-                            </b>
-                            <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                        </p>
-                        }
-                        
-                        @if (filtre.filter_elements.length === 2) {
-                          <p class="flex items-center">
-                            <b class="m-1">
-                              * {{ selectedColumn.display_name.default }}
-                              {{ filtre.filter_type }}
-                              "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
-                            </b>
-                            <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
-                          </p>
-                        }
-                      }
-                    </p-scrollPanel>
-                  </div>
-              </div>
-            }
           </div>
+
+          <!-- OptionCheck -->
+          <div class="w-1/2">
+            <div class="flex justify-between items-center">
+              <div class="">
+                <label i18n="@@optionsLabel" for="filter_options">Opciones</label>
+                <br>
+                <p-inputSwitch
+                  id="filter_options"
+                  [(ngModel)]="filter.switch"
+                  [disabled]="display.switchButton"
+                  (onChange)="loadDropDrownData()">
+                </p-inputSwitch>
+                <span class="state-label" *ngIf="filter.switch">Si</span>
+                <span class="state-label" *ngIf="!filter.switch">No</span>
+              </div>
+
+              <div>
+                <button class="flex items-center px-4 py-2 border rounded-md" (click)="addFilter()" [disabled]="display.filterButton">
+                  <span i18n-label="@@addFilterBtn">Añadir filtro</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filter List -->
+          @if (filter.forDisplay.length > 0) {
+            <div class="mt-10">
+              <h4 i18n="@@FiltersH4">Filtros</h4>
+                <div class="w-full mt-10 foot-card">
+                  <p-scrollPanel [style]="{width: '100%', height: '120px'}" styleClass="custombar1">
+                    @for (filtre of filter.forDisplay; track filtre) {
+                      @if (filtre.filter_elements.length === 0) {
+                        <p class="flex items-center">
+                          <b class="m-1">
+                            * {{ selectedColumn.display_name.default }} is
+                            {{ filtre.filter_type }}
+                          </b>
+                          <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                        </p>
+                      }
+  
+                      @if (filtre.filter_elements.length === 1) {
+                        <p class="flex items-center">
+                          <b class="m-1">
+                            * {{ selectedColumn.display_name.default }}
+                            {{ filtre.filter_type }}
+                            "{{ filtre.filter_elements[0].value1 }}"
+                          </b>
+                          <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                      </p>
+                      }
+                      
+                      @if (filtre.filter_elements.length === 2) {
+                        <p class="flex items-center">
+                          <b class="m-1">
+                            * {{ selectedColumn.display_name.default }}
+                            {{ filtre.filter_type }}
+                            "{{ filtre.filter_elements[0].value1}}" Y "{{ filtre.filter_elements[1].value2 }}"
+                          </b>
+                          <i class="pi pi-times pointer" (click)="removeFilter(filtre)"></i>
+                        </p>
+                      }
+                    }
+                  </p-scrollPanel>
+                </div>
+            </div>
+          }
         </div>
       </div>
     </div>
+  </div>
 
   <div footer>
     <div class="flex justify-end p-2 border-t gap-1.5">
@@ -275,7 +275,7 @@
         <span i18n-label="@@duplicateColumnButton">Duplicar columna</span>
       </button>
 
-      <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-500 to-green-400 text-white rounded-md" [disabled]="!display.filterButton" (click)="closeDialog()">
+      <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" [disabled]="!display.filterButton" (click)="closeDialog()">
         <i class="fa fa-check"></i> <span i18n-label="@@guardarButton">Confirmar</span>
       </button>
     </div>

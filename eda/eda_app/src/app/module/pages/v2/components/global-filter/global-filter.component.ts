@@ -8,12 +8,13 @@ import * as _ from 'lodash';
 import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
+import { IconComponent } from "@eda/shared/components/icon/icon.component";
 
 @Component({
     selector: 'app-v2-global-filter',
     templateUrl: './global-filter.component.html',
     standalone: true,
-    imports: [FormsModule, MultiSelectModule],
+    imports: [FormsModule, MultiSelectModule, IconComponent],
     styleUrls: ['./global-filter.component.css']
 })
 export class GlobalFilterV2Component implements OnInit {
@@ -43,6 +44,7 @@ export class GlobalFilterV2Component implements OnInit {
     public ngOnInit(): void {
         this.isAdmin = this.userService.isAdmin;
         console.log(this.isAdmin);
+        console.log('isEditable', this.dashboard.isEditable());
         // this.isDashboardCreator = this.dashboard.isDashboardCreator;
         // this.hideFilters = this.dashboard.display_v.panelMode;
     }

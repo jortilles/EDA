@@ -82,13 +82,17 @@
 <eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="98vw" height="100vh">
   <!-- Header -->
   <div header class="w-full flex items-center justify-between border-b px-4 py-2">
-    <h1 class="text-lg font-semibold">
-      {{panel.title.trim().length > 0 ? panel.title : '\uD83D\uDD89'}}
-    </h1>
-    <select class="rounded-md border px-2 py-1">
-      <option value="eda">EDA Mode</option>
-      <option value="analysis">Analysis Mode</option>
-    </select>
+    <div class="p-2" (click)="titleClick=true;">
+      @if (!titleClick) {
+        <h1 class="text-lg font-semibold cursor-pointer">
+          {{panel.title.trim().length > 0 ? panel.title : '\uD83D\uDD89'}}
+        </h1>
+      } @else {
+        <input type="text" [(ngModel)]="panel.title" autofocusOnShow (focusout)="titleClick=false;"
+          class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
+      }
+    </div>
+    <p-dropdown [(ngModel)]="selectedQueryMode" [options]="queryModes" (ngModelChange)="changeQueryMode()"></p-dropdown>
   </div>
   <!-- Main Content -->
   <div content class="flex h-full w-full flex-col rounded-lg bg-background">
@@ -108,22 +112,48 @@
                     <input class="h-8 w-full rounded-md border px-2" placeholder="Search entities...">
                   </div>
                   <div class="h-full overflow-y-auto">
-                    <div class="space-y-1 p-2">
-                      @for (entity of tablesToShow; track entity.table_name) {
-                      <button class="flex w-full items-center justify-between rounded-md px-3 py-2"
-                        [class.bg-[#00BFB3]]="userSelectedTable === entity.table_name"
-                        [class.text-primary-foreground]="userSelectedTable === entity.table_name"
-                        (click)="loadColumns(entity)"
-                        (mouseover)="showDescription(entity)"
-                        (mouseout)="description=''">
-
-                        <span class="text-left font-bold" [title]="entity.description.default">
-                          {{entity.display_name.default}}
-                        </span>
-                        <!-- <eda-icon name="chevron-right"></eda-icon> -->
-                      </button>
+                    <ng-template #entityList>
+                      <div class="space-y-1 p-2">
+                        @for (entity of tablesToShow; track entity.table_name) {
+                        <button class="flex w-full items-center justify-between rounded-md px-3 py-2"
+                          [class.bg-[#00BFB3]]="userSelectedTable === entity.table_name"
+                          [class.text-primary-foreground]="userSelectedTable === entity.table_name"
+                          (click)="loadColumns(entity)"
+                          (mouseover)="showDescription(entity)"
+                          (mouseout)="description=''">
+  
+                          <span class="text-left font-bold" [title]="entity.description.default">
+                            {{entity.display_name.default}}
+                          </span>
+                          <!-- <eda-icon name="chevron-right"></eda-icon> -->
+                        </button>
+                        }
+                      </div>
+                    </ng-template>
+                    <!-- EDA STANDARD MODE -->
+                    @if (selectedQueryMode=='EDA') {
+                      <ng-container *ngTemplateOutlet="entityList"></ng-container>
+                    }
+                    <!-- EDA JOINS TREE MODE -->
+                    @if (selectedQueryMode=='EDA2') {
+                      @if (currentQuery.length > 0) {
+                        <p-tree selectionMode="single"
+                          [value]="tableNodes"
+                          [loading]="loadingNodes"
+                          (onNodeExpand)="tableNodeExpand($event)"
+                          (onNodeSelect)="tableNodeSelect($event)">
+                          <ng-template let-node pTemplate="child">
+                            <span [ngClass]="checkNodeSelected(node) ? 'font-weight-bold' : ''"> {{node.label}} </span>
+                          </ng-template>
+                          <ng-template let-node pTemplate="default">
+                            <b>{{node.label}}</b>
+                          </ng-template>
+                        </p-tree>
+                      } @else {
+                        <ng-container *ngTemplateOutlet="entityList"></ng-container>
                       }
-                    </div>
+                    }
+                    <!-- ----------- -->
                   </div>
                 </div>
 
@@ -143,12 +173,17 @@
                       #columnsList="cdkDropList"
                       [cdkDropListData]="columns"
                       [cdkDropListConnectedTo]="[selectList, filterList]"
+                      (cdkDropListDropped)="drop($event)"
+                      [cdkDropListEnterPredicate]="isAllowed"
                     >
                       @for (attr of columns; track attr.name) {
                         <div 
                           class="flex w-full items-center gap-2 rounded-md px-3 py-2  font-bold bg-background hover:bg-muted/50 cursor-move"
                           cdkDrag
                           [cdkDragData]="attr"
+                          (cdkDragDropped)="searchRelations(attr)"
+                          (click)="moveItem(attr)"
+                          [style.opacity]="attr.hidden && attr.hidden == 1 ? '0.5' : '1'"
                         >
                           <span class="mdi {{getAttributeTypeIcon(attr.column_type)}}"></span>
                           {{attr.display_name.default}}
@@ -187,8 +222,8 @@
                           (click)="openColumnDialog(attr)"
                           (mouseover)="showDescription(attr)"
                           (mouseout)="description = ''"
-                          cdkDrag
                           [cdkDragData]="columns"
+                          cdkDrag
                         >
                           <i class="drag-handle-icon"></i>
                           <span class="mdi {{getAttributeTypeIcon(attr.column_type)}}"></span>
@@ -210,7 +245,7 @@
                       }
 
                       @if (currentQuery.length === 0) {
-                        <div class=" text-muted-foreground text-center py-4">
+                        <div class=" text-muted-foreground text-center py-2">
                           {{draggFields}}
                         </div>
                       }
@@ -232,8 +267,11 @@
                       @for (attr of filtredColumns; track attr.display_name.default) {
                         <div 
                           class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move min-w-[250px]"
+                          (click)="openColumnDialog(attr, true)"
+                          (mouseover)="showDescription(attr)"
+                          (mouseout)="description = ''"
+                          [cdkDragData]="columns"
                           cdkDrag
-                          [cdkDragData]="attr"
                         >
                           <i class="drag-handle-icon"></i>
                           <span class="mdi {{getAttributeTypeIcon(attr.column_type)}}"></span>
@@ -255,7 +293,7 @@
 
                       @if (filtredColumns.length === 0) {
                         <div class=" text-muted-foreground text-center py-2">
-                          Drag attributes here to add filters
+                          {{draggFilters}}
                         </div>
                       }
                     </div>
@@ -453,12 +491,12 @@
                     @if (chartForm.value.chart) {
                       <div class="flex items-center">
                         @if (!!chartForm.value.chart.ngIf) {
-                          <i class="{{chartForm.value.chart.icon}} text-[#eeac57] align-middle"></i>
+                          <i class="{{chartForm.value.chart.icon}} text-[#eeac57] items-center"></i>
                         }
                         <span class="material-icons">
                           {{getOptionIcon(chartForm.value.chart.subValue)}}
                         </span>
-                        <span class="align-middle ml-2">
+                        <span class="items-center ml-2">
                           {{chartForm.value.chart.label}}
                         </span>
                       </div>
@@ -504,6 +542,12 @@
 
   <ng-container footer>
     <button
+      class="rounded-md px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white"
+      [disabled]="disableRunQuery()"
+      (click)="runManualQuery()">
+      Execute
+    </button>
+    <button
       class="rounded-md px-4 py-2 border"
       (click)="closeEditarConsulta()">
       Cancel
@@ -513,12 +557,6 @@
       [disabled]="display_v.btnSave"
       (click)="savePanel()">
       Confirm
-    </button>
-    <button
-      class="rounded-md px-4 py-2 bg-[#00BFB3] text-primary-foreground"
-      [disabled]="disableRunQuery()"
-      (click)="runManualQuery()">
-      Execute
     </button>
   </ng-container>
 </eda-dialog2>

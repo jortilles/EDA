@@ -35,7 +35,8 @@ export class DashboardPageV2 implements OnInit {
   public gridsterOptions: GridsterConfig;
   public gridsterDashboard: GridsterItem[];
 
-  sidebarVisible = false
+  sidebarVisible = false;
+  notSaved: boolean = false;
 
   dashboardId: string;
   dashboard: any;
@@ -63,6 +64,10 @@ export class DashboardPageV2 implements OnInit {
   ngOnInit(): void {
     this.initGridsterOptions();
     this.loadDashboard();
+
+    this.dashboardService.notSaved.subscribe(
+      (data) => this.notSaved = data
+    );
   }
 
   ngOnDestroy() {
