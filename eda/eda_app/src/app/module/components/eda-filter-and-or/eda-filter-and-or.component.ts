@@ -16,6 +16,9 @@ import {
   GridType
 } from 'angular-gridster2';
 
+import _ from 'lodash';
+
+
 @Component({
   selector: 'eda-filter-and-or',
   templateUrl: './eda-filter-and-or.component.html',
@@ -30,6 +33,7 @@ export class EdaFilterAndOrComponent implements OnInit {
 
   options: GridsterConfig;
   dashboard: GridsterItem[];
+  dashboardClone: GridsterItem[];
   itemToPush!: GridsterItemComponent;
   selectedButton: any[]; 
   selectedButtonInitialValue: string; // Valor seleccionado por defecto
@@ -82,6 +86,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       this.dashboard.push({cols: 3, rows:1, y: this.globalFilters.length + j, x:0, filter_column: sf.filter_column, value: "and"})
     })
 
+    // Se crea una clonación del dashboard
+    this.dashboardClone = _.cloneDeep(this.dashboard);
   }
 
   onItemChange(item: GridsterItem): void {
@@ -89,31 +95,60 @@ export class EdaFilterAndOrComponent implements OnInit {
     const topMostItem = this.getTopMostItem();
     const bottomMostItem = this.getBottomMostItem()
 
-    // Verificamos si es un intercambio de items
+    // Verificación del intercambio de items, para evitar que se duplique la ejecución
+    //---------------------------------------------------------------------------------
+    // 1. Cuando los items intercambian de posición
     let contadorIntercambioItems = 0;
     for( let i = 0; i < this.dashboard.length; i++ ) {
       if(item.x === this.dashboard[i].x && item.y === this.dashboard[i].y){
-        contadorIntercambioItems++;
+        contadorIntercambioItems++; 
       }
     }
     // Termina la iteración del primer item que se intercambia
     if(contadorIntercambioItems===2) return;
 
-    //--------------------------------------------------------------------------
+    // 2. Cuando los items intercambian de posición pero un desplazamiento.
+    for( let i = 0; i < this.dashboard.length; i++ ) {
+      if(item.y === this.dashboard[i].y){
+          if(this.dashboard[i].x-2 === item.x) return;
+          if(this.dashboard[i].x-1 === item.x) return;
+          if(this.dashboard[i].x+1 === item.x) return;
+          if(this.dashboard[i].x+2 === item.x) return;
+      }
+    }
+    //---------------------------------------------------------------------------------
 
     // Verificamos si contiene un item en la posición x=0, y=0
+    let itemInicial = false;
     for( let i = 0; i < this.dashboard.length; i++ ) {
       if(this.dashboard[i].x === 0 && this.dashboard[i].y === 0){
-        console.log('Si hay un valor en el 0,0')
+        itemInicial = true;
         break;
       }
     }
 
-    console.log('Item:', item);
-    console.log('Todos los items:', this.dashboard);
+    if(itemInicial) {
+      this.dashboardClone = _.cloneDeep(this.dashboard);
+      console.log('Item:', item);
+      console.log('Todos los items:', this.dashboard);
+      console.log('Todos los items clonación:', this.dashboardClone);
+    } else {
+      this.dashboard = _.cloneDeep(this.dashboardClone);
+      console.log('.... MOVIMIENTO NO DISPONIBLE ....')
+      console.log('Item:', item);
+      console.log('Todos los items:', this.dashboard);
+      console.log('Todos los items clonación:', this.dashboardClone);
+    }
+    
+    // console.log('Item:', item);
+    // console.log('Todos los items:', this.dashboard);
+    // console.log('Todos los items clonación:', this.dashboardClone);
 
-    console.log('Ítem Máximo:', topMostItem);
-    console.log('Ítem Mínimo:', bottomMostItem);
+    // console.log('itemInicial: ', itemInicial);
+
+    // console.log('Ítem Máximo:', topMostItem);
+    // console.log('Ítem Mínimo:', bottomMostItem);
+
   }
 
     // Función para detectar el ítem más bajo
