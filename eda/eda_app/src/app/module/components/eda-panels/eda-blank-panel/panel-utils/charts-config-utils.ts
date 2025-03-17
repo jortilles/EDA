@@ -84,43 +84,15 @@ export const ChartsConfigUtils = {
       };
     } else{
       // Chart.js
-      let assignedColors = []
-      //Si es panel recien creado no tendra config
-      if (!ebp.panelChart.props.hasOwnProperty("config")) { assignedColors = []; }
-      //Panel con colores en el grafico pero sin [colors]
-      else {
-        ebp.chartData.forEach((element, index) => {
-          if ((ebp.panelChart.props.chartType === "doughnut" || ebp.panelChart.props.chartType === "polarArea")) {
-            //Si no tiene colors aún asignado, los cogemos del chart actual
-            if (!ebp.panelChart.props.config.hasOwnProperty("colors")) {
-              assignedColors[index] =
-                [{ value: element.find(innerElement => typeof innerElement === "string") },
-                { color: ebp.panelChart.componentRef.instance.inject.chartColors[0].backgroundColor[index] }]
-            }
-            //Si tiene colors assignados en el config, los recuperamos
-            else {   
-              assignedColors[index] =
-                [{ value: element.find(innerElement => typeof innerElement === "string") },
-                { color: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'][0].backgroundColor[index]: [] }];
-            }
-          }
-          //Si no trabajamos con charts con pool de colores PIE, asignamos estandard
-          else {
-            assignedColors[index] = [{value: element.find((innerElement) => typeof innerElement === "string"),},
-              {color: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()["colors"]: [],},
-            ];
-          }
-        });
-      }
-        config = { 
-          colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
-          chartType: ebp.panelChart.props.chartType, 
-          addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
-          addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,
-          showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false,
-          showLabelsPercent: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabelsPercent'] : false,
-          numberOfColumns: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['numberOfColumns'] : null,
-          assignedColors:assignedColors,
+      config = { 
+        colors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['colors'] : [], 
+        chartType: ebp.panelChart.props.chartType, 
+        addTrend: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addTrend'] : false,
+        addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,
+        showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false,
+        showLabelsPercent: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabelsPercent'] : false,
+        numberOfColumns: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['numberOfColumns'] : null,
+        assignedColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['assignedColors'] : [],
       };
     }
     return new ChartConfig(config);

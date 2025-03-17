@@ -36,6 +36,8 @@ import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
+import { ChartsColors } from '@eda/configs/index';
+import { ChartConfig } from './chart-configuration-models/chart-config';
 
 
 @Component({
@@ -299,49 +301,69 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartLabels = chartData[0];
         chartConfig.chartDataset = chartData[1];
         chartConfig.chartOptions = config.chartOptions;
-        const colorArray = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
-        if (chartConfig.chartType === "doughnut" || chartConfig.chartType === "polarArea") {
-            //Rescatamos los colores y valores por separado del config
-            const configData = this.props.config.getConfig()['assignedColors'].flatMap((item) => item[0].value);
-            const configColors = this.props.config.getConfig()['assignedColors'].flatMap((item) => item[1]);
-            let coloresAsignadosBG = [], coloresAsignadosBC = [];
-            //Iteramos por toda la data que se muestra en el chart
-            chartData[0].forEach((element, index) => {
-                if (chartData[0].length !== 1 && configColors.length === chartData[0].length) {
-                    //Chart carga más de 1 elemento, es decir, no tiene un filtro único
-                    if (configData.includes(element)) {
-                        //Si la data cargada esta en el config, tiene color assignado, lo ponemos
-                        coloresAsignadosBG.push(configColors[index].color);
-                        coloresAsignadosBC.push(configColors[index].color);
-                    } else if(this.props.config.getConfig()["colors"]){
-                        //Si la data cargada NO esta en el config, assignamos el color siguiente que le pertoque
-                        coloresAsignadosBG.push(this.props.config.getConfig()["colors"][0].backgroundColor[configColors.length + index]);
-                        coloresAsignadosBC.push(this.props.config.getConfig()["colors"][0].backgroundColor[configColors.length + index]);
+        chartConfig.chartColors =  this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
+        chartConfig.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+
+
+        
+        //Si assignedColors no existe, lo generamos
+        if (chartConfig.assignedColors.length === 0) {
+            // Si es doughnut o polar area, trabajamos con 400 colores
+            if (chartConfig.chartType === "doughnut" || chartConfig.chartType === "polarArea") {
+                    if (!this.props.config.getConfig()["colors"]) {
+                        chartConfig.chartLabels.forEach((element, index) => {
+                            chartConfig.assignedColors.push({
+                                value: element,
+                                color: chartConfig.chartColors[0].backgroundColor[index]
+                            });
+                        });
+                    } else {
+                        chartConfig.chartLabels.forEach((element, index) => {
+                            //asignamos el valor de la data y color perteniente si lo tiene
+                            chartConfig.assignedColors.push({
+                                value: element,
+                                color: this.props.config.getConfig()["colors"][0].backgroundColor[index] || chartConfig.chartColors[chartData.length + index] 
+                            });
+                        });
                     }
-                } else if (configData.includes(element)) {
-                    //Chart carga 1 elemento, es decir, tiene un filtro único
-                    //Si la data cargada esta en el config, tiene color assignado, lo ponemos
-                    let colorDataMatch = configColors[configData.findIndex(item => chartData[0].includes(item))].color;
-                    coloresAsignadosBG.push(colorDataMatch);
-                    coloresAsignadosBC.push(colorDataMatch);
-                } else if (this.props.config.getConfig()["colors"]) {
-                    //Si la data cargada NO esta en el config, assignamos el color siguiente que le pertoque
-                    let nextColorInList = this.props.config.getConfig()["colors"][0].backgroundColor[configColors.length + index] || colorArray[configColors.length + index];
-                    coloresAsignadosBG.push(nextColorInList);
-                    coloresAsignadosBC.push(nextColorInList);
+                } else {
+                    //Graficos con colores estandard
+                    chartData[0].forEach((element, index) => {
+                        //asignamos el valor de la data y color perteniente
+                        chartConfig.assignedColors.push({
+                            value: element,
+                            color: chartConfig.chartColors[0].backgroundColor
+                        });
+                    });
+                }                
+              
+        }
+
+
+        //Si aplicamos filtro
+        if (chartData[0].length === 1 && chartConfig.edaChart !== "histogram" && chartConfig.edaChart !== "barline") {
+            //Seteamos variables: labels, colores, y indice del filtro
+            const configData = chartConfig.assignedColors.flatMap((item) => item.value);
+            const configColors = chartConfig.assignedColors.flatMap((item) => item.color);
+            let indexMatched = configData.findIndex(element => element === chartData[0][0])
+            
+            //Si indexMatched ha encontrado alguna label igual, quiere decir que no es data nueva
+            if (indexMatched != -1) {
+                if (chartConfig.chartType === "doughnut" || chartConfig.chartType === "polarArea") {
+                    chartConfig.chartColors[0].backgroundColor[0] = configColors[indexMatched];
+                    chartConfig.chartColors[0].borderColor[0] = configColors[indexMatched];
                 }
-            });
-            //Asignamos colores de
-            chartConfig.chartColors = [{backgroundColor: coloresAsignadosBG,borderColor: coloresAsignadosBC,}];
-            if (!chartConfig.chartColors.some(obj => (obj.backgroundColor.length > 0) || (obj.borderColor.length > 0))) {
-                chartConfig.chartColors = colorArray;
             }
-        } else {
-          chartConfig.chartColors = colorArray;
+            else{
+                chartConfig.chartColors[0].backgroundColor[0] =
+                    chartConfig.chartColors[0].backgroundColor[configColors.length + indexMatched + 1]
+                chartConfig.chartColors[0].borderColor[0] =
+                    chartConfig.chartColors[0].backgroundColor[configColors.length + indexMatched + 1]
+            }
         }
 
         // chartColors unicamente se reflejan si estan dentro del chartDataset 
-        if (!chartData[1][0]?.backgroundColor){
+        if (!chartData[1][0]?.backgroundColor) {
             chartData[1].forEach(( e,i) => {
                 try{
                     e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
@@ -353,10 +375,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 }
             });
         }
+
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
         this.createEdaChartComponent(chartConfig);
     }
-
+        
     /**
      * Creates a chart component
      * @param inject chart configuration

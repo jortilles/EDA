@@ -951,7 +951,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 // Asignamos AssignedColors en Config en charts creados
                 let assignedColors = [];
                 this.graficos.chartLabels.forEach((element, index) => {
-                    assignedColors[index] = [{ value: element }, { color: this.graficos.chartColors[0].backgroundColor[index] }]
+                    assignedColors[index] = { value: element, color: this.graficos.chartColors[0].backgroundColor[index] }
                 });
                 
                 this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: assignedColors };

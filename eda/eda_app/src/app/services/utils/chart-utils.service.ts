@@ -866,24 +866,6 @@ export class ChartUtilsService {
         return (<ChartJsConfig>config).colors;
     }
 
-    public generateD3AssignedColors(chart: any, colors:string[], isScatterPlot:boolean) {
-    let configData = [], configColors = [];
-        if (!isScatterPlot) {
-            //SI TENEMOS ASSIGNED COLORS CORRECTAMENTE, RECUPERAMOS SU VALOR
-            if (chart.inject.assignedColors && chart.inject.assignedColors[0][1].color !== undefined) {
-                configData = chart.inject.assignedColors.map(item => item[0].value)
-                configColors = chart.inject.assignedColors.map(item => item[1].color)
-            } else { configColors = colors }
-        
-        } else {
-            if (chart.inject.assignedColors && chart.inject.assignedColors[chart.data.length - 1][1].color !== undefined) { 
-                //SI TENEMOS ASSIGNED COLORS CORRECTAMENTE, RECUPERAMOS SU VALOR
-                configData = chart.inject.assignedColors.map(item => item[0].value)
-                configColors = chart.inject.assignedColors.map(item => item[1].color)
-            }
-        }
-        return { data: configData, colors: configColors }
-    }
 
     public describeData(currentQuery: any, labels: any) {
         let names = this.pretifyLabels(currentQuery, labels);
