@@ -95,8 +95,8 @@ export class EdaFilterAndOrComponent implements OnInit {
     const topMostItem = this.getTopMostItem();
     const bottomMostItem = this.getBottomMostItem()
 
-    // Verificación del intercambio de items, para evitar que se duplique la ejecución
     //---------------------------------------------------------------------------------
+    // Verificación del intercambio de items, para evitar que se duplique la ejecución
     // 1. Cuando los items intercambian de posición
     let contadorIntercambioItems = 0;
     for( let i = 0; i < this.dashboard.length; i++ ) {
@@ -119,19 +119,30 @@ export class EdaFilterAndOrComponent implements OnInit {
     //---------------------------------------------------------------------------------
 
     // Verificación del item superior en la posición x=0, y=0
-    let itemInicial = false;
+    let verificacionItemInicial = false;
     for( let i = 0; i < this.dashboard.length; i++ ) {
       if(this.dashboard[i].x === 0 && this.dashboard[i].y === 0){
-        itemInicial = true;
+        verificacionItemInicial = true;
         break;
       }
     }
 
-    if(itemInicial) {
-      this.dashboardClone = _.cloneDeep(this.dashboard);
+    if(verificacionItemInicial) {
+
+      let verificacionHorizontalValor: boolean;
+      verificacionHorizontalValor = this.verificacionHorizontal(item, this.dashboardClone);
+
+      if(verificacionHorizontalValor) {
+        this.dashboardClone = _.cloneDeep(this.dashboard);
+      } else {
+        this.dashboard = _.cloneDeep(this.dashboardClone);
+      }
+
       console.log('Item:', item);
       console.log('Todos los items:', this.dashboard);
       console.log('Todos los items clonación:', this.dashboardClone);
+      // this.dashboardClone = _.cloneDeep(this.dashboard);
+    
     } else {
       this.dashboard = _.cloneDeep(this.dashboardClone);
       console.log('.... MOVIMIENTO NO DISPONIBLE ....')
@@ -139,16 +150,28 @@ export class EdaFilterAndOrComponent implements OnInit {
       console.log('Todos los items:', this.dashboard);
       console.log('Todos los items clonación:', this.dashboardClone);
     }
-    
-    // console.log('Item:', item);
-    // console.log('Todos los items:', this.dashboard);
-    // console.log('Todos los items clonación:', this.dashboardClone);
 
-    // console.log('itemInicial: ', itemInicial);
+  }
 
-    // console.log('Ítem Máximo:', topMostItem);
-    // console.log('Ítem Mínimo:', bottomMostItem);
+  verificacionHorizontal(item: any, dashboardClonado: any) {
+    let itemX = dashboardClonado.filter((it: any) => item.filter_column === it.filter_column)[0];
+    let itemSuperior = dashboardClonado.filter((it: any) => it.y === item.y-1)[0];
 
+    if(item.y === itemX.y) {
+      if((itemSuperior.x - item.x === 0) || (item.x - itemSuperior.x === 1)) {
+        return true;
+        console.log('MOVIMIENTO PERMITIDO ....')
+      } else {
+        return false;
+        console.log('Movimiento NO PERMITIDO ....')
+      }
+    } else {
+      return true;
+      console.log('Los valores no estan a la misma altura')
+    }
+
+    console.log('itemSuperior: ', itemSuperior);
+    console.log('itemX: ', itemX);
   }
 
     // Función para detectar el ítem más bajo
