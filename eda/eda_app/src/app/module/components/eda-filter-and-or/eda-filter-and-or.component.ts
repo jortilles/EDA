@@ -88,11 +88,32 @@ export class EdaFilterAndOrComponent implements OnInit {
     
     const topMostItem = this.getTopMostItem();
     const bottomMostItem = this.getBottomMostItem()
-    
-    console.log('Cambio en el ítem:', item);
-    console.log('Todos los valores:', this.dashboard);
-    console.log('Ítem más alto:', topMostItem);
-    console.log('Ítem más bajo:', bottomMostItem);
+
+    // Verificamos si es un intercambio de items
+    let contadorIntercambioItems = 0;
+    for( let i = 0; i < this.dashboard.length; i++ ) {
+      if(item.x === this.dashboard[i].x && item.y === this.dashboard[i].y){
+        contadorIntercambioItems++;
+      }
+    }
+    // Termina la iteración del primer item que se intercambia
+    if(contadorIntercambioItems===2) return;
+
+    //--------------------------------------------------------------------------
+
+    // Verificamos si contiene un item en la posición x=0, y=0
+    for( let i = 0; i < this.dashboard.length; i++ ) {
+      if(this.dashboard[i].x === 0 && this.dashboard[i].y === 0){
+        console.log('Si hay un valor en el 0,0')
+        break;
+      }
+    }
+
+    console.log('Item:', item);
+    console.log('Todos los items:', this.dashboard);
+
+    console.log('Ítem Máximo:', topMostItem);
+    console.log('Ítem Mínimo:', bottomMostItem);
   }
 
     // Función para detectar el ítem más bajo
