@@ -118,7 +118,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     }
     //---------------------------------------------------------------------------------
 
-    // Verificamos si contiene un item en la posición x=0, y=0
+    // Verificación del item superior en la posición x=0, y=0
     let itemInicial = false;
     for( let i = 0; i < this.dashboard.length; i++ ) {
       if(this.dashboard[i].x === 0 && this.dashboard[i].y === 0){

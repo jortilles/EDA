@@ -13,6 +13,7 @@
                 <p-selectButton 
                     [options]="selectedButton" 
                     [(ngModel)]="item.value"
+                    [disabled]="(item.x==0 && item.y==0)"
                 ></p-selectButton>
 
             </div>

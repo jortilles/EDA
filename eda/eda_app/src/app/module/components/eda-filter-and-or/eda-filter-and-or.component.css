@@ -24,3 +24,14 @@
     cursor: pointer;
     padding: 0 10px;
 }
+
+/* Cambiar el color de la previsualización del item */
+.gridster-preview {
+    background-color: transparent; /* Cambia este valor por el color que desees */
+}
+
+
+
+
+
+
