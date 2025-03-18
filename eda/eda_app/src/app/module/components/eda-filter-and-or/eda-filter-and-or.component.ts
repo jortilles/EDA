@@ -133,7 +133,19 @@ export class EdaFilterAndOrComponent implements OnInit {
       verificacionHorizontalValor = this.verificacionHorizontal(item, this.dashboardClone);
 
       if(verificacionHorizontalValor) {
-        this.dashboardClone = _.cloneDeep(this.dashboard);
+
+        let verificacionVerticalValor: boolean;
+        verificacionVerticalValor = this.verificacionVertical(this.dashboard);
+
+        if(verificacionVerticalValor) {
+          console.log('Valor vertical verificado')
+          this.dashboardClone = _.cloneDeep(this.dashboard);
+        } else {
+          console.log('Valor Vertical Errado')
+          this.dashboard = _.cloneDeep(this.dashboardClone);
+        }
+
+        // this.dashboardClone = _.cloneDeep(this.dashboard);
       } else {
         this.dashboard = _.cloneDeep(this.dashboardClone);
       }
@@ -151,6 +163,12 @@ export class EdaFilterAndOrComponent implements OnInit {
       console.log('Todos los items clonación:', this.dashboardClone);
     }
 
+  }
+
+  verificacionVertical(dashboard: any){
+    let verticalY = []
+    for(let j=0; j<dashboard.length; j++) { verticalY[j] = j }
+    return verticalY.every(valorY => dashboard.some(item => item.y === valorY))
   }
 
   verificacionHorizontal(item: any, dashboardClonado: any) {
