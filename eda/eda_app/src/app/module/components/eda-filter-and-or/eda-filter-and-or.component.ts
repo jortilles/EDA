@@ -38,6 +38,8 @@ export class EdaFilterAndOrComponent implements OnInit {
   selectedButton: any[]; 
   selectedButtonInitialValue: string; // Valor seleccionado por defecto
 
+  existeIntercambioItems: boolean = false;
+
   constructor() { 
     this.options = {
       gridType: GridType.Fixed,
@@ -105,15 +107,26 @@ export class EdaFilterAndOrComponent implements OnInit {
       }
     }
     // Termina la iteración del primer item que se intercambia
-    if(contadorIntercambioItems===2) return;
+    if(contadorIntercambioItems===2) {
+      this.existeIntercambioItems = true;
+      return;
+    };
 
     // 2. Cuando los items intercambian de posición pero un desplazamiento.
     for( let i = 0; i < this.dashboard.length; i++ ) {
       if(item.y === this.dashboard[i].y){
-          if(this.dashboard[i].x-2 === item.x) return;
-          if(this.dashboard[i].x-1 === item.x) return;
-          if(this.dashboard[i].x+1 === item.x) return;
-          if(this.dashboard[i].x+2 === item.x) return;
+          if(this.dashboard[i].x-2 === item.x) {
+            this.existeIntercambioItems = true;
+            return};
+          if(this.dashboard[i].x-1 === item.x) {
+            this.existeIntercambioItems = true;
+            return};
+          if(this.dashboard[i].x+1 === item.x) {
+            this.existeIntercambioItems = true;
+            return};
+          if(this.dashboard[i].x+2 === item.x) {
+            this.existeIntercambioItems = true;
+            return};
       }
     }
     //---------------------------------------------------------------------------------
@@ -139,14 +152,35 @@ export class EdaFilterAndOrComponent implements OnInit {
 
         if(verificacionVerticalValor) {
           console.log('Valor vertical verificado')
-          this.dashboardClone = _.cloneDeep(this.dashboard);
+          this.dashboardClone = _.cloneDeep(this.dashboard); // Tendria que hacerse despues de verificarse el intercambio de items
+          console.log('Pasamos por aqui....');
+
+          // Verificamos si existe un intercambio de items
+          if(this.existeIntercambioItems) {
+            console.log('Existe INTERCAMBIO DE ITEMS');
+            this.dashboard = this.correccionIntercambioItems(this.dashboard)
+  
+          }
+
+          else {
+            console.log('Nooooo Existe INTERCAMBIO DE ITEMS');
+          }
+
+
+
+          //*********************************************************************** */
+          this.existeIntercambioItems = false; // Al terminar toda la iteración
+          //*********************************************************************** */
+
         } else {
           console.log('Valor Vertical Errado')
           this.dashboard = _.cloneDeep(this.dashboardClone);
         }
 
         // this.dashboardClone = _.cloneDeep(this.dashboard);
-      } else {
+      } 
+      
+      else {
         this.dashboard = _.cloneDeep(this.dashboardClone);
       }
 
@@ -163,6 +197,20 @@ export class EdaFilterAndOrComponent implements OnInit {
       console.log('Todos los items clonación:', this.dashboardClone);
     }
 
+  }
+
+  correccionIntercambioItems(dashboard: any) {
+    console.log('Dashboard a trabajar : ', dashboard)
+
+    // Comenzamos la iteración sobre el segundo elemento
+    for(let i=1; i<dashboard.length; i++) {
+
+    }
+
+    dashboard.pop(); ////////////////////////////////   AQUIIIIIIIII
+
+    console.log('Comienza a verificar los items para el intercambio ..... ')
+    return dashboard;
   }
 
   verificacionVertical(dashboard: any){
