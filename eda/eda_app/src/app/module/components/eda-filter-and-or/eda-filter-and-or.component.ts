@@ -159,6 +159,7 @@ export class EdaFilterAndOrComponent implements OnInit {
           if(this.existeIntercambioItems) {
             console.log('Existe INTERCAMBIO DE ITEMS');
             this.dashboard = this.correccionIntercambioItems(this.dashboardClone)
+            this.dashboardClone = _.cloneDeep(this.dashboard);
             console.log('dashboard: ', this.dashboard);
           }
 
