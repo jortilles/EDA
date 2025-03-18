@@ -92,7 +92,7 @@ export const ChartsConfigUtils = {
         showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false,
         showLabelsPercent: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabelsPercent'] : false,
         numberOfColumns: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['numberOfColumns'] : null,
-        assignedColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['assignedColors'] : [],
+        assignedColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['assignedColors'] : [], // o null?
       };
     }
     return new ChartConfig(config);

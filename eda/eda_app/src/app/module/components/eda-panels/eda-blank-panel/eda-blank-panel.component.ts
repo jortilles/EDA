@@ -944,21 +944,21 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseChartProperties(event, properties): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
-
                 this.graficos = {};
-                this.graficos = _.cloneDeep(properties);
-                
-                // Asignamos AssignedColors en Config en charts creados
-                let assignedColors = [];
-                this.graficos.chartLabels.forEach((element, index) => {
-                    assignedColors[index] = { value: element, color: this.graficos.chartColors[0].backgroundColor[index] }
+                this.graficos = _.cloneDeep(properties);                
+            
+                this.graficos.assignedColors.forEach((e, index) => {
+                    if (this.graficos.chartLabels.includes(e.value)) {
+                        let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
+                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor]
+                    }
                 });
-                
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: assignedColors };
+        
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors };
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
-                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, assignedColors));
+                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors));
 
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
@@ -1001,12 +1001,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseSankeyProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            let assignedColors = [];
-            this.panelChart.componentRef.instance.assignedColors.map((item) => item.value).forEach((element, index) => {
-                assignedColors[index] = { value: element ,  color: response.colors[index] }
-            });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
-            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.panelChart.componentRef.instance.assignedColors.forEach((e, index) => { e.color = response.colors[index] });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors }; const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
 
@@ -1030,12 +1026,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseFunnelProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            let assignedColors = [];
-            this.panelChart.componentRef.instance.assignedColors.map((item) => item.value).forEach((element, index) => {
-                assignedColors[index] = { value: element ,  color: response.colors[index] }
-            });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
-            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.panelChart.componentRef.instance.assignedColors.forEach((e, index) => { e.color = response.colors[index] });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
             this.dashboardService._notSaved.next(true);
@@ -1046,12 +1038,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseBubblechartProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            let assignedColors = [];
-            this.panelChart.componentRef.instance.assignedColors.map((item) => item.value).forEach((element, index) => {
-                assignedColors[index] = { value: element ,  color: response.colors[index] }
-            });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
-            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.panelChart.componentRef.instance.assignedColors.forEach((e, index) => { e.color = response.colors[index] });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
 
@@ -1065,12 +1053,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseScatterProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            let assignedColors = [];
-            this.panelChart.componentRef.instance.assignedColors.map((item) => item.value).forEach((element, index) => {
-                assignedColors[index] = { value: element ,  color: response.colors[index] }
-            });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
-            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.panelChart.componentRef.instance.assignedColors.forEach((e, index) => { e.color = response.colors[index] });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
             this.dashboardService._notSaved.next(true);
@@ -1080,12 +1064,8 @@ export class EdaBlankPanelComponent implements OnInit {
     }
     public onCloseSunburstProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            let assignedColors = [];
-            this.panelChart.componentRef.instance.assignedColors.map((item) => item.value).forEach((element, index) => {
-                assignedColors[index] = { value: element ,  color: response.colors[index] }
-            });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
-            const config = new ChartConfig(this.panel.content.query.output.config);
+            this.panelChart.componentRef.instance.assignedColors.forEach((e, index) => { e.color = response.colors[index] });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
             this.dashboardService._notSaved.next(true);

@@ -35,9 +35,7 @@ import { EdaBubblechartComponent } from '@eda/components/eda-d3-bubblechart/eda-
 import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
-import { EdaChart } from '@eda/components/eda-chart/eda-chart';
-import { ChartsColors } from '@eda/configs/index';
-import { ChartConfig } from './chart-configuration-models/chart-config';
+
 
 
 @Component({
@@ -294,7 +292,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             });
             trends.forEach(trend => chartData[1].push(trend));
         }
-
         let chartConfig: any = {};
         chartConfig.chartType = this.props.chartType;
         chartConfig.edaChart = this.props.edaChart;
@@ -304,65 +301,72 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartColors =  this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
         chartConfig.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
 
-
         
-        //Si assignedColors no existe, lo generamos
+        
+        //Si assignedColors no existe (informes viejos), lo generamos
         if (chartConfig.assignedColors.length === 0) {
             // Si es doughnut o polar area, trabajamos con 400 colores
             if (chartConfig.chartType === "doughnut" || chartConfig.chartType === "polarArea") {
-                    if (!this.props.config.getConfig()["colors"]) {
-                        chartConfig.chartLabels.forEach((element, index) => {
-                            chartConfig.assignedColors.push({
-                                value: element,
-                                color: chartConfig.chartColors[0].backgroundColor[index]
-                            });
-                        });
-                    } else {
-                        chartConfig.chartLabels.forEach((element, index) => {
-                            //asignamos el valor de la data y color perteniente si lo tiene
-                            chartConfig.assignedColors.push({
-                                value: element,
-                                color: this.props.config.getConfig()["colors"][0].backgroundColor[index] || chartConfig.chartColors[chartData.length + index] 
-                            });
-                        });
-                    }
-                } else {
-                    //Graficos con colores estandard
-                    chartData[0].forEach((element, index) => {
-                        //asignamos el valor de la data y color perteniente
+                //Este if controla si es un chart recien creado, es el único a mantener en el tiempo
+                if (!this.props.config.getConfig()["colors"]) {
+                    chartConfig.chartLabels.forEach((element, index) => {
                         chartConfig.assignedColors.push({
                             value: element,
-                            color: chartConfig.chartColors[0].backgroundColor
+                            color: chartConfig.chartColors[0].backgroundColor[index] || chartConfig.chartColors[chartData.length + index] 
                         });
                     });
-                }                
-              
+                } else {
+                    chartConfig.chartLabels.forEach((element, index) => {
+                        //asignamos el valor de la data y color perteniente si lo tiene
+                        chartConfig.assignedColors.push({
+                            value: element,
+                            color: this.props.config.getConfig()["colors"][0].backgroundColor[index] 
+                        });
+                    });
+                }
+            } else {
+            //Graficos con colores estandard
+            chartData[0].forEach((element) => {
+                chartConfig.assignedColors.push({
+                    value: element,
+                    color: chartConfig.chartColors[0].backgroundColor[0]
+                });
+            });
+            }                 
         }
 
 
-        //Si aplicamos filtro
-        if (chartData[0].length === 1 && chartConfig.edaChart !== "histogram" && chartConfig.edaChart !== "barline") {
+        //Si aplicamos filtro 
+        if (!["histogram", "barline"].includes(chartConfig.edaChart)) {
             //Seteamos variables: labels, colores, y indice del filtro
             const configData = chartConfig.assignedColors.flatMap((item) => item.value);
             const configColors = chartConfig.assignedColors.flatMap((item) => item.color);
-            let indexMatched = configData.findIndex(element => element === chartData[0][0])
-            
-            //Si indexMatched ha encontrado alguna label igual, quiere decir que no es data nueva
-            if (indexMatched != -1) {
-                if (chartConfig.chartType === "doughnut" || chartConfig.chartType === "polarArea") {
-                    chartConfig.chartColors[0].backgroundColor[0] = configColors[indexMatched];
-                    chartConfig.chartColors[0].borderColor[0] = configColors[indexMatched];
-                }
-            }
-            else{
-                chartConfig.chartColors[0].backgroundColor[0] =
-                    chartConfig.chartColors[0].backgroundColor[configColors.length + indexMatched + 1]
-                chartConfig.chartColors[0].borderColor[0] =
-                    chartConfig.chartColors[0].backgroundColor[configColors.length + indexMatched + 1]
+
+            if (chartConfig.chartType === "doughnut" || chartConfig.chartType === "polarArea") {
+                chartData[0].forEach((element, index) => {
+                    let indexMatched = configData.findIndex(e => e === element)
+                //Si indexMatched encuentra data igual, asigna su color, sino el siguiente que no este usado
+                    if (indexMatched != -1) {
+                        chartConfig.chartColors[0].backgroundColor[index] = configColors[indexMatched];
+                        chartConfig.chartColors[0].borderColor[index] = configColors[indexMatched];
+                    } else {
+                        // Revisar indice
+                        let config = this.props.config.getConfig();
+                        let newAssignedColor = chartConfig.chartColors[0].backgroundColor[config['assignedColors'].length + index];
+                        
+                        // si no lo contiene añadirlo
+                        if (!config['assignedColors'].includes(element)) { 
+                            config['assignedColors'].push({value: element, color: newAssignedColor});
+                            this.props.config.setConfig(config)
+                        } 
+                        chartConfig.chartColors[0].backgroundColor[index] = newAssignedColor;
+                        chartConfig.chartColors[0].borderColor[index] = newAssignedColor;
+                    }
+                });
             }
         }
 
-        // chartColors unicamente se reflejan si estan dentro del chartDataset 
+        // chartColors unicamente se reflejan si estan dentro del chartDataset (esto asigna colores correctamente) 
         if (!chartData[1][0]?.backgroundColor) {
             chartData[1].forEach(( e,i) => {
                 try{
@@ -675,7 +679,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.maps = this.props.maps;
         inject.query = this.props.query;
         inject.draggable = this.props.draggable;
-        //Marc
         inject.zoom = this.props.zoom;
         inject.coordinates = this.props.coordinates;
 
@@ -750,6 +753,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        
+        //Tratamiento de informes viejos que no contienen assignedColors en su config
         if (inject.assignedColors.length === 0) {
             inject.data.values.forEach((element, index) => {
                 inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
@@ -780,6 +785,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        //Tratamiento de informes viejos que no contienen assignedColors en su config
         if (inject.assignedColors.length === 0) {
             inject.data.values.forEach((element, index) => {
                 inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
@@ -810,6 +816,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        //Tratamiento de informes viejos que no contienen assignedColors en su config
         if (inject.assignedColors.length === 0) {
             inject.data.values.forEach((element, index) => {
                 inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
@@ -837,6 +844,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        //Tratamiento de informes viejos que no contienen assignedColors en su config
         if (inject.assignedColors.length === 0) {
             inject.data.values.forEach((element, index) => {
                 inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
@@ -865,6 +873,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        //Tratamiento de informes viejos que no contienen assignedColors en su config
         if (inject.assignedColors.length === 0) {
             inject.data.values.forEach((element, index) => {
                 inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
@@ -893,6 +902,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        //Tratamiento de informes viejos que no contienen assignedColors en su config
         if (inject.assignedColors.length === 0) {
             inject.data.values.forEach((element, index) => {
                 inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
