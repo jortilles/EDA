@@ -158,7 +158,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     let itemSuperior = dashboardClonado.filter((it: any) => it.y === item.y-1)[0];
 
     if(item.y === itemX.y) {
-      if((itemSuperior.x - item.x === 0) || (item.x - itemSuperior.x === 1)) {
+      if((item.x >= 0) && (item.x <= 1 + itemSuperior.x)) {
         return true;
         console.log('MOVIMIENTO PERMITIDO ....')
       } else {
