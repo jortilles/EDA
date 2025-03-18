@@ -158,8 +158,8 @@ export class EdaFilterAndOrComponent implements OnInit {
           // Verificamos si existe un intercambio de items
           if(this.existeIntercambioItems) {
             console.log('Existe INTERCAMBIO DE ITEMS');
-            this.dashboard = this.correccionIntercambioItems(this.dashboard)
-  
+            this.dashboard = this.correccionIntercambioItems(this.dashboardClone)
+            console.log('dashboard: ', this.dashboard);
           }
 
           else {
@@ -204,10 +204,14 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // Comenzamos la iteración sobre el segundo elemento
     for(let i=1; i<dashboard.length; i++) {
-
+      if(dashboard.find((item: any) => item.y === i).x <= (dashboard.find((item: any) => item.y === (i-1)).x) + 1){
+        continue;
+      }  else {
+        dashboard.find((item: any) => item.y === i).x = (dashboard.find((item: any) => item.y === (i-1)).x) + 1
+      }
     }
 
-    dashboard.pop(); ////////////////////////////////   AQUIIIIIIIII
+    // dashboard.pop(); ////////////////////////////////   AQUIIIIIIIII
 
     console.log('Comienza a verificar los items para el intercambio ..... ')
     return dashboard;
