@@ -32,6 +32,19 @@
     background-color: transparent; /* Cambia este valor por el color que desees */
 }
 
+/* Ajustar el tamaño del botón */
+.small-button .p-button {
+    padding: 3px 6px !important;  /* Reduce el padding (espaciado interno) */
+    height: 15px !important;      /* Reduce la altura del botón */
+    min-width: 20px !important;   /* Ajusta el ancho mínimo del botón */
+    font-size: 7px !important;   /* Cambia el tamaño de la fuente (si lo deseas) */
+}
+
+/* Asegurarse de que el contenedor también sea pequeño */
+.small-button .p-selectbutton {
+    height: 25px !important;      /* Reduce la altura */
+    padding: 3.5px 0px !important;  /* Ajusta el padding */
+}
 
 
 
