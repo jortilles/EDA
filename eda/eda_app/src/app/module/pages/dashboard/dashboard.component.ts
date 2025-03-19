@@ -782,7 +782,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       const data = event?.data;
       const panel = event?.data?.panel;
       let column: any;
-    
+      console.log(event)
       if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
         if (data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
           column = event.data.query.find((query: any) => query?.display_name?.default === data.query[0].display_name.default);
