@@ -150,53 +150,35 @@ export class EdaFilterAndOrComponent implements OnInit {
         let verificacionVerticalValor: boolean;
         verificacionVerticalValor = this.verificacionVertical(this.dashboard);
 
-        console.log('ASDASDASDASDASD::::: ', verificacionVerticalValor);
-
         if(verificacionVerticalValor) {
 
-          // Aqui la ultima función retroceso:
-          this.dashboardClone = _.cloneDeep(this.dashboard); // Tendria que hacerse despues de verificarse el intercambio de items
-
+          this.dashboardClone = _.cloneDeep(this.dashboard);
           this.dashboard = this.verificacionVerticalRetroceso(this.dashboardClone)
-
-
 
           // Verificamos si existe un intercambio de items
           if(this.existeIntercambioItems) {
-            console.log('INTERCAMBIO DE ITEMS');
             this.dashboard = this.correccionIntercambioItems(this.dashboardClone)
             this.dashboardClone = _.cloneDeep(this.dashboard);
-          }
-
-          else {
-            console.log('Nooooo Existe INTERCAMBIO DE ITEMS');
+          } else {
             this.dashboard = _.cloneDeep(this.dashboardClone);
           }
-
           //*********************************************************************** */
           this.existeIntercambioItems = false; // Al terminar toda la iteración
           //*********************************************************************** */
-
         } else {
-          console.log('Valor Vertical Errado')
           this.dashboard = _.cloneDeep(this.dashboardClone);
         }
-
-      } 
-      
-      else {
+      } else {
         this.dashboard = _.cloneDeep(this.dashboardClone);
       }
     
     } else {
       this.dashboard = _.cloneDeep(this.dashboardClone);
-      console.log('.... MOVIMIENTO NO DISPONIBLE ....')
     }
 
-    console.log('Item:', item);
-    console.log('Todos los items:', this.dashboard);
-    console.log('Todos los items clonación:', this.dashboardClone);
-
+    console.log('ITEM:', item);
+    console.log('TOTAL DE ITEMS:', this.dashboard);
+    console.log('TOTAL DE ITEMS - CLONACIÓN', this.dashboardClone);
   }
 
   verificacionVerticalRetroceso(dashboardClonado: any){
@@ -208,7 +190,6 @@ export class EdaFilterAndOrComponent implements OnInit {
         dashboardClonado.find((item:any) => item.y === j+1).x = dashboardClonado.find((item:any) => item.y === j).x+1
       }
     }
-    console.log('dashboardClonado a trabajar <<<>>> ', dashboardClonado);
 
     return dashboardClonado;
   }
