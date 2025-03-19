@@ -45,7 +45,7 @@ export class EdaScatter implements AfterViewInit {
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
-    this.assignedColors = this.inject.assignedColors; 
+    this.assignedColors = this.inject.assignedColors || []; 
   }
   ngOnDestroy(): void {
     if (this.div)

@@ -72,10 +72,10 @@ export const ChartsConfigUtils = {
         
       }
     } else if (["parallelSets", "treeMap", "scatterPlot", "funnel", "bubblechart", "sunburst"].includes(ebp.panelChart.props.chartType)) {
-        config = {
-          colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : [],
-          assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
-        }
+      config = {
+        colors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.colors : [],
+        assignedColors: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.assignedColors : [],
+      }
     }
     else if (ebp.panelChart.props.chartType === 'knob') {
       config = {
@@ -109,19 +109,19 @@ export const ChartsConfigUtils = {
         }else if (['bar', 'line', 'area', 'pie', 'doughnut', 'polarArea', 'barline', 'horizontalBar', 'pyramid', 'histogram', 'radar'].includes(type)) {
             return new ChartJsConfig(null, type, false, false, false, false, null, []);
         } else if (type === 'parallelSets') {
-            return new SankeyConfig([]);
+            return new SankeyConfig([],[]);
         } else if (type === 'treeMap') {
-            return new TreeMapConfig([]);
+            return new TreeMapConfig([],[]);
         } else if (type === 'scatterPlot') {
-            return new ScatterConfig([]);
+            return new ScatterConfig([],[]);
         } else if (type === 'funnel') {
             return new FunnelConfig([]);
         } else if (type === 'bubblechart') {
-            return new BubblechartConfig([]);
+            return new BubblechartConfig([],[]);
         } else if (type === 'knob') {
             return new KnobConfig(null, null);
         } else if (type === 'sunburst') {
-            return new SunburstConfig([]);
+            return new SunburstConfig([],[]);
         } else if (type === 'kpi') {
             return new KpiConfig();
         } else if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {

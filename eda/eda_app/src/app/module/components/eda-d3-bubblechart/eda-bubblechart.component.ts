@@ -57,7 +57,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
     this.colors = this.inject.colors.length > 0 ? this.inject.colors
       : this.getColors(this.data.children.length, ChartsColors);
-    this.assignedColors = this.inject.assignedColors; 
+    this.assignedColors = this.inject.assignedColors || []; 
 
   }
 

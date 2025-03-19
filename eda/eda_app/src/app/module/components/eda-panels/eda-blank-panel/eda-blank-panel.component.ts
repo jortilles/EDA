@@ -947,6 +947,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.graficos = {};
                 this.graficos = _.cloneDeep(properties);                
             
+                //assignedColors se le modifica el color dependiendo de su label
                 this.graficos.assignedColors.forEach((e, index) => {
                     if (this.graficos.chartLabels.includes(e.value)) {
                         let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
@@ -1001,8 +1002,16 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseSankeyProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panelChart.componentRef.instance.assignedColors.forEach((e, index) => { e.color = response.colors[index] });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors }; const config = new ChartConfig(this.panel.content.query.output.config);
+
+            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
+                if (this.panelChart.componentRef.instance.data.values.map(item => item.find(value => typeof value === 'string')).includes(e.value)) {
+                    let indexColor = this.panelChart.componentRef.instance.data.values.map(item => item.find(value => typeof value === 'string'))
+                        .findIndex(element => element === e.value)
+                    e.color = response.colors[indexColor]
+                }
+            });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+            const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
 
@@ -1012,11 +1021,15 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseTreeMapProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            let assignedColors = [];
-            this.panelChart.componentRef.instance.assignedColors.map((item) => item.value).forEach((element, index) => {
-                assignedColors[index] = { value: element ,  color: response.colors[index] }
+            //assignedColors se le recoge el valor y modifica el color
+            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
+                if (this.panelChart.componentRef.instance.data.children.map(item => item.name).includes(e.value)) {
+                    let indexColor = this.panelChart.componentRef.instance.data.children.map(item => item.name)
+                        .findIndex(element => element === e.value)
+                    e.color = response.colors[indexColor]
+                }
             });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: assignedColors };
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
@@ -1026,8 +1039,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseFunnelProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panelChart.componentRef.instance.assignedColors.forEach((e, index) => { e.color = response.colors[index] });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };const config = new ChartConfig(this.panel.content.query.output.config);
+            this.panel.content.query.output.config = { colors: response.colors };
+            const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
             this.dashboardService._notSaved.next(true);
@@ -1038,8 +1051,15 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseBubblechartProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panelChart.componentRef.instance.assignedColors.forEach((e, index) => { e.color = response.colors[index] });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };const config = new ChartConfig(this.panel.content.query.output.config);
+            //assignedColors se le recoge el valor y modifica el color
+            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
+                if (this.panelChart.componentRef.instance.data.children.map(item => item.name).includes(e.value)) {
+                    let indexColor = this.panelChart.componentRef.instance.data.children.map(item => item.name).findIndex(element => element === e.value);
+                    e.color = response.colors[indexColor]
+                }
+            });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+            const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
 
@@ -1053,8 +1073,16 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseScatterProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panelChart.componentRef.instance.assignedColors.forEach((e, index) => { e.color = response.colors[index] });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };const config = new ChartConfig(this.panel.content.query.output.config);
+            //assignedColors se le recoge el valor y modifica el color
+            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
+                if (this.panelChart.componentRef.instance.data.map(item => item.label).includes(e.value)) {
+                    let indexColor = this.panelChart.componentRef.instance.data.map(item => item.label)
+                        .findIndex(element => element === e.value)
+                    e.color = response.colors[indexColor]
+                }
+            });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+            const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
             this.dashboardService._notSaved.next(true);
@@ -1064,8 +1092,16 @@ export class EdaBlankPanelComponent implements OnInit {
     }
     public onCloseSunburstProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panelChart.componentRef.instance.assignedColors.forEach((e, index) => { e.color = response.colors[index] });
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };const config = new ChartConfig(this.panel.content.query.output.config);
+            //assignedColors se le recoge el valor y modifica el color
+            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
+                if (this.panelChart.componentRef.instance.data.map(item => item.find(value => typeof value === 'string')).includes(e.value)) {
+                    let indexColor = this.panelChart.componentRef.instance.data.map(item => item.find(value => typeof value === 'string'))
+                        .findIndex(element => element === e.value)
+                    e.color = response.colors[indexColor]
+                }
+            });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+            const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
             this.dashboardService._notSaved.next(true);

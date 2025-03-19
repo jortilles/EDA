@@ -59,7 +59,7 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
   }
 
   handleInputColor(serie) {
-    this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(this.colors.map(color => this.hex2rgb(color))));
+    this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(this.colors.map(color => this.hex2rgb(color)),[]));
     this.myPanelChartComponent.changeChartType();
   }
 

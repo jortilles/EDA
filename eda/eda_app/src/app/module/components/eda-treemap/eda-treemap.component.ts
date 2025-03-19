@@ -42,8 +42,7 @@ export class EdaTreeMap implements AfterViewInit {
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.data = this.formatData(this.inject.data);
     this.colors = this.inject.colors.length > 0 ? this.inject.colors : this.getColors(this.data.children.length, ChartsColors);
-    this.assignedColors = this.inject.assignedColors; 
-
+    this.assignedColors = this.inject.assignedColors || [];
   }
 
   ngOnDestroy(): void {
@@ -321,6 +320,4 @@ export class EdaTreeMap implements AfterViewInit {
     });
     return values;
   }
-
-
 }

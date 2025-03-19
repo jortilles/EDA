@@ -46,7 +46,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
-    this.assignedColors = this.inject.assignedColors; 
+    this.assignedColors = this.inject.assignedColors || []; 
   }
 
   ngAfterViewInit() {

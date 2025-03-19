@@ -304,6 +304,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         
         
         //Si assignedColors no existe (informes viejos), lo generamos
+        //Para una posterior versión se podria mirar de eliminar este bloque if else y solo mirar si existe el config
         if (chartConfig.assignedColors.length === 0) {
             // Si es doughnut o polar area, trabajamos con 400 colores
             if (chartConfig.chartType === "doughnut" || chartConfig.chartType === "polarArea") {
@@ -753,13 +754,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        
-        //Tratamiento de informes viejos que no contienen assignedColors en su config
-        if (inject.assignedColors.length === 0) {
-            inject.data.values.forEach((element, index) => {
-                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
-            });
-        }
+
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
+
+
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createParallelSetsComponent(inject);
@@ -784,13 +783,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
-        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        //Tratamiento de informes viejos que no contienen assignedColors en su config
-        if (inject.assignedColors.length === 0) {
-            inject.data.values.forEach((element, index) => {
-                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
-            });
-        }
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createFunnelComponent(inject);
@@ -816,12 +808,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        //Tratamiento de informes viejos que no contienen assignedColors en su config
-        if (inject.assignedColors.length === 0) {
-            inject.data.values.forEach((element, index) => {
-                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
-            });
-        }
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createBubblechartComponent(inject);
@@ -844,12 +832,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        //Tratamiento de informes viejos que no contienen assignedColors en su config
-        if (inject.assignedColors.length === 0) {
-            inject.data.values.forEach((element, index) => {
-                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
-            });
-        }            
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));        
         inject.linkedDashboard = this.props.linkedDashboardProps;
         this.createTreeMap(inject);
     }
@@ -873,12 +857,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        //Tratamiento de informes viejos que no contienen assignedColors en su config
-        if (inject.assignedColors.length === 0) {
-            inject.data.values.forEach((element, index) => {
-                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
-            });
-        }
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createScatter(inject);
@@ -902,12 +882,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-        //Tratamiento de informes viejos que no contienen assignedColors en su config
-        if (inject.assignedColors.length === 0) {
-            inject.data.values.forEach((element, index) => {
-                inject.assignedColors[index] = { value: element.find(element => typeof element === 'string'), color: inject.colors[index] };
-            });
-        }
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
         inject.linkedDashboard = this.props.linkedDashboardProps;
         this.createSunburst(inject);
     }
@@ -975,6 +951,23 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             return new EdaTable({ cols: tableColumns, pivot: true, ...configs });
         }
 
+    }
+
+    private assignedColorsWork(config, inject) { 
+        // console.log(config)
+        // console.log(inject)
+        inject.data.values.forEach((injectValue, index) => {
+            //Primer string encontrado(valor del filtro)
+            const injectValueString = injectValue.find(value => typeof value === 'string');
+            if (!config || !config['assignedColors'].some(item => item.value === injectValueString)) { 
+                inject.assignedColors.push({
+                    value: injectValueString, color: inject.colors[index] ||
+                        `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`
+                });
+            } 
+        });
+        config['assignedColors'] = inject.assignedColors;
+        return config;
     }
 
     /**

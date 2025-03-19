@@ -60,7 +60,7 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
   }
 
   handleInputColor(serie) {
-    this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors.map(color => this.hex2rgb(color))));
+    this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors.map(color => this.hex2rgb(color)),[]));
     this.myPanelChartComponent.changeChartType();
   }
 
