@@ -53,13 +53,13 @@ export class EdaFilterAndOrComponent implements OnInit {
       resizable: {
         enabled: false // Elemento para que no se redimensione
       },
-      minCols: 12,
-      maxCols: 12,
-      minRows: 14,
-      maxRows: 14,
+      minCols: 8,
+      maxCols: 8,
+      minRows: 10,
+      maxRows: 10,
       margin: 0, // Reduce el margen entre celdas
-      fixedRowHeight: 35, // Altura del elemento
-      fixedColWidth: 80, // Anchura del elemento
+      fixedRowHeight: 24, // Altura del elemento
+      fixedColWidth: 65, // Anchura del elemento
       // disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
       // disableScrollVertical: true, // Desactiva scroll horizontal si es necesario
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
