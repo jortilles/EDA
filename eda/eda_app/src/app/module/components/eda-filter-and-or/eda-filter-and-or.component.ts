@@ -150,8 +150,16 @@ export class EdaFilterAndOrComponent implements OnInit {
         let verificacionVerticalValor: boolean;
         verificacionVerticalValor = this.verificacionVertical(this.dashboard);
 
+        console.log('ASDASDASDASDASD::::: ', verificacionVerticalValor);
+
         if(verificacionVerticalValor) {
+
+          // Aqui la ultima función retroceso:
           this.dashboardClone = _.cloneDeep(this.dashboard); // Tendria que hacerse despues de verificarse el intercambio de items
+
+          this.dashboard = this.verificacionVerticalRetroceso(this.dashboardClone)
+
+
 
           // Verificamos si existe un intercambio de items
           if(this.existeIntercambioItems) {
@@ -189,6 +197,20 @@ export class EdaFilterAndOrComponent implements OnInit {
     console.log('Todos los items:', this.dashboard);
     console.log('Todos los items clonación:', this.dashboardClone);
 
+  }
+
+  verificacionVerticalRetroceso(dashboardClonado: any){
+
+    for(let j=1; j<dashboardClonado.length-1; j++){
+      if(dashboardClonado.find((item:any) => item.y === j).x+1 >= dashboardClonado.find((item:any) => item.y === j+1).x) {
+        continue;
+      } else {
+        dashboardClonado.find((item:any) => item.y === j+1).x = dashboardClonado.find((item:any) => item.y === j).x+1
+      }
+    }
+    console.log('dashboardClonado a trabajar <<<>>> ', dashboardClonado);
+
+    return dashboardClonado;
   }
 
   correccionIntercambioItems(dashboardClonado: any) {
