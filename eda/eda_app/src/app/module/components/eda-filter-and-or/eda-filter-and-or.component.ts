@@ -151,23 +151,19 @@ export class EdaFilterAndOrComponent implements OnInit {
         verificacionVerticalValor = this.verificacionVertical(this.dashboard);
 
         if(verificacionVerticalValor) {
-          console.log('Valor vertical verificado')
           this.dashboardClone = _.cloneDeep(this.dashboard); // Tendria que hacerse despues de verificarse el intercambio de items
-          console.log('Pasamos por aqui....');
 
           // Verificamos si existe un intercambio de items
           if(this.existeIntercambioItems) {
-            console.log('Existe INTERCAMBIO DE ITEMS');
+            console.log('INTERCAMBIO DE ITEMS');
             this.dashboard = this.correccionIntercambioItems(this.dashboardClone)
             this.dashboardClone = _.cloneDeep(this.dashboard);
-            console.log('dashboard: ', this.dashboard);
           }
 
           else {
             console.log('Nooooo Existe INTERCAMBIO DE ITEMS');
+            this.dashboard = _.cloneDeep(this.dashboardClone);
           }
-
-
 
           //*********************************************************************** */
           this.existeIntercambioItems = false; // Al terminar toda la iteración
@@ -178,44 +174,35 @@ export class EdaFilterAndOrComponent implements OnInit {
           this.dashboard = _.cloneDeep(this.dashboardClone);
         }
 
-        // this.dashboardClone = _.cloneDeep(this.dashboard);
       } 
       
       else {
         this.dashboard = _.cloneDeep(this.dashboardClone);
       }
-
-      console.log('Item:', item);
-      console.log('Todos los items:', this.dashboard);
-      console.log('Todos los items clonación:', this.dashboardClone);
-      // this.dashboardClone = _.cloneDeep(this.dashboard);
     
     } else {
       this.dashboard = _.cloneDeep(this.dashboardClone);
       console.log('.... MOVIMIENTO NO DISPONIBLE ....')
-      console.log('Item:', item);
-      console.log('Todos los items:', this.dashboard);
-      console.log('Todos los items clonación:', this.dashboardClone);
     }
+
+    console.log('Item:', item);
+    console.log('Todos los items:', this.dashboard);
+    console.log('Todos los items clonación:', this.dashboardClone);
 
   }
 
-  correccionIntercambioItems(dashboard: any) {
-    console.log('Dashboard a trabajar : ', dashboard)
+  correccionIntercambioItems(dashboardClonado: any) {
 
     // Comenzamos la iteración sobre el segundo elemento
-    for(let i=1; i<dashboard.length; i++) {
-      if(dashboard.find((item: any) => item.y === i).x <= (dashboard.find((item: any) => item.y === (i-1)).x) + 1){
+    for(let i=1; i<dashboardClonado.length; i++) {
+      if(dashboardClonado.find((item: any) => item.y === i).x <= (dashboardClonado.find((item: any) => item.y === (i-1)).x) + 1){
         continue;
       }  else {
-        dashboard.find((item: any) => item.y === i).x = (dashboard.find((item: any) => item.y === (i-1)).x) + 1
+        dashboardClonado.find((item: any) => item.y === i).x = (dashboardClonado.find((item: any) => item.y === (i-1)).x) + 1
       }
     }
 
-    // dashboard.pop(); ////////////////////////////////   AQUIIIIIIIII
-
-    console.log('Comienza a verificar los items para el intercambio ..... ')
-    return dashboard;
+    return dashboardClonado;
   }
 
   verificacionVertical(dashboard: any){
@@ -231,21 +218,15 @@ export class EdaFilterAndOrComponent implements OnInit {
     if(item.y === itemX.y) {
       if((item.x >= 0) && (item.x <= 1 + itemSuperior.x)) {
         return true;
-        console.log('MOVIMIENTO PERMITIDO ....')
       } else {
         return false;
-        console.log('Movimiento NO PERMITIDO ....')
       }
     } else {
       return true;
-      console.log('Los valores no estan a la misma altura')
     }
-
-    console.log('itemSuperior: ', itemSuperior);
-    console.log('itemX: ', itemX);
   }
 
-    // Función para detectar el ítem más bajo
+    // Función para detectar el ítem más bajo  ==> Función a borrar
   getBottomMostItem(): GridsterItem | undefined {
     let bottomMostItem: GridsterItem | undefined;
     let maxBottom = -1; // Inicializamos con un valor bajo
@@ -263,7 +244,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     return bottomMostItem;
   }
 
-  // Función para detectar el ítem más alto
+  // Función para detectar el ítem más alto  ==> Función a borrar
   getTopMostItem(): GridsterItem | undefined {
     let topMostItem: GridsterItem | undefined;
     let minTop = Number.MAX_VALUE; // Inicializamos con un valor alto para buscar el mínimo
