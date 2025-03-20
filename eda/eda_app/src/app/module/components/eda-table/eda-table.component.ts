@@ -62,6 +62,7 @@ export class EdaTableComponent implements OnInit {
             let filterBy = colname;
             let label = item;
             //lanzo el filtro para los dos tipos de tablas
+        if(typeof label !== 'number')
             this.onClick.emit({ label, filterBy })
         }
     }
