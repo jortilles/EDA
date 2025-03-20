@@ -14,7 +14,7 @@
     <gridster class="gridster" [options]="options">
         <gridster-item [item]="item" *ngFor="let item of dashboard" class="gridster-item">
         <div class="d-flex justify-content-between align-items-center">
-            <div class="button-holder">
+            <div class="button-holder" *ngIf="!(item.x==0 && item.y==0)">
 
                 <p-selectButton 
                     [options]="selectedButton" 
@@ -24,7 +24,7 @@
                 ></p-selectButton>
 
             </div>
-            <h5 class="texto-filtro">{{item.filter_column}}</h5>
+            <h5 class="texto-filtro" [class.texto-derecha]="item.x == 0 && item.y == 0">{{item.filter_column}} </h5>
         </div>
         </gridster-item>
     </gridster>
