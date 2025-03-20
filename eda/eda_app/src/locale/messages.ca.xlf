@@ -4377,12 +4377,12 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Total valors distints</target>
       </trans-unit>
       <trans-unit id="most_duplicatedLabel" datatype="html">
-        <source>Más duplicado</source>
-        <target>Mes duplicat</target>
+        <source>Más repetido</source>
+        <target>Mes repetit</target>
       </trans-unit>
       <trans-unit id="least_duplicatedLabel" datatype="html">
-        <source>Menos duplicado</source>
-        <target>Menys duplicat</target>
+        <source>Menos repetido</source>
+        <target>Menys repetit</target>
       </trans-unit>
       <trans-unit id="maxLabel" datatype="html">
         <source>Valor máximo</source>

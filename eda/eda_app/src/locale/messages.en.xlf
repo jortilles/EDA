@@ -4341,12 +4341,12 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>Total distinct values</target>
       </trans-unit>
       <trans-unit id="most_duplicatedLabel" datatype="html">
-        <source>Más duplicado</source>
-        <target>Most duplicated</target>
+        <source>Más repetido</source>
+        <target>Most repeated</target>
       </trans-unit>
       <trans-unit id="least_duplicatedLabel" datatype="html">
-        <source>Menos duplicado</source>
-        <target>Least duplicated</target>
+        <source>Menos repetido</source>
+        <target>Least repeated</target>
       </trans-unit>
       <trans-unit id="maxLabel" datatype="html">
         <source>Valor máximo</source>

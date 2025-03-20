@@ -2006,7 +2006,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="most_duplicatedLabel" datatype="html">
-        <source>Más duplicado</source>
+        <source>Más repetido</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/module/components/eda-panels/eda-blank-panel/panel-utils/query-utils.ts</context>
           <context context-type="linenumber">104,99</context>
