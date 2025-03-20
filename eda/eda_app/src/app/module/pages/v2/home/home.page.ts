@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import * as _ from 'lodash';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { CreateDashboardComponent } from '@eda/shared/components/shared-components.index';
+import { title } from 'process';
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
@@ -108,6 +109,33 @@ export class HomePageV2 implements OnInit {
 
   public onCreateDashboard() {
     this.createDashboardService.open();
+  }
+
+  public filterByTitle(event) {
+    //Creación variables  
+    let reportsFiltered = [];    
+    const reportFiltered = event.target.value.toString().toUpperCase();
+    console.log(this)
+    
+    //Empezar a filtarar con más de un caracter en el buscador
+    if (reportFiltered.length > 1) {
+      this.allDashboards.map(item => item.config.title.toUpperCase()).forEach(report => {
+        //Almacenamos todos los reports que coincidan   
+        if (report.includes(reportFiltered))
+            reportsFiltered.push(report)
+        });
+
+      this.publicReports = this.publicReports.filter(db => reportsFiltered.includes(db.config.title.toUpperCase()));
+      this.sharedReports = this.sharedReports.filter(db => reportsFiltered.includes(db.config.title.toUpperCase()));
+      this.privateReports = this.privateReports.filter(db => reportsFiltered.includes(db.config.title.toUpperCase()));
+      this.roleReports = this.roleReports.filter(db => reportsFiltered.includes(db.config.title.toUpperCase()));
+
+    } else {
+      this.publicReports = this.reportMap.public; 
+      this.sharedReports = this.reportMap.shared; 
+      this.privateReports = this.reportMap.private; 
+      this.roleReports = this.reportMap.group; 
+    }
   }
 
   /**

@@ -10,7 +10,8 @@
         <div class="relative w-full sm:w-[300px]">
           <eda-icon name="magnifying-glass" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-[65%] text-muted-foreground"/>
           <input 
-            type="text" 
+          type="text" 
+          (keyup)="filterByTitle($event)"
             class="w-full rounded-md border border-input bg-background py-2 !pl-9 text-sm"
             placeholder="Buscador"
           >
