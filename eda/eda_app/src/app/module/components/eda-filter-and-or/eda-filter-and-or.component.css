@@ -22,7 +22,7 @@
 
 .gridster-item {
     background-color: #ffffff; /* Cambia este valor por el color que desees */
-    border: 1px solid #908d8dc3;  /* Líneas de borde alrededor de cada ítem */
+    border: 1.5px solid #b5b2b2c3;  /* Líneas de borde alrededor de cada ítem */
     cursor: pointer;
     padding: 0 10px;
     border-radius: 5px;
@@ -50,6 +50,8 @@
 
 .texto-filtro {
     font-style: italic;
+    color: rgb(73, 80, 87);
+    /* font-weight: bold; */
 }
 
 /* Clase que alinea el texto a la derecha cuando no hay botón */
