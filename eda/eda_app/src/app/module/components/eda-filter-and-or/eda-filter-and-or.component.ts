@@ -57,7 +57,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       maxCols: 12,
       minRows: 10,
       maxRows: 10,
-      margin: 0, // Reduce el margen entre celdas
+      margin: 0.2, // Reduce el margen entre celdas
       fixedRowHeight: 23, // Altura del elemento
       fixedColWidth: 65, // Anchura del elemento
       // disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
