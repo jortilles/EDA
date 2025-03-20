@@ -4,6 +4,8 @@ import {
   OnInit,
   ViewEncapsulation,
   Input, 
+  Output,
+  EventEmitter,
 } from '@angular/core';
 
 import {
@@ -30,6 +32,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   
   @Input() selectedFilters: any[] = []; // Valor que es 
   @Input() globalFilters: any[] = []; // Valor que es 
+  @Output() dashboardChanged: EventEmitter<any> = new EventEmitter<any>();
 
   options: GridsterConfig;
   dashboard: GridsterItem[];
@@ -71,6 +74,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       { label: "OR", value: "or" } 
     ]; 
 
+
   }
 
   ngOnInit(): void {
@@ -90,6 +94,13 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // Se crea una clonación del dashboard
     this.dashboardClone = _.cloneDeep(this.dashboard);
+
+    // Enviando el dashboard inicial al componente <filter-and-or-dialog>
+    this.dashboardChanged.emit(this.dashboard);
+
+    console.log('selectedFilters: ', this.selectedFilters)
+    console.log('globalFilters: ', this.globalFilters)
+
   }
 
   onItemChange(item: GridsterItem): void {
@@ -179,6 +190,9 @@ export class EdaFilterAndOrComponent implements OnInit {
     console.log('ITEM:', item);
     console.log('TOTAL DE ITEMS:', this.dashboard);
     console.log('TOTAL DE ITEMS - CLONACIÓN', this.dashboardClone);
+    // variable dashboard lista para la creación de la query de filtros and/or
+    this.creacionQueryFiltros(this.dashboard);
+
   }
 
   verificacionVerticalRetroceso(dashboardClonado: any){
@@ -227,6 +241,11 @@ export class EdaFilterAndOrComponent implements OnInit {
     } else {
       return true;
     }
+  }
+
+  creacionQueryFiltros(dashboard: any) {
+    console.log('Aqui esta la query final ...: ', dashboard)
+    this.dashboardChanged.emit(this.dashboard);
   }
 
     // Función para detectar el ítem más bajo  ==> Función a borrar

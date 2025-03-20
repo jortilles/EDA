@@ -12,6 +12,7 @@ export class FilterAndOrDialogComponent implements OnInit {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
   public display: boolean = false;
+  public dashboardRecibido = [];
 
 
   constructor() { }
@@ -19,9 +20,13 @@ export class FilterAndOrDialogComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  // Recibe el dashboard del componente <eda-filter-and-or>
+  public handleDashboardChanged(event: any) {
+    this.dashboardRecibido = event
+  }
+
   public onApplyFilterAndOrDialog() {
-    console.log('desde el hijo: onApplyFilterAndOrDialog')
-    console.log('A llegado el currenquery: ', this.selectedFilters)
+    console.log('Dashboard final para tratar: ', this.dashboardRecibido);
     this.close.emit();
   }
 

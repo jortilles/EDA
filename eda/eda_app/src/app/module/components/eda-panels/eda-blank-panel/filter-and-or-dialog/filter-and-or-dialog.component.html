@@ -12,7 +12,7 @@
         
         <br>
 
-        <eda-filter-and-or [(selectedFilters)]="selectedFilters" [(globalFilters)] ="globalFilters"></eda-filter-and-or>
+        <eda-filter-and-or [(selectedFilters)]="selectedFilters" [(globalFilters)] ="globalFilters" (dashboardChanged)="handleDashboardChanged($event)"></eda-filter-and-or>
 
     </div>
 
