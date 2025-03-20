@@ -615,6 +615,19 @@ export class ChartUtilsService {
             for (let i = 0; i < values.length; i += 1) {
                 const obj = {};
                 for (let e = 0; e < values[i].length; e += 1) {
+                    // Si no es string, y es un objeto
+                    if (typeof values[i][e] === 'object') {
+                        // Si el anterior valor era más duplicado
+                        const isMesDuplicat = values[i][e - 1] === "Mes Duplicat";
+                        //Contamos todos los valores de la array, y dependiendo de isMesDuplicat volvemos la array inversa o no
+                        const sortedEntries = Object.entries(values[i][e].data.reduce((count, valor) => {
+                            count[valor] = (count[valor] || 0) + 1;
+                            return count;
+                        }, {})).sort((a, b) => isMesDuplicat ? Number(b[1]) - Number(a[1]) : Number(a[1]) - Number(b[1]));
+
+                        values[i][e] = sortedEntries[0][0];
+                    }
+
                     obj[labels[e]] = values[i][e];
                 }
                 output.push(obj);
