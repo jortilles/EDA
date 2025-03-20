@@ -25,6 +25,7 @@
     border: 1px solid #908d8dc3;  /* Líneas de borde alrededor de cada ítem */
     cursor: pointer;
     padding: 0 10px;
+    border-radius: 5px;
 }
 
 /* Cambiar el color de la previsualización del item */
