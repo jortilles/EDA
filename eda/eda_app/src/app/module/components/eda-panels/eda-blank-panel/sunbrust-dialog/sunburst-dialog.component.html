@@ -21,7 +21,7 @@
         <ng-container *ngFor="let label of labels; let i = index">
 
           <div class="col-6">
-            <span> {{labePrettify(label)}} </span>
+            <span> {{label}} </span>
             <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor(label)" format="hex" appendTo="body">
             </p-colorPicker>
 

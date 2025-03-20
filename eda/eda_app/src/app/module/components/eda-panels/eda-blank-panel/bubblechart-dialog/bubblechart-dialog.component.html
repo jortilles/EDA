@@ -21,8 +21,8 @@
         <ng-container *ngFor="let label of labels; let i = index">
 
           <div class="col-6">
-
-            <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor()" format="hex" appendTo="body">
+            <span> {{label}} </span>
+            <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor(label)" format="hex" appendTo="body">
             </p-colorPicker>
 
             <input type="text" pInputText class="eda-color-pick" [(ngModel)]="colors[i]"

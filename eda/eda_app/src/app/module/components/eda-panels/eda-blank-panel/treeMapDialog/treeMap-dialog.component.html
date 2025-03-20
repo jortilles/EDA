@@ -9,7 +9,7 @@
     </div>
 
 
-    <div class="col-2" style="margin-left: 3em;">
+    <div class="col-3" style="margin-left: 3em;">
 
       <h6 i18n="@@colorsChartH6" class="custom-border-b1">
         Colores
@@ -20,7 +20,7 @@
         <ng-container *ngFor="let label of labels; let i = index">
 
           <div class="col-6">
-
+            <span> {{label}} </span>
             <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor(label)" format="hex" appendTo="body">
             </p-colorPicker>
 
