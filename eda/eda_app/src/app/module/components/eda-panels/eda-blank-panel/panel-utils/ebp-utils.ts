@@ -105,6 +105,7 @@ export const EbpUtils = {
     let description = '';
     switch (value) {
       case 'table':
+      case 'tableanalized':
         description = 'table_chart';
         break
       case 'crosstable':

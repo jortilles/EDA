@@ -108,13 +108,19 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "app-eda:build"
-                      },
+                        "browserTarget": "app-eda:build",
+                        "host": "0.0.0.0",
+                        "proxyConfig": "proxy.conf.json",
+                        "port": 4200
+                    },
                     "configurations": {
                         "production": {
                             "browserTarget": "app-eda:build:production"
                         },
                         "es": {
+                            "browserTarget": "app-eda:build"
+                        },
+                        "en": {
                             "browserTarget": "app-eda:build:en"
                         },
                         "ca": {
