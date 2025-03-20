@@ -3,7 +3,7 @@
     background-color: transparent; 
     border: 1px solid #13d60c00;  /* Líneas de borde alrededor de cada ítem */
     /* position: static; */
-    width: 96%;
+    width: 100%;
     /* Es el valor por el cual dara espacio para escribir la query  */
     /* width: 65%;  */
     height: 55%;
