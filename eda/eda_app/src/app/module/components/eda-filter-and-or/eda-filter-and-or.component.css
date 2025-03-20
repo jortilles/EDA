@@ -10,14 +10,14 @@
 }
 
 .gridster .gridster-column {
-    border-left: 1px solid rgb(204, 197, 197);
-    border-right: 1px solid rgb(204, 197, 197);;
-    outline: 1px solid rgb(204, 197, 197);;
+    border-left: 1px solid rgb(240, 240, 243);
+    border-right: 1px solid rgb(240, 240, 243);
+    outline: 1px solid rgb(240, 240, 243);
 }
 .gridster .gridster-row {
-    border-top: 1px solid rgb(204, 197, 197);;
-    border-bottom: 1px solid rgb(204, 197, 197);;
-    outline: 1px solid rgb(204, 197, 197);
+    border-top: 1px solid rgb(240, 240, 243);
+    border-bottom: 1px solid rgb(240, 240, 243);
+    outline: 1px solid rgb(240, 240, 243);
 }
 
 .gridster-item {
@@ -37,13 +37,18 @@
     padding: 3px 6px !important;  /* Reduce el padding (espaciado interno) */
     height: 15px !important;      /* Reduce la altura del botón */
     min-width: 20px !important;   /* Ajusta el ancho mínimo del botón */
-    font-size: 7px !important;   /* Cambia el tamaño de la fuente (si lo deseas) */
+    font-size: 6px !important;   /* Cambia el tamaño de la fuente (si lo deseas) */
+    font-style: italic;
 }
 
 /* Asegurarse de que el contenedor también sea pequeño */
 .small-button .p-selectbutton {
     height: 25px !important;      /* Reduce la altura */
     padding: 3.5px 0px !important;  /* Ajusta el padding */
+}
+
+.texto-filtro {
+    font-style: italic;
 }
 
 
