@@ -53,8 +53,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       resizable: {
         enabled: false // Elemento para que no se redimensione
       },
-      minCols: 8,
-      maxCols: 8,
+      minCols: 10,
+      maxCols: 10,
       minRows: 10,
       maxRows: 10,
       margin: 0, // Reduce el margen entre celdas
