@@ -499,7 +499,7 @@ export class DashboardController {
               'info',
               'DashboardAccessed',
               req.user.name,
-              ds._id + '--' + ds.name
+              dashboard._id + '--' + dashboard.config.title
             )
             return res.status(200).json({ ok: true, dashboard, datasource: ds })
           }
