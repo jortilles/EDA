@@ -80,6 +80,52 @@ export const QueryUtils = {
     }
   },
   
+  analizedQuery: async (ebp: EdaBlankPanelComponent) => {
+    const query = QueryUtils.initEdaQuery(ebp);
+
+    query.query.filters = query.query.filters.filter((f) =>
+      (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0)
+      || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
+    );
+
+    const response = await ebp.queryService.executeAnalizedQuery(query).toPromise();
+    return response;
+  },
+  
+  transformAnalizedQueryData: (ebp: EdaBlankPanelComponent, data: any) => {
+    const labels = [$localize`:@@atributoLabel:Atributo`, $localize`:@@atributoConsulta:Consulta`, $localize`:@@atributoValor:Valor`];
+    const values = [];
+
+    const i18n = {
+        "count_tables": $localize`:@@count_tablesLabel:Tablas implicadas`,
+        "count_nulls": $localize`:@@count_nullsLabel:Total nulos`,
+        "count_empty": $localize`:@@count_emptyLabel:Total cadenas vacías`,
+        "count_distinct": $localize`:@@count_distinctLabel:Total valores distintos`,
+        "most_duplicated": $localize`:@@most_duplicatedLabel:Más repetido`,
+        "least_duplicated": $localize`:@@least_duplicatedLabel:Menos repetido`,
+        "max": $localize`:@@maxLabel:Valor máximo`,
+        "min": $localize`:@@minLabel:Valor mínimo`,
+        "moda_counts": $localize`:@@moda_countsLabel:Moda`,
+        "avg": $localize`:@@avgLabel:Media`,
+        "median": $localize`:@@medianLabel:Mediana`,
+        "median_count_bymonth": $localize`:@@median_count_bymonthLabel:Mediana por mes`,
+        "max_bymonth": $localize`:@@max_bymonthLabel:Máximos por mes`,
+        "min_bymonth": $localize`:@@min_bymonthLabel:Mínimos por mes`,
+    };
+
+    for (const key in data) {
+
+      for (const valueKey in data[key]) {
+        const value = data[key][valueKey];
+        values.push([key,i18n[valueKey], value]);
+      }
+    }
+
+    return {
+      labels,
+      values
+    }
+  },
   /**
    * Switch sql mode or eda mode and run query
    * @param ebp edaBlankPanelComponent
@@ -186,7 +232,7 @@ export const QueryUtils = {
 
         // Este if y else permiten mantener el gráfico que ya estaba configurado a pesar de que sean otros datos
         // en caso de que query no cumpla con el grádico correspondiente, se proyectara una tabla con los datos.
-        if(ebp.chartForm.value.chart===null){
+        if(ebp.chartForm.value.chart===null || ebp.chartForm.value.chart.subValue==='tableanalized'){
           ebp.changeChartType('table', 'table', null);
           ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
         } 

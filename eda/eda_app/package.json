@@ -4,13 +4,14 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve -o --configuration=ca",
-    "start:ca": "ng serve  --configuration=ca",
+    "start:ca": "ng serve -o --configuration=ca",
+    "start:en": "ng serve -o --configuration=en",
     "copy-index": "node scripts/copy-index.js",
     "build:prod": "ng build --configuration production --localize --build-optimizer --vendor-chunk && npm run copy-index",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "int:extract": "ng xi18n --output-path locale"
+    "int:extract": "ng i18n --output-path locale"
   },
   "private": true,
   "dependencies": {
@@ -41,6 +42,7 @@
     "d3-sankey": "^0.12.3",
     "dom-to-image": "^2.5.0",
     "font-awesome": "^4.7.0",
+    "fs-extra": "^3.0.1",
     "fs-extra": "^3.0.1",
     "glob-parent": "^6.0.1",
     "html2canvas": "^1.0.0-rc.5",

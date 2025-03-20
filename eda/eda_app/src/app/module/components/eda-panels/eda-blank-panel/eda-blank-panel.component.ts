@@ -29,13 +29,14 @@ import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 import { ActivatedRoute } from '@angular/router';
-
-import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
+import { NULL_VALUE } from '../../../../config/personalitzacio/customizables'
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 import { inject, computed } from '@angular/core';
 import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
 import { lastValueFrom } from 'rxjs';
 import { DashboardPageV2 } from 'app/module/pages/v2/dashboard/dashboard.page';
+import { QueryService } from '@eda/services/api/query.service';
+import { ConfirmationService } from 'primeng/api';
 
 export interface IPanelAction {
     code: string;
@@ -223,11 +224,13 @@ export class EdaBlankPanelComponent implements OnInit {
         public queryBuilder: QueryBuilderService,
         public fileUtiles: FileUtiles,
         public dashboardService: DashboardService,
+        public queryService: QueryService,
         public chartUtils: ChartUtilsService,
         public alertService: AlertService,
         public spinnerService: SpinnerService,
         public groupService: GroupService,
         public userService: UserService,
+        private confirmationService: ConfirmationService
     ) {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
@@ -679,16 +682,33 @@ public tableNodeExpand(event: any): void {
         }
     }
 
+
+    public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
+        if (subType=='tableanalized') {
+            this.changeChartType(type, subType, config)
+            // TODO - Popup no aparece
+            // this.confirmationService.confirm({
+            //     header: `Warning`,
+            //     message: `Este proceso realiza un seguido de consultas al modelo de datos y puede que le tome su tiempo. ¿Desea continuar?`,
+            //     acceptLabel: $localize`:@@si:Si`,
+            //     rejectLabel: $localize`:@@no:No`,
+            //     icon: 'pi pi-exclamation-triangle',
+            //     accept: () => this.changeChartType(type, subType, config)
+            // })
+        } else {
+            this.changeChartType(type, subType, config);
+        }
+    }
+
     /**
      * Changes chart type 
      * @param type chart type
      * @param content panel content
      */
-    public changeChartType(type: string, subType: string, config?: ChartConfig) {
-        
-        this.graphicType = type; // Actualizamos el tipo de variable para el componente drag-drop
+    public async changeChartType(type: string, subType: string, config?: ChartConfig) {
+        // Actualizamos el tipo de variable para el componente drag-drop
+        this.graphicType = type;
         this.graficos = {};
-        let allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
         this.display_v.chart = type;
         this.graficos.chartType = type;
         this.graficos.edaChart = subType;
@@ -696,11 +716,26 @@ public tableNodeExpand(event: any): void {
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
         this.graficos.assignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
 
+        const allow = _.find(this.chartTypes, c => c.value === type && c.subValue == subType);
+
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             _.merge(_config, config||{});
-            
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
+
+            if (subType=='tableanalized') {
+                try {
+                    if (!this.display_v.minispinner) this.spinnerService.on();
+                    const data = await QueryUtils.analizedQuery(this);
+                    const transformedData = QueryUtils.transformAnalizedQueryData(this, data);
+                    this.renderChart(this.currentQuery, transformedData.labels, transformedData.values, type, subType, _config);
+                } catch(err) {
+                    throw err;
+                } finally {
+                    this.spinnerService.off();
+                }
+            } else {
+                this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
+            }
         }
 
         // Controlar si se ejecuta una tabla cruzada
