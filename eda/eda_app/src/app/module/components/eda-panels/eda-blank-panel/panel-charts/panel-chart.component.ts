@@ -759,7 +759,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
         this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
 
-
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createParallelSetsComponent(inject);
@@ -955,19 +954,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private assignedColorsWork(config, inject) { 
-        // console.log(config)
-        // console.log(inject)
         inject.data.values.forEach((injectValue, index) => {
             //Primer string encontrado(valor del filtro)
             const injectValueString = injectValue.find(value => typeof value === 'string');
             if (!config || !config['assignedColors'].some(item => item.value === injectValueString)) { 
                 inject.assignedColors.push({
                     value: injectValueString, color: inject.colors[index] ||
-                        `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`
+                    `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`
                 });
-            } 
+            } else {
+                let mapValues = inject.assignedColors.map(item => item.value);
+                inject.colors[index] = inject.assignedColors[mapValues.findIndex(value => value === injectValueString)]['color'];
+            }
         });
-        config['assignedColors'] = inject.assignedColors;
+        config = inject;
         return config;
     }
 
