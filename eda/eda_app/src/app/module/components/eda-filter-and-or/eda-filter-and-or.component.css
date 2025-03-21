@@ -3,7 +3,7 @@
     background-color: transparent; 
     border: 1px solid #13d60c00;  /* Líneas de borde alrededor de cada ítem */
     /* position: static; */
-    width: 100%;
+    width: 96%;
     /* Es el valor por el cual dara espacio para escribir la query  */
     /* width: 65%;  */
     height: 55%;
@@ -50,6 +50,7 @@
 
 .texto-filtro {
     font-style: italic;
+    font-size: 1rem;
     color: rgb(73, 80, 87);
     /* font-weight: bold; */
 }
@@ -57,6 +58,10 @@
 /* Clase que alinea el texto a la derecha cuando no hay botón */
 .texto-derecha {
     margin-left: auto; /* Empuja el texto hacia la derecha */
+}
+
+.text-query {
+    font-weight: bold;
 }
 
 

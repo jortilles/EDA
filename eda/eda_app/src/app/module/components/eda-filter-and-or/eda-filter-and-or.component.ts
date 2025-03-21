@@ -62,7 +62,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       maxRows: 10,
       margin: 0.2, // Reduce el margen entre celdas
       fixedRowHeight: 23, // Altura del elemento
-      fixedColWidth: 65, // Anchura del elemento
+      fixedColWidth: 56, // Anchura del elemento
       // disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
       // disableScrollVertical: true, // Desactiva scroll horizontal si es necesario
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
