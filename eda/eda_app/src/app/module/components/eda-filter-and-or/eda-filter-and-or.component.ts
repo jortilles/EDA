@@ -87,12 +87,12 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {
-      this.dashboard.push({cols: 3, rows:1, y: j, x:0, filter_table: sf.filter_table, filter_column: sf.filter_column, value: "and"})
+      this.dashboard.push({cols: 3, rows:1, y: j, x:0, filter_table: sf.filter_table, filter_column: sf.filter_column, filter_type: sf.filter_type, filter_elements: sf.filter_elements, value: "and"})
     })
 
     // Agregado de Filtros Globales
     this.globalFilters.forEach((gf, i) => {
-      this.dashboard.push({cols: 3, rows:1, y: i + this.selectedFilters.length, x:0, filter_table: gf.filter_table ,filter_column: gf.filter_column, value: "and"})
+      this.dashboard.push({cols: 3, rows:1, y: i + this.selectedFilters.length, x:0, filter_table: gf.filter_table ,filter_column: gf.filter_column, filter_type: gf.filter_type, filter_elements: gf.filter_elements, value: "and"})
     })
 
     // Se crea una clonación del dashboard
@@ -246,13 +246,16 @@ export class EdaFilterAndOrComponent implements OnInit {
     console.log('Dashboard <<<>>> => ', dashboard)
 
     let strQuery = 'where ';
+    strQuery = strQuery + `\"${dashboard.find((item: any) => item.y === 0).filter_table}\".\"${dashboard.find((item: any) => item.y === 0).filter_column}\"`;
 
-    for(let i=0; i<dashboard.length; i++) {
+    for(let y=1; y<dashboard.length; y++) {
+      dashboard.find((item: any) => item.y ===y)
 
+      console.log(dashboard.find((item: any) => item.y ===y))
     }
     
 
-
+    console.log('strQuery: ',strQuery)
 
     this.dashboardChanged.emit(this.dashboard);
   }
