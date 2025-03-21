@@ -82,14 +82,17 @@ export class EdaFilterAndOrComponent implements OnInit {
     // Integración:
     this.dashboard = [];
 
+    console.log('this.selectedFilters: ', this.selectedFilters)
+    console.log('this.globalFilters: ', this.globalFilters)
+
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {
-      this.dashboard.push({cols: 3, rows:1, y: j, x:0, filter_column: sf.filter_column, value: "and"})
+      this.dashboard.push({cols: 3, rows:1, y: j, x:0, filter_table: sf.filter_table, filter_column: sf.filter_column, value: "and"})
     })
 
     // Agregado de Filtros Globales
     this.globalFilters.forEach((gf, i) => {
-      this.dashboard.push({cols: 3, rows:1, y: i + this.selectedFilters.length, x:0, filter_column: gf.filter_column, value: "and"})
+      this.dashboard.push({cols: 3, rows:1, y: i + this.selectedFilters.length, x:0, filter_table: gf.filter_table ,filter_column: gf.filter_column, value: "and"})
     })
 
     // Se crea una clonación del dashboard
@@ -244,9 +247,9 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     let strQuery = 'where ';
 
-    // for(let i=0; i<dashboard.length; i++) {
+    for(let i=0; i<dashboard.length; i++) {
 
-    // }
+    }
     
 
 
