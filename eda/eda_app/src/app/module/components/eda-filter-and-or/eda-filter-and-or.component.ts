@@ -82,14 +82,17 @@ export class EdaFilterAndOrComponent implements OnInit {
     // Integración:
     this.dashboard = [];
 
-    // Agregado de Filtros Globales
-    this.globalFilters.forEach((gf, i) => {
-      this.dashboard.push({cols: 3, rows:1, y:i, x:0, filter_column: gf.filter_column, value: "and"})
-    })
+    console.log('this.globalFilters: ', this.globalFilters)
+    console.log('this.selectedFilters: ', this.selectedFilters)
 
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {
-      this.dashboard.push({cols: 3, rows:1, y: this.globalFilters.length + j, x:0, filter_column: sf.filter_column, value: "and"})
+      this.dashboard.push({cols: 3, rows:1, y: j, x:0, filter_column: sf.filter_column, value: "and"})
+    })
+
+    // Agregado de Filtros Globales
+    this.globalFilters.forEach((gf, i) => {
+      this.dashboard.push({cols: 3, rows:1, y: i + this.selectedFilters.length, x:0, filter_column: gf.filter_column, value: "and"})
     })
 
     // Se crea una clonación del dashboard
@@ -97,9 +100,6 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // Enviando el dashboard inicial al componente <filter-and-or-dialog>
     this.dashboardChanged.emit(this.dashboard);
-
-    console.log('selectedFilters: ', this.selectedFilters)
-    console.log('globalFilters: ', this.globalFilters)
 
   }
 
@@ -187,9 +187,9 @@ export class EdaFilterAndOrComponent implements OnInit {
       this.dashboard = _.cloneDeep(this.dashboardClone);
     }
 
-    console.log('ITEM:', item);
-    console.log('TOTAL DE ITEMS:', this.dashboard);
-    console.log('TOTAL DE ITEMS - CLONACIÓN', this.dashboardClone);
+    // console.log('ITEM:', item);
+    // console.log('TOTAL DE ITEMS:', this.dashboard);
+    // console.log('TOTAL DE ITEMS - CLONACIÓN', this.dashboardClone);
     // variable dashboard lista para la creación de la query de filtros and/or
     this.creacionQueryFiltros(this.dashboard);
 
@@ -244,7 +244,17 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   creacionQueryFiltros(dashboard: any) {
-    console.log('Aqui esta la query final ...: ', dashboard)
+    console.log('Dashboard <<<>>> => ', dashboard)
+
+    let strQuery = 'where ';
+
+    // for(let i=0; i<dashboard.length; i++) {
+
+    // }
+
+
+
+
     this.dashboardChanged.emit(this.dashboard);
   }
 
