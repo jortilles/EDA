@@ -32,7 +32,6 @@ export class EdaFilterAndOrComponent implements OnInit {
   
   @Input() selectedFilters: any[] = []; // Filtros de los paneles
   @Input() globalFilters: any[] = []; // Filtros globales
-  @Input() dashboardSaved: any[]; // Filtros globales
   @Output() dashboardChanged: EventEmitter<any> = new EventEmitter<any>();
 
   options: GridsterConfig;
@@ -98,9 +97,6 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // Enviando el dashboard inicial al componente <filter-and-or-dialog>
     this.dashboardChanged.emit(this.dashboard);
-
-
-    console.log('dashboardSaved: ', this.dashboardSaved);
 
   }
 
