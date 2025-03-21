@@ -30,8 +30,9 @@ import _ from 'lodash';
 })
 export class EdaFilterAndOrComponent implements OnInit {
   
-  @Input() selectedFilters: any[] = []; // Valor que es 
-  @Input() globalFilters: any[] = []; // Valor que es 
+  @Input() selectedFilters: any[] = []; // Filtros de los paneles
+  @Input() globalFilters: any[] = []; // Filtros globales
+  @Input() dashboardSaved: any[]; // Filtros globales
   @Output() dashboardChanged: EventEmitter<any> = new EventEmitter<any>();
 
   options: GridsterConfig;
@@ -82,9 +83,6 @@ export class EdaFilterAndOrComponent implements OnInit {
     // Integración:
     this.dashboard = [];
 
-    console.log('this.globalFilters: ', this.globalFilters)
-    console.log('this.selectedFilters: ', this.selectedFilters)
-
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {
       this.dashboard.push({cols: 3, rows:1, y: j, x:0, filter_column: sf.filter_column, value: "and"})
@@ -100,6 +98,9 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // Enviando el dashboard inicial al componente <filter-and-or-dialog>
     this.dashboardChanged.emit(this.dashboard);
+
+
+    console.log('dashboardSaved: ', this.dashboardSaved);
 
   }
 
@@ -192,7 +193,6 @@ export class EdaFilterAndOrComponent implements OnInit {
     // console.log('TOTAL DE ITEMS - CLONACIÓN', this.dashboardClone);
     // variable dashboard lista para la creación de la query de filtros and/or
     this.creacionQueryFiltros(this.dashboard);
-
   }
 
   verificacionVerticalRetroceso(dashboardClonado: any){
@@ -251,7 +251,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     // for(let i=0; i<dashboard.length; i++) {
 
     // }
-
+    
 
 
 
