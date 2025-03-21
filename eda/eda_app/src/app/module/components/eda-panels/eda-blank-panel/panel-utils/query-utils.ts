@@ -105,7 +105,7 @@ export const QueryUtils = {
         "least_duplicated": $localize`:@@least_duplicatedLabel:Menos repetido`,
         "max": $localize`:@@maxLabel:Valor máximo`,
         "min": $localize`:@@minLabel:Valor mínimo`,
-        "moda_counts": $localize`:@@moda_countsLabel:Moda`,
+        "mode": $localize`:@@moda_countsLabel:Moda`,
         "avg": $localize`:@@avgLabel:Media`,
         "median": $localize`:@@medianLabel:Mediana`,
         "median_count_bymonth": $localize`:@@median_count_bymonthLabel:Mediana por mes`,

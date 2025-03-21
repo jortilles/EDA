@@ -4,6 +4,8 @@ import ManagerConnectionService from "../../services/connection/manager-connecti
 import { DashboardController } from "../dashboard/dashboard.controller";
 import formatDate from '../../services/date-format/date-format.service'
 
+
+/** Esta clase sirve para analizar los datos de una consulta si hay duplicados, etc. */
 export class QueryController {
 
     static async execAnalizedQuery(req: Request, res: Response, next: NextFunction) {
