@@ -246,12 +246,60 @@ export class EdaFilterAndOrComponent implements OnInit {
     console.log('Dashboard <<<>>> => ', dashboard)
 
     let strQuery = 'where ';
-    strQuery = strQuery + `\"${dashboard.find((item: any) => item.y === 0).filter_table}\".\"${dashboard.find((item: any) => item.y === 0).filter_column}\"`;
+    strQuery = strQuery + `\"${dashboard.find((item: any) => item.y === 0).filter_table}\".\"${dashboard.find((item: any) => item.y === 0).filter_column}\" `;
+    strQuery = strQuery + `${dashboard.find((item: any) => item.y === 0).filter_type} `.replace('not_null', 'is not');
+    
+    console.log(dashboard.find((item: any) => item.y === 0).filter_elements[0])
+    
+    if(dashboard.find((item: any) => item.y === 0).filter_elements[0] !== undefined) {
+
+      if(dashboard.find((item: any) => item.y === 0).filter_elements[0].value1.length===1) {
+        if(typeof(dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[0]) === 'number'){
+          strQuery = strQuery + `${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[0]}\n`
+        }
+
+        if(typeof(dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[0]) === 'string'){
+          strQuery = strQuery + `'${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[0]}'\n`
+        }
+
+      } else {
+        let strFilters = '(';
+        for(let i=0; i<dashboard.find((item: any) => item.y === 0).filter_elements[0].value1.length; i++){
+
+          if(typeof(dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]) === 'number'){
+            if(i === dashboard.find((item: any) => item.y === 0).filter_elements[0].value1.length-1) {
+              strFilters = strFilters + `${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]})\n`;
+            }
+            else {
+              strFilters = strFilters + `${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]},`;
+            }
+          }
+
+          if(typeof(dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]) === 'string'){
+            if(i === dashboard.find((item: any) => item.y === 0).filter_elements[0].value1.length-1) {
+              strFilters = strFilters + `'${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]}')\n`;
+            }
+            else {
+              strFilters = strFilters + `'${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]}',`;
+            }
+          }
+
+        }
+        strQuery = strQuery + strFilters;
+      }
+
+    } else {
+      strQuery = strQuery + 'null\n';
+    }
+    
+    strQuery = strQuery + 'holaz'; // Para tener una referencia clara
 
     for(let y=1; y<dashboard.length; y++) {
-      dashboard.find((item: any) => item.y ===y)
+      // dashboard.find((item: any) => item.y ===y)
 
-      console.log(dashboard.find((item: any) => item.y ===y))
+      // console.log(dashboard.find((item: any) => item.y ===y))
+      dashboard.find((item: any) => item.y === y).filter_elements[0]
+      console.log(dashboard.find((item: any) => item.y === y).filter_elements[0])
     }
     
 
