@@ -77,7 +77,6 @@ import { PrimengModule } from 'app/core/primeng.module';
         GroupDetailComponent,
         DashboardFilterDialogComponent,
         GlobalFilterComponent,
-        GlobalFilterDialogComponent,
         ColumnPermissionDialogComponent,
         ColumnValueListDialogComponent,
         TablePermissionDialogComponent,

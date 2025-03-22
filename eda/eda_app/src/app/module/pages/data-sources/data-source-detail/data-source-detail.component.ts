@@ -242,7 +242,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 new EdaColumnContextMenu(),
                 new EdaColumnText({ field: 'user', header: $localize`:@@userTable:USUARIO` }),
                 new EdaColumnText({ field: 'group', header: $localize`:@@groupTable:GRUPO` }),
-                new EdaColumnText({ field: 'permission', header:"permission" }),
+                new EdaColumnText({ field: 'permission', header:"permission" }), //Fixme
             ]
         });
 
@@ -419,7 +419,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.dataModelService.currentModelPanel.subscribe(
             modelPanel => {
                 this.modelPanel = modelPanel;
-                this.selectedTipoBD = this.tiposBD.filter(type => type.value === modelPanel.connection.type)[0];
+                // TODO Fixme
+                // this.selectedTipoBD = this.tiposBD.filter(type => type.value === modelPanel.connection.type)[0];
+                this.selectedTipoBD = this.tiposBD[0];
             }, err => this.alertService.addError(err)
         );
 
@@ -462,18 +464,24 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
-    updateColumnType() {
-        this.columnPanel.column_type = this.selectedcolumnType;
+    updateColumnType(type?: any) {
+        this.columnPanel.column_type = type;
         this.update();
     }
 
-    updateTableType() {
-        this.tablePanel.table_type = this.selectedTableType;
+    updateTableType(type?: any) {
+        // this.tablePanel.table_type = this.selectedTableType;
+        this.tablePanel.table_type = type;
         this.update();
     }
 
-    updateAgg() {
-        this.columnPanel.aggregation_type = this.selectedAggType;
+    updateAgg(type?: any) {
+        const inx = this.columnPanel.aggregation_type.indexOf(type);
+        if (inx != -1) {
+            this.columnPanel.aggregation_type.splice(inx,1);
+        } else {
+            this.columnPanel.aggregation_type.push(type);
+        }
         this.update();
     }
 

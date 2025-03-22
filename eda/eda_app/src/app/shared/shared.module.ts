@@ -20,6 +20,8 @@ import {
 } from './components/shared-components.index';
 import { PrimengModule } from 'app/core/primeng.module';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { GlobalFilterDialogComponent } from 'app/module/pages/dashboard/global-filter-dialog/global-filter-dialog.component';
+import { EdaListComponent } from './components/eda-list/eda-list.component';
 
 @NgModule({
     declarations: [
@@ -31,11 +33,13 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
         EdaInputComponent,
         FocusOnShowDirective,
         EdaDatePickerComponent,
-        EdaFieldComponent
+        EdaFieldComponent,
+        GlobalFilterDialogComponent,
     ],
     imports: [
         PrimengModule,
         CoreModule,
+        EdaListComponent,
         SweetAlert2Module.forRoot(),
         PipesModule
     ],
@@ -50,7 +54,8 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
         EdaInputComponent,
         FocusOnShowDirective,
         EdaDatePickerComponent,
-        EdaFieldComponent
+        EdaFieldComponent,
+        GlobalFilterDialogComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

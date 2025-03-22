@@ -13,7 +13,8 @@ import { pagesV2Routes } from 'app/module/pages/v2/pages-v2.routes';
 
 export const coreRoutes: Routes = [
     { path: '', loadComponent: () => import('./login_v2/login_v2').then(c => c.LoginV2Component) },
-    { path: 'login', component: LoginComponent },
+    // { path: 'login', component: LoginComponent },
+    { path: 'login', loadComponent: () => import('./login_v2/login_v2').then(c => c.LoginV2Component) },
     { path: 'v2/login', loadComponent: () => import('./login_v2/login_v2').then(c => c.LoginV2Component) },
     { path: 'conditions', component: ConditionsComponent },
     { path: 'public/:dashboardID', component: AnonymousLoginComponent },

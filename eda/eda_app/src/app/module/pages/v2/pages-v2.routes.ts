@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { PagesV2Component } from './pages-v2';
+import { DataSourceListComponent } from '../data-sources/data-source-list/data-source-list.component';
+import { VerifyTokenGuard } from '@eda/services/service.index';
 
 export const pagesV2Routes: Routes = [
   {
@@ -37,6 +39,12 @@ export const pagesV2Routes: Routes = [
       {
         path: 'dashboard/:id',
         loadComponent: () => import('./dashboard/dashboard.page').then(c => c.DashboardPageV2)
+      },
+      {
+        path: 'data-source/:id',
+        component: DataSourceListComponent,
+        canActivate: [VerifyTokenGuard],
+        runGuardsAndResolvers: 'paramsChange'
       },
     ]
   }

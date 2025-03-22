@@ -9,12 +9,13 @@ import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
 import { IconComponent } from "@eda/shared/components/icon/icon.component";
+import { SharedModule } from "../../../../../shared/shared.module";
 
 @Component({
     selector: 'app-v2-global-filter',
     templateUrl: './global-filter.component.html',
     standalone: true,
-    imports: [FormsModule, MultiSelectModule, IconComponent],
+    imports: [FormsModule, MultiSelectModule, IconComponent, SharedModule],
     styleUrls: ['./global-filter.component.css']
 })
 export class GlobalFilterV2Component implements OnInit {
@@ -123,22 +124,34 @@ export class GlobalFilterV2Component implements OnInit {
     }
 
     // Main Global Filter
-    public onShowGlobalFilter(isnew: boolean, filter?: any): void {
-        // if (this.dashboard.validateDashboard('GLOBALFILTER')) {
-        //     const treeQueryMode = this.dashboard.edaPanels.some((panel) => panel.selectedQueryMode === 'EDA2');
+    public onShowGlobalFilter(isnew: boolean, filter?: Record<string, any>): void {
+        console.log('onShowGlobalFilter');
+        console.log(this.dashboard.validateDashboard('GLOBALFILTER'));
+        if (this.dashboard.validateDashboard('GLOBALFILTER')) {
 
-        //     if (treeQueryMode) {
-        //         if (isnew) this.globalFilter = { isnew: true };
-        //         else {
-        //             filter.isnew = false;
-        //             this.globalFilter = _.cloneDeep(filter);
-        //         }
+            const treeQueryMode = this.dashboard.edaPanels.some(
+                (panel) => panel.selectedQueryMode === 'EDA2'
+            );
+    
+            const globalFilter: any = {
+                isnew,
+                queryMode: treeQueryMode ? 'EDA2' : 'EDA',
+                ...filter
+            };
+            
 
-        //         this.dashboard.display_v.rightSidebar = false;
-        //     } else {
-        //         this.onFilterConfig(isnew, filter);
-        //     }
-        // }
+            if (!globalFilter.selectedTable) {
+                globalFilter.selectedTable = { table_name: filter.table.value };
+            }
+
+            if (!globalFilter.selectedColumn) {
+                globalFilter.selectedColumn = { ...filter.column.value };
+            }
+                
+            console.log('globalFilter', globalFilter);
+            this.globalFilter = globalFilter;
+            console.log(this.globalFilter);
+        }
     }
 
     // Global Filter Tree

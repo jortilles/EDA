@@ -274,5 +274,25 @@ export class DashboardPageV2 implements OnInit {
     return filtersCleaned;
   }
 
+  public validateDashboard(action: string): boolean {
+    let isvalid = true;
+
+    if (action == 'GLOBALFILTER') {
+      const emptyQuery = this.edaPanels.some((panel) => panel.currentQuery.length === 0);
+      if (emptyQuery) isvalid = false;
+
+      if (!isvalid) {
+        // TODO
+        // this.showSwalAlert({
+        //   title: $localize`:@@AddFiltersWarningTittle:Solo puedes añadir filtros cuando todos los paneles están configurados`,
+        //   text: $localize`:@@AddFiltersWarningText:Puedes borrar los paneles en blanco o configurarlos`,
+        //   resolveBtnText: $localize`:@@AddFiltersWarningButton:Entendido`
+        // });
+      }
+    }
+
+    return isvalid;
+  }
+
 
 }

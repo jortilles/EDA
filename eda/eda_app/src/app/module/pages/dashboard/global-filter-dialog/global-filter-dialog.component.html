@@ -2,67 +2,138 @@
     (close)="onClose()">
 
     <div content>
-        <div class="row">
-            <div class="col-9">
-                <p-card *ngIf="formReady && !globalFilter.isdeleted" [header]="header3" id="anywhereClick">
-                    <div class="row">
-                        <div class="col-3">
-                            <p-dropdown id="selectFilerTable" [options]="tables"
-                                [(ngModel)]="globalFilter.selectedTable" filter="true"
-                                optionLabel="display_name.default" [style]="{'width': '100%'}"
-                                i18n-placeholder="@@placeholderTables" placeholder="Entidades"
-                                (onChange)="onChangeSelectedTable()" appendTo="body">
-                            </p-dropdown>
-                        </div>
-                        <div class="col-3">
-                            <p-dropdown id="selectFilterColumn" [options]="columns"
-                                [(ngModel)]="globalFilter.selectedColumn" filter="true"
-                                optionLabel="display_name.default" [style]="{'width': '100%'}"
-                                i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
-                                (onChange)="onChangeSelectedColumn()" appendTo="body">
-                            </p-dropdown>
-                        </div>
-                        <div class="col-3" >
-                            <input class = "d-flex justify-content-center" type="text" pInputText id="aliasName"
-                            [style]="{'vertical-align' : 'bottom', width: '100%' }"
-                            [(ngModel)]="aliasValue"  
-                            placeholder="Alias del filtro (opcional)"
-                            i18n-placeholder="@@aliasValuePh">
-                        </div>
-                        <div class="col-3">
-                            <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
-                                *ngIf="globalFilter.selectedColumn?.column_type !== 'date'" [options]="columnValues"
-                                [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" [itemSize]="30"
-                                [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
-                                [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" defaultLabel="Valor por defecto"
-                                display="chip" appendTo="body">
-                            </p-multiSelect>
-
-                            <eda-date-picker #myCalendar
-                                *ngIf="globalFilter.selectedColumn?.column_type === 'date'"
-                                [inject]="datePickerConfigs[globalFilter?.id]"
-                                [autoClear]="true" (onDatesChanges)="processPickerEvent($event)">
-                            </eda-date-picker>
-                        </div>
-                    </div>
-                </p-card>
+      <!-- Filter Details -->
+      <div class="border rounded-lg shadow-sm">
+        <div class="p-4 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-medium">Sales-Status</h3>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex items-center justify-between space-x-2">
+              <div class="flex items-center space-x-2">
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <!-- [(ngModel)]="applyToAll" -->
+                  <input type="checkbox"  class="sr-only peer"> 
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                </label>
+                <span class="text-sm font-medium">Apply to all panels</span>
+              </div>
+              <div class="relative group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-gray-500 cursor-help">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4"/>
+                  <path d="M12 8h.01"/>
+                </svg>
+                <div class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 w-48">
+                  When enabled, this filter will be applied to all dashboard panels
+                </div>
+              </div>
             </div>
-            <div class="col-3">
-                <p-card *ngIf="formReady && !globalFilter.isdeleted" [header]="header4" id="anywhereClick">
-                    <div class="row">
-                        <div class="col-12">
-                            <p-dropdown id="applyToOneFilterDropdown" i18n-title="@@filterVisibleScope"
-                                title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
-                                [options]="publicRoHidden" [(ngModel)]="globalFilter.visible"
-                                [style]="{'width': '100%'}" selected="publicRoHiddenOption" autoWidth="false">
-                            </p-dropdown>
-                        </div>
-                    </div>
-                </p-card>
+            
+            <div class="flex flex-col space-y-1.5">
+              <label class="text-sm font-medium">Filter visibility</label>
+              <div class="relative">
+                <!-- <select [(ngModel)]="globalFilter.visible" class="block w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800">
+                  <option *ngFor="let option of publicRoHidden" [value]="option.value">{{ option.label }}</option>
+                </select> -->
+                <p-dropdown
+                  [options]="publicRoHidden" [(ngModel)]="globalFilter.visible"
+                  i18n-title="@@filterVisibleScope"
+                  title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
+                  [style]="{'width': '100%'}" selected="publicRoHiddenOption"
+                ></p-dropdown>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
+      <!-- Panel Selection -->
+      <div class="border rounded-lg shadow-sm" [class.opacity-50]="applyToAll" [class.pointer-events-none]="applyToAll">
+        <div class="p-4 space-y-4">
+          <h3 class="text-lg font-medium">Panels for which the filter applies</h3>
+          
+          <div class="w-full">
+            <div class="grid grid-cols-3 mb-4 border rounded-md overflow-hidden">
+              <button class="py-2 text-sm font-medium transition-colors">
+                <!-- {{ tab === 'filtered' ? 'Filtered panels' : tab === 'non-related' ? 'Non related panels' : 'Non filtered panels' }}
+                <span *ngIf="tab === 'filtered'" class="ml-2 px-2 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-700">{{ selectedPanels.length }}</span> -->
+              </button>
+            </div>
+            
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  *ngFor="let panel of panels"
+                  (click)="togglePanel(panel.id)"
+                  class="flex items-center justify-start h-auto py-2 px-3 rounded-md text-sm font-medium transition-colors"
+                  [class.bg-blue-600]="isPanelSelected(panel.id)"
+                  [class.text-white]="isPanelSelected(panel.id)"
+                  [class.border]="!isPanelSelected(panel.id)"
+                  [class.border-gray-300]="!isPanelSelected(panel.id)"
+                  [class.dark:border-gray-600]="!isPanelSelected(panel.id)"
+                >
+                  <svg *ngIf="isPanelSelected(panel.id)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4 shrink-0">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  <span class="truncate">{{ panel.title }}</span>
+                </button>
+              </div>
+          </div>
+        </div>
+      </div>
+        <!-- <div class="w-full "> -->
+            <p-card *ngIf="formReady && !globalFilter.isdeleted" [header]="header3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <p-dropdown [options]="tables"
+                        [(ngModel)]="globalFilter.selectedTable" filter="true"
+                        optionLabel="display_name.default" [style]="{'width': '100%'}"
+                        i18n-placeholder="@@placeholderTables" placeholder="Entidades"
+                        (onChange)="onChangeSelectedTable()" appendTo="body">
+                    </p-dropdown>
 
+                    <p-dropdown [options]="columns"
+                        [(ngModel)]="globalFilter.selectedColumn" filter="true"
+                        optionLabel="display_name.default" [style]="{'width': '100%'}"
+                        i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
+                        (onChange)="onChangeSelectedColumn()" appendTo="body">
+                    </p-dropdown>
 
+                    <input class="h-8 w-full rounded-md border px-2 py-4"
+                        [(ngModel)]="aliasValue"
+                        i18n-placeholder="@@aliasValuePh"
+                        placeholder="Alias del filtro (opcional)"
+                    >
+                    @if (globalFilter.selectedColumn?.column_type !== 'date') {
+                        <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
+                            [options]="columnValues" [(ngModel)]="globalFilter.selectedItems"
+                            [virtualScroll]="true" [itemSize]="30"
+                            [style]="{ width: '100%' }"
+                            [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" defaultLabel="Valor por defecto"
+                            display="chip" appendTo="body">
+                        </p-multiSelect>
+                    }
+                    @if (globalFilter.selectedColumn?.column_type === 'date') {
+                        <eda-date-picker #myCalendar
+                            [inject]="datePickerConfigs[globalFilter?.id]"
+                            [autoClear]="true" (onDatesChanges)="processPickerEvent($event)">
+                        </eda-date-picker>
+                    }
+                </div>
+            </p-card>
+
+            <p-card *ngIf="formReady && !globalFilter.isdeleted" [header]="header4" id="anywhereClick">
+                <p-dropdown id="applyToOneFilterDropdown" i18n-title="@@filterVisibleScope"
+                    title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
+                    [options]="publicRoHidden" [(ngModel)]="globalFilter.visible"
+                    [style]="{'width': '100%'}" selected="publicRoHiddenOption" autoWidth="false">
+                </p-dropdown>
+            </p-card>
+        <!-- </div> -->
 
         <div class="row">
             <div *ngIf="!isEmpty(globalFilter.selectedTable) && !isEmpty(globalFilter.selectedColumn)" class="col-12">

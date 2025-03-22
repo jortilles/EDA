@@ -47,7 +47,10 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
       this.getDataSourceId();
         this.dataModelService.currentTreeData.subscribe(
-            (data) => this.treeData = data,
+            (data) => {
+                console.log(data);
+                this.treeData = data
+            },
             (err) => this.alertService.addError(err)
         );
         this.dataModelService.unsaved.subscribe(

@@ -7,12 +7,13 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { SharedModule } from '@eda/shared/shared.module';
 import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
+import { EdaListComponent } from '@eda/shared/components/eda-list/eda-list.component';
 
 @Component({
   selector: 'app-group-list',
   templateUrl: './group-list.page.html',
   standalone: true,
-  imports: [SharedModule, CommonModule, FormsModule, IconComponent],
+  imports: [SharedModule, CommonModule, FormsModule, IconComponent, EdaListComponent],
 })
 export class GroupListPage implements OnInit {
   private userService = inject(UserService);

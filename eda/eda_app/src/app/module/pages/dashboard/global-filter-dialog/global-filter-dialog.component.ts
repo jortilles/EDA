@@ -55,6 +55,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public formReady: boolean = false;
     public datePickerConfigs: any = {};
     public aliasValue: string = "";
+    public applyToAll: boolean = false;
+    selectedPanels: any[] = []
 
     constructor(
         private globalFilterService: GlobalFiltersService,
@@ -73,7 +75,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.display = true;
         this.modelTables = _.cloneDeep(this.dataSource.model.tables);
+        // this.initGlobalFilter();
+        this.formReady = true;
+    }
 
+    private initGlobalFilter() {
         if (this.globalFilter.isnew) {
             this.globalFilter = {
                 id: this.fileUtils.generateUUID(),
@@ -111,8 +117,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.findPanelPathTables();
             this.aliasValue = display_name_alias;
         }
-
-        this.formReady = true;
     }
 
     public ngOnDestroy(): void {
@@ -122,7 +126,21 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
     }
 
+    togglePanel(id: string): void {
+        if (this.isPanelSelected(id)) {
+          this.selectedPanels = this.selectedPanels.filter(panelId => panelId !== id);
+        } else {
+          this.selectedPanels = [...this.selectedPanels, id];
+        }
+      }
+      
+      isPanelSelected(id: string): boolean {
+        return this.selectedPanels.includes(id);
+      }
+
     public initPanels() {
+        if (this.globalFilter.queryMode != 'EDA2') return;
+
         this.allPanels = this.globalFilterService.filterPanels(this.modelTables, this.panels);
         this.allPanels = this.allPanels.sort(this.sortByTittle);
 
@@ -156,7 +174,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public initTablesForFilter() {
-                
         const queryTables = []; // si aparece
         const excludedTables = this.modelTables.filter((t: any) => t.visible === false).map((t: any) => t.table_name); // Si aparece
 

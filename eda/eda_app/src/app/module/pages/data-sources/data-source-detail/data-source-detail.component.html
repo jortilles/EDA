@@ -1,207 +1,763 @@
-<div *ngIf=" typePanel==='tabla' && tablePanel.technical_name" class="tp-container">
-
-    <p-card i18n-header="@@editModelHeaders" header="Editar {{tablePanel.type ? tablePanel.name : ''}}">
-        <p-header style="font-size: 18px;">
-
-        </p-header>
-        <div>
-            <h5 class="title-datamodel" i18n="@@inputNombre">Nombre</h5>
-            <p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.name" (keyup)="update()"></p>
+<div *ngIf=" typePanel==='tabla' && tablePanel.technical_name" class="w-full mx-auto px-6">
+  <div class="bg-card rounded-lg border shadow-sm">
+    <div class="flex flex-col space-y-1.5 p-6 border-b">
+      <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{tablePanel.type ? tablePanel.name : ''}}</h3>
+    </div>
+    <div class="p-6 space-y-6">
+      <div class="grid gap-4">
+        <div class="grid gap-2">
+          <label for="name"
+            i18n="@@inputNombre"
+            class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Nombre <span class="text-red-500">*</span>
+          </label>
+          <input id="name" value="Customers"
+            [(ngModel)]="tablePanel.name" (keyup)="update()"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          />
         </div>
-
-        <div>
-            <h5 class="title-datamodel" i18n="@@inputNombreTecnico">Nombre técnico</h5>
-            <p>{{tablePanel.technical_name}}</p>
+        <div class="grid gap-2">
+          <label for="technical-name"
+            i18n="@@inputNombreTecnico"
+            class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Nombre técnico
+          </label>
+          <input id="technical-name" value="{{tablePanel.technical_name}}" readonly
+            class="flex h-10 w-full rounded-md border border-input bg-muted/50 px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          />
         </div>
-
-        <div>
-            <h5 class="title-datamodel" i18n="@@inputDescripcion"> Descripción </h5>
-            <p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.description" (keyup)="update()"></p>
+        
+        <div class="grid gap-2">
+          <label
+            for="description"
+            i18n="@@inputDescripcion"
+            class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Descripción
+          </label>
+          <textarea id="description"
+            [(ngModel)]="tablePanel.description" (keyup)="update()"  
+            class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+            <!-- My Dear Customers -->
+          </textarea>
         </div>
-
-        <div *ngIf="tablePanel.query">
-            <h5 class="title-datamodel" i18n="@@inputQueryView"> Vista </h5>
-            <p>{{tablePanel.query}}</p>
+        
+        <div class="flex items-center space-x-2">
+          <button type="button" role="switch"
+            [attr.aria-checked]="!tablePanel.visible" (click)="toggle_table(tablePanel.visible)" 
+            class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#00BFB3] data-[state=unchecked]:bg-input"
+            [ngClass]="{'bg-[#00BFB3]': !tablePanel.visible, 'bg-input': tablePanel.visible}">
+            <span
+              class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+              [ngClass]="{'translate-x-5': !tablePanel.visible, 'translate-x-0': tablePanel.visible}">
+            </span>
+          </button>
+          <label i18n="@@inputEsconderTabla"
+            class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Ocultar tabla
+          </label>
         </div>
-
-
-        <div>
-            <h5 class="title-datamodel" i18n="@@inputEsconderTabla">Esconder tabla</h5>
-            <p-inputSwitch (onChange)="toggle_table(tablePanel.visible)" [ngModel]="!tablePanel.visible" (ngModelChange)="tablePanel.visible = $event">
-            </p-inputSwitch>
+        
+        <div class="grid gap-2">
+          <label i18n="@@inputTipoTabla"
+            class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            Tipo de tabla
+          </label>
+          <div class="flex p-1 rounded-lg w-max bg-gray-200">
+            <button
+              *ngFor="let type of tableTypes"
+              (click)="updateTableType(type.value)"
+              class="min-w-60 px-4 py-2 rounded-lg transition-all text-center font-semibold
+                ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+              [ngClass]="{'bg-background text-foreground shadow-sm': tablePanel.table_type === type.value}"
+            >
+              {{ type.label }}
+            </button>
+          </div>
         </div>
+      </div>
+      
+      <div class="h-px bg-border"></div>
+      
+      <!-- Relations section -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium" i18n="@@listRelations">Relaciones</h3>
+        <eda-table [inject]="relationsTable"></eda-table>
+      </div>
+      
+      <div class="h-px bg-border"></div>
+      
+      <!-- Table visibility section -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium" i18n="@@rolesPermisosTabla">Visibilidad de tabla</h3>
+        <eda-table [inject]="permissionTable"></eda-table>
+      </div>
+      
+      <div class="flex flex-wrap gap-2 pt-4">
+        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] text-primary-foreground hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
+          (click)="openTablePermissionsDialog()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          {{addPermission}}
+        </button>
+        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] text-primary-foreground hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
+          (click)="openTableRelationDialog()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M12 5v14M5 12h14"/></svg>
+          {{addRelation}}
+        </button>
+        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#00BFB3] text-primary-foreground hover:bg-[#00BFB3]/90 h-10 px-4 py-2"
+          (click)="openNewColDialog()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M12 5v14M5 12h14"/></svg>
+          {{addCalculatedCol}}
+        </button>
+        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+          (click)="hideAllColumns(tablePanel)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+          {{hideColumnsString}}
+        </button>
+      </div>
+      <div *ngIf="tablePanel.query">
+        <h5 class="title-datamodel" i18n="@@inputBorrarVista">Borrar vista</h5>
+        <button pButton type="button" icon="pi pi-trash" class="ui-button-danger"
+            (click)="deleteView(tablePanel.technical_name)"></button>
+      </div>
+    </div>
+  </div>
 
-        <div style="margin-bottom: 1em; margin-top: 0.5em;">
-            <h5 class="title-datamodel" i18n="@@inputTipoTabla">Tipo de tabla</h5>
-            <div>
-                <p-selectButton [options]="tableTypes" [(ngModel)]="selectedTableType" (onChange)="updateTableType()">
-                </p-selectButton>
-            </div>
+  <!-- <p-card i18n-header="@@editModelHeaders" header="Editar {{tablePanel.type ? tablePanel.name : ''}}">
+      <p-header style="font-size: 18px;">
 
-        </div>
+      </p-header>
+      <div>
+          <h5 class="title-datamodel" i18n="@@inputNombre">Nombre</h5>
+          <p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.name" (keyup)="update()"></p>
+      </div>
 
-        <div>
-            <h5 class="title-datamodel" i18n="@@listRelations">Relaciones</h5>
-            <eda-table [inject]="relationsTable"></eda-table>
-        </div>
+      <div>
+          <h5 class="title-datamodel" i18n="@@inputNombreTecnico">Nombre técnico</h5>
+          <p>{{tablePanel.technical_name}}</p>
+      </div>
 
-        <div>
-            <h5 class="title-datamodel" i18n="@@rolesPermisosTabla">Visibilidad de tablas</h5>
-            <eda-table [inject]="permissionTable"></eda-table>
-        </div>
+      <div>
+          <h5 class="title-datamodel" i18n="@@inputDescripcion"> Descripción </h5>
+          <p><input pInputText type="text" size="50" [(ngModel)]="tablePanel.description" (keyup)="update()"></p>
+      </div>
 
-        <span class="p-buttonset">
-            <button pButton type="button" icon="pi pi-plus"
-            [label]="addPermission" class="p-button-secondary" (click)="openTablePermissionsDialog()"
-            style="margin-bottom: 1px;"> </button>
+      <div *ngIf="tablePanel.query">
+          <h5 class="title-datamodel" i18n="@@inputQueryView"> Vista </h5>
+          <p>{{tablePanel.query}}</p>
+      </div>
 
-            <button pButton type="button" icon="pi pi-plus" [label]="addRelation" class="p-button-secondary"
-                (click)="openTableRelationDialog()" style="margin-bottom: 1px;"> </button>
-            <button *ngIf="selectedTableType !=='view'" pButton type="button" icon="pi pi-plus"
-                [label]="addCalculatedCol" class="p-button-secondary" (click)="openNewColDialog()"
-                style="margin-bottom: 1px;"> </button>
-            <button pButton type="button" icon="pi pi-eye-slash" [label]="hideColumnsString" class="p-button-secondary"
-                (click)="hideAllColumns(tablePanel)" style="margin-bottom: 1px;"> </button>
 
-        </span>
+      <div>
+          <h5 class="title-datamodel" i18n="@@inputEsconderTabla">Esconder tabla</h5>
+          <p-inputSwitch (onChange)="toggle_table(tablePanel.visible)" [ngModel]="!tablePanel.visible" (ngModelChange)="tablePanel.visible = $event">
+          </p-inputSwitch>
+      </div>
 
-        <div *ngIf="tablePanel.query">
-            <h5 class="title-datamodel" i18n="@@inputBorrarVista">Borrar vista</h5>
-            <button pButton type="button" icon="pi pi-trash" class="ui-button-danger"
-                (click)="deleteView(tablePanel.technical_name)"></button>
-        </div>
+      <div style="margin-bottom: 1em; margin-top: 0.5em;">
+          <h5 class="title-datamodel" i18n="@@inputTipoTabla">Tipo de tabla</h5>
+          <div>
+              <p-selectButton [options]="tableTypes" [(ngModel)]="selectedTableType" (onChange)="updateTableType()">
+              </p-selectButton>
+          </div>
 
-    </p-card>
+      </div>
 
+      <div>
+          <h5 class="title-datamodel" i18n="@@listRelations">Relaciones</h5>
+          <eda-table [inject]="relationsTable"></eda-table>
+      </div>
+
+      <div>
+          <h5 class="title-datamodel" i18n="@@rolesPermisosTabla">Visibilidad de tablas</h5>
+          <eda-table [inject]="permissionTable"></eda-table>
+      </div>
+
+      <span class="p-buttonset">
+          <button pButton type="button" icon="pi pi-plus"
+          [label]="addPermission" class="p-button-secondary" (click)="openTablePermissionsDialog()"
+          style="margin-bottom: 1px;"> </button>
+
+          <button pButton type="button" icon="pi pi-plus" [label]="addRelation" class="p-button-secondary"
+              (click)="openTableRelationDialog()" style="margin-bottom: 1px;"> </button>
+          <button *ngIf="selectedTableType !=='view'" pButton type="button" icon="pi pi-plus"
+              [label]="addCalculatedCol" class="p-button-secondary" (click)="openNewColDialog()"
+              style="margin-bottom: 1px;"> </button>
+          <button pButton type="button" icon="pi pi-eye-slash" [label]="hideColumnsString" class="p-button-secondary"
+              (click)="hideAllColumns(tablePanel)" style="margin-bottom: 1px;"> </button>
+
+      </span>
+
+      <div *ngIf="tablePanel.query">
+          <h5 class="title-datamodel" i18n="@@inputBorrarVista">Borrar vista</h5>
+          <button pButton type="button" icon="pi pi-trash" class="ui-button-danger"
+              (click)="deleteView(tablePanel.technical_name)"></button>
+      </div>
+
+  </p-card> -->
 </div>
 
 
 
+<div *ngIf="typePanel==='columna' && columnPanel.technical_name" class="w-full mx-auto px-6">
+  <div class="bg-card rounded-lg border shadow-sm">
+    <div class="flex flex-col space-y-1.5 p-6 border-b">
+      <h3 class="text-2xl font-semibold leading-none tracking-tight" i18n="@@editModelHeaders">{{columnPanel.type ? columnPanel.name : ''}}</h3>
+    </div>
+    
+    <div class="p-6 space-y-6">
+      <!-- Name Field -->
+      <div class="mb-4">
+        <label for="name" class="block font-medium text-gray-700 mb-1" i18n="@@inputNombre">
+          Nombre <span class="text-red-500">*</span>
+        </label>
+        <input 
+          id="name" 
+          [(ngModel)]="columnPanel.name"
+          (keyup)="update()"
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+        />
+      </div>
+      
+      <!-- Technical Name Field -->
+      <div class="mb-4">
+        <label for="technical-name" class="block font-medium text-gray-700 mb-1" i18n="@@inputNombreTecnico">
+          Nombre técnico
+        </label>
+        <div class="text-gray-600 mb-1">{{ columnPanel.technical_name }}</div>
+      </div>
+      
+      <!-- Description Field -->
+      <div class="mb-4">
+        <label for="description" class="block font-medium text-gray-700 mb-1" i18n="@@inputDescripcion">
+          Descripción
+        </label>
+        <input 
+          id="description" 
+          [(ngModel)]="columnPanel.description"
+          (keyup)="update()"
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+        />
+      </div>
 
-
-<div *ngIf="typePanel==='columna' && columnPanel.technical_name" class="tp-container">
-
-    <p-card i18n-header="@@editModelHeaders" header="Editar {{columnPanel.type ?  columnPanel.name : ''}}">
-
-        <p-header style="font-size: 18px;">
-
-        </p-header>
-
-        <div>
-            <h5 class="title-datamodel" i18n="@@inputNombre">
-                Nombre
-            </h5>
-            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.name" (keyup)="update()"></p>
+      <!-- ComputedColumn -->
+      @if (columnPanel.computed_column !== 'no') {
+        <div class="mb-4">
+          <label for="sqlExpression" class="block font-medium text-gray-700 mb-1" i18n="@@sqlExpColumn">
+            Expresión SQL (Debe incluir la agregación)
+          </label>
+          <input 
+            id="sqlExpression" 
+            [(ngModel)]="columnPanel.SQLexpression"
+            (keyup)="update()"
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+          />
         </div>
-
-        <div>
-            <h5 class="title-datamodel" i18n="@@inputNombreTecnico">
-                Nombre técnico
-            </h5>
-            <p>{{columnPanel.technical_name}}</p>
+      }
+      
+      <!-- Column Type -->
+      <div class="mb-4">
+        <label class="block font-medium text-gray-700 mb-2" i18n="@@inputTipoColumna">
+          Tipo de columna
+        </label>
+        <div class="flex flex-wrap gap-2">
+          @for (type of columnTypes; track type.value) {
+            <button 
+              type="button" 
+              (click)="updateColumnType(type.value)" 
+              class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" 
+              [ngClass]="columnPanel.column_type === type.value ? 'bg-[#00BFB3] text-white border-[#00BFB3]' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+            >
+              {{ type.label }}
+            </button>
+          }
         </div>
-
-        <div>
-            <h5 class="title-datamodel" i18n="@@inputDescripcion">
-                Descripción
-            </h5>
-            <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" (keyup)="update()"></p>
+      </div>
+      
+      <!-- Aggregation -->
+      @if (columnPanel.computed_column === 'no') {
+        <div class="mb-4">
+          <label class="block font-medium text-gray-700 mb-2" i18n="@@agregacionh5">
+            Agregación
+          </label>
+          <div class="flex flex-wrap gap-2">
+            @for (type of aggTypes; track type.value) {
+              <button 
+                type="button" 
+                (click)="updateAgg(type.value)" 
+                class="px-4 py-2 font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" 
+                [ngClass]="columnPanel.aggregation_type.includes(type.value) ? 'bg-[#00BFB3] text-white border-[#00BFB3]' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'"
+              >
+                {{ type.label }}
+              </button>
+            }
+          </div>
         </div>
+      }
 
-        <div *ngIf="columnPanel.computed_column !== 'no'">
-            <h5 class="title-datamodel" i18n="@@sqlExpColumn">Expresión SQL (Debe incluir la agregación)</h5>
-            <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" (keyup)="update()" rows="5"
-                    cols="100" placeholder="sum(a*b)"> </textarea></p>
+      
+      <!-- Decimal Places -->
+      @if (selectedcolumnType === 'numeric') {
+        <div class="mb-6">
+          <label for="decimal-places" class="block font-medium text-gray-700 mb-1" i18n="@@inputFormat">
+            Número de decimales
+          </label>
+          <input 
+            id="decimal-places" 
+            type="number"
+            [(ngModel)]="columnPanel.minimumFractionDigits"
+            (keyup)="update()"
+            class="flex h-10 w-full max-w-[240px] rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+          />
         </div>
+      }
 
-        <div  style="margin-bottom: 1em; margin-top: 0.5em;">
-            <h5 class="title-datamodel" i18n="@@inputTipoColumna">
-                Tipo de columna
-            </h5>
-            <div>
-                <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" (onChange)=updateColumnType()>
-                </p-selectButton>
-            </div>
+      <!-- TODO -->
+      <!-- <div *ngIf="columnPanel.valueListSource" style="margin-bottom: 1em; margin-top: 0.5em;">
+        <h5 class="title-datamodel" i18n="@@possibleValuesList"  [pTooltip]="valueListSourceHeader">
+            Valores para filtro: 
+        </h5>
+        <div class="valuesListList">
+            <p> <b  [pTooltip]="valueListSourceTabla" i18n="@@possibleValuesListTable" >Tabla:</b>  {{columnPanel.valueListSource.target_table}}</p> 
+            <p> <b  [pTooltip]="valueListSourceID" i18n="@@possibleValuesListID">Columna id:</b>  {{columnPanel.valueListSource.target_id_column}} </p> 
+            <p> <b  [pTooltip]="valueListSourceDescripcion" i18n="@@possibleValuesListDescription">Columna descripción:</b>   {{columnPanel.valueListSource.target_description_column}}</p>
         </div>
-
-        <div *ngIf="columnPanel.computed_column === 'no'" style="margin-bottom: 1em; margin-top: 0.5em;">
-            <h5 class="title-datamodel" i18n="@@agregacionh5">
-                Agregación
-            </h5>
-            <p>
-                <p-selectButton [options]="aggTypes" [(ngModel)]="selectedAggType" multiple="multiple" (onChange)="updateAgg()">
-                </p-selectButton>
-            </p>
-
+        <div class="deleteRelation">
+            <i class="fa fa-trash btn pl-1" (click)="deleteValuesList(columnPanel)"></i>
         </div>
-
-        <div *ngIf="selectedcolumnType === 'numeric'" style="margin-bottom: 1em; margin-top: 0.5em;">
-            <h5 class="title-datamodel" i18n="@@inputFormat">
-                Número de decimales
-            </h5>
-            <div>
-                <p><input pInputText type="number" size="50" [(ngModel)]="columnPanel.minimumFractionDigits" (keyup)="update()"></p>
-            </div>
+      </div> -->
+      
+      <!-- Row Roles and Permissions -->
+      @if (columnPanel.computed_column === 'no') {
+        <div class="mb-6">
+          <h3 class="text-lg font-medium text-gray-700 mb-3" i18n="@@rolesPermisos">Roles y permisos de fila</h3>
+          <eda-table [inject]="permissionsColumn"></eda-table>
         </div>
-
-
-        <div *ngIf="columnPanel.valueListSource" style="margin-bottom: 1em; margin-top: 0.5em;">
-            <h5 class="title-datamodel" i18n="@@possibleValuesList"  [pTooltip]="valueListSourceHeader">
-                Valores para filtro: 
-            </h5>
-            <div class="valuesListList">
-                <p> <b  [pTooltip]="valueListSourceTabla" i18n="@@possibleValuesListTable" >Tabla:</b>  {{columnPanel.valueListSource.target_table}}</p> 
-                <p> <b  [pTooltip]="valueListSourceID" i18n="@@possibleValuesListID">Columna id:</b>  {{columnPanel.valueListSource.target_id_column}} </p> 
-                <p> <b  [pTooltip]="valueListSourceDescripcion" i18n="@@possibleValuesListDescription">Columna descripción:</b>   {{columnPanel.valueListSource.target_description_column}}</p>
-            </div>
-            <div class="deleteRelation">
-                <i class="fa fa-trash btn pl-1" (click)="deleteValuesList(columnPanel)"></i>
-            </div>
+      }
+      
+      @if (columnPanel.computed_column === 'no') {
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-2 mb-6">
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+            (click)="openValueListDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+            {{addValueList}}
+          </button>
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+            (click)="openPermissionsRelationDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+            {{addPermission}}
+          </button>
         </div>
-
-        <div *ngIf="columnPanel.computed_column === 'no'">
-            <h5 class="title-datamodel" i18n="@@rolesPermisos">Roles y permisos de fila</h5>
-            <eda-table [inject]="permissionsColumn"></eda-table>
+      
+      
+        <!-- Hide Column Toggle -->
+        <div class="flex items-center space-x-2">
+          <label class="font-medium" i18n="@@esconderColumna">Esconder columna</label>
+          <button 
+            type="button" 
+            role="switch" 
+            [attr.aria-checked]="!columnPanel.visible" 
+            (click)="toggle_column(columnPanel.visible)" 
+            class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" 
+            [ngClass]="{'bg-[#00BFB3]': !columnPanel.visible, 'bg-input': columnPanel.visible}"
+          >
+            <span 
+              class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform" 
+              [ngClass]="{'translate-x-5': !columnPanel.visible, 'translate-x-0': columnPanel.visible}"
+            ></span>
+          </button>
         </div>
+      } @else {
+        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-red-600 text-white hover:bg-red-700 h-10 px-4 py-2"
+          i18n="@@borrar"  
+          (click)="deleteCalculatedCol(columnPanel)">
+          Borrar
+        </button>
+      }
+
+      @if (columnPanel.SQLexpression) {
+        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+          (click)="checkCalculatedColumn(columnPanel)">
+          Comprobar expresión
+        </button>
+      }
+    </div>
+  </div>
+  
+  <!-- <p-card i18n-header="@@editModelHeaders" header="Editar {{columnPanel.type ?  columnPanel.name : ''}}">
+
+      <p-header style="font-size: 18px;">
+
+      </p-header>
+
+      <div>
+          <h5 class="title-datamodel" i18n="@@inputNombre">
+              Nombre
+          </h5>
+          <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.name" (keyup)="update()"></p>
+      </div>
+
+      <div>
+          <h5 class="title-datamodel" i18n="@@inputNombreTecnico">
+              Nombre técnico
+          </h5>
+          <p>{{columnPanel.technical_name}}</p>
+      </div>
+
+      <div>
+          <h5 class="title-datamodel" i18n="@@inputDescripcion">
+              Descripción
+          </h5>
+          <p><input pInputText type="text" size="50" [(ngModel)]="columnPanel.description" (keyup)="update()"></p>
+      </div>
+
+      <div *ngIf="columnPanel.computed_column !== 'no'">
+          <h5 class="title-datamodel" i18n="@@sqlExpColumn">Expresión SQL (Debe incluir la agregación)</h5>
+          <p><textarea pInputTextarea type="text" [(ngModel)]="columnPanel.SQLexpression" (keyup)="update()" rows="5"
+                  cols="100" placeholder="sum(a*b)"> </textarea></p>
+      </div>
+
+      <div  style="margin-bottom: 1em; margin-top: 0.5em;">
+          <h5 class="title-datamodel" i18n="@@inputTipoColumna">
+              Tipo de columna
+          </h5>
+          <div>
+              <p-selectButton [options]="columnTypes" [(ngModel)]="selectedcolumnType" (onChange)=updateColumnType()>
+              </p-selectButton>
+          </div>
+      </div>
+
+      <div *ngIf="columnPanel.computed_column === 'no'" style="margin-bottom: 1em; margin-top: 0.5em;">
+          <h5 class="title-datamodel" i18n="@@agregacionh5">
+              Agregación
+          </h5>
+          <p>
+              <p-selectButton [options]="aggTypes" [(ngModel)]="selectedAggType" multiple="multiple" (onChange)="updateAgg()">
+              </p-selectButton>
+          </p>
+
+      </div>
+
+      <div *ngIf="selectedcolumnType === 'numeric'" style="margin-bottom: 1em; margin-top: 0.5em;">
+          <h5 class="title-datamodel" i18n="@@inputFormat">
+              Número de decimales
+          </h5>
+          <div>
+              <p><input pInputText type="number" size="50" [(ngModel)]="columnPanel.minimumFractionDigits" (keyup)="update()"></p>
+          </div>
+      </div>
 
 
-        <button *ngIf="columnPanel.computed_column === 'no'" pButton type="button" icon="pi pi-plus"
-        [label]="addValueList" class="p-button-secondary" (click)="openValueListDialog()"
-        style="margin-bottom: 1px;"> </button>
+      <div *ngIf="columnPanel.valueListSource" style="margin-bottom: 1em; margin-top: 0.5em;">
+          <h5 class="title-datamodel" i18n="@@possibleValuesList"  [pTooltip]="valueListSourceHeader">
+              Valores para filtro: 
+          </h5>
+          <div class="valuesListList">
+              <p> <b  [pTooltip]="valueListSourceTabla" i18n="@@possibleValuesListTable" >Tabla:</b>  {{columnPanel.valueListSource.target_table}}</p> 
+              <p> <b  [pTooltip]="valueListSourceID" i18n="@@possibleValuesListID">Columna id:</b>  {{columnPanel.valueListSource.target_id_column}} </p> 
+              <p> <b  [pTooltip]="valueListSourceDescripcion" i18n="@@possibleValuesListDescription">Columna descripción:</b>   {{columnPanel.valueListSource.target_description_column}}</p>
+          </div>
+          <div class="deleteRelation">
+              <i class="fa fa-trash btn pl-1" (click)="deleteValuesList(columnPanel)"></i>
+          </div>
+      </div>
+
+      <div *ngIf="columnPanel.computed_column === 'no'">
+          <h5 class="title-datamodel" i18n="@@rolesPermisos">Roles y permisos de fila</h5>
+          <eda-table [inject]="permissionsColumn"></eda-table>
+      </div>
 
 
-        <button *ngIf="columnPanel.computed_column === 'no'" pButton type="button" icon="pi pi-plus"
-            [label]="addPermission" class="p-button-secondary" (click)="openPermissionsRelationDialog()"
-            style="margin-bottom: 1px;"> </button>
+      <button *ngIf="columnPanel.computed_column === 'no'" pButton type="button" icon="pi pi-plus"
+      [label]="addValueList" class="p-button-secondary" (click)="openValueListDialog()"
+      style="margin-bottom: 1px;"> </button>
 
-        <div *ngIf="columnPanel.computed_column === 'no'">
-            <h5 class="title-datamodel" i18n="@@esconderColumna">Esconder columna</h5>
-            <p>
-                <p-inputSwitch (onChange)="toggle_column(columnPanel.visible)" [ngModel]="!columnPanel.visible" (ngModelChange)="columnPanel.visible = $event">
-                </p-inputSwitch>
-            </p>
-        </div>
 
-        <div>
-            <button *ngIf="columnPanel.SQLexpression" type="button" pButton (click)="checkCalculatedColumn(columnPanel)"
-                class="ui-button-success ml-2" label="Comprobar expresión" style="margin-right: 5px;"></button>
-            <button *ngIf="columnPanel.computed_column !== 'no'" type="button" pButton
-                (click)="deleteCalculatedCol(columnPanel)" class="p-button-raised p-button-danger" i18n-label="@@borrar"
-                label="Borrar"></button>
-        </div>
+      <button *ngIf="columnPanel.computed_column === 'no'" pButton type="button" icon="pi pi-plus"
+          [label]="addPermission" class="p-button-secondary" (click)="openPermissionsRelationDialog()"
+          style="margin-bottom: 1px;"> </button>
 
-    </p-card>
+      <div *ngIf="columnPanel.computed_column === 'no'">
+          <h5 class="title-datamodel" i18n="@@esconderColumna">Esconder columna</h5>
+          <p>
+              <p-inputSwitch (onChange)="toggle_column(columnPanel.visible)" [ngModel]="!columnPanel.visible" (ngModelChange)="columnPanel.visible = $event">
+              </p-inputSwitch>
+          </p>
+      </div>
 
+      <div>
+          <button *ngIf="columnPanel.SQLexpression" type="button" pButton (click)="checkCalculatedColumn(columnPanel)"
+              class="ui-button-success ml-2" label="Comprobar expresión" style="margin-right: 5px;"></button>
+          <button *ngIf="columnPanel.computed_column !== 'no'" type="button" pButton
+              (click)="deleteCalculatedCol(columnPanel)" class="p-button-raised p-button-danger" i18n-label="@@borrar"
+              label="Borrar"></button>
+      </div>
+
+  </p-card> -->
 </div>
 
 
 
+<div *ngIf="typePanel==='root' && modelPanel.metadata" class="w-full mx-auto px-6">
+  <div class="bg-card rounded-lg border shadow-sm">
+    <div class="flex flex-col space-y-1.5 p-6 border-b"> 
+      <h2 class="text-2xl font-semibold" i18n="@@editModelHeaders">Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}</h2>
+    </div>
+    <div class="p-6 space-y-6">
+      <!-- Metadata Section -->
+      <div class="mb-8">
+        <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@metadata">Metadata</h3>
+        <div class="grid gap-4">
+          <div class="grid gap-2">
+            <label for="name" class="font-medium" i18n="@@inputNombre">
+              Nombre <span class="text-red-500">*</span>
+            </label>
+            <input 
+              id="name" 
+              [(ngModel)]="modelPanel.metadata.model_name"
+              (keyup)="update()"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+            />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Connection Section -->
+      <div class="mb-8">
+        <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@conexionh4">Conexión</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="grid gap-2">
+            <label for="type" class="font-medium" i18n="@@inputTipoDatamodel">Tipo</label>
+            <div class="relative">
+              <select 
+                id="type" 
+                [(ngModel)]="selectedTipoBD"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
+              >
+                @for (type of tiposBD; track type) {
+                  <option [value]="type">{{type.label}}</option>
+                }
+                <!-- <option value="Postgres">Postgres</option>
+                <option value="MySQL">MySQL</option>
+                <option value="SQLite">SQLite</option>
+                <option value="SQL Server">SQL Server</option> -->
+              </select>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute right-3 top-2.5 h-4 w-4 opacity-50"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+          </div>
+          
+          @if (!['bigquery'].includes(selectedTipoBD.value)) {
+            <div class="grid gap-2">
+              @if (selectedTipoBD.value === 'snowflake') {
+                <label for="host" class="font-medium" i18n="@@inputCuentaEdit">Cuenta</label>
+              } @else {
+                <label for="host" class="font-medium" i18n="@@inputHost">Host</label>
+              }
+              <input 
+                id="host" 
+                [(ngModel)]="modelPanel.connection.host"
+                (keyup)="update()"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+              />
+            </div>
+          }
+          <div class="grid gap-2">
+            <label for="database" class="font-medium" i18n="@@inputNombreDB">Base de datos</label>
+            <input 
+              id="database" 
+              [(ngModel)]="modelPanel.connection.database"
+              (keyup)="update()"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+            />
+          </div>
+          @if (!['bigquery'].includes(selectedTipoBD.value)) {
+            <div class="grid gap-2">
+              <label for="port" class="font-medium" i18n="@@inputPuerto">Puerto</label>
+              <input 
+                id="port" 
+                [(ngModel)]="modelPanel.connection.port"
+                (keyup)="update()"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+              />
+            </div>
 
+            <div class="grid gap-2">
+              <label for="schema" class="font-medium" i18n="@@inputNombreEsquemaModel">Esquema</label>
+              <input 
+                id="schema" 
+                [(ngModel)]="modelPanel.connection.schema"
+                (keyup)="update()"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+              />
+            </div>
+          }
+          @if (selectedTipoBD.value === 'mysql') {
+            <div class="grid gap-2">
+              <label for="poolLimit" class="font-medium">Pool Limit</label>
+              <input 
+                id="poolLimit" 
+                [(ngModel)]="modelPanel.connection.poolLimit"
+                (keyup)="update()"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+              />
+            </div>
+          }
 
+          @if (selectedTipoBD.value === 'snowflake') {
+            <div class="grid gap-2">
+              <label for="warehouse" class="font-medium">Warehouse</label>
+              <input 
+                id="warehouse" 
+                [(ngModel)]="modelPanel.connection.warehouse"
+                (keyup)="update()"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+              />
+            </div>
+          }
 
-<div *ngIf="typePanel==='root' && modelPanel.metadata" class="tp-container">
-
-    <p-card i18n-header="@@editModelHeaders" header="Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}">
+          @if (!['bigquery'].includes(selectedTipoBD.value)) {
+            <div class="grid gap-2">
+              <label for="user" class="font-medium" i18n="@@inputNombreUsuario">Usuario</label>
+              <input 
+                id="user" 
+                [(ngModel)]="modelPanel.connection.user"
+                (keyup)="update()"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+              />
+            </div>
+            
+            <div class="grid gap-2">
+              <label for="password" class="font-medium" i18n="password@@inputPassword">
+                Password <span class="text-red-500">*</span>
+              </label>
+              <input 
+                id="password" 
+                type="password"
+                [(ngModel)]="modelPanel.connection.password"
+                (keyup)="update()"
+                autocomplete="new-password"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+              />
+            </div>
+          }
+          
+          <div class="grid gap-2">
+            <label for="filters" class="font-medium" i18n="@@inputFilter">Filtros</label>
+            <input 
+              id="filters" 
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+              [(ngModel)]="modelPanel.metadata.filter"
+              (keyup)="update()"
+            />
+          </div>
+        </div>
+        
+        @if (!modelPanel.connection.ssl && ['mysql', 'postgres', 'sqlserver'].includes(selectedTipoBD.value)) {
+          <div class="mt-4 flex items-center space-x-2">
+            <button 
+              type="button" 
+              role="switch" 
+              [attr.aria-checked]="modelPanel.connection.ssl" 
+              (click)="modelPanel.connection.ssl = !modelPanel.connection.ssl;"
+              class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" 
+              [ngClass]="{'bg-[#00BFB3]': modelPanel.connection.ssl, 'bg-input': !modelPanel.connection.ssl}"
+            >
+              <span 
+                class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform" 
+                [ngClass]="{'translate-x-5': modelPanel.connection.ssl, 'translate-x-0': !modelPanel.connection.ssl}"
+              ></span>
+            </button>
+            @if (modelPanel.connection.ssl) {
+              <label class="font-medium">Conexión mediante SSL</label>
+            } @else {
+              <label class="font-medium">Conexión sin SSL</label>
+            }
+          </div>
+        }
+        
+        <div class="mt-4">
+          <button 
+            (click)="checkConection()" 
+            class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-600 text-white hover:bg-green-700 h-10 px-4 py-2"
+            i18n='@@checkConnection'
+          >
+            Comprobar conexión
+          </button>
+        </div>
+      </div>
+      
+      <!-- Extend Model Section -->
+      <div class="mb-8">
+        <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2">{{functionalities}}</h3>
+        <div class="flex flex-wrap gap-2">
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+            (click)="openNewMapDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="3" y2="21"/><line x1="15" x2="15" y1="3" y2="21"/></svg>
+            {{addMap}}
+          </button>
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+            (click)="openNewViewDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+            {{addView}}
+          </button>
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+            (click)="openCSVDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+            {{addCSV}}
+          </button>
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+            (click)="openTagDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+            {{addTagDataSource}}
+          </button>
+        </div>
+      </div>
+      
+      <!-- Utilities Section -->
+      <div class="mb-8">
+        <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2">{{utilities}}</h3>
+        <div class="flex flex-wrap gap-2">
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+            (click)="hideAllTables()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+            {{hideTablesString}}
+          </button>
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+            (click)="hideAllRelations()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+            {{hideAllRelationsString}}
+          </button>
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+            (click)="openCacheDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg>
+            {{addCacheConfig}}
+          </button>
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+            (click)="openModelPermissionsDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 5v14M5 12h14"/></svg>
+            {{addPermission}}
+          </button>
+          <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-white hover:bg-slate-700 h-10 px-4 py-2"
+            (click)="openSecurityDialog()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            {{viewsecurity}}
+          </button>
+        </div>
+      </div>
+      
+      <!-- Model-level visibility Section -->
+      <div class="mb-8">
+        <h3 class="text-lg font-medium text-gray-700 mb-4 border-b pb-2" i18n="@@rolesPermisosModelo">Visibilidad a nivel de modelo</h3>
+        <eda-table [inject]="permissionModel"></eda-table>
+      </div>
+    </div>
+  </div>
+    <!-- <p-card i18n-header="@@editModelHeaders" header="Editar {{modelPanel.type ? modelPanel.metadata.model_name : ''}}">
         <div class="grid">
             <div style="margin-bottom: 1rem;" class="col-12">
 
@@ -365,8 +921,7 @@
 
             </div>
         </div>
-    </p-card>
-
+    </p-card> -->
 </div>
 
 
