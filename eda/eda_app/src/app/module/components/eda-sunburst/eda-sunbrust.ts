@@ -7,5 +7,6 @@ export class SunBurst {
   data : { labels: any[], values: any[]; };
   dataDescription : any;
   colors : Array<string>;
+  assignedColors : any[];
   linkedDashboard : LinkedDashboardProps;
 }

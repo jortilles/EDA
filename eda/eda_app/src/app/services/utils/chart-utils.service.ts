@@ -867,6 +867,7 @@ export class ChartUtilsService {
         return (<ChartJsConfig>config).colors;
     }
 
+
     public describeData(currentQuery: any, labels: any) {
         let names = this.pretifyLabels(currentQuery, labels);
         let out = { numericColumns: [], coordinateColumns: 0, otherColumns: [], totalColumns: 0, query: currentQuery }
