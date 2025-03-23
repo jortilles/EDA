@@ -134,9 +134,9 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
       }
       
-      isPanelSelected(id: string): boolean {
+    isPanelSelected(id: string): boolean {
         return this.selectedPanels.includes(id);
-      }
+    }
 
     public initPanels() {
         if (this.globalFilter.queryMode != 'EDA2') return;

@@ -59,4 +59,20 @@
 
 
   </div>
+
+  <div footer class="flex justify-end p-2 border-t gap-1.5">
+    <button
+      class="rounded-md px-4 py-2 border"
+      (click)="closeDialog()"
+      i18n="@@cancelarBtn">
+      Cancelar
+    </button>
+    <button
+      class="rounded-md px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white"
+      (click)="savePermission()"
+      [disabled]="(selectedUsers.length < 1 && selectedRoles.length < 1) "
+      i18n="@@guardarBtn">
+      Confirmar
+    </button>
+  </div>
 </eda-dialog>
