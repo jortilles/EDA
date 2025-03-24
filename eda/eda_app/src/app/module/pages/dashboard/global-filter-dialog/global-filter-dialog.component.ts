@@ -55,6 +55,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public formReady: boolean = false;
     public datePickerConfigs: any = {};
     public aliasValue: string = "";
+
+    // Legacy 
     public applyToAll: boolean = false;
     selectedPanels: any[] = []
 
@@ -73,9 +75,10 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     };
 
     public ngOnInit(): void {
+        console.log(this.globalFilter);
         this.display = true;
         this.modelTables = _.cloneDeep(this.dataSource.model.tables);
-        // this.initGlobalFilter();
+        this.initGlobalFilter();
         this.formReady = true;
     }
 
@@ -96,10 +99,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 visible: null,
             };
 
-            this.initPanels();
+            if (this.globalFilter.queryMode == 'EDA2') this.initPanels();
+            else this.initPanelsLegacy();
+
             this.initTablesForFilter();
         } else {
-            this.initPanels();
+            if (this.globalFilter.queryMode == 'EDA2') this.initPanels();
+            else this.initPanelsLegacy();
+
             this.initTablesForFilter();
 
             const tableName = this.globalFilter.selectedTable.table_name;
@@ -139,8 +146,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public initPanels() {
-        if (this.globalFilter.queryMode != 'EDA2') return;
-
         this.allPanels = this.globalFilterService.filterPanels(this.modelTables, this.panels);
         this.allPanels = this.allPanels.sort(this.sortByTittle);
 
@@ -171,6 +176,30 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
 
         this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
+    }
+
+    public initPanelsLegacy() {
+        const panel = this.panels.filter(p => p.content)[0];
+        const newPanel = this.panels.find((p: any) => p.id === panel.id);
+        this.allPanels = this.globalFilterService.panelsToDisplay(this.modelTables, this.panels, newPanel);
+        this.allPanels = this.allPanels.sort(this.sortByTittle);
+        console.log('allPanels', this.allPanels);
+        if (this.globalFilter?.panelList) {
+            const selectedPanelList = this.globalFilter.panelList;
+
+            for (let displayPanel of this.allPanels) {
+                if (!selectedPanelList.some((id: any) => displayPanel.id === id)) {
+                    displayPanel.active = false;
+                }
+            }
+        }
+        
+        this.filteredPanels = this.allPanels.filter(p => p.avaliable === true && p.active === true );
+
+        // Filter can only apply to all panels if all panels are in display list
+        this.applyToAll = (this.allPanels.length === this.filteredPanels.length);
+
+        // this.setTablesAndColumnsToFilter();
     }
 
     public initTablesForFilter() {
@@ -321,6 +350,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public findPanelPathTables() {
+        if (this.globalFilter.queryMode !== 'EDA2') return;
+
         for (const panel of this.filteredPanels) {
             panel.content.globalFilterPaths = this.globalFilterService.loadTablePaths(this.modelTables, panel);
 
@@ -497,6 +528,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
 
         return str;
+    }
+
+    public applyToAllCheck() {
+        this.applyToAll = !this.applyToAll;
+
+        if (this.applyToAll){
+            this.filteredPanels = this.allPanels.filter(p => p.avaliable === true);
+        }
     }
 
     public onApply(): void {

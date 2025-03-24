@@ -44,8 +44,6 @@ export class GlobalFilterV2Component implements OnInit {
 
     public ngOnInit(): void {
         this.isAdmin = this.userService.isAdmin;
-        console.log(this.isAdmin);
-        console.log('isEditable', this.dashboard.isEditable());
         // this.isDashboardCreator = this.dashboard.isDashboardCreator;
         // this.hideFilters = this.dashboard.display_v.panelMode;
     }
@@ -125,8 +123,6 @@ export class GlobalFilterV2Component implements OnInit {
 
     // Main Global Filter
     public onShowGlobalFilter(isnew: boolean, filter?: Record<string, any>): void {
-        console.log('onShowGlobalFilter');
-        console.log(this.dashboard.validateDashboard('GLOBALFILTER'));
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
 
             const treeQueryMode = this.dashboard.edaPanels.some(
@@ -147,10 +143,8 @@ export class GlobalFilterV2Component implements OnInit {
             if (!globalFilter.selectedColumn) {
                 globalFilter.selectedColumn = { ...filter.column.value };
             }
-                
-            console.log('globalFilter', globalFilter);
+
             this.globalFilter = globalFilter;
-            console.log(this.globalFilter);
         }
     }
 
@@ -450,7 +444,6 @@ export class GlobalFilterV2Component implements OnInit {
                     if (columnName === paramColumn) {
                         filter.selectedItems = _.split(urlParams[param], '|');
 
-                        console.log(this.dashboard.panels);
                         filter.panelList
                             .map(id => this.dashboard.panels.find(p => p.id === id))
                             .forEach((panel) => {
