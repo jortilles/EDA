@@ -271,27 +271,25 @@ export class EdaFilterAndOrComponent implements OnInit {
       }
 
       const itemGenerico = dashboard.filter((item: any) => item.y === y + 1)[0]
-      // console.log('elementosHijos: ', elementosHijos);
-      // console.log('itemGenerico: ', itemGenerico);
 
       if(elementosHijos.length>0) {
-        let hijosCadena = elementosHijos.map(itemHijo => {
+        let hijoArreglo = elementosHijos.map(itemHijo => {
           return cadenaRecursiva(itemHijo);
         })
 
-        let hijosCadenaString = '';
-        hijosCadena.forEach((hijo, index) => {
-          hijosCadenaString = hijosCadenaString + hijo;
+        let hijosCadena = '';
+        hijoArreglo.forEach((hijo, index) => {
+          hijosCadena = hijosCadena + hijo;
           if(index<elementosHijos.length-1){
-            hijosCadenaString = hijosCadenaString + ` ${elementosHijos[index+1].value.toUpperCase()} `
+            hijosCadena = hijosCadena + ` ${elementosHijos[index+1].value.toUpperCase()} `
           }
         })
 
         // .join(` sss `);
-        console.log('hijosCadena: ', hijosCadena);
+        console.log('hijosCadena: ', hijoArreglo);
         console.log('elementosHijos: ', elementosHijos);
 
-        resultado = `(${resultado} ${itemGenerico.value.toUpperCase()} (${hijosCadenaString}))`;
+        resultado = `(${resultado} ${itemGenerico.value.toUpperCase()} (${hijosCadena}))`;
       }
 
       return resultado;
