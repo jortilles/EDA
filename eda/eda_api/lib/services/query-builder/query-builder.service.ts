@@ -383,7 +383,7 @@ export abstract class QueryBuilderService {
 
                     let withRanges = "WITH ranges AS (\n";
 
-                    withRanges += `    SELECT ' < ${fieldsColumn.ranges[0]}' as \`range\`\n`;
+                    withRanges += `    SELECT '< ${fieldsColumn.ranges[0]}' as \`range\`\n`;
 
                     for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
                         withRanges += `    UNION SELECT ' ${fieldsColumn.ranges[i]} - ${fieldsColumn.ranges[i + 1] - 1}'\n`;
