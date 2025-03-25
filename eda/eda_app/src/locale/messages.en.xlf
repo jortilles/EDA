@@ -5791,7 +5791,6 @@ Once configured you can invoke it whenever you want from the button.</target>
 </trans-unit>
 
 
-
       <trans-unit id="chartTypesTableAnalized" datatype="html">
         <source>Tabla DataQuality</source>
         <target>Table DataQuality</target>
@@ -5863,6 +5862,9 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="min_bymonthLabel" datatype="html">
         <source>Mínimos por mes</source>
         <target>Minimums by month</target>
+      <trans-unit id="chartTypesTreeTable">
+        <source>Tabla Árbol</source>
+        <target>Tree Table</target>       
       </trans-unit>
     </body>
 

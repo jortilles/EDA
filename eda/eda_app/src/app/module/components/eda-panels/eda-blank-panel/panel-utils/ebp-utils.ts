@@ -105,6 +105,7 @@ export const EbpUtils = {
   getOptionIcon: (value: string): string => {
 
     let description = '';
+
     switch (value) {
       case 'table':
       case 'tableanalized':
@@ -190,6 +191,9 @@ export const EbpUtils = {
         break;
       case 'radar':
         description = 'radar';
+        break;
+      case 'treetable': 
+        description = 'account_tree';
         break;
     }
 

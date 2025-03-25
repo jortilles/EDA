@@ -5741,6 +5741,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <target>Wydanie tej wartości anulowania</target>
 </trans-unit>
 
+  <trans-unit id="chartTypesTreeTable">
+    <source>Tabla Árbol</source>
+    <target>Stół Drzewny</target>       
+  </trans-unit>
 </body>
 </file>
 </xliff>
