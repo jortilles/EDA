@@ -33,6 +33,8 @@ import { NULL_VALUE } from '../../../../config/personalitzacio/customizables'
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 import { QueryService } from '@eda/services/api/query.service';
 import { ConfirmationService } from 'primeng/api';
+import Swal from 'sweetalert2';
+
 
 export interface IPanelAction {
     code: string;
@@ -622,17 +624,47 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
         if (subType=='tableanalized') {
-            this.changeChartType(type, subType, config)
+            
+            
+            Swal.fire({
+                title: 'Titulo',
+                text: 'Texto aquiii',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Eliminalo!',
+                cancelButtonText: ':Cancelar',
+            }).then( (borrado) => {
+                if(borrado.value){
+                    try {
+                        Swal.fire(`Deleted:¡Eliminado!`,`Informe eliminado correctamente.`, 'success');
+                        this.changeChartType(type, subType, config)
+
+                        console.log('ACEPTOOOO')
+                    } catch (err) {
+                        this.alertService.addError(err);
+                        throw err;
+                    }
+                }
+            })
+            
+            
+            
+            // this.changeChartType(type, subType, config)
+
+
+
             console.log('paso por aqui???????');
             // TODO - Popup no aparece
-             this.confirmationService.confirm({
-                 header: `Warning`,
-                 message: `Este proceso realiza un seguido de consultas al modelo de datos y puede que le tome su tiempo. ¿Desea continuar?`,
-                 acceptLabel: $localize`:@@si:Si`,
-                 rejectLabel: $localize`:@@no:No`,
-                 icon: 'pi pi-exclamation-triangle',
-                 accept: () => this.changeChartType(type, subType, config)
-             })
+            //  this.confirmationService.confirm({
+            //      header: `Warning`,
+            //      message: `Este proceso realiza un seguido de consultas al modelo de datos y puede que le tome su tiempo. ¿Desea continuar?`,
+            //      acceptLabel: $localize`:@@si:Si`,
+            //      rejectLabel: $localize`:@@no:No`,
+            //      icon: 'pi pi-exclamation-triangle',
+            //      accept: () => this.changeChartType(type, subType, config)
+            //  })
         } else {
             this.changeChartType(type, subType, config);
         }
