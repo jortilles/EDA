@@ -243,67 +243,72 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   creacionQueryFiltros(dashboard: any) {
-    console.log('Dashboard <<<>>> => ', dashboard)
-
-    let strQuery = 'where ';
-    strQuery = strQuery + `\"${dashboard.find((item: any) => item.y === 0).filter_table}\".\"${dashboard.find((item: any) => item.y === 0).filter_column}\" `;
-    strQuery = strQuery + `${dashboard.find((item: any) => item.y === 0).filter_type} `.replace('not_null', 'is not');
     
-    console.log(dashboard.find((item: any) => item.y === 0).filter_elements[0])
-    
-    if(dashboard.find((item: any) => item.y === 0).filter_elements[0] !== undefined) {
+    // Ordenamiento en el eje y
+    dashboard.sort((a, b) => a.y - b.y); 
+    console.log('Dashboard <<<>>>', dashboard)
 
-      if(dashboard.find((item: any) => item.y === 0).filter_elements[0].value1.length===1) {
-        if(typeof(dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[0]) === 'number'){
-          strQuery = strQuery + `${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[0]}\n`
+    // Creamos la variable de stringQuery y la función recursiva
+    let stringQuery = 'where ';
+
+    function cadenaRecursiva(item: any) {
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_elements, value } = item; // item -> variable recursiva
+      
+      let resultado = filter_column;
+
+      let elementosHijos = [];
+
+      for(let n = y+1; n<dashboard.length; n++){
+
+        if(dashboard[n].x === x){
+          break;
         }
 
-        if(typeof(dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[0]) === 'string'){
-          strQuery = strQuery + `'${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[0]}'\n`
+        if(y < dashboard[n].y && dashboard[n].x === x+1){
+          // console.log('filter_column: ', dashboard[h].filter_column)
+          elementosHijos.push(dashboard[n])
         }
-
-      } else {
-        let strFilters = '(';
-        for(let i=0; i<dashboard.find((item: any) => item.y === 0).filter_elements[0].value1.length; i++){
-
-          if(typeof(dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]) === 'number'){
-            if(i === dashboard.find((item: any) => item.y === 0).filter_elements[0].value1.length-1) {
-              strFilters = strFilters + `${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]})\n`;
-            }
-            else {
-              strFilters = strFilters + `${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]},`;
-            }
-          }
-
-          if(typeof(dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]) === 'string'){
-            if(i === dashboard.find((item: any) => item.y === 0).filter_elements[0].value1.length-1) {
-              strFilters = strFilters + `'${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]}')\n`;
-            }
-            else {
-              strFilters = strFilters + `'${dashboard.find((item: any) => item.y === 0).filter_elements[0].value1[i]}',`;
-            }
-          }
-
-        }
-        strQuery = strQuery + strFilters;
       }
 
-    } else {
-      strQuery = strQuery + 'null\n';
+      const itemGenerico = dashboard.filter((item: any) => item.y === y + 1)[0]
+      // console.log('elementosHijos: ', elementosHijos);
+      // console.log('itemGenerico: ', itemGenerico);
+
+      if(elementosHijos.length>0) {
+        let hijosCadena = elementosHijos.map(itemHijo => {
+          return cadenaRecursiva(itemHijo);
+        })
+
+        let hijosCadenaString = '';
+        hijosCadena.forEach((hijo, index) => {
+          hijosCadenaString = hijosCadenaString + hijo;
+          if(index<elementosHijos.length-1){
+            hijosCadenaString = hijosCadenaString + ` ${elementosHijos[index+1].value.toUpperCase()} `
+          }
+        })
+
+        // .join(` sss `);
+        console.log('hijosCadena: ', hijosCadena);
+        console.log('elementosHijos: ', elementosHijos);
+
+        resultado = `(${resultado} ${itemGenerico.value.toUpperCase()} (${hijosCadenaString}))`;
+      }
+
+      return resultado;
     }
-    
-    strQuery = strQuery + 'holaz'; // Para tener una referencia clara
 
-    for(let y=1; y<dashboard.length; y++) {
-      // dashboard.find((item: any) => item.y ===y)
 
-      // console.log(dashboard.find((item: any) => item.y ===y))
-      dashboard.find((item: any) => item.y === y).filter_elements[0]
-      console.log(dashboard.find((item: any) => item.y === y).filter_elements[0])
-    }
-    
+    // Empezamos por el primer elemento
+    const primerNivel = dashboard.filter((e: any) => e.y===0 && e.x===0); // [{cols: 3, rows: 1, y: 0, x: 0, filter_table: 'products',filter_column: "productline", ...}] 
 
-    console.log('strQuery: ',strQuery)
+    const primerResultado = primerNivel.map(cadenaRecursiva).join(' OR ');
+
+    console.log('primerNivel:::: ',primerNivel)
+    console.log('primerResultado:::: ',primerResultado)
+
+  
+
+    console.log('stringQuery: ',stringQuery)
 
     this.dashboardChanged.emit(this.dashboard);
   }
