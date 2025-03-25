@@ -298,11 +298,20 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // Empezamos por el primer elemento
     const primerNivel = dashboard.filter((e: any) => e.y===0 && e.x===0); // [{cols: 3, rows: 1, y: 0, x: 0, filter_table: 'products',filter_column: "productline", ...}] 
-
-    const primerResultado = primerNivel.map(cadenaRecursiva).join(' OR ');
+    const primerResultado = primerNivel.map(cadenaRecursiva);
+    // .join(' OR ');
 
     console.log('primerNivel:::: ',primerNivel)
     console.log('primerResultado:::: ',primerResultado)
+
+
+    for(let r=0; r<dashboard.length; r++){
+      if(dashboard[r].x === 0){
+        console.log(`r: ${r} -> `,dashboard.filter((e: any) => e.y===r).map(cadenaRecursiva))
+      } else {
+        continue;
+      }
+    }
 
   
 
