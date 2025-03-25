@@ -10,6 +10,8 @@ export class Dashboard {
     public applytoAllFilter: {present: boolean, refferenceTable: string, id: string};
     public visible: string;
     public onlyIcanEdit: boolean = false;
+    public createdAt: Date;
+    public author: string;
 
     constructor(init: Partial<Dashboard>) {
         Object.assign(this, init);

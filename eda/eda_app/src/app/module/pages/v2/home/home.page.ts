@@ -4,6 +4,7 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { UserService } from '@eda/services/api/user.service';
 import { AlertService, DashboardService } from '@eda/services/service.index';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
@@ -38,7 +39,7 @@ export class HomePageV2 implements OnInit {
   isOpenTags = signal(false)
   searchTagTerm = signal("")
 
-  constructor() { }
+  constructor(private userService: UserService) { }
 
   ngOnInit(): void {
     this.loadReports();
@@ -115,16 +116,14 @@ export class HomePageV2 implements OnInit {
     //Creación variables  
     let reportsFiltered = [];    
     const reportFiltered = event.target.value.toString().toUpperCase();
-    console.log(this)
-    
     //Empezar a filtarar con más de un caracter en el buscador
     if (reportFiltered.length > 1) {
       this.allDashboards.map(item => item.config.title.toUpperCase()).forEach(report => {
         //Almacenamos todos los reports que coincidan   
         if (report.includes(reportFiltered))
-            reportsFiltered.push(report)
-        });
-
+          reportsFiltered.push(report)
+      });
+      console.log(this.allDashboards)
       this.publicReports = this.publicReports.filter(db => reportsFiltered.includes(db.config.title.toUpperCase()));
       this.sharedReports = this.sharedReports.filter(db => reportsFiltered.includes(db.config.title.toUpperCase()));
       this.privateReports = this.privateReports.filter(db => reportsFiltered.includes(db.config.title.toUpperCase()));
@@ -189,17 +188,22 @@ export class HomePageV2 implements OnInit {
         if (response.ok && response.dashboard) {
           // Create a deep copy of the original report
           const clonedReport = _.cloneDeep(report);
-
-          // Update the cloned report data with the server response
           Object.assign(clonedReport, response.dashboard);
-
+          // Update the cloned report data with the server response
+          
           // Ensure type and author are correctly assigned
           clonedReport.type = clonedReport.config.visible;
-          //   clonedReport.user = this.currentUser;
-
+          clonedReport.user = this.userService.user.name;
+          
           // Update creation and modification dates
-          clonedReport.config.createdAt = new Date().toISOString();
-          clonedReport.config.modifiedAt = new Date().toISOString();
+          const currentDate = new Date().toISOString().split("T")[0];
+          clonedReport.config.createdAt = currentDate;
+          clonedReport.config.modifiedAt = currentDate;
+          
+          // Assing author
+          clonedReport.config.author =  clonedReport.user; 
+          
+
 
           const targetArray = this.reportMap[clonedReport.type];
 

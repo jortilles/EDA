@@ -273,6 +273,7 @@ export class UserController {
 
     static async getUser(req: Request, res: Response, next: NextFunction) {
         try {
+            console.log(req)
             User.findById({ _id: req.params.id }, (err, user) => {
 
                 if (err) {
@@ -295,6 +296,14 @@ export class UserController {
         } catch (err) {
             next(err);
         }
+    }
+
+
+    static async getUserName(req: Request,  res: Response,next: NextFunction) {
+        try {
+            return User.findById({ _id: req.user });
+        }
+        catch (err) {next(err);}
     }
 
     static async getIsAdmin(req: Request, res: Response, next: NextFunction) {

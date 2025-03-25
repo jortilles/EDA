@@ -9,17 +9,18 @@ import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
+
 import _ from 'lodash'
+import { UserController } from './../../module/admin/users/user.controller'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
-  static async getDashboards(req: Request, res: Response, next: NextFunction) {
+  static async getDashboards(req: Request, res: Response, next: NextFunction) {    
     try {
       let admin, privates, group, publics, shared = [];
       const groups = await Group.find({ users: { $in: req.user._id } }).exec();
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
-
       if (isAdmin) {
         admin = await DashboardController.getAllDashboardToAdmin(req)
         publics = admin[0]
@@ -33,6 +34,10 @@ export class DashboardController {
         shared = await DashboardController.getSharedDashboards(req)
       }
 
+      // Modificación de fecha y adición de autor si no lo tiene (informes viejos)
+      await setDasboardsAuthorDate([publics, shared, group, privates], res, next);
+
+
       // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
       group = await DashboardController.addGroupInfo(group);
 
@@ -43,7 +48,7 @@ export class DashboardController {
         publics,
         shared,
         isAdmin,
-        isDataSourceCreator
+        isDataSourceCreator,
       });
     } catch (err) {
       console.log(err);
@@ -64,7 +69,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit'
+        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
       ).populate('user','name').exec()
       const privates = []
       for (const dashboard of dashboards) {
@@ -109,7 +114,7 @@ export class DashboardController {
       }).exec();
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit'
+        'config.title config.visible group config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
       ).exec()
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
@@ -160,7 +165,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit'
+        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
       ).populate('user','name').exec()
       const publics = []
 
@@ -202,7 +207,7 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit'
+        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
       ).populate('user','name').exec()
       const shared = []
       for (const dashboard of dashboards) {
@@ -256,9 +261,8 @@ export class DashboardController {
     try { 
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards =  JSON.stringify(filter) !== '{}'  ? 
-      await Dashboard.find({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.external').exec() : 
-      await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.external').exec();
-      
+      await Dashboard.find({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))}, 'user config.title config.visible group config.tag config.author config.createdAt config.modifiedAt config.onlyIcanEdit config.external').exec() : 
+      await Dashboard.find({}, 'user config.title config.visible group config.tag config.author config.createdAt config.modifiedAt config.onlyIcanEdit  config.external').exec();
       const publics = []
       const privates = []
       const groups = []
@@ -1673,13 +1677,13 @@ export class DashboardController {
         config: {
           ...originalDashboard.config,
           title: `${originalDashboard.config.title} copy`, // Append 'copy' to the title
-          createdAt: new Date(),
-          modifiedAt: new Date()
+          createdAt: new Date().toISOString(),
+          modifiedAt: new Date().toISOString(),
+          author:  req.user.name
         },
         user: req.user._id, // Set the current user as the owner of the cloned dashboard
         group: originalDashboard.group // Maintain the same group permissions
       });
-
 
       // Save the cloned dashboard to the database
       const savedDashboard = await clonedDashboard.save();
@@ -1757,3 +1761,19 @@ function insertServerLog(
     date.getSeconds()
   ServerLogService.log({ level, action, userMail, ip, type, date_str })
 }
+
+function setDasboardsAuthorDate(dashboards: any[], res, next) {
+  dashboards.forEach(reportType => {
+    reportType.forEach(async (report) => {
+        // Setear la fecha si la tiene, sino, asignarle el dia de hoy
+        if (report.config.createdAt)
+          report.config.createdAt && report.config.createdAt.length > 0 ? report.config.createdAt = report.config.createdAt.toString().split("T")[0] : report.config.createdAt = new Date().toISOString().toString().split("T")[0]; 
+              
+        //Si no tiene autor lo recuperamos a partir del id del user que ha creado el report
+        if (!report.config.author)
+          await UserController.getUserName(report, res, next).then(result => { result ? report.config.author = result.name : report.config.author = 'Undefined' });
+
+    });
+  });
+}
+
