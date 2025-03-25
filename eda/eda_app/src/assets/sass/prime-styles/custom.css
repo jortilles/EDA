@@ -3604,6 +3604,8 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 
 .p-dialog-mask.p-component-overlay {
   background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999 !important;
+
 }
 
 .p-overlaypanel {
