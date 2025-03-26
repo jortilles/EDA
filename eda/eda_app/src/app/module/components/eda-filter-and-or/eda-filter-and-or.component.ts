@@ -301,6 +301,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   // Función que se ejecuta cuando se hace click en el p-selectButton AND | OR
   onButtonClick() {
     this.creacionQueryFiltros(this.dashboard);
+    this.dashboardClone = _.cloneDeep(this.dashboard);
   }
 
 }
