@@ -82,8 +82,8 @@ export class EdaFilterAndOrComponent implements OnInit {
     // Integración:
     this.dashboard = [];
 
-    console.log('this.selectedFilters: ', this.selectedFilters)
-    console.log('this.globalFilters: ', this.globalFilters)
+    // console.log('this.selectedFilters: ', this.selectedFilters)
+    // console.log('this.globalFilters: ', this.globalFilters)
 
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {
@@ -286,8 +286,8 @@ export class EdaFilterAndOrComponent implements OnInit {
         })
 
         // .join(` sss `);
-        console.log('hijosCadena: ', hijoArreglo);
-        console.log('elementosHijos: ', elementosHijos);
+        // console.log('hijosCadena: ', hijoArreglo);
+        // console.log('elementosHijos: ', elementosHijos);
 
         resultado = `(${resultado} ${itemGenerico.value.toUpperCase()} (${hijosCadena}))`;
       }
@@ -301,19 +301,22 @@ export class EdaFilterAndOrComponent implements OnInit {
     const primerResultado = primerNivel.map(cadenaRecursiva);
     // .join(' OR ');
 
-    console.log('primerNivel:::: ',primerNivel)
-    console.log('primerResultado:::: ',primerResultado)
+    // console.log('primerNivel:::: ',primerNivel)
+    // console.log('primerResultado:::: ',primerResultado)
 
-
+    let itemsString = '( '
     for(let r=0; r<dashboard.length; r++){
       if(dashboard[r].x === 0){
         console.log(`r: ${r} -> `,dashboard.filter((e: any) => e.y===r).map(cadenaRecursiva))
+        console.log(dashboard[r].value);
+        itemsString = itemsString +  (r === 0 ? '' : ' ' + dashboard[r].value.toUpperCase() + ' ' ) + dashboard.filter((e: any) => e.y===r).map(cadenaRecursiva)[0]
       } else {
         continue;
       }
     }
 
-  
+    itemsString = itemsString + ' )';
+    stringQuery = stringQuery + itemsString
 
     console.log('stringQuery: ',stringQuery)
 
