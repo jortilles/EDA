@@ -627,20 +627,18 @@ export class EdaBlankPanelComponent implements OnInit {
             
             
             Swal.fire({
-                title: 'Titulo',
-                text: 'Texto aquiii',
+                title: $localize`:@@NameTablaQuality:Tabla DataQuality`,
+                text: $localize`:@@SureDataQuality:¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: '¡Eliminalo!',
-                cancelButtonText: ':Cancelar',
+                confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
+                cancelButtonText: $localize`:@@CancelTablaQuality:Cancelar`,
             }).then( (borrado) => {
                 if(borrado.value){
                     try {
-                        Swal.fire(`Deleted:¡Eliminado!`,`Informe eliminado correctamente.`, 'success');
                         this.changeChartType(type, subType, config)
-
                         console.log('ACEPTOOOO')
                     } catch (err) {
                         this.alertService.addError(err);

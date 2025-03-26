@@ -4382,6 +4382,22 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Tabla Árbol</source>
         <target>Tree Table</target>       
       </trans-unit>
+      <trans-unit id="NameTablaQuality">
+        <source>Tabla DataQuality</source>
+        <target>Table DataQuality</target>       
+      </trans-unit>
+      <trans-unit id="SureDataQuality">
+        <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
+        <target>Are you sure you want to continue viewing DataQuality? This may take a while.</target>       
+      </trans-unit>
+      <trans-unit id="ContinueTablaQuality">
+        <source>Continuar</source>
+        <target>Continue</target>       
+      </trans-unit>
+      <trans-unit id="CancelTablaQuality">
+        <source>Cancelar</source>
+        <target>Cancel</target>       
+      </trans-unit>
     </body>
   </file>
 </xliff>
