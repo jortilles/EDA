@@ -4451,6 +4451,22 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Activar funciones del mouse</source>
         <target>Activar funcions del mouse</target>       
       </trans-unit>
+      <trans-unit id="NameTablaQuality">
+        <source>Tabla DataQuality</source>
+        <target>Taula DataQuality</target>       
+      </trans-unit>
+      <trans-unit id="SureDataQuality">
+        <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
+        <target>Segur que vols continuar amb la visualització de DataQuality? Aquesta acció pot trigar una mica de temps.</target>       
+      </trans-unit>
+      <trans-unit id="ContinueTablaQuality">
+        <source>Continuar</source>
+        <target>Continuar</target>       
+      </trans-unit>
+      <trans-unit id="CancelTablaQuality">
+        <source>Cancelar</source>
+        <target>Cancel·la</target>       
+      </trans-unit>
       <trans-unit id="GroupCreated">
         <source>Grupo creado</source>
         <target>Grup creat</target>

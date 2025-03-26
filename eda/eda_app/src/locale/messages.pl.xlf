@@ -5745,6 +5745,22 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <source>Tabla Árbol</source>
     <target>Stół Drzewny</target>       
   </trans-unit>
+  <trans-unit id="NameTablaQuality">
+    <source>Tabla DataQuality</source>
+    <target>Tablica DataQuality</target>       
+  </trans-unit>
+  <trans-unit id="SureDataQuality">
+    <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
+    <target>Czy na pewno chcesz kontynuować wizualizację DataQuality? Ta czynność może chwilę potrwać.</target>       
+  </trans-unit>
+  <trans-unit id="ContinueTablaQuality">
+    <source>Continuar</source>
+    <target>Kontynuować</target>       
+  </trans-unit>
+  <trans-unit id="CancelTablaQuality">
+    <source>Cancelar</source>
+    <target>Anulować</target>       
+  </trans-unit>
 </body>
 </file>
 </xliff>

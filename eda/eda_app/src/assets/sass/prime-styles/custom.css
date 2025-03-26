@@ -3604,8 +3604,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 
 .p-dialog-mask.p-component-overlay {
   background-color: rgba(0, 0, 0, 0.4);
-  z-index: 999 !important;
-
+  z-index: 1060 !important;   /* z-index modificado para el pop up se superponga */
 }
 
 .p-overlaypanel {
