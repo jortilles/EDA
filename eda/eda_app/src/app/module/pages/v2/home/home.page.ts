@@ -38,7 +38,11 @@ export class HomePageV2 implements OnInit {
   ]);
   isOpenTags = signal(false)
   searchTagTerm = signal("")
-
+  
+  //Variables de control de edició Modificar¿?
+  isEditing: boolean = false;
+  editingReportId: number | null = null;
+  editTitle: string = ''; 
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {
@@ -122,6 +126,31 @@ export class HomePageV2 implements OnInit {
     } else {
         ({ public: this.publicReports, shared: this.sharedReports, private: this.privateReports, group: this.roleReports } = this.reportMap);
     }
+  }
+
+  // Activar modo edición de un reporte
+  renameReport(report: any, inputElement: HTMLInputElement) {
+    this.isEditing = true;
+    this.editingReportId = report._id;
+    this.editTitle = report.config.title;
+    setTimeout(() => inputElement?.focus(), 0);
+  }
+
+  //Manejar flow de edición
+  handleEditing(code: string, report?: any) {
+    switch (code) {
+      case 'done': // Guardar cambios
+        if (this.editTitle.trim()) {
+          report.config.title = this.editTitle;
+        }
+        break;
+      case 'cancel': // Cancelaar y no guardar los cambios
+        break;
+    }
+    // Estado de rename reseteado
+    this.isEditing = false;
+    this.editingReportId = null;
+    this.editTitle = '';
   }
 
   /**

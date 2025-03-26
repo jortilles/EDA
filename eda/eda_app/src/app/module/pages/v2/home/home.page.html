@@ -116,18 +116,49 @@
     @for (report of reports; track report._id) {
       <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
         <div class="px-4 py-2 cursor-pointer" (click)="openReport(report)">
-          <h3 class="text-base font-semibold">{{ report.config?.title }}</h3>
-        </div>
+
+
+
+      <h3 class="text-base font-semibold" [style.display]="isEditing && editingReportId === report._id ? 'none' : 'block'">
+        {{ report.config?.title }}
+      </h3>
+
+      <!-- Input solo se muestra cuando se está editando, sustituir style display por ngif -->
+      <input class="text-base font-semibold px-2 py-1" 
+             [(ngModel)]="editTitle"  
+             [style.display]="isEditing && editingReportId === report._id ? 'block' : 'none'"  
+             placeholder="{{ report.config.title }}" 
+             (blur)="handleEditing('done', report)"
+             (keydown.enter)="handleEditing('done', report)"
+             (keydown.escape)="handleEditing('cancel', report)"
+             (click)="$event.stopPropagation()"
+             #inputElement 
+             />
+
+
+    </div>
         <div class="flex items-center justify-between border-t px-4 py-2">
           <div class="flex items-center gap-2 text-sm text-muted-foreground">
               <span>{{report.config.author}}</span>
               <span>{{report.config.createdAt}}</span>
-              <!-- <span>{{ report.date | date: 'short' }}</span> -->
           </div>
           <div class="flex items-center gap-2">
-            <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="openReport(report)">
-              <eda-icon name="pencil" class="mr-2"></eda-icon>
-            </button>
+        <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="renameReport(report, inputElement)">
+
+          <eda-icon name="pencil" class="mr-2"></eda-icon>
+          
+          <!--
+          
+          <ng-container *ngIf="!isEditing || editingReportId !== report._id; else checkIcon">
+            <eda-icon name="pencil" class="mr-2"></eda-icon>
+          </ng-container>
+          <ng-template #checkIcon>
+            <eda-icon name="check-square" class="mr-2"></eda-icon>
+          </ng-template>
+          
+          -->
+
+        </button>
             <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="cloneReport(report)">
               <eda-icon name="document-duplicated"></eda-icon>
             </button>
