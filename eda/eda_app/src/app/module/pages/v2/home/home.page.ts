@@ -113,27 +113,14 @@ export class HomePageV2 implements OnInit {
   }
 
   public filterByTitle(event) {
-    //Creación variables  
-    let reportsFiltered = [];    
-    const reportFiltered = event.target.value.toString().toUpperCase();
-    //Empezar a filtarar con más de un caracter en el buscador
-    if (reportFiltered.length > 1) {
-      this.allDashboards.map(item => item.config.title.toUpperCase()).forEach(report => {
-        //Almacenamos todos los reports que coincidan   
-        if (report.includes(reportFiltered))
-          reportsFiltered.push(report)
-      });
-      console.log(this.allDashboards)
-      this.publicReports = this.publicReports.filter(db => reportsFiltered.includes(db.config.title.toUpperCase()));
-      this.sharedReports = this.sharedReports.filter(db => reportsFiltered.includes(db.config.title.toUpperCase()));
-      this.privateReports = this.privateReports.filter(db => reportsFiltered.includes(db.config.title.toUpperCase()));
-      this.roleReports = this.roleReports.filter(db => reportsFiltered.includes(db.config.title.toUpperCase()));
-
+    const query = event.target.value?.toString().trim().toUpperCase();
+    if (query?.length > 1) {
+        this.publicReports  = this.reportMap.public.filter(db => db.config?.title?.toUpperCase().includes(query));
+        this.sharedReports  = this.reportMap.shared.filter(db => db.config?.title?.toUpperCase().includes(query));
+        this.privateReports = this.reportMap.private.filter(db => db.config?.title?.toUpperCase().includes(query));
+        this.roleReports    = this.reportMap.group.filter(db => db.config?.title?.toUpperCase().includes(query));
     } else {
-      this.publicReports = this.reportMap.public; 
-      this.sharedReports = this.reportMap.shared; 
-      this.privateReports = this.reportMap.private; 
-      this.roleReports = this.reportMap.group; 
+        ({ public: this.publicReports, shared: this.sharedReports, private: this.privateReports, group: this.roleReports } = this.reportMap);
     }
   }
 

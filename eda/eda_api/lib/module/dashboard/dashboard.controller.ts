@@ -1761,19 +1761,23 @@ function insertServerLog(
     date.getSeconds()
   ServerLogService.log({ level, action, userMail, ip, type, date_str })
 }
+async function setDasboardsAuthorDate(dashboards: any[], res, next) {
+  for (const reportType of dashboards) {
+    for (const report of reportType) {
+      // Setear la fecha si la tiene, sino, asignarle el día de hoy
+      report.config.createdAt = report.config.createdAt?.length > 0
+        ? report.config.createdAt.toString().split("T")[0]
+        : new Date().toISOString().split("T")[0];
 
-function setDasboardsAuthorDate(dashboards: any[], res, next) {
-  dashboards.forEach(reportType => {
-    reportType.forEach(async (report) => {
-        // Setear la fecha si la tiene, sino, asignarle el dia de hoy
-        if (report.config.createdAt)
-          report.config.createdAt && report.config.createdAt.length > 0 ? report.config.createdAt = report.config.createdAt.toString().split("T")[0] : report.config.createdAt = new Date().toISOString().toString().split("T")[0]; 
-              
-        //Si no tiene autor lo recuperamos a partir del id del user que ha creado el report
-        if (!report.config.author)
-          await UserController.getUserName(report, res, next).then(result => { result ? report.config.author = result.name : report.config.author = 'Undefined' });
-
-    });
-  });
+      // Si no tiene autor, lo recuperamos a partir del id del usuario que ha creado el report
+      if (!report.config.author) {
+        try { report.config.author = await UserController.getUserName(report.user, res, next);}
+        catch (error) {
+          console.error("Error fetching user name:", error);
+          report.config.author = 'Undefined';
+        }
+      }
+    }
+  }
 }
 
