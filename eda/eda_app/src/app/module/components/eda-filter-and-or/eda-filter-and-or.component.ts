@@ -40,6 +40,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   itemToPush!: GridsterItemComponent;
   selectedButton: any[]; 
   selectedButtonInitialValue: string; // Valor seleccionado por defecto
+  stringQuery: string = '';
 
   existeIntercambioItems: boolean = false;
 
@@ -82,9 +83,6 @@ export class EdaFilterAndOrComponent implements OnInit {
     // Integración:
     this.dashboard = [];
 
-    // console.log('this.selectedFilters: ', this.selectedFilters)
-    // console.log('this.globalFilters: ', this.globalFilters)
-
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {
       this.dashboard.push({cols: 3, rows:1, y: j, x:0, filter_table: sf.filter_table, filter_column: sf.filter_column, filter_type: sf.filter_type, filter_elements: sf.filter_elements, value: "and"})
@@ -104,9 +102,6 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   onItemChange(item: GridsterItem): void {
-    
-    const topMostItem = this.getTopMostItem();
-    const bottomMostItem = this.getBottomMostItem()
 
     //---------------------------------------------------------------------------------
     // Verificación del intercambio de items, para evitar que se duplique la ejecución
@@ -242,35 +237,28 @@ export class EdaFilterAndOrComponent implements OnInit {
     }
   }
 
+  // Función de generación de la cadena de los filtros AND/OR anidados correspondido con el diseño gráfico de los items.
   creacionQueryFiltros(dashboard: any) {
     
-    // Ordenamiento en el eje y
-    dashboard.sort((a, b) => a.y - b.y); 
-    console.log('Dashboard <<<>>>', dashboard)
+    // Ordenamiento del dashboard en el eje y de menor a mayor. 
+    dashboard.sort((a: any, b: any) => a.y - b.y); 
 
-    // Creamos la variable de stringQuery y la función recursiva
+    // Variable que contiene la nueva cadena de los filtros AND/OR anidados correspondido con el diseño gráfico de los items.
     let stringQuery = 'where ';
 
+    // Función recursiva para la anidación necesaria según el gráfico de los filtros AND/OR.
     function cadenaRecursiva(item: any) {
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_elements, value } = item; // item -> variable recursiva
-      
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_elements, value } = item; // item recursivo
       let resultado = filter_column;
-
       let elementosHijos = [];
 
       for(let n = y+1; n<dashboard.length; n++){
-
-        if(dashboard[n].x === x){
-          break;
-        }
-
-        if(y < dashboard[n].y && dashboard[n].x === x+1){
-          // console.log('filter_column: ', dashboard[h].filter_column)
-          elementosHijos.push(dashboard[n])
-        }
+        if(dashboard[n].x === x) break;
+        if(y < dashboard[n].y && dashboard[n].x === x+1) elementosHijos.push(dashboard[n]);
       }
 
-      const itemGenerico = dashboard.filter((item: any) => item.y === y + 1)[0]
+      // variable que contiene el siguiente item del item tratado por la función recursiva.
+      const itemGenerico = dashboard.filter((item: any) => item.y === y + 1)[0];
 
       if(elementosHijos.length>0) {
         let hijoArreglo = elementosHijos.map(itemHijo => {
@@ -285,30 +273,16 @@ export class EdaFilterAndOrComponent implements OnInit {
           }
         })
 
-        // .join(` sss `);
-        // console.log('hijosCadena: ', hijoArreglo);
-        // console.log('elementosHijos: ', elementosHijos);
-
         resultado = `(${resultado} ${itemGenerico.value.toUpperCase()} (${hijosCadena}))`;
       }
-
       return resultado;
     }
 
 
-    // Empezamos por el primer elemento
-    const primerNivel = dashboard.filter((e: any) => e.y===0 && e.x===0); // [{cols: 3, rows: 1, y: 0, x: 0, filter_table: 'products',filter_column: "productline", ...}] 
-    const primerResultado = primerNivel.map(cadenaRecursiva);
-    // .join(' OR ');
-
-    // console.log('primerNivel:::: ',primerNivel)
-    // console.log('primerResultado:::: ',primerResultado)
-
+    // Iteración del dashboard para conseguir el string anidado correcto
     let itemsString = '( '
     for(let r=0; r<dashboard.length; r++){
       if(dashboard[r].x === 0){
-        console.log(`r: ${r} -> `,dashboard.filter((e: any) => e.y===r).map(cadenaRecursiva))
-        console.log(dashboard[r].value);
         itemsString = itemsString +  (r === 0 ? '' : ' ' + dashboard[r].value.toUpperCase() + ' ' ) + dashboard.filter((e: any) => e.y===r).map(cadenaRecursiva)[0]
       } else {
         continue;
@@ -318,43 +292,14 @@ export class EdaFilterAndOrComponent implements OnInit {
     itemsString = itemsString + ' )';
     stringQuery = stringQuery + itemsString
 
+    this.stringQuery = _.cloneDeep(stringQuery);
+
     console.log('stringQuery: ',stringQuery)
-
-    this.dashboardChanged.emit(this.dashboard);
+    this.dashboardChanged.emit(this.dashboard); // Envio del dashboard - Se puede cambiar el envio. 
   }
 
-    // Función para detectar el ítem más bajo  ==> Función a borrar
-  getBottomMostItem(): GridsterItem | undefined {
-    let bottomMostItem: GridsterItem | undefined;
-    let maxBottom = -1; // Inicializamos con un valor bajo
-
-    for (let item of this.dashboard) {
-      // Calculamos la posición final en Y (bottom) del ítem
-      const bottom = item.y + item.rows;
-
-      // Si el ítem actual es más bajo, lo actualizamos
-      if (bottom > maxBottom) {
-        maxBottom = bottom;
-        bottomMostItem = item;
-      }
-    }
-    return bottomMostItem;
-  }
-
-  // Función para detectar el ítem más alto  ==> Función a borrar
-  getTopMostItem(): GridsterItem | undefined {
-    let topMostItem: GridsterItem | undefined;
-    let minTop = Number.MAX_VALUE; // Inicializamos con un valor alto para buscar el mínimo
-
-    for (let item of this.dashboard) {
-      // Si encontramos un ítem cuyo valor de `y` es menor, lo actualizamos
-      if (item.y < minTop) {
-        minTop = item.y;
-        topMostItem = item;
-      }
-    }
-
-    return topMostItem;
+  onButtonClick() {
+    this.creacionQueryFiltros(this.dashboard);
   }
 
 }
