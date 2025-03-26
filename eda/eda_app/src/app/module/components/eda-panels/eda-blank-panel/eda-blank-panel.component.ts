@@ -118,6 +118,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public index: number;
     public description: string;
     public chartForm: UntypedFormGroup;
+    public previousChartForm: UntypedFormGroup;
     public userSelectedTable: string;
 
     /**Strings */
@@ -274,7 +275,6 @@ export class EdaBlankPanelComponent implements OnInit {
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
             contextMenuItems: PanelOptions.generateMenu(this)
         });
-
     }
 
     /**
@@ -388,6 +388,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.filterTypes = this.chartUtils.filterTypes;
 
         this.ordenationTypes = this.chartUtils.ordenationTypes;
+
     }
 
     private initializeInputs(): void {
@@ -499,6 +500,7 @@ export class EdaBlankPanelComponent implements OnInit {
         PanelInteractionUtils.handleFilters(this, panelContent.query.query);
         PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
         this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
+
         PanelInteractionUtils.verifyData(this);
 
         const config = ChartsConfigUtils.recoverConfig(panelContent.chart, panelContent.query.output.config);
@@ -508,6 +510,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.minispinner = false;
 
         this.graphicType = this.chartForm.value.chart.value;// iniciamos el tipo de gráfico crossTable
+        this.previousChartForm = _.cloneDeep(this.chartForm); // Copiamos el anterior chartForm que habia configurado después de hacer click en el selector de gráficos.
 
         // Verifica si es una tabla cruzada para mostrarlo en pantalla de inicio
         this.dragAndDropAvailable = !this.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
@@ -623,9 +626,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
     public changeChartTypeCheck(type: string, subType: string, config?: ChartConfig) {
+
         if (subType=='tableanalized') {
-            
-            
             Swal.fire({
                 title: $localize`:@@NameTablaQuality:Tabla DataQuality`,
                 text: $localize`:@@SureDataQuality:¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.`,
@@ -639,32 +641,18 @@ export class EdaBlankPanelComponent implements OnInit {
                 if(borrado.value){
                     try {
                         this.changeChartType(type, subType, config)
-                        console.log('ACEPTOOOO')
+                        this.previousChartForm = _.cloneDeep(this.chartForm);
                     } catch (err) {
                         this.alertService.addError(err);
                         throw err;
                     }
+                } else {
+                    this.chartForm = _.cloneDeep(this.previousChartForm);
                 }
             })
-            
-            
-            
-            // this.changeChartType(type, subType, config)
-
-
-
-            console.log('paso por aqui???????');
-            // TODO - Popup no aparece
-            //  this.confirmationService.confirm({
-            //      header: `Warning`,
-            //      message: `Este proceso realiza un seguido de consultas al modelo de datos y puede que le tome su tiempo. ¿Desea continuar?`,
-            //      acceptLabel: $localize`:@@si:Si`,
-            //      rejectLabel: $localize`:@@no:No`,
-            //      icon: 'pi pi-exclamation-triangle',
-            //      accept: () => this.changeChartType(type, subType, config)
-            //  })
         } else {
             this.changeChartType(type, subType, config);
+            this.previousChartForm = _.cloneDeep(this.chartForm);
         }
     }
 
