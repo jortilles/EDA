@@ -298,6 +298,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     this.dashboardChanged.emit(this.dashboard); // Envio del dashboard - Se puede cambiar el envio. 
   }
 
+  // Función que se ejecuta cuando se hace click en el p-selectButton AND | OR
   onButtonClick() {
     this.creacionQueryFiltros(this.dashboard);
   }
