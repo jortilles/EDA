@@ -9,9 +9,8 @@ import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
-
+import { DateUtil } from '../../utils/date.util'
 import _ from 'lodash'
-import { UserController } from './../../module/admin/users/user.controller'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
@@ -35,7 +34,7 @@ export class DashboardController {
       }
 
       // Modificación de fecha y adición de autor si no lo tiene (informes viejos)
-      await setDasboardsAuthorDate([publics, shared, group, privates], res, next);
+      await setDasboardsAuthorDate([publics, shared, group, privates]);
 
 
       // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
@@ -1684,6 +1683,7 @@ export class DashboardController {
         user: req.user._id, // Set the current user as the owner of the cloned dashboard
         group: originalDashboard.group // Maintain the same group permissions
       });
+      console.log(clonedDashboard)
 
       // Save the cloned dashboard to the database
       const savedDashboard = await clonedDashboard.save();
@@ -1761,23 +1761,18 @@ function insertServerLog(
     date.getSeconds()
   ServerLogService.log({ level, action, userMail, ip, type, date_str })
 }
-async function setDasboardsAuthorDate(dashboards: any[], res, next) {
-  for (const reportType of dashboards) {
-    for (const report of reportType) {
-      // Setear la fecha si la tiene, sino, asignarle el día de hoy
-      report.config.createdAt = report.config.createdAt?.length > 0
-        ? report.config.createdAt.toString().split("T")[0]
-        : new Date().toISOString().split("T")[0];
-
-      // Si no tiene autor, lo recuperamos a partir del id del usuario que ha creado el report
-      if (!report.config.author) {
-        try { report.config.author = await UserController.getUserName(report.user, res, next);}
-        catch (error) {
-          console.error("Error fetching user name:", error);
-          report.config.author = 'Undefined';
-        }
-      }
-    }
-  }
+async function setDasboardsAuthorDate(dashboards: any[]) {
+    dashboards.forEach(reportType => {
+      reportType.forEach(async (report) => {
+        
+        // Setear la fecha si la tiene, sino, asignarle el dia de hoy
+        report.config.createdAt = DateUtil.convertDashboardDate(report.config.createdAt);  
+        
+          //Si no tiene autor le asignamos undefined, nunca deberia darse este caso 
+        if (!report.config.author)
+            report.config.author = 'Undefined';
+      
+      });
+  });
 }
 

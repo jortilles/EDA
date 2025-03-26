@@ -298,17 +298,6 @@ export class UserController {
         }
     }
 
-    static async getUserName(req: Request, res: Response, next: NextFunction): Promise<string> {
-        return new Promise((resolve, reject) => {
-            User.findById(req, (err, user) => {
-                if (err || !user) {
-                    console.error("User not found:", err);
-                    return reject('Undefined');
-                }
-                resolve(user.name);
-            });
-        });
-    }
 
     static async getIsAdmin(req: Request, res: Response, next: NextFunction) {
         try {
