@@ -137,14 +137,22 @@ export class HomePageV2 implements OnInit {
   }
 
   //Manejar flow de edición
-  handleEditing(code: string, report?: any) {
+  handleEditing(code: string, report: any) {
     switch (code) {
       case 'done': // Guardar cambios
         if (this.editTitle.trim()) {
           report.config.title = this.editTitle;
-        }
+          //TODO s'ha de canviar a updateDashboardSpecific
+          this.dashboardService.updateDashboard(report._id.toString(), report).subscribe(
+          () => {
+            this.allDashboards[this.allDashboards.findIndex(d => d._id === report._id)] = report;
+            this.alertService.addSuccess($localize`:@@DashboardUpdatedInfo:Report successfully updated.`);
+          },
+          err => this.alertService.addError(err)
+        );
+      }
         break;
-      case 'cancel': // Cancelaar y no guardar los cambios
+      case 'cancel': // Cancelar y no guardar los cambios
         break;
     }
     // Estado de rename reseteado
