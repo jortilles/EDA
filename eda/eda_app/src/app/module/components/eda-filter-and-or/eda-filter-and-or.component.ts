@@ -99,6 +99,10 @@ export class EdaFilterAndOrComponent implements OnInit {
     // Enviando el dashboard inicial al componente <filter-and-or-dialog>
     this.dashboardChanged.emit(this.dashboard);
 
+    // Al inicio de la ejecución
+    // this.creacionQueryFiltros(this.dashboard);
+    // console.log('dashboard: ',this.dashboard)
+
   }
 
   onItemChange(item: GridsterItem): void {
