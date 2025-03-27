@@ -129,11 +129,10 @@ export class HomePageV2 implements OnInit {
   }
 
   // Activar modo edición de un reporte
-  renameReport(report: any, inputElement: HTMLInputElement) {
+  renameReport(report: any) {
     this.isEditing = true;
     this.editingReportId = report._id;
     this.editTitle = report.config.title;
-    setTimeout(() => inputElement?.focus(), 0);
   }
 
   //Manejar flow de edición
