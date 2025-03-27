@@ -778,7 +778,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public async onPanelAction(event: IPanelAction): Promise<void> {
+
     if (event.code === "ADDFILTER") {
+      this.alertService.addSuccess($localize`:@@filteredReportMessage:Por favor, espera un momento mientras procesamos la selección.`);
+
       const data = event?.data;
       const panel = event?.data?.panel;
       let column: any;

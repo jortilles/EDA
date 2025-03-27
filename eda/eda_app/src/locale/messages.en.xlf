@@ -4398,6 +4398,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Cancelar</source>
         <target>Cancel</target>       
       </trans-unit>
+      <trans-unit id="filteredReportMessage">
+        <source>Por favor, espera un momento mientras procesamos la selección.</source>
+        <target>Please wait a moment while we process your selection.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
