@@ -253,7 +253,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     // Función recursiva para la anidación necesaria según el gráfico de los filtros AND/OR.
     function cadenaRecursiva(item: any) {
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_elements, value } = item; // item recursivo
-      let resultado = filter_column;
+      let resultado = filter_column; // Valor item genérico para los filtros de la query. 
       let elementosHijos = [];
 
       for(let n = y+1; n<dashboard.length; n++){
