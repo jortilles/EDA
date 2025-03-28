@@ -267,6 +267,9 @@ export class EdaFilterAndOrComponent implements OnInit {
       const itemGenerico = dashboard.filter((item: any) => item.y === y + 1)[0];
 
       if(elementosHijos.length>0) {
+        let space = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        let variableSpace = space.repeat(x+1);
+
         let hijoArreglo = elementosHijos.map(itemHijo => {
           return cadenaRecursiva(itemHijo);
         })
@@ -275,12 +278,9 @@ export class EdaFilterAndOrComponent implements OnInit {
         hijoArreglo.forEach((hijo, index) => {
           hijosCadena = hijosCadena + hijo;
           if(index<elementosHijos.length-1){
-            hijosCadena = hijosCadena + ` ${elementosHijos[index+1].value.toUpperCase()} `
+            hijosCadena = hijosCadena + ` <br> ${variableSpace} ${elementosHijos[index+1].value.toUpperCase()} `
           }
         })
-
-        let space = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-        let variableSpace = space.repeat(x+1);
 
         resultado = `(${resultado} <br> ${variableSpace} ${itemGenerico.value.toUpperCase()} (${hijosCadena}))`;
       }

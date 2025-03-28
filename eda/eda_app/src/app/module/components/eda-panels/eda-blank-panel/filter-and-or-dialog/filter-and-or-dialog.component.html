@@ -1,13 +1,12 @@
 
 <eda-dialog2
     [display]="display"
-    header="Filtros (And / OR)" width="70vw" height="80vh"
+    header="Filtros (And / OR)" width="70vw" height="84vh"
     (apply)="onApplyFilterAndOrDialog()"
     (close)="oncloseFilterAndOrDialog()"
     >
 
     <div content>
-
         <h6>Ordenamiento dinámico de los todos los filtros</h6>
         <eda-filter-and-or [(selectedFilters)]="selectedFilters" [(globalFilters)] ="globalFilters" (dashboardChanged)="handleDashboardChanged($event)"></eda-filter-and-or>
     </div>
