@@ -59,6 +59,10 @@
                                 <i class="mdi mdi-settings"></i> <span i18n="@@mailmanagementHeader">Gestión de
                                     correo y envio de mails</span>
                             </a>
+                            <a routerLinkActive="active"  routerLink="/logs" (click)="ignoreNotSaved()">
+                                <i class="mdi mdi-clipboard-text"></i> <span i18n="@@logsManagement">Gestión de
+                                    Logs</span>
+                            </a>
                         </li>
                         <li>
                             <a (click)="logout()" class="pointer" (click)="ignoreNotSaved()">

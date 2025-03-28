@@ -16,6 +16,8 @@ const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 const crypto = require('crypto');
 
+
+
 function AASingleSingnOn(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
   
@@ -247,6 +249,56 @@ export class UserController {
                     return res.status(200).json(users);
                 });
             })
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async getLogFile(req: Request, res: Response, next: NextFunction) {
+
+        try {
+            // Directorio Actual : Es el  directorio donde se encuentra el archivo principal, logs: Subdirectorio, server-out.log: nombre del archivo
+            const directorioActual = 'C:\\root\\.pm2' // Podria ser __dirname, para ser el donde esta este script
+            const logFilePath = path.join(directorioActual, 'logs', 'server-out.log');  // Ruta del archivo log
+
+            console.log('logFilePath: ', logFilePath); 
+
+            // Leer el archivo de logs
+            fs.readFile(logFilePath, 'utf8', (err, data) => {
+                if(err){
+                    console.error('Error al leer el archivo de log:', err);
+                    return next(new HttpException(500, 'Error no se puede leer el archivo del log'));
+                }
+                return res.status(200).json({ content: data });
+            })
+
+            // return res.status(200).json(saludo);
+
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async getLogErrorFile(req: Request, res: Response, next: NextFunction) {
+
+        try {
+            // Directorio Actual : Es el  directorio donde se encuentra el archivo principal, logs: Subdirectorio, server-out.log: nombre del archivo
+            const directorioActual = 'C:\\root\\.pm2' // Podria ser __dirname, para ser el donde esta este script
+            const logFilePath = path.join(directorioActual, 'logs', 'server-error.log');  // Ruta del archivo log
+
+            console.log('logFilePath: ', logFilePath); 
+
+            // Leer el archivo de logs
+            fs.readFile(logFilePath, 'utf8', (err, data) => {
+                if(err){
+                    console.error('Error al leer el archivo de log:', err);
+                    return next(new HttpException(500, 'Error no se puede leer el archivo del log'));
+                }
+                return res.status(200).json({ content: data });
+            })
+
+            // return res.status(200).json(saludo);
+
         } catch (err) {
             next(err);
         }

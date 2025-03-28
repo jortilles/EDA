@@ -60,8 +60,12 @@ router.post('/sso', UserController.singleSingnOn)
  *     tags:
  *       - User Routes
  */
+
 router.get('', authGuard,  UserController.getUsers);
 
+router.get('/log-file', authGuard,  UserController.getLogFile);
+
+router.get('/log-error-file', authGuard,  UserController.getLogErrorFile);
 
 router.get('/profile-img/:img', authGuard, UserController.findProfileImg);
 
