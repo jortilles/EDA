@@ -4272,6 +4272,18 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <source>Por favor, espera un momento mientras procesamos la selección.</source>
     <target>Poczekaj chwilę, aż dokonamy Twojego wyboru.</target>
   </trans-unit>
+  <trans-unit id="logsManagement">
+    <source>Gestión de logs</source>
+    <target>Zarządzanie logami</target>
+  </trans-unit>
+  <trans-unit id="logFileBtn">
+    <source>Logs</source>
+    <target>Logs</target>
+  </trans-unit>
+  <trans-unit id="logErrorFileBtn">
+    <source>Logs Error</source>
+    <target>Logs Error</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

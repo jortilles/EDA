@@ -4363,6 +4363,18 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Por favor, espera un momento mientras procesamos la selección.</source>
         <target>Si us plau, espera un moment mentre processem la selecció.</target>
       </trans-unit>
+      <trans-unit id="logsManagement">
+        <source>Gestión de logs</source>
+        <target>Gestió de logs</target>
+      </trans-unit>
+      <trans-unit id="logFileBtn">
+        <source>Logs</source>
+        <target>Logs</target>
+      </trans-unit>
+      <trans-unit id="logErrorFileBtn">
+        <source>Logs Error</source>
+        <target>Logs Error</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
