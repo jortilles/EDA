@@ -279,7 +279,10 @@ export class EdaFilterAndOrComponent implements OnInit {
           }
         })
 
-        resultado = `(${resultado} ${itemGenerico.value.toUpperCase()} (${hijosCadena}))`;
+        let space = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        let variableSpace = space.repeat(x+1);
+
+        resultado = `(${resultado} <br> ${variableSpace} ${itemGenerico.value.toUpperCase()} (${hijosCadena}))`;
       }
       return resultado;
     }
@@ -289,7 +292,7 @@ export class EdaFilterAndOrComponent implements OnInit {
     let itemsString = '( '
     for(let r=0; r<dashboard.length; r++){
       if(dashboard[r].x === 0){
-        itemsString = itemsString +  (r === 0 ? '' : ' ' + dashboard[r].value.toUpperCase() + ' ' ) + dashboard.filter((e: any) => e.y===r).map(cadenaRecursiva)[0]
+        itemsString = itemsString +  (r === 0 ? '' : ' ' + dashboard[r].value.toUpperCase() + ' ' ) + dashboard.filter((e: any) => e.y===r).map(cadenaRecursiva)[0] + `<br>`;
       } else {
         continue;
       }
