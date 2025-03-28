@@ -255,8 +255,39 @@ export class EdaFilterAndOrComponent implements OnInit {
     // Función recursiva para la anidación necesaria según el gráfico de los filtros AND/OR.
     function cadenaRecursiva(item: any) {
       const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_elements, value } = item; // item recursivo
-      let resultado = `\"${filter_table}\".\"${filter_column}\"`; // Valor item genérico para los filtros de la query. 
-      let elementosHijos = [];
+
+
+      // Valor item genérico para los filtros de la query. 
+      // Primero tratamos el valor genérico
+
+      // filter_type:  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
+      let filter_type_value = '';
+      if(filter_type === 'not_in'){
+        filter_type_value = 'not in';
+      } else {
+        if(filter_type === 'not_like') {
+          filter_type_value = 'not like';
+        } else {
+          if(filter_type === 'not_null') {
+            filter_type_value = 'is not null';
+          } else {
+            if(true){
+              filter_type_value = filter_type;
+            }
+          }
+        }
+      }
+
+      // filter_elements: 
+
+
+
+      let resultado = `\"${filter_table}\".\"${filter_column}\" ${filter_type_value}`;
+      
+      
+
+
+      let elementosHijos = []; // Arreglo de items hijos
 
       for(let n = y+1; n<dashboard.length; n++){
         if(dashboard[n].x === x) break;
