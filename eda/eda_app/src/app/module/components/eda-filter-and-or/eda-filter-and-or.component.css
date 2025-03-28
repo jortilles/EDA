@@ -6,7 +6,7 @@
     width: 96%;
     /* Es el valor por el cual dara espacio para escribir la query  */
     /* width: 65%;  */
-    height: 55%;
+    height: 50%;
 }
 
 .gridster .gridster-column {
@@ -36,23 +36,23 @@
 /* Ajustar el tamaño del botón */
 .small-button .p-button {
     padding: 3px 6px !important;  /* Reduce el padding (espaciado interno) */
-    height: 15px !important;      /* Reduce la altura del botón */
+    height: 22px !important;      /* Reduce la altura del botón */
     min-width: 20px !important;   /* Ajusta el ancho mínimo del botón */
-    font-size: 6px !important;   /* Cambia el tamaño de la fuente (si lo deseas) */
+    font-size: 8px !important;   /* Cambia el tamaño de la fuente (si lo deseas) */
     font-style: italic;
+    font-weight: 500;
 }
 
 /* Asegurarse de que el contenedor también sea pequeño */
 .small-button .p-selectbutton {
-    height: 25px !important;      /* Reduce la altura */
-    padding: 3.5px 0px !important;  /* Ajusta el padding */
+    height: 22px !important;      /* Reduce la altura */
 }
 
 .texto-filtro {
     font-style: italic;
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: rgb(73, 80, 87);
-    /* font-weight: bold; */
+    margin: 5px 10px 5px 10px;
 }
 
 /* Clase que alinea el texto a la derecha cuando no hay botón */
