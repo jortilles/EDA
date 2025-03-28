@@ -15,6 +15,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 const crypto = require('crypto');
+const eda_api_config = require('../../../../config/eda_api_config.js');
 
 
 
@@ -257,11 +258,8 @@ export class UserController {
     static async getLogFile(req: Request, res: Response, next: NextFunction) {
 
         try {
-            // Directorio Actual : Es el  directorio donde se encuentra el archivo principal, logs: Subdirectorio, server-out.log: nombre del archivo
-            const directorioActual = 'C:\\root\\.pm2' // Podria ser __dirname, para ser el donde esta este script
-            const logFilePath = path.join(directorioActual, 'logs', 'server-out.log');  // Ruta del archivo log
-
-            console.log('logFilePath: ', logFilePath); 
+            // Directorio Actual : Es el  directorio donde se encuentra el archivo principal
+            const logFilePath = eda_api_config.log_file;  
 
             // Leer el archivo de logs
             fs.readFile(logFilePath, 'utf8', (err, data) => {
@@ -282,11 +280,8 @@ export class UserController {
     static async getLogErrorFile(req: Request, res: Response, next: NextFunction) {
 
         try {
-            // Directorio Actual : Es el  directorio donde se encuentra el archivo principal, logs: Subdirectorio, server-out.log: nombre del archivo
-            const directorioActual = 'C:\\root\\.pm2' // Podria ser __dirname, para ser el donde esta este script
-            const logFilePath = path.join(directorioActual, 'logs', 'server-error.log');  // Ruta del archivo log
-
-            console.log('logFilePath: ', logFilePath); 
+            // Directorio Actual : Es el  directorio donde se encuentra el archivo principal
+            const logFilePath = eda_api_config.error_log_file;  
 
             // Leer el archivo de logs
             fs.readFile(logFilePath, 'utf8', (err, data) => {
