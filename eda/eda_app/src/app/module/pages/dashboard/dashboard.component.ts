@@ -763,7 +763,124 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.gridster.setOption('lanes', this.lanes).reload();
             this.initMobileSizes();
 
+  public reloadOnGlobalFilter(): void {
+    //not saved alert message
+    this.dashboardService._notSaved.next(true);
+
+    // Simula el click en el btn
+    setTimeout(() => {
+      let btn = document.getElementById("dashFilterBtn");
+      if (btn) btn.click();
+      else this.reloadPanels();
+    }, 500);
+  }
+
+  public async onPanelAction(event: IPanelAction): Promise<void> {
+
+    if (event.code === "ADDFILTER") {
+      this.alertService.addSuccess($localize`:@@filteredReportMessage:Por favor, espera un momento mientras procesamos la selección.`);
+
+      const data = event?.data;
+      const panel = event?.data?.panel;
+      let column: any;
+      console.log(event)
+      if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
+        if (data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
+          column = event.data.query.find((query: any) => query?.display_name?.default === data.query[0].display_name.default);
+        else 
+          column = event.data.query.find((query: any) => query?.display_name?.default === data.filterBy);         
+      }else { //Si el evento es de un chart de la libreria D3Chart o Leaflet
+        column = event.data.query.find((query: any) => query?.display_name?.default.localeCompare(data.filterBy, undefined, { sensitivity: 'base' }) === 0);
+      }
+      console.log('Tengo la columna', column);
+      const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
+      console.log('Tengo la table', table);
+      if (column && table) {
+        let config = this.setPanelsToFilter(panel);
+        //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
+        if (this.gFilter.globalFilters.length > 0) {
+          //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla, si lo hay, hay que borrarlo
+          let chartToRemove = this.gFilter.globalFilters.find(
+            (f) => f.table.value === table.table_name && f.column.value.column_name === column.column_name &&
+            f.selectedItems.includes(event?.data.label) && f.selectedItems.length === 1 && f.hasOwnProperty("fromChart")
+          );
+          if (chartToRemove) {
+            let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label &&
+              element.filter.table.label === chartToRemove.table.label)
+            // Borramos del global filter el filtro a borrar fromChart
+            this.gFilter.removeGlobalFilter(chartToRemove, true);            
+            // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
+            if (filterToAddIndx !== -1 ) { 
+              await this.gFilter.onGlobalFilter(this.lastFilters[filterToAddIndx].filter, table.table_name)
+              this.lastFilters.splice(filterToAddIndx, 1);
+            }
+            
+            // Actualizamos global filter
+              this.reloadOnGlobalFilter(); 
+          } else {
+            //CREAMOS NUEVO FILTRO EN CHART
+            //Recuperamos filtros activos del global filter
+            let actualFilter = this.gFilter.globalFilters.filter(
+              (f) =>f.table.value === table.table_name && f.column.value.column_name === column.column_name
+            )[0];
+            if (actualFilter) {
+              //Si last filters no tiene uno con la misma label lo guardamos
+              if (!this.lastFilters.includes(actualFilter)) {
+                this.lastFilters.push({filterName: actualFilter.column.label, filter: actualFilter});
+              } else {
+                //Si label es igual lo remplazamos
+                if (this.lastFilters.includes(actualFilter.column.label)) {
+                  let filterToRemoveIndx = this.lastFilters.findIndex(element => element.filterName === actualFilter.column.label)
+                  this.lastFilters.splice(filterToRemoveIndx, 1);
+                  this.lastFilters.push(({ filterName: actualFilter.column.label, filter: actualFilter }));
+                }
+              }
+            }
+
+            // Creamos un filtro nuevo con from chart true
+            this.chartFilter = {
+              id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
+              isGlobal: true,
+              applyToAll: config.applyToAll,
+              panelList: config.panelList.map((p) => p.id),
+              table: {label: table.display_name.default,value: table.table_name,},
+              column: {label: column.display_name.default,value: column,},
+              selectedItems: [data.label], // valor del chart que hemos clicado
+              fromChart: true, //fromChart = true indica que se ha creado mediante un click
+            };
+            //Borramos filtros activos del global filter, pero los mantenemos guardados
+            this.lastFilters.forEach((element) => { this.gFilter.removeGlobalFilter(element.filter, true);});
+
+            //Añadimos filtros nuevos
+            try { await this.gFilter.onGlobalFilter(this.chartFilter, table.table_name); this.reloadOnGlobalFilter(); }
+            catch (error) { console.log(error) }
+          }
         }
+        
+        // NO TENEMOS NINGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
+        else { 
+            // Creamos un filtro nuevo con from chart true
+            this.chartFilter = {
+              id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
+              isGlobal: true,
+              applyToAll: config.applyToAll,
+              panelList: config.panelList.map((p) => p.id),
+              table: { label: table.display_name.default, value: table.table_name,},
+              column: { label: column.display_name.default, value: column },
+              selectedItems: [data.label], // valor del chart que hemos clicado
+              fromChart: true, //fromChart = true indica que se ha creado mediante un click
+          };
+          
+          // Esperamos a que se apliquen los filtros, para luego recargar el global filter
+          await this.gFilter.onGlobalFilter(this.chartFilter,table.table_name);
+          this.reloadOnGlobalFilter();
+        }
+      }
+    } else if (event.code === "QUERYMODE") {
+      console.log(' ES un querymode..... preguntar a marc');
+      this.setPanelsQueryMode();
+    }else{
+      console.log('paso por aqui ' )
     }
 
    
