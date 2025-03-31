@@ -298,10 +298,10 @@ export class GlobalFiltersService {
 
     private formatGlobalFilter(globalFilter: any) {
         const isDate = globalFilter.column.value.column_type === 'date';
-
         const formatedFilter = {
             filter_id: globalFilter.id,
             filter_table: globalFilter.table.value,
+            filter_column_type: globalFilter.column.value.column_type,
             filter_column: globalFilter.column.value.column_name,
             filter_type: isDate ? 'between' : 'in',
             filter_elements: this.assertGlobalFilterItems(globalFilter),
@@ -325,6 +325,7 @@ export class GlobalFiltersService {
             filter_id: globalFilter.id,
             filter_table: globalFilter.table_id || globalFilter.selectedTable.table_name,
             filter_column: globalFilter.selectedColumn.column_name,
+            filter_column_type: globalFilter.selectedColumn.column_type,
             filter_type: isDate ? 'between' : 'in',
             filter_elements: this.assertGlobalFilterItems(globalFilter),
             pathList: pathList,
