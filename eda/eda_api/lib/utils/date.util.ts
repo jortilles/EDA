@@ -27,4 +27,12 @@ export class DateUtil {
 
     }
 
+    public static convertDashboardDate(date: string) {
+        // Modificamos la fecha para solo mostrar YYYY/MM/DD sin la hora
+        if (date && date.length > 0) {
+            return date.split("T")[0];
+        } else {
+            return new Date().toISOString().split("T")[0];
+        }
+    }
 }
