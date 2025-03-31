@@ -83,8 +83,8 @@ export class EdaFilterAndOrComponent implements OnInit {
     // Integración:
     this.dashboard = [];
 
-    // console.log('this.selectedFilters: ', this.selectedFilters);
-    // console.log('this.globalFilters: ', this.globalFilters);
+    console.log('this.selectedFilters: ', this.selectedFilters);
+    console.log('this.globalFilters: ', this.globalFilters);
 
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {

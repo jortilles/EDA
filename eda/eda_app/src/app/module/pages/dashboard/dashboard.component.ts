@@ -409,8 +409,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                         grp = res.dashboard.group;
                     }
 
-                    console.log('MIRANDO AQUI',res.dashboard.config);
-
                     // Si el dashboard no te cap panel es crea un automatic
                     if (!res.dashboard.config.panel) {
                         me.panels.push(
@@ -444,7 +442,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     } else {
                         // Si te panels els carrega
                         me.panels = config.panel;
-                        console.log('ME => panels =>', me.panels)
 
                         me.panels.forEach( p => {
 
@@ -608,9 +605,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private setPanelSizes(panel) {
 
-        console.log('this.toLitle: ', this.toLitle)
-        console.log('this.panels: ', this.panels)
-
         if (this.toLitle) {
             if (this.panels.length > 0) {
                 const lastPanel = this.panels[this.panels.length - 1];
@@ -688,16 +682,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     public onResize(event) {
 
         const innerWidth = event.target.innerWidth;
-        console.log('Hola onResize')
 
         if (innerWidth >= 1200) {
             this.toLitle = false;
             this.toMedium = false;
-            console.log('IGUAL y/o POR arriba del 1200')
         } else {
             this.toLitle = true;
             this.toMedium = false;
-            console.log('POR abajo del 1200')
             // this.gridster.setOption('lanes', this.lanes).reload();
         }
     }
@@ -924,8 +915,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     // Sidebar functions
     public onAddWidget(): void {
 
-        console.log('AGREGANDOOOOOO')
-
         let panel = new EdaPanel({
             id: this.fileUtiles.generateUUID(),
             title: $localize`:@@newPanelTitle2:Nuevo Panel`,
@@ -972,7 +961,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         let valor = this.getBottomMostItem();
-        console.log('El menor valor: ', valor);
         this.height = (valor.y + valor.rows + 4) * 32;
     }
 
@@ -1203,11 +1191,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
     onItemChange(item: GridsterItem): void {
-        console.log('Cambio en el Item:', item);
-        console.log('Todos los valores => Dashboard:', this.dashboard);
-        
         let valor = this.getBottomMostItem();
-        console.log('El menor valor: ', valor);
         this.height = (valor.y + valor.rows + 4) * 32;
     }
 
