@@ -4502,6 +4502,7 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="tutorialTitleThirdPPanel" datatype="html">
         <source>3. KPIs y alertas con edalitics:</source>
         <target>3. KPIs and alerts with edalitics:</target>
+      </trans-unit>
       <trans-unit id="chartTypesTableAnalized" datatype="html">
         <source>Tabla DataQuality</source>
         <target>Table DataQuality</target>
