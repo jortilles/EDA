@@ -88,12 +88,12 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {
-      this.dashboard.push({cols: 3, rows:1, y: j, x:0, filter_table: sf.filter_table, filter_column: sf.filter_column, filter_type: sf.filter_type, filter_elements: sf.filter_elements, value: "and"})
+      this.dashboard.push({cols: 3, rows:1, y: j, x:0, filter_table: sf.filter_table, filter_column: sf.filter_column, filter_type: sf.filter_type, filter_column_type: sf.filter_column_type, filter_elements: sf.filter_elements, value: "and"})
     })
 
     // Agregado de Filtros Globales
     this.globalFilters.forEach((gf, i) => {
-      this.dashboard.push({cols: 3, rows:1, y: i + this.selectedFilters.length, x:0, filter_table: gf.filter_table ,filter_column: gf.filter_column, filter_type: gf.filter_type, filter_elements: gf.filter_elements, value: "and"})
+      this.dashboard.push({cols: 3, rows:1, y: i + this.selectedFilters.length, x:0, filter_table: gf.filter_table ,filter_column: gf.filter_column, filter_type: gf.filter_type, filter_column_type: gf.filter_column_type, filter_elements: gf.filter_elements, value: "and"})
     })
 
     // Se crea una clonación del dashboard
@@ -257,13 +257,11 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // Función recursiva para la anidación necesaria según el gráfico de los filtros AND/OR.
     function cadenaRecursiva(item: any) {
-      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_elements, value } = item; // item recursivo
+      // item recursivo
+      const { cols, rows, y, x, filter_table, filter_column, filter_type, filter_column_type, filter_elements, value } = item;
 
-
-      // Valor item genérico para los filtros de la query. 
-      // Primero tratamos el valor genérico
-
-      /////// filter_type ///////  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
+      // Verificar  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
+      ////////////////////////////////////////////////// filter_type ////////////////////////////////////////////////// 
       let filter_type_value = '';
       if(filter_type === 'not_in'){
         filter_type_value = 'not in';
@@ -282,7 +280,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       }
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      /////// filter_elements /////// 
+      ////////////////////////////////////////////////// filter_elements ////////////////////////////////////////////////// 
       let filter_elements_value = '';
       // console.log('longitud: ',filter_elements.length)
       if(filter_elements.length === 0) {}
@@ -291,31 +289,49 @@ export class EdaFilterAndOrComponent implements OnInit {
         if(filter_elements[0].value1.length === 1){
           // Para solo un valor  ==> Agregar mas tipos de valores si fuera necesario
 
-          // Valor de tipo string
-          if(typeof(filter_elements[0].value1[0]) === 'string'){
-            filter_elements_value = filter_elements_value + `'${filter_elements[0].value1[0]}'`;
+          // Valor de tipo text
+          if(filter_column_type === 'text'){
+            filter_elements_value = filter_elements_value + `'${filter_type === 'like' || filter_type === 'not_like'? '%': ''}${filter_elements[0].value1[0]}${filter_type === 'like' || filter_type === 'not_like'? '%': ''}'`;
           } 
 
-          // Valor de tipo numérico
-          if(typeof(filter_elements[0].value1[0]) === 'number'){
+          // Valor de tipo numeric
+          if(filter_column_type === 'numeric'){
             filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
           } 
 
         } else {
           // Para varios valores
           filter_elements_value = filter_elements_value + '('
-          filter_elements[0].value1.forEach((element: any, index: number) => {
-            filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
-          })
 
+          console.log('filter_column_type: ', filter_column_type);
+
+          // Valores de tipo text
+          if(filter_column_type === 'text'){
+            filter_elements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            })
+          }
+
+          // Valores de tipo numeric
+          if(filter_column_type === 'numeric'){
+            filter_elements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `${element}` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            })
+          }
+
+          // Valores que no tengan definido un filter_column_type
+          if(filter_column_type === undefined){
+            filter_elements[0].value1.forEach((element: any, index: number) => {
+              filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+            })
+          }
         }
       }
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+      // RESULTADO DE TODO EL STRING
       let resultado = `\"${filter_table}\".\"${filter_column}\" ${filter_type_value} ${filter_elements_value}`;
       
-      
-
 
       let elementosHijos = []; // Arreglo de items hijos
 
