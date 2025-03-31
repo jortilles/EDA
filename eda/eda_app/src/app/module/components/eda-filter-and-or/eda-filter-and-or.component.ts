@@ -59,8 +59,8 @@ export class EdaFilterAndOrComponent implements OnInit {
       },
       minCols: 10,
       maxCols: 10,
-      minRows: 8,
-      maxRows: 8,
+      minRows: 9, // Hacer dinámico este valor
+      maxRows: 9, // Hacer dinámico este valor
       margin: 0.2, // Reduce el margen entre celdas
       fixedRowHeight: 29, // Altura del elemento
       fixedColWidth: 80, // Anchura del elemento
@@ -82,6 +82,9 @@ export class EdaFilterAndOrComponent implements OnInit {
 
     // Integración:
     this.dashboard = [];
+
+    // console.log('this.selectedFilters: ', this.selectedFilters);
+    // console.log('this.globalFilters: ', this.globalFilters);
 
     // Agregado de Filtros de Panel
     this.selectedFilters.forEach((sf, j) => {
@@ -260,7 +263,7 @@ export class EdaFilterAndOrComponent implements OnInit {
       // Valor item genérico para los filtros de la query. 
       // Primero tratamos el valor genérico
 
-      // filter_type:  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
+      /////// filter_type ///////  (Hay dos filtros por revisar ==> | not_null_nor_empty | null_nor_empty | )
       let filter_type_value = '';
       if(filter_type === 'not_in'){
         filter_type_value = 'not in';
@@ -277,12 +280,39 @@ export class EdaFilterAndOrComponent implements OnInit {
           }
         }
       }
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      // filter_elements: 
+      /////// filter_elements /////// 
+      let filter_elements_value = '';
+      // console.log('longitud: ',filter_elements.length)
+      if(filter_elements.length === 0) {}
+      else {
+        console.log('valores: ', filter_elements[0].value1)
+        if(filter_elements[0].value1.length === 1){
+          // Para solo un valor  ==> Agregar mas tipos de valores si fuera necesario
 
+          // Valor de tipo string
+          if(typeof(filter_elements[0].value1[0]) === 'string'){
+            filter_elements_value = filter_elements_value + `'${filter_elements[0].value1[0]}'`;
+          } 
 
+          // Valor de tipo numérico
+          if(typeof(filter_elements[0].value1[0]) === 'number'){
+            filter_elements_value = filter_elements_value + `${filter_elements[0].value1[0]}`;
+          } 
 
-      let resultado = `\"${filter_table}\".\"${filter_column}\" ${filter_type_value}`;
+        } else {
+          // Para varios valores
+          filter_elements_value = filter_elements_value + '('
+          filter_elements[0].value1.forEach((element: any, index: number) => {
+            filter_elements_value += `'${element}'` + `${index===(filter_elements[0].value1.length-1)? ')': ','}`;
+          })
+
+        }
+      }
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      let resultado = `\"${filter_table}\".\"${filter_column}\" ${filter_type_value} ${filter_elements_value}`;
       
       
 
