@@ -1,10 +1,11 @@
-import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter } from '@angular/core';
 import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
 import { ChartsColors } from '@eda/configs/index';
 import { EdaD3 } from './eda-d3';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
+import { ChartUtilsService } from '@eda/services/service.index';
 
 
 @Component({
@@ -16,6 +17,7 @@ import * as dataUtils from '../../../services/utils/transform-data-utils';
 export class EdaD3Component implements AfterViewInit, OnInit {
 
   @Input() inject: EdaD3;
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
@@ -23,15 +25,15 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   svg: any;
   data: any;
   colors: Array<string>;
+  assignedColors: any[];
   firstColLabels: Array<string>;
   metricIndex: number;
   width: number;
   heigth: number;
-
   div = null;
 
 
-  constructor() {
+  constructor(private chartUtilService : ChartUtilsService) {
   }
 
 
@@ -44,7 +46,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
-
+    this.assignedColors = this.inject.assignedColors || []; 
   }
 
   ngAfterViewInit() {
@@ -56,6 +58,11 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       this.draw();
     }
 
+  }
+
+  ngOnDestroy(): void {
+    if (this.div)
+      this.div.remove();
   }
 
 
@@ -75,7 +82,12 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     //Remove metric key and assign value
     const metricKey = keys.splice(this.metricIndex, 1)[0];
 
-    const color = d3.scaleOrdinal(this.firstColLabels, this.colors).unknown("#ccc");
+    //Valores de assignedColors separados
+    const valuesTree = this.assignedColors.map((item) => item.value);
+    const colorsTree = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
+    
+    //Funcion de ordenación de colores de D3
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree).unknown("#ccc");
 
     let { _nodes, _links } = this.graph(keys, data, metricKey);
 
@@ -107,9 +119,9 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("height", d => d.y1 - d.y0)
       .attr("width", d => d.x1 - d.x0)
       .attr("fill", "#242a33")
-
-
-    svg.append("g")
+      
+      
+      svg.append("g")
       .attr("fill", "none")
       .selectAll("g")
       .data(links)
@@ -117,7 +129,6 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("d", sankeyLinkHorizontal())
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
-
           const props = this.inject.linkedDashboard;
           const value = this.inject.data.values.filter(row => {
             let allIn = true;
@@ -129,12 +140,21 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
           const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
-
+          
+        } else {
+          //Passem aquestes dades
+          const label = data.source.name;
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({ label, filterBy });
         }
       })
       .on('mouseover', this.showLinks)
       .on('mouseout', this.hideLinks)
-      .attr("stroke", d => color(d.names[0]))
+        .attr("stroke", d => { 
+          //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+          return  colorsTree[valuesTree.findIndex((item) => d.names.includes(item))] || color(d.names[0]);
+        })
+        
       .attr("stroke-width", d => d.width)
       .style("mix-blend-mode", "multiply")
       .on('mouseover', (d, data) => {
@@ -149,10 +169,9 @@ export class EdaD3Component implements AfterViewInit, OnInit {
         const link = this.inject.linkedDashboard ? `<br/> <h6>${thirdRow}</h6>` : '';
         let text = `${firstRow} <br/> ${secondRow} ${link}`;
 
-        const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (14 / 12)]);
-        const pixelWithRate = 7;
+        const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (18 / 12)]);
+        const pixelWithRate = 8;
         const width = maxLength * pixelWithRate + 10;
-        const height = this.inject.linkedDashboard ? '5em' : '4em';
 
         this.div = d3.select("body").append('div')
           .attr('class', 'd3tooltip')
@@ -160,7 +179,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
         this.div
           .style('width', `${width}px`)
-          .style('height', height);
+          .style('height', 'auto');
 
         this.div.transition()
           .duration(200)
@@ -199,7 +218,9 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("dy", "0.35em")
       .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
       .style("font-family", "var(--panel-font-family)")
-      .attr("fill", "var(--panel-font-color)")
+      //.attr("fill", "var(--panel-font-color)")
+      .style("pointer-events", "none")
+      .attr("fill", "white")
       .style("font-size", "var(--panel-big)")
       .text(d => d.name)
       .append("tspan")

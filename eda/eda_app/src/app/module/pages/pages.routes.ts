@@ -10,6 +10,7 @@ import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.compon
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 import { ModelSettingsComponent } from './model-settings/model-settings.component';
 import { AboutComponent } from './about/about.component';
+import { LogsComponent } from './logs/logs.component';
 
 
 // Guard
@@ -34,6 +35,7 @@ const pagesRoutes: Routes = [
     { path: 'models-management', component: ModelSettingsComponent, canActivate:[VerifyTokenGuard]},
     { path: 'alerts-management', component: AlertsManagementComponent, canActivate:[VerifyTokenGuard]},
     { path: 'mail-management', component: MailManagementComponent, canActivate:[VerifyTokenGuard]},
+    { path: 'logs', component: LogsComponent, canActivate:[VerifyTokenGuard]},
     { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

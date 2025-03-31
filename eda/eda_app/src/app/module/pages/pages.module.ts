@@ -6,7 +6,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { ComponentsModule } from '../components/components.module';
 import { GridsterModule } from 'angular2gridster';
 
-// Component
+// Components
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
@@ -37,6 +37,7 @@ import { AlertsManagementComponent } from './alerts-management/alerts-management
 import { MailManagementComponent } from './mail-management/mail-management.component';
 import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
 import { UrlsActionComponent } from './dashboard/urls-action/urls-action.component';
+import { LogsComponent } from './logs/logs.component';
 
 
 // Routes
@@ -46,7 +47,6 @@ import { UploadFileComponent } from './data-sources/data-source-detail/upload-fi
 import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.component';
 import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
 import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.component';
-
 
 
 @NgModule({
@@ -92,7 +92,8 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
         DashboardMailDialogComponent,
         SaveAsDialogComponent,
         EditStylesDialogComponent,
-        UrlsActionComponent
+        UrlsActionComponent,
+        LogsComponent,
     ]
 })
 export class PagesModule { }

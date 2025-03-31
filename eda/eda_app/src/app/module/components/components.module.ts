@@ -46,7 +46,7 @@ import {
     CumSumAlertDialogComponent,
     EdaSunburstComponent,
     SunburstDialogComponent,
-    WhatIfDialogComponent
+    WhatIfDialogComponent,
  } from './component.index';
  
 import { SafeUrlPipe } from './eda-panels/eda-title-panel/urlSanitizer.pipe';
@@ -135,7 +135,7 @@ import { DragDropComponent } from './drag-drop/drag-drop.component';
         WhatIfDialogComponent,
         SunburstDialogComponent,
         DragDropComponent,
-        MapCoordDialogComponent
+        MapCoordDialogComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

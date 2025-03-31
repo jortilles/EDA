@@ -35,7 +35,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
         this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
-        this.labels = this.myPanelChartComponent.componentRef.instance.labels;
+        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
       }, 0)
     }
   }
@@ -58,7 +58,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   }
 
   handleInputColor(serie) {
-    this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(this.colors.map(color => this.hex2rgb(color))));
+    this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(this.colors.map(color => this.hex2rgb(color)),[]));
     this.myPanelChartComponent.changeChartType();
   }
 

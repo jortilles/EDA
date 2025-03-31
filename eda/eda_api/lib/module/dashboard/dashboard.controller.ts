@@ -506,7 +506,7 @@ export class DashboardController {
               'info',
               'DashboardAccessed',
               req.user.name,
-              ds._id + '--' + ds.name
+              dashboard._id + '--' + dashboard.config.title
             )
             return res.status(200).json({ ok: true, dashboard, datasource: ds })
           }
@@ -1358,11 +1358,11 @@ export class DashboardController {
 
         if (!cachedQuery) {
           connection.client = await connection.getclient()
-          const getResults = await connection.execSqlQuery(query)
-          let results = []
-          const resultsRollback = []
-          const oracleDataTypes = []
-          let oracleEval: Boolean = true
+          const getResults = await connection.execSqlQuery(query);
+          let results = [];
+          const resultsRollback = [];
+          const oracleDataTypes = [];
+          let oracleEval: Boolean = true;
           let labels: Array<string>
           if (getResults.length > 0) {
             labels = Object.keys(getResults[0]).map(i => i)
@@ -1372,7 +1372,7 @@ export class DashboardController {
           // Normalize data
 
           for (let i = 0, n = getResults.length; i < n; i++) {
-            const r = getResults[i]
+            const r = getResults[i];
             /** si es oracle  o alguns mysql haig de fer una merda per tornar els numeros normals. */
             /** poso els resultats al resultat i faig una matriu de tipus de numero. també faig una copia de seguretat */
             if (
@@ -1441,7 +1441,7 @@ export class DashboardController {
             for (var i = 0; i < results.length; i++) {
               var e = results[i]
               for (var j = 0; j < e.length; j++) {
-                  if ( results[i][j] ==  eda_api_config.null_value ) {
+                  if ( results[i][j] ===  eda_api_config.null_value ) {
                     results[i][j] = null;
                   }
               }
@@ -1452,6 +1452,7 @@ export class DashboardController {
             CachedQueryService.storeQuery(req.body.model_id, query, output)
           }
 
+          console.log(output);
           console.log(
             '\x1b[32m%s\x1b[0m',
             `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id

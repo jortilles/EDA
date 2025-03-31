@@ -383,14 +383,14 @@ export class GlobalFilterComponent implements OnInit {
         let targetColumn: any;
 
         if (globalFilter.selectedTable) {
-          targetTable = globalFilter.selectedTable.table_name;
-          targetColumn = globalFilter.selectedColumn;
-          targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+            targetTable = globalFilter.selectedTable.table_name;
+            targetColumn = globalFilter.selectedColumn;
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
           // globalFilter.selectedColumn.ordenation_type = 'Asc';
         } else {
-          targetTable = globalFilter.table.value;
-          targetColumn = globalFilter.column.value;
-          targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+            targetTable = globalFilter.table.value;
+            targetColumn = globalFilter.column.value;
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "No";
         }
 
         const queryParams = {

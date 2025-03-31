@@ -48,7 +48,9 @@ export class ChartUtilsService {
 
     public chartTypes: EdaChartType[] = [
         { label: $localize`:@@chartTypes1:Tabla de Datos`, value: 'table', subValue: 'table', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesTableAnalized:Tabla DataQuality`, value: 'table', subValue: 'tableanalized', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes2:Tabla Cruzada`, value: 'crosstable', subValue: 'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesTreeTable:Tabla Árbol`, value: 'treetable', subValue: 'treetable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: 'KPI', value: 'kpi', subValue: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPIBAR:KPI + Gráfico de Barras`, value: 'kpibar', subValue: 'kpibar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesKPILINE:KPI + Gráfico de Lineas`, value: 'kpiline', subValue: 'kpiline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -607,13 +609,13 @@ export class ChartUtilsService {
         return uniqueLabels;
     }
 
-    public transformDataQueryForTable( labels: any[], values: any[]) {
+    public transformDataQueryForTable(labels: any[], values: any[]) {
             const output = [];
             values = values.filter(row => !row.every(element => element === null));
             // Load the Table for a preview
             for (let i = 0; i < values.length; i += 1) {
                 const obj = {};
-                for (let e = 0; e < values[i].length; e += 1) {
+                for (let e = 0; e < values[i].length; e += 1) { 
                     obj[labels[e]] = values[i][e];
                 }
                 output.push(obj);
@@ -633,9 +635,8 @@ export class ChartUtilsService {
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
                 'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid', 'radar', 'stackedbar100'
+                'pyramid', 'radar', 'stackedbar100', 'treetable'
             ];
-
 
         //table (at least one column)
         if (dataDescription.totalColumns > 0) notAllowed.splice(notAllowed.indexOf('table'), 1);
@@ -747,6 +748,12 @@ export class ChartUtilsService {
             ) {
             notAllowed.splice(notAllowed.indexOf('pyramid'), 1);
         }
+
+        //treetable (Al menos tres columnas y dos numéricas que son id y las relaciones_id)
+        if(dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 1) {
+            notAllowed.splice(notAllowed.indexOf('treetable'), 1);
+        }
+
         return notAllowed;
 
     }
@@ -865,6 +872,7 @@ export class ChartUtilsService {
 
         return (<ChartJsConfig>config).colors;
     }
+
 
     public describeData(currentQuery: any, labels: any) {
         let names = this.pretifyLabels(currentQuery, labels);

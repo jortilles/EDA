@@ -2,6 +2,7 @@ import express from 'express';
 import AdminRouter from './module/admin/admin.router';
 import AuthRouter from './module/auth/auth.router';
 import DashboardRouter from './module/dashboard/dashboard.router';
+import QueryRouter from './module/query/query.router';
 import AddTableRouter from './module/addtabletomodel/addtable.router';
 import DataSourceRouter from './module/datasource/datasource.router';
 import UploadsRouter from './module/uploads/uploads.router';
@@ -19,6 +20,8 @@ router.use('/admin', AdminRouter);
 router.use('/auth', AuthRouter);
 
 router.use('/dashboard', DashboardRouter);
+
+router.use('/query', QueryRouter);
 
 router.use('/datasource', DataSourceRouter);
 
