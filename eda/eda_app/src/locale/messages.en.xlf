@@ -4499,7 +4499,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>2. Creación de un nuevo informe y paneles de visualización de datos:</source>
         <target>2. Creation of a new report and data visualisation panels:</target>
       </trans-unit>
-
+      <trans-unit id="tutorialTitleThirdPPanel" datatype="html">
+        <source>3. KPIs y alertas con edalitics:</source>
+        <target>3. KPIs and alerts with edalitics:</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
