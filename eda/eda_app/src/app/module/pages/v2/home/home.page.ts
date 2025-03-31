@@ -10,7 +10,6 @@ import Swal from 'sweetalert2';
 import * as _ from 'lodash';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import { CreateDashboardComponent } from '@eda/shared/components/shared-components.index';
-import { title } from 'process';
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
@@ -43,6 +42,7 @@ export class HomePageV2 implements OnInit {
   isEditing: boolean = false;
   editingReportId: number | null = null;
   editTitle: string = ''; 
+  sortingType: string = sessionStorage.getItem('homeSorting');
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {
@@ -51,19 +51,22 @@ export class HomePageV2 implements OnInit {
 
   private async loadReports() {
     const { publics, shared, dashboards, group } = await lastValueFrom(this.dashboardService.getDashboards());
-    this.publicReports = publics.sort((a, b) => a.config.title.localeCompare(b.config.title));
-    this.privateReports = dashboards.sort((a, b) => a.config.title.localeCompare(b.config.title));
-    this.roleReports = group.sort((a, b) => a.config.title.localeCompare(b.config.title));
-    this.sharedReports = shared.sort((a, b) => a.config.title.localeCompare(b.config.title));
-    this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.sharedReports);
+    this.publicReports = publics;
+    this.privateReports = dashboards;
+    this.roleReports = group;
+    this.sharedReports = shared;
 
-    this.reportMap = {
-      private: this.privateReports,
-      group: this.roleReports,
-      public: this.publicReports,
-      shared: this.sharedReports
-    };
-    this.loadReportTags();
+  this.allDashboards = [].concat(this.publicReports, this.privateReports, this.roleReports, this.sharedReports);
+
+  this.reportMap = {
+    private: this.privateReports,
+    group: this.roleReports,
+    public: this.publicReports,
+    shared: this.sharedReports
+  };
+
+  this.handleSorting();
+  this.loadReportTags();
   }
 
   private async loadReportTags() {
@@ -277,4 +280,27 @@ export class HomePageV2 implements OnInit {
       }
     );
   }
+
+
+  handleSorting() {
+    switch (this.sortingType) {
+      case 'date':
+        this.sortingReports('createdAt', this.reportMap);
+        sessionStorage.setItem("homeSorting", "date");
+        break;
+      default:
+        this.sortingReports('title', this.reportMap);
+        sessionStorage.setItem("homeSorting", "name");
+        break;
+    }
+  }
+
+
+  sortingReports(type: string, reports: any) {
+    this.publicReports = reports.public.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
+    this.privateReports = reports.private.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
+    this.roleReports = reports.group.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
+    this.sharedReports = reports.shared.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
+  }
+
 }

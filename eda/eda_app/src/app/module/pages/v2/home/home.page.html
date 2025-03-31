@@ -84,7 +84,7 @@
       <div class="space-y-2 w-full sm:w-auto">
         <div class="text-sm text-muted-foreground">ORDENAR INFORMES:</div>
         <!-- <span class="text-sm text-muted-foreground">ORDENAR INFORMES:</span> -->
-        <select class="w-full sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm">
+        <select class="w-full sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm" [(ngModel)]="sortingType" (change)="handleSorting()">
           <option value="date">Data creació (asc.)</option>
           <option value="name">Nom</option>
         </select>
