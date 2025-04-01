@@ -4451,6 +4451,83 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Activar funciones del mouse</source>
         <target>Activar funcions del mouse</target>       
       </trans-unit>
+        <trans-unit id="chartTypesTableAnalized" datatype="html">
+        <source>Tabla DataQuality</source>
+        <target>Taula DataQuality</target>
+      </trans-unit>
+      <trans-unit id="atributoLabel" datatype="html">
+        <source>Atributo</source>
+        <target>Atribut</target>
+      </trans-unit>
+      <trans-unit id="atributoConsulta" datatype="html">
+        <source>Consulta</source>
+        <target>Consulta</target>
+      </trans-unit>
+      <trans-unit id="atributoValor" datatype="html">
+        <source>Valor</source>
+        <target>Valor</target>
+      </trans-unit>
+      <trans-unit id="count_tablesLabel" datatype="html">
+        <source>Tablas implicadas</source>
+        <target>Taules implicades</target>
+      </trans-unit>
+      <trans-unit id="count_rowsLabel" datatype="html">
+        <source>Total de registros</source>
+        <target>Total de registres</target>
+      </trans-unit>
+      <trans-unit id="count_nullsLabel" datatype="html">
+        <source>Total nulos</source>
+        <target>Total nulls</target>
+      </trans-unit>
+      <trans-unit id="count_emptyLabel" datatype="html">
+        <source>Total cadenas vacías</source>
+        <target>Total cadenes buides</target>
+      </trans-unit>
+      <trans-unit id="count_distinctLabel" datatype="html">
+        <source>Total valores distintos</source>
+        <target>Total valors distints</target>
+      </trans-unit>
+      <trans-unit id="most_duplicatedLabel" datatype="html">
+        <source>Más repetido</source>
+        <target>Mes repetit</target>
+      </trans-unit>
+      <trans-unit id="least_duplicatedLabel" datatype="html">
+        <source>Menos repetido</source>
+        <target>Menys repetit</target>
+      </trans-unit>
+      <trans-unit id="maxLabel" datatype="html">
+        <source>Valor máximo</source>
+        <target>Valor màxim</target>
+      </trans-unit>
+      <trans-unit id="minLabel" datatype="html">
+        <source>Valor mínimo</source>
+        <target>Valor mínim</target>
+      </trans-unit>
+      <trans-unit id="moda_countsLabel" datatype="html">
+        <source>Moda</source>
+        <target>Moda</target>
+      </trans-unit>
+      <trans-unit id="avgLabel" datatype="html">
+        <source>Media</source>
+        <target>Mitjana</target>
+      </trans-unit>
+      <trans-unit id="medianLabel" datatype="html">
+        <source>Mediana</source>
+        <target>Mediana</target>
+      </trans-unit>
+      <trans-unit id="median_count_bymonthLabel" datatype="html">
+        <source>Mediana por mes</source>
+        <target>Mediana per mes</target>
+      </trans-unit>
+      <trans-unit id="max_bymonthLabel" datatype="html">
+        <source>Máximos por mes</source>
+        <target>Màxims per mes</target>
+      </trans-unit>
+      <trans-unit id="min_bymonthLabel" datatype="html">
+        <source>Mínimos por mes</source>
+        <target>Mínims per mes</target>
+      </trans-unit>
+
       <trans-unit id="NameTablaQuality">
         <source>Tabla DataQuality</source>
         <target>Taula DataQuality</target>       

@@ -1984,6 +1984,10 @@
           <context context-type="linenumber">100,99</context>
         </context-group>
       </trans-unit>
+        <trans-unit id="count_rowsLabel" datatype="html">
+        <source>TTotal de registros</source>
+        <target>Total rows</target>
+      </trans-unit>
       <trans-unit id="count_nullsLabel" datatype="html">
         <source>Total nulos</source>
         <context-group purpose="location">

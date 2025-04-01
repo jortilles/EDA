@@ -107,6 +107,10 @@ export class MySqlBuilderService extends QueryBuilderService {
       querys[diplayName] = [];
       
       if (col.column_type == "text") {
+        // COUNT ROWS
+        querys[diplayName].push(
+          "SELECT COUNT(  `main`." + `${col.column_name}` + ") AS `count_rows` FROM" + `${mainQuery}`
+        );
         // COUNT NULLS
         querys[diplayName].push(
           "SELECT SUM(CASE WHEN `main`." + `${col.column_name}` + " IS NULL THEN 1 ELSE 0 END) AS `count_nulls` FROM" + `${mainQuery}`
@@ -135,6 +139,9 @@ export class MySqlBuilderService extends QueryBuilderService {
         );
               
       } else if (col.column_type == "numeric") {
+        querys[diplayName].push(
+          "SELECT COUNT(  `main`." + `${col.column_name}` + ") AS `count_rows` FROM" + `${mainQuery}`
+        );
         // COUNT NULLS
         querys[diplayName].push(
           "SELECT SUM(CASE WHEN `main`." + `${col.column_name}` + " IS NULL THEN 1 ELSE 0 END) AS `count_nulls` FROM" + `${mainQuery}`
@@ -153,7 +160,7 @@ export class MySqlBuilderService extends QueryBuilderService {
           `${mainQuery}` + " GROUP BY 1 ORDER BY 2 DESC LIMIT 1) SELECT mode_value || ' (total: '|| frequency ||')' AS 'mode' FROM  moda_counts;");
         // AVG
         querys[diplayName].push(
-          "SELECT AVG(`main`." + `${col.column_name}` + ") AS `avg` FROM " + `${mainQuery}`
+          "SELECT   TRUNCATE( AVG(`main`." + `${col.column_name}` + ") ,3) AS `avg` FROM " + `${mainQuery}`
         );
         // MEDIAN
         querys[diplayName].push(
@@ -161,6 +168,9 @@ export class MySqlBuilderService extends QueryBuilderService {
           "SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY `main`." + `${col.column_name}` + ") OVER () AS `median` FROM " + `${mainQuery}`
         );
       } else if (col.column_type == "date") {
+        querys[diplayName].push(
+          "SELECT COUNT(  `main`." + `${col.column_name}` + ") AS `count_rows` FROM" + `${mainQuery}`
+        );
         // CountNulls
         querys[diplayName].push(
           "SELECT SUM(CASE WHEN `main`." + `${col.column_name}` + " IS NULL THEN 1 ELSE 0 END) AS `count_nulls` FROM" + `${mainQuery}`
