@@ -4327,6 +4327,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Tablas implicadas</source>
         <target>Tables involved</target>
       </trans-unit>
+      <trans-unit id="count_rowsLabel" datatype="html">
+        <source>Total de registros</source>
+        <target>Total rows</target>
+      </trans-unit>
       <trans-unit id="count_nullsLabel" datatype="html">
         <source>Total nulos</source>
         <target>Total nulls</target>

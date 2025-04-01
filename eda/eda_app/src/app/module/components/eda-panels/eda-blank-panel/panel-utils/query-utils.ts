@@ -98,6 +98,7 @@ export const QueryUtils = {
 
     const i18n = {
         "count_tables": $localize`:@@count_tablesLabel:Tablas implicadas`,
+        "count_rows": $localize`:@@count_rowsLabel:Total de registros`,
         "count_nulls": $localize`:@@count_nullsLabel:Total nulos`,
         "count_empty": $localize`:@@count_emptyLabel:Total cadenas vacías`,
         "count_distinct": $localize`:@@count_distinctLabel:Total valores distintos`,
