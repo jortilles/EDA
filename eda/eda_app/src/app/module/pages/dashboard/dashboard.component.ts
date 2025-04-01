@@ -778,22 +778,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public async onPanelAction(event: IPanelAction): Promise<void> {
-
-    if (event.code === "ADDFILTER") {
-      this.alertService.addSuccess($localize`:@@filteredReportMessage:Por favor, espera un momento mientras procesamos la selección.`);
-
+    //Check de modo
+    let modeEDA: boolean = !event?.data.panel.content.query.query.modeSQL &&
+      (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA')
+    
+    //Si es modo arbol o SQL no aplica filtros
+    if (event.code === "ADDFILTER" && modeEDA) {
       const data = event?.data;
       const panel = event?.data?.panel;
       let column: any;
-      console.log(event)
-      if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
-        if (data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
-          column = event.data.query.find((query: any) => query?.display_name?.default === data.query[0].display_name.default);
-        else 
-          column = event.data.query.find((query: any) => query?.display_name?.default === data.filterBy);         
-      }else { //Si el evento es de un chart de la libreria D3Chart o Leaflet
-        column = event.data.query.find((query: any) => query?.display_name?.default.localeCompare(data.filterBy, undefined, { sensitivity: 'base' }) === 0);
-      }
+      column = this.getCorrectColumnFiltered(event)
       const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
       if (column && table) {
         let config = this.setPanelsToFilter(panel);
@@ -1459,5 +1453,21 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  public getCorrectColumnFiltered(event): string {
+        if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
+          if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
+             return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
+          else 
+            return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);         
+        }
+        else if ('table'.includes(event.data.panel.content.chart)) {
+            return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);  
+        } else {
+            //Si el evento es de un chart de la libreria D3Chart o Leaflet
+            return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
+          }
+        
+      
+  }
 
 }
