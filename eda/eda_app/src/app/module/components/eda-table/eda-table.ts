@@ -817,7 +817,7 @@ export class EdaTable {
         }
     }
 
-    PivotTable() {
+    async PivotTable() {
 
         let axes = []
         // console.log('PIVOTtABLE: ',this);
@@ -857,7 +857,7 @@ export class EdaTable {
             newLabels.axes = axes;
 
             this._value = this.mergeCrossRows(rowsToMerge, axes); // Nueva función que genera las filas de la tabla cruzada
-            this.cols = this.mergeCrossColumns(colsToMerge, axes); // Nueva función que genera las columnas de la tabla cruzada
+            this.cols = await this.mergeCrossColumns(colsToMerge, axes); // Nueva función que genera las columnas de la tabla cruzada
             this.buildCrossHeaders(newLabels, colsInfo); // Nueva función para la creación de los encabezados
 
             return 
@@ -876,7 +876,7 @@ export class EdaTable {
         newLabels.metricsDescriptions = colsInfo.numericDescriptions;
         newLabels.textDescriptions = colsInfo.textDescriptions;
         this._value = this.mergeRows(rowsToMerge);
-        this.cols = this.mergeColumns(colsToMerge);
+        this.cols = await this.mergeColumns(colsToMerge);
 
         this.buildHeaders(newLabels, colsInfo);
     }
@@ -1001,7 +1001,7 @@ export class EdaTable {
         return rows;
     }
 
-    mergeCrossColumns(colsToMerge: any, axes: any){
+    async mergeCrossColumns(colsToMerge: any, axes: any){
         
         const NUM_COLS = colsToMerge[0].length;
         let cols = [];  //first column is the same for each serie
@@ -1023,7 +1023,7 @@ export class EdaTable {
      * Merges series columns in one set of columns
      * @param colsToMerge 
      */
-    mergeColumns(colsToMerge: any) {
+    async mergeColumns(colsToMerge: any) {
         const NUM_COLS = colsToMerge[0].length;
         let cols = [colsToMerge[0][0]];  //first column is the same for each serie
         for (let col = 1; col < NUM_COLS; col++) {
