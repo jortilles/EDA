@@ -856,7 +856,7 @@ export class EdaTable {
             newLabels.textDescriptions = colsInfo.textDescriptions;
             newLabels.axes = axes;
 
-            this._value = this.mergeCrossRows(rowsToMerge, axes); // Nueva función que genera las filas de la tabla cruzada
+            this._value = await this.mergeCrossRows(rowsToMerge, axes); // Nueva función que genera las filas de la tabla cruzada
             this.cols = await this.mergeCrossColumns(colsToMerge, axes); // Nueva función que genera las columnas de la tabla cruzada
             this.buildCrossHeaders(newLabels, colsInfo); // Nueva función para la creación de los encabezados
 
@@ -875,7 +875,7 @@ export class EdaTable {
         newLabels.metricsLabels = colsInfo.numericLabels;
         newLabels.metricsDescriptions = colsInfo.numericDescriptions;
         newLabels.textDescriptions = colsInfo.textDescriptions;
-        this._value = this.mergeRows(rowsToMerge);
+        this._value = await this.mergeRows(rowsToMerge);
         this.cols = await this.mergeColumns(colsToMerge);
 
         this.buildHeaders(newLabels, colsInfo);
@@ -944,7 +944,7 @@ export class EdaTable {
      * Merges series rows in one set of rows
      * @param rowsToMerge 
      */
-    mergeCrossRows(rowsToMerge: any, axes: any) {
+    async mergeCrossRows(rowsToMerge: any, axes: any) {
         const NUM_ROWS_IN_SERIES = rowsToMerge[0].length;
         const NUM_SERIES = rowsToMerge.length;
         const rows = [];
@@ -987,7 +987,7 @@ export class EdaTable {
         return newRows;
     }
 
-    mergeRows(rowsToMerge: any) {
+    async mergeRows(rowsToMerge: any) {
         const NUM_ROWS_IN_SERIES = rowsToMerge[0].length;
         const NUM_SERIES = rowsToMerge.length;
         const rows = [];
