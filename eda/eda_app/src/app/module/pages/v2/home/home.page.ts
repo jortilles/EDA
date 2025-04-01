@@ -42,7 +42,7 @@ export class HomePageV2 implements OnInit {
   isEditing: boolean = false;
   editingReportId: number | null = null;
   editTitle: string = ''; 
-  sortingType: string = sessionStorage.getItem('homeSorting');
+  sortingType: string = sessionStorage.getItem('homeSorting') || 'name';
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {
