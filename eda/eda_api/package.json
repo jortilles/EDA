@@ -1,6 +1,6 @@
 {
     "name": "api-eda",
-    "version": "2.1.2",
+    "version": "2.1.3",
     "description": "EDA api package",
     "main": "index.js",
     "scripts": {
