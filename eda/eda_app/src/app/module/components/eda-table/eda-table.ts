@@ -245,7 +245,6 @@ export class EdaTable {
             event ? this.colSubTotals(event.first / event.rows + 1) : this.colSubTotals(1);
         } 
         if (!this.pivot) {
-        	// console.log(' this.noRepeatedRows() DESCOMENTADO');
             this.noRepeatedRows();
         }
     }
@@ -817,10 +816,9 @@ export class EdaTable {
         }
     }
 
-    async PivotTable() {
+    PivotTable() {
 
         let axes = []
-        // console.log('PIVOTtABLE: ',this);
         const colsInfo = this.getColsInfo();
         const oldRows = this.getValues();
 
@@ -856,8 +854,8 @@ export class EdaTable {
             newLabels.textDescriptions = colsInfo.textDescriptions;
             newLabels.axes = axes;
 
-            this._value = await this.mergeCrossRows(rowsToMerge, axes); // Nueva función que genera las filas de la tabla cruzada
-            this.cols = await this.mergeCrossColumns(colsToMerge, axes); // Nueva función que genera las columnas de la tabla cruzada
+            this._value = this.mergeCrossRows(rowsToMerge, axes); // Nueva función que genera las filas de la tabla cruzada
+            this.cols = this.mergeCrossColumns(colsToMerge, axes); // Nueva función que genera las columnas de la tabla cruzada
             this.buildCrossHeaders(newLabels, colsInfo); // Nueva función para la creación de los encabezados
 
             return 
@@ -875,8 +873,8 @@ export class EdaTable {
         newLabels.metricsLabels = colsInfo.numericLabels;
         newLabels.metricsDescriptions = colsInfo.numericDescriptions;
         newLabels.textDescriptions = colsInfo.textDescriptions;
-        this._value = await this.mergeRows(rowsToMerge);
-        this.cols = await this.mergeColumns(colsToMerge);
+        this._value = this.mergeRows(rowsToMerge);
+        this.cols = this.mergeColumns(colsToMerge);
 
         this.buildHeaders(newLabels, colsInfo);
     }
@@ -914,10 +912,8 @@ export class EdaTable {
 
         const params = this.generateCrossParams(axes);
         // console.log(`params ===> serieIndex ${serieIndex} <===`, params)
-
         const mapTree = this.buildMapCrossRecursive(params.newCols);
         // console.log(`mapTree ===> serieIndex ${serieIndex} <===`, mapTree);
-
         const populatedMap = this.populateCrossMap(mapTree, params.oldRows, params.mainColsLabels, params.aggregatedColLabels[serieIndex], params.pivotColsLabels);
         // console.log(`populatedMap ===> serieIndex ${serieIndex} <===`, populatedMap);
 
@@ -944,7 +940,7 @@ export class EdaTable {
      * Merges series rows in one set of rows
      * @param rowsToMerge 
      */
-    async mergeCrossRows(rowsToMerge: any, axes: any) {
+    mergeCrossRows(rowsToMerge: any, axes: any) {
         const NUM_ROWS_IN_SERIES = rowsToMerge[0].length;
         const NUM_SERIES = rowsToMerge.length;
         const rows = [];
@@ -987,7 +983,7 @@ export class EdaTable {
         return newRows;
     }
 
-    async mergeRows(rowsToMerge: any) {
+    mergeRows(rowsToMerge: any) {
         const NUM_ROWS_IN_SERIES = rowsToMerge[0].length;
         const NUM_SERIES = rowsToMerge.length;
         const rows = [];
@@ -1001,7 +997,7 @@ export class EdaTable {
         return rows;
     }
 
-    async mergeCrossColumns(colsToMerge: any, axes: any){
+    mergeCrossColumns(colsToMerge: any, axes: any){
         
         const NUM_COLS = colsToMerge[0].length;
         let cols = [];  //first column is the same for each serie
@@ -1023,7 +1019,7 @@ export class EdaTable {
      * Merges series columns in one set of columns
      * @param colsToMerge 
      */
-    async mergeColumns(colsToMerge: any) {
+    mergeColumns(colsToMerge: any) {
         const NUM_COLS = colsToMerge[0].length;
         let cols = [colsToMerge[0][0]];  //first column is the same for each serie
         for (let col = 1; col < NUM_COLS; col++) {
@@ -1155,8 +1151,6 @@ export class EdaTable {
                 lastMapKey = lastMapKey.get(row[clonePivotColsLabels[i]]);
             }
             let actualValue = lastMapKey.get(row[clonePivotColsLabels[i]]);
-            // console.log('actualValue: ', actualValue);
-            // console.log('typeOf actualValue: ', typeof(actualValue));
             lastMapKey.set(row[clonePivotColsLabels[i]], Number(actualValue) + value);
         });
         return map;
