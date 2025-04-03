@@ -81,7 +81,7 @@ export class PgBuilderService extends QueryBuilderService {
 
       if (col.column_type == 'text') {
         // COUNT DISTINCT
-        querys[diplayName].push(`SELECT COUNT("main"."${col.column_name}") AS "count_rows" FROM ${mainQuery}`);
+        querys[diplayName].push(`SELECT COUNT( * ) AS "count_rows" FROM ${mainQuery}`);
         // COUNT NULLS
         querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
         // COUNT EMPTY
@@ -114,7 +114,7 @@ export class PgBuilderService extends QueryBuilderService {
         `);
       } else if (col.column_type == 'numeric') {
         // COUNT DISTINCT
-        querys[diplayName].push(`SELECT COUNT("main"."${col.column_name}") AS "count_rows" FROM ${mainQuery}`);
+        querys[diplayName].push(`SELECT COUNT( * ) AS "count_rows" FROM ${mainQuery}`);
         // COUNT NULLS
         querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
         // MAX
@@ -140,7 +140,7 @@ export class PgBuilderService extends QueryBuilderService {
 
       } else if (col.column_type == 'date') {
         // COUNT DISTINCT
-        querys[diplayName].push(`SELECT COUNT("main"."${col.column_name}") AS "count_rows" FROM ${mainQuery}`);
+        querys[diplayName].push(`SELECT COUNT( * ) AS "count_rows" FROM ${mainQuery}`);
         // CountNulls
         querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
         // MAX
