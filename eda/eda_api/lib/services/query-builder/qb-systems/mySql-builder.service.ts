@@ -109,7 +109,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       if (col.column_type == "text") {
         // COUNT ROWS
         querys[diplayName].push(
-          "SELECT COUNT(  `main`." + `${col.column_name}` + ") AS `count_rows` FROM" + `${mainQuery}`
+          "SELECT COUNT(  * s) AS `count_rows` FROM" + `${mainQuery}`
         );
         // COUNT NULLS
         querys[diplayName].push(
@@ -140,7 +140,7 @@ export class MySqlBuilderService extends QueryBuilderService {
               
       } else if (col.column_type == "numeric") {
         querys[diplayName].push(
-          "SELECT COUNT(  `main`." + `${col.column_name}` + ") AS `count_rows` FROM" + `${mainQuery}`
+          "SELECT COUNT(  * ) AS `count_rows` FROM" + `${mainQuery}`
         );
         // COUNT NULLS
         querys[diplayName].push(
@@ -169,7 +169,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         );
       } else if (col.column_type == "date") {
         querys[diplayName].push(
-          "SELECT COUNT(  `main`." + `${col.column_name}` + ") AS `count_rows` FROM" + `${mainQuery}`
+          "SELECT COUNT(  * ) AS `count_rows` FROM" + `${mainQuery}`
         );
         // CountNulls
         querys[diplayName].push(
