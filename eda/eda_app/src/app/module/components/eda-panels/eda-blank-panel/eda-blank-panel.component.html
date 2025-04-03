@@ -500,11 +500,13 @@
 
 
                         <div class="container">
-                            <div class="row preview-chart-box">
+                            <div class="row">
                                 <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
                                     style="height: 100%; width: 100%; display:block">
                                 </panel-chart>
                             </div>
+                        </div>
+                        <div class="container">
                             <div class="row">
                                 <drag-drop *ngIf="graphicType==='crosstable'  && dragAndDropAvailable" [axes]="axes" (newAxes)="newAxesOrdering($event)"></drag-drop>
                             </div>
