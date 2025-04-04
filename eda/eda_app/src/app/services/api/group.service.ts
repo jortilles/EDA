@@ -6,7 +6,7 @@ import {User} from '@eda/models/user-models/user.model';
 export interface IGroup {
     name: string;
     role: {label: string, value: string};
-    img: File;
+    img?: File;
     users: User[];
 }
 

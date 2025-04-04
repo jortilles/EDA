@@ -7,7 +7,17 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { SharedModule } from '@eda/shared/shared.module';
 import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
+import Swal from 'sweetalert2';
 import { EdaListComponent } from '@eda/shared/components/eda-list/eda-list.component';
+import { IGroup } from '@eda/services/service.index';
+type TemporalGroup = {
+  _id?: string;
+  name?: string;
+  role?: { label: string; value: string; };
+  users?: any[];
+  img?: any;
+  isnew?: any;
+};
 
 @Component({
   selector: 'app-group-list',
@@ -72,7 +82,7 @@ export class GroupListPage implements OnInit {
   }
 
 
-  handleEditGroup(group: any) {
+  handleEditGroup(group: TemporalGroup) {
     this.selectedGroup = group;
     this.showGroupDetail = true;
   }
@@ -82,13 +92,77 @@ export class GroupListPage implements OnInit {
     this.showGroupDetail = true;
   }
 
-  handleDeleteGroup(userId: string) {
-    // TODO Remove User call
-    this.groups = this.groups.filter(user => user._id !== userId);
+  handleDeleteGroup(groupId: string) {
+    // DONE
+
+        // Confirmación del borrado de grupo
+        let title = $localize`:@@DeleteGroupText:Eliminarás todos los elementos relacionados con este grupo. `
+        Swal.fire({
+            title: $localize`:@@Sure:¿Estás seguro?`,
+            text: `${title} `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: $localize`:@@DeleteGroupButton:Si, ¡Eliminalo!`
+        }).then(deleted => {
+          if (deleted.value === true) { 
+            this.groupService.deleteGroup(groupId).subscribe(
+            res => {
+                Swal.fire($localize`:@@GroupDeletedOk:El grupo a sido eliminado correctamente`, res.email, 'success');
+                this.loadGroups();
+            }, err => {
+              Swal.fire($localize`:@@ErrorMessage:Ha ocurrido un error`, err.text, 'error');
+            }
+          );
+          }
+        });
+
   }
 
   onApplyGroupDetail() {
-    // TODO Insert/Update user
+    // TODO Insert/Update group
     this.showGroupDetail = false;
+    
+    console.log(this.selectedGroup)
+
+    if (this.selectedGroup.isnew) { //Estamos creando grupo
+      
+      // no necesita ni users ni img????
+      let group: IGroup = {
+        name: this.selectedGroup.name,
+        role: { label: this.selectedGroup.name, value: this.selectedGroup.role },
+        users: [],
+      }
+
+
+      this.groupService.insertGroup(group).subscribe(
+        res => {
+          Swal.fire($localize`:@@GroupCreated:Grupo creado`, res.name, 'success');
+          this.loadGroups();
+        }, err => {
+          Swal.fire($localize`:@@ErrorMessage:Ha ocurrido un error `, err.text, 'error');
+        }
+      );   
+    }
+
+    else { //Estamos modificando usuario
+      let group: IGroup = {
+        name: this.selectedGroup.name,
+        role: { label: this.selectedGroup.name, value: this.selectedGroup.role },
+        users: this.selectedGroup.users,
+      }
+        this.groupService.updateGroup(this.selectedGroup.id, group).subscribe(
+          res => {
+            Swal.fire($localize`:@@GroupUpdated:Grupo actualizado`, res.email, 'success');
+            this.loadGroups();
+          }, err => {
+            Swal.fire($localize`:@@UpdatedGroupError:El grupo no se ha podido actualizar`, err.text, 'error');
+          }
+        );
+      
+        
+    }
+
   }
 }
