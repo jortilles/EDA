@@ -59,6 +59,9 @@
                                 <i class="mdi mdi-settings"></i> <span i18n="@@mailmanagementHeader">Gestión de
                                     correo y envio de mails</span>
                             </a>
+
+                        </li>
+                        <li *ngIf="userService.isDataSourceCreator||userService.isAdmin" class="user-profile">
                             <a routerLinkActive="active"  routerLink="/logs" (click)="ignoreNotSaved()">
                                 <i class="mdi mdi-clipboard-text"></i> <span i18n="@@logsManagement">Gestión de
                                     Logs</span>
