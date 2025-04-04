@@ -113,13 +113,12 @@ export class QueryController {
             for (const column in querys) {
                 results[column] = {};
                 for (const query of querys[column]) {
-                    console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${logDate}  for Dashboard:${dashboardId} and Panel:${panelId}`)
+                    /* Edalitics free console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${logDate}  for Dashboard:${dashboardId} and Panel:${panelId}`) */
+                    console.log('\x1b[32m%s\x1b[0m', `QUERY  at: ${logDate} `)
                     console.log(query)
                     console.log('\n-------------------------------------------------------------------------------\n');
-                    
                     connection.client = await connection.getclient();
                     const getResults = (await connection.execQuery(query))[0];
-                    console.log(getResults)
                     console.log('\n-------------------------------------------------------------------------------\n');
 
                     for (const key in getResults) {
@@ -131,7 +130,6 @@ export class QueryController {
 
 
             console.log('\x1b[32m%s\x1b[0m',`Date: ${logDate} Dashboard:${dashboardId} Panel:${panelId} DONE\n`);
-            console.log(results);
 
             return res.status(200).json(results)
         } catch (err) {
