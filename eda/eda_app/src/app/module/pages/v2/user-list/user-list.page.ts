@@ -8,13 +8,12 @@ import { SharedModule } from '@eda/shared/shared.module';
 import { lastValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
-import { User } from '@eda/models/model.index';
 
-type TemporalUser = {
+type User = {
   _id?: string;
-  email?: string;
-  name?: string;
-  password?: string;
+  email: string;
+  name: string;
+  password: string;
   role?: any;
   isnew?: any;
 };
@@ -30,11 +29,11 @@ export class UserListPage implements OnInit {
   private groupService = inject(GroupService);
 
   groups: any[] = [];
-  users: TemporalUser[] = [];
+  users: User[] = [];
 
   searchTerm: string = '';
   sortConfig: { key: keyof User; direction: 'asc' | 'desc' } | null = null;
-  selectedUser: TemporalUser = {};
+  selectedUser: User = {name:'',email:'',password:''};
   showUserDetail: boolean = false;
 
   currentPage: number = 1;
@@ -79,7 +78,6 @@ export class UserListPage implements OnInit {
 
   async loadGroups() {
     this.groups = await lastValueFrom(this.groupService.getGroups());
-    console.log(this.groups)
   }
   
 
@@ -99,13 +97,13 @@ export class UserListPage implements OnInit {
   }
 
 
-  handleEditUser(user: TemporalUser) {
+  handleEditUser(user: User) {
     this.selectedUser = user;
     this.showUserDetail = true;
   }
 
   handleCreateUser() {
-    this.selectedUser = { isnew: true };
+    this.selectedUser = {name:'',email:'',password:'', isnew: true };
     this.showUserDetail = true;
   }
 
@@ -142,16 +140,10 @@ export class UserListPage implements OnInit {
   }
 
   onApplyUserDetail() {
-    // TODO Insert/Update user
     this.showUserDetail = false;
     
-    // TODO arreglar create con rol ==> el rol ha de ser el id del group
+    // TODO arreglar agregació password pasa algo raro
 
-
-    console.log(this.selectedUser)
-    console.log(this.groups)
-
-    
     if (this.selectedUser.isnew) { //Estamos creando usuario
       let user: User = {
         name: this.selectedUser.name,
@@ -169,18 +161,15 @@ export class UserListPage implements OnInit {
       );   
     }
 
-
-
     else { //Estamos modificando usuario
-      let user: User = {
-        _id: this.selectedUser._id,
-        name: this.selectedUser.name,
-        email: this.selectedUser.email,
-        password: this.selectedUser.password,
-        role: this.groups.find(group => group.name === this.selectedUser.role)._id,
-      }
-      if (user.password && user.password !== '') {
-        this.userService.manageUpdateUsers(user).subscribe(
+      let userToModify = this.users.find(user => user._id === this.selectedUser._id);
+      userToModify.name = this.selectedUser.name; 
+      userToModify.email =  this.selectedUser.email,
+      userToModify.password = this.selectedUser.password; 
+      userToModify.role = this.groups.find(group => group.name === this.selectedUser.role)._id; 
+
+      if (userToModify.password && userToModify.password !== '') {
+        this.userService.manageUpdateUsers(userToModify).subscribe(
           res => {
             Swal.fire($localize`:@@UpdatedUser:Usuario actualizado`, res.email, 'success');
             this.loadUserList();

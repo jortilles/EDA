@@ -4352,9 +4352,17 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Grupo creado</source>
         <target>Grup creat</target>
       </trans-unit>
+      <trans-unit id="GroupUpdated">
+        <source>Grupo actualizado</source>
+        <target>Grup actualitzat</target>
+      </trans-unit>
       <trans-unit id="GroupDeletedOk">
         <source>El grupo a sido eliminado correctamente</source>
         <target>El grup ha sigut eleiminat correctament</target>
+      </trans-unit>
+      <trans-unit id="UpdatedGroupError">
+        <source>El grupo no se ha podido actualizar</source>
+        <target>El grup no s'ha pogut actualitzar</target>
       </trans-unit>
     </body>
   </file>
