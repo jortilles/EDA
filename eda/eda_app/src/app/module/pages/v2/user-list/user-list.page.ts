@@ -6,13 +6,16 @@ import { GroupService, UserService } from '@eda/services/service.index';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { SharedModule } from '@eda/shared/shared.module';
 import { lastValueFrom } from 'rxjs';
+import Swal from 'sweetalert2';
 import * as _ from 'lodash';
+import { User } from '@eda/models/model.index';
 
-type User = {
+type TemporalUser = {
   _id?: string;
   email?: string;
   name?: string;
-  role?: string;
+  password?: string;
+  role?: any;
   isnew?: any;
 };
 
@@ -27,11 +30,11 @@ export class UserListPage implements OnInit {
   private groupService = inject(GroupService);
 
   groups: any[] = [];
-  users: User[] = [];
+  users: TemporalUser[] = [];
 
   searchTerm: string = '';
   sortConfig: { key: keyof User; direction: 'asc' | 'desc' } | null = null;
-  selectedUser: User = {};
+  selectedUser: TemporalUser = {};
   showUserDetail: boolean = false;
 
   currentPage: number = 1;
@@ -76,7 +79,10 @@ export class UserListPage implements OnInit {
 
   async loadGroups() {
     this.groups = await lastValueFrom(this.groupService.getGroups());
-}
+    console.log(this.groups)
+  }
+  
+
 
   handleSort(key: keyof User) {
     this.sortConfig = this.sortConfig?.key === key && this.sortConfig.direction === 'asc'
@@ -93,7 +99,7 @@ export class UserListPage implements OnInit {
   }
 
 
-  handleEditUser(user: User) {
+  handleEditUser(user: TemporalUser) {
     this.selectedUser = user;
     this.showUserDetail = true;
   }
@@ -104,12 +110,87 @@ export class UserListPage implements OnInit {
   }
 
   handleDeleteUser(userId: string) {
-    // TODO Remove User call
+    // Control de no borrar el propio usuario
     this.users = this.users.filter(user => user._id !== userId);
+    if (userId === this.userService.getUserObject()._id) {
+        Swal.fire($localize`:@@cantDeleteUser:No se puede borrar el usuario`, $localize`:@@cantSelfDelete:No se puede borrar a si mismo`, 'error');
+        return;
+    }
+
+    // Confirmación del borrado de usuario
+    let title = $localize`:@@DeleteUserMessage:Estás a punto de borrar el usuario `
+    Swal.fire({
+        title: $localize`:@@Sure:¿Estás seguro?`,
+        text: `${title} `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: $localize`:@@DeleteUser:Si, ¡Bórralo!`
+    }).then(deleted => {
+      if (deleted.value === true) { 
+        this.userService.deleteUser(userId).subscribe(
+        res => {
+            Swal.fire($localize`:@@UserDeletedOk:El usuario a sido eliminado correctamente`, res.email, 'success');
+            this.loadUserList();
+        }, err => {
+          Swal.fire($localize`:@@ErrorMessage:Ha ocurrido un error`, err.text, 'error');
+        }
+      );
+      }
+    });
   }
 
   onApplyUserDetail() {
     // TODO Insert/Update user
     this.showUserDetail = false;
+    
+    // TODO arreglar create con rol ==> el rol ha de ser el id del group
+
+
+    console.log(this.selectedUser)
+    console.log(this.groups)
+
+    
+    if (this.selectedUser.isnew) { //Estamos creando usuario
+      let user: User = {
+        name: this.selectedUser.name,
+        email: this.selectedUser.email,
+        password: this.selectedUser.password,
+        role: this.groups.find(group => group.name === this.selectedUser.role)._id,
+      }
+      this.userService.createUser(user).subscribe(
+        res => {
+          Swal.fire($localize`:@@CreatedUser:Usuario creado`, res.email, 'success');
+          this.loadUserList();
+        }, err => {
+          Swal.fire($localize`:@@RegisterError:Error al registrarse`, err.text, 'error');
+        }
+      );   
+    }
+
+
+
+    else { //Estamos modificando usuario
+      let user: User = {
+        _id: this.selectedUser._id,
+        name: this.selectedUser.name,
+        email: this.selectedUser.email,
+        password: this.selectedUser.password,
+        role: this.groups.find(group => group.name === this.selectedUser.role)._id,
+      }
+      if (user.password && user.password !== '') {
+        this.userService.manageUpdateUsers(user).subscribe(
+          res => {
+            Swal.fire($localize`:@@UpdatedUser:Usuario actualizado`, res.email, 'success');
+            this.loadUserList();
+          }, err => {
+            Swal.fire($localize`:@@UpdatedUserError:Error al actualizar el usuario`, err.text, 'error');
+          }
+        );
+      } else {
+        Swal.fire($localize`:@@UpdatedUserError:Error al actualizar el usuario`,'error','error');
+      }
+    }
   }
 }

@@ -2729,6 +2729,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <target>Usuari actualitzat </target>
 </trans-unit>
 
+<trans-unit id="UpdatedUserError">
+<source>Error al actualizar el usuario </source>
+<target>Error al actualitzar l'usuari </target>
+</trans-unit>
+
 <trans-unit id="PasswordsNotEqual">
 <source>Las contraseñas no coinciden </source>
 <target>Les contrassenyes no coincideixen</target>
@@ -4342,6 +4347,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="noMouseH6">
         <source>Activar funciones del mouse</source>
         <target>Activar funcions del mouse</target>       
+      </trans-unit>
+      <trans-unit id="GroupCreated">
+        <source>Grupo creado</source>
+        <target>Grup creat</target>
+      </trans-unit>
+      <trans-unit id="GroupDeletedOk">
+        <source>El grupo a sido eliminado correctamente</source>
+        <target>El grup ha sigut eleiminat correctament</target>
       </trans-unit>
     </body>
   </file>

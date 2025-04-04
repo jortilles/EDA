@@ -73,12 +73,14 @@
       <input [(ngModel)]="selectedUser.email" class="w-full border p-2 rounded mt-1" />
 
       <label class="block text-sm font-medium mt-2">Contraseña</label>
-      <input type="password" class="w-full border p-2 rounded mt-1" />
+      <input type="password" [(ngModel)]="selectedUser.password" class="w-full border p-2 rounded mt-1" />
 
       <label class="block text-sm font-medium mt-2">Grupo</label>
       <select [(ngModel)]="selectedUser.role" class="w-full border p-2 rounded mt-1">
-        <option value="EDA_ADMIN_ROLE">ADMIN</option>
-        <option value="EDA_USER_ROLE">USER</option>
+        @for (group of groups; track $index) {
+          <option value={{group.name}}>{{group.name}}</option>
+        }
+
       </select>
     </div>
   </div>
