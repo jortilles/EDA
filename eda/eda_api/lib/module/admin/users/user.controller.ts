@@ -175,10 +175,8 @@ export class UserController {
     }
 
     static async create(req: Request, res: Response, next: NextFunction) {
-
         try {
             const body = req.body;
-
             const user: IUser = new User({
                 name: body.name,
                 email: body.email,
@@ -243,7 +241,6 @@ export class UserController {
 
                     users = isAdmin ? users : UserController.filterUsersByGroup(req.user, users);
                     
-
                     return res.status(200).json(users);
                 });
             })
@@ -273,7 +270,6 @@ export class UserController {
 
     static async getUser(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log(req)
             User.findById({ _id: req.params.id }, (err, user) => {
 
                 if (err) {
@@ -377,7 +373,7 @@ export class UserController {
                 user.name = body.name;
                 user.email = body.email;
                 user.role = body.role;
-
+                
                 if (body.password) {
                     if (body.password !== '') {
                         user.password = bcrypt.hashSync(body.password, 10);

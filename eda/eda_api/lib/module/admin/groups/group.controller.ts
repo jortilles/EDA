@@ -136,12 +136,12 @@ export class GroupController {
   }
 
 
-  static async createGroup (req: Request, res: Response, next: NextFunction) {
+  static async createGroup(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body
       const group: IGroup = new Group({
         name: body.name,
-        role: 'EDA_USER_ROLE',
+        role: body.role.value,
         users: body.users,
         img: body.img
       })
@@ -173,8 +173,7 @@ export class GroupController {
   static async updateGroup (req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body
-
-      Group.findById(req.params.id, (err, group: IGroup) => {
+      Group.findById(req.body._id, (err, group: IGroup) => {
         if (err) {
           return next(new HttpException(500, 'Group not found'))
         }
@@ -185,9 +184,11 @@ export class GroupController {
           )
         }
 
-        group.name = body.name
-        group.users = body.users
-        group.role = 'EDA_USER_ROLE'
+
+
+        group.name = body.name;
+        group.users = body.users;
+        group.role = body.role;
 
         group.save(async (err, groupSaved: IGroup) => {
           if (err) {
@@ -197,12 +198,12 @@ export class GroupController {
           // Borrem de tots els usuaris el grup actualitzat
           await User.updateMany(
             {},
-            { $pull: { role: { $in: [req.params.id] } } }
+            { $pull: { role: { $in: [req.body._id] } } }
           )
           // Introduim de nou als usuaris seleccionat el grup actualitzat
           await User.updateMany(
             { _id: { $in: body.users } },
-            { $push: { role: req.params.id } }
+            { $push: { role: req.body._id } }
           ).exec()
 
           return res.status(200).json({ ok: true, group: groupSaved })
