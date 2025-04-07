@@ -5,10 +5,10 @@
       <!-- Filter Details -->
       <div class="border rounded-lg shadow-sm">
         <div class="p-4 space-y-4">
-          @if (globalFilter?.selectedTable && globalFilter?.selectedColumn) {
+          @if (globalFilter?.selectedTable?.table_name && globalFilter?.selectedColumn) {
             <div class="flex items-center justify-between">
               <h3 class="text-lg font-medium">
-                {{globalFilter.selectedTable.display_name.default}} - {{globalFilter.selectedColumn.display_name.default}}
+                {{globalFilter.selectedTable?.display_name?.default}} - {{globalFilter.selectedColumn?.display_name?.default}}
               </h3>
             </div>
           }
@@ -57,25 +57,60 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <p-dropdown [options]="tables"
+              <p-dropdown [options]="tables" [style]="{'width': '100%'}"
                 [(ngModel)]="globalFilter.selectedTable" filter="true"
-                optionLabel="display_name.default" [style]="{'width': '100%'}"
                 i18n-placeholder="@@placeholderTables" placeholder="Entidades"
                 (onChange)="onChangeSelectedTable()" appendTo="body">
+                <ng-template pTemplate="selectedItem" let-selectedOption>
+                    <div>{{ selectedOption?.display_name?.default }}</div>
+                </ng-template>
+                <ng-template let-table pTemplate="item">
+                    <div>{{ table?.display_name?.default }}</div>
+                </ng-template>
               </p-dropdown>
   
-              <p-dropdown [options]="columns"
+              <p-dropdown [options]="columns" [style]="{'width': '100%'}"
                 [(ngModel)]="globalFilter.selectedColumn" filter="true"
-                optionLabel="display_name.default" [style]="{'width': '100%'}"
                 i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
                 (onChange)="onChangeSelectedColumn()" appendTo="body">
+                <ng-template pTemplate="selectedItem" let-selectedOption>
+                    <div>{{ selectedOption?.display_name?.default }}</div>
+                </ng-template>
+                <ng-template let-column pTemplate="item">
+                    <div>{{ column?.display_name?.default }}</div>
+                </ng-template>
               </p-dropdown>
-  
+
               <input class="h-8 w-full rounded-md border px-2 py-4"
                 [(ngModel)]="aliasValue"
                 i18n-placeholder="@@aliasValuePh"
                 placeholder="Alias del filtro (opcional)"
-              >
+              />
+
+              <!-- TODO Show Alias -->
+              <!-- <div class="flex">
+                <button type="button"
+                  (click)="toggleShowAlias()"
+                  class="rounded-full p-2.5 m-2 ring-0 cursor-pointer">
+                  @if (showAlias) {
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                  }
+                </button>
+                @if (showAlias) {
+                  <input class="h-8 w-full rounded-md border px-2 py-4"
+                    [(ngModel)]="aliasValue"
+                    i18n-placeholder="@@aliasValuePh"
+                    placeholder="Alias del filtro (opcional)"
+                  />
+                }
+              </div> -->
+
               @if (globalFilter.selectedColumn?.column_type !== 'date') {
                 <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
                   [options]="columnValues" [(ngModel)]="globalFilter.selectedItems"
@@ -108,31 +143,32 @@
       <!-- Panel Selection -->
       @if (formReady && !globalFilter.isdeleted) {
         @if (globalFilter.queryMode == 'EDA') {
-          <div class="border rounded-lg shadow-sm mt-4" [class.opacity-50]="applyToAll" [class.pointer-events-none]="applyToAll">
-            <div class="p-4 space-y-4">
-              <h3 class="text-lg font-medium">{{header2}}</h3>
-              
-              <div class="w-full"> 
-                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <button
-                      *ngFor="let panel of panels"
-                      (click)="togglePanel(panel.id)"
-                      class="flex items-center justify-start h-auto py-2 px-3 rounded-md text-sm font-medium transition-colors"
-                      [class.bg-blue-600]="isPanelSelected(panel.id)"
-                      [class.text-white]="isPanelSelected(panel.id)"
-                      [class.border]="!isPanelSelected(panel.id)"
-                      [class.border-gray-300]="!isPanelSelected(panel.id)"
-                      [class.dark:border-gray-600]="!isPanelSelected(panel.id)"
-                    >
-                      <svg *ngIf="isPanelSelected(panel.id)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4 shrink-0">
-                        <polyline points="20 6 9 17 4 12"/>
-                      </svg>
-                      <span class="truncate">{{ panel.title }}</span>
-                    </button>
-                  </div>
+          @if (!applyToAll) {
+            <div class="border rounded-lg shadow-sm mt-4">
+              <div class="p-4 space-y-4">
+                <h3 class="text-lg font-medium">{{header2}}</h3>
+                
+                <div class="w-full"> 
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <button
+                        *ngFor="let panel of allPanels"
+                        (click)="togglePanel(panel)"
+                        class="flex items-center justify-start h-auto py-2 px-3 rounded-md font-medium transition-colors"
+                        [ngClass]="{'bg-[#00BFB3]': isPanelSelected(panel) }"
+                        [class.text-white]="isPanelSelected(panel)"
+                        [class.border]="!isPanelSelected(panel)"
+                        [class.border-gray-300]="!isPanelSelected(panel)"
+                      >
+                        <svg *ngIf="isPanelSelected(panel.id)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4 shrink-0">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span class="truncate">{{ panel.title }}</span>
+                      </button>
+                    </div>
+                </div>
               </div>
             </div>
-          </div>
+          }
         } @else if (globalFilter.queryMode == 'EDA2') {
           @if (!isEmpty(globalFilter.selectedTable) && !isEmpty(globalFilter.selectedColumn)) {
             <div class="border rounded-lg shadow-sm mt-4">
@@ -198,9 +234,6 @@
           }
         }
       }
-
-      
-
 
         <div class="row mt-4">
             <div class="col-12">

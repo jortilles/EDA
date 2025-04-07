@@ -9,7 +9,7 @@ export class GlobalFiltersService {
 
     public panelsToDisplay(modelTables: any[], panels: any[], refferencePanel: any) {
         const panelsTables = [];
-        const panelsToDisplay: Array<{ title, id, active, avaliable, visible }> = [];
+        const panelsToDisplay: any[] = [];
 
 
         if (refferencePanel.content) {
@@ -36,11 +36,14 @@ export class GlobalFiltersService {
                         if (!firstPanelRelatedTables.has(table_id)) inlcludePanel = false;
                     }
 
-                    if (inlcludePanel) {
-                        panelsToDisplay.push({ title: panel.title, id: panel.id, active: true, avaliable: true, visible: true });
-                    } else {
-                        panelsToDisplay.push({ title: panel.title, id: panel.id, active: false, avaliable: false, visible: true });
-                    }
+                    panelsToDisplay.push({
+                        title: panel.title,
+                        id: panel.id,
+                        active: inlcludePanel,
+                        avaliable: true,
+                        visible: true,
+                        content: panel.content
+                    });
                 }
             }
         }

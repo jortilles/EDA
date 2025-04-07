@@ -2,7 +2,7 @@ import { GroupService } from './../../../../services/api/group.service';
 import { LinkedDashboardProps } from '@eda/components/eda-panels/eda-blank-panel/link-dashboards/link-dashboard-props';
 import { TableConfig } from './panel-charts/chart-configuration-models/table-config';
 import { PanelChartComponent } from './panel-charts/panel-chart.component';
-import { Component, Input, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDrag } from '@angular/cdk/drag-drop';
 import { Column, EdaPanel, InjectEdaPanel } from '@eda/models/model.index';
@@ -42,11 +42,11 @@ export interface IPanelAction {
 
 @Component({
     selector: 'eda-blank-panel',
-    templateUrl: './eda-blank-panel.component.html',
+    templateUrl: './eda-blank-panel-v2.component.html',
     styleUrls: ['./eda-blank-panel.component.css'],
 })
 export class EdaBlankPanelComponent implements OnInit {
-
+    private cd = inject(ChangeDetectorRef);
     @ViewChild('pdialog', { static: false }) pdialog: EdaPageDialogComponent;
     @ViewChild('edaChart', { static: false }) edaChart: EdaChartComponent;
     @ViewChild(PanelChartComponent, { static: false }) panelChart: PanelChartComponent;
@@ -220,13 +220,13 @@ export class EdaBlankPanelComponent implements OnInit {
     ngOnInit(): void {
         this.index = 0;
         this.setTablesData();
-
         /**If panel comes from server */
         if (this.panel.content) {
             try{
                 const contentQuery = this.panel.content.query;
 
-                const modeSQL = contentQuery.query.modeSQL; // Comptabilitzar dashboard antics sense queryMode informat
+                // Comptabilitzar dashboard antics sense queryMode informat
+                const modeSQL = contentQuery.query.modeSQL; 
                 let queryMode = contentQuery.query.queryMode;
 
                 if (!queryMode) {
@@ -248,7 +248,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
                 this.loadChartsData(this.panel.content);
             } catch(e){
-                console.error('Error loading panen conent.....');
+                console.error('Error loading panel conent: ');
                 throw e;
             }
         }
@@ -270,8 +270,9 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param event selected node. Can be rootNode (table_id) or childNode (child_id).
      */
     public tableNodeSelect(event: any): void {
+        // TODO
         // clean columns filter.
-        this.inputs.findColumn.reset();
+        // this.inputs.findColumn.reset();
 
         if (this.currentQuery.length == 0) {
             this.nodeJoins = [];
@@ -430,7 +431,6 @@ export class EdaBlankPanelComponent implements OnInit {
     async loadChartsData(panelContent: any) {
         if (this.panel.content) {
             this.display_v.minispinner = true;
-
             try {
                 const response = await QueryUtils.switchAndRun(this, panelContent.query);
                 this.chartLabels = this.chartUtils.uniqueLabels(response[0]);
@@ -439,6 +439,7 @@ export class EdaBlankPanelComponent implements OnInit {
             } catch (err) {
                 this.alertService.addError(err);
                 this.display_v.minispinner = false;
+                throw err;
             }
         }
 
@@ -474,7 +475,6 @@ export class EdaBlankPanelComponent implements OnInit {
                     PanelInteractionUtils.handleCurrentQuery(this);
                     this.columns = this.columns.filter((c) => !c.isdeleted);
                 }
-                
                 
             } catch(e) {
                 console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
@@ -729,6 +729,7 @@ export class EdaBlankPanelComponent implements OnInit {
             transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
             //obor dialeg o filre
             const column = <Column><unknown>event.container.data[event.currentIndex];
+
             if(event.container.element.nativeElement.className.toString().includes('select-list')) {
                 this.moveItem(column);
                 this.openColumnDialog(column);

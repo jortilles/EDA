@@ -55,10 +55,11 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public formReady: boolean = false;
     public datePickerConfigs: any = {};
     public aliasValue: string = "";
+    public showAlias: boolean = false;
 
     // Legacy 
     public applyToAll: boolean = false;
-    selectedPanels: any[] = []
+    // selectedPanels: any[] = []
 
     constructor(
         private globalFilterService: GlobalFiltersService,
@@ -75,7 +76,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     };
 
     public ngOnInit(): void {
-        console.log(this.globalFilter);
         this.display = true;
         this.modelTables = _.cloneDeep(this.dataSource.model.tables);
         this.initGlobalFilter();
@@ -118,7 +118,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
             this.globalFilter.selectedColumn = _.cloneDeep(this.globalFilter.selectedTable.columns.find((col: any) => col.column_name == columnName));
 
-
             this.getColumnsByTable();
             this.loadColumnValues();
             this.findPanelPathTables();
@@ -133,16 +132,35 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         }
     }
 
-    togglePanel(id: string): void {
-        if (this.isPanelSelected(id)) {
-          this.selectedPanels = this.selectedPanels.filter(panelId => panelId !== id);
+    togglePanel(panel: any): void {
+      console.log('toggle', panel, this.isPanelSelected(panel.id));
+        if (!panel.avaliable) {
+          console.log('not available');
+          this.initPanelsLegacy(panel);
+        } else if (panel.active) {
+          console.log('set to false');
+          panel.active = false;
+          this.filteredPanels = this.filteredPanels.filter((p: any) => p.id !== panel.id);
+          console.log(panel);
         } else {
-          this.selectedPanels = [...this.selectedPanels, id];
+          panel.active = true;
+          this.filteredPanels.push(panel);
         }
-      }
+
+        // if (panel.avaliable === false) {
+        //     this.selectPanelToFilter(panel);
+        // } else if (panel.active === true) {
+        //     panel.active = false;
+        //     this.panelstoFilter = this.panelstoFilter.filter(p => p.id !== panel.id);
+        // } else {
+        //     panel.active = true;
+        //     this.panelstoFilter.push(panel);
+        // }
+    }
       
-    isPanelSelected(id: string): boolean {
-        return this.selectedPanels.includes(id);
+    isPanelSelected(panel: any): boolean {
+        const panels = [...new Set(this.filteredPanels.map((p) => p.id))];
+        return panel.avaliable && panels.includes(panel.id);
     }
 
     public initPanels() {
@@ -178,13 +196,17 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.filteredPanels = this.allPanels.filter((p: any) => p.avaliable && p.active);
     }
 
-    public initPanelsLegacy() {
-        const panel = this.panels.filter(p => p.content)[0];
+    public initPanelsLegacy(panel?: any) {
+        if (!panel) {
+            panel = this.panels.filter(p => p.content)[0];
+        }
+
         const newPanel = this.panels.find((p: any) => p.id === panel.id);
         this.allPanels = this.globalFilterService.panelsToDisplay(this.modelTables, this.panels, newPanel);
         this.allPanels = this.allPanels.sort(this.sortByTittle);
-        console.log('allPanels', this.allPanels);
-        if (this.globalFilter?.panelList) {
+
+        
+        if ((this.globalFilter.panelList||[]).length > 0) {
             const selectedPanelList = this.globalFilter.panelList;
 
             for (let displayPanel of this.allPanels) {
@@ -264,12 +286,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public onChangeSelectedTable(): void {
-        this.globalFilter.selectedColumn = {};
+        this.globalFilter.selectedColumn = null;
+        this.aliasValue = '';
         this.getColumnsByTable();
         this.clearFilterPaths();
     }
 
     public onChangeSelectedColumn(): void {
+        this.aliasValue = '';
         this.globalFilter.selectedItems = [];
         if (this.globalFilter.selectedColumn.column_type == 'date') {
             this.loadDatesFromFilter();
@@ -441,7 +465,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     private validateGlobalFilter(): boolean {
         let valid = true;
-        if (this.aliasValue != "") this.globalFilter.selectedColumn.display_name.default = this.aliasValue;
+        if (this.aliasValue) this.globalFilter.selectedColumn.display_name.default = this.aliasValue;
         const availablePanels = this.filteredPanels.map((p) => p.id);
 
         if (!this.globalFilter.isdeleted) {
@@ -467,6 +491,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     private clearFilterPaths(clearPanel?: any) {
+        if (this.globalFilter.queryMode !== 'EDA2') return;
+
         if (clearPanel) {
             this.globalFilter.panelList = this.globalFilter.panelList.filter((p) => p !== clearPanel.id);
             this.globalFilter.pathList[clearPanel.id] = {
@@ -535,11 +561,30 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
         if (this.applyToAll){
             this.filteredPanels = this.allPanels.filter(p => p.avaliable === true);
+            // if (this.globalFilter?.panelList) {
+            //     const selectedPanelList = this.globalFilter.panelList;
+    
+            //     for (let displayPanel of this.allPanels) {
+            //         if (!selectedPanelList.some((id: any) => displayPanel.id === id)) {
+            //             displayPanel.active = false;
+            //         }
+            //     }
+            // }
         }
+    }
+
+    public toggleShowAlias() {
+        this.showAlias = !this.showAlias;
     }
 
     public onApply(): void {
         if (this.validateGlobalFilter()) {
+
+            if (this.globalFilter.queryMode != 'EDA2') {
+                this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
+                this.globalFilter.applyToAll = this.applyToAll;
+            }
+
             this.globalFilterChange.emit(this.globalFilter);
             this.display = false;
             this.close.emit(true);

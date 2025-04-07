@@ -23,10 +23,10 @@ export const PanelInteractionUtils = {
         .sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
     });
 
-    if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
-      ebp.inputs.findTable.reset();
-      ebp.setTablesData();
-    }
+    // if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
+    //   ebp.inputs.findTable.reset();
+    //   ebp.setTablesData();
+    // }
   },
 
   loadColumns: (ebp: EdaBlankPanelComponent, table: any) => {
@@ -55,10 +55,10 @@ export const PanelInteractionUtils = {
 
 
     // Reset input and update table data if the findTable ngModel is not empty
-    if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
+    // if (!_.isEqual(ebp.inputs.findTable.ngModel, '')) {
         // ebp.inputs.findTable.reset();
         // ebp.setTablesData();
-    }
+    // }
   },
   
   /**
@@ -611,8 +611,9 @@ export const PanelInteractionUtils = {
     PanelInteractionUtils.handleAggregationType(ebp, c);
     // Comprovacio ordenacio  de la nova columna afegida a la consulta
     PanelInteractionUtils.handleOrdTypes(ebp, c);
+    // TODO
     // resetea las columnas a mostrar
-    ebp.inputs.findColumn.reset();
+    // ebp.inputs.findColumn.reset();
 
     // Torna a carregar les columnes de la taula
     const selectedTable = ebp.getUserSelectedTable();

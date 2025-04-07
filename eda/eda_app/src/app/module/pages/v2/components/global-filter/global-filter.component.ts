@@ -122,7 +122,7 @@ export class GlobalFilterV2Component implements OnInit {
     }
 
     // Main Global Filter
-    public onShowGlobalFilter(isnew: boolean, filter?: Record<string, any>): void {
+    public onShowGlobalFilter(isnew: boolean, filter?: any): void {
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
 
             const treeQueryMode = this.dashboard.edaPanels.some(
@@ -136,13 +136,16 @@ export class GlobalFilterV2Component implements OnInit {
             };
             
 
-            if (!globalFilter.selectedTable) {
-                globalFilter.selectedTable = { table_name: filter.table.value };
+            if (!isnew) {
+                if (!globalFilter.selectedTable) {
+                    globalFilter.selectedTable = { table_name: filter.table.value };
+                }
+    
+                if (!globalFilter.selectedColumn) {
+                    globalFilter.selectedColumn = { ...filter.column.value };
+                }
             }
 
-            if (!globalFilter.selectedColumn) {
-                globalFilter.selectedColumn = { ...filter.column.value };
-            }
 
             this.globalFilter = globalFilter;
         }
@@ -151,11 +154,11 @@ export class GlobalFilterV2Component implements OnInit {
     // Global Filter Tree
     public async onCloseGlobalFilter(apply: boolean): Promise<void> {
         if (apply) {
-            // this.dashboard.edaPanels.forEach(panel => {
-            //     if (!this.globalFilter.isdeleted) {
-            //         panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
-            //     }
-            // });
+            this.dashboard.edaPanels.forEach(panel => {
+                if (!this.globalFilter.isdeleted) {
+                    panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
+                }
+            });
 
             if (this.globalFilter.isnew) {
                 this.globalFilters.push(this.globalFilter);
@@ -173,13 +176,17 @@ export class GlobalFilterV2Component implements OnInit {
                     filter.type = this.globalFilter.type;
                     filter.isGlobal = this.globalFilter.isGlobal;
                     filter.visible = this.globalFilter.visible;
+                    filter.applyToAll = this.globalFilter.applyToAll;
 
-                    for (const key in filter.pathList) {
-                        if (filter.pathList[key]?.selectedTableNodes) {
-                            const selectedTableNodes = filter.pathList[key].selectedTableNodes;
-                            delete (selectedTableNodes.parent);
+                    if (filter.pathList) {
+                        for (const key in filter.pathList) {
+                            if (filter.pathList[key]?.selectedTableNodes) {
+                                const selectedTableNodes = filter.pathList[key].selectedTableNodes;
+                                delete (selectedTableNodes.parent);
+                            }
                         }
                     }
+
 
                     delete (filter.isnew);
                 } else if (filter.isdeleted) {

@@ -79,7 +79,8 @@
         </div>
     </div>
 </div> -->
-<eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="98vw" height="100vh">
+@if (display_v.page_dialog) {
+<eda-dialog2 [display]="display_v.page_dialog" width="98vw" height="100vh">
   <!-- Header -->
   <div header class="w-full flex items-center justify-between border-b px-4 py-2">
     <div class="p-2" (click)="titleClick=true;">
@@ -216,9 +217,9 @@
                       [cdkDropListConnectedTo]="[columnsList, filterList]"
                       (cdkDropListDropped)="drop($event)"
                     >
-                      @for (attr of currentQuery; track attr.display_name.default) {
-                        <div 
-                          class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move min-w-[250px]"
+                      <!-- @for (attr of currentQuery; track attr) { -->
+                        <div *ngFor="let attr of currentQuery" 
+                          class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move min-w-[250px] z-10"
                           (click)="openColumnDialog(attr)"
                           (mouseover)="showDescription(attr)"
                           (mouseout)="description = ''"
@@ -227,13 +228,12 @@
                         >
                           <i class="drag-handle-icon"></i>
                           <span class="mdi {{getAttributeTypeIcon(attr.column_type)}}"></span>
-                          <!-- <span class="text-center eda-col-class-{{item.column_type}}" title="{{item.description.default}}"  > -->
                           <span [title]="attr.description.default">{{attr.display_name.default}}</span>
                           <button 
-                            class="ml-auto rounded-full hover:bg-muted-foreground/20"
+                            class="ml-auto rounded-full hover:bg-muted-foreground/20 z-50"
                             (click)="removeColumn(attr)"
                           >
-                            <i class="fa fa-close"></i>
+                            <i class="fa fa-close z-50"></i>
                           </button>
 
                           <!-- Preview cuando se está arrastrando -->
@@ -242,7 +242,7 @@
                             {{attr.display_name.default}}
                           </div>
                         </div>
-                      }
+                      <!-- } -->
 
                       @if (currentQuery.length === 0) {
                         <div class=" text-muted-foreground text-center py-2">
@@ -560,7 +560,7 @@
     </button>
   </ng-container>
 </eda-dialog2>
-
+}
 <!-- Page Dialog -->
 <eda-page-dialog #pdialog [inject]="{display: false, title: this.panel.title.trim().length > 0 ? panel.title : '\uD83D\uDD89'}">
     <div (window:resize)="onResize($event)" class="grid">

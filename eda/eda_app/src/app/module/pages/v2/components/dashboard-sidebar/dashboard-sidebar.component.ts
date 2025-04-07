@@ -65,6 +65,8 @@ export class DashboardSidebarComponent {
     {
       label: "Nou filtre",
       icon: "pi pi-filter",
+      command: () => this.onAddGlobalFilter()
+      
     },
     {
       label: "Recargar informe",
@@ -140,6 +142,12 @@ export class DashboardSidebarComponent {
     this.isPopoverVisible = false;
     this.popover.hide();
   }
+
+  public onAddGlobalFilter(): void {
+    this.dashboard.globalFilter.onShowGlobalFilter(true);
+    this.hidePopover();
+  }
+
   public onAddWidget(): void {
     const panel = new EdaPanel({
       id: this.fileUtils.generateUUID(),
@@ -248,9 +256,7 @@ export class DashboardSidebarComponent {
       };
 
       // TODO
-      // this.dashboard.edaPanels.forEach(panel => {
-      //   panel.savePanel();
-      // });
+      this.dashboard.edaPanels.forEach(panel => panel.savePanel());
 
       await lastValueFrom(this.dashboardService.updateDashboard(res.dashboard._id, body));
       this.dashboardService._notSaved.next(false);
