@@ -141,7 +141,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public ordenationTypes: OrdenationType[];
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
-    public queryLimit: number;
+    public queryLimit: number = 5000; // por defecto se limita a 5.000
     public joinType: string = 'inner';
 
     public queryModes: any[] = [
