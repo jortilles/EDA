@@ -20,10 +20,14 @@ export class EdaTreeTable implements OnInit {
   @Input() inject: any; // El inject contiene dos arreglos => (labels y values)
   files!: TreeNode[];
   labels: any[] = [];
+  id_label: string = '';
 
   constructor() { }
 
   ngOnInit(): void {
+
+    // Obtención de la primera etiqueta de los labels como id genérico
+    this.id_label = this.inject.labels[0];
 
     // Recolección de las etiquetas titulo para el Treetable
     this.labels = this.inject.labels.slice(2);
@@ -48,7 +52,7 @@ export class EdaTreeTable implements OnInit {
         });
 
         // Almacenar el nodo en el mapa usando el ID como clave
-        map[node.id] = { 
+        map[node[`${this.id_label}`]] = { 
             data: node,  // El objeto `data` es dinámico, contiene las propiedades del nodo
             children: []  // Inicializamos la lista de hijos vacía
         };
