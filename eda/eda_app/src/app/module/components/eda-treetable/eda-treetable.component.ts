@@ -20,11 +20,15 @@ export class EdaTreeTable implements OnInit {
   @Input() inject: any; // El inject contiene dos arreglos => (labels y values)
   files!: TreeNode[];
   labels: any[] = [];
+  labelsInputs: any[] = [];
+
   id_label: string = '';
 
   constructor() { }
 
   ngOnInit(): void {
+
+    console.log('inject>>> ', this.inject);
 
     // Obtención de la primera etiqueta de los labels como id genérico
     this.id_label = this.inject.data.labels[0];
@@ -34,8 +38,15 @@ export class EdaTreeTable implements OnInit {
       this.labels.push(e.display_name.default)
     })
 
+    this.inject.query.forEach((e: any) => {
+      this.labelsInputs.push(e.display_name.default)
+    })
+
+    console.log('this.inject.data.labels: ',this.inject.data.labels)
+    console.log('this.labelsInputs: ',this.labelsInputs)
+
     // Construcción del objeto necesario para el Treetable
-    this.buildHierarchyTreetable(this.inject.data.labels, this.inject.data.values).then( (files: any) => {
+    this.buildHierarchyTreetable(this.labelsInputs, this.inject.data.values).then( (files: any) => {
       this.files = files;
     } )
   }
