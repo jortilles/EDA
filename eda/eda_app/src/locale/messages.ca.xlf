@@ -1572,6 +1572,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">19</context>
 </context-group>
 </trans-unit>
+<trans-unit id="placeholderRelationName" datatype="html">
+<source>Nombre relación </source>
+<target>Nom relació </target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
+<context context-type="linenumber">19</context>
+</context-group>
+</trans-unit>
 <trans-unit id="placeholderTargetColumnDesc" datatype="html">
 <source>Columna con la descripción </source>
 <target>Columna amb la descripció</target>
@@ -1798,6 +1806,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="originRel">
 <source>Origen</source>
 <target>Origen</target>
+</trans-unit>
+
+<trans-unit id="nameRel">
+<source>Nombre</source>
+<target>Nom</target>
 </trans-unit>
 
 <trans-unit id="userTable">

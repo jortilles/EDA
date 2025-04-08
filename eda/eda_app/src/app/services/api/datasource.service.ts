@@ -24,6 +24,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             source_column: [],
             target_table: '',
             target_column: [],
+            display_name: {},
             visible: false
         }],
         table_type: '',
@@ -293,6 +294,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             source_column: rel.target_column,
             target_table: rel.source_table,
             target_column: rel.source_column,
+            display_name: rel.display_name,
             visible: true
         };
 
@@ -334,6 +336,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             source_column: rel.target_column,
             target_table: rel.source_table,
             target_column: rel.source_column,
+            display_name: rel.display_name,
             visible: true
         };
 
