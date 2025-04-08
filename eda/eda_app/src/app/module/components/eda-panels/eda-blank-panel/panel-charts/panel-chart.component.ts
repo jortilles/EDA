@@ -910,6 +910,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private renderTreetable() {
         const inject = this.props.data;
+        console.log('this.props: ', this.props);
         this.createTreetable(inject);
     }
 
@@ -917,6 +918,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaTreeTable);
         this.componentRef = this.entry.createComponent(factory);
+        console.log('inject>>>>>>>>> ', inject)
         this.componentRef.instance.inject = inject; // inject como input al componente Treetable
     }
 
