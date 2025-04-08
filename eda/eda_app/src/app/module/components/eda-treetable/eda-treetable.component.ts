@@ -30,9 +30,6 @@ export class EdaTreeTable implements OnInit {
 
     console.log('inject>>> ', this.inject);
 
-    // Obtención de la primera etiqueta de los labels como id genérico
-    this.id_label = this.inject.data.labels[0];
-
     // Recolección de las etiquetas titulo para el Treetable
     this.inject.query.slice(2).forEach((e: any) => {
       this.labels.push(e.display_name.default)
@@ -41,6 +38,10 @@ export class EdaTreeTable implements OnInit {
     this.inject.query.forEach((e: any) => {
       this.labelsInputs.push(e.display_name.default)
     })
+
+    // Obtención de la primera etiqueta de los labels como id genérico
+    this.id_label = this.labelsInputs[0];
+
 
     console.log('this.inject.data.labels: ',this.inject.data.labels)
     console.log('this.labelsInputs: ',this.labelsInputs)
