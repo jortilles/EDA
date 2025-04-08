@@ -28,8 +28,6 @@ export class EdaTreeTable implements OnInit {
 
   ngOnInit(): void {
 
-    console.log('inject>>> ', this.inject);
-
     // Recolección de las etiquetas titulo para el Treetable
     this.inject.query.slice(2).forEach((e: any) => {
       this.labels.push(e.display_name.default)
@@ -41,10 +39,6 @@ export class EdaTreeTable implements OnInit {
 
     // Obtención de la primera etiqueta de los labels como id genérico
     this.id_label = this.labelsInputs[0];
-
-
-    console.log('this.inject.data.labels: ',this.inject.data.labels)
-    console.log('this.labelsInputs: ',this.labelsInputs)
 
     // Construcción del objeto necesario para el Treetable
     this.buildHierarchyTreetable(this.labelsInputs, this.inject.data.values).then( (files: any) => {
