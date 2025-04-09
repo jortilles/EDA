@@ -4,7 +4,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
 import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
-import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource } from '@eda/models/data-source-model/data-source-models';
+import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
 import { aggTypes } from 'app/config/aggretation-types';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
@@ -113,6 +113,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     // model permissions
     public modelPermissions: Array<any>;
+    public selectedRelation: Relation;
 
     constructor(public dataModelService: DataSourceService,
         private alertService: AlertService,
@@ -260,7 +261,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 ]
             }),
             cols: [
-
                 //new EdaColumnFunction({ click: (relation) => this.deleteRelation(relation._id) }),
                 //Opció esborrar treta ==> opció editar al final ? 
                 new EdaColumnText({ field: 'origin', header: $localize`:@@originRel:Origen` }),
@@ -490,13 +490,19 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
-    updateRelation(relation) {
-        //relation es el ID 
-
-        // Recuperar relació
-        // Modificar relació
-        //this.dataModelService.updateDataModel(relation);
+    updateRelation(relation: Relation) {  
+        this.selectedRelation = relation;
+        this.relationController = new EdaDialogController({
+            params: { table: this.tablePanel},
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.updateRelation(relation,response);
+                }
+                this.relationController = undefined;
+            }
+        });
     }
+
     deleteRelation(relation) {
         this.dataModelService.deleteRelation(relation);
     }

@@ -371,7 +371,7 @@
 
 
 
-<app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
+<app-table-relations-dialog *ngIf="relationController" [relation]="selectedRelation" [controller]="relationController"></app-table-relations-dialog>
 <app-column-value-list-dialog *ngIf="valueListController" [controller]="valueListController"></app-column-value-list-dialog>
 <app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController"></app-column-permission-dialog>
 <app-table-permission-dialog *ngIf="tablePermissionsController" [controller]="tablePermissionsController"></app-table-permission-dialog>

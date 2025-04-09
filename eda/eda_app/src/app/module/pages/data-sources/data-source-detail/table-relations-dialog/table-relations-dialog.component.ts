@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {SelectItem} from 'primeng/api';
 import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract} from '@eda/shared/components/shared-components.index';
 import {Relation} from '@eda/models/data-source-model/data-source-models';
@@ -13,6 +13,7 @@ import { AlertService } from '@eda/services/service.index';
 })
 
 export class TableRelationsDialogComponent extends EdaDialogAbstract {
+    @Input() relation: Relation;
     public dialog: EdaDialog;
     // Drop down vars
     public sourceCols: any[] = [];
@@ -44,7 +45,7 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
             title: $localize`:@@addRelationTo:Añadir relación a la tabla`
         });
         this.dialog.style = { width: '54%', height: '50%', top:"-4em", left:'1em' };
-
+        
         this.form = this.formBuilder.group({
             sourceCol: [null, Validators.required],
             targetTable: [null, Validators.required],
@@ -53,14 +54,20 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
         }); //, {validators: this.checkOrder('sourceCol', 'targetTable')});
     }
 
-    onShow(): void {
-        const title = this.dialog.title;
-        this.dialog.title = `${title} ${this.controller.params.table.name}`;
-        this.sourceCols = this.controller.params.table.columns;
-        this.targetTables = this.dataModelService.getModel().map(t => {
-            const item: SelectItem = { label: t.display_name.default, value: t };
-            return item;
-        });
+onShow(): void {
+    const title = this.dialog.title;
+    this.dialog.title = `${title} ${this.controller.params.table.name}`;
+    this.sourceCols = this.controller.params.table.columns;
+    this.targetTables = this.dataModelService.getModel().map(t => {
+        const item: SelectItem = { label: t.display_name.default, value: t };
+        return item;
+    });
+
+    //if update
+    this.form.get("display_name").setValue(this.relation.display_name ? this.relation.display_name['default'] :  this.relation.target_table + ' - ' + this.relation.target_column);
+    this.form.get("targetTable").setValue(this.targetTables.find(option => option.value.table_name === this.relation.target_table));
+    this.form.get("sourceCol").setValue(this.sourceCols.find(option => option.column_name === this.relation.source_column[0]));
+    this.getColumnsByTable();
     }
 
     disableDrop(){
@@ -92,7 +99,8 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
         tmpTable.value.columns.filter(c => c.column_type === this.form.value.sourceCol.column_type).forEach(col => {
             this.targetCols.push({ label: col.display_name.default, value: col })
         });
-
+        //if update
+        this.form.get("targetCol").setValue(this.targetCols.find(option => option.value.column_name === this.relation.target_column[0]).value);
     }
 
     addRelation(){
