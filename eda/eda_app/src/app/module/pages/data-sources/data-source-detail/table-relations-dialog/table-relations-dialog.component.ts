@@ -54,20 +54,21 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
         }); //, {validators: this.checkOrder('sourceCol', 'targetTable')});
     }
 
-onShow(): void {
-    const title = this.dialog.title;
-    this.dialog.title = `${title} ${this.controller.params.table.name}`;
-    this.sourceCols = this.controller.params.table.columns;
-    this.targetTables = this.dataModelService.getModel().map(t => {
-        const item: SelectItem = { label: t.display_name.default, value: t };
-        return item;
-    });
+    onShow(): void {
+        const title = this.dialog.title;
+        this.dialog.title = `${title} ${this.controller.params.table.name}`;
+        this.sourceCols = this.controller.params.table.columns;
+        this.targetTables = this.dataModelService.getModel().map(t => {
+            const item: SelectItem = { label: t.display_name.default, value: t };
+            return item;
+        });
 
-    //if update
-    this.form.get("display_name").setValue(this.relation.display_name ? this.relation.display_name['default'] :  this.relation.target_table + ' - ' + this.relation.target_column);
-    this.form.get("targetTable").setValue(this.targetTables.find(option => option.value.table_name === this.relation.target_table));
-    this.form.get("sourceCol").setValue(this.sourceCols.find(option => option.column_name === this.relation.source_column[0]));
-    this.getColumnsByTable();
+        if (this.relation) {
+            this.form.get("display_name").setValue(this.relation.display_name ? this.relation.display_name['default'] :  this.relation.target_table + ' - ' + this.relation.target_column);
+            this.form.get("targetTable").setValue(this.targetTables.find(option => option.value.table_name === this.relation.target_table));
+            this.form.get("sourceCol").setValue(this.sourceCols.find(option => option.column_name === this.relation.source_column[0]));
+            this.getColumnsByTable();
+        }
     }
 
     disableDrop(){
@@ -89,7 +90,7 @@ onShow(): void {
                 display_name: { "default": this.display_name, "localized": []},
                 visible: true
             };          
-           this.onClose(EdaDialogCloseEvent.NEW, rel);
+            this.onClose(EdaDialogCloseEvent.NEW, rel);
         }
     }
 
@@ -99,8 +100,9 @@ onShow(): void {
         tmpTable.value.columns.filter(c => c.column_type === this.form.value.sourceCol.column_type).forEach(col => {
             this.targetCols.push({ label: col.display_name.default, value: col })
         });
-        //if update
-        this.form.get("targetCol").setValue(this.targetCols.find(option => option.value.column_name === this.relation.target_column[0]).value);
+        if (this.relation) {
+            this.form.get("targetCol").setValue(this.targetCols.find(option => option.value.column_name === this.relation.target_column[0]).value);
+        }
     }
 
     addRelation(){

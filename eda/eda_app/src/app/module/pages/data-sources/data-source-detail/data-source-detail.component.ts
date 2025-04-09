@@ -499,6 +499,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     this.dataModelService.updateRelation(relation,response);
                 }
                 this.relationController = undefined;
+                this.selectedRelation = null;
             }
         });
     }
