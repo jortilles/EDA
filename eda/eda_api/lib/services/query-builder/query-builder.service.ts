@@ -46,7 +46,7 @@ export abstract class QueryBuilderService {
     public builder() {
 
         let graph = this.buildGraph();
-        /* Agafem els noms de les taules, origen i destí (és arbitrari), les columnes i el tipus d'agregació per construïr la consulta */
+        /* We take the names of the tables, origin and destination (it is arbitrary), the columns and the type of aggregation to build the query. */
         let origin = this.queryTODO.rootTable || this.queryTODO.fields.find(x => x.order === 0).table_id;
         let dest = [];
         const valueListList = [];
@@ -54,16 +54,35 @@ export abstract class QueryBuilderService {
 
          this.permissions = this.getTreePermissions(modelPermissions,  this.queryTODO);
         
-        // SI USUARIO ES ADMIN VACIAR EL ARRAY PERMISSIONS
+        // IF USER IS ADMIN EMPTY PERMISSIONS ARRAY
         
         if (this.groups.includes("135792467811111111111110")) {
             this.permissions = [];
         }
-        /** joins per els value list */
+        /** joins for the value list */
         let valueListJoins = [];
 
+        /** I check the filters in case there is a numeric with value "" because it is a null.....  */
+        this.queryTODO.filters.forEach(e=>{           
+            if( e.filter_column_type == 'numeric'  && 
+                e.filter_type == 'in' && 
+                e.filter_elements[0].value1.includes( '' ) ){
+                    //If I filter for a empty in a numeric I really want to filter for a null. I add the null filter
+                    let ee =  JSON.parse(JSON.stringify(e));
+                    ee.filter_id = ee.filter_id.split('-')[0]
+                    ee.filter_type = 'is_null' 
+                    e.filter_elements[0].value1 = e.filter_elements[0].value1.filter(obj => {return obj !== ''});
+
+                    this.queryTODO.filters.push(ee);   
+                    // If the filter is empty I remove it
+                    if(e.filter_elements[0].value1.length == 0){
+                        this.queryTODO.filters = this.queryTODO.filters.filter( obj => {return obj !== e});
+                    }     
+                }
+    });
+
         if (!this.queryTODO.queryMode || this.queryTODO.queryMode == 'EDA') {
-            /** Reviso si cap columna de la  consulta es un multivalueliest..... */
+            /** I check if any column of the query is a multivalueliest..... */
             this.queryTODO.fields.forEach( e=>{
                 if( e.valueListSource ){
                     valueListList.push(JSON.parse(JSON.stringify(e)));
@@ -75,7 +94,7 @@ export abstract class QueryBuilderService {
                 }
             })
 
-            /** Reviso si cap FILTRE de la  consulta es un multivalueliest.....  */
+            /* I check if any FILTER of the query is a multivalueliest.....  */
             this.queryTODO.filters.forEach(e=>{
                 if(e.valueListSource){
                     e.table_id = e.filter_table;
@@ -87,7 +106,7 @@ export abstract class QueryBuilderService {
                 }
             })
 
-            /** revisió dels filtres per si hi ha un multivaluelist */
+            /** checking the filters for any possible multivaluelist */
             if(valueListList.length > 0 && this.queryTODO.filters){
                 this.queryTODO.filters.forEach(f=>{
                     valueListList.forEach(v=>{
@@ -99,7 +118,7 @@ export abstract class QueryBuilderService {
                 })
             }
 
-            /** Ajusto els joins per que siguin left join en cas els value list*/
+            /** I adjust joins to be left join in value list case */
             if(valueListList.length > 0){
                 valueListList.forEach(v=>{
                     valueListJoins.push(v.valueListSource.target_table);
@@ -110,14 +129,14 @@ export abstract class QueryBuilderService {
             }
         }
 
-        /** ..........................PER ELS VALUE LISTS................................ */
+        /** ..........................FOR VALUE LISTS................................ */
 
-        // Verificando el Rango, si existe agrega los cambios sino el this.queryTODO queda igual.
+        // Checking the Range, if it exists, add the changes, otherwise this.queryTODO remains the same.
         this.queryTODO = this.verifyRange(this.queryTODO);
 
         const filterTables = this.queryTODO.filters.map(filter => filter.filter_table);
 
-        // Afegim a dest les taules dels filtres
+        // We add the filter tables
         filterTables.forEach(table => {
             if (!dest.includes(table) && table !== origin) {
                 dest.push(table);
@@ -134,7 +153,7 @@ export abstract class QueryBuilderService {
         }
         
         
-        /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
+        /** WE SEPARATE BETWEEN AGGREGATION COLUMNS/GROUPING COLUMNS */
         let separedCols = this.getSeparedColumns(origin, dest);
         let columns = separedCols[0];
         let grouping = separedCols[1];
@@ -159,16 +178,16 @@ export abstract class QueryBuilderService {
     
 
         if (!this.queryTODO.queryMode || this.queryTODO.queryMode == 'EDA') {
-            // Las taules de les consultes van primer per potenciar relacions directes en consultes tipus EDA
+            // Query tables go first in order to enhance direct relationships in EDA type queries.
             const vals = [...dest];
             const firs = [];
             vals.forEach(v => firs.push(  graph.filter( e => v == e.name )[0])   );
             firs.forEach(e => graph = graph.filter(f=> f.name != e.name)   );
             graph  = [...firs, ...graph];
             
-            /** ARBRE DELS JOINS A FER */
+            /** JOINS TREE TO DO */
             joinTree = this.dijkstraAlgorithm(graph, origin, dest.slice(0));
-            // Busco relacions directes.
+            // looking for direct relations.
             if( ! this.validateJoinTree(  joinTree, dest ) ){
                 let exito = false;
                 let new_origin  = '';
@@ -192,7 +211,7 @@ export abstract class QueryBuilderService {
             }
 
             this.queryTODO.joined = false;
-            /**poso les taules de la consulta al principi del joinTree per potenciar relacions directes */
+            /**I put the tables of the query at the beginning of the joinTree to enhance direct relations */
             const my_tables = [...dest ];
             const firsts = [];
             my_tables.forEach( e => firsts.push(  joinTree.filter( t => e == t.name )[0])  );
@@ -265,7 +284,7 @@ export abstract class QueryBuilderService {
             this.queryTODO.joined = true;
 
             dest = valueListJoins;
-            /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
+            /** WE SEPARATE BETWEEN AGGREGATION COLUMNS/GROUPING COLUMNS */
             separedCols = this.getSeparedColumns(origin, dest);
             columns = separedCols[0];
             grouping = separedCols[1];
@@ -285,7 +304,7 @@ export abstract class QueryBuilderService {
             }
         });
 
-        // para los filtros en los value list
+        // for filters in the value list
         filters.forEach(f => {
             if (f.valueListSource) {
                         
@@ -340,30 +359,30 @@ export abstract class QueryBuilderService {
         
                     let SQLexpression = "CASE\n";
                 
-                    // Primer caso: menor que el primer valor del rango
+                    // First case: less than the first value of the range
                     SQLexpression += `\tWHEN ${columna} < ${fieldsColumn.ranges[0]} THEN '< ${fieldsColumn.ranges[0]}'\n`; 
         
-                    // Casos intermedios: entre cada par de valores en el rango
+                    // Middle cases: between every pair of values in the range
                     for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
                         const lower = fieldsColumn.ranges[i];
                         const upper = fieldsColumn.ranges[i + 1] - 1;
                         SQLexpression += `\tWHEN ${columna} >= ${lower} AND ${columna} <= ${upper} THEN ' ${lower} - ${upper}'\n`;
                     }            
         
-                    // Último caso: mayor o igual al último valor del rango
+                    // Last case: greater than or equal to the last value in the range
                     SQLexpression += `\tWHEN ${columna} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}'\n`;
                     SQLexpression += "END";            
         
                     fieldsColumn.SQLexpression = SQLexpression;
 
-                    // GENERANDO LA ORDENACIÓN
+                    // GENERATING THE SORTING
                     let rangesOrderExpression = "CASE\n";
                     let rangesOrderExpressionNumber = 1;
                     
-                    // Primer caso:
+                    // First case:
                     rangesOrderExpression += `\tWHEN ${columna} < ${fieldsColumn.ranges[0]} THEN ${rangesOrderExpressionNumber}\n`;
 
-                    // Casos intermedios:
+                    // Middle cases:
                     for(let i = 0; i<fieldsColumn.ranges.length - 1; i++) {
                         rangesOrderExpressionNumber += 1;
                         const lower = fieldsColumn.ranges[i];
@@ -371,7 +390,7 @@ export abstract class QueryBuilderService {
                         rangesOrderExpression += `\tWHEN ${columna} >= ${lower} AND ${columna} <= ${upper} THEN ${rangesOrderExpressionNumber}\n`;
                     }
 
-                    // Ultimo caso:
+                    // Last case:
                     rangesOrderExpression += `\tWHEN ${columna} >= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]} THEN  ${rangesOrderExpressionNumber + 1}\n`;
                     rangesOrderExpression += "END";
                     fieldsColumn.rangesOrderExpression = rangesOrderExpression;
@@ -379,7 +398,7 @@ export abstract class QueryBuilderService {
                     queryTODO[j] = fieldsColumn;
 
                     // ##########################################################################################################################
-                    // Agregado de ceros y nulos para los campos que tengan agregaciones de: suma, cuenta de valores y valores diferentes
+                    // Aggregation of zeros and nulls for fields having aggregations of: sum, count of values and different values
 
                     let withRanges = "WITH ranges AS (\n";
 
@@ -402,14 +421,14 @@ export abstract class QueryBuilderService {
                             } else if(col.column_type==='text') {
                                 coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, null) AS \`${col.display_name}\`,\n`
                             } else {
-                                coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, 0) AS \`${col.display_name}\`,\n` // Verificar las fechas
+                                coalesceRangesAux += `    COALESCE(t.\`${col.display_name}\`, 0) AS \`${col.display_name}\`,\n` // Check dates
                             }
                         } else {
                             coalesceRangesAux += `    r.range AS \`${fieldsColumn.display_name}\`,\n`;
                         }
                     })
 
-                    // Eliminando la ultima coma del salto de linea
+                    // Removing the last comma from the line break
                     const lastCommaIndex = coalesceRangesAux.lastIndexOf(',\n');
                     if (lastCommaIndex !== -1) {
                         coalesceRangesAux = coalesceRangesAux.slice(0, lastCommaIndex) + coalesceRangesAux.slice(lastCommaIndex + 1);
@@ -417,18 +436,18 @@ export abstract class QueryBuilderService {
 
                     coalesceRanges = coalesceRanges + coalesceRangesAux + `FROM ranges r\nLEFT JOIN(\n`;
                     withRanges = withRanges + coalesceRanges
-                    fieldsColumn.withRanges = withRanges; // agregando withRanges en field del campo que tiene un rango
+                    fieldsColumn.withRanges = withRanges; // adding withRanges in field of the field that has a range
 
                     let orderRanges = `\n) t ON r.range = t.\`${fieldsColumn.display_name}\`\nORDER BY\n`;
                     orderRanges += `    CASE\n`;
                     orderRanges += `        WHEN r.range = '< ${fieldsColumn.ranges[0]}' THEN 1\n`;
 
-                    // Generar los casos intermedios
+                    // Generate intermediate cases
                     for (let i = 0; i < fieldsColumn.ranges.length - 1; i++) {
                         orderRanges += `        WHEN r.range = ' ${fieldsColumn.ranges[i]} - ${fieldsColumn.ranges[i + 1] - 1}' THEN ${i + 2}\n`;
                     }
 
-                    // Agregar el último caso para valores mayores o iguales al último elemento
+                    // Add the last case for values greater than or equal to the last element
                     orderRanges += `        WHEN r.range = '>= ${fieldsColumn.ranges[fieldsColumn.ranges.length - 1]}' THEN ${fieldsColumn.ranges.length + 1}\n`;
                     orderRanges += `    END;`;
 
@@ -445,8 +464,8 @@ export abstract class QueryBuilderService {
 
     public buildGraph() {
         const graph = [];
-        //No fa falta treure les relacions ocultes per que les poso al array no_relations en guardar-ho
-        //Totes les relacions ja son bones. Ho deixo per que el bucle ja es fa...
+        //No need to remove the hidden relations because I put them in the array no_relations when saving.
+        //All relationships are already good. I'll leave it because the loop is already done...
         this.tables.forEach(t => {
             const relations = [];
             t.relations
@@ -457,7 +476,7 @@ export abstract class QueryBuilderService {
     }
 
 
-    /** valida relaciones directas */
+    /** validates direct relationships */
     public validateJoinTree(joinTree:any, dest:any){
         for (let i = 0; i < dest.length; i++) {
             let elem = joinTree.find(n => n.name === dest[i]);
@@ -472,7 +491,7 @@ export abstract class QueryBuilderService {
     public getGraph(graph, origin, dest) {
         let new_origin = origin;
         const workingGrapth = JSON.parse(JSON.stringify(graph));
-        //inicializo en el origen.
+        //I initialise at the origin.
         let elem = workingGrapth.filter(e => e.name === new_origin )[0];
         const ruta = { name: elem.name, paths: [] };
         elem.rel.forEach((r,i) => {
@@ -531,7 +550,7 @@ export abstract class QueryBuilderService {
               finalPaths.push(r);
             }
           })
-        // rutas limpias sin duplicados.
+        // clean routes without duplicates.
         ruta.paths = [...finalPaths];
         finalPaths = [];
         
@@ -540,7 +559,7 @@ export abstract class QueryBuilderService {
             dest.forEach(e => {  if(r.indexOf(e)<0){ exito=0;}} );
             if( exito==1){goodPaths.push(r);}
         })
-        //Si tengo un origen y un destino.
+        //If I have an origin and a destination.
         goodPaths.forEach((p,i)=>{
             if( dest.indexOf( p[p.length-1] ) >=0 ){ finalPaths.push(p);}
         })
@@ -614,7 +633,7 @@ export abstract class QueryBuilderService {
     }
 
 
-    /** esto se usa para las consultas que hacemos a bbdd para generar el modelo */
+    /** this is used for bbdd queries to generate the model. */
     public simpleQuery(columns: string[], origin: string) {
     
         const schema = this.dataModel.ds.connection.schema;
@@ -679,9 +698,9 @@ export abstract class QueryBuilderService {
   /*SDA CUSTOM*/ @custom.queryBuilderServiceCustomGetTreePermissions 
     public getTreePermissions(modelPermissions,  query) {
           /**
-         * Tento todos los permisos modelPermissions
-         * Tengo mi consulta query
-         * Tengo que añadir los wheres que tocan a la consulta para implmentar los permisos.
+         * I have all modelPermissions permissions
+         * I have my query 
+         * I have to add the wheres that modify the query to implement the permissions.
          **/      
 
         let filters = [];
@@ -807,7 +826,7 @@ export abstract class QueryBuilderService {
                                              f.filter === havingFilter.filter_column);
         }else{
 
-            return  { // devolvemos una columna ficticia con los valores que necesitamos para hacer el having
+            return  { // we return a dummy column with the values we need to do the having
                 table_id: havingFilter.filter_table ,
                 column_name: havingFilter.filter_column,
                 display_name: havingFilter.filter_column,
@@ -849,7 +868,7 @@ export abstract class QueryBuilderService {
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         let query = userQuery.SQLexpression;
         
-        // añado un espacio en blanco al final de cada linea para asegurar que no se juntan palabras
+        // I add a blank space at the end of each line to ensure that words do not run together.
         let reg = new RegExp(`\n`, "g");
         query = query.replace(reg, ` `);
 
@@ -913,8 +932,8 @@ export abstract class QueryBuilderService {
         const dest = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
         /*SDA CUSTOM security for own tables*/const permissions = this.getPermissions(modelPermissions, this.tables, origin).filter( (p)=> p.filter_table == table );
-        const joinType = 'inner'; // es per els permisos. Ha de ser així.
-        const valueListJoins = []; // anulat
+        const joinType = 'inner'; // it is for the permissions. It has to be like this.
+        const valueListJoins = []; // cancelled
 
         let tables = this.dataModel.ds.model.tables
             .map(table => { return { name: table.table_name, query: table.query } });
@@ -973,7 +992,7 @@ export abstract class QueryBuilderService {
         for (let i = 0; i < words.length; i++) {
             if (
                 (words[i].toUpperCase() === 'FROM' || words[i].toUpperCase() === 'JOIN') &&
-                (words[i + 1] !== '(' && words[i + 1].toUpperCase() !== 'SELECT')  // la paraula que ve despres de un from i no es una subconsulta
+                (words[i + 1] !== '(' && words[i + 1].toUpperCase() !== 'SELECT')  // the word that comes after a from and is not a subquery
             ) {
                 tables.push(words[i + 1]);
             }
@@ -1139,9 +1158,9 @@ export abstract class QueryBuilderService {
 
     public getEqualFilters = (filters) => {
         /**
-         * LOS FILTROS TIENEN DIFERENTES NIVELES GLOBAL = A NIVEL DE DASHBOARD - LOCAL = A NIVEL DE PANEL - SEGURIDAD = QUE VIENEN DE LA SEGURIDAD
-         * LOS FILTORS SE CONCATENAN CON UN AND NORMALMENTE. PERO SI PONGO FILTROS SOBRE LA MISMA COLUMNA AL MISMO NIVEL (ISGLOBAL) SE CONCATENAN
-         * CON UN OR. QUE ES EL FUNCIONAMIENTO ESPERADO.
+         * FILTERS HAVE DIFFERENT LEVELS GLOBAL = AT DASHBOARD LEVEL - LOCAL = AT PANEL LEVEL - SECURITY = COMING FROM SECURITY
+         * FILTORS ARE CONCATENATED WITH AN AND NORMALLY. BUT IF I PUT FILTERS ON THE SAME COLUMN AT THE SAME LEVEL (ISGLOBAL) THEY ARE CONCATENATED
+         * WITH A OR. WHICH IS THE EXPECTED PERFORMANCE.
          * 
           */
         let filterMap = new Map();
@@ -1149,7 +1168,7 @@ export abstract class QueryBuilderService {
         filters.forEach(filter => {
             let myKey = filter.filter_table + filter.filter_column + filter.isGlobal;
             if(filter.isGlobal == 'security'){
-                myKey = filter.filter_table +'security'  /**   si es de seguridad se deben combinar todos los filtros. */
+                myKey = filter.filter_table +'security'  /**   if it is a security filter, all filters must be combined. */
             }
             let node = filterMap.get(myKey);
             if (node) {
@@ -1177,10 +1196,12 @@ export abstract class QueryBuilderService {
         if (equalfilters.toRemove.length > 0) {
             equalfilters.map.forEach((value, key) => {
                 let filterSTR = '\nand ( '    
-                let n = value.filter( f=> (f.filter_type == 'not_null'  || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') );
-                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null')];            
+                //we put the nulls first
+                let n = value.filter( f=> (f.filter_type == 'not_null'  || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty' || f.filter_type == 'is_null' ) );
+                // and the values afterwards.
+                let values = [...n, ...value.filter( f=> f.filter_type != 'not_null' && f.filter_type != 'not_null_nor_empty' && f.filter_type != 'null_or_empty' && f.filter_type != 'is_null' )];          
                 values.forEach((f) => {
-                    if (f.filter_type == 'not_null' || f.filter_type == 'not_null_nor_empty' || f.filter_type == 'null_or_empty') {                        //Fins que no es pugi determinar el tipus de conjunció. Els filtres sobre una mateixa columna es un or perque vull dos grups. EXCEPTE QUAN ES UN NULL
+                    if (f.filter_type == 'not_null' || f.filter_type == 'not_null_nor_empty' ) {                        //Until the type of conjunction can be determined. Filters on the same column is an OR because I want two groups. EXCEPT WHEN IT IS A NULL
                         filterSTR += this.filterToString(f) + '\n  and ';
                     } else {
                         filterSTR += this.filterToString(f) + '\n  or ';

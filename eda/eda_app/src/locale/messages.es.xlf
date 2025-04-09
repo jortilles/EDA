@@ -4394,6 +4394,10 @@
         <source>Entre</source>
         <target>Entre</target>
       </trans-unit>
+        <trans-unit id="emptyStringTxt">
+        <source>Vacío</source>
+        <target>(Vacío)</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

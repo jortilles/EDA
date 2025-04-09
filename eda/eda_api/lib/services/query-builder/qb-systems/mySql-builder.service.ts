@@ -14,9 +14,9 @@ export class MySqlBuilderService extends QueryBuilderService {
     let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
     let myQuery = `SELECT ${columns.join(', ')} \nFROM ${o}`;
 
-    /** SI ES UN SELECT PARA UN SELECTOR  VOLDRÉ VALORS ÚNICS */
-    if (forSelector === true) {
-      myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
+    /** IF IT IS A SELECT FOR A SELECTOR I WANT UNIQUE VALUES */
+    if (forSelector === true && columns.length == 1 ) {
+      myQuery = `SELECT DISTINCT ${columns} \nFROM ${o}`;
     }
  
 
@@ -30,7 +30,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
     } else {
-      /*EDA Normal*/
+      /*Normal EDA*/
       joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema, dest.length);
     }
 
@@ -50,9 +50,9 @@ export class MySqlBuilderService extends QueryBuilderService {
     myQuery += this.getHavingFilters(havingFilters);
 
 
-    /**SDA CUSTOM */ // if (forSelector === true) {
-    /**SDA CUSTOM */ //    myQuery += `\n UNION \n SELECT '' `;
-    /**SDA CUSTOM */ //  }
+    /**SDA CUSTOM */  if (forSelector === true) {
+    /**SDA CUSTOM */      myQuery += `\n UNION \n SELECT '' `;
+    /**SDA CUSTOM */   }
 
 
     // OrderBy
@@ -113,7 +113,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   public getFilters(filters, destLongitud, pTable): any { 
 
-    /** Si Tenemos Permisos Y No Hay Destino Lo Añado A Los Filtros */
+    /** If We Have permissions And No Destination I Add To Filters */
 
     if ( this.permissions.length > 0 && destLongitud == 0) this.permissions.forEach( permission => { filters.push(permission); });
     else { this.permissions.forEach( permission => { if( permission.filter_table === pTable ) filters.push(permission);})}
@@ -133,10 +133,10 @@ export class MySqlBuilderService extends QueryBuilderService {
         if (f.filter_type === 'not_null' || f.filter_type === 'not_null_nor_empty' || f.filter_type === 'null_or_empty') {
           filtersString += '\nand ' + this.filterToString(f);
         } else {
-          /* Control de nulos... se genera la consutla de forma diferente */
-            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length >1 ) {// Si tengo varios filtors es filtro por X o es nulo.
+          /* Null control... query generated in a different way */
+            if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  >1 ) {// Si tengo varios filtros sobre una misma columna  es filtro por X o es nulo.
                    filtersString += `\nor ${colname}  is null `;
-            } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.length ==1 ) { // si soolo tengo el filtro de nulo es un and poqque digo 1=1 y es nulo.
+            } if (   f.filter_type == 'is_null' && f.filter_elements[0].value1.length === 1 && filters.filter( (f)=>f.filter_column == column.column_name && f.filter_table == column.table_id ).length  ==1 ) { // si solo tengo el filtro de nulo es un and porque digo 1=1 y es nulo.
               filtersString += `\nand ${colname}  is null `;
             } else {  
                 filtersString += `\nand (${this.filterToString(f)} ) `;
@@ -180,7 +180,7 @@ export class MySqlBuilderService extends QueryBuilderService {
           let t = tables.filter(table => table.name === e[j]).map(table => { return table.query ? table.query : `\`${table.name}\`` })[0];
 
           if( valueListJoins.includes(e[j])   ){
-            myJoin = 'left'; // Si es una tabla que ve del multivaluelist aleshores els joins son left per que la consulta tingui sentit.
+            myJoin = 'left'; //If it is a table that comes from multivaluelist then joins are left for the query to make sense.
           }else{
             myJoin = joinType; 
           }
@@ -236,7 +236,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
   
   public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[], destLongitud: any) {
-    // Inicialización de variables
+    // Variables initialisation
     const joinExists = new Set();
     const aliasTables = {};
     let joinString = [];
@@ -245,17 +245,17 @@ export class MySqlBuilderService extends QueryBuilderService {
 
     for (const join of joinTree) {
 
-        // División de las partes de la join
+        // Division of the joins parts
         const sourceLastDotInx = join[0].lastIndexOf('.');
         // sourceTableAlias === join relation table_id
         const [sourceTable, sourceColumn] = [join[0].substring(0, sourceLastDotInx), join[0].substring(sourceLastDotInx + 1)];
         const [targetTable, targetColumn] = join[1].split('.');
 
-        // Construcción de las partes de la join
+        // Construction of the join parts
         let sourceJoin = `\`${sourceTable}\`.\`${sourceColumn}\``;
         let targetJoin = `\`${targetTable}\`.\`${targetColumn}\``;
 
-        // Si la join no existe ya, se añade
+        // If the join does not already exist, add
         if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
             joinExists.add(`${sourceJoin}=${targetJoin}`);
 
@@ -265,7 +265,7 @@ export class MySqlBuilderService extends QueryBuilderService {
                 aliasSource = `\`${sourceTable}.${sourceColumn}\``;
             }
             
-            // Construcción de los alias
+            // Alias construction
             let alias = `\`${targetTable}.${targetColumn}.${sourceColumn}\``;
 
             if (aliasSource) {
@@ -346,9 +346,10 @@ export class MySqlBuilderService extends QueryBuilderService {
       let table_column;
 
       if (el.autorelation && !el.valueListSource && !this.queryTODO.forSelector ) {
-
         table_column = `\`${el.joins[el.joins.length-1][0]}\`.\`${el.column_name}\``;
-      } else {
+      } else if(this.queryTODO.forSelector) {
+        table_column = `IFNULL( \`${el.table_id}\`.\`${el.column_name}\`, '')`;
+      }else{
         table_column = `\`${el.table_id}\`.\`${el.column_name}\``;
       }
 
@@ -358,7 +359,7 @@ export class MySqlBuilderService extends QueryBuilderService {
 
       el = this.getMinFractionDigits(el);
 
-      // Aqui se manejan las columnas calculadas
+      // Calculated columns are managed here
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
@@ -463,7 +464,7 @@ export class MySqlBuilderService extends QueryBuilderService {
               grouping.push(`${table_column}`);
             }
           } else {
-            //  Si es una única columna numérica no se agrega.
+            //  If it is a single numeric column it is not aggregated.
             if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
               grouping.push(`${table_column}`);
             }
@@ -555,7 +556,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       /**
    * 
    * @param filterObject 
-   * @returns clausula having en un string.  
+   * @returns having clause in a string.  
    */
   public getHavingFilters(filters ): any {
 
@@ -575,11 +576,11 @@ export class MySqlBuilderService extends QueryBuilderService {
         }else if (f.filter_type === 'null_or_empty') {
           filtersString += `\nand ( ${colname}  is null or ${colname} != ''  ) `;
         }  else {
-          /* Control de nulos... se genera la consutla de forma diferente */
+          /* Null control... query is generated in a different way. */
           let nullValueIndex = f.filter_elements[0].value1.indexOf(null);
           if (nullValueIndex != - 1) {
             if (f.filter_elements[0].value1.length === 1) {
-              /* puedo haber escogido un nulo en la igualdad */
+              /* I may have chosen a null on equality. */
               if (f.filter_type == '=') {
                 filtersString += `\nand ${colname}  is null `;
               } else {
@@ -679,7 +680,7 @@ public getHavingColname(column: any){
 
   public processFilter(filter: any, columnType: string) {
     filter = filter.map(elem => {
-      if (elem === null || elem === undefined || elem === 'null') return 'null'; //aqui poner 'null'
+      if (elem === null || elem === undefined || elem === 'null') return 'null'; //here put ‘null’.
       else return elem;
     });
 
@@ -700,7 +701,7 @@ public getHavingColname(column: any){
         str = str + tail + ','
       });
 
-      // En el cas dels filtres de seguretat si l'usuari no pot veure res....
+      // In the case of security filters if the user can't see anything....
       filter.forEach(f => {
         if(f == '(x => None)'){
           switch (columnType) {
