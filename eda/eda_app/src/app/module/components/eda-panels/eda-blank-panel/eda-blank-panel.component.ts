@@ -110,7 +110,8 @@ export class EdaBlankPanelComponent implements OnInit {
         disablePreview: true,
         disableQueryInfo: true,
         notSaved: false,
-        minispinnerSQL: false
+        minispinnerSQL: false,
+        advancedSetting: false
     };
 
     public index: number;
@@ -182,7 +183,6 @@ export class EdaBlankPanelComponent implements OnInit {
         { icon: 'pi pi-align-left', label: 'Left', joinType: 'left' },
         { icon: 'pi pi-align-center', label: 'Inner', joinType: 'inner' },
         { icon: 'pi pi-align-right', label: 'Right', joinType: 'right' }
-        //,         { icon: 'pi pi-align-justify', joinType: 'full outer' }
     ];
 
 
@@ -506,7 +506,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * Updates panel content with actual state
      */
     public savePanel() {
-        this.panel.title = this.pdialog.getTitle();
+        // this.panel.title = this.panel.title;
 
         if (this.panel?.content) {
             this.panel.content.query.query.queryMode = this.selectedQueryMode;

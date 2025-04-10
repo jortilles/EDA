@@ -40,16 +40,14 @@
 
   </div>
 
-  <div footer>
-
-    <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
-      class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
-      id="eda_chart_dialog_confirmar">
+  <div class="flex justify-end p-2 border-t gap-1.5">
+    <button  class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
+      <i class="fa fa-times"></i>
+      <span i18n-label="@@cancelarBtn">Cancelar</span>
     </button>
-    <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
-      class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
+    <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" (click)="saveChartConfig()">
+      <i class="fa fa-check"></i> <span>Confirmar</span>
     </button>
-
   </div>
 
 </eda-dialog>

@@ -235,7 +235,7 @@ export class DashboardPageV2 implements OnInit {
       // group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
     };
 
-    // this.edaPanels.forEach(panel => { panel.savePanel(); });
+    this.edaPanels.forEach(panel => { panel.savePanel(); });
     body.config.panel = this.dashboard.panel;
 
     try {

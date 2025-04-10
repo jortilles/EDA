@@ -1,129 +1,213 @@
 <eda-dialog [inject]="dialog">
 
-    <div body class="grid">
+  <!--   <div body>
+    <div class="grid gap-4"
+      [ngClass]="{
+        'grid-cols-[1fr_1fr_1fr_3fr]': showFormatDateSection,
+        'grid-cols-[1fr_1fr_3fr]': !showFormatDateSection}
+      "> -->
+    <div body>
 
-        <div class="col-8" style="height: 80%; ">
-
-            <div class="eda-chart-panel col-8" style="height: 80%; margin-left: 6em; margin-top: 4em; background-color: var(--panel-color);">
-
-                <panel-chart *ngIf="!!display" #PanelChartComponent [props]="panelChartConfig" style="height: 80%; width: 90%; display:block;  margin-top:5em"></panel-chart>
-
-            </div>
-
+      <div class="grid gap-4 grid-cols-2">
+        <div class="p-2 w-full h-full">
+          @if (display) {
+            <panel-chart #PanelChartComponent
+            [props]="panelChartConfig"
+            class="h-full w-full block"
+          ></panel-chart>
+          }
         </div>
 
-        <div  class="col-2" *ngIf='panelChartConfig.edaChart != "histogram"' >
-
+        <div>
+          @if (panelChartConfig.edaChart !== 'histogram') {
             <h6 i18n="@@addtrend" class="custom-border-b1" style="margin-top: 2em;">
-                Tendencia
+              Tendencia
             </h6>
 
             <div [pTooltip]="trendTooltip" tooltipPosition="left">
-                <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="addTrend"
-                    tooltipPosition="left" (onChange)="checkTrend()" [disabled]="!showTrend">
-                </p-inputSwitch>
+              <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="addTrend"
+                tooltipPosition="left" (onChange)="checkTrend()" [disabled]="!showTrend">
+              </p-inputSwitch>
             </div>
-        </div>
-        <div class="col-2" *ngIf='panelChartConfig.edaChart != "histogram"' >
+
             <h6 i18n="@@addComparative" class="custom-border-b1" style="margin-top: 2em;">
-                Comparativa
+              Comparativa
             </h6>
 
             <div [pTooltip]="comparativeTooltip" tooltipPosition="left">
-                <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="addComparative"
-                    tooltipPosition="left" (onChange)="setComparative()" [disabled]="!showComparative">
-                </p-inputSwitch>
+              <p-inputSwitch [(ngModel)]="addComparative"
+                tooltipPosition="left"
+                [disabled]="!showComparative"
+                (onChange)="setComparative()"
+              ></p-inputSwitch>
             </div>
-
-
-        </div>
-
-        <div class="col-2 col-offset-8">
+          }
             <h6 i18n="@@showLabels" class="custom-border-b1" style="margin-top: 2em;">
-                Mostrar Etiquetas
+              Mostrar Etiquetas
             </h6>
 
             <div [pTooltip]="showLablesTooltip" tooltipPosition="left">
-                <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="showLabels"
-                    tooltipPosition="left" (onChange)="setShowLables()" >
-                </p-inputSwitch>
+              <p-inputSwitch [(ngModel)]="showLabels"
+                tooltipPosition="left"
+                (onChange)="setShowLables()"
+              ></p-inputSwitch>
             </div>
 
-        </div>
-        <div class="col-2 col-offset-8">
             <h6 i18n="@@showLabelsPercent" class="custom-border-b1" style="margin-top: 2em;">
-                Mostrar Etiquetas en Porcentajes
+              Mostrar Etiquetas en Porcentajes
             </h6>
 
             <div [pTooltip]="showLablesPercentTooltip" tooltipPosition="left">
-                <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="showLabelsPercent"
-                    tooltipPosition="left" (onChange)="setShowLablesPercent()" >
-                </p-inputSwitch>
+              <p-inputSwitch [(ngModel)]="showLabelsPercent"
+                tooltipPosition="left"
+                (onChange)="setShowLablesPercent()"
+              ></p-inputSwitch>
             </div>
-
-        </div>
-        
-        <div  *ngIf=showNumberOfColumns class="col-2" style="margin-top: 2em;">
-            <h6 i18n="@@histogramColum" class="custom-border-b1">
-                Columnas
-            </h6>
-        <div   *ngIf=showNumberOfColumns [pTooltip]="columnsTooltip" tooltipPosition="left">
-            <input type="number" pInputText id="columnes" name="columnes"
-            min="3" max="100" [(ngModel)]="numberOfColumns" (change)="SetNumberOfColumns()" > 
-        </div>
-       </div>
-
-
-
-        <div class="col-4 col-offset-8">
 
             <h6 i18n="@@colorsChartH6" class="custom-border-b1">
-                Colores
-            </h6>
+              Colores
+          </h6>
 
-            <div class="grid chart-color-selection">
+          <div class="grid chart-color-selection">
 
-                <ng-container *ngFor="let serie of series; let i = index">
+              <ng-container *ngFor="let serie of series; let i = index">
+                  <div class=" col-6 ">
+                      <input type="text" pInputText style="width: 40%" [value]="serie.label" disabled="true" 
+                          [style.border-color]="serie.border" />
 
-                    <div class=" col-6 ">
-                        <input type="text" pInputText style="width: 40%" [value]="serie.label" disabled="true" 
-                            [style.border-color]="serie.border" />
+                      <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex"
+                          appendTo="body">
+                      </p-colorPicker>
 
-                        <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex"
-                            appendTo="body">
-                        </p-colorPicker>
+                      <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg"
+                          (input)="handleInputColor(serie)" minlength="7" >
 
-                        <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg"
-                            (input)="handleInputColor(serie)" minlength="7" >
+                  </div>
+              </ng-container>
 
-                    </div>
-
-                </ng-container>
-
-            </div>
-
+          </div>
 
         </div>
+        <!-- <panel-chart *ngIf="!!display" #PanelChartComponent [props]="panelChartConfig" style="height: 80%; width: 90%; display:block;  margin-top:5em"></panel-chart> -->
+      </div>
+
+      <!-- <div class="col-8" style="height: 80%; ">
+
+          <div class="eda-chart-panel col-8" style="height: 80%; margin-left: 6em; margin-top: 4em; background-color: var(--panel-color);">
+
+              <panel-chart *ngIf="!!display" #PanelChartComponent [props]="panelChartConfig" style="height: 80%; width: 90%; display:block;  margin-top:5em"></panel-chart>
+
+          </div>
+
+      </div>
+
+      <div  class="col-2" *ngIf='panelChartConfig.edaChart != "histogram"' >
+
+          <h6 i18n="@@addtrend" class="custom-border-b1" style="margin-top: 2em;">
+              Tendencia
+          </h6>
+
+          <div [pTooltip]="trendTooltip" tooltipPosition="left">
+              <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="addTrend"
+                  tooltipPosition="left" (onChange)="checkTrend()" [disabled]="!showTrend">
+              </p-inputSwitch>
+          </div>
+      </div>
+      <div class="col-2" *ngIf='panelChartConfig.edaChart != "histogram"' >
+          <h6 i18n="@@addComparative" class="custom-border-b1" style="margin-top: 2em;">
+              Comparativa
+          </h6>
+
+          <div [pTooltip]="comparativeTooltip" tooltipPosition="left">
+              <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="addComparative"
+                  tooltipPosition="left" (onChange)="setComparative()" [disabled]="!showComparative">
+              </p-inputSwitch>
+          </div>
+
+
+      </div>
+
+      <div class="col-2 col-offset-8">
+          <h6 i18n="@@showLabels" class="custom-border-b1" style="margin-top: 2em;">
+              Mostrar Etiquetas
+          </h6>
+
+          <div [pTooltip]="showLablesTooltip" tooltipPosition="left">
+              <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="showLabels"
+                  tooltipPosition="left" (onChange)="setShowLables()" >
+              </p-inputSwitch>
+          </div>
+
+      </div>
+      <div class="col-2 col-offset-8">
+          <h6 i18n="@@showLabelsPercent" class="custom-border-b1" style="margin-top: 2em;">
+              Mostrar Etiquetas en Porcentajes
+          </h6>
+
+          <div [pTooltip]="showLablesPercentTooltip" tooltipPosition="left">
+              <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" [(ngModel)]="showLabelsPercent"
+                  tooltipPosition="left" (onChange)="setShowLablesPercent()" >
+              </p-inputSwitch>
+          </div>
+
+      </div> -->
+      
+      <!-- <div  *ngIf=showNumberOfColumns class="col-2" style="margin-top: 2em;">
+          <h6 i18n="@@histogramColum" class="custom-border-b1">
+              Columnas
+          </h6>
+      <div   *ngIf=showNumberOfColumns [pTooltip]="columnsTooltip" tooltipPosition="left">
+          <input type="number" pInputText id="columnes" name="columnes"
+          min="3" max="100" [(ngModel)]="numberOfColumns" (change)="SetNumberOfColumns()" > 
+      </div>
+      </div> -->
+
+
+
+      <!-- <div class="col-4 col-offset-8">
+
+          <h6 i18n="@@colorsChartH6" class="custom-border-b1">
+              Colores
+          </h6>
+
+          <div class="grid chart-color-selection">
+
+              <ng-container *ngFor="let serie of series; let i = index">
+
+                  <div class=" col-6 ">
+                      <input type="text" pInputText style="width: 40%" [value]="serie.label" disabled="true" 
+                          [style.border-color]="serie.border" />
+
+                      <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex"
+                          appendTo="body">
+                      </p-colorPicker>
+
+                      <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg"
+                          (input)="handleInputColor(serie)" minlength="7" >
+
+                  </div>
+
+              </ng-container>
+
+          </div>
+
+
+      </div> -->
 
 
     </div>
 
 
     <div footer>
-
-        <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-
-            <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
-                class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
-                id="eda_chart_dialog_confirmar">
-            </button>
-
-            <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
-                class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
-            </button>
-
-        </div>
-
+      <div class="flex justify-end p-2 border-t gap-1.5">
+        <button  class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
+          <i class="fa fa-times"></i>
+          <span i18n-label="@@cancelarBtn">Cancelar</span>
+        </button>
+        <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" (click)="saveChartConfig()">
+          <i class="fa fa-check"></i> <span>Confirmar</span>
+        </button>
+      </div>
     </div>
 
 </eda-dialog>
