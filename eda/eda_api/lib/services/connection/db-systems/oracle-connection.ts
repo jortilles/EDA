@@ -3,7 +3,6 @@ import { AbstractConnection } from '../abstract-connection';
 import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 import { OracleBuilderService } from '../../query-builder/qb-systems/oracle-builder.service';
 import oracledb from 'oracledb';
-import { parse } from 'path';
 
 /**
  * WARNING !! La resposta de oracledb dóna problemes de format (objecte, array) ?? 
