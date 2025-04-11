@@ -237,7 +237,6 @@ export class EdaTable {
         } else if (this.resultAsPecentage === false && this.percentageColumns.length !== 0) {
             this.removePercentages();
         }
-
         if (this.withColTotals) {
             this.coltotals();
         }
@@ -619,9 +618,33 @@ export class EdaTable {
 
         //esta primera iteración con this.noRepetitions en false se hace para devolver las palabras repetidas al diálogo.
         //Es una secuencia similar a la de quitar los valores, pero opuesta.
-        if (!this.noRepetitions && this.noRepetitions !== undefined) {
-           this.value = this.origValues  ;
-        } else {
+        if (!this.noRepetitions && this.noRepetitions !== undefined ) {
+            // si no he tocado nada, dejo el valor origintal
+           this.value = _.cloneDeep(this.origValues); 
+        }  else if (!this.noRepetitions && ( this.resultAsPecentage || this.onlyPercentages)) {
+            // si  quiero repetidos pero tengo porcentajes....
+           //separamos valores de claves
+           let values = this.extractDataValues(this.value);
+           //tomamos claves que serán el cabecero
+           let labels = this.extractLabels(this.value)
+           labels.shift(); //borramos el primer objeto.
+           let output = [];
+           // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE 
+
+           for (let i = 0; i < values.length; i += 1) {
+               const obj = [];
+               for (let e = 0; e < values[i].length; e += 1) {
+                    if( ! ['EdaColumnPercentage', 'EdaColumnNumber'].includes(  this.cols[e].type ) ) {
+                        obj[labels[e]] =  this.origValues[i][labels[e]];
+                    }else{
+                        obj[labels[e]] = values[i][e];
+                    }
+              }
+               output.push(obj);   
+             }
+           this.value = output;  
+
+        }else {
             //separamos valores de claves
             let values = this.extractDataValues(this.value);
             //tomamos claves que serán el cabecero
@@ -655,6 +678,7 @@ export class EdaTable {
 
 
     colsPercentages() {
+
 
         if (this.percentageColumns.length !== 0) {
             this.removePercentages();
@@ -724,7 +748,6 @@ export class EdaTable {
                 });
             })
         }
-
         if (this.onlyPercentages === true) {
             this.cols.forEach(col => {
                 if (col.type === "EdaColumnNumber") {
@@ -734,7 +757,7 @@ export class EdaTable {
         }
     }
 
-    removePercentages() {
+    removePercentages() {        
         const cols = [];
         const hidenColumns = this.cols.filter(col => col.visible === false).length > 0;
         //remove labels
