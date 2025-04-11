@@ -133,12 +133,12 @@ export class GroupListPage implements OnInit {
         }
       );   
     }
-    else { //Estamos modificando usuario  
+    else { //Estamos modificando grupo  
       let groupToModify = this.groups.find(group => group._id === this.selectedGroup._id);
       groupToModify.name = this.selectedGroup.name; 
       groupToModify.role =  this.selectedGroup.role,
       groupToModify.users = this.selectedGroup.users; 
-      this.groupService.updateGroup(groupToModify.id, groupToModify).subscribe(
+      this.groupService.updateGroup(this.selectedGroup._id, groupToModify).subscribe(
         res => {
           Swal.fire($localize`:@@GroupUpdated:Grupo actualizado`, res.email, 'success');
           this.loadGroups();

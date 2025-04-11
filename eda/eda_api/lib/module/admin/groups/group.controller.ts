@@ -173,7 +173,7 @@ export class GroupController {
   static async updateGroup (req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body
-      Group.findById(req.body._id, (err, group: IGroup) => {
+      Group.findById(req.params.id, (err, group: IGroup) => {
         if (err) {
           return next(new HttpException(500, 'Group not found'))
         }
@@ -198,12 +198,12 @@ export class GroupController {
           // Borrem de tots els usuaris el grup actualitzat
           await User.updateMany(
             {},
-            { $pull: { role: { $in: [req.body._id] } } }
+            { $pull: { role: { $in: [req.params.id] } } }
           )
           // Introduim de nou als usuaris seleccionat el grup actualitzat
           await User.updateMany(
             { _id: { $in: body.users } },
-            { $push: { role: req.body._id } }
+            { $push: { role: req.params.id } }
           ).exec()
 
           return res.status(200).json({ ok: true, group: groupSaved })
