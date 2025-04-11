@@ -79,9 +79,13 @@ export class PgBuilderService extends QueryBuilderService {
 
       querys[diplayName] = [];
 
+        // Source Table
+        querys[diplayName].push(  `SELECT '${col.table_id}' AS source_table `   );
+        // COUNT 
+        querys[diplayName].push(`SELECT COUNT( * ) AS "count_rows" FROM ${col.table_id}`);
+
+
       if (col.column_type == 'text') {
-        // COUNT DISTINCT
-        querys[diplayName].push(`SELECT COUNT( * ) AS "count_rows" FROM ${mainQuery}`);
         // COUNT NULLS
         querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
         // COUNT EMPTY
@@ -113,8 +117,6 @@ export class PgBuilderService extends QueryBuilderService {
           ) sub;
         `);
       } else if (col.column_type == 'numeric') {
-        // COUNT DISTINCT
-        querys[diplayName].push(`SELECT COUNT( * ) AS "count_rows" FROM ${mainQuery}`);
         // COUNT NULLS
         querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
         // MAX
@@ -139,8 +141,6 @@ export class PgBuilderService extends QueryBuilderService {
         querys[diplayName].push(`SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY "main"."${col.column_name}") AS "median" FROM ${mainQuery}`);
 
       } else if (col.column_type == 'date') {
-        // COUNT DISTINCT
-        querys[diplayName].push(`SELECT COUNT( * ) AS "count_rows" FROM ${mainQuery}`);
         // CountNulls
         querys[diplayName].push(`SELECT SUM(CASE WHEN "main"."${col.column_name}" IS NULL THEN 1 ELSE 0 END) AS "count_nulls" FROM ${mainQuery}`);
         // MAX
