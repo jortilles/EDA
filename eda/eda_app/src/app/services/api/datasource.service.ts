@@ -336,7 +336,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             source_column: rel.target_column,
             target_table: rel.source_table,
             target_column: rel.source_column,
-            display_name: rel.display_name,
+            display_name: rel.display_name['default'] !== null ? rel.display_name['default'] : rel.target_table + ' - ' + rel.target_column,
             visible: true
         };
 

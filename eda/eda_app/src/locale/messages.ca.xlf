@@ -2437,6 +2437,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Añadir relación a la tabla</source>
 <target>Afegir relació a la taula</target>
 </trans-unit>
+<trans-unit id="modifyRelationTo">
+<source>Modificar relación de la tabla</source>
+<target>Modificar relació de la taula</target>
+</trans-unit>
 
 <trans-unit id="chartInfo1">
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>

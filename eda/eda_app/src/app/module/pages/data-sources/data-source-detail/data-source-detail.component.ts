@@ -9,6 +9,7 @@ import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMen
 import { aggTypes } from 'app/config/aggretation-types';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
+import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
 
 @Component({
     selector: 'app-data-source-detail',
@@ -261,16 +262,13 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 ]
             }),
             cols: [
-                //new EdaColumnFunction({ click: (relation) => this.deleteRelation(relation._id) }),
-                //Opció esborrar treta ==> opció editar al final ? 
                 new EdaColumnText({ field: 'origin', header: $localize`:@@originRel:Origen` }),
                 new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` }),
                 new EdaColumnText({ field: 'name', header: $localize`:@@nameRel:Nombre` }),
-                new EdaColumnFunction({ click: (relation) => this.updateRelation(relation._id) }),
-                new EdaColumnFunction({ click: (relation) => this.deleteRelation(relation._id) }),
+                new EdaColumnEditable({ field: 'modify', click: (relation) => this.updateRelation(relation._id)}),
+                new EdaColumnFunction({ field: 'delete', click: (relation) => this.deleteRelation(relation._id)}),
             ]
         })
-       
     }
 
     ngOnInit() {
@@ -368,7 +366,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     const row = {
                         origin: relation.source_column,
                         dest: `${relation.target_table}.${relation.target_column}`,
-                        name: relation.display_name !== undefined ? relation.display_name['default'] : relation.target_table + ' - ' + relation.target_column,
+                        name: relation.display_name !== undefined && relation.display_name !== null ? relation.display_name['default'] : relation.target_table + ' - ' + relation.target_column,
                         _id: relation
                     };
                     if (!this.relationsTable.value.map(value => value.dest).includes(row.dest) ) {

@@ -780,10 +780,11 @@ export class EdaTable {
 
 
     public onSort($event) {
-
-        this.sortedColumn = $event;
-        this.onSortColEvent.emit($event);
-        this.checkTotals(null);
+        if (this.cols.find(col => col.field === $event.field).sortable) {            
+            this.sortedColumn = $event;
+            this.onSortColEvent.emit($event);
+            this.checkTotals(null);
+        }
     }
 
     sort(serie) {
