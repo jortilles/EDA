@@ -909,7 +909,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private renderTreetable() {
-        const inject = this.props.data;
+        const inject = this.props;
         this.createTreetable(inject);
     }
 

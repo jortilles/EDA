@@ -44,7 +44,7 @@ export interface IPanelAction {
 @Component({
     selector: 'eda-blank-panel',
     templateUrl: './eda-blank-panel.component.html',
-    styleUrls: []
+    styleUrls: ['./eda-blank-panel.component.css'],
 })
 export class EdaBlankPanelComponent implements OnInit {
 
@@ -141,7 +141,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public ordenationTypes: OrdenationType[];
     public currentQuery: any[] = [];
     public currentSQLQuery: string = '';
-    public queryLimit: number;
+    public queryLimit: number = 5000; // por defecto se limita a 5.000
     public joinType: string = 'inner';
 
     public queryModes: any[] = [

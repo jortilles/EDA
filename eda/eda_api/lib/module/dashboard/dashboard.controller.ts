@@ -1438,7 +1438,7 @@ export class DashboardController {
             for (var i = 0; i < oracleDataTypes.length - 1; i++) {
               var e = oracleDataTypes[i]
               for (var j = 0; j < e.length; j++) {
-                if(oracleDataTypes[j][0]=='int'  ){
+                if(oracleDataTypes[0][j]=='int'  ){
                   if ( oracleDataTypes[i][j] != oracleDataTypes[i + 1][j]) {
                     oracleEval = false
                   }
