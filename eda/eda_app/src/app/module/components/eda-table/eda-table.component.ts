@@ -67,7 +67,7 @@ export class EdaTableComponent implements OnInit {
         }
     }
 
-    getTooltip = (col) => (`${col.description}` && col.description !== undefined) || ``;
+    getTooltip = (col) => `${col.description}` && col.description !== undefined ? `${col.description}` : ``;
 
     getLinkTooltip(col) {
         return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
