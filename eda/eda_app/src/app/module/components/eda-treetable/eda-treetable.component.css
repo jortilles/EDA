@@ -2,3 +2,11 @@
 .container-treetable{
     margin: 0.1rem;
 }
+
+tr .header-style {
+    background: #edeff1;
+    border: 1px solid white;
+    border-radius: 0.4rem;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+}
