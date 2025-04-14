@@ -21,6 +21,7 @@ export class EdaTreeTable implements OnInit {
   files!: TreeNode[];
   labels: any[] = [];
   labelsInputs: any[] = [];
+  filterMode = 'lenient'; // Modo indulgente activado, activar botones para opciones de modos => indulgente / estricto
 
   id_label: string = '';
 
@@ -32,10 +33,13 @@ export class EdaTreeTable implements OnInit {
     this.inject.query.slice(2).forEach((e: any) => {
       this.labels.push(e.display_name.default)
     })
+    console.log('labels: ', this.labels);
 
     this.inject.query.forEach((e: any) => {
       this.labelsInputs.push(e.display_name.default)
     })
+    console.log('labelsInputs: ', this.labelsInputs);
+
 
     // Obtención de la primera etiqueta de los labels como id genérico
     this.id_label = this.labelsInputs[0];
@@ -43,7 +47,9 @@ export class EdaTreeTable implements OnInit {
     // Construcción del objeto necesario para el Treetable
     this.buildHierarchyTreetable(this.labelsInputs, this.inject.data.values).then( (files: any) => {
       this.files = files;
+      console.log('files: ', this.files);
     } )
+    console.log('inject: ', this.inject);
   }
 
   // Función que brinda la lógica de ordenamiento
