@@ -8,9 +8,14 @@
             </tr>
             <tr>
                 <th *ngFor="let label of labels">
-                    <input *ngIf="label" type="text" pInputText
-                           (input)="tt.filter($event.target.value, label, 'contains')"
-                           [placeholder]="'Filter by ' + label" />
+                    <input 
+                            class="input-filter"
+                            *ngIf="label" 
+                            type="text" 
+                            pInputText
+                            (input)="tt.filter($event.target.value, label, 'contains')"
+                            [placeholder]="filterBy + ' ' +label" 
+                    />
                 </th>
             </tr>
         </ng-template>

@@ -4452,6 +4452,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Logs Error</source>
         <target>Logs Error</target>
       </trans-unit>
+      <trans-unit id="filterByTreetable">
+      <source>Filtrar por</source>
+      <target>Filtrar per</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

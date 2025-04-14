@@ -25,6 +25,8 @@ export class EdaTreeTable implements OnInit {
 
   id_label: string = '';
 
+  public filterBy: string = $localize`:@@filterByTreetable:Filtrar por`;
+
   constructor() { }
 
   ngOnInit(): void {

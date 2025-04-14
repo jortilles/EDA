@@ -4419,6 +4419,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Logs Error</source>
         <target>Logs Error</target>
       </trans-unit>
+      <trans-unit id="filterByTreetable">
+      <source>Filtrar por</source>
+      <target>Filter by</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
