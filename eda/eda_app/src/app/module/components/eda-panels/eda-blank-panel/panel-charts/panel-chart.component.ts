@@ -702,15 +702,15 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             if (true) {
                 inject.zoom = this.props.config["config"]["zoom"];
             } else {}
-        }catch{
-            inject.zoom =  1 ;
-        }
+        }catch{}
         try{
             if (type === "geoJsonMap") {
                 inject.color = this.props.config["config"]["color"];
+                inject.baseLayer = this.props.config['config']['baseLayer'];
             } else {
                 inject.initialColor = this.props.config["config"]["initialColor"];
                 inject.finalColor = this.props.config["config"]["finalColor"];
+                inject.baseLayer = true;
             }
         }catch{
             inject.color =  '#006400';
