@@ -12,7 +12,7 @@ import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-co
 
 @Component({
     selector: 'app-chart-dialog',
-    templateUrl: './chart-dialog.component.html'
+    templateUrl: './chart-dialog-v2.component.html'
 })
 
 export class ChartDialogComponent extends EdaDialogAbstract  {
@@ -53,6 +53,32 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public series: any[] = [];
     public id: any;
 
+    activeTab = "display"
+
+  settings = {
+    tendencia: false,
+    comparativa: false,
+    mostrarEtiquetas: false,
+    mostrarPorcentajes: false,
+  }
+
+  colorData: any[] = [
+    { country: "USA", code: "#024873" },
+    { country: "France", code: "#0fa697" },
+    { country: "Spain", code: "#f2c53d" },
+    { country: "UK", code: "#bf814b" },
+    { country: "Australia", code: "#591202" },
+    { country: "Italy", code: "#00ae57" },
+    { country: "New Zealand", code: "#a9d531" },
+    { country: "Finland", code: "#008400" },
+    { country: "Norway", code: "#e77770" },
+    { country: "Germany", code: "#555555" },
+    { country: "Canada", code: "#1f9da5" },
+    { country: "Denmark", code: "#2bd7e3" },
+    { country: "Singapore", code: "#f2c53d" },
+    { country: "Japan", code: "#c2d281" },
+  ]
+
 
     constructor(private chartUtils: ChartUtilsService,) {
         super();
@@ -88,6 +114,14 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             { label: 'Sin apilar', value: false },
             { label: 'Apilar', value: true }
         ];
+    }
+
+    setActiveTab(tab: string): void {
+        this.activeTab = tab
+      }
+    
+      toggleSetting(setting: string): void {
+        this.settings[setting] = !this.settings[setting]
     }
 
     onShow(): void {
@@ -137,6 +171,8 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor: s.border }));
                 break;
         }
+
+        console.log(this.series);
     }
 
     handleInputColor(event) {

@@ -236,7 +236,7 @@ export class DashboardPageV2 implements OnInit {
     };
 
     this.edaPanels.forEach(panel => { panel.savePanel(); });
-    body.config.panel = this.dashboard.panel;
+    body.config.panel = this.panels;
 
     try {
       await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));

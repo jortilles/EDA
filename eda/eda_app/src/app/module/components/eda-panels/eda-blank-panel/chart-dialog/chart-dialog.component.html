@@ -68,23 +68,23 @@
               Colores
           </h6>
 
-          <div class="grid chart-color-selection">
+          <div class="grid grid-cols-2">
+            @for (serie of series; track serie) {
+              <div>
+                <input type="text" pInputText
+                  [value]="serie.label"
+                  disabled="true" 
+                  [style.border-color]="serie.border"
+                />
 
-              <ng-container *ngFor="let serie of series; let i = index">
-                  <div class=" col-6 ">
-                      <input type="text" pInputText style="width: 40%" [value]="serie.label" disabled="true" 
-                          [style.border-color]="serie.border" />
+                <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex"
+                    appendTo="body">
+                </p-colorPicker>
 
-                      <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex"
-                          appendTo="body">
-                      </p-colorPicker>
-
-                      <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg"
-                          (input)="handleInputColor(serie)" minlength="7" >
-
-                  </div>
-              </ng-container>
-
+                <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg"
+                    (input)="handleInputColor(serie)" minlength="7" >
+              </div>
+            }
           </div>
 
         </div>
