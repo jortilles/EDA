@@ -38,11 +38,12 @@ export class HomePageV2 implements OnInit {
   isOpenTags = signal(false)
   searchTagTerm = signal("")
   
-  //Variables de control de edició Modificar¿?
+  //Variables de control de edició Modificar
   isEditing: boolean = false;
-  editingReportId: number | null = null;
+  editingReportId: number;
   editTitle: string = ''; 
   sortingType: string = sessionStorage.getItem('homeSorting') || 'name';
+
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {
@@ -83,6 +84,8 @@ export class HomePageV2 implements OnInit {
     // Agregar opciones adicionales
     this.tags.unshift({ label: $localize`:@@NoTag:Sin Etiqueta`, value: 0 });
     this.tags.push({ label: $localize`:@@AllTags:Todos`, value: 1 });
+
+    this.filterByTags(); // Revisar si es necesari
   }
 
   public openReport(report: any) {
@@ -96,7 +99,8 @@ export class HomePageV2 implements OnInit {
     } else {
       this.selectedTags.set([...currentFilters, option])
     }
-    this.isOpenTags.set(false)
+    this.isOpenTags.set(false);
+    this.filterByTags();
   }
 
   public filteredTags(): any[] {
@@ -104,7 +108,8 @@ export class HomePageV2 implements OnInit {
   }
 
   public removeTag(filterToRemove: any): void {
-    this.selectedTags.set(this.selectedTags().filter((filter) => filter.value !== filterToRemove.value))
+    this.selectedTags.set(this.selectedTags().filter((filter) => filter.value !== filterToRemove.value));
+    this.filterByTags();
   }
 
   public toggleDropdownTags(): void {
@@ -117,6 +122,30 @@ export class HomePageV2 implements OnInit {
 
   public onCreateDashboard() {
     this.createDashboardService.open();
+  }
+
+  public filterByTags() {
+    if (this.getSelectedTags().find(element => element === 1)) {    // Si tenemos el filtro todos restablecemos los reportes
+      this.publicReports  = this.reportMap.public;
+      this.sharedReports  = this.reportMap.shared;
+      this.privateReports  = this.reportMap.private;
+      this.roleReports = this.reportMap.group;
+    } else {  // Aplicamos filtro
+
+      
+      //Revisar restructuración + conjunto de tags
+
+      this.publicReports  = this.reportMap.public.filter(db => this.getSelectedTags().includes(db.config?.tag));
+      this.sharedReports  = this.reportMap.shared.filter(db => this.getSelectedTags().includes(db.config?.tag));
+      this.privateReports  = this.reportMap.private.filter(db => this.getSelectedTags().includes(db.config?.tag));
+      this.roleReports = this.reportMap.group.filter(db => this.getSelectedTags().includes(db.config?.tag));
+      if (this.getSelectedTags().find(element => element === 0) !== undefined) {
+        this.publicReports  = this.reportMap.public.filter(db => db.config?.tag === null);
+        this.sharedReports  = this.reportMap.shared.filter(db => db.config?.tag === '');
+        this.privateReports  = this.reportMap.private.filter(db => db.config?.tag === undefined);
+        this.roleReports  = this.reportMap.group.filter(db => db.config?.tag === '');
+      }
+    } 
   }
 
   public filterByTitle(event) {
@@ -301,6 +330,12 @@ export class HomePageV2 implements OnInit {
     this.privateReports = reports.private.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
     this.roleReports = reports.group.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
     this.sharedReports = reports.shared.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
+  }
+
+    public getSelectedTags() {
+    return this.tags
+      .filter(element => this.selectedTags().some(filter => filter.value === element.value))
+      .map(element => element.value);
   }
 
 }
