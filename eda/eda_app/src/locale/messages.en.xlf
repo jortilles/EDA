@@ -1426,10 +1426,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="addRelation" datatype="html">
 <source>Añadir relación</source>
 <target>Add relation</target>
-<context-group purpose="location">
-<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/data-source-detail.component.html</context>
-<context context-type="linenumber">36</context>
-</context-group>
 </trans-unit>
 <trans-unit id="inputTipoColumna" datatype="html">
 <source>
@@ -2418,7 +2414,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="addRelationTo">
 <source>Añadir relación a la tabla</source>
 <target>Add relation to table</target>
-</trans-unit>
 </trans-unit>
 <trans-unit id="modifyRelationTo">
 <source>Modificar relación de la tabla</source>
