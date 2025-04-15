@@ -64,8 +64,6 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
       coordinates:
         this.myPanelChartComponent.componentRef.instance.inject.coordinates,
     });
-    this.mapUtilsService.setCoordinates(null);
-    this.mapUtilsService.setZoom(null);
   }
 
   handleInputColor() {
@@ -97,6 +95,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
 
   closeChartConfig() {
     this.onClose(EdaDialogCloseEvent.NONE);
+    this.mapUtilsService.cancelChartProps();
   }
 
   onShow(): void {
@@ -104,7 +103,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     this.zoom = this.controller.params.zoom;
     this.coordinates = this.controller.params.coordinates;
     this.legendPosition = this.controller.params.legendPosition;
-    this.baseLayer = this.controller.params.baseLayer;
+    this.baseLayer = this.controller.params.baseLayer !== undefined ? this.controller.params.baseLayer :  true;
     this.color = this.controller.params.color;
     this.logarithmicScale = this.controller.params.logarithmicScale;
     this.draggable = this.controller.params.draggable;
