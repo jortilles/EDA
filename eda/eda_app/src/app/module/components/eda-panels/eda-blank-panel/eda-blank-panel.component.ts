@@ -1114,6 +1114,7 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
             this.panel.content.query.output.config.logarithmicScale = response.logarithmicScale;
             this.panel.content.query.output.config.legendPosition = response.legendPosition;
             this.panel.content.query.output.config.baseLayer = response.baseLayer;
+            this.panel.content.query.output.config.baseLayer = response.baseLayer;
             this.panel.content.query.output.config.draggable = response.draggable;
             this.panel.content.query.output.config.zoom = response.zoom;
             this.panel.content.query.output.config.coordinates =

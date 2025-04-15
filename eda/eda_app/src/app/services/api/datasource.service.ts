@@ -24,6 +24,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             source_column: [],
             target_table: '',
             target_column: [],
+            display_name: {},
             visible: false
         }],
         table_type: '',
@@ -283,6 +284,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             source_column: rel.target_column,
             target_table: rel.source_table,
             target_column: rel.source_column,
+            display_name: rel.display_name,
             visible: true
         };
 
@@ -324,6 +326,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             source_column: rel.target_column,
             target_table: rel.source_table,
             target_column: rel.source_column,
+            display_name: rel.display_name['default'] !== null ? rel.display_name['default'] : rel.target_table + ' - ' + rel.target_column,
             visible: true
         };
 
@@ -335,6 +338,28 @@ export class DataSourceService extends ApiService implements OnDestroy {
         }
 
         this._databaseModel.next(tmp_model);
+    }
+
+    updateRelation(rel: Relation, newRelation: Relation) {
+        // Set new values
+        rel.display_name = newRelation.display_name;
+        rel.source_column = newRelation.source_column;
+        rel.source_table = newRelation.source_table;
+        rel.target_column = newRelation.target_column;
+        rel.target_table = newRelation.target_table;
+
+        // Update tablePanel
+        const tmp_panel = this._tablePanel.getValue();
+        const tmp_relationIndex = tmp_panel.relations.findIndex((r: { source_table: any; source_column: any; target_table: any; target_column: any; }) => {
+            return r.source_table === rel.source_table && JSON.stringify(r.source_column) === JSON.stringify(rel.source_column)
+                && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
+        });
+        if (tmp_relationIndex >= 0) {
+            tmp_panel.relations[tmp_relationIndex].visible = true;
+        } else {
+            tmp_panel.relations.push(rel);
+        }
+        this._tablePanel.next(tmp_panel);
     }
 
     /** add a value list as the source of a column */
@@ -388,6 +413,13 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
             });
     }
+
+    getRelation(rel: Relation, tableIndex: string | number) {
+        return this._databaseModel.getValue()[tableIndex].relations
+            .find((r: { source_table: any; source_column: any; target_table: any; target_column: any; }) => {
+                return r.source_table === rel.source_table && JSON.stringify(r.source_column) === JSON.stringify(rel.source_column)
+                && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
+            });    }
 
     updateDataModel(panel: any) {
         if (panel.type === 'tabla') {

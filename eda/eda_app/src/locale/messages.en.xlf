@@ -2427,7 +2427,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Añadir relación a la tabla</source>
 <target>Add relation to table</target>
 </trans-unit>
-
+</trans-unit>
+<trans-unit id="modifyRelationTo">
+<source>Modificar relación de la tabla</source>
+<target>Modify table relation</target>
+</trans-unit>
 <trans-unit id="chartInfo1">
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
 <target>Chart not avaiable with current data.</target>
@@ -4400,6 +4404,10 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="noMouseH6">
         <source>Activar funciones del mouse</source>
         <target>Activate mouse functions</target>
+      </trans-unit>
+      <trans-unit id="noBaseLayerH6">
+        <source>Activar capa base</source>
+        <target>Activate base layer</target>       
       </trans-unit>
       <trans-unit id="loginTitle">
         <source>Inicio de sesión</source>
