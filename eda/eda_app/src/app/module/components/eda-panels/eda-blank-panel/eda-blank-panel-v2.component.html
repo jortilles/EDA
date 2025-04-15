@@ -13,7 +13,7 @@
           <div class="p-2 w-full h-full">
             <panel-chart #PanelChartComponent
               [props]="panelChartConfig"
-              (configUpdated)="setChartProperties()"
+              (configUpdated)="setChartProperties($event)"
               (onChartClick)="onChartClick($event)"
               class="component" style="height: 100%; width: 100%; display:block">
             </panel-chart>
@@ -166,8 +166,8 @@
                       [cdkDropListConnectedTo]="[columnsList, filterList]"
                       (cdkDropListDropped)="drop($event)"
                     >
-                      <!-- @for (attr of currentQuery; track attr) { -->
-                        <div *ngFor="let attr of currentQuery" 
+                      @for (attr of currentQuery; track attr) {
+                        <div
                           class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move min-w-[250px] z-10"
                           (click)="openColumnDialog(attr)"
                           (mouseover)="showDescription(attr)"
@@ -180,9 +180,9 @@
                           <span [title]="attr.description.default">{{attr.display_name.default}}</span>
                           <button 
                             class="ml-auto rounded-full hover:bg-muted-foreground/20 z-50"
-                            (click)="removeColumn(attr)"
+                            (click)="removeColumn(attr, 'select'); $event.stopPropagation()"
                           >
-                            <i class="fa fa-close z-50"></i>
+                            <i class="fa fa-close z-50 pointer-events-auto"></i>
                           </button>
 
                           <!-- Preview cuando se está arrastrando -->
@@ -191,7 +191,7 @@
                             {{attr.display_name.default}}
                           </div>
                         </div>
-                      <!-- } -->
+                      }
 
                       @if (currentQuery.length === 0) {
                         <div class=" text-muted-foreground text-center py-2">

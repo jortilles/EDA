@@ -334,7 +334,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(EdaChartComponent);
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-        this.configUpdated.emit();
+        this.configUpdated.emit(this.currentConfig);
     }
 
     /**
@@ -383,7 +383,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject.noRepetitions = config.noRepetitions;
         this.componentRef.instance.inject.ordering = config.ordering;
         this.componentRef.instance.inject.negativeNumbers = config.negativeNumbers;
-        this.configUpdated.emit();
+        this.configUpdated.emit(this.currentConfig);;
     }
 
     /**renderKnob */
@@ -550,12 +550,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             const kpiConfig = new KpiConfig({ sufix: data.sufix, alertLimits: inject.alertLimits||[], edaChart: inject.edaChart });
             (<KpiConfig><unknown>this.props.config.setConfig(kpiConfig));
         })
-        this.configUpdated.emit();
+        this.configUpdated.emit(this.currentConfig);;
 
         // this.componentRef = this.entry.createComponent(EdaChartComponent);
         // this.componentRef.instance.inject = inject;
         // this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
-        // this.configUpdated.emit();
+        // this.configUpdated.emit(this.currentConfig);;
     }
 
 

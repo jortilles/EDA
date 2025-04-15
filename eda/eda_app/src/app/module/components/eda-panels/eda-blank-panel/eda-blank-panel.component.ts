@@ -49,7 +49,7 @@ export class EdaBlankPanelComponent implements OnInit {
     private cd = inject(ChangeDetectorRef);
     @ViewChild('pdialog', { static: false }) pdialog: EdaPageDialogComponent;
     @ViewChild('edaChart', { static: false }) edaChart: EdaChartComponent;
-    @ViewChild(PanelChartComponent, { static: false }) panelChart: PanelChartComponent;
+    @ViewChild('PanelChartComponent', { static: false }) panelChart: PanelChartComponent;
     @ViewChild('panelChartComponentPreview', { static: false }) panelChartPreview: PanelChartComponent;
     @ViewChild('op', { static: false }) op: any;
 
@@ -585,13 +585,13 @@ export class EdaBlankPanelComponent implements OnInit {
     /**
      * Updates chart configuration properties
      */
-    public setChartProperties() {
-        const config = this.panelChart.getCurrentConfig();
-        //W T F F!!!!!!!!!!!=)&/=)!/(!&=)&)!=
+    public setChartProperties(config?: any) {
+        config = config || this.panelChart?.getCurrentConfig();
+
         if (config 
             && ['bar', 'line', 'horizontalBar', 'polarArea', 'doughnut', 'pyramid', 'radar'].includes(config.chartType) 
             && config.chartType === this.graficos.chartType ) {
-            this.graficos = this.panelChart.getCurrentConfig();
+            this.graficos = config;
         }
     }
 
