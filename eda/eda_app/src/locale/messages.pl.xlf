@@ -5766,6 +5766,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <source>Cancelar</source>
     <target>Anulować</target>       
   </trans-unit>
+  <trans-unit id="filterByTreetable">
+  <source>Filtrar por</source>
+  <target>Filtruj według</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

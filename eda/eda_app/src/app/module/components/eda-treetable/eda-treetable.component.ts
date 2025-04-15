@@ -20,6 +20,12 @@ export class EdaTreeTable implements OnInit {
   @Input() inject: any; // El inject contiene dos arreglos => (labels y values)
   files!: TreeNode[];
   labels: any[] = [];
+  labelsInputs: any[] = [];
+  filterMode = 'lenient'; // Modo indulgente activado, activar botones para opciones de modos => indulgente / estricto
+
+  id_label: string = '';
+
+  public filterBy: string = $localize`:@@filterByTreetable:Filtrar por`;
 
   constructor() { }
 
@@ -31,7 +37,9 @@ export class EdaTreeTable implements OnInit {
     // Construcción del objeto necesario para el Treetable
     this.buildHierarchyTreetable(this.inject.labels, this.inject.values).then( (files: any) => {
       this.files = files;
+      console.log('files: ', this.files);
     } )
+    console.log('inject: ', this.inject);
   }
 
   // Función que brinda la lógica de ordenamiento
