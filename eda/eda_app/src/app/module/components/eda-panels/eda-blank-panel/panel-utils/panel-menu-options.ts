@@ -58,7 +58,6 @@ export const PanelOptions = {
             });
 
           } else if (panelComponent.graficos.chartType === 'geoJsonMap') {
-
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.mapController = new EdaDialogController({
               params: {
@@ -66,6 +65,7 @@ export const PanelOptions = {
                 panelChart: panelComponent.panelChartConfig,
                 color: panelComponent.panelChart.componentRef.instance.color,
                 logarithmicScale: panelComponent.panelChart.componentRef.instance.logarithmicScale,
+                baseLayer: panelComponent.panelChart.componentRef.instance.inject.baseLayer,
                 legendPosition: panelComponent.panelChart.componentRef.instance.legendPosition,
                 draggable: panelComponent.panelChart.componentRef.instance.draggable,
                 zoom: panelComponent.panelChart.componentRef.instance.inject.zoom,

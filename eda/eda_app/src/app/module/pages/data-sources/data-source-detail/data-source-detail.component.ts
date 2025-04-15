@@ -4,11 +4,12 @@ import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
 import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
-import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource } from '@eda/models/data-source-model/data-source-models';
+import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
 import { aggTypes } from 'app/config/aggretation-types';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
+import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
 
 @Component({
     selector: 'app-data-source-detail',
@@ -113,6 +114,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     // model permissions
     public modelPermissions: Array<any>;
+    public selectedRelation: Relation;
 
     constructor(public dataModelService: DataSourceService,
         private alertService: AlertService,
@@ -260,12 +262,13 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 ]
             }),
             cols: [
-                new EdaColumnFunction({ click: (relation) => this.deleteRelation(relation._id) }),
                 new EdaColumnText({ field: 'origin', header: $localize`:@@originRel:Origen` }),
-                new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` })
+                new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` }),
+                new EdaColumnText({ field: 'name', header: $localize`:@@nameRel:Nombre` }),
+                new EdaColumnEditable({ field: 'modify', click: (relation) => this.updateRelation(relation._id)}),
+                new EdaColumnFunction({ field: 'delete', click: (relation) => this.deleteRelation(relation._id)}),
             ]
         })
-       
     }
 
     ngOnInit() {
@@ -363,6 +366,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     const row = {
                         origin: relation.source_column,
                         dest: `${relation.target_table}.${relation.target_column}`,
+                        name: relation.display_name !== undefined && relation.display_name !== null ? relation.display_name['default'] : relation.target_table + ' - ' + relation.target_column,
                         _id: relation
                     };
                     if (!this.relationsTable.value.map(value => value.dest).includes(row.dest) ) {
@@ -482,6 +486,20 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
         this.modelPanel.connection.type = this.selectedTipoBD.value;
         this.update();
+    }
+
+    updateRelation(relation: Relation) {  
+        this.selectedRelation = relation;
+        this.relationController = new EdaDialogController({
+            params: { table: this.tablePanel},
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.updateRelation(relation,response);
+                }
+                this.relationController = undefined;
+                this.selectedRelation = null;
+            }
+        });
     }
 
     deleteRelation(relation) {

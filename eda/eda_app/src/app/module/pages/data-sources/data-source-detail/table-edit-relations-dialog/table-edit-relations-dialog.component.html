@@ -37,7 +37,7 @@
                     <button pButton pRipple type="button" icon="pi pi-plus"
                         class="p-button-rounded p-button-outlined" (click)="addRelation()" style="margin:0.2em"
                         i18n-title="@@Refresh" title="Refrescar modelo de datos"
-                        [disabled]="!this.form.controls.targetTable.value  ||  !this.form.value.sourceCol || !this.form.value.targetCol ">
+                        [disabled]="!this.form.controls.targetTable.value  ||  !this.form.value.sourceCol || !this.form.value.targetCol || !this.form.value.display_name">
                     </button>
                 </div>
 
@@ -47,8 +47,8 @@
                             <li *ngFor="let sourceCol of selectedSourceCols; let i=index">
                                 <i class="fa fa-close" style="color: #c0555e;"
                                     (click)="deleteRelation(i)"></i>&nbsp;&nbsp;
-                                {{this.controller.params.table.description}}.{{sourceCol.display_name.default}} ⇴
-                                {{targetTable}}.{{selectedTargetCols[i].display_name.default}}
+                                {{this.controller.params.table.description}}.{{sourceCol}} ⇴
+                                {{targetTables[i].label}}.{{selectedTargetCols[i]}}
                             </li>
                         </div>
                     </ul>

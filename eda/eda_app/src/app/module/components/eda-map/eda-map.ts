@@ -16,5 +16,6 @@ export class EdaMap{
   maps : Array<Object>;
   query: Array<any>;
   linkedDashboard : LinkedDashboardProps;
+  baseLayer: boolean;
 
 }
