@@ -209,15 +209,11 @@ export class EdaGeoJsonMapComponent
       this.map.on("moveend", (event) => {
         let c = this.map.getCenter();
         this.inject.coordinates = [c.lat, c.lng];
-        if (!this.mapUtilsService.isMapEditOpen()) {
-          this.mapUtilsService.setCoordinates(this.inject.coordinates);
-        }
+        this.mapUtilsService.setCoordinates(this.inject.coordinates);
       });
       this.map.on("zoomend", (event) => {
         this.inject.zoom = this.map.getZoom();
-        if (!this.mapUtilsService.isMapEditOpen()) {
           this.mapUtilsService.setZoom(this.inject.zoom);
-        }
       });
       this.map.options.minZoom = 1;
       //tiles.addTo(this.map);
