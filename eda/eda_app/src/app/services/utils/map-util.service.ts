@@ -12,11 +12,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class MapUtilsService extends ApiService {
   private route = "/global/upload/readGeoJsonFile";
   private mapsObservables$: {} = {};
-  private coordinates: Array<Array<number>> | null = null;
-  private auxCoordinates: Array<Array<number>> | null = null;
-  private zoom: number | null = null;
-  private auxZoom: number | null = null;
-  private editMapActive = false;
+  private coordinates: Array<Array<number>>  = null;
+  public auxCoordinates: Array<Array<number>> = null;
+  private zoom: number = null;
+  public auxZoom: number = null;
   public layerGroup = L.layerGroup([]);
   private isSmallestValue: boolean;
 
@@ -271,33 +270,25 @@ export class MapUtilsService extends ApiService {
   };
 
   public setCoordinates(coordinates: Array<Array<number>>): void {
-    if (coordinates === null) {
-      this.auxCoordinates = this.coordinates;
-    }
     this.coordinates = coordinates;
   }
-  public getCoordinates(): Array<Array<number>> | null {
-    if (this.coordinates === null) return this.auxCoordinates;
-    else return this.coordinates;
+  public getCoordinates(): Array<Array<number>>{
+    return this.coordinates;
   }
   public setZoom(zoom: number): void {
-    if (zoom === null) {
-      this.auxZoom = this.zoom;
-    }
     this.zoom = zoom;
   }
   public getZoom(): number | null {
-    if (this.zoom === null) return this.auxZoom;
-    else return this.zoom;
-  }
-
-  public isMapEditOpen(): boolean {
-    return this.editMapActive;
+    return this.zoom;
   }
   public mapEditOpen(): void {
-    this.editMapActive = true;
+    this.auxCoordinates = this.coordinates;
   }
   public mapEditClose(): void {
-    this.editMapActive = false;
+    this.auxCoordinates = null;
+  }
+  cancelChartProps() {
+    this.coordinates = this.auxCoordinates; 
+    this.zoom = this.auxZoom; 
   }
 }
