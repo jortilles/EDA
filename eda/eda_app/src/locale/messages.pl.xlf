@@ -4289,6 +4289,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <source>Logs Error</source>
     <target>Logs Error</target>
   </trans-unit>
+  <trans-unit id="filterByTreetable">
+  <source>Filtrar por</source>
+  <target>Filtruj według</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
