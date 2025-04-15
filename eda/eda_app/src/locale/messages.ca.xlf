@@ -1572,6 +1572,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">19</context>
 </context-group>
 </trans-unit>
+<trans-unit id="placeholderRelationName" datatype="html">
+<source>Nombre relación </source>
+<target>Nom relació </target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
+<context context-type="linenumber">19</context>
+</context-group>
+</trans-unit>
 <trans-unit id="placeholderTargetColumnDesc" datatype="html">
 <source>Columna con la descripción </source>
 <target>Columna amb la descripció</target>
@@ -1798,6 +1806,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="originRel">
 <source>Origen</source>
 <target>Origen</target>
+</trans-unit>
+
+<trans-unit id="nameRel">
+<source>Nombre</source>
+<target>Nom</target>
 </trans-unit>
 
 <trans-unit id="userTable">
@@ -2423,6 +2436,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="addRelationTo">
 <source>Añadir relación a la tabla</source>
 <target>Afegir relació a la taula</target>
+</trans-unit>
+<trans-unit id="modifyRelationTo">
+<source>Modificar relación de la tabla</source>
+<target>Modificar relació de la taula</target>
 </trans-unit>
 
 <trans-unit id="chartInfo1">
@@ -4271,6 +4288,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Activar funciones del mouse</source>
         <target>Activar funcions del mouse</target>       
       </trans-unit>
+      <trans-unit id="noBaseLayerH6">
+        <source>Activar capa base</source>
+        <target>Activar capa base</target>       
+      </trans-unit>
         <trans-unit id="chartTypesTableAnalized" datatype="html">
         <source>Tabla DataQuality</source>
         <target>Taula DataQuality</target>
@@ -4644,6 +4665,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <trans-unit id="logErrorFileBtn">
         <source>Logs Error</source>
         <target>Logs Error</target>
+      </trans-unit>
+      <trans-unit id="filterByTreetable">
+      <source>Filtrar por</source>
+      <target>Filtrar per</target>
       </trans-unit>
     </body>
   </file>

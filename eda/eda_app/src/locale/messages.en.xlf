@@ -2419,7 +2419,11 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Añadir relación a la tabla</source>
 <target>Add relation to table</target>
 </trans-unit>
-
+</trans-unit>
+<trans-unit id="modifyRelationTo">
+<source>Modificar relación de la tabla</source>
+<target>Modify table relation</target>
+</trans-unit>
 <trans-unit id="chartInfo1">
 <source>Los datos seleccionados no permiten utilizar este gráfico.</source>
 <target>Chart not avaiable with current data.</target>
@@ -4502,6 +4506,9 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="tutorialTitleThirdPPanel" datatype="html">
         <source>3. KPIs y alertas con edalitics:</source>
         <target>3. KPIs and alerts with edalitics:</target>
+      <trans-unit id="noBaseLayerH6">
+        <source>Activar capa base</source>
+        <target>Activate base layer</target>       
       </trans-unit>
       <trans-unit id="chartTypesTableAnalized" datatype="html">
         <source>Tabla DataQuality</source>
@@ -4614,6 +4621,10 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="logErrorFileBtn">
         <source>Logs Error</source>
         <target>Logs Error</target>
+      </trans-unit>
+      <trans-unit id="filterByTreetable">
+      <source>Filtrar por</source>
+      <target>Filter by</target>
       </trans-unit>
     </body>
   </file>

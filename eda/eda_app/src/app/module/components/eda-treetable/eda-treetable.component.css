@@ -1,0 +1,24 @@
+
+.container-treetable{
+    margin: 0.1rem;
+}
+
+tr .header-style {
+    background: #edeff1;
+    border: 1px solid white;
+    border-radius: 0.4rem;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+}
+
+.input-filter {
+    border: 1px solid #cbd5e1;  /* color azul bonito */
+    border-radius: 6px;         /* esquinas redondeadas */
+    padding: 6px 10px;
+    outline: none;
+}
+
+.input-filter:focus {
+    border-color: #2ecc70c5;     /* cambia a verde al enfocar */
+    box-shadow: 0 0 5px rgba(46, 204, 113, 0.5);
+}
