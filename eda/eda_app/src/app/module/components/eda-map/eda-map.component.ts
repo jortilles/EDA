@@ -30,6 +30,7 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
 
   }
   ngOnInit(): void {
+    console.log(this.inject)
     this.loading = true;
     this.dataIndex = this.inject.query.findIndex((e) => e.column_type === "numeric");
     this.initialColor = this.inject.initialColor ? this.inject.initialColor: this.initialColor;
@@ -65,8 +66,9 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
         zoom: this.mapUtilsService.getZoom() ??
           this.inject.zoom ??
           12,
-        dragging: !L.Browser.mobile,
+        dragging: this.draggable,
         tap: !L.Browser.mobile,
+        scrollWheelZoom: this.draggable,
       });
       const tiles = L.tileLayer(
         "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
