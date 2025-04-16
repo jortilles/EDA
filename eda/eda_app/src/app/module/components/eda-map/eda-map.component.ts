@@ -30,7 +30,6 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
 
   }
   ngOnInit(): void {
-    console.log(this.inject)
     this.loading = true;
     this.dataIndex = this.inject.query.findIndex((e) => e.column_type === "numeric");
     this.initialColor = this.inject.initialColor ? this.inject.initialColor: this.initialColor;
