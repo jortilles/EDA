@@ -194,7 +194,7 @@ export class EdaGeoJsonMapComponent
         zoom:
           this.mapUtilsService.getZoom() ??
           this.inject.zoom ??
-          0,
+          12,
         dragging: this.draggable,
         baseLayer: this.inject.baseLayer,
         tap: !L.Browser.mobile,
