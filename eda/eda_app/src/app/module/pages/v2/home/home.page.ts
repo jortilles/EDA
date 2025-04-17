@@ -30,14 +30,16 @@ export class HomePageV2 implements OnInit {
   reportMap: any = {};
 
   activeFilters: string[] = ['Veure tots', 'Ajuntament'];
-
+  
   tags: any[] = [];
-  selectedTags = signal<any[]>([
-    { label: $localize`:@@AllTags:Todos`, value: 1 }
-  ]);
+  selectedTags = signal<any[]>(JSON.parse(sessionStorage.getItem('activeTags') ? sessionStorage.getItem('activeTags') : '[]').map(
+    tag => ({ label: tag.label, value: String(tag.value) })
+  ));
+
   isOpenTags = signal(false)
   searchTagTerm = signal("")
-  
+
+
   //Variables de control de edició Modificar
   isEditing: boolean = false;
   editingReportId: number;
@@ -84,8 +86,7 @@ export class HomePageV2 implements OnInit {
     // Agregar opciones adicionales
     this.tags.unshift({ label: $localize`:@@NoTag:Sin Etiqueta`, value: 0 });
     this.tags.push({ label: $localize`:@@AllTags:Todos`, value: 1 });
-
-    this.filterByTags(); // Revisar si es necesari
+    this.filterByTags();
   }
 
   public openReport(report: any) {
@@ -93,12 +94,21 @@ export class HomePageV2 implements OnInit {
   }
 
   public handleTagSelect(option: any): void {
-    const currentFilters = this.selectedTags()
-    if (currentFilters.some((filter) => filter.value === option.value)) {
-      this.selectedTags.set(currentFilters.filter((filter) => filter.value !== option.value))
+    const currentFilters = this.selectedTags(); // Filtros de tags 
+    const tags = JSON.parse(sessionStorage.getItem("activeTags") || "[]"); // Tags activos en sesion
+    
+    if (currentFilters.some((filter) => filter.value === option.value)) { //Si el filtro existe eliminamos este
+      this.selectedTags.set(currentFilters.filter((filter) => filter.value !== option.value)); // Elimina el valor del tag del headerTag
+      sessionStorage.setItem("activeTags", JSON.stringify((() => {
+        return tags.filter(tag => tag.value !== option.value) // Elimina valor del JSON de storage
+      })()));
     } else {
-      this.selectedTags.set([...currentFilters, option])
+      this.selectedTags.set([...currentFilters, option]); // Añadir el valor del tag del headerTag
+      sessionStorage.setItem("activeTags", JSON.stringify((() => {
+        return [...tags, option]; // Añadir valor del JSON de storage
+      })()));
     }
+
     this.isOpenTags.set(false);
     this.filterByTags();
   }
@@ -108,7 +118,11 @@ export class HomePageV2 implements OnInit {
   }
 
   public removeTag(filterToRemove: any): void {
-    this.selectedTags.set(this.selectedTags().filter((filter) => filter.value !== filterToRemove.value));
+    this.selectedTags.set(this.selectedTags().filter((filter) => filter.value !== filterToRemove.value)); // Elimina del header el tag
+    sessionStorage.setItem("activeTags", JSON.stringify((() => {    
+      const tags = JSON.parse(sessionStorage.getItem("activeTags") || "[]"); 
+      return tags.filter(tag => tag.value !== filterToRemove.value); // Elimina valor del JSON de storage
+    })()));
     this.filterByTags();
   }
 
@@ -124,28 +138,27 @@ export class HomePageV2 implements OnInit {
     this.createDashboardService.open();
   }
 
-  public filterByTags() {
-    if (this.getSelectedTags().find(element => element === 1)) {    // Si tenemos el filtro todos restablecemos los reportes
+  public filterByTags() { // Esta función actualiza los reports, y es llamada cada vez que se modifican los tags
+    const tags = sessionStorage.getItem("activeTags") || "[]";
+    if (tags.includes('1') || tags === '[]') { // Si tiene la etiqueta Todos o no tiene etiqueta mostraremos todos los informes
       this.publicReports  = this.reportMap.public;
       this.sharedReports  = this.reportMap.shared;
-      this.privateReports  = this.reportMap.private;
-      this.roleReports = this.reportMap.group;
-    } else {  // Aplicamos filtro
-
-      
-      //Revisar restructuración + conjunto de tags
-
-      this.publicReports  = this.reportMap.public.filter(db => this.getSelectedTags().includes(db.config?.tag));
-      this.sharedReports  = this.reportMap.shared.filter(db => this.getSelectedTags().includes(db.config?.tag));
-      this.privateReports  = this.reportMap.private.filter(db => this.getSelectedTags().includes(db.config?.tag));
-      this.roleReports = this.reportMap.group.filter(db => this.getSelectedTags().includes(db.config?.tag));
-      if (this.getSelectedTags().find(element => element === 0) !== undefined) {
-        this.publicReports  = this.reportMap.public.filter(db => db.config?.tag === null);
-        this.sharedReports  = this.reportMap.shared.filter(db => db.config?.tag === '');
-        this.privateReports  = this.reportMap.private.filter(db => db.config?.tag === undefined);
-        this.roleReports  = this.reportMap.group.filter(db => db.config?.tag === '');
+      this.privateReports = this.reportMap.private;
+      this.roleReports    = this.reportMap.group;
+    } else {
+      // Asignación de reportes visibles
+      this.publicReports  = this.checkTagsIntoReports(this.reportMap.public, tags);
+      this.sharedReports  = this.checkTagsIntoReports(this.reportMap.shared, tags);
+      this.privateReports = this.checkTagsIntoReports(this.reportMap.private, tags);
+      this.roleReports = this.checkTagsIntoReports(this.reportMap.group, tags);
       }
-    } 
+  }
+
+  private checkTagsIntoReports(reports, tags) { // Función que devuelve los reports que contienen alguno de los tags del header
+    return reports.filter(db => {
+        const tag = db.config?.tag;
+        return tags.includes('0') ? (tag === null || tags.includes(tag)): tags.includes(tag) && tag != '';
+    });
   }
 
   public filterByTitle(event) {
@@ -330,12 +343,6 @@ export class HomePageV2 implements OnInit {
     this.privateReports = reports.private.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
     this.roleReports = reports.group.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
     this.sharedReports = reports.shared.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
-  }
-
-    public getSelectedTags() {
-    return this.tags
-      .filter(element => this.selectedTags().some(filter => filter.value === element.value))
-      .map(element => element.value);
   }
 
 }
