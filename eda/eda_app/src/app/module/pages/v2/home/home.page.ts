@@ -49,6 +49,7 @@ export class HomePageV2 implements OnInit {
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {
+    console.log('AAAAAAAAAAA',this.selectedTags())
     this.loadReports();
   }
 
@@ -76,16 +77,17 @@ export class HomePageV2 implements OnInit {
     /** Obtener etiquetas únicas */
     this.tags = _.uniqBy(
       [...this.privateReports, ...this.publicReports, ...this.roleReports, ...this.sharedReports]
-        .flatMap(db => db.config.tag) // Aplanamos los arrays de tags
-        .filter(tag => tag !== null && tag !== undefined) // Eliminamos valores nulos o indefinidos
-        .flatMap(tag => Array.isArray(tag) ? tag : [tag]) // Si es un array, lo expandimos; si no, lo mantenemos como está
-        .map(tag => typeof tag === 'string' ? { label: tag, value: tag } : tag), // Convertimos en objetos { label, value }
+      .flatMap(db => db.config.tag) // Aplanamos los arrays de tags
+      .filter(tag => tag !== null && tag !== undefined) // Eliminamos valores nulos o indefinidos
+      .flatMap(tag => Array.isArray(tag) ? tag : [tag]) // Si es un array, lo expandimos; si no, lo mantenemos como está
+      .map(tag => typeof tag === 'string' ? { label: tag, value: tag } : tag), // Convertimos en objetos { label, value }
       'value' // Eliminamos duplicados basados en el valor
     );
+    console.log('1', this.tags)
 
     // Agregar opciones adicionales
-    this.tags.unshift({ label: $localize`:@@NoTag:Sin Etiqueta`, value: 0 });
-    this.tags.push({ label: $localize`:@@AllTags:Todos`, value: 1 });
+    this.tags.unshift({ label: $localize`:@@NoTag:Sin Etiqueta`, value: $localize`:@@NoTag:Sin Etiqueta`, });
+    this.tags.push({ label: $localize`:@@AllTags:Todos`, value: $localize`:@@AllTags:Todos` });
     this.filterByTags();
   }
 
@@ -108,7 +110,6 @@ export class HomePageV2 implements OnInit {
         return [...tags, option]; // Añadir valor del JSON de storage
       })()));
     }
-
     this.isOpenTags.set(false);
     this.filterByTags();
   }
@@ -139,8 +140,9 @@ export class HomePageV2 implements OnInit {
   }
 
   public filterByTags() { // Esta función actualiza los reports, y es llamada cada vez que se modifican los tags
+    console.log('5')
     const tags = sessionStorage.getItem("activeTags") || "[]";
-    if (tags.includes('1') || tags === '[]') { // Si tiene la etiqueta Todos o no tiene etiqueta mostraremos todos los informes
+    if (tags.includes( $localize`:@@AllTags:Todos`) || tags === '[]') { // Si tiene la etiqueta Todos o no tiene etiqueta mostraremos todos los informes
       this.publicReports  = this.reportMap.public;
       this.sharedReports  = this.reportMap.shared;
       this.privateReports = this.reportMap.private;
@@ -157,7 +159,7 @@ export class HomePageV2 implements OnInit {
   private checkTagsIntoReports(reports, tags) { // Función que devuelve los reports que contienen alguno de los tags del header
     return reports.filter(db => {
         const tag = db.config?.tag;
-        return tags.includes('0') ? (tag === null || tags.includes(tag)): tags.includes(tag) && tag != '';
+        return tags.includes($localize`:@@NoTag:Sin Etiqueta`) ? (tag === null || tags.includes(tag)): tags.includes(tag) && tag != '';
     });
   }
 
