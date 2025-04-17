@@ -1,24 +1,28 @@
-<eda-dialog [inject]="dialog" >
-  <div body>
+<eda-dialog [inject]="dialog">
+  <div body class="flex flex-col flex-1 overflow-hidden h-full">
     <p-menubar [model]="items" styleClass="total-item">
     </p-menubar>
 
-
-    <div class="col-12" id="tableDiv" style="margin-top: 50px; background-color: var(--panel-color);" class="table-div">
-      <panel-chart  #PanelChartComponent class="component" [props]="panelChartConfig" (configUpdated)="setChartProperties()">
+    <div class="relative w-full aspect-square">
+      <panel-chart
+        #PanelChartComponent
+        [props]="panelChartConfig"
+        (configUpdated)="setChartProperties()">
       </panel-chart>
     </div>
   </div>
 
 
-  <div class="flex justify-end p-2 border-t gap-1.5">
-    <button  class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
-      <i class="fa fa-times"></i>
-      <span i18n-label="@@cancelarBtn">Cancelar</span>
-    </button>
-    <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" (click)="saveChartConfig()">
-      <i class="fa fa-check"></i> <span>Confirmar</span>
-    </button>
+  <div footer>
+    <div class="flex justify-end p-2 border-t gap-1.5">
+      <button  class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
+        <i class="fa fa-times"></i>
+        <span i18n-label="@@cancelarBtn">Cancelar</span>
+      </button>
+      <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" (click)="saveChartConfig()">
+        <i class="fa fa-check"></i> <span>Confirmar</span>
+      </button>
+    </div>
   </div>
 </eda-dialog>
 

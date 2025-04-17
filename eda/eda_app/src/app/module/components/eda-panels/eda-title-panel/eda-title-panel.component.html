@@ -1,4 +1,4 @@
-<div class="panel-heading d-flex justify-content-between">
+<!-- <div class="panel-heading d-flex justify-content-between">
 
     <div class="panel-heading justify-content-between  h-75" style="margin-top: 0.2rem;">
         <div class="mb-0 pointer w-90 eda-title-panel" [innerHTML]="panel.title | sanitizeHtml"></div>
@@ -8,8 +8,22 @@
         <i class="fa fa-ellipsis-v btn" (click)="contextMenu.showContextMenu($event)"></i>
     </div>
 
-</div>
+</div> -->
 
+<div class="flex flex-col h-full rounded-lg p-6 shadow-sm bg-white">
+    <!-- Header -->
+    <div class="flex justify-end items-center mb-2">
+        <i class="pi pi-ellipsis-v cursor-pointer" (click)="contextMenu.showContextMenu($event)"></i>
+        <!-- <p-button icon="pi pi-ellipsis-v" styleClass="p-button-text" (click)="contextMenu.showContextMenu($event)"></p-button> -->
+    </div>
+
+    <div
+      class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50 border border-dashed border-gray-300">
+      
+      <div class="eda-title-panel" [innerHTML]="panel.title | sanitizeHtml"></div>
+
+    </div>
+</div>
 
 
 

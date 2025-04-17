@@ -23,15 +23,15 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public chart: EdaChart;
     public oldChart: EdaChart;
     public addTrend: boolean;
-    public showTrend: boolean = true;
-    public showNumberOfColumns: boolean = false;
-    public showComparative : boolean = true;
-    public addComparative : boolean;
-    public numberOfColumns : number;
+    public addComparative: boolean;
+    public numberOfColumns: number;
     public panelChartConfig: PanelChart = new PanelChart();
-    public display:boolean=false;
-    public showLabels: boolean;
-    public showLabelsPercent: boolean;
+    public showTrend: boolean = false;
+    public showComparative: boolean = false;
+    public showNumberOfColumns: boolean = false;
+    public display: boolean = false;
+    public showLabels: boolean = false;
+    public showLabelsPercent: boolean = false;
 
     public comparativeTooltip = $localize`:@@comparativeTooltip:La función de comparar sólo se puede activar si se dispone de un campo de fecha agregado por mes o semana y un único campo numérico agregado`
     public trendTooltip = $localize`:@@trendTooltip:La función de añadir tendencia sólo se puede activar en los gràficos de lineas`
@@ -54,31 +54,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public id: any;
 
     activeTab = "display"
-
-  settings = {
-    tendencia: false,
-    comparativa: false,
-    mostrarEtiquetas: false,
-    mostrarPorcentajes: false,
-  }
-
-  colorData: any[] = [
-    { country: "USA", code: "#024873" },
-    { country: "France", code: "#0fa697" },
-    { country: "Spain", code: "#f2c53d" },
-    { country: "UK", code: "#bf814b" },
-    { country: "Australia", code: "#591202" },
-    { country: "Italy", code: "#00ae57" },
-    { country: "New Zealand", code: "#a9d531" },
-    { country: "Finland", code: "#008400" },
-    { country: "Norway", code: "#e77770" },
-    { country: "Germany", code: "#555555" },
-    { country: "Canada", code: "#1f9da5" },
-    { country: "Denmark", code: "#2bd7e3" },
-    { country: "Singapore", code: "#f2c53d" },
-    { country: "Japan", code: "#c2d281" },
-  ]
-
 
     constructor(private chartUtils: ChartUtilsService,) {
         super();
@@ -118,10 +93,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     setActiveTab(tab: string): void {
         this.activeTab = tab
-      }
-    
-      toggleSetting(setting: string): void {
-        this.settings[setting] = !this.settings[setting]
     }
 
     onShow(): void {

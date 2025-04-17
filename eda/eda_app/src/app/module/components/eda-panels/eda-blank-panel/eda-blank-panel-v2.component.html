@@ -1,9 +1,10 @@
 
 <div class="flex flex-col h-full rounded-lg p-6 shadow-sm bg-white">
   <!-- Header -->
-  <div class="flex justify-between items-center mb-6">
+  <div class="flex justify-between items-center mb-2">
     <h2 class="text-lg font-medium"> {{ panel.title || title }}</h2>
-    <p-button icon="pi pi-ellipsis-v" styleClass="p-button-text" (click)="contextMenu.showContextMenu($event)"></p-button>
+    <i class="pi pi-ellipsis-v cursor-pointer" (click)="contextMenu.showContextMenu($event)"></i>
+    <!-- <p-button icon="pi pi-ellipsis-v" styleClass="p-button-text" (click)="contextMenu.showContextMenu($event)"></p-button> -->
   </div>
 
     <div

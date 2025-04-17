@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'app-kpi-dialog',
-    templateUrl: './kpi-dialog.component.html',
+    templateUrl: './kpi-dialog-v2.component.html',
     styleUrls: ['./kpi-dialog.component.css']
 })
 
@@ -41,6 +41,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public series: any[] = [];
     public edaChart: any;
     public display: boolean = false;
+    public activeTab: "colors" | "alerts" = "alerts";
 
     constructor(private userService: UserService,) {
 
@@ -60,6 +61,10 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
             this.canIRunAlerts = true;
         }
 
+    }
+
+    setActiveTab(tab: "colors" | "alerts"): void {
+        this.activeTab = tab
     }
 
     saveChartConfig() {

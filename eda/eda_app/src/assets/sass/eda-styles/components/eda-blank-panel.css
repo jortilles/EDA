@@ -526,6 +526,7 @@ eda-blank-panel h4 {
     overflow-x: hidden;
 }
 
+#chartSelector .p-dropdown-panel .p-dropdown-items-wrapper,
 .edaChartSelector .p-dropdown-panel .p-dropdown-items-wrapper {
     overflow: auto;
     max-height: 54vh !important;
