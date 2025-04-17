@@ -7,7 +7,7 @@ import { PanelChart } from '../panel-charts/panel-chart';
 
 @Component({
   selector: 'app-mapedit-dialog',
-  templateUrl: './mapedit-dialog.component.html'
+  templateUrl: './mapedit-dialog-v2.component.html'
 })
 
 export class MapEditDialogComponent extends EdaDialogAbstract {
@@ -21,7 +21,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
   public logarithmicScale :boolean = false;
   public draggable : boolean;
   public legendPosition : string;
-
+  public label: string;
   public display:boolean=false;
 
   constructor() {
@@ -57,7 +57,8 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     leafletMap.switchNoMouse(this.draggable);
   }
 
-  changeLegend(){
+  changeLegend(legendPosition: string) {
+    this.legendPosition = legendPosition;
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     leafletMap.changeLegend(this.legendPosition);
   }
@@ -72,6 +73,9 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     this.logarithmicScale = this.controller.params.logarithmicScale;
     this.draggable = this.controller.params.draggable;
     this.panelChartConfig = this.controller.params.panelChart;
+
+    const numericColumn = this.panelChartConfig.query.find((c) => c.column_type == 'numeric');
+    this.label = numericColumn?.display_name?.default || 'Map';
     this.display = true;
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {

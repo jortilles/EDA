@@ -2,9 +2,7 @@ import { Component, ViewChild, AfterViewChecked } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
-import { TreeMapConfig } from '../panel-charts/chart-configuration-models/treeMap-config';
 import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.config';
-import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
 
 
 @Component({
@@ -18,9 +16,9 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
-  public colors: Array<string> ;
+  public colors: Array<string>;
   public labels: Array<number>;
-  public display:boolean=false;
+  public display: boolean = false;
 
   constructor() {
 
@@ -31,15 +29,15 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: $localize`:@@ChartProps:PROPIEDADES DEL GRAFICO`
     });
-    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
+    this.dialog.style = { width: '80%', height: '70%', top: "-4em", left: '1em' };
   }
   ngAfterViewChecked(): void {
-    
+
     if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
         this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
-        this.labels = [0, 1];
+        this.labels = this.panelChartConfig.data.labels;
       })
     }
 
@@ -55,7 +53,7 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
   }
 
   saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors.map(color => this.hex2rgb(color))});
+    this.onClose(EdaDialogCloseEvent.UPDATE, { colors: this.colors.map(color => this.hex2rgb(color)) });
   }
 
   closeChartConfig() {

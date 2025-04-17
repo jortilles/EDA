@@ -74,7 +74,6 @@
                 </div>
               }
 
-
               <!-- Comparativa -->
               @if (showComparative) {
                 <div class="flex items-center justify-between">
@@ -161,40 +160,23 @@
 
       <!-- Colors Tab -->
       @if (activeTab === 'colors') {
-      <div class="space-y-6">
-        <div class="space-y-4">
-          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colors</h3>
+        <div class="space-y-6">
+          <div class="space-y-4">
+            <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colors</h3>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @for (item of series; track item.label) {
-            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-              <span class="font-medium">{{ item.label }}</span>
-              <div class="flex items-center gap-2">
-                <span class="text-md text-slate-500 font-mono">{{ item.bg }}</span>
-                <div class="w-6 h-6 rounded-full border border-slate-200" [style.backgroundColor]="item.bg"></div>
-              </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              @for (item of series; track item.label) {
+                <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                  <span class="font-medium">{{ item.label }}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-md text-slate-500 font-mono">{{ item.bg }}</span>
+                    <div class="w-6 h-6 rounded-full border border-slate-200" [style.backgroundColor]="item.bg"></div>
+                  </div>
+                </div>
+              }
             </div>
-            }
-
-            <!-- @for (serie of series; track serie) {
-              <div>
-                <input type="text" pInputText
-                  [value]="serie.label"
-                  disabled="true" 
-                  [style.border-color]="serie.border"
-                />
-
-                <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex"
-                    appendTo="body">
-                </p-colorPicker>
-
-                <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg"
-                    (input)="handleInputColor(serie)" minlength="7" >
-              </div>
-            } -->
           </div>
         </div>
-      </div>
       }
     </div>
   </div>
