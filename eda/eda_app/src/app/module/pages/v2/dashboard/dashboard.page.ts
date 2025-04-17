@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, computed, CUSTOM_ELEMENTS_SCHEMA, effect, inject, OnInit, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
@@ -6,12 +6,12 @@ import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { MenuModule } from 'primeng/menu';
 import { MessageModule } from 'primeng/message';
-import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridsterModule, GridType } from 'angular-gridster2';
-import { DashboardService, FileUtiles, IGroup } from '@eda/services/service.index';
+import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridType } from 'angular-gridster2';
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, IGroup } from '@eda/services/service.index';
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from '../components/dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterV2Component } from '../components/global-filter/global-filter.component';
-import { EdaBlankPanelComponent } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
+import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { ComponentsModule } from '@eda/components/components.module';
 
 @Component({
@@ -27,7 +27,9 @@ export class DashboardPageV2 implements OnInit {
   @ViewChild(GlobalFilterV2Component) globalFilter: GlobalFilterV2Component;
   @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
   
+  private globalFiltersService = inject(GlobalFiltersService);
   private dashboardService = inject(DashboardService);
+  private alertService = inject(AlertService);
   private fileUtils = inject(FileUtiles);
   private route = inject(ActivatedRoute);
 
@@ -187,19 +189,115 @@ export class DashboardPageV2 implements OnInit {
   }
 
   onRemovePanel(panel: any) {
+    this.panels.splice(_.findIndex(this.panels, { id: panel }), 1);
 
+    for (const filter of this.globalFilter.globalFilters) {
+      filter.panelList = filter.panelList.filter((id: string) => id !== panel);
+    }
+
+    // TODO ??
+    // let valor = this.getBottomMostItem();
+    // console.log('El menor valor: ', valor);
+    // this.height = (valor.y + valor.rows + 4) * 32;
   }
 
-  onPanelAction(action: any) {
-
+  // TODO unificar onRemovePanel(),onDuplicatePanel() a onPanelAction()
+  // TODO simplificar
+  onPanelAction(action: IPanelAction) {
+    if (action.code === 'ADDFILTER') {
+      this.onGlobalFilter(action.data);
+    } else if (action.code === 'QUERYMODE') {
+      this.setPanelsQueryMode();
+    }
   }
 
   onDuplicatePanel(panel: any) {
+    this.panels.push(panel);
+    this.dashboardService._notSaved.next(true);
+  }
 
+  async onGlobalFilter(data: any) {
+    // const data = action?.data;
+    if (data && !_.isNil(data?.inx)) {
+      const panel = data?.panel;
+      const column = data.query.find((query: any) => query?.display_name?.default === data.filterBy);
+      const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
+
+      if (column && table) {
+        let config = this.setPanelsToFilter(panel);
+
+        let globalFilter = {
+          id: `${table.table_name}_${column.column_name}`,  //this.fileUtils.generateUUID(),
+          isGlobal: true,
+          applyToAll: config.applyToAll,
+          panelList: config.panelList.map(p => p.id),
+          table: { label: table.display_name.default, value: table.table_name },
+          column: { label: column.display_name.default, value: column },
+          selectedItems: [data.label]
+        };
+
+        await this.globalFilter.onGlobalFilter(globalFilter, table.table_name);
+      
+
+        this.dashboardService._notSaved.next(true);
+
+        // Simula el click en el btn
+        setTimeout(() => {
+            let btn = document.getElementById('dashFilterBtn');
+            if (btn) btn.click();
+            else this.refreshPanels();
+        }, 500);
+      }
+    }
+  }
+
+  private setPanelsToFilter(panel: any): any {
+    const newPanel = this.panels.find(p => p.id === panel.id);
+    const panels = this.globalFiltersService.panelsToDisplay(this.dataSource.model.tables, this.panels, newPanel);
+    const panelsToFilter = panels.filter(p => p.avaliable === true);
+
+    return {
+        panelList: panelsToFilter,
+        applyToAll: (panels.length === panelsToFilter.length)
+    };
+  }
+
+  /** Selecciona el modo en el que se permitirá hacer consultas. Teniendo en cuenta que no se pueden mezclar consultas de tipo EDA y Arbol en un mismo informe. */
+  private setPanelsQueryMode(): void {
+    const treeQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA2');
+    const standardQueryMode = this.panels.some((p) => p.content?.query?.query?.queryMode === 'EDA');
+
+    for (const panel of this.edaPanels) {
+      if (treeQueryMode) {
+        panel.queryModes = [
+          { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' },
+          { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
+        ];
+      } else if (standardQueryMode) {
+        panel.queryModes = [
+          { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+          { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
+        ];
+      }
+
+      if ((!standardQueryMode && !treeQueryMode) || this.edaPanels.length === 1) {
+        panel.queryModes = [
+          { label: $localize`:@@PanelModeSelectorEDA:Modo EDA`, value: 'EDA' },
+          { label: $localize`:@@PanelModeSelectorSQL:Modo SQL`, value: 'SQL' },
+          { label: $localize`:@@PanelModeSelectorTree:Modo Árbol`, value: 'EDA2' }
+        ];
+      }
+    }
   }
 
   refreshPanels() {
-
+    this.edaPanels.forEach(async (panel) => {
+      if (panel.currentQuery.length > 0) {
+        panel.display_v.chart = '';
+        await panel.runQueryFromDashboard(true);
+        panel.panelChart.updateComponent();
+      }
+    });
   }
 
   isEditable(): boolean {
@@ -240,10 +338,10 @@ export class DashboardPageV2 implements OnInit {
 
     try {
       await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
-      // this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+      this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
       this.dashboardService._notSaved.next(false);
     } catch (err) {
-      // this.alertService.addError(err);
+      this.alertService.addError(err);
       throw err;
     }
   }
