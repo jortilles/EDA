@@ -1,114 +1,140 @@
 <eda-dialog [inject]="dialog">
   <div body>
-
     <div style="margin: 1em;">
       <p-progressBar *ngIf="activateProgressBar" mode="indeterminate" [style]="{'height': '0.3rem'}"></p-progressBar>
     </div>
 
     <!-- CASE chart + edaquery -->
-
-    <div class="grid"
-      *ngIf="controller.params.charttype !== 'table' && controller.params.charttype !== 'parallelSets'  && !controller.params.modeSQL">
-      <div class="col-6">
-        <h6 class="col-12" i18n="@@csvField" class="custom-border-b1">
-          Campo
-        </h6>
-        <div class="col-12">
-          <h6>{{column}}</h6>
+    @if (!controller.params.modeSQL && !['table', 'parallelSets'].includes(controller.params.charttype) ) {
+      <div class="grid grid-cols-2 p-6">
+        <div class="">
+          <label class="block font-medium text-gray-700 mb-1" i18n="@@csvField">
+            Campo
+          </label>
+          <div class="text-gray-600 mb-1">{{ column }}</div>
+        </div>
+        
+        <div class="">
+          <label for="technical-name" class="block font-medium text-gray-700 mb-1" i18n="@@LinkDashboardSelectedDashboard">
+            Informe a vincular
+          </label>
+          <div class="text-gray-600 mb-1">
+            <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard" [disabled]="noLink" [style]="{'width': '100%'}"></p-dropdown>
+          </div>
         </div>
       </div>
-
-      <div class="col-6">
-        <h6 class="col-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
-          Informe a vincular
-        </h6>
-        <div class="col-12">
-          <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard" [disabled]="noLink"></p-dropdown>
-        </div>
-      </div>
-    </div>
-
+    }
 
 
     <!-- CASE table + edaquery -->
-
-    <div class="grid"
-      *ngIf="(controller.params.charttype === 'table' || controller.params.charttype === 'parallelSets') && !controller.params.modeSQL">
-      <div class="col-6">
-        <h6 class="col-12" i18n="@@csvField" class="custom-border-b1">
-          Campo
-        </h6>
-        <div class="col-12">
-          <p-dropdown [options]="columns" placeholder="Column" [(ngModel)]="selectedColumn" [disabled]="noLink"
-            (onChange)="initDashboards(selectedColumn)" optionLabel="colname"></p-dropdown>
+    @if (!controller.params.modeSQL && ['table', 'parallelSets'].includes(controller.params.charttype) ) {
+      <div class="grid grid-cols-2 gap-2">
+        <div class="">
+          <label class="block font-medium text-gray-700 mb-1" i18n="@@csvField">
+            Campo
+          </label>
+          <div class="text-gray-600 mb-1">
+            <p-dropdown 
+              [(ngModel)]="selectedColumn"
+              [options]="columns"
+              [disabled]="noLink"
+              (onChange)="initDashboards(selectedColumn)"
+              optionLabel="colname" placeholder="Column"
+              [style]="{'width': '100%'}"
+            ></p-dropdown>
+          </div>
+        </div>
+        
+        <div class="">
+          <label for="technical-name" class="block font-medium text-gray-700 mb-1" i18n="@@LinkDashboardSelectedDashboard">
+            Informe a vincular
+          </label>
+          <div class="text-gray-600 mb-1">
+            <p-dropdown
+              [options]="dasboards"
+              [(ngModel)]="selectedDashboard"
+              [disabled]="noLink"
+              [style]="{'width': '100%'}"
+              placeholder="Column"
+            ></p-dropdown>
+          </div>
         </div>
       </div>
-
-      <div class="col-6">
-        <h6 class="col-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
-          Informe a vincular
-        </h6>
-        <div class="col-12">
-          <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard" [disabled]="noLink"></p-dropdown>
-        </div>
-
-      </div>
-    </div>
+    }
 
     <!-- CASE chart + sqlquery -->
-    <div *ngIf="controller.params.modeSQL" class="grid">
-      <div class="col-12">
-        <h6 class="col-12" i18n="@@csvField" class="custom-border-b1">
-          Campo
-        </h6>
-        <div class="col-12">
-          <p-dropdown [options]="columns" placeholder="Column" [(ngModel)]="selectedColumn" [disabled]="noLink"
-            (onChange)="initDashboards(selectedColumn)" optionLabel="colname"></p-dropdown>
+    @if (controller.params.modeSQL) {
+      <div class="grid grid-cols-3 gap-3">
+        <div class="">
+          <label class="block font-medium text-gray-700 mb-1" i18n="@@csvField">
+            Campo
+          </label>
+          <div class="text-gray-600 mb-1">
+            <p-dropdown 
+              [(ngModel)]="selectedColumn"
+              [options]="columns"
+              [disabled]="noLink"
+              (onChange)="initDashboards(selectedColumn)"
+              optionLabel="colname" placeholder="Column"
+              [style]="{'width': '100%'}"
+            ></p-dropdown>
+          </div>
+        </div>
+
+        <div class="">
+          <label class="block font-medium text-gray-700 mb-1" i18n="@@LinkDashboardDbFilter">
+            Campo del informe
+          </label>
+          <div class="text-gray-600 mb-1">
+            <p-dropdown
+            [(ngModel)]="selectedDashboard"
+              [options]="dasboards"
+              placeholder="Dashboard"
+              [disabled]="noLink"
+              (onChange)="filterFilters()"
+              [style]="{'width': '100%'}"
+            ></p-dropdown>
+          </div>
+        </div>
+        
+        <div class="">
+          <label for="technical-name" class="block font-medium text-gray-700 mb-1" i18n="@@LinkDashboardSelectedDashboard">
+            Informe a vincular
+          </label>
+          <div class="text-gray-600 mb-1">
+            <p-dropdown
+              [(ngModel)]="selectedFilter"
+              [options]="filters"
+              optionLabel="colname" placeholder="Column"
+              [disabled]="noLink"
+              [style]="{'width': '100%'}"
+              (onChange)="handleTargetColumn()"
+            ></p-dropdown>
+          </div>
         </div>
       </div>
+    }
 
-      <div class="col-6">
-        <h6 class="col-12" i18n="@@LinkDashboardDbFilter" class="custom-border-b1">
-          Campo del informe
-        </h6>
-        <div class="col-12">
-          <p-dropdown [options]="dasboards" [(ngModel)]="selectedDashboard" placeholder="Dashboard" [disabled]="noLink"
-            (onChange)="filterFilters()"></p-dropdown>
-        </div>
+    @if (oldLinked) {
+      <div class="grid space-y-4">
+        <h6>{{unLinkString}} {{oldLinked}} </h6>
+        <p-inputSwitch
+          id="switchQueryMode"
+          [(ngModel)]="noLink"
+          tooltipPosition="left">
+        </p-inputSwitch>
       </div>
-
-      <div class="col-6">
-        <h6 class="col-12" i18n="@@LinkDashboardSelectedDashboard" class="custom-border-b1">
-          Informe a vincular
-        </h6>
-        <div class="col-12">
-          <p-dropdown [options]="filters" [(ngModel)]="selectedFilter" optionLabel="colname" placeholder="Column"
-            [disabled]="noLink" (onChange)="handleTargetColumn()"></p-dropdown>
-        </div>
-      </div>
-
-    </div>
-
-
-
-    <div *ngIf=" this.oldLinked " class="col-6">
-
-      <h6>{{unLinkString}} {{oldLinked}} </h6>
-      <p-inputSwitch id="switchQueryMode" class="col-1 sql-switch" #switchMode [(ngModel)]="noLink"
-        tooltipPosition="left">
-      </p-inputSwitch>
-
-    </div>
+    }
   </div>
 
   <div footer>
-    <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
-      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
-        class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
-        id="eda_chart_dialog_confirmar" [disabled]="!selectedDashboard && !noLink">
+    <div class="flex justify-end p-2 border-t gap-1.5">
+      <button  class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
+        <i class="fa fa-times"></i>
+        <span i18n-label="@@cancelarBtn">Cancelar</span>
       </button>
-      <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
-        class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
+      <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" (click)="saveChartConfig()">
+        <i class="fa fa-check"></i> <span>Confirmar</span>
       </button>
     </div>
   </div>
