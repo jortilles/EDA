@@ -62,10 +62,8 @@ export class BubblechartDialog extends EdaDialogAbstract implements AfterViewChe
   }
 
   handleInputColor() {
-
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(this.colors.map(color => this.hex2rgb(color))));
     this.myPanelChartComponent.changeChartType();
-
   }
 
   hex2rgb(hex, opacity = 100): string {

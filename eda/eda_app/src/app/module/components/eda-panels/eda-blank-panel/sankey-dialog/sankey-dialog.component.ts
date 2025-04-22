@@ -19,6 +19,7 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
   public colors: Array<string>;
   public labels: Array<string>;
   public display:boolean=false;
+  public selectedLabel: any;
 
   constructor() {
 
@@ -58,7 +59,7 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor(serie) {
+  handleInputColor() {
     this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.colors.map(color => this.hex2rgb(color))));
     this.myPanelChartComponent.changeChartType();
   }

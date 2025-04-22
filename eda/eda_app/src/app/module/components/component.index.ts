@@ -46,8 +46,8 @@ export { MapEditDialogComponent } from './eda-panels/eda-blank-panel/maps-dialog
 export { KpiEditDialogComponent } from './eda-panels/eda-blank-panel/kpi-dialog/kpi-dialog.component';
 export { dynamicTextDialogComponent } from './eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component';
 export { SankeyDialog } from './eda-panels/eda-blank-panel/sankey-dialog/sankey-dialog.component';
-export { TreeMapDialog } from './eda-panels/eda-blank-panel/treeMapDialog/treeMap-dialog.component';
-export { ScatterPlotDialog } from './eda-panels/eda-blank-panel/scatterPlotDialog/scatterPlot-dialog.component';
+export { TreeMapDialog } from './eda-panels/eda-blank-panel/tree-map-dialog/tree-map-dialog.component';
+export { ScatterPlotDialog } from './eda-panels/eda-blank-panel/scatter-plot-dialog/scatter-plot-dialog.component';
 export { EdaScatter } from './eda-scatter/eda-scatter.component';
 export { LinkDashboardsComponent } from './eda-panels/eda-blank-panel/link-dashboards/link-dashboards.component';
 export { EdaTreeMap} from './eda-treemap/eda-treemap.component';

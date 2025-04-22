@@ -2,15 +2,15 @@ import { Component, ViewChild, AfterViewChecked } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
-import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
+import { TreeMapConfig } from '../panel-charts/chart-configuration-models/treeMap-config';
 
 
 @Component({
-  selector: 'app-scatterPlot-dialog',
-  templateUrl: './scatterPlot-dialog.component.html'
+  selector: 'app-tree-map-dialog',
+  templateUrl: './tree-map-dialog.component.html'
 })
 
-export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChecked {
+export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked {
 
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
@@ -36,17 +36,15 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
         this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
-        this.labels = this.myPanelChartComponent.componentRef.instance.data[0].category 
-        ?  this.myPanelChartComponent.componentRef.instance.firstColLabels
-        :  [this.myPanelChartComponent.componentRef.instance.inject.dataDescription.otherColumns[0].name];
+        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
       }, 0)
     }
   }
 
   onShow(): void {
+    console.log('show treemap')
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
-
 
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -61,8 +59,8 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor(serie) {
-    this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors.map(color => this.hex2rgb(color))));
+  handleInputColor() {
+    this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(this.colors.map(color => this.hex2rgb(color))));
     this.myPanelChartComponent.changeChartType();
   }
 
