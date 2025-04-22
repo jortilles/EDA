@@ -99,29 +99,29 @@ export class GlobalFilterV2Component implements OnInit {
         const formatedFilter = this.globalFilterService.formatFilter(filter);
         this.setFilterButtonVisibilty();
 
-        // filter.panelList
-        //     .map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
-        //     .forEach((panel: EdaBlankPanelComponent) => {
-        //         if (panel) panel.assertGlobalFilter(formatedFilter);
-        //     });
+        filter.panelList
+            .map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
+            .forEach((panel: EdaBlankPanelComponent) => {
+                if (panel) panel.assertGlobalFilter(formatedFilter);
+            });
     }
 
     public setGlobalFilterItems(filter: any) {
-        // this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
-        //     if (filter.panelList.includes(panel.panel.id)) {
-        //         const filterApplied = panel.globalFilters.find((gf: any) => gf.filter_id === filter.id);
+        this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+            if (filter.panelList.includes(panel.panel.id)) {
+                const filterApplied = panel.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
-        //         if (filterApplied) {
-        //             filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
-        //         } else {
-        //             const formatedFilter = this.globalFilterService.formatFilter(filter);
-        //             panel.assertGlobalFilter(formatedFilter);
-        //         }
-        //     }
-        // })
+                if (filterApplied) {
+                    filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
+                } else {
+                    const formatedFilter = this.globalFilterService.formatFilter(filter);
+                    panel.assertGlobalFilter(formatedFilter);
+                }
+            }
+        })
     }
 
-    // Main Global Filter
+    // Global Filter Dialog
     public onShowGlobalFilter(isnew: boolean, filter?: any): void {
         if (this.dashboard.validateDashboard('GLOBALFILTER')) {
 
@@ -151,8 +151,12 @@ export class GlobalFilterV2Component implements OnInit {
         }
     }
 
-    // Global Filter Tree
-    public async onCloseGlobalFilter(apply: boolean): Promise<void> {
+    // Global Filter Dialog
+    public async onGlobalFilter(apply: boolean, gf?: any): Promise<void> {
+        if (!this.globalFilter && gf) {
+            this.globalFilter = gf;
+        }
+
         if (apply) {
             this.dashboard.edaPanels.forEach(panel => {
                 if (!this.globalFilter.isdeleted) {
@@ -209,44 +213,12 @@ export class GlobalFilterV2Component implements OnInit {
         }
 
         this.globalFilter = undefined;
-        // this.dashboard.reloadOnGlobalFilter();
+        this.dashboard.refreshPanels();
     }
 
+    // Deprecated
     // Legacy Global Filter
-    public onFilterConfig(isnew: boolean, filter?: any): void {
-        // this.dashboard.display_v.rightSidebar = false;
-        this.filterController = new EdaDialogController({
-            params: {
-                panels: this.dashboard.panels,
-                dataSource: this.dashboard.dataSource,
-                filtersList: this.globalFilters,
-                filter,
-                isnew
-            },
-            close: async (event, response) => {
-                if (_.isEqual(event, EdaDialogCloseEvent.NEW)) {
-
-                    await this.onGlobalFilter(response.filterList, response.targetTable);
-                    // this.dashboard.reloadOnGlobalFilter();
-
-                } else if (_.isEqual(event, EdaDialogCloseEvent.UPDATE)) {
-
-                    this.globalFilters = [];
-
-                    for (let filter of response.filterList) {
-                        await this.onGlobalFilter(filter, filter.table?.value);
-                    }
-
-                    // this.dashboard.reloadOnGlobalFilter();
-                }
-
-                this.filterController = undefined;
-            }
-        });
-    }
-
-    // Legacy Global Filter
-    public async onGlobalFilter(filter: any, targetTable: string): Promise<void> {
+    public async xonGlobalFilter(filter: any, targetTable: string): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 if (filter.isdeleted) {
