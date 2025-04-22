@@ -60,8 +60,11 @@
                 <!-- Entities Section -->
                 <div class="w-1/2 border-r">
                   <div class="border-b p-3">
-                    <h3 class="text-lg mb-2  font-bold">Entities</h3>
-                    <input class="h-8 w-full rounded-md border px-2" placeholder="Search entities...">
+                    <h3 i18n="@@entidadesH4" class="text-lg mb-2 font-bold"
+                      i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos.">
+                      Entidades
+                    </h3>
+                    <input class="h-8 w-full rounded-md border px-2" placeholder="Buscar entidades...">
                   </div>
                   <div class="h-full overflow-y-auto">
                     <ng-template #entityList>
@@ -112,10 +115,13 @@
                 <!-- Attributes Section -->
                 <div class="w-1/2">
                   <div class="border-b p-3">
-                    <h3 class="text-lg mb-2 font-bold">Attributes</h3>
+                    <h3 class="text-lg mb-2 font-bold" i18n="@@atributosH4"
+                      i18n-title="@@atributsTitle" title="Atributos de una entidad. Arrastre los atrubutos a la selección o los filtros para consultarlos. Haciendo click sobre el atributo se accede a sus propiedaes">
+                      Atributos
+                    </h3>
                     <input 
                       class="h-8 w-full rounded-md border px-2" 
-                      placeholder="Search attributes..."
+                      placeholder="Buscar atributos..."
                     >
                   </div>
                   <div class="h-full overflow-y-auto">
@@ -158,7 +164,10 @@
                 <div class="space-y-6">
                   <!-- Selected Attributes -->
                   <div>
-                    <h3 class="text-lg mb-4 font-bold">Selected Attributes</h3>
+                    <h3 i18n="@@seleccionH4" class="text-lg mb-4 font-bold"
+                      i18n-title="@@seleccionTitle" title="Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.">
+                      Mostrar los siguientes atributos:
+                    </h3>
                     <div 
                       class="flex gap-1 rounded-lg border p-2 min-h-[55px]"
                       cdkDropList
@@ -204,7 +213,7 @@
 
                   <!-- Filter section -->
                   <div>
-                    <h3 class="text-lg mb-4 font-bold">Filter</h3>
+                    <h3 class="text-lg mb-4 font-bold" i18n="@@filtrosH4">Filtrar los resultados por:</h3>
                     <div 
                       class="flex gap-1 rounded-lg border p-2 min-h-[55px]"
                       cdkDropList
@@ -259,7 +268,7 @@
                   <div class="flex items-end gap-10 mt-6 mb-2">
                     <!-- Join Type -->
                     <div>
-                      <h3 class="text-lg font-bold">Join Type</h3>
+                      <h3 class="text-lg font-bold" i18n="@@joinTypeH4">Tipo de intersección:</h3>
                       <div class="flex gap-2">
                         <button *ngFor="let type of joinTypeOptions" class="border px-3 py-1 rounded-lg hover:bg-gray-100">
                           {{ type.label }}
@@ -268,7 +277,7 @@
                     </div>
                     <!-- Show Top -->
                     <div>
-                      <h3 class="text-lg font-bold">Mostrar Top</h3>
+                      <h3 class="text-lg font-bold" i18n="@@topQueryH4">Mostrar Top:</h3>
                       <input type="number" [(ngModel)]="queryLimit" class="w-full border p-1 rounded" (input)="onTopChange()">
                     </div>
 
@@ -284,7 +293,7 @@
                   <div class="mt-6 border-t pt-4">
                     <div class="flex items-center justify-between">
                       <span class="flex items-center gap-1">
-                        <h3 class="text-lg font-bold" i18n="@@consultaH4">Mi consulta</h3>
+                        <h3 class="text-lg font-bold" i18n="@@yourQuerySQL">Mi consulta SQL</h3>
                           <i class="pi pi-info-circle cursor-pointer"
                             [pTooltip]="ptooltipViewQuery"
                             (click)="getQuery($event)">
