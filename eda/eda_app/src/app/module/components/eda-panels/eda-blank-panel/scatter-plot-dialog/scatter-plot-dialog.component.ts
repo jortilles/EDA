@@ -2,15 +2,15 @@ import { Component, ViewChild, AfterViewChecked } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
-import { TreeMapConfig } from '../panel-charts/chart-configuration-models/treeMap-config';
+import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
 
 
 @Component({
-  selector: 'app-treeMap-dialog',
-  templateUrl: './treeMap-dialog.component.html'
+  selector: 'app-scatter-plot-dialog',
+  templateUrl: './scatter-plot-dialog.component.html'
 })
 
-export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked {
+export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChecked {
 
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
 
@@ -36,7 +36,9 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
         this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
-        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
+        this.labels = this.myPanelChartComponent.componentRef.instance.data[0].category 
+        ?  this.myPanelChartComponent.componentRef.instance.firstColLabels
+        :  [this.myPanelChartComponent.componentRef.instance.inject.dataDescription.otherColumns[0].name];
       }, 0)
     }
   }
@@ -44,6 +46,7 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
   onShow(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
+
 
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -58,8 +61,8 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor(serie) {
-    this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(this.colors.map(color => this.hex2rgb(color))));
+  handleInputColor() {
+    this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors.map(color => this.hex2rgb(color))));
     this.myPanelChartComponent.changeChartType();
   }
 

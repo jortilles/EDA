@@ -216,6 +216,7 @@ export class DashboardPageV2 implements OnInit {
     this.dashboardService._notSaved.next(true);
   }
 
+  // TODO revisar funcion (al hacer click en un grafico este deberia añadir un global filter al dashboard)
   async onGlobalFilter(data: any) {
     // const data = action?.data;
     if (data && !_.isNil(data?.inx)) {
@@ -236,16 +237,16 @@ export class DashboardPageV2 implements OnInit {
           selectedItems: [data.label]
         };
 
-        await this.globalFilter.onGlobalFilter(globalFilter, table.table_name);
+        await this.globalFilter.onGlobalFilter(true, globalFilter);
       
 
         this.dashboardService._notSaved.next(true);
 
         // Simula el click en el btn
         setTimeout(() => {
-            let btn = document.getElementById('dashFilterBtn');
-            if (btn) btn.click();
-            else this.refreshPanels();
+          let btn = document.getElementById('dashFilterBtn');
+          if (btn) btn.click();
+          else this.refreshPanels();
         }, 500);
       }
     }
@@ -295,7 +296,7 @@ export class DashboardPageV2 implements OnInit {
       if (panel.currentQuery.length > 0) {
         panel.display_v.chart = '';
         await panel.runQueryFromDashboard(true);
-        panel.panelChart.updateComponent();
+        setTimeout(() => panel.panelChart.updateComponent(), 100);
       }
     });
   }

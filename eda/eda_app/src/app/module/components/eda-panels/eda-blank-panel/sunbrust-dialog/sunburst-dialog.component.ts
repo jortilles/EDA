@@ -57,7 +57,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor(serie) {
+  handleInputColor() {
     this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(this.colors.map(color => this.hex2rgb(color))));
     this.myPanelChartComponent.changeChartType();
   }

@@ -356,7 +356,7 @@ export const PanelInteractionUtils = {
             c.column_name === contentColumn.column_name
             // && c.display_name.default === contentColumn.display_name
           );
-          // console.log('assertColumn', contentColumn, column);
+    
           if (!column && contentColumn) {
             if(columns.length > 0) {
               column = ebp.currentQuery.find((c: Column) =>

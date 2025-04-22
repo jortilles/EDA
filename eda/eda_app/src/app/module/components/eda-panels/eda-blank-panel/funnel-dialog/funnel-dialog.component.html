@@ -25,7 +25,7 @@
                 <span class="font-medium">{{ item }}</span>
                 <div class="flex items-center gap-2">
                   <span class="text-md text-slate-500 font-mono">{{ colors[idx] }}</span>
-                  <div class="w-6 h-6 rounded-full border border-slate-200" [style.backgroundColor]="colors[idx]"></div>
+                  <p-colorPicker [(ngModel)]="colors[idx]" (onChange)="handleInputColor()" format="hex" appendTo="body"/>
                 </div>
               </div>
               }

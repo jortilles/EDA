@@ -2,7 +2,7 @@
   <div body class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
     <!-- Chart Preview -->
     <div class="p-6 flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
-      <div class="relative w-full max-w-md aspect-square">
+      <div class="relative h-full w-full">
         @if (display) {
           <panel-chart #PanelChartComponent
             [props]="panelChartConfig"
@@ -170,7 +170,8 @@
                   <span class="font-medium">{{ item.label }}</span>
                   <div class="flex items-center gap-2">
                     <span class="text-md text-slate-500 font-mono">{{ item.bg }}</span>
-                    <div class="w-6 h-6 rounded-full border border-slate-200" [style.backgroundColor]="item.bg"></div>
+                    <p-colorPicker [(ngModel)]="item.bg" (onChange)="handleInputColor(item)" format="hex" appendTo="body"/>
+                    <!-- <div class="w-6 h-6 rounded-full border border-slate-200" [style.backgroundColor]="item.bg"></div> -->
                   </div>
                 </div>
               }

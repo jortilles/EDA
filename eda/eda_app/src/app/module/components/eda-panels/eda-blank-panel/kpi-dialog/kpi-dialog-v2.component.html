@@ -40,7 +40,7 @@
               <span class="font-medium">{{ item.label }}</span>
               <div class="flex items-center gap-2">
                 <span class="text-md text-slate-500 font-mono">{{ item.bg }}</span>
-                <div class="w-6 h-6 rounded-full border border-slate-200" [style.backgroundColor]="item.bg"></div>
+                <p-colorPicker [(ngModel)]="item.bg" (onChange)="handleInputColor(item)" format="hex" appendTo="body"/>
               </div>
             </div>
             }

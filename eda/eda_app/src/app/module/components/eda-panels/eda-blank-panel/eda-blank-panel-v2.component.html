@@ -11,12 +11,12 @@
       class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50 border border-dashed border-gray-300"
       [class.spinner-panel]="display_v.minispinner">
         @if (display_v.saved_panel && !display_v.minispinner) {
-          <div class="p-2 w-full h-full">
+          <div class="relative w-full h-full">
             <panel-chart #PanelChartComponent
               [props]="panelChartConfig"
               (configUpdated)="setChartProperties($event)"
               (onChartClick)="onChartClick($event)"
-              class="component" style="height: 100%; width: 100%; display:block">
+              class="h-full w-full block">
             </panel-chart>
           </div>
         }
@@ -284,30 +284,75 @@
                   <div class="mt-6 border-t pt-4">
                     <div class="flex items-center justify-between">
                       <span class="flex items-center gap-1">
-                        <h3 class="text-lg font-bold">Query Summary</h3>
+                        <h3 class="text-lg font-bold" i18n="@@consultaH4">Mi consulta</h3>
                           <i class="pi pi-info-circle cursor-pointer"
                             [pTooltip]="ptooltipViewQuery"
                             (click)="getQuery($event)">
                           </i>
                       </span>
                     </div>
-                    <div class="mt-2 border rounded-lg bg-gray-50 p-4 min-h-[200px]">
-                      @for (attr of currentQuery; track attr.display_name.default) {
-                        <p class="flex items-center">
-                          <strong [innerHTML]="getColumnJoins(attr)"></strong>
-                          <span>
-                            <strong> {{ getNiceTableName(attr.table_id) }} </strong>
-                            <i class="pi pi-angle-right"></i>
-                            {{attr.display_name.default}}
-                          </span>
-                          @for (aggregation of attr.aggregation_type; track aggregation.display_name) {
-                            @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
-                              &nbsp;({{aggregation.display_name}})
+
+                    <div class="grid grid-cols-2 mt-2 border rounded-lg bg-gray-50 p-4 min-h-[200px]">
+                      <div>
+                        <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
+                      
+                        @for (attr of currentQuery; track attr.display_name.default) {
+                          <p class="flex items-center">
+                            <strong [innerHTML]="getColumnJoins(attr)"></strong>
+                            <span>
+                              <strong> {{ getNiceTableName(attr.table_id) }} </strong>
+                              <i class="pi pi-angle-right"></i>
+                              {{attr.display_name.default}}
+                            </span>
+                            @for (aggregation of attr.aggregation_type; track aggregation.display_name) {
+                              @if (aggregation.selected && !['No', 'no'].includes(aggregation.display_name)) {
+                                &nbsp;({{aggregation.display_name}})
+                              }
                             }
-                          }
-                        </p>
-                      }
+                          </p>
+                        }
+                        <br>
+                        <h3 class="text-base font-semibold" i18n="@@resumenFiltrosPanelH6">Resumen de filtros del panel</h3>
+                        @for (attr of selectedFilters; track attr) {
+                          <p class="flex items-center">
+                            <strong [innerHTML]="getFilterJoins(attr)"></strong>
+                            <span [innerHTML]="getDisplayFilterStr(attr)">
+                              <!-- <strong> {{ getNiceTableName(attr.table_id) }} </strong>
+                              <i class="pi pi-angle-right"></i>
+                              {{attr.display_name.default}} -->
+                            </span>
+                          </p>
+                        }
+                      </div>
+
+                      <div>
+                        <h3 class="text-base font-semibold" i18n="@@resumenFiltrosInformeH6">Resumen de filtros del informe</h3>
+                        @for (attr of globalFilters; track attr) {
+                          <p class="flex items-center">
+                            <strong [innerHTML]="getFilterJoins(attr)"></strong>
+                            <span [innerHTML]="getDisplayFilterStr(attr)">
+                              <!-- <strong> {{ getNiceTableName(attr.table_id) }} </strong>
+                              <i class="pi pi-angle-right"></i>
+                              {{attr.display_name.default}} -->
+                            </span>
+                          </p>
+                        }
+                      </div>
                     </div>
+
+                    <!-- 
+
+                    <div class="col-12 md:col-6 pl-2">
+                        <h5 i18n="@@resumenFiltrosInformeH6">
+                            Resumen de filtros del informe
+                        </h5>
+
+                        <div *ngFor="let filter of globalFilters" class="d-flex align-items-center">
+                            <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
+
+                            <span class="d-flex align-items-center" [innerHTML]="getDisplayFilterStr(filter)"></span>
+                        </div>
+                    </div> -->
                   </div>
 
 
@@ -415,17 +460,14 @@
           <!-- Preview View -->
           <div class="flex h-full max-h-[600px] gap-6 p-6">
             <div class="flex-1 rounded-lg border p-4 bg-muted/30">
-              <!-- <div class="h-full rounded-lg bg-muted/30"> -->
                 <!-- Preview Chart  -->
                 <panel-chart
                   class="block h-full w-full"
                   #panelChartComponentPreview
                   [props]="panelChartConfig"
                 ></panel-chart>
-                <!-- style="height: 100%; width: 100%; display:block" -->
-              <!-- </div> -->
             </div>
-            <div class="w-96 space-y-2" [ngClass]="{'w-2/6': graphicType==='crosstable'}">
+            <div class="w-96 space-y-2" [ngClass]="{'w-3/6': graphicType==='crosstable'}">
               <form [formGroup]="chartForm">
                 <p-dropdown
                   id="chartSelector"
@@ -533,11 +575,11 @@
 
 <app-bubblechart-dialog *ngIf="bubblechartController" [controller]="bubblechartController"></app-bubblechart-dialog>
 
-<app-treeMap-dialog *ngIf="treeMapController" [controller]="treeMapController"></app-treeMap-dialog>
+<app-tree-map-dialog *ngIf="treeMapController" [controller]="treeMapController"></app-tree-map-dialog>
 
 <app-funnel-dialog *ngIf="funnelController" [controller]="funnelController"></app-funnel-dialog>
 
-<app-scatterPlot-dialog *ngIf="scatterPlotController" [controller]="scatterPlotController"></app-scatterPlot-dialog>
+<app-scatter-plot-dialog *ngIf="scatterPlotController" [controller]="scatterPlotController"></app-scatter-plot-dialog>
 
 <link-dashboards-dialog *ngIf="linkDashboardController" [controller]="linkDashboardController"></link-dashboards-dialog>
 
