@@ -1,17 +1,55 @@
 <eda-dialog [inject]="dialog">
+  <div body class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
+    <!-- Chart Preview -->
+    <div class="p-6 flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
+      <div class="relative w-full max-w-md aspect-square">
+        @if (display) {
+          <panel-chart #PanelChartComponent
+            [props]="panelChartConfig"
+            class="h-full w-full block"
+          ></panel-chart>
+        }
+      </div>
+    </div>
 
-  <div body class="grid">
-    <div class="col-8">
-      <div class="eda-chart-panel" style="margin-top: 6em;">
-        <div style="height: 70%; background-color: var(--panel-color); margin: 2em;">
-          <panel-chart *ngIf="display" style="margin: 1em;" #PanelChartComponent [props]="panelChartConfig">
-          </panel-chart>
+    <!-- Settings -->
+    <div class="p-6 flex-1 overflow-y-auto">
+      <div class="space-y-6">
+        <div class="space-y-4">
+          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+              <span class="font-medium">{{ label }}</span>
+              <div class="flex items-center gap-2">
+                <span class="text-md text-slate-500 font-mono">{{ color }}</span>
+                <div class="w-6 h-6 rounded-full border border-slate-200" [style.backgroundColor]="color"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <h3 class="font-medium text-slate-500 uppercase">
+            Opciones de visualización
+          </h3>
+
+          <div class="flex items-center justify-between">
+            <div class="space-y-0.5">
+              <div class="flex flex-col gap-2">
+                <label i18n="@@Limits" class="font-medium">
+                  Limites
+                </label>
+                <input type="number" [(ngModel)]="min" class="w-full border p-1 rounded" placeholder="min">
+                <input type="number" [(ngModel)]="max" class="w-full border p-1 rounded" placeholder="max">
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-
-    <div class="grid col-4">
+    <!-- <div class="grid col-4">
 
       <div class="col-6">
 
@@ -23,7 +61,6 @@
           <div class="mb-1">
             <input type="text" [(ngModel)]="color" pInputText style="width: 40%" (keyup)="handleInputColor()" />
             <p-colorPicker [(ngModel)]="color" appendTo="body" (onChange)="handleInputColor()"></p-colorPicker>
-            <!-- <input type="text" pInputText class="eda-color-pick" (input)="handleInputColor()" minlength="7"> -->
           </div>
         </div>
 
@@ -44,18 +81,18 @@
 
       </div>
 
+    </div> -->
+  </div>
+
+  <div footer>
+    <div class="flex justify-end p-2 border-t gap-1.5">
+      <button  class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
+        <i class="fa fa-times"></i>
+        <span i18n-label="@@cancelarBtn">Cancelar</span>
+      </button>
+      <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" (click)="saveChartConfig()">
+        <i class="fa fa-check"></i> <span>Confirmar</span>
+      </button>
     </div>
   </div>
-
-  <div class="flex justify-end p-2 border-t gap-1.5">
-    <button  class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
-      <i class="fa fa-times"></i>
-      <span i18n-label="@@cancelarBtn">Cancelar</span>
-    </button>
-    <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" (click)="saveChartConfig()">
-      <i class="fa fa-check"></i> <span>Confirmar</span>
-    </button>
-  </div>
-
-
 </eda-dialog>

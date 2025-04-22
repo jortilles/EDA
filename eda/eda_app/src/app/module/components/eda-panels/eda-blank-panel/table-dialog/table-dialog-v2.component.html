@@ -1,0 +1,148 @@
+<eda-dialog [inject]="dialog">
+  <div body>
+    <div class="bg-white border-b p-4">
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-700">
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+          <line x1="3" x2="21" y1="9" y2="9"></line>
+          <line x1="3" x2="21" y1="15" y2="15"></line>
+          <line x1="12" x2="12" y1="3" y2="21"></line>
+        </svg>
+        <h2 class="text-xl font-semibold text-slate-800">Propiedades de la tabla</h2>
+      </div>
+    </div>
+  
+    <div class="p-4 bg-slate-50 border-b">
+      <div class="flex flex-wrap gap-2">
+        <button 
+          [class]="'px-4 py-2 rounded-md flex items-center gap-2 transition-colors ' + (showTotals ? 'bg-slate-900 text-white' : 'bg-white border hover:bg-slate-100')"
+          (click)="toggleOption('totals')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m2 18 8-8 4 4 8-8"></path>
+            <path d="M22 18v-8h-8"></path>
+          </svg>
+          <span>Totales</span>
+        </button>
+  
+        <button 
+          [class]="'px-4 py-2 rounded-md flex items-center gap-2 transition-colors ' + (showPercentages ? 'bg-slate-900 text-white' : 'bg-white border hover:bg-slate-100')"
+          (click)="toggleOption('percentages')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" x2="5" y1="5" y2="19"></line>
+            <circle cx="6.5" cy="6.5" r="2.5"></circle>
+            <circle cx="17.5" cy="17.5" r="2.5"></circle>
+          </svg>
+          <span>Porcentajes</span>
+        </button>
+  
+        <button 
+          [class]="'px-4 py-2 rounded-md flex items-center gap-2 transition-colors ' + (showColorCode ? 'bg-slate-900 text-white' : 'bg-white border hover:bg-slate-100')"
+          (click)="toggleOption('colorCode')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="13.5" cy="6.5" r="2.5"></circle>
+            <circle cx="17.5" cy="10.5" r="2.5"></circle>
+            <circle cx="8.5" cy="7.5" r="2.5"></circle>
+            <circle cx="6.5" cy="12.5" r="2.5"></circle>
+          </svg>
+          <span>Código de color</span>
+        </button>
+  
+        <button 
+          [class]="'px-4 py-2 rounded-md flex items-center gap-2 transition-colors ' + (hideRepeatedValues ? 'bg-slate-900 text-white' : 'bg-white border hover:bg-slate-100')"
+          (click)="toggleOption('repeatedValues')"
+        >
+          <svg *ngIf="hideRepeatedValues" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+            <line x1="2" x2="22" y1="2" y2="22"></line>
+          </svg>
+          <svg *ngIf="!hideRepeatedValues" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span>Valores repetidos</span>
+        </button>
+  
+        <div class="relative">
+          <button 
+            class="px-4 py-2 bg-white border rounded-md flex items-center gap-2 hover:bg-slate-100 transition-colors"
+            (click)="$event.stopPropagation(); negativeNumbersDropdown = !negativeNumbersDropdown"
+          >
+            <span>Números negativos</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </button>
+          
+          <div *ngIf="negativeNumbersDropdown" class="absolute right-0 mt-1 w-56 bg-white border rounded-md shadow-lg z-10">
+            <div 
+              class="flex items-center justify-between p-3 hover:bg-slate-50 cursor-pointer"
+              (click)="setNegativeNumbersFormat('default'); negativeNumbersDropdown = false"
+            >
+              <span>Predeterminado (-123)</span>
+              <svg *ngIf="negativeNumbersFormat === 'default'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5"></path>
+              </svg>
+            </div>
+            <div 
+              class="flex items-center justify-between p-3 hover:bg-slate-50 cursor-pointer"
+              (click)="setNegativeNumbersFormat('parentheses'); negativeNumbersDropdown = false"
+            >
+              <span>Paréntesis (123)</span>
+              <svg *ngIf="negativeNumbersFormat === 'parentheses'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5"></path>
+              </svg>
+            </div>
+            <div 
+              class="flex items-center justify-between p-3 hover:bg-slate-50 cursor-pointer"
+              (click)="setNegativeNumbersFormat('red'); negativeNumbersDropdown = false"
+            >
+              <span>Texto rojo</span>
+              <svg *ngIf="negativeNumbersFormat === 'red'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div *ngIf="showTotals" class="mt-3 flex flex-wrap gap-4">
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="column-totals" [(ngModel)]="columnTotals" class="h-4 w-4 rounded border-gray-300" />
+          <label for="column-totals" class="text-sm cursor-pointer">
+            Totales de columna
+          </label>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="column-subtotals" [(ngModel)]="columnSubtotals" class="h-4 w-4 rounded border-gray-300" />
+          <label for="column-subtotals" class="text-sm cursor-pointer">
+            Subtotales de columna
+          </label>
+        </div>
+      </div>
+    </div>
+  
+    <div class="overflow-auto">
+      <panel-chart #PanelChartComponent
+        [props]="panelChartConfig"
+        (configUpdated)="setChartProperties()"
+      ></panel-chart>
+    </div>
+  </div>
+
+  <div footer>
+    <div class="flex justify-end p-2 border-t gap-1.5">
+      <button  class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
+        <i class="fa fa-times"></i>
+        <span i18n-label="@@cancelarBtn">Cancelar</span>
+      </button>
+      <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" (click)="saveChartConfig()">
+        <i class="fa fa-check"></i> <span>Confirmar</span>
+      </button>
+    </div>
+  </div>
+</eda-dialog>

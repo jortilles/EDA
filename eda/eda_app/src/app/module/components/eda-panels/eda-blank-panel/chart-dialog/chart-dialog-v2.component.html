@@ -40,7 +40,7 @@
       @if (activeTab === 'display') {
       <div class="space-y-6">
         <div class="space-y-4">
-          <h3 class="font-medium text-slate-500 uppercase tracking-wider">
+          <h3 class="font-medium text-slate-500 uppercase">
             Opciones de visualización
           </h3>
 
@@ -68,12 +68,11 @@
                     <p class="text-md text-slate-500">Muestra la línea de tendencia en el gráfico</p>
                   </div>
                   <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="addTrend" class="sr-only peer" (onChange)="checkTrend()">
+                    <input type="checkbox" [(ngModel)]="addTrend" class="sr-only peer" (ngModelChange)="checkTrend()">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
                   </label>
                 </div>
               }
-
 
               <!-- Comparativa -->
               @if (showComparative) {
@@ -97,7 +96,7 @@
                     <p class="text-md text-slate-500">Compara con datos de períodos anteriores</p>
                   </div>
                   <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="addComparative" class="sr-only peer" (onChange)="setComparative()">
+                    <input type="checkbox" [(ngModel)]="addComparative" class="sr-only peer" (ngModelChange)="setComparative()">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
                   </label>
                 </div>
@@ -124,7 +123,7 @@
                 <p class="text-md text-slate-500">Muestra el nombre de cada segmento</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" [(ngModel)]="settings.mostrarEtiquetas" class="sr-only peer">
+                <input type="checkbox" [(ngModel)]="showLabels" class="sr-only peer" (ngModelChange)="setShowLables()">
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
               </label>
             </div>
@@ -150,7 +149,7 @@
                 <p class="text-md text-slate-500">Muestra el valor porcentual de cada segmento</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" [(ngModel)]="settings.mostrarPorcentajes" class="sr-only peer">
+                <input type="checkbox" [(ngModel)]="showLabelsPercent" class="sr-only peer" (ngModelChange)="setShowLablesPercent()">
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
               </label>
             </div>
@@ -161,40 +160,23 @@
 
       <!-- Colors Tab -->
       @if (activeTab === 'colors') {
-      <div class="space-y-6">
-        <div class="space-y-4">
-          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colors</h3>
+        <div class="space-y-6">
+          <div class="space-y-4">
+            <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colors</h3>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @for (item of series; track item.label) {
-            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-              <span class="font-medium">{{ item.label }}</span>
-              <div class="flex items-center gap-2">
-                <span class="text-md text-slate-500 font-mono">{{ item.bg }}</span>
-                <div class="w-6 h-6 rounded-full border border-slate-200" [style.backgroundColor]="item.bg"></div>
-              </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              @for (item of series; track item.label) {
+                <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                  <span class="font-medium">{{ item.label }}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-md text-slate-500 font-mono">{{ item.bg }}</span>
+                    <div class="w-6 h-6 rounded-full border border-slate-200" [style.backgroundColor]="item.bg"></div>
+                  </div>
+                </div>
+              }
             </div>
-            }
-
-            <!-- @for (serie of series; track serie) {
-              <div>
-                <input type="text" pInputText
-                  [value]="serie.label"
-                  disabled="true" 
-                  [style.border-color]="serie.border"
-                />
-
-                <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex"
-                    appendTo="body">
-                </p-colorPicker>
-
-                <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg"
-                    (input)="handleInputColor(serie)" minlength="7" >
-              </div>
-            } -->
           </div>
         </div>
-      </div>
       }
     </div>
   </div>
