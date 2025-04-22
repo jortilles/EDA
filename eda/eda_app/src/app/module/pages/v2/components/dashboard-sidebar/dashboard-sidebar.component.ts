@@ -2,10 +2,11 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, Input, ViewChild } from "@an
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import { DashboardPageV2 } from "../../dashboard/dashboard.page";
-import { DashboardService, FileUtiles, SpinnerService } from "@eda/services/service.index";
+import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService } from "@eda/services/service.index";
 import { EdaPanel, EdaPanelType, EdaTitlePanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
 import { DashboardSaveAsDialog } from "../dashboard-save-as/dashboard-save-as.dialog";
+import { DashboardEditStyleDialog } from "../dashboard-edit-style/dashboard-edit-style.dialog";
 import { Router } from "@angular/router";
 import domtoimage from 'dom-to-image';
 import jspdf from 'jspdf';
@@ -14,7 +15,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
-  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog],
+  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardEditStyleDialog],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -44,12 +45,16 @@ export class DashboardSidebarComponent {
   private fileUtils = inject(FileUtiles);
   private router = inject(Router);
   private spinner = inject(SpinnerService);
-
+  private alertService = inject(AlertService);
+  private stylesProviderService =  inject(StyleProviderService)
+  
+  
   @ViewChild('popover') popover!: OverlayPanel;
   @Input() dashboard: DashboardPageV2;
 
   isPopoverVisible = false; // Controla la visibilidad del overlay
   isSaveAsDialogVisible = false;
+  isEditStyleDialogVisible = false;
 
   sidebarItems = [
     {
@@ -109,7 +114,10 @@ export class DashboardSidebarComponent {
     {
       label: "Editar estils",
       icon: "pi pi-palette",
-      command: () => this.editStyles()
+      command: () => {
+        this.isEditStyleDialogVisible = true;
+        this.hidePopover();
+      }
     },
     {
       label: "Descargar PDF",
@@ -133,6 +141,12 @@ export class DashboardSidebarComponent {
     },
   ]
 
+  ngOnInit(): void {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+    console.log(this)  
+  }
+  
   showPopover(event: Event) {
     this.isPopoverVisible = true;
     this.popover.toggle(event);
@@ -230,7 +244,7 @@ export class DashboardSidebarComponent {
           ds,
           tag: null,
           refreshTime: null,
-          styles: null //TODO this.stylesProviderService.generateDefaultStyles(),
+          styles: this.stylesProviderService.generateDefaultStyles(), //TODO ==> Done?
         },
         group: (newDashboard.group || []).map((g: any) => g._id)
       };
@@ -239,35 +253,34 @@ export class DashboardSidebarComponent {
       const body = {
         config: {
           title: newDashboard.name,
-          panel: this.dashboard.dashboard.panel,
+          panel: this.dashboard.panels,
           ds: { _id: this.dashboard.dataSource._id },
           filters: this.dashboard.cleanFiltersData(),
           applyToAllfilter: this.dashboard.applyToAllfilter,
           visible: newDashboard.visible,
-          tags: null, //TODO this.selectedTags,
+          tags: this.dashboard.dashboard.config.tag, //TODO ==> Done?
           refreshTime: (this.dashboard.refreshTime > 5) ? this.dashboard.refreshTime : this.dashboard.refreshTime ? 5 : null,
-          mailingAlertsEnabled: null, //TODO this.getMailingAlertsEnabled(),
-          sendViaMailConfig: null, //TODO this.sendViaMailConfig,
-          onlyIcanEdit: null, //TODO this.onlyIcanEdit,
-          styles: null, //TODO this.styles
-
+          mailingAlertsEnabled: this.getMailingAlertsEnabled(),
+          sendViaMailConfig: this.dashboard.sendViaMailConfig, //TODO ==> Done?
+          onlyIcanEdit: this.dashboard.onlyIcanEdit, //TODO ==> Done?
+          styles: this.dashboard.dashboard.config.styles, //TODO ==> Done?
         },
         group: (newDashboard.group || []).map((g: any) => g._id)
       };
 
-      // TODO
+      // TODO ==> Done?
       this.dashboard.edaPanels.forEach(panel => panel.savePanel());
 
       await lastValueFrom(this.dashboardService.updateDashboard(res.dashboard._id, body));
       this.dashboardService._notSaved.next(false);
-      // TODO
-      // this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-      // this.router.navigate(['/dashboard/', r.dashboard._id]).then(() => {
-      //   window.location.reload();
-      // });
+      // TODO ==> Done?
+      this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+      this.router.navigate(['/v2/dashboard/', res.dashboard._id]).then(() => { // TODO ==> deixo v2 per ara  a la url 
+        window.location.reload();
+      });
     } catch (err) {
-      // TODO
-      // this.alertService.addError(err);
+      // TODO ==> Done?
+      this.alertService.addError(err);
       throw err;
     }
   }
@@ -297,30 +310,16 @@ export class DashboardSidebarComponent {
             window.location.reload();
           });
         } catch (err) {
-          // TODO
-          // this.alertService.addError(err);
+          // TODO ==> Done?
+          this.alertService.addError(err);
           throw err;
         }
       }
     });
   }
 
-  public editStyles() {
-    this.hidePopover();
-    // TODO
-    // const params = this.styles;
-
-    // this.editStylesController = new EdaDialogController({
-    //   params,
-    //   close: (event, response) => {
-    //     if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-    //       this.stylesProviderService.setStyles(response);
-    //       this.styles = response;
-    //       this.dashboardService._notSaved.next(true);
-    //     }
-    //     this.editStylesController = null;
-    //   }
-    // })
+  public saveStyles(newStyles: any) {
+    console.log(newStyles);
   }
 
 
@@ -361,22 +360,9 @@ export class DashboardSidebarComponent {
   public openMailConfig() {
     this.hidePopover();
 
-    const params = {
-      dashboard: this.dashboard.dashboardId,
-      config: this.dashboard.sendViaMailConfig
-    };
+    console.log('openmailconfig')
+    const params = {dashboard: this.dashboard.dashboardId, config: this.dashboard.sendViaMailConfig};
 
-    // TODO
-    // this.emailController = new EdaDialogController({
-    //   params,
-    //   close: (event, response) => {
-    //     if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-    //       this.sendViaMailConfig = response;
-    //       this.saveDashboard();
-    //     }
-    //     this.emailController = undefined;
-    //   }
-    // });
   }
 
   // Funcion que agrega urls para acción personalizada
@@ -395,4 +381,26 @@ export class DashboardSidebarComponent {
     //   }
     // })
   }
+
+  public getMailingAlertsEnabled(): boolean {
+
+    let mailingenabled = false;
+
+    this.dashboard.panels.forEach(panel => {
+        if (panel.content && panel.content.chart === 'kpi') {
+            try{
+                panel.content.query.output.config.alertLimits.forEach(alert => {
+                    if (alert.mailing.enabled === true) {
+                        mailingenabled = true
+                    };
+                });
+            }catch(e){
+                    console.log('error getting mailing alerts.... setting it to false');
+                    mailingenabled = false;
+            }
+        }
+    });
+
+    return mailingenabled;
+  } 
 }

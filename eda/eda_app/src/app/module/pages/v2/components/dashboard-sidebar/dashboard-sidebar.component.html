@@ -26,5 +26,7 @@
 }
 
 @if (isSaveAsDialogVisible) {
-    <app-dashboard-save-as (close)="saveDashboardAs($event)"></app-dashboard-save-as>
+  <app-dashboard-save-as (close)="saveDashboardAs($event)"></app-dashboard-save-as>
+} @else if (isEditStyleDialogVisible) {
+  <app-dashboard-edit-style (close)="saveStyles($event)"></app-dashboard-edit-style>
 }
