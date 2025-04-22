@@ -47,8 +47,7 @@ export class GroupListPage implements OnInit {
           : b[this.sortConfig.key].localeCompare(a[this.sortConfig.key]);
       })
       .filter(group =>
-        group.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        group.role.toLowerCase().includes(this.searchTerm.toLowerCase())
+        group.name.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
   }
 

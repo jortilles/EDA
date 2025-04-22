@@ -49,8 +49,7 @@ export class UserListPage implements OnInit {
       })
       .filter(user =>
         user.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        user.role.toLowerCase().includes(this.searchTerm.toLowerCase())
+        user.name.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
   }
 
