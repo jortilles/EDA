@@ -164,7 +164,7 @@
                 <div class="space-y-6">
                   <!-- Selected Attributes -->
                   <div>
-                    <h3 i18n="@@seleccionH4" class="text-lg mb-4 font-bold"
+                    <h3 i18n="@@seleccionH4" class="text-lg mb-2 font-bold"
                       i18n-title="@@seleccionTitle" title="Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.">
                       Mostrar los siguientes atributos:
                     </h3>
@@ -213,7 +213,7 @@
 
                   <!-- Filter section -->
                   <div>
-                    <h3 class="text-lg mb-4 font-bold" i18n="@@filtrosH4">Filtrar los resultados por:</h3>
+                    <h3 class="text-lg mb-2 font-bold" i18n="@@filtrosH4">Filtrar los resultados por:</h3>
                     <div 
                       class="flex gap-1 rounded-lg border p-2 min-h-[55px]"
                       cdkDropList
@@ -265,32 +265,41 @@
                   </p-selectButton> -->
                 
                   <!-- Advanced Settings -->
-                  <div class="flex items-end gap-10 mt-6 mb-2">
-                    <!-- Join Type -->
-                    <div>
-                      <h3 class="text-lg font-bold" i18n="@@joinTypeH4">Tipo de intersección:</h3>
-                      <div class="flex gap-2">
-                        <button *ngFor="let type of joinTypeOptions" class="border px-3 py-1 rounded-lg hover:bg-gray-100">
-                          {{ type.label }}
-                        </button>
-                      </div>
-                    </div>
-                    <!-- Show Top -->
-                    <div>
-                      <h3 class="text-lg font-bold" i18n="@@topQueryH4">Mostrar Top:</h3>
-                      <input type="number" [(ngModel)]="queryLimit" class="w-full border p-1 rounded" (input)="onTopChange()">
-                    </div>
+                  <div class="mt-4 mb-2">
+                    <h3 class="text-lg font-bold flex items-center">
+                      Opciones avanzadas
+                      <eda-icon [name]="display_v.advancedSetting ? 'chevron-up' : 'chevron-down'" class="cursor-pointer" (click)="display_v.advancedSetting = !display_v.advancedSetting"></eda-icon>
+                    </h3>
+                    
+                    @if (display_v.advancedSetting) {
+                      <div class="flex items-end gap-10 pl-2">
+                        <!-- Join Type -->
+                        <div>
+                          <h3 class="text-base font-bold">-<span i18n="@@joinTypeH4">Tipo de intersección:</span></h3>
+                          <div class="flex gap-2">
+                            <button *ngFor="let type of joinTypeOptions" class="border px-3 py-1 rounded-lg hover:bg-gray-100">
+                              {{ type.label }}
+                            </button>
+                          </div>
+                        </div>
+                        <!-- Show Top -->
+                        <div>
+                          <h3 class="text-base font-bold">-<span i18n="@@topQueryH4">Mostrar Top:</span></h3>
+                          <input type="number" [(ngModel)]="queryLimit" class="w-full border p-1 rounded" (input)="onTopChange()">
+                        </div>
 
-                    <div>
-                      <button class="border px-3 py-2 rounded-lg font-bold hover:bg-gray-100"
-                        (click)="onWhatIfDialog()">
-                        What If?
-                      </button>
-                    </div>
+                        <div>
+                          <button class="border px-3 py-2 rounded-lg font-bold hover:bg-gray-100"
+                            (click)="onWhatIfDialog()">
+                            What If?
+                          </button>
+                        </div>
+                      </div>
+                    }
                   </div>
 
                   <!-- Query Summary -->
-                  <div class="mt-6 border-t pt-4">
+                  <div class="mt-4 border-t pt-4">
                     <div class="flex items-center justify-between">
                       <span class="flex items-center gap-1">
                         <h3 class="text-lg font-bold" i18n="@@yourQuerySQL">Mi consulta SQL</h3>
@@ -301,7 +310,7 @@
                       </span>
                     </div>
 
-                    <div class="grid grid-cols-2 mt-2 border rounded-lg bg-gray-50 p-4 min-h-[200px]">
+                    <div class="grid grid-cols-2 mt-2 border rounded-lg bg-gray-50 p-4 min-h-[230px]">
                       <div>
                         <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
                       
