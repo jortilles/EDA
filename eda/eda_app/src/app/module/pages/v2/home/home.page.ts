@@ -9,7 +9,7 @@ import { AlertService, DashboardService } from '@eda/services/service.index';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
-import { CreateDashboardComponent } from '@eda/shared/components/shared-components.index';
+import { CreateDashboardComponent } from '@eda/shared/components/create-dashboard/create-dashboard.component';
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
@@ -139,24 +139,26 @@ export class HomePageV2 implements OnInit {
     this.createDashboardService.open();
   }
 
-  public filterByTags() { // Esta función actualiza los reports, y es llamada cada vez que se modifican los tags
-    console.log('5')
+  // Esta función actualiza los reports, y es llamada cada vez que se modifican los tags
+  public filterByTags() { 
     const tags = sessionStorage.getItem("activeTags") || "[]";
-    if (tags.includes( $localize`:@@AllTags:Todos`) || tags === '[]') { // Si tiene la etiqueta Todos o no tiene etiqueta mostraremos todos los informes
+    // Si tiene la etiqueta Todos o no tiene etiqueta mostraremos todos los informes
+    if (tags.includes( $localize`:@@AllTags:Todos`) || tags === '[]') {
       this.publicReports  = this.reportMap.public;
       this.sharedReports  = this.reportMap.shared;
       this.privateReports = this.reportMap.private;
       this.roleReports    = this.reportMap.group;
+    // Asignación de reportes visibles
     } else {
-      // Asignación de reportes visibles
       this.publicReports  = this.checkTagsIntoReports(this.reportMap.public, tags);
       this.sharedReports  = this.checkTagsIntoReports(this.reportMap.shared, tags);
       this.privateReports = this.checkTagsIntoReports(this.reportMap.private, tags);
       this.roleReports = this.checkTagsIntoReports(this.reportMap.group, tags);
       }
   }
-
-  private checkTagsIntoReports(reports, tags) { // Función que devuelve los reports que contienen alguno de los tags del header
+  
+  // Función que devuelve los reports que contienen alguno de los tags del header
+  private checkTagsIntoReports(reports, tags) {
     return reports.filter(db => {
         const tag = db.config?.tag;
         return tags.includes($localize`:@@NoTag:Sin Etiqueta`) ? (tag === null || tags.includes(tag)): tags.includes(tag) && tag != '';

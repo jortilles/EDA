@@ -1,31 +1,32 @@
-<eda-dialog2 *ngIf="display" [display]="display" i88n="@@newDashboardtitle" header="CREA UN NUEVO INFORME" width="50vw" height="60vh" (close)="onClose()" (apply)="createNewDashboard()">
-    <div content>
-        <!-- <form [formGroup]="form" class="form-horizontal form-material" (ngSubmit)="createNewDashboard()">
-            <div class="grid">
-                <div class="col-12  mt-2">
-                    <span class="p-float-label">
-                        <input id="float-dash" formControlName="name" type="text" pInputText required style="width: 100%;">
-                        <label i18n="@@labelDameNombre" for="float-dash">Dame un nombre *</label>
-                    </span>
-                </div>
+<eda-dialog2 [display]="display" i18n-header="@@newDashboardtitle" header="CREA UN NUEVO INFORME" width="50vw" height="70vh" (close)="onClose()"
+  (apply)="createNewDashboard()">
+  <div content>
+    <form [formGroup]="form" class="form-horizontal form-material" (ngSubmit)="createNewDashboard()">
+      <div class="grid">
+        <div class="mt-6">
+          <input type="text" pInputText formControlName="name" class="w-full py-2.5 px-2 border rounded-md"
+            i18n-placeholder="@@labelDameNombre" placeholder="Dame un nombre *" required>
+        </div>
 
-                <div class="col-12 ">
-                    <p-dropdown id="float-ds" formControlName="ds" [options]="dataSources" optionLabel="model_name" 
-                        [showClear]="true" i18n-placeholder="@@selectFuenteDatos"
-                        placeholder="Selecciona una fuente de datos *" required [style]="{'minWidth':'100%'}">
-                    </p-dropdown>
-                </div>
+        <div class="mt-6">
+          <p-dropdown id="float-ds" formControlName="ds" [options]="dataSources" optionLabel="model_name"
+            [showClear]="true" i18n-placeholder="@@selectFuenteDatos" placeholder="Selecciona una fuente de datos *"
+            required [style]="{'minWidth':'100%'}">
+          </p-dropdown>
+        </div>
 
-                <div style="margin: 8px">
-                    <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)">
-                    </p-selectButton>
-                </div>
+        <div class="mt-6">
+          <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)"></p-selectButton>
+        </div>
 
-                <div class="col-12 " *ngIf="showGroups">
-                    <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false" optionLabel="name" defaultLabel="Selecciona un grupo *">
-                    </p-multiSelect>
-                </div>
-            </div>
-        </form> -->
-    </div>
+        @if (showGroups) {
+          <div class="mt-6">
+            <p-multiSelect id="float-grups" formControlName="group" [options]="grups" [filter]="false" optionLabel="name"
+              defaultLabel="Selecciona un grupo *" appendTo="body">
+            </p-multiSelect>
+          </div>
+        }
+      </div>
+    </form>
+  </div>
 </eda-dialog2>

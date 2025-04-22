@@ -29,11 +29,8 @@ export class DataSourceNamesService extends ApiService {
       );
   }
 
-  getDataSourceNamesForDashboard(): void {
-    this.get(this.globalDSRoute + '/namesForDashboard')
-      .pipe(
-        map((names: any) => this._datasourcesDB.next(names.ds))
-      );
+  getDataSourceNamesForDashboard(): Observable<any> {
+    return this.get(this.globalDSRoute + '/namesForDashboard');
   }
 
   getDataSources(): Observable<any> {

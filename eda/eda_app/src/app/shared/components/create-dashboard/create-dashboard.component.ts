@@ -2,22 +2,25 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, inject, OnInit, Output
 import { FormBuilder, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from "@angular/forms";
 import { AlertService, DashboardService, GroupService, IGroup, SidebarService, StyleProviderService } from "@eda/services/service.index";
 import { SelectItem } from "primeng/api";
-import * as _ from 'lodash';
 import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
 import { SharedModule } from "@eda/shared/shared.module";
 import { DropdownModule } from "primeng/dropdown";
 import { ButtonModule } from "primeng/button";
 import { MultiSelectModule } from "primeng/multiselect";
 import { SelectButtonModule } from "primeng/selectbutton";
+import * as _ from 'lodash';
+import { DataSourceNamesService } from "@eda/services/shared/datasource-names.service";
 
 @Component({
     standalone: true,
     selector: 'app-create-dashboard',
     templateUrl: './create-dashboard.component.html',
-    imports: [SharedModule, FormsModule, ReactiveFormsModule, DropdownModule, SelectButtonModule, MultiSelectModule],
+    imports: [SharedModule, ReactiveFormsModule, FormsModule, DropdownModule, ButtonModule, SelectButtonModule, MultiSelectModule],
 })
 export class CreateDashboardComponent implements OnInit {
-    // private createDashboardService = inject(CreateDashboardService);
+    private createDashboardService = inject(CreateDashboardService);
+    private dataSourceNameService = inject(DataSourceNamesService);
+
     public display: boolean = false;
     public dataSources: any[] = [];
     public form: UntypedFormGroup;
@@ -40,10 +43,7 @@ export class CreateDashboardComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        console.log('initcreatedashboard')
         this.display = true;
-        // TODO
-        // this.sidebarService.getDataSourceNamesForDashboard();
         this.loadGroups();
     }
 
@@ -62,17 +62,16 @@ export class CreateDashboardComponent implements OnInit {
         ];
 
         this.form.controls['visible'].setValue(this.visibleTypes[2].value);
-        // TODO
-        // this.sidebarService.currentDatasourcesDB.subscribe(
-        //     (res) => {
-        //         this.dataSources = res;
-        //         this.dataSources = this.dataSources.sort((a, b) => {
-        //             let va = a.model_name.toLowerCase();
-        //             let vb = b.model_name.toLowerCase();
-        //             return va < vb ?  -1 : va > vb ? 1 : 0
-        //         });
-        //     }
-        // );
+
+        this.dataSourceNameService.getDataSourceNamesForDashboard().subscribe((res) => {
+            console.log(res);
+            this.dataSources = res?.ds;
+            this.dataSources = this.dataSources.sort((a, b) => {
+                let va = a.model_name.toLowerCase();
+                let vb = b.model_name.toLowerCase();
+                return va < vb ?  -1 : va > vb ? 1 : 0
+            });
+        });
     }
 
     private async loadGroups(): Promise<void> {
@@ -134,7 +133,8 @@ export class CreateDashboardComponent implements OnInit {
     }
 
     public onClose(res?: any): void {
-        // this.createDashboardService.close();
+        this.display = false;
+        this.createDashboardService.close();
         this.close.emit(res);
     }
 }
