@@ -4585,6 +4585,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       <source>Filtrar por</source>
       <target>Filtrar per</target>
       </trans-unit>
+      <trans-unit id="NullVallueMessage">
+      <source>Sin Informar</source>
+      <target>Sense Informar</target>
+      </trans-unit>
       <trans-unit id="loginTitle">
         <source>Inicio de sesión</source>
         <target>Inici de sessió</target>
