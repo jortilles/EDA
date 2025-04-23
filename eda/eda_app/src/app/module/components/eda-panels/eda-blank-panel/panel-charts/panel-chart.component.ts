@@ -283,7 +283,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             maxRotation:30,
             minRotation: 0,
             labelOffset: 5,
-            padding: -2
+            padding: 5
         };
       
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
