@@ -5921,7 +5921,7 @@ o incluso invocar procesos de carga desde una llamada http. Una vez configurado 
           <context context-type="linenumber">28</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="NullVallueMessage" datatype="html">
+      <trans-unit id="EmptyValueMessage" datatype="html">
         <source>Sin Informar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/config/personalitzacio/customizables.ts</context>
