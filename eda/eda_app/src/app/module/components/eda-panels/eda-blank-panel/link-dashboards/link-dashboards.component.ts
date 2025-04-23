@@ -48,7 +48,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
       title: $localize`:@@DashboardLink:Vincular con un informe`,
-      style: { width: '30%', height: '60%', top: '-1em', left: '1em' }
+      style: { width: '40%', height: '40%', top: '-1em', left: '1em' }
     });
   }
 
@@ -217,6 +217,7 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
     catch (err) {
       this.alertService.addError(err);
+      throw err;
     }
     finally {
       this.activateProgressBar = false;

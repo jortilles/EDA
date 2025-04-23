@@ -1,9 +1,9 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject, OnInit } from "@angular/core";
-import { RouterModule } from "@angular/router";
+import { Router, RouterModule } from "@angular/router";
 import { MainLeftSidebarComponent } from "./components/main-left-sidebar/main-left-sidebar";
-import { CreateDashboardComponent } from "@eda/shared/components/shared-components.index";
 import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
+import { CreateDashboardComponent } from "@eda/shared/components/create-dashboard/create-dashboard.component";
 
 @Component({
     selector: 'app-v2-pages',
@@ -12,6 +12,7 @@ import { CreateDashboardService } from "@eda/services/utils/create-dashboard.ser
     imports: [CommonModule, RouterModule, MainLeftSidebarComponent, CreateDashboardComponent],
 })
 export class PagesV2Component implements OnInit {
+    private router = inject(Router);
     public createDashboardService = inject(CreateDashboardService);
     backgroundColor: string
     panelMode: boolean = false;
@@ -34,6 +35,6 @@ export class PagesV2Component implements OnInit {
     }
 
     onCloseCreateDashboard(event: any) {
-
+        if (event) this.router.navigate(['/v2/dashboard', event._id]);
     }
 }

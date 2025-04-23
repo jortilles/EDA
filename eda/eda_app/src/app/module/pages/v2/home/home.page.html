@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <h1 class="text-2xl font-semibold">
-          <eda-icon name="home" class="text-[#00B0BA]"/>
-          Els meus informes
+        <eda-icon name="home" class="text-[#00B0BA]"/>
+        Els meus informes
       </h1>
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
         <div class="relative w-full sm:w-[300px]">
@@ -17,7 +17,7 @@
           >
         </div>
         <button class="bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white font-bold px-4 py-2 rounded flex items-center"
-            (click)="onCreateDashboard()">
+          (click)="onCreateDashboard()">
           <eda-icon name="plus" size="sm" class="h-4 mr-2"/>
           Crear nou informe
         </button>
@@ -131,7 +131,7 @@
           (keydown.escape)="handleEditing('cancel', report)"
           (click)="$event.stopPropagation()"
           autofocus
-      />
+        />
       }
 
 
