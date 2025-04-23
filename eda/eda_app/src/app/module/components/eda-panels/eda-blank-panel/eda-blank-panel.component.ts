@@ -29,7 +29,7 @@ import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 import { ActivatedRoute } from '@angular/router';
-import { NULL_VALUE } from '../../../../config/personalitzacio/customizables'
+import { NULL_VALUE, EMPTY_VALUE } from '../../../../config/personalitzacio/customizables'
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 import { inject, computed } from '@angular/core';
 import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
@@ -505,13 +505,23 @@ public tableNodeExpand(event: any): void {
             const [labels, values] = response;
             
             this.chartLabels = this.chartUtils.uniqueLabels(labels);
-            this.chartData = values.map(row =>
-                row.map(value => value == null ? NULL_VALUE : value)
-            );
+                this.chartData = response[1].map(item => item.map(a => {
+                
+                        if(a === null){
+                          return NULL_VALUE;
+                        }
+                        if(a === ''){
+                          return EMPTY_VALUE;
+                        }
+                
+                        return a;
+                
+                })); // canviem els null y els '' per valor customitzable
             
             this.buildGlobalconfiguration(panelContent);
         } catch (err) {
             this.alertService.addError(err);
+            this.display_v.minispinner = false;
             throw err;
         }
     }
