@@ -6,6 +6,8 @@ import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
 import { ChartsConfigUtils } from './charts-config-utils';
 import { PanelInteractionUtils } from './panel-interaction-utils';
 
+import { NULL_VALUE, EMPTY_VALUE } from '../../../../../config/personalitzacio/customizables'
+
 export const QueryUtils = {
 
   /**
@@ -179,8 +181,23 @@ export const QueryUtils = {
 
       // Execute query
       const response = await QueryUtils.switchAndRun(ebp, query);
+      console.log('response :::: --->',response)
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
-      ebp.chartData = response[1];       // Chart data
+      ebp.chartData = response[1].map(item => item.map(a => {
+
+        if(a === null){
+          return NULL_VALUE;
+        }
+        if(a === ''){
+          return EMPTY_VALUE;
+        }
+
+        return a;
+
+      })); // canviem els null y els '' per valor customitzable
+      // ebp.chartData = response[1].map(item => item.map(a => a === '' ? 'EMPTY_VALUE' : a)); // canviem els null per valor customitzable
+      
+      // ebp.chartData = response[1];       // Chart data
       ebp.ableBtnSave();                 // Button save
       /* Labels i Data - Arrays */
       if (!globalFilters) {

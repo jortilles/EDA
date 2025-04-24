@@ -29,7 +29,7 @@ import { EbpUtils } from './panel-utils/ebp-utils';
 import { ChartsConfigUtils } from './panel-utils/charts-config-utils';
 import { PanelInteractionUtils } from './panel-utils/panel-interaction-utils'
 import { ActivatedRoute } from '@angular/router';
-import { NULL_VALUE } from '../../../../config/personalitzacio/customizables'
+import { NULL_VALUE, EMPTY_VALUE } from '../../../../config/personalitzacio/customizables'
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 import { QueryService } from '@eda/services/api/query.service';
 import { ConfirmationService } from 'primeng/api';
@@ -447,7 +447,20 @@ export class EdaBlankPanelComponent implements OnInit {
             try {
                 const response = await QueryUtils.switchAndRun(this, panelContent.query);
                 this.chartLabels = this.chartUtils.uniqueLabels(response[0]);
-                this.chartData = response[1].map(item => item.map(a => a == null ? NULL_VALUE : a)); // canviem els null per valor customitzable
+
+                this.chartData = response[1].map(item => item.map(a => {
+                
+                        if(a === null){
+                          return NULL_VALUE;
+                        }
+                        if(a === ''){
+                          return EMPTY_VALUE;
+                        }
+                
+                        return a;
+                
+                })); // canviem els null y els '' per valor customitzable
+                
                 this.buildGlobalconfiguration(panelContent);
             } catch (err) {
                 this.alertService.addError(err);

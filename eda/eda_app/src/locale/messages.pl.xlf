@@ -4490,6 +4490,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
   <source>Filtrar por</source>
   <target>Filtruj według</target>
   </trans-unit>
+  <trans-unit id="EmptyValueMessage">
+  <source>Sin Informar</source>
+  <target>Niepoinformowany</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>

@@ -40,5 +40,6 @@ export const DEFAULT_FONT_FAMILY: string = 'Montserrat';  /* THIS MUST BE SET AL
 export const DEFAULT_FONT_SIZE: number = 0;
 export const DEFAULT_TITLE_ALIGN : string = 'center';
 export const DEFAULT_PANEL_TITLE_ALIGN : string = 'left';
-export const NULL_VALUE : string = 'null' ;
+export const EMPTY_VALUE : string = $localize`:@@EmptyValueMessage:Sin Informar` ;// Agregado valores vacios en diferentes idiomas
+export const NULL_VALUE : string = 'null' ;// Agregado de null_value en diferentes idiomas
 export const FATHER_ID : number = 0; // Valor id de Padre para el componente Treetable
