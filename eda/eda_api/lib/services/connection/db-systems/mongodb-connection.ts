@@ -29,7 +29,7 @@ export class MongoDBConnection extends AbstractConnection {
             }
 
             if(authSource == undefined || authSource == null){
-                authSource = 'EDA';
+                authSource = 'admin';
             }
 
             this.connectUrl = `${type}://${credentialStr}${host}:${port}/${db}?authSource=${authSource}`;
@@ -157,8 +157,8 @@ export class MongoDBConnection extends AbstractConnection {
         return this.execQuery(query);
     }
 
-    override async getQueryBuilded(queryData: any, dataModel: any, user: any) {
-        this.queryBuilder = new MongoDBBuilderService(queryData, dataModel, user);
+    override async getQueryBuilded(queryData: any, dataModel: any, user: any, limit: number) {
+        this.queryBuilder = new MongoDBBuilderService(queryData, dataModel, user, limit);
         return this.queryBuilder.builder();
     }
 
