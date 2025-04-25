@@ -819,7 +819,7 @@ public getHavingColname(column: any){
       filter.forEach(value => {
         const tail = columnType === 'date'
           ? `STR_TO_DATE('${value}','%Y-%m-%d')`
-          : columnType === 'numeric' ? value : `'${value.replace(/'/g, "''")}'`;
+          : columnType === 'numeric' ? value : `'${value.toString().replace(/'/g, "''")}'`;
         str = str + tail + ','
       });
 
