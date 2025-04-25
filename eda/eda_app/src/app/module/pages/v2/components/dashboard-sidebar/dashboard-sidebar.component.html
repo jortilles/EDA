@@ -26,5 +26,9 @@
 }
 
 @if (isSaveAsDialogVisible) {
-    <app-dashboard-save-as (close)="saveDashboardAs($event)"></app-dashboard-save-as>
+  <app-dashboard-save-as (close)="saveDashboardAs($event)"></app-dashboard-save-as>
+}
+
+@if (isTagModalVisible) {
+  <app-dashboard-tag-modal (close)="closeTagModal($event)"></app-dashboard-tag-modal>
 }
