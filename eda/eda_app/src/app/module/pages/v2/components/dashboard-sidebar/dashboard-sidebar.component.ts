@@ -5,6 +5,7 @@ import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService } from "@eda/services/service.index";
 import { EdaPanel, EdaPanelType, EdaTitlePanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
+import { DashboardEditStyleDialog } from "../dashboard-edit-style/dashboard-edit-style.dialog";
 import { DashboardSaveAsDialog } from "../dashboard-save-as/dashboard-save-as.dialog";
 import { DashboardTagModal } from "../dashboard-tag/dashboard-tag.modal";
 import { Router } from "@angular/router";
@@ -15,7 +16,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
-  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal],
+  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -54,6 +55,7 @@ export class DashboardSidebarComponent {
 
   isPopoverVisible = false; // Controla la visibilidad del overlay
   isSaveAsDialogVisible = false;
+  isEditStyleDialogVisible = false;
   isTagModalVisible = false;
 
   sidebarItems = [
@@ -325,7 +327,7 @@ export class DashboardSidebarComponent {
     });
   }
 
-  public saveStyles(newStyles: any) {
+  public closeSaveStyles(newStyles: any) {
     console.log(newStyles);
   }
 
