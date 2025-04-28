@@ -27,6 +27,8 @@
 
 @if (isSaveAsDialogVisible) {
   <app-dashboard-save-as (close)="saveDashboardAs($event)"></app-dashboard-save-as>
-} @else if (isEditStyleDialogVisible) {
-  <app-dashboard-edit-style (close)="saveStyles($event)"></app-dashboard-edit-style>
+}
+
+@if (isTagModalVisible) {
+  <app-dashboard-tag-modal (close)="closeTagModal($event)"></app-dashboard-tag-modal>
 }

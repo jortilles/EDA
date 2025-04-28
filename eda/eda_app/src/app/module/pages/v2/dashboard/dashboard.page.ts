@@ -63,6 +63,8 @@ export class DashboardPageV2 implements OnInit {
     enabled: false
   };
 
+  public selectedTags: any[] = [];
+
   ngOnInit(): void {
     this.initGridsterOptions();
     this.loadDashboard();

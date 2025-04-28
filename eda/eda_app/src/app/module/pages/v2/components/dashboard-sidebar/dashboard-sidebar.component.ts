@@ -6,7 +6,7 @@ import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProvid
 import { EdaPanel, EdaPanelType, EdaTitlePanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
 import { DashboardSaveAsDialog } from "../dashboard-save-as/dashboard-save-as.dialog";
-import { DashboardEditStyleDialog } from "../dashboard-edit-style/dashboard-edit-style.dialog";
+import { DashboardTagModal } from "../dashboard-tag/dashboard-tag.modal";
 import { Router } from "@angular/router";
 import domtoimage from 'dom-to-image';
 import jspdf from 'jspdf';
@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
-  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardEditStyleDialog],
+  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -54,7 +54,7 @@ export class DashboardSidebarComponent {
 
   isPopoverVisible = false; // Controla la visibilidad del overlay
   isSaveAsDialogVisible = false;
-  isEditStyleDialogVisible = false;
+  isTagModalVisible = false;
 
   sidebarItems = [
     {
@@ -86,7 +86,10 @@ export class DashboardSidebarComponent {
     {
       label: "Afegir etiqueta",
       icon: "pi pi-tag",
-      items: [],
+      command: () => {
+        this.isTagModalVisible = true;
+        this.hidePopover();
+      }
     },
     {
       label: "Guardar",
@@ -227,7 +230,6 @@ export class DashboardSidebarComponent {
     this.hidePopover();
   }
 
-
   public async saveDashboardAs(newDashboard: any) {
     this.isSaveAsDialogVisible = false;
     // onClose
@@ -283,6 +285,11 @@ export class DashboardSidebarComponent {
       this.alertService.addError(err);
       throw err;
     }
+  }
+
+  public closeTagModal(tags: any[]) {
+    this.isTagModalVisible = false;
+    this.dashboard.selectedTags = tags;
   }
 
   public removeDashboard() {
