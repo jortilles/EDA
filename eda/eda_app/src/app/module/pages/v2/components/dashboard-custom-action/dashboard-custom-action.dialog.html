@@ -1,0 +1,109 @@
+<eda-dialog2 [display]="display"
+  header="ACCIONES PERSONALIZADAS" width="50vw" height="50vh"
+  [disableApply]="disableApply()"
+  (apply)="onApply()"
+  (close)="onClose()">
+
+  <div content class="p-6 overflow-hidden">
+    <!-- S'ha de fer scrollable -->
+
+    <div class="grid grid-flow-col grid-rows-2 gap-6">
+      <!-- Lista de URLs -->
+      @if(urls?.length > 0){
+          <!-- Position Column -->
+          <div class="border rounded-lg">
+            <table class="w-full">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="cursor-pointer p-3">Url</th>
+                  <th class="cursor-pointer p-3">Nombre</th>
+                  <th class="cursor-pointer p-3">Descripción</th>
+                  <th class="p-3 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="font-semibold">
+                @for (url of urls; track url.id; let index = $index) {
+                  <tr>
+                    <td class="p-3">{{ url.url }}</td>
+                    <td class="p-3">{{ url.name }}</td>
+                    <td class="p-3">{{ url.description }}</td>
+                    @if(editing && index == editingRow){
+                        <td class="p-3 text-right">
+                          <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditSave(url)">
+                            <eda-icon name="check"></eda-icon>
+                          </button>
+                          <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditCancel(url, index)">
+                            <eda-icon name="chevron-left"></eda-icon>
+                          </button>
+                          <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditDelete(index)">
+                            <eda-icon name="bin"></eda-icon>
+                          </button>                      
+                    } @else{
+                      <td class="p-3 text-right">
+                        <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditInit(url, index,urls)">
+                          <eda-icon name="pencil"></eda-icon>
+                        </button>
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>   
+      }
+
+      <!-- Configuración -->
+      <div class="grid space-y-8">
+        <div class="grid grid-cols-2 gap-4 ">
+          <div class="grid grid-flow-col grid-rows-4 gap-6">
+            <div class="flex w-full gap-2">
+              <p-floatLabel class="w-full">
+                <input type="text" [(ngModel)]="urlAdd" class="w-full border px-2 py-2.5 rounded">
+                <label i18n="@@urlString">URL: </label>
+              </p-floatLabel>
+            </div>
+    
+            <div class="flex w-full gap-2">
+              <p-floatLabel class="w-full">
+                <input type="text" [(ngModel)]="nameAdd" class="w-full border px-2 py-2.5 rounded">
+                <label i18n="@@urlName">Nombre: </label>
+              </p-floatLabel>
+            </div>
+    
+            <div class="flex w-full gap-2">
+              <p-floatLabel class="w-full">
+                <input type="text" [(ngModel)]="descriptionAdd" class="w-full border px-2 py-2.5 rounded">
+                <label i18n="@@urlDescription" >Descripción: </label>
+              </p-floatLabel>
+            </div>     
+            <div>
+              <button type="button" i18n="@@textLabelUrl" 
+              class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+              (click)="addUrlDashboard(urlAdd, nameAdd, descriptionAdd)">
+              >
+                Agregar url
+              </button>
+            </div>
+          </div>
+          
+
+
+          <div class="size-full description" i18n="@@resumeTextConfiguration">
+            Puedes configurar una acción personalizada que quieras ejecutar.  
+            Te permite llamar a una URL que haga una acción que quieras invocar. 
+            Puede ser una llamada a una api, a un endpoint de una app
+            o incluso invocar procesos de carga desde una llamada http. 
+            Una vez configurado podrás invocarlo siempre que que quieras desde el botón.
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    
+    
+  </div>
+</eda-dialog2>

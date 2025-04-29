@@ -34,5 +34,8 @@
 }
 
 @if(isEditStyleDialogVisible){
-  <app-dashboard-tag-modal (close)="closeSaveStyles($event)"></app-dashboard-tag-modal>
+  <app-dashboard-edit-style (close)="closeSaveStyles($event)"></app-dashboard-edit-style>
+}
+@if(isCustomActionDialogVisible){
+  <app-dashboard-custom-action (close)="closeCustomAction($event)"> </app-dashboard-custom-action>
 }

@@ -49,7 +49,6 @@ export class HomePageV2 implements OnInit {
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {
-    console.log('AAAAAAAAAAA',this.selectedTags())
     this.loadReports();
   }
 

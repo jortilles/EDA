@@ -5,8 +5,9 @@ import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService } from "@eda/services/service.index";
 import { EdaPanel, EdaPanelType, EdaTitlePanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
-import { DashboardEditStyleDialog } from "../dashboard-edit-style/dashboard-edit-style.dialog";
 import { DashboardSaveAsDialog } from "../dashboard-save-as/dashboard-save-as.dialog";
+import { DashboardEditStyleDialog } from "../dashboard-edit-style/dashboard-edit-style.dialog";
+import { DashboardCustomActionDialog } from "../dashboard-custom-action/dashboard-custom-action.dialog";
 import { DashboardTagModal } from "../dashboard-tag/dashboard-tag.modal";
 import { Router } from "@angular/router";
 import domtoimage from 'dom-to-image';
@@ -16,7 +17,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
-  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog],
+  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog, DashboardCustomActionDialog],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -56,6 +57,7 @@ export class DashboardSidebarComponent {
   isPopoverVisible = false; // Controla la visibilidad del overlay
   isSaveAsDialogVisible = false;
   isEditStyleDialogVisible = false;
+  isCustomActionDialogVisible = false;
   isTagModalVisible = false;
 
   sidebarItems = [
@@ -142,14 +144,15 @@ export class DashboardSidebarComponent {
     {
       label: "Acció personalitzada",
       icon: "pi pi-cog",
-      command: () => this.openUrlsConfig()
+      command: () => {
+        this.isCustomActionDialogVisible = true;
+        this.hidePopover();
+      }
     },
   ]
 
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    console.log(this)  
+    //console.log(this)  
   }
   
   showPopover(event: Event) {
@@ -289,6 +292,19 @@ export class DashboardSidebarComponent {
     }
   }
 
+  public closeSaveStyles(newStyles: any) {
+    this.isSaveAsDialogVisible = false;
+    console.log(newStyles);
+  }
+  public closeCustomAction(url: any) {
+    this.isCustomActionDialogVisible = false;
+    console.log(url);
+  }
+
+  public openMailConfig() {
+    console.log('openmailconfig')
+  }
+
   public closeTagModal(tags: any[]) {
     this.isTagModalVisible = false;
     this.dashboard.selectedTags = tags;
@@ -327,9 +343,6 @@ export class DashboardSidebarComponent {
     });
   }
 
-  public closeSaveStyles(newStyles: any) {
-    console.log(newStyles);
-  }
 
 
   public exportAsPDF() {
@@ -366,13 +379,7 @@ export class DashboardSidebarComponent {
       });
   }
 
-  public openMailConfig() {
-    this.hidePopover();
 
-    console.log('openmailconfig')
-    const params = {dashboard: this.dashboard.dashboardId, config: this.dashboard.sendViaMailConfig};
-
-  }
 
   // Funcion que agrega urls para acción personalizada
   public openUrlsConfig() {

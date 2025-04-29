@@ -16,15 +16,12 @@ export class DashboardEditStyleDialog {
 @Output() close: EventEmitter<any> = new EventEmitter<any>();
   public dialog: EdaDialog;
   public form: UntypedFormGroup;
-  public grups: IGroup[] = [];
   public visibleTypes: SelectItem[] = [];
 
   public display: boolean = false;
-  public showGroups: boolean = false;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
-    private groupService: GroupService,
     private alertService: AlertService) { }
 
   ngOnInit(): void {
@@ -42,20 +39,6 @@ export class DashboardEditStyleDialog {
     this.form.controls['visible'].setValue(this.visibleTypes[2].value);
   }
 
-  public handleSelectedBtn(event): void {
-    const groupControl = this.form.get('group');
-    this.showGroups = event.value === 'group';
-
-    if (this.showGroups) {
-      groupControl.setValidators(Validators.required);
-    }
-
-    if (!this.showGroups) {
-      groupControl.setValidators(null);
-      groupControl.setValue(null);
-    }
-
-  }
 
   public onApply() {
     this.display = false;
