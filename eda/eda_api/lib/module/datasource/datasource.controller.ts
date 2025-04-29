@@ -100,7 +100,7 @@ export class DataSourceController {
             //si no lleva filtro, pasamos directamente a recuperarlos todos
             const datasources = JSON.stringify(filter) !== '{}' ? 
             await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() : 
-            await DataSource.find({}, '_id ds.metadata.model_name ds.melettadata.model_granted_roles ds.metadata.model_owner', options).exec(); 
+            await DataSource.find({}, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec(); 
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
