@@ -170,47 +170,51 @@ export class updateModel {
                                         await connection.query(query).then(async customUserPermissionsValue => {
                                           console.timeLog("UpdateModel", "(Run MariaDB queries)");
                                           let dynamicPermisssionsForUser = customUserPermissionsValue;
+                                          await connection.query("select `key`, `value` from sda_def_config")
+                                          .then(async cacheConfigSDA => {
+                                            let cache_config_SDA = cacheConfigSDA;
+                                            try {
+                                              crm_to_eda = await userAndGroupsToMongo.crm_to_eda_UsersAndGroups(
+                                                users_crm,
+                                                roles
+                                              );
+                                              console.timeLog("UpdateModel", "(Syncs users and groups)");
+                                            } catch (e) {
+                                              console.log("Error 1", e);
+                                              res.status(500).json({ status: "ko" });
+                                            }
 
-                                          try {
-                                            crm_to_eda = await userAndGroupsToMongo.crm_to_eda_UsersAndGroups(
-                                              users_crm,
-                                              roles
-                                            );
-                                            console.timeLog("UpdateModel", "(Syncs users and groups)");
-                                          } catch (e) {
-                                            console.log("Error 1", e);
-                                            res.status(500).json({ status: "ko" });
-                                          }
-                                          try {
-                                            grantedRolesAt = await updateModel.grantedRolesToModel(
-                                              fullTablePermissionsForRoles,
-                                              tables,
-                                              fullTablePermissionsForUsers,
-                                              dynamicPermisssionsForGroup,
-                                              dynamicPermisssionsForUser
-                                            );
-                                            console.timeLog("UpdateModel", "(Converts CRM roles to EDA)");
-                                          } catch (e) {
-                                            console.log("Error 2", e);
-                                            res.status(500).json({ status: "ko" });
-                                          }
+                                            try {
+                                              grantedRolesAt = await updateModel.grantedRolesToModel(
+                                                fullTablePermissionsForRoles,
+                                                tables,
+                                                fullTablePermissionsForUsers,
+                                                dynamicPermisssionsForGroup,
+                                                dynamicPermisssionsForUser
+                                              );
+                                              console.timeLog("UpdateModel", "(Converts CRM roles to EDA)");
+                                            } catch (e) {
+                                              console.log("Error 2", e);
+                                              res.status(500).json({ status: "ko" });
+                                            }
 
-                                          try {
-                                            modelToExport = updateModel.createModel(
-                                              tables,
-                                              columns,
-                                              relations,
-                                              grantedRolesAt,
-                                              ennumeration,
-                                              res
-                                            );
-                                            console.timeLog("UpdateModel", "(Creating Model)");
-                                          } catch (e) {
-                                            console.log("Error 3", e);
-                                            res.status(500).json({ status: "ko" });
-                                          }
+                                            try {
+                                              modelToExport = updateModel.createModel(
+                                                tables,
+                                                columns,
+                                                relations,
+                                                grantedRolesAt,
+                                                ennumeration,
+                                                res,
+                                                cache_config_SDA
+                                              );
+                                              console.timeLog("UpdateModel", "(Creating Model)");
+                                            } catch (e) {
+                                              console.log("Error 3", e);
+                                              res.status(500).json({ status: "ko" });
+                                            }
+                                          });
                                         });
-
                                         connection.end();
                                       });
                                   });
@@ -225,6 +229,50 @@ export class updateModel {
       console.log("Error : ", e);
     }
   }
+  
+  /**
+  * receives an cache_config SDA object and check if it's correct. Safety first
+  * 
+  * @param cache_config_SDA - cache_config SDA object  with the cache configuration
+  * @returns cache_config_SDA checked if the result is not acceptable cache is disabled.
+  */
+  static assertCacheConfig(cache_config_SDA:any) {
+    if( cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  === "1") {
+      if (  ! [ 'days', 'hours'].includes ( cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_units').value  )  ){
+          // no correct units. Cache = false.
+          console.log('Error in cache configuration units : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_units').value  );
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0'  ;
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_units').value  = 'days'  ;
+        }
+      if (  ! (cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value  >0 
+        &&  cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value < 200 )  ){
+          // no correct units. Cache = false.
+          console.log('Error in cache configuration quantity  : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value  );
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0'  ;
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value  = 1  ;
+        }
+      if (  ! (cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_hours').value  >=0 
+        &&  cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_hours').value < 24 ) ){
+          // no correct units. Cache = false.
+          console.log('Error in cache configuration hours  : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_hours').value );
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0'  ;
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_hours').value  = '00'  ;
+        }
+      if (  ! (cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value  >=0 
+        &&  cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value < 60) ){
+          // no correct units. Cache = false.
+          console.log('Error in cache configuration minutes  : ' + cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value );
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0' ;
+          cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value  = '00'  ;
+        }
+    }else{
+      console.log('Cache disabled : ' + cache_config_SDA['sda_config_cache_enabled']  );
+      cache_config_SDA.find( (v: any) => v.key === 'sda_config_cache_enabled').value  = '0' ;
+    }
+  return cache_config_SDA;
+  }
+
+
   /** Checks if columns and tables defined in the model exist */
   static async checkSinergiaModel(con: any) {
     let tablas = [];
@@ -447,7 +495,8 @@ export class updateModel {
     relations: any,
     grantedRoles: any,
     ennumeration: any,
-    res: any
+    res: any,
+    cache_configSDA: any
   ): string[] {
     let visible = false;
 
@@ -488,7 +537,7 @@ export class updateModel {
       destTables.push(tabla);
     }
 
-    this.extractJsonModelAndPushToMongo(destTables, grantedRoles, res);
+    this.extractJsonModelAndPushToMongo(destTables, grantedRoles, res, cache_configSDA);
 
     return destTables;
   }
@@ -610,7 +659,7 @@ export class updateModel {
   }
 
   /** Formats and pushes the final model to MongoDB */
-  static async extractJsonModelAndPushToMongo(tables: any, grantedRoles: any, res: any) {
+  static async extractJsonModelAndPushToMongo(tables: any, grantedRoles: any, res: any, cache_configSDA: any) {
     // Format tables as JSON
     console.timeLog("UpdateModel", "(Start JSON formatting)");
     
@@ -625,6 +674,38 @@ export class updateModel {
     main_model.ds.connection.password = EnCrypterService.encrypt(sinergiaDatabase.sinergiaConn.password);
     main_model.ds.model.tables = tables;
     main_model.ds.metadata.model_granted_roles = await grantedRoles;
+
+
+    cache_configSDA = this.assertCacheConfig(cache_configSDA);
+
+
+    try{
+      // Checking if the cache information is enabled from Sinergia CRM
+      let sda_config_cache_enabled_value = cache_configSDA.find( v => v.key === 'sda_config_cache_enabled').value
+      // More variables can be configured
+      if(sda_config_cache_enabled_value === "1") {
+        main_model.ds.metadata.cache_config = {
+          units: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_units').value,
+          quantity: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value,
+          hours: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_hours').value,
+          minutes: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value,
+          enabled: true,
+        }
+      } else {
+        main_model.ds.metadata.cache_config = {
+          units: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_units').value,
+          quantity: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_quantity').value,
+          hours: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_hours').value,
+          minutes: cache_configSDA.find( (v: any) => v.key === 'sda_config_cache_minutes').value,
+          enabled: false,
+        }
+      }
+    }catch( e){
+      console.log('\n \n \n IT IS MISSING SOME OF THE CACHE CONFIGURATION. WE DISABLE IT! \n \n \n ')
+      main_model.ds.metadata.cache_config.enabled = false;
+    }
+
+
 
     console.timeLog("UpdateModel", "(Model configuration completed)");
  

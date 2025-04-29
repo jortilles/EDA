@@ -11,18 +11,18 @@
       </div>
 
       <div class="col-12">
-        <p-inputNumber [(ngModel)]="quantity" [disabled]="noCache"></p-inputNumber>
+      <!--SDA CUSTOM --><p-inputNumber [(ngModel)]="quantity" [disabled]="noCache || dataModelService.model_id=='111111111111111111111111'"></p-inputNumber>
       </div>
       <div class="col-12">
-        <p-radioButton name="groupname" value="days" [label]="daysSTR" [(ngModel)]="units" [disabled]="noCache">
+        <!--SDA CUSTOM --><p-radioButton name="groupname" value="days" [label]="daysSTR" [(ngModel)]="units" [disabled]="noCache || dataModelService.model_id=='111111111111111111111111'">
         </p-radioButton>
       </div>
       <div class="col-12" *ngIf="units==='days'">
         <span> A las </span>
-        <p-calendar [timeOnly]="true" [(ngModel)]="hours"></p-calendar>
+        <!--SDA CUSTOM --><p-calendar [timeOnly]="true" [(ngModel)]="hours" [disabled]="noCache || dataModelService.model_id=='111111111111111111111111'"></p-calendar>
       </div>
       <div class="col-12">
-        <p-radioButton name="groupname" value="hours" [label]="hoursSTR" [(ngModel)]="units" [disabled]="noCache">
+        <!--SDA CUSTOM --><p-radioButton name="groupname" value="hours" [label]="hoursSTR" [(ngModel)]="units" [disabled]="noCache || dataModelService.model_id=='111111111111111111111111'">
         </p-radioButton>
       </div>
     </div>
@@ -31,7 +31,7 @@
 
       <div class="col-12">
         <h6 i18n="@@noCache">Sin cache</h6>
-        <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="noCache" tooltipPosition="left">
+        <!--SDA CUSTOM --><p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="noCache" tooltipPosition="left" [disabled]="dataModelService.model_id=='111111111111111111111111'">
         </p-inputSwitch>
       </div>
 
@@ -53,7 +53,7 @@
 
   <div footer>
     <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-      <button type="button" pButton (click)="saveConfig()" class="ui-button" i18n-label="@@guardarBtn"
+      <!--SDA CUSTOM--> <button *ngIf="dataModelService.model_id!='111111111111111111111111'" type="button" pButton (click)="saveConfig()" class="ui-button" i18n-label="@@guardarBtn"
         [disabled]="checkForm()" icon="fa fa-check" label="Confirmar">
       </button>
       <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"

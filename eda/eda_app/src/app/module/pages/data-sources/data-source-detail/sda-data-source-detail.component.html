@@ -349,17 +349,19 @@
 
                 <span class="p-buttonset">
                   <span *ngIf="dataModelService.model_id!='111111111111111111111111'">
+                  <!-- hidden buttons-->
                   <button pButton type="button" icon="pi pi-eye-slash" [label]="hideTablesString"
                         class="p-button-secondary" (click)="hideAllTables()" style="margin-bottom: 1px;"> </button>
                   <button pButton type="button" icon="pi pi-eye-slash" [label]="hideAllRelationsString"
                         class="p-button-secondary" (click)="hideAllRelations()" style="margin-bottom: 1px;"> </button>
-                        <button pButton type="button" icon="pi pi-cog" [label]="addCacheConfig" class="p-button-secondary"
-                            (click)="openCacheDialog()" style="margin-bottom: 1px;"> </button>
                         <button pButton type="button" icon="pi pi-plus" [label]="addPermission" class="p-button-secondary"
                             (click)="openModelPermissionsDialog()" style="margin-bottom: 1px;"> </button>
                   </span>
+                      <!-- visible buttons-->
                     <button pButton type="button" icon="pi pi-eye" [label]="viewsecurity" class="p-button-secondary"
                          (click)="openSecurityDialog()" style="margin-bottom: 1px;"> </button>
+                    <button pButton type="button" icon="pi pi-cog" [label]="addCacheConfig" class="p-button-secondary"
+                         (click)="openCacheDialog()" style="margin-bottom: 1px;"> </button>
                 </span>
 
             </div>
