@@ -33,6 +33,14 @@ export const pagesV2Routes: Routes = [
         loadComponent: () => import('./model-import-export/model-import-export.page').then(c => c.ModelImportExportPage)
       },
       {
+        path: 'admin/data-source',
+        loadComponent: () => import('./datasource-list/datasource-list.page').then(c => c.DataSourceListPage)
+      },
+      {
+        path: 'admin/data-source/new',
+        loadComponent: () => import('./datasource-connection-detail/datasource-connection-detail.page').then(c => c.DataSourceConnectionDetailPage)
+      },
+      {
         path: 'admin/email-settings',
         loadComponent: () => import('./email-settings/email-settings.page').then(c => c.EmailSettingsPage)
       },

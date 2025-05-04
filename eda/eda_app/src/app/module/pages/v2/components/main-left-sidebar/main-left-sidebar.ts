@@ -30,7 +30,7 @@ export class MainLeftSidebarComponent {
       icon: 'plus',
       items: [
         { path: '/v2', label: 'Nuevo Dashboard', icon: 'plus' },
-        { path: '/v2', label: 'Nuevo DataSource', icon: 'plus' },
+        { path: '/v2/admin/data-source/new', label: 'Nuevo DataSource', icon: 'plus' },
       ]
     },
     {
@@ -39,7 +39,7 @@ export class MainLeftSidebarComponent {
       items: [
         { path: '/v2/admin/users', label: `Gestión de usuarios`, icon: 'users' },
         { path: '/v2/admin/groups', label: 'Gestión de grupos', icon: 'rectangle-group' },
-        { path: '/', label: 'Gestión de datasource', icon: 'rectangle-group' },
+        { path: '/v2/admin/data-source', label: 'Gestión de datasource', icon: 'rectangle-group' },
         { path: '/v2/admin/models/import-export', label: 'Data Export/Import', icon: 'arrow-down-on-square-stack' },
         { path: '/v2/admin/email-settings', label: `Gestión de email`, icon: 'at-symbol' },
       ]

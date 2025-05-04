@@ -888,7 +888,8 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
 
-    onJoinTypeChange(){
+    onJoinTypeChange(type?: any) {
+        this.joinType = type?.value;
         this.display_v.joinType = true;
     }
 
