@@ -149,7 +149,7 @@ export class EditStylesDialogComponent extends EdaDialogAbstract {
 	public setSampleTitleStyle() {
 		this.sampleTitleStyle = {
 			'background-color': this.dashBoardStyles.panelColor,
-			'font-family': this.selectedTitleFont.value,
+			'font-family': this.selectedTitleFont,
 			'color': this.titleFontColor,
 			'text-align': this.alignDasboardTitle === 'flex-start' ? 'left' : this.alignDasboardTitle === 'center' ? 'center' : 'right',
 			'font-size': `${this.titleFontSize / 10 + 1.8}rem`,
