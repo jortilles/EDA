@@ -7,7 +7,7 @@
   <div content class="p-6">
     <!-- S'ha de fer scrollable -->
 
-    <div class="grid grid-flow-col grid-rows-2 gap-6 overflow-hidden">
+    <div class="grid grid-flow-row auto-rows-auto gap-6">
       <!-- Lista de URLs -->
       @if(urls?.length > 0){
           <!-- Position Column -->
@@ -33,7 +33,7 @@
                             <eda-icon name="check"></eda-icon>
                           </button>
                           <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditCancel(url, index)">
-                            <eda-icon name="chevron-left"></eda-icon>
+                            <eda-icon name="restart"></eda-icon>
                           </button>
                           <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditDelete(index)">
                             <eda-icon name="bin"></eda-icon>

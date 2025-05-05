@@ -31,10 +31,8 @@ export class DashboardCustomActionDialog{
   constructor(private alertService: AlertService,public dashboardService: DashboardService, private urlsService: UrlsService) { }
 
   ngOnInit(): void {
-    console.log(this)
     const urls = JSON.parse(sessionStorage.getItem('urls')) || [];
-    console.log(urls)
-    this.urls = _.uniqBy(urls, 'value');
+    this.urls = _.uniqBy(urls, 'url');
   }
 
   onRowEditInit(url: any, index: number, urls: any) {
