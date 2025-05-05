@@ -1,38 +1,93 @@
 <eda-dialog2 [display]="display"
-  header="Guardar como..." width="50vw" height="50vh"
+  header="Editar estilos" width="80vw" height="100vh"
   [disableApply]="disableApply()"
   (apply)="onApply()"
   (close)="onClose()">
 
   <div content class="p-6">
-    <form [formGroup]="form" class="mt-8 space-y-4" (ngSubmit)="true"> 
-      <div class="grid space-y-4">
-        
-        <!-- Input Nombre -->
-        <div class="col-12">
-          <span class="relative block">
-            <input 
-              id="float-dash" 
-              formControlName="name" 
-              type="text" 
-              pInputText 
-              i18n-placeholder="@@labelDameNombre"
-              placeholder="Dame un nombre *"
-              required 
-              class="w-full p-2 border rounded-md bg-gray-100 text-gray-700 focus:outline-none focus:ring focus:ring-gray-300 peer"
-            />
-            <label 
-              for="float-dash" 
-              class="absolute left-2 top-2 text-gray-500 text-sm peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all"
-            > 
-            </label>
-          </span>
+    <div class="grid grid-flow-row auto-rows-auto gap-6">
+      <div class="flex gap-6">
+        <div>
+          <h6 i18n="@@@@ChangeBackgroundColor" class="mb-1"> Color del fondo:</h6>
+          <p-colorPicker [(ngModel)]="backgroundColor"  format="hex" appendTo="body" ></p-colorPicker>
+				  <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="backgroundColor"
+					minlength="7" (focusout)="setSampleGlobalStyle()">
+        </div>    
+        <div>
+          <h6 i18n="@@@@ChangePaneColor" class="mb-1"> Color del panel:</h6>
+          <p-colorPicker [(ngModel)]="panelColor"  format="hex" appendTo="body"></p-colorPicker>
+          <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="panelColor"
+					minlength="7" (focusout)="setSampleGlobalStyle()">
         </div>
-    
-
-    
-   
       </div>
-    </form>
+      
+      <div class="flex gap-3">
+        <div>Properties</div>
+        <div>CSS</div>
+      </div>
+          
+
+
+        <div class="grid grid-flow-col grid-cols-5 gap-6">
+          <div class="p-4 bg-white rounded-lg shadow-md">
+            <div class="rounded-md bg-white shadow p-4">
+							<div style="display: flex;  flex-direction: column; margin: 1em;" class="div-card-body">
+								<div>
+									<h6 i18n="@@ChangeFontFamily" class="mb-2"> Tipo de fuente</h6>
+									<p-multiSelect id="fonts" [options]="fonts" [(ngModel)]="selectedTitleFont" optionLabel="label"
+										 [style]="{'width': '100%'}"
+										(onChange)="setSampleTitleStyle()">
+									</p-multiSelect>
+								</div>
+		
+								<div>
+		
+									<h6 i18n="@@ChangeFontSize" class="mb-2 mt-2"> Tamaño de fuente</h6>
+									<p-slider [(ngModel)]="titleFontSize" 
+                    min="1" max="5" step="0.5" (onChange)="setSampleTitleStyle()">
+                  </p-slider>
+		
+								</div>
+		
+								<div>
+									<h6 i18n="@@ChangeFontColor" class="mt-2 mb-2"> Color de la fuente</h6>
+									<p-colorPicker [(ngModel)]="titleFontColor" format="hex" appendTo="body"
+										(onChange)="setSampleTitleStyle()">
+									</p-colorPicker>
+									<input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="titleFontColor"
+										minlength="7" (focusout)="setSampleTitleStyle()">
+								</div>
+		
+								<div>
+									<h6 i18n="@@ChangelignTitle" style="margin-top: 1.1em;"> Alineación</h6>
+									<div>
+										<div class="p-field-radiobutton">
+											<p-radioButton value="flex-start"  [(ngModel)]="alignDasboardTitle"
+												inputId="i1" (onClick)="setSampleTitleStyle()">
+											</p-radioButton>
+											<label for="i1">{{left}}</label>
+										</div>
+										<div class="p-field-radiobutton">
+											<p-radioButton value="center" class="text-sm" [(ngModel)]="alignDasboardTitle"
+												inputId="i2" (onClick)="setSampleTitleStyle()">
+											</p-radioButton>
+											<label for="i2">{{center}}</label>
+										</div>
+										<div class="p-field-radiobutton">
+											<p-radioButton value="flex-end" class="text-sm" [(ngModel)]="alignDasboardTitle"
+												inputId="i3" (onClick)="setSampleTitleStyle()">
+											</p-radioButton>
+											<label for="i3">{{right}}</label>
+										</div>
+									</div>
+								</div>
+		
+							</div>
+						</div>
+					</div>
+        </div>
+      </div>
+
+      
   </div>
 </eda-dialog2>
