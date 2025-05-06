@@ -1737,6 +1737,20 @@ export class ChartUtilsService {
                     };
 
                     if (chartSubType=='pyramid') {
+                        //modificamos los valores del tooltip para que sea positivo.
+                        (<any>options.chartOptions).plugins.tooltip = {
+                            callbacks :{
+                                label :  (context) =>{
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': ';  }
+                                    if (context.parsed.x !== null) {
+                                        label += Math.abs( parseFloat( context.parsed.x )).toLocaleString('de-DE', { maximumFractionDigits: 6 }) ;
+                                    }
+                                    return label;
+                                } 
+                            },
+                        };
+
                         //modificamos los valores del eje x para que sean positivos a la vista
                         (<any>options.chartOptions).scales.y.stacked = true;
                         (<any>options.chartOptions).scales.x.ticks.callback = (value, index, ticks) => {
