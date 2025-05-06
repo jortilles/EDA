@@ -1154,7 +1154,8 @@ export class DashboardController {
       const query = await connection.getQueryBuilded(
         myQuery,
         dataModelObject,
-        req.user
+        req.user,
+        req.body.query.queryLimit // Agregado de limite para fuente de datos generados a partir de un excel
       )
 
       /**---------------------------------------------------------------------------------------------------------*/
