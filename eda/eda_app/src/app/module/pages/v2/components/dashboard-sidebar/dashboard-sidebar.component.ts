@@ -58,6 +58,7 @@ export class DashboardSidebarComponent {
   isSaveAsDialogVisible = false;
   isEditStyleDialogVisible = false;
   isCustomActionDialogVisible = false;
+  isMailConfigDialogVisible = false;
   isTagModalVisible = false;
 
   sidebarItems = [
@@ -139,7 +140,10 @@ export class DashboardSidebarComponent {
     {
       label: "Enviar per email",
       icon: "pi pi-envelope",
-      command: () => this.openMailConfig()
+      command: () => { 
+        this.isMailConfigDialogVisible = false;
+        this.hidePopover();
+      }
     },
     {
       label: "Acció personalitzada",
@@ -293,16 +297,19 @@ export class DashboardSidebarComponent {
   }
 
   public closeSaveStyles(newStyles: any) {
-    this.isSaveAsDialogVisible = false;
-    console.log(newStyles);
+    this.isEditStyleDialogVisible = false;
+    this.dashboard.dashboard.config.styles = newStyles; // check direct
   }
   public closeCustomAction(url: any) {
     this.isCustomActionDialogVisible = false;
-    console.log(url);
+    this.dashboard.urls = url;
   }
 
-  public openMailConfig() {
+  public openMailConfig(mailconfig) {
     console.log('openmailconfig')
+    this.isCustomActionDialogVisible = false;
+    this.dashboard.sendViaMailConfig = mailconfig;
+    
   }
 
   public closeTagModal(tags: any[]) {

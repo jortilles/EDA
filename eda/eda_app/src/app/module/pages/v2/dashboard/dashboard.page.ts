@@ -315,7 +315,7 @@ export class DashboardPageV2 implements OnInit {
     //   this.display_v.rightSidebar = false;
     //   this.alertService.addError($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
     // } else {
-
+    console.log(this)
     const body = {
       config: {
         title: this.title,
@@ -330,11 +330,12 @@ export class DashboardPageV2 implements OnInit {
         // sendViaMailConfig: this.sendViaMailConfig,
         onlyIcanEdit: this.onlyIcanEdit,
         // styles: this.styles,
-        // urls: this.urls
+        urls: this.urls
 
       },
       // group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
     };
+    console.log(body)
 
     this.edaPanels.forEach(panel => { panel.savePanel(); });
     body.config.panel = this.panels;

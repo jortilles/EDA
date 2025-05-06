@@ -11,40 +11,14 @@
     <div class="grid grid-flow-row auto-rows-auto gap-6">
       <div class="flex gap-6">
         <div>
-          <h6 i18n="@@@@ChangeBackgroundColor" class="mb-1">
-            Color del fondo:
-          </h6>
-          <p-colorPicker
-            [(ngModel)]="backgroundColor"
-            format="hex"
-            appendTo="body"
-            class="border border-black"
-          />
-          <input
-            type="text"
-            pInputText
-            class="eda-color-pick mt-2"
-            [(ngModel)]="backgroundColor"
-            minlength="7"
-            (focusout)="setSampleGlobalStyle()"
-          />
+          <h6 i18n="@@@@ChangeBackgroundColor" class="mb-1"> del fondo:</h6>
+          <p-colorPicker [(ngModel)]="backgroundColor" format="hex" appendTo="body" class="border border-black" />
+          <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="backgroundColor" minlength="7" (focusout)="setSampleGlobalStyle()"/>
         </div>
         <div>
           <h6 i18n="@@@@ChangePaneColor" class="mb-1">Color del panel:</h6>
-          <p-colorPicker
-            class="border border-black"
-            [(ngModel)]="panelColor"
-            format="hex"
-            appendTo="body"
-          />
-          <input
-            type="text"
-            pInputText
-            class="eda-color-pick mt-2"
-            [(ngModel)]="panelColor"
-            minlength="7"
-            (focusout)="setSampleGlobalStyle()"
-          />
+          <p-colorPicker class="border border-black" [(ngModel)]="panelColor" format="hex" appendTo="body" />
+          <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="panelColor" minlength="7" (focusout)="setSampleGlobalStyle()"/>
         </div>
       </div>
 
@@ -119,6 +93,7 @@
                       name="alignDasboardTitle"
                       value="flex-start"
                       [(ngModel)]="alignDasboardTitle"
+                      (change)="setSampleTitleStyle()"
                       class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300"
                     />
                     <span class="text-xs">{{left}}</span>
@@ -129,6 +104,7 @@
                       name="alignDasboardTitle"
                       value="center"
                       [(ngModel)]="alignDasboardTitle"
+                      (change)="setSampleTitleStyle()"
                       class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300"
                     />
                     <span class="text-xs">{{center}}</span>
@@ -139,6 +115,7 @@
                       name="alignDasboardTitle"
                       value="flex-end"
                       [(ngModel)]="alignDasboardTitle"
+                      (change)="setSampleTitleStyle()"
                       class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300"
                     />
                     <span class="text-xs">{{right}}</span>
@@ -257,7 +234,7 @@
                 <h6 i18n="@@ChangelignTitle" style="margin-top: 1.1em">
                   Alineación
                 </h6>
-                <div class="space-y-4">
+                <!-- <div class="space-y-4">
                   <label class="flex items-center space-x-2">
                     <input
                       type="radio"
@@ -291,7 +268,7 @@
                     />
                     <span class="text-xs">{{right}}</span>
                   </label>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>

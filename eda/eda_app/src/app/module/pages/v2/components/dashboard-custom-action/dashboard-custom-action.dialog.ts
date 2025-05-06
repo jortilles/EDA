@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output } from "@angular/core";
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { AlertService, DashboardService } from "@eda/services/service.index";
 import { UrlsService } from '@eda/services/api/urls.service';
 import { SharedModule } from "@eda/shared/shared.module";
@@ -19,8 +19,9 @@ imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, Mu
 })
 export class DashboardCustomActionDialog{
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  public form: UntypedFormGroup;
   public display: boolean = false;
-  public urls: any[];
+  public urls: any[] = [];
   public clonedUrls: { [s: string]: any; } = {};
   public urlAdd: string;
   public nameAdd: string;
@@ -28,13 +29,13 @@ export class DashboardCustomActionDialog{
   public editing: boolean = false;
   public editingRow: number;
 
-  constructor(private alertService: AlertService,public dashboardService: DashboardService, private urlsService: UrlsService) { }
+  constructor(private alertService: AlertService, public dashboardService: DashboardService,
+    private urlsService: UrlsService) { }
 
   ngOnInit(): void {
-    const urls = JSON.parse(sessionStorage.getItem('urls')) || [];
-    this.urls = _.uniqBy(urls, 'url');
+    //this.urls = //get urls from dashboard config    
   }
-
+  
   onRowEditInit(url: any, index: number, urls: any) {
     this.clonedUrls[url.id] = { ...url }; // variable de clonacion temporal
 
@@ -126,7 +127,6 @@ export class DashboardCustomActionDialog{
 
   public onApply() {
     this.display = false;
-    sessionStorage.setItem('urls', JSON.stringify(this.urls));
     this.close.emit(this.urls);
   }
 

@@ -163,10 +163,10 @@ export class DashboardEditStyleDialog {
 		}
 	}
 
-	public setSampleTitleStyle() {
+  public setSampleTitleStyle() {
 		this.sampleTitleStyle = {
-			'background-color': this.dashBoardStyles.panelColor,
-			'font-family': this.selectedTitleFont.value,
+			'background-color': this.panelColor,
+			'font-family': this.selectedTitleFont,
 			'color': this.titleFontColor,
 			'text-align': this.alignDasboardTitle === 'flex-start' ? 'left' : this.alignDasboardTitle === 'center' ? 'center' : 'right',
 			'font-size': `${this.titleFontSize / 10 + 1.8}rem`,
@@ -175,7 +175,7 @@ export class DashboardEditStyleDialog {
 			'white-space': 'nowrap',
 			'padding': '0.1em',
 			'box-shadow': '0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%)'
-		}
+    }
 	}
 
 	public setSampleFIltersStyle() {
@@ -205,11 +205,45 @@ export class DashboardEditStyleDialog {
 
 	public setCustomStyle() {
 
+  }
+  
+
+  public saveConfig(): void {
+		// this.dashBoardStyles.fontFamily = this.selectedFont.value;
+		const response: DashboardStyles = {
+			backgroundColor: this.dashBoardStyles.backgroundColor,
+			panelColor: this.dashBoardStyles.panelColor,
+			titleAlign: this.alignDasboardTitle,
+			panelTitleAlign: this.alignPanelTitle,
+			customCss: this.css,
+			title: {
+				fontFamily: this.selectedTitleFont.value,
+				fontSize: this.titleFontSize,
+				fontColor: this.titleFontColor
+			},
+			filters: {
+				fontFamily: this.selectedFiltersFont.value,
+				fontSize: this.filtersFontSize,
+				fontColor: this.filtersFontColor
+			},
+			panelTitle: {
+				fontFamily: this.selectedPanelTitleFont.value,
+				fontSize: this.panelTitleFontSize,
+				fontColor: this.panelTitleFontColor
+			},
+			panelContent: {
+				fontFamily: this.selectedPanelFont.value,
+				fontSize: this.panelFontSize,
+				fontColor: this.panelFontColor
+			},
+		}
+
+		this.onClose();
 	}
 
   public onApply() {
     this.display = false;
-    this.close.emit(this.form.value);
+    this.saveConfig();
   }
 
   public disableApply(): boolean {
@@ -219,5 +253,5 @@ export class DashboardEditStyleDialog {
   public onClose(): void {
     this.display = false;
     this.close.emit();
-}
+  }
 }
