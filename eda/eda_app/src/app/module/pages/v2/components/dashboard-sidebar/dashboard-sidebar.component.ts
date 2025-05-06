@@ -13,11 +13,13 @@ import { Router } from "@angular/router";
 import domtoimage from 'dom-to-image';
 import jspdf from 'jspdf';
 import Swal from 'sweetalert2';
+import { DashboardMailConfigModal } from "../dashboard-mail-config/dashboard-mail-config.modal";
 
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
-  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog, DashboardCustomActionDialog],
+  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog
+    , DashboardCustomActionDialog, DashboardMailConfigModal],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -141,7 +143,7 @@ export class DashboardSidebarComponent {
       label: "Enviar per email",
       icon: "pi pi-envelope",
       command: () => { 
-        this.isMailConfigDialogVisible = false;
+        this.isMailConfigDialogVisible = true;
         this.hidePopover();
       }
     },
@@ -305,7 +307,7 @@ export class DashboardSidebarComponent {
     this.dashboard.urls = url;
   }
 
-  public openMailConfig(mailconfig) {
+  public closeMailConfig(mailconfig) {
     console.log('openmailconfig')
     this.isCustomActionDialogVisible = false;
     this.dashboard.sendViaMailConfig = mailconfig;

@@ -1,0 +1,55 @@
+<eda-dialog2 [display]="display"
+  header="Configuración de los envíos por email" width="50vw" height="35vh"
+  [disableApply]="disableApply()"
+  (apply)="onApply()"
+  (close)="onClose()">
+
+  <div content class="p-6">
+    <div class="grid grid-flow-row auto-rows-auto gap-6">
+
+        <h6 i18n="@@SendMailEvery"> Enviar mail de alerta cada: </h6>
+
+        <div class="col-12" style="margin-top: -0.4em;">
+            <!-- <p-inputNumber [(ngModel)]="quantity"></p-inputNumber> -->
+        </div>
+
+        <div class="col-12">
+            <!-- <p-radioButton name="groupname" value="days" [label]="daysSTR" [(ngModel)]="units"></p-radioButton> -->
+        </div>
+
+        <!-- <div class="col-12" *ngIf="units==='days'">
+            <p i18n="@@at"> A las </p>
+            <p-calendar [timeOnly]="true" [(ngModel)]="hours"></p-calendar> 
+        </div> -->
+
+        <div class="col-12">
+             <!-- <p-radioButton name="groupname" value="hours" [label]="hoursSTR" [(ngModel)]="units"> </p-radioButton> -->
+        </div>
+
+    </div>
+
+    <div class="grid grid-flow-col auto-cols-auto gap-6"> 
+        <h6 i18n="@@SendMailWho"> Destinatarios </h6>
+        <div>
+            <!-- <p-multiSelect [(ngModel)]="selectedUsers" [options]="users" [style]="{width: '80%'}" optionLabel="label"></p-multiSelect> -->
+        </div>
+
+    </div>
+
+    <div class="col-4">
+
+      <h6 i18n="@@SendMailWhat"> Contenido del mail: </h6>
+
+      <!-- <textarea rows="8" cols="30" pInputTextarea autoResize="autoResize" [(ngModel)]="mailMessage"></textarea> -->
+
+    </div>
+
+    <div class="col-12">
+        <h6 i18n="@@noMail">Sin alertas de correo</h6>
+        <!-- <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="disabled" tooltipPosition="left"></p-inputSwitch> -->
+    </div>
+
+  </div>
+</eda-dialog2>
+
+
