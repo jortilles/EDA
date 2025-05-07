@@ -63,7 +63,10 @@
                       i18n-title="@@entidadesTitle" title="Clique sobre un entidad para ver sus atributos.">
                       Entidades
                     </h3>
-                    <input class="h-8 w-full rounded-md border px-2" placeholder="Buscar entidades...">
+                    <input
+                      class="h-8 w-full rounded-md border px-2"
+                      placeholder="Buscar entidades..."
+                      (keyup)="onTableInputKey($event)">
                   </div>
                   <div class="h-full overflow-y-auto">
                     <ng-template #entityList>
@@ -121,7 +124,7 @@
                     <input 
                       class="h-8 w-full rounded-md border px-2" 
                       placeholder="Buscar atributos..."
-                    >
+                      (keyup)="onColumnInputKey($event)">
                   </div>
                   <div class="h-full overflow-y-auto">
                     <div 

@@ -4,42 +4,112 @@
     (apply)="onApplyWhatIfDialog()"
     (close)="onCloseWhatIfDialog()">
 
-    <div content>
-        <div class="row pl-1">
-        <div class="col-3">
-            <span i18n="@@measureLabel">Medida:</span>
-            <p-dropdown [(ngModel)]="whatIf.column" [options]="columnOptions" [autoDisplayFirst]="false" [style]="{'width': '100%'}" appendTo="body">
-            </p-dropdown>
-        </div>
-            <div class="col-2">
-                <span i18n="@@operationLabel">Operación:</span>
-                <p-dropdown [(ngModel)]="whatIf.operator" [options]="ifOptions" [autoDisplayFirst]="false" [style]="{'width': '100%'}" appendTo="body">
-                </p-dropdown>
+    <div content class="p-6 pt-2 space-y-2">
+      <!-- First row -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-2">
+          <label for="mesura" class="text-sm font-medium text-gray-700 dark:text-gray-300"
+            i18n="@@measureLabel">
+            Mesura
+          </label>
+          <div class="relative">
+            <select 
+              id="mesura"  
+              [(ngModel)]="whatIf.column"
+              class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#00BFB3] appearance-none">
+              <option [ngValue]="null" disabled selected>Seleccionar mesura</option>
+              <option *ngFor="let option of columnOptions" [ngValue]="option.value">{{ option.label }}</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
             </div>
-            <div class="col-2 flex flex-column">
-                <span i18n="@@numericalValueLabel">Valor numérico:</span>
-                <input type="number" pInputText [(ngModel)]="whatIf.value">
-            </div>
-            <div class="col-3 flex flex-column">
-                <span i18n="@@newNameLabel">Nuevo nombre:</span>
-                <div class="p-inputgroup">
-                    <input type="text" pInputText [(ngModel)]="whatIf.display_name">
-                    <button type="button" pButton pRipple icon="pi pi-refresh" class="p-button-info" title="Generate alias" (click)="generateAlias()"></button>
-                </div>
-            </div>
+          </div>
         </div>
 
-        <div class="col-12 mt-3">
-            <hr>
-            <div *ngFor="let column of currentQuery">
-                <ng-container *ngIf="column.whatif_column">
-                    <div class="d-flex justify-content-between align-items-center" style="width: fit-content; font-weight: bold;">
-                        <i class="pi pi-times mr-2" style="cursor: pointer; font-size: 10px;" (click)="removeWhatIfColumn(column)"></i>
-                        {{column.display_name.default}}
-                    </div>
-                </ng-container>
+        <div class="space-y-2">
+          <label for="operacio" class="text-sm font-medium text-gray-700 dark:text-gray-300"
+            i18n="@@operationLabel">
+            Operació
+          </label>
+          <div class="relative">
+            <select 
+              id="operacio" 
+              [(ngModel)]="whatIf.operator"
+              class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#00BFB3] appearance-none">
+              <option value="" disabled selected>Seleccionar operació</option>
+              <option *ngFor="let option of ifOptions" [value]="option.value">{{ option.label }}</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
             </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Second row -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-2">
+          <label for="valor" class="text-sm font-medium text-gray-700 dark:text-gray-300"
+            i18n="@@numericalValueLabel">
+            Valor numérico:
+          </label>
+          <div class="flex">
+            <input
+              id="valor"
+              type="number"
+              [(ngModel)]="whatIf.value"
+              class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label for="nouNom" class="text-sm font-medium text-gray-700 dark:text-gray-300"
+            i18n="@@newNameLabel">
+            Nuevo nombre:
+          </label>
+          <div class="flex">
+            <input
+              id="nouNom"
+              type="text"
+              [(ngModel)]="whatIf.display_name"
+              class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]"
+            />
+            <button 
+              (click)="generateAlias()"
+              class="ml-2 inline-flex items-center justify-center rounded-md p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#00BFB3]">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CurrentQuery -->
+      <div *ngIf="currentQuery.length > 0" class="mt-2 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600 min-h-52 overflow-y-auto">
+        <div class="p-3 flex flex-wrap gap-2">
+          <ng-container *ngFor="let column of currentQuery">
+            @if (column?.whatif_column) {
+              <div 
+                class="inline-flex items-center rounded-full bg-gray-200 dark:bg-gray-600 px-3 py-1 text-sm text-gray-800 dark:text-gray-200">
+                {{column.display_name.default}}
+                <button 
+                  (click)="removeWhatIfColumn(column)" 
+                  class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                  <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            }
+          </ng-container>
+        </div>
+      </div>
     </div>
 
 </eda-dialog2>
