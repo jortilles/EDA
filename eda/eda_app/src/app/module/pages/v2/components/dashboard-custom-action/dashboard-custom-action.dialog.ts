@@ -45,7 +45,7 @@ export class DashboardCustomActionDialog{
     this.editing = true;
   }
 
-  onRowEditSave(url: any){
+  onRowEditSave(url: any, index:any){
     if(url.name.length>0 && url.url.length>0 && url.description.length>0) {
         delete this.clonedUrls[url.id];
         this.alertService.addSuccess($localize`:@@urlEditSave:URL editado correctamente`);
@@ -53,7 +53,8 @@ export class DashboardCustomActionDialog{
     else {
       this.alertService.addError($localize`:@@urlEditSaveError:Formulario incompleto, rellene todos los campos`);
     }
-    this.dashboard.dashboard.config.urls = this.urls;
+    
+    this.dashboard.dashboard.config.urls[index] = url;
     this.editing = false;
   }
 

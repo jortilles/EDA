@@ -24,12 +24,12 @@
               <tbody class="font-semibold">
                 @for (url of urls; track url.id; let index = $index) {
                   <tr>
-                    <td class="p-3">{{ url.url }}</td>
-                    <td class="p-3">{{ url.name }}</td>
-                    <td class="p-3">{{ url.description }}</td>
                     @if(editing && index == editingRow){
+                        <td class="p-3"><input class="text-gray-200" [(ngModel)]="url.url"></td>
+                        <td class="p-3"><input class="text-gray-200" [(ngModel)]="url.name"></td>
+                        <td class="p-3"><input class="text-gray-200" [(ngModel)]="url.description"></td>
                         <td class="p-3 text-right">
-                          <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditSave(url)">
+                          <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditSave({url: url.url, name: url.name, description: url.description} , index)">
                             <eda-icon name="check"></eda-icon>
                           </button>
                           <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditCancel(url, index)">
@@ -37,8 +37,12 @@
                           </button>
                           <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditDelete(index)">
                             <eda-icon name="bin"></eda-icon>
-                          </button>                      
+                          </button>       
+                        </td>               
                     } @else{
+                      <td class="p-3">{{ url.url }}</td>
+                      <td class="p-3">{{ url.name }}</td>
+                      <td class="p-3">{{ url.description }}</td>
                       <td class="p-3 text-right">
                         <button class="rounded-md p-2 cursor-pointer hover:bg-muted"  (click)="onRowEditInit(url, index,urls)">
                           <eda-icon name="pencil"></eda-icon>
