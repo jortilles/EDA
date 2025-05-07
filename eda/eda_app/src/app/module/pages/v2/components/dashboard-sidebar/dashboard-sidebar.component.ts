@@ -304,7 +304,8 @@ export class DashboardSidebarComponent {
   }
   public closeCustomAction(url: any) {
     this.isCustomActionDialogVisible = false;
-    this.dashboard.urls = url;
+    if(url !== undefined) // onClose devuelve undefined
+      this.dashboard.dashboard.config.urls = url;
   }
 
   public closeMailConfig(mailconfig) {

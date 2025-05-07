@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormsModule, ReactiveFormsModule, UntypedFormGroup } from "@angular/forms";
 import { AlertService, DashboardService } from "@eda/services/service.index";
 import { UrlsService } from '@eda/services/api/urls.service';
@@ -8,6 +8,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectButtonModule } from "primeng/selectbutton";
 import * as _ from 'lodash';
 import { IconComponent } from "../../../../../shared/components/icon/icon.component";
+import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 
 
 
@@ -19,6 +20,7 @@ imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, Mu
 })
 export class DashboardCustomActionDialog{
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Input() dashboard: DashboardPageV2;
   public form: UntypedFormGroup;
   public display: boolean = false;
   public urls: any[] = [];
@@ -29,11 +31,10 @@ export class DashboardCustomActionDialog{
   public editing: boolean = false;
   public editingRow: number;
 
-  constructor(private alertService: AlertService, public dashboardService: DashboardService,
-    private urlsService: UrlsService) { }
+  constructor(private alertService: AlertService, public dashboardService: DashboardService, private urlsService: UrlsService) { }
 
   ngOnInit(): void {
-    //this.urls = //get urls from dashboard config    
+    this.urls = this.dashboard.dashboard.config.urls !== undefined ? this.dashboard.dashboard.config.urls: [];    
   }
   
   onRowEditInit(url: any, index: number, urls: any) {
@@ -52,6 +53,7 @@ export class DashboardCustomActionDialog{
     else {
       this.alertService.addError($localize`:@@urlEditSaveError:Formulario incompleto, rellene todos los campos`);
     }
+    this.dashboard.dashboard.config.urls = this.urls;
     this.editing = false;
   }
 
@@ -66,8 +68,8 @@ export class DashboardCustomActionDialog{
     for (let clave in this.clonedUrls){
       if(this.clonedUrls[clave].id === this.urls[index].id) delete this.clonedUrls[clave];
     }
-
     this.urls = this.urls.filter(element => this.urls[index] !== element);
+    this.dashboard.dashboard.config.urls = this.urls;
     this.editing = false;
   }
   

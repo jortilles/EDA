@@ -330,7 +330,7 @@ export class DashboardPageV2 implements OnInit {
         // sendViaMailConfig: this.sendViaMailConfig,
         onlyIcanEdit: this.onlyIcanEdit,
         // styles: this.styles,
-        urls: this.urls
+        urls: this.dashboard.config.urls
 
       },
       // group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
