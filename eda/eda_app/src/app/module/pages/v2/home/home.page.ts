@@ -82,7 +82,6 @@ export class HomePageV2 implements OnInit {
       .map(tag => typeof tag === 'string' ? { label: tag, value: tag } : tag), // Convertimos en objetos { label, value }
       'value' // Eliminamos duplicados basados en el valor
     );
-    console.log('1', this.tags)
 
     // Agregar opciones adicionales
     this.tags.unshift({ label: $localize`:@@NoTag:Sin Etiqueta`, value: $localize`:@@NoTag:Sin Etiqueta`, });

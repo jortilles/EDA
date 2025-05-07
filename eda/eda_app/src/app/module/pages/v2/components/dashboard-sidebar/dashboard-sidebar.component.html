@@ -34,11 +34,11 @@
 }
 
 @if(isEditStyleDialogVisible){
-  <app-dashboard-edit-style (close)="closeSaveStyles($event)"></app-dashboard-edit-style>
+  <app-dashboard-edit-style [dashboard]="dashboard" (close)="closeSaveStyles($event)"></app-dashboard-edit-style>
 }
 @if(isCustomActionDialogVisible){
-  <app-dashboard-custom-action [dashboard]="dashboard"  (close)="closeCustomAction($event)"> </app-dashboard-custom-action>
+  <app-dashboard-custom-action [dashboard]="dashboard" (close)="closeCustomAction($event)"></app-dashboard-custom-action>
 }
 @if(isMailConfigDialogVisible){
-  <app-dashboard-mail-config (close)="closeMailConfig($event)"> </app-dashboard-mail-config>
+  <app-dashboard-mail-config (close)="closeMailConfig($event)"></app-dashboard-mail-config>
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
 import { AlertService, GroupService, IGroup } from "@eda/services/service.index";
 import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
@@ -14,6 +14,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 
 
 import { DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_FAMILY } from "@eda/configs/personalitzacio/customizables";
+import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 
 @Component({
   selector: 'app-dashboard-edit-style',
@@ -23,7 +24,8 @@ import { DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_FAMILY } fr
     MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule,RadioButtonModule]
 })
 export class DashboardEditStyleDialog {
-@Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Input() dashboard: DashboardPageV2;
   public dialog: EdaDialog;
   public form: UntypedFormGroup;
   public visibleTypes: SelectItem[] = [];
@@ -105,33 +107,21 @@ export class DashboardEditStyleDialog {
   constructor(private formBuilder: UntypedFormBuilder, private alertService: AlertService
     , private stylesProviderService: StyleProviderService) {
       this.dashBoardStyles = {} as DashboardStyles;
-      this.dialog = new EdaDialog({
-        show: () => this.onShow(),
-        hide: () => this.onClose(),
-        title: $localize`:@@editStylesTitle:EDITAR ESTILOS DEL INFORME`,
-      });
-  }
-  ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    console.log(this)
   }
 
-  onShow(): void {
-    //this.dashBoardStyles = this.controller.params;
-    console.log(this)
+  ngOnInit(): void {
+    this.dashBoardStyles = this.dashboard.dashboard.config;
 		this.assignValues(this.dashBoardStyles);
 		this.setSampleTitleStyle();
 		this.setSampleFIltersStyle();
 		this.setSampleGlobalStyle();
 		this.setPanelTitleStyle();
-		this.setPanelContentStyle();
-	}
+    this.setPanelContentStyle();
+  }
 
   assignValues(styles: DashboardStyles): void {
-
 		/**Title */
-		this.selectedTitleFont = { label: styles.title.fontFamily, value: styles.title.fontFamily }
+    this.selectedTitleFont = { label: styles.filters.fontFamily, value: styles.filters.fontFamily};
 		this.titleFontColor = styles.title.fontColor;
 		this.titleFontSize = styles.title.fontSize;
 		this.alignDasboardTitle = styles.titleAlign;
@@ -157,9 +147,8 @@ export class DashboardEditStyleDialog {
 	}
 
 	public setSampleGlobalStyle() {
-
 		this.sampleGlobalStyle = {
-			'background-color': this.dashBoardStyles.backgroundColor,
+			'background-color': this.backgroundColor,
 		}
 	}
 
@@ -180,7 +169,7 @@ export class DashboardEditStyleDialog {
 
 	public setSampleFIltersStyle() {
 		this.sampleFiltersStyle = {
-			'font-family': this.selectedFiltersFont.value,
+			'font-family': this.selectedFiltersFont,
 			'color': this.filtersFontColor,
 			'font-size': `${this.filtersFontSize / 10 + 1.1}rem`,
 		}
@@ -188,16 +177,16 @@ export class DashboardEditStyleDialog {
 
 	public setPanelTitleStyle() {
 		this.samplePanelTitleStyle = {
-			'font-family': this.selectedPanelTitleFont.value,
+			'font-family': this.selectedPanelTitleFont,
 			'color': this.panelTitleFontColor,
-			'text-align': this.alignPanelTitle,
+			'text-align': this.alignPanelTitle === 'flex-start' ? 'left' : this.alignPanelTitle === 'center' ? 'center' : 'right',
 			'font-size': `${this.panelTitleFontSize / 10 + 1.2}rem`,
 		}
 	}
 
 	public setPanelContentStyle() {
 		this.samplePanelContentStyle = {
-			'font-family': this.selectedPanelFont.value,
+			'font-family': this.selectedPanelFont,
 			'color': this.panelFontColor,
 			'font-size': `${this.panelFontSize / 10 + 1}rem`,
 		};
@@ -217,28 +206,27 @@ export class DashboardEditStyleDialog {
 			panelTitleAlign: this.alignPanelTitle,
 			customCss: this.css,
 			title: {
-				fontFamily: this.selectedTitleFont.value,
+				fontFamily: this.selectedTitleFont,
 				fontSize: this.titleFontSize,
 				fontColor: this.titleFontColor
 			},
 			filters: {
-				fontFamily: this.selectedFiltersFont.value,
+				fontFamily: this.selectedFiltersFont,
 				fontSize: this.filtersFontSize,
 				fontColor: this.filtersFontColor
 			},
 			panelTitle: {
-				fontFamily: this.selectedPanelTitleFont.value,
+				fontFamily: this.selectedPanelTitleFont,
 				fontSize: this.panelTitleFontSize,
 				fontColor: this.panelTitleFontColor
 			},
 			panelContent: {
-				fontFamily: this.selectedPanelFont.value,
+				fontFamily: this.selectedPanelFont,
 				fontSize: this.panelFontSize,
 				fontColor: this.panelFontColor
 			},
 		}
-
-		this.onClose();
+		this.close.emit(response);
 	}
 
   public onApply() {
