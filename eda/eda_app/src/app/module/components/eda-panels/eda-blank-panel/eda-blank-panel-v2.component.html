@@ -4,7 +4,6 @@
   <div class="flex justify-between items-center mb-2">
     <h2 class="text-lg font-medium"> {{ panel.title || title }}</h2>
     <i class="pi pi-ellipsis-v cursor-pointer" (click)="contextMenu.showContextMenu($event)"></i>
-    <!-- <p-button icon="pi pi-ellipsis-v" styleClass="p-button-text" (click)="contextMenu.showContextMenu($event)"></p-button> -->
   </div>
 
     <div
@@ -257,12 +256,6 @@
                       }
                     </div>
                   </div>
-<!--              <p-selectButton [options]="joinTypeOptions" [(ngModel)]="joinType"  (onChange)="onJoinTypeChange()"  optionLabel="icon" optionValue="joinType" >
-                      <ng-template let-item>
-                          <i [class]="item.icon"></i>
-
-                      </ng-template>
-                  </p-selectButton> -->
                 
                   <!-- Advanced Settings -->
                   <div class="mt-4 mb-2">
@@ -334,11 +327,7 @@
                         @for (attr of selectedFilters; track attr) {
                           <p class="flex items-center">
                             <strong [innerHTML]="getFilterJoins(attr)"></strong>
-                            <span [innerHTML]="getDisplayFilterStr(attr)">
-                              <!-- <strong> {{ getNiceTableName(attr.table_id) }} </strong>
-                              <i class="pi pi-angle-right"></i>
-                              {{attr.display_name.default}} -->
-                            </span>
+                            <span [innerHTML]="getDisplayFilterStr(attr)"></span>
                           </p>
                         }
                       </div>
@@ -348,127 +337,12 @@
                         @for (attr of globalFilters; track attr) {
                           <p class="flex items-center">
                             <strong [innerHTML]="getFilterJoins(attr)"></strong>
-                            <span [innerHTML]="getDisplayFilterStr(attr)">
-                              <!-- <strong> {{ getNiceTableName(attr.table_id) }} </strong>
-                              <i class="pi pi-angle-right"></i>
-                              {{attr.display_name.default}} -->
-                            </span>
+                            <span [innerHTML]="getDisplayFilterStr(attr)"></span>
                           </p>
                         }
                       </div>
                     </div>
-
-                    <!-- 
-
-                    <div class="col-12 md:col-6 pl-2">
-                        <h5 i18n="@@resumenFiltrosInformeH6">
-                            Resumen de filtros del informe
-                        </h5>
-
-                        <div *ngFor="let filter of globalFilters" class="d-flex align-items-center">
-                            <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
-
-                            <span class="d-flex align-items-center" [innerHTML]="getDisplayFilterStr(filter)"></span>
-                        </div>
-                    </div> -->
                   </div>
-
-
-<!--                                 <div class="col-12 md:col-12 info-query" *ngIf="currentQuery.length !== 0">
-                                    <div #myQuery>
-                                        <span i18n="@@consultaH4" class="span-title">
-                                            Mi consulta
-                                        </span>
-
-                                        <span>
-                                            <i class="pi pi-info-circle" style="cursor: pointer; margin-top: -5px;"
-                                                (click)="getQuery($event)" [pTooltip]="ptooltipViewQuery"></i>
-                                        </span>
-                                    </div>
-
-                                    <hr>
-
-                                    <p-overlayPanel #op [appendTo]="'body'">
-                                      <ng-template pTemplate>
-                                          <div>
-                                              <h6 i18n="@@yourQuerySQL">Mi consulta SQL</h6>
-                                              <div *ngIf="display_v.minispinnerSQL"
-                                                  style="text-align: center; margin: solid 1px grey;">
-
-                                                  <p-progressSpinner *ngIf="display_v.minispinnerSQL"
-                                                      [style]="{width: '4vw', height: '4vh'}" strokeWidth="5" class=""
-                                                      fill="#EEEEEE" animationDuration=".5s">
-                                                  </p-progressSpinner>
-
-                                              </div>
-
-                                              <textarea *ngIf="!display_v.minispinnerSQL" id="query-area" class="sqlInput"
-                                                  rows="10" cols="100" pInputTextarea autoResize="autoResize"
-                                                  [(ngModel)]="queryFromServer"></textarea>
-                                          </div>
-                                          <button type="button" pButton icon="fa fa-database" (click)="migrateQuery()"
-                                              class="p-button-success ml-2" i18n-label="@@openSqlMode"
-                                              label="Abrir en modo SQL" [pTooltip]="ptooltipSQLmode">
-                                          </button>
-                                      </ng-template>
-                                  </p-overlayPanel>
-
-
-                                  <div class="grid">
-
-                                      <div class="col-12 md:col-6 pl-2">
-                                          <h5 i18n="@@resumenAtrH6">
-                                              Resumen de atributos
-                                          </h5>
-
-                                          <div *ngFor="let column of currentQuery" class="d-flex align-items-center">
-
-                                              <strong class="d-flex align-items-center" [innerHTML]="getColumnJoins(column)"></strong>
-
-                                              <span class="d-flex align-items-center">
-                                                  <strong> {{ getNiceTableName(column.table_id) }} </strong>
-                                                  <i class="pi pi-angle-right"></i>
-                                                  {{column.display_name.default}}
-                                              </span>
-
-                                              <ng-container *ngFor="let aggregation of column.aggregation_type">
-                                                  <span *ngIf="aggregation.selected && aggregation.display_name !== 'no'" class="d-flex align-items-center">
-                                                      ( {{aggregation.display_name}} )
-                                                  </span>
-                                              </ng-container>
-
-                                          </div>
-                                      </div>
-
-
-                                      <div class="col-12 md:col-6 pl-2">
-                                          <h5 i18n="@@resumenFiltrosPanelH6">
-                                              Resumen de filtros del panel
-                                          </h5>
-
-
-
-                                          <div *ngFor="let filter of selectedFilters" class="d-flex align-items-center">
-                                              <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
-
-                                              <span class="d-flex align-items-center" [innerHTML]="getDisplayFilterStr(filter)"></span>
-                                          </div>
-                                      </div>
-
-                                      <div class="col-12 md:col-6 pl-2">
-                                          <h5 i18n="@@resumenFiltrosInformeH6">
-                                              Resumen de filtros del informe
-                                          </h5>
-
-                                          <div *ngFor="let filter of globalFilters" class="d-flex align-items-center">
-                                              <strong class="d-flex align-items-center" [innerHTML]="getFilterJoins(filter)"></strong>
-
-                                              <span class="d-flex align-items-center" [innerHTML]="getDisplayFilterStr(filter)"></span>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div> -->
-
                 </div>
               </div>
             </div>
@@ -478,14 +352,14 @@
               <div class="md:col-span-3 p-4 border-r border-gray-200">
                 <div class="space-y-4">
                   <h3 class="font-semibold text-gray-700" i18n="@@sqlExpresionH6">Expresión SQL</h3>
-
                   <div class="relative">
                     <textarea 
                       [(ngModel)]="currentSQLQuery" 
                       class="w-full h-64 p-3 border border-gray-300 rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                       placeholder="SELECT * FROM customers">
                     </textarea>
-                    <button 
+                    <!-- TODO Sugerir SQL -->
+                    <!-- <button 
                       class="absolute right-2 top-2 px-2 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 flex items-center">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 mr-1">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -499,18 +373,30 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                       </svg>
                       Sugerir
-                    </button>
+                    </button> -->
+                  </div>
+
+                  <!-- Table Selection and Filters -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="text-sm font-medium text-gray-700 mb-1 block" i18n="@@originTable">Tabla origen</label>
+                      <select 
+                        [(ngModel)]="sqlOriginTable" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
+                        <option *ngFor="let table of sqlOriginTables" [value]="table">{{ table.label }}</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
+
               <div class="md:col-span-2 border-t md:border-t-0 border-gray-200 overflow-y-auto">
                 <div class="p-3">
                   <h3 class="font-semibold mb-4" i18n="@@indicaciones">Indicaciones</h3>
 
-
                   <div class="w-full">
                     <!-- General Information -->
-                    <details class="group border-b border-gray-200" open>
+                    <details class="group border-b border-gray-200" open name="sqlIndicationOpenSection">
                       <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
                         <div class="flex items-center">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mr-2">
@@ -518,7 +404,7 @@
                             <line x1="12" y1="16" x2="12" y2="12"></line>
                             <line x1="12" y1="8" x2="12.01" y2="8"></line>
                           </svg>
-                          Información general
+                          <span i18n="@@informacionGeneral">Información general</span>
                         </div>
                         <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -549,14 +435,14 @@
                     </details>
         
                     <!-- Link query and panel filters -->
-                    <details class="group border-b border-gray-200">
+                    <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
                       <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
                         <div class="flex items-center">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mr-2">
                             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                           </svg>
-                          Vincular consulta y filtros del panel
+                          <span i18n="@@linkFilters">Vincular consulta con los filtros del panel</span>
                         </div>
                         <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -599,7 +485,7 @@
                     </details>
         
                     <!-- Examples -->
-                    <details class="group border-b border-gray-200">
+                    <details class="group border-b border-gray-200" name="sqlIndicationOpenSection">
                       <summary class="flex justify-between items-center cursor-pointer py-2 font-semibold">
                         <div class="flex items-center">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mr-2">
@@ -609,7 +495,7 @@
                             <line x1="16" y1="17" x2="8" y2="17"></line>
                             <polyline points="10 9 9 9 8 9"></polyline>
                           </svg>
-                          Ejemplos
+                          <span i18n="@@examples">Ejemplos</span>
                         </div>
                         <svg class="h-5 w-5 text-gray-500 group-open:rotate-180 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -644,6 +530,7 @@
                                   </div>
                                 </div>
                               </div>
+
                               <p class="text-sm text-gray-500 mt-2" i18n="@@indicaciones13">Consulta con filtros vinculados</p>
                               <div class="bg-gray-50 p-3 rounded-md text-sm font-mono">
                                 <div class="flex items-start">
@@ -658,7 +545,22 @@
         
                             <!-- Query with JOIN -->
                             <div>
-                              <h4 class="text-sm font-medium mb-2">Consulta con JOIN</h4>
+                              <h4 class="text-sm font-medium mb-2" i18n="@@indicaciones14">
+                                Tenemos un filtro en el informe para el campo 'office_id' de la tabla OFFICES
+                              </h4>
+
+                              <p class="text-sm text-gray-500" i18n="@@indicaciones15"> Consulta sin filtros vinculados</p>
+                              <div class="bg-gray-50 p-3 rounded-md text-sm font-mono">
+                                <div class="flex items-start">
+                                  <div class="flex-1">
+                                    SELECT e.employee_name FROM EMPLOYEE e<br>
+                                    INNER JOIN OFFICES o ON o.office_id = e.office_id<br>
+                                    WHERE e.employee_name IN ('Julia', 'John')
+                                  </div>
+                                </div>
+                              </div>
+
+                              <p class="text-sm text-gray-500 mt-2" i18n="@@indicaciones16">Consulta con filtros vinculados</p>
                               <div class="bg-gray-50 p-3 rounded-md text-sm font-mono">
                                 <div class="flex items-start">
                                   <div class="flex-1">
@@ -667,31 +569,6 @@
                                     WHERE e.employee_name IN ('Julia', 'John')<br>
                                     AND o.office_id = {{'${o.office_id}'}}
                                   </div>
-                                </div>
-                              </div>
-                            </div>
-        
-                            <!-- Query with aggregation -->
-                            <div>
-                              <h4 class="text-sm font-medium mb-2">Consulta con agregación</h4>
-                              <div class="bg-gray-50 p-3 rounded-md text-sm font-mono">
-                                <div class="flex items-start">
-                                  <div class="flex-1">
-                                    SELECT c.customername, COUNT(o.order_id) as total_orders,<br />
-                                    SUM(o.amount) as total_amount<br />
-                                    FROM CUSTOMERS c<br />
-                                    JOIN ORDERS o ON c.customer_id = o.customer_id<br />
-                                    GROUP BY c.customername<br />
-                                    ORDER BY total_amount DESC
-                                  </div>
-                                  <!-- <button 
-                                    class="h-6 w-6 p-0 ml-2 -mt-1 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-md"
-                                    (click)="copyQuery('SELECT c.customername, COUNT(o.order_id) as total_orders,\nSUM(o.amount) as total_amount\nFROM CUSTOMERS c\nJOIN ORDERS o ON c.customer_id = o.customer_id\nGROUP BY c.customername\nORDER BY total_amount DESC')">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                  </button> -->
                                 </div>
                               </div>
                             </div>

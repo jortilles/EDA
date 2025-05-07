@@ -151,8 +151,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     // Depreacted use selectedQueryMode instead of
     // public modeSQL: boolean;
-    public sqlOriginTables: {}[];
+    public sqlOriginTables: any[];
     public sqlOriginTable: any;
+    public sqlIndicationOpenSection = 'general';
 
     /** Chart Variables */
     public chartTypes: EdaChartType[]; // All posible chartTypes
@@ -1480,6 +1481,16 @@ export class EdaBlankPanelComponent implements OnInit {
             text: 'mdi-alphabetical' //'text-orange-500' 
         };
         return icons[type as keyof typeof icons] || '';
+    }
+
+    // Nuevo método para controlar qué sección está abierta
+    toggleSection(section: string): void {
+        this.sqlIndicationOpenSection = this.sqlIndicationOpenSection === section ? '' : section
+    }
+
+    // Método para verificar si una sección está abierta
+    isSectionOpen(section: string): boolean {
+        return this.sqlIndicationOpenSection === section
     }
 
 }
