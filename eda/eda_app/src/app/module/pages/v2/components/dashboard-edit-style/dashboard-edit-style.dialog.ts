@@ -110,39 +110,43 @@ export class DashboardEditStyleDialog {
   }
 
   ngOnInit(): void {
-    this.dashBoardStyles = this.dashboard.dashboard.config;
-		this.assignValues(this.dashBoardStyles);
-		this.setSampleTitleStyle();
-		this.setSampleFIltersStyle();
-		this.setSampleGlobalStyle();
-		this.setPanelTitleStyle();
+    this.dashBoardStyles = this.dashboard.dashboard.config.styles;
+	this.assignValues(this.dashBoardStyles);
+	this.setSampleTitleStyle();
+	this.setSampleFIltersStyle();
+	this.setSampleGlobalStyle();
+	this.setPanelTitleStyle();
     this.setPanelContentStyle();
   }
 
   assignValues(styles: DashboardStyles): void {
-		/**Title */
-    this.selectedTitleFont = { label: styles.filters.fontFamily, value: styles.filters.fontFamily};
-		this.titleFontColor = styles.title.fontColor;
-		this.titleFontSize = styles.title.fontSize;
-		this.alignDasboardTitle = styles.titleAlign;
+	/** Global colors */
+	this.backgroundColor = styles.backgroundColor;  
+	this.panelColor = styles.panelColor;
+	  
+	/**Title */
+	this.selectedTitleFont = styles.filters.fontFamily;
+	this.titleFontColor = styles.title.fontColor;
+	this.titleFontSize = styles.title.fontSize;
+	this.alignDasboardTitle = styles.titleAlign;
 
-		/**Filters */
-		this.selectedFiltersFont = { label: styles.filters.fontFamily, value: styles.filters.fontFamily }
-		this.filtersFontColor = styles.filters.fontColor;
-		this.filtersFontSize = styles.filters.fontSize;
+	/**Filters */
+	this.selectedFiltersFont = styles.filters.fontFamily
+	this.filtersFontColor = styles.filters.fontColor;
+	this.filtersFontSize = styles.filters.fontSize;
 
-		/**Panel title */
-		this.selectedPanelTitleFont = { label: styles.panelTitle.fontFamily, value: styles.panelTitle.fontFamily }
-		this.panelTitleFontColor = styles.panelTitle.fontColor;
-		this.panelTitleFontSize = styles.panelTitle.fontSize;
-		this.alignPanelTitle = styles.panelTitleAlign;
+	/**Panel title */
+	this.selectedPanelTitleFont = styles.panelTitle.fontFamily;
+	this.panelTitleFontColor = styles.panelTitle.fontColor;
+	this.panelTitleFontSize = styles.panelTitle.fontSize;
+	this.alignPanelTitle = styles.panelTitleAlign;
 
-		/**Panel content */
-		this.selectedPanelFont = { label: styles.panelContent.fontFamily, value: styles.panelContent.fontFamily }
-		this.panelFontColor = styles.panelContent.fontColor;
-		this.panelFontSize = styles.panelContent.fontSize;
+	/**Panel content */
+	this.selectedPanelFont = styles.panelContent.fontFamily;
+	this.panelFontColor = styles.panelContent.fontColor;
+	this.panelFontSize = styles.panelContent.fontSize;
 
-		this.css = styles.customCss;
+	this.css = styles.customCss;
 
 	}
 
@@ -200,8 +204,8 @@ export class DashboardEditStyleDialog {
   public saveConfig(): void {
 		// this.dashBoardStyles.fontFamily = this.selectedFont.value;
 		const response: DashboardStyles = {
-			backgroundColor: this.dashBoardStyles.backgroundColor,
-			panelColor: this.dashBoardStyles.panelColor,
+			backgroundColor: this.backgroundColor,
+			panelColor: this.panelColor,
 			titleAlign: this.alignDasboardTitle,
 			panelTitleAlign: this.alignPanelTitle,
 			customCss: this.css,

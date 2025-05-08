@@ -329,7 +329,7 @@ export class DashboardPageV2 implements OnInit {
         // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
         // sendViaMailConfig: this.sendViaMailConfig,
         onlyIcanEdit: this.onlyIcanEdit,
-        // styles: this.styles,
+        styles: this.dashboard.config.styles,
         urls: this.dashboard.config.urls
 
       },

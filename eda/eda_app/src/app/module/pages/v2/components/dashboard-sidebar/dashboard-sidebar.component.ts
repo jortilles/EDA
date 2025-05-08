@@ -276,7 +276,7 @@ export class DashboardSidebarComponent {
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
           sendViaMailConfig: this.dashboard.sendViaMailConfig, //TODO ==> Done?
           onlyIcanEdit: this.dashboard.onlyIcanEdit, //TODO ==> Done?
-          styles: this.dashboard.dashboard.config.styles, //TODO ==> Done?
+          styles: this.stylesProviderService.generateDefaultStyles(), //TODO ==> Done?
         },
         group: (newDashboard.group || []).map((g: any) => g._id)
       };
