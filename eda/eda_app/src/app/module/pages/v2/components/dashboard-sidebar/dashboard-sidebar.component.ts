@@ -14,12 +14,13 @@ import domtoimage from 'dom-to-image';
 import jspdf from 'jspdf';
 import Swal from 'sweetalert2';
 import { DashboardMailConfigModal } from "../dashboard-mail-config/dashboard-mail-config.modal";
+import { DashboardVisibleModal } from "../dashboard-visible/dashboard-visible.modal";
 
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
-  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog
-    , DashboardCustomActionDialog, DashboardMailConfigModal],
+  imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog,
+    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -61,6 +62,7 @@ export class DashboardSidebarComponent {
   isEditStyleDialogVisible = false;
   isCustomActionDialogVisible = false;
   isMailConfigDialogVisible = false;
+  isVisibleModalVisible = false;
   isTagModalVisible = false;
 
   sidebarItems = [
@@ -119,7 +121,10 @@ export class DashboardSidebarComponent {
     {
       label: "Privacitat informe",
       icon: "pi pi-lock",
-      items: [],
+      command: () => { 
+        this.isVisibleModalVisible = true;
+        this.hidePopover();
+      }
     },
     {
       label: "Editar estils",
@@ -313,6 +318,10 @@ export class DashboardSidebarComponent {
   public closeMailConfig(mailconfig: any) {
     this.isCustomActionDialogVisible = false;
     this.dashboard.sendViaMailConfig = mailconfig;
+  }
+
+  public closeVisibleModal(mailconfig: any) {
+    this.isVisibleModalVisible = false;
   }
 
   public closeTagModal(tags: any[]) {
