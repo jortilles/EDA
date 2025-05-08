@@ -299,8 +299,10 @@ export class DashboardSidebarComponent {
   }
 
   public closeSaveStyles(newStyles: any) {
+    //Devuelve DashboardStyles, import? 
     this.isEditStyleDialogVisible = false;
-    this.dashboard.dashboard.config.styles = newStyles; // check direct
+    if(newStyles !== undefined) // onClose devuelve undefined 
+      this.dashboard.dashboard.config.styles = newStyles;
   }
   public closeCustomAction(url: any) {
     this.isCustomActionDialogVisible = false;
@@ -308,11 +310,9 @@ export class DashboardSidebarComponent {
       this.dashboard.dashboard.config.urls = url;
   }
 
-  public closeMailConfig(mailconfig) {
-    console.log('openmailconfig')
+  public closeMailConfig(mailconfig: any) {
     this.isCustomActionDialogVisible = false;
     this.dashboard.sendViaMailConfig = mailconfig;
-    
   }
 
   public closeTagModal(tags: any[]) {
