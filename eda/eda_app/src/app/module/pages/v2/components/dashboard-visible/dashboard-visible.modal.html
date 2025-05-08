@@ -1,35 +1,26 @@
 <eda-dialog2 [display]="display"
-  header="DASHBOARD TAGS" width="50vw" height="35vh"
+  header="DASHBOARD VISIBILITY" width="50vw" height="35vh"
   [disableApply]="disableApply()"
   (apply)="onApply()"
   (close)="onClose()">
 
   <div content class="p-6">
-      <div class="grid space-y-8">
-        <div class="flex w-full gap-2">
-          <p-floatLabel class="w-full">
-            <input id="floating_tag2" type="text" [(ngModel)]="newTag" class="w-full border px-2 py-2.5 rounded">
-            <label i18n="@@newTag" for="floating_tag2">Nueva etiqueta</label>
-          </p-floatLabel>
-          <button class="flex items-center px-4 py-2.5 border rounded-md" (click)="setNewTag()" [disabled]="!newTag">
-            <span i18n-label="@@guardarBtn">Confirmar</span>
-          </button>
-        </div>
-
-        <p-floatLabel>
-          <p-multiSelect
-            id="floating_tag"
-            [options]="tags"
-            [(ngModel)]="selectedTags"
-            [style]="{'width': '100%'}"
-            [maxSelectedLabels]="6"
-            appendTo="body"
-          ></p-multiSelect>
-          <label i18n="@@addTagString" for="floating_tag">Añadir Etiqueta</label>
-        </p-floatLabel>
-        
-
-
+    <div class="grid space-y-8">
+    <!-- Botones de Selección -->
+      <div class="col-12">
+        <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)" 
+          class="bg-gray-100 text-gray-700 rounded-md shadow-sm">
+        </p-selectButton>
       </div>
+  
+      @if (showGroups) {
+      <!-- Multiselect de Grupos -->
+      <div class="col-12">
+        <p-multiSelect formControlName="group" [options]="grups" [filter]="false" optionLabel="name" defaultLabel="Selecciona un grupo *"
+          class="w-full bg-gray-100 rounded-md border text-gray-700" appendTo="body" >
+        </p-multiSelect>
+      </div>
+      }
+    </div>
   </div>
 </eda-dialog2>

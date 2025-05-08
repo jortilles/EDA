@@ -320,8 +320,9 @@ export class DashboardSidebarComponent {
     this.dashboard.sendViaMailConfig = mailconfig;
   }
 
-  public closeVisibleModal(mailconfig: any) {
+  public closeVisibleModal(visibility: any) {
     this.isVisibleModalVisible = false;
+    this.dashboard.dashboard.config.visible = visibility.visible;
   }
 
   public closeTagModal(tags: any[]) {

@@ -1,55 +1,89 @@
 import { Component, EventEmitter, OnInit, Output } from "@angular/core";
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, } from "@angular/forms";
-import { AlertService } from "@eda/services/service.index";
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from "@angular/forms";
+import { AlertService, GroupService, IGroup } from "@eda/services/service.index";
+import { EdaDialog, EdaDialog2Component, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { SharedModule } from "@eda/shared/shared.module";
+import { SelectItem } from "primeng/api";
 import { MultiSelectModule } from "primeng/multiselect";
-import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectButtonModule } from "primeng/selectbutton";
-import * as _ from 'lodash';
 
 @Component({
   selector: 'app-dashboard-visible',
   standalone: true,
-  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule, FloatLabelModule],
+  imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, MultiSelectModule],
   templateUrl: './dashboard-visible.modal.html',
 })
 export class DashboardVisibleModal {
 @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  public dialog: EdaDialog;
+  public form: UntypedFormGroup;
+  public grups: IGroup[] = [];
+  public visibleTypes: SelectItem[] = [];
+
   public display: boolean = false;
+  public showGroups: boolean = false;
 
-  public newTag: any;
-  public tags: any[];
-  public selectedTags: any[] = [];
-  public selectedtag: any;
 
-  constructor(private alertService: AlertService) { }
+  constructor(
+    private formBuilder: UntypedFormBuilder,
+    private groupService: GroupService,
+    private alertService: AlertService) { }
 
   ngOnInit(): void {
-    const tags = JSON.parse(localStorage.getItem('tags')) || [];
-    this.tags = _.uniqBy(tags, 'value');
+    this.initializeForm();
+    this.loadGroups();
   }
 
-  public setNewTag() {
-    const repeated = this.tags.some(tag => (this.newTag.toUpperCase() === String(tag.value).toUpperCase()));
+private initializeForm(): void {
+    this.form = this.formBuilder.group({
+      name: [null, Validators.required],
+      visible: [null, Validators.required],
+      group: [null]
+    });
 
-    if (this.newTag.length === 0) {
-      this.newTag = !this.newTag;
-      this.alertService.addError("Empty tag")
-    } else if (repeated) {
-      this.newTag = '';
-      this.alertService.addError("Tag already existing")
-    } else {
-      const tag = JSON.parse(JSON.stringify({ label: this.newTag, value: this.newTag }));
-      this.tags.push(tag);
-      this.selectedTags.push(tag);
-      this.newTag = '';
-      localStorage.setItem('tags', JSON.stringify(this.tags));
+    this.visibleTypes = [
+      { label: $localize`:@@commonPanel:Común`, value: 'public', icon: 'fa fa-fw fa-globe' },
+      { label: $localize`:@@groupPanel:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
+      { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
+    ];
+
+    this.form.controls['visible'].setValue(this.visibleTypes[2].value);
+  }
+
+  private loadGroups(): void {
+
+    this.groupService.getGroupsByUser().subscribe(
+      res => {
+        this.grups = res;
+
+        if (this.grups.length === 0) {
+          this.visibleTypes.splice(1, 1);
+        }
+      }, err => {
+        this.alertService.addError(err)
+      }
+    );
+  }
+
+  
+  public handleSelectedBtn(event): void {
+    const groupControl = this.form.get('group');
+    this.showGroups = event.value === 'group';
+
+    if (this.showGroups) {
+      groupControl.setValidators(Validators.required);
     }
+
+    if (!this.showGroups) {
+      groupControl.setValidators(null);
+      groupControl.setValue(null);
+    }
+
   }
 
   public onApply() {
     this.display = false;
-    this.close.emit(this.selectedTags);
+    this.close.emit(this.form.value);
   }
 
   public disableApply(): boolean {
