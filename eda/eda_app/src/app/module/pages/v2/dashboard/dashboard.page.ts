@@ -7,7 +7,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MenuModule } from 'primeng/menu';
 import { MessageModule } from 'primeng/message';
 import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridType } from 'angular-gridster2';
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, IGroup } from '@eda/services/service.index';
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles } from '@eda/services/service.index';
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from '../components/dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterV2Component } from '../components/global-filter/global-filter.component';
@@ -17,7 +17,7 @@ import { ComponentsModule } from '@eda/components/components.module';
 @Component({
   selector: 'app-v2-dashboard-page',
   standalone: true,
-  imports: [GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, GlobalFilterV2Component, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule],
+  imports: [GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, GlobalFilterV2Component, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule,],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -28,12 +28,14 @@ export class DashboardPageV2 implements OnInit {
   @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
   
   private globalFiltersService = inject(GlobalFiltersService);
+  private stylesProviderService = inject(StyleProviderService);
   private dashboardService = inject(DashboardService);
   private alertService = inject(AlertService);
   private fileUtils = inject(FileUtiles);
   private route = inject(ActivatedRoute);
 
   public title: string = $localize`:@@loading:Cargando informe...`;
+  public styles: DashboardStyles;
   public gridsterOptions: GridsterConfig;
   public gridsterDashboard: GridsterItem[];
 
@@ -68,7 +70,7 @@ export class DashboardPageV2 implements OnInit {
   ngOnInit(): void {
     this.initGridsterOptions();
     this.loadDashboard();
-
+    this.initStyles();
     this.dashboardService.notSaved.subscribe(
       (data) => this.notSaved = data
     );
@@ -77,6 +79,72 @@ export class DashboardPageV2 implements OnInit {
   ngOnDestroy() {
   }
 
+  private initStyles(): void{
+    console.log(document.documentElement.style)
+        /**Global */
+        this.stylesProviderService.panelColor.subscribe(panelColor => {
+            document.documentElement.style.setProperty('--panel-color', panelColor);
+        });
+
+        /**Title */
+        this.stylesProviderService.titleFontColor.subscribe(color => {
+            document.documentElement.style.setProperty('--eda-title-font-color', color);
+        });
+        this.stylesProviderService.titleFontFamily.subscribe(font => {
+            document.documentElement.style.setProperty('--eda-title-font-family', font);
+        });
+        this.stylesProviderService.titleFontSize.subscribe(size => {
+            this.stylesProviderService.setTitleFontSize(size);
+        });
+        this.stylesProviderService.titleAlign.subscribe(align => {
+            document.documentElement.style.setProperty('--justifyTitle', align)
+        })
+
+        /**Filters */
+        this.stylesProviderService.filtersFontColor.subscribe(color => {
+            document.documentElement.style.setProperty('--eda-filters-font-color', color);
+        });
+        this.stylesProviderService.filtersFontFamily.subscribe(font => {
+            document.documentElement.style.setProperty('--eda-filters-font-family', font);
+        });
+        this.stylesProviderService.filtersFontSize.subscribe(size => {
+            this.stylesProviderService.setfiltersFontSize(size);
+        });
+
+        /**Title */
+        this.stylesProviderService.panelTitleFontColor.subscribe(color => {
+            document.documentElement.style.setProperty('--panel-title-font-color', color);
+        });
+        this.stylesProviderService.panelTitleFontFamily.subscribe(font => {
+            document.documentElement.style.setProperty('--panel-title-font-family', font);
+        });
+        this.stylesProviderService.panelTitleFontSize.subscribe(size => {
+            this.stylesProviderService.setPanelTitleFontSize(size);
+        });
+        this.stylesProviderService.panelTitleAlign.subscribe(align => {
+            document.documentElement.style.setProperty('--justifyPanelTitle', align)
+        })
+
+        /**Content */
+        this.stylesProviderService.panelFontColor.subscribe(color => {
+            document.documentElement.style.setProperty('--panel-font-color', color);
+        });
+        this.stylesProviderService.panelFontFamily.subscribe(font => {
+            document.documentElement.style.setProperty('--panel-font-family', font);
+        });
+        this.stylesProviderService.panelFontSize.subscribe(size => {
+            this.stylesProviderService.setPanelContentFontSize(size);
+        });
+        console.log(document.documentElement.style)
+
+        // this.stylesProviderService.customCss.subscribe((css) => {
+        //    this.stylesProviderService.setCustomCss(css);
+        // });
+    }
+
+
+  
+  
   private initGridsterOptions(): void {
     this.gridsterOptions = {
       gridType: GridType.VerticalFixed, // Configuración general del Gridster : permite scroll vertical y los items generados son de tamaño fijo.
@@ -119,7 +187,8 @@ export class DashboardPageV2 implements OnInit {
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
       this.globalFilter.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
-
+      this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
+      this.stylesProviderService.setStyles(this.styles);
       // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
       // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
       // me.selectedTags = me.selectedTagsForDashboard(me.tags, config.tag)
@@ -323,13 +392,13 @@ export class DashboardPageV2 implements OnInit {
         ds: { _id: this.dataSource._id },
         filters: this.cleanFiltersData(),
         applyToAllfilter: this.applyToAllfilter,
-        // visible: this.form.controls['visible'].value,
+        visible: this.dashboard.config.visible,
         // tag: this.saveTag(),
         refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
         // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
         // sendViaMailConfig: this.sendViaMailConfig,
         onlyIcanEdit: this.onlyIcanEdit,
-        styles: this.dashboard.config.styles,
+        styles: this.styles,
         urls: this.dashboard.config.urls
 
       },
