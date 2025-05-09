@@ -256,6 +256,9 @@ export const PanelOptions = {
     const menu = [];
     const editmode = panelComponent.getEditMode();
     const type = panelComponent.getChartType();
+
+    console.log('editmode: ', editmode)
+    console.log('type: ', type)
     
     if (editmode) {
         menu.push(PanelOptions.editQuery(panelComponent));
@@ -271,12 +274,49 @@ export const PanelOptions = {
 
     menu.push(PanelOptions.exportExcel(panelComponent));
     menu.push(PanelOptions.duplicatePanel(panelComponent));
-
+    menu.push(PanelOptions.askToIA(panelComponent));
 
     if (editmode) {
         menu.push(PanelOptions.deletePanel(panelComponent));
     }
 
     return menu;
-  }
+  },
+  askToIA : (panelComponent: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: $localize`:@@panelOptions6:Pregunte a la IA`,
+      icon: 'fas fa-brain',
+      command: () => {
+        console.log('panelComponent ::::: ', panelComponent)
+        // panelComponent.contextMenu.hideContextMenu();
+        // panelComponent.removePanel();
+      }
+    });
+
+
+    return new EdaContextMenuItem({
+      label: $localize`:@@panelOptions1:Editar consulta`,
+      icon: 'fa fa-cog',
+      command: () => {
+        if (panelComponent.panel.content) {
+
+          panelComponent.panelDeepCopy = _.cloneDeep(panelComponent.panel.content, true);
+          if (panelComponent.selectedQueryMode == 'EDA2') {
+            panelComponent.panelDeepCopy.rootTable = _.cloneDeep(panelComponent.rootTable);
+          }
+          panelComponent.display_v.disablePreview = false;
+
+        } else {
+          panelComponent.display_v.disablePreview = true;
+        }
+        if (Object.entries(panelComponent.graficos).length !== 0) {
+          panelComponent.colorsDeepCopy = _.cloneDeep(panelComponent.graficos);
+        }
+        panelComponent.contextMenu.hideContextMenu();
+        panelComponent.openEditarConsulta();
+        panelComponent.index = 0;
+      }
+    });
+  } 
+
 }

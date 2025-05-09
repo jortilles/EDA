@@ -4242,6 +4242,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Activar funciones del mouse</source>
         <target>Aktywuj funkcje myszy</target>
   </trans-unit>   
+  <trans-unit id="panelOptions6">
+    <source>Pregunte a la IA</source>
+    <target>Zapytaj AI</target>
+  </trans-unit>
 </body>
 </file>
 </xliff>
