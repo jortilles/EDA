@@ -175,8 +175,9 @@
                       cdkDropList
                       #selectList="cdkDropList"
                       cdkDropListOrientation="horizontal"
+                      [cdkDropListData]="currentQuery"
                       [cdkDropListConnectedTo]="[columnsList, filterList]"
-                      (cdkDropListDropped)="drop($event)"
+                      (cdkDropListDropped)="drop($event, 'select-list')"
                     >
                       @for (attr of currentQuery; track attr) {
                         <div
@@ -268,7 +269,7 @@
                     </h3>
                     
                     @if (display_v.advancedSetting) {
-                      <div class="flex items-end gap-10 pl-2">
+                      <div class="flex items-end gap-10 pl-2 pt-2">
                         <!-- Join Type -->
                         <div>
                           <h3 class="text-base font-bold">-<span i18n="@@joinTypeH4">Tipo de intersección:</span></h3>

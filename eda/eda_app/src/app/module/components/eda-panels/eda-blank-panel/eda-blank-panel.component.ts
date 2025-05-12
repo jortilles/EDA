@@ -722,7 +722,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * Move column with drag and drop
      * @param event 
      */
-    public drop(event: any) {
+    public drop(event: any, list?: any) {
         if (event.previousContainer === event.container) {
             //Reordeno
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -730,8 +730,9 @@ export class EdaBlankPanelComponent implements OnInit {
             transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
             //obor dialeg o filre
             const column = <Column><unknown>event.container.data[event.currentIndex];
+            const className = list || event.container.element.nativeElement.className.toString() || '';
 
-            if(event.container.element.nativeElement.className.toString().includes('select-list')) {
+            if(className.includes('select-list')) {
                 this.moveItem(column);
                 this.openColumnDialog(column);
             } else {

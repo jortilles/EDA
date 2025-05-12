@@ -1,5 +1,5 @@
 <div class="flex flex-wrap items-center gap-4">
-  @if (isAdmin || isDashboardCreator || filterButtonVisibility.public) {
+  @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
     <button
       class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
       (click)="dashboard.refreshPanels()">
