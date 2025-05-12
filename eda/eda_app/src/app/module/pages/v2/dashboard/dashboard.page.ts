@@ -402,7 +402,7 @@ export class DashboardPageV2 implements OnInit {
         urls: this.dashboard.config.urls
 
       },
-      // group: this.form.value.group ? _.map(this.form.value.group, '_id') : undefined
+      group: this.dashboard.group ? _.map(this.dashboard.group, '_id') : undefined
     };
     console.log(body)
 

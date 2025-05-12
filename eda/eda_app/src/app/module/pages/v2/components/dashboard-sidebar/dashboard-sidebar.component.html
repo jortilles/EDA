@@ -43,5 +43,5 @@
   <app-dashboard-mail-config (close)="closeMailConfig($event)"></app-dashboard-mail-config>
 }
 @if(isVisibleModalVisible){
-  <app-dashboard-visible (close)="closeVisibleModal($event)"></app-dashboard-visible>
+  <app-dashboard-visible  [dashboard]="dashboard" (close)="closeVisibleModal($event)"></app-dashboard-visible>
 }
