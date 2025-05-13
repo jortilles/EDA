@@ -40,7 +40,7 @@
   <app-dashboard-custom-action [dashboard]="dashboard" (apply)="saveCustomAction($event)" (close)="closeCustomAction()"></app-dashboard-custom-action>
 }
 @if(isMailConfigDialogVisible){
-  <app-dashboard-mail-config (apply)="saveMailConfig($event)" (close)="closeMailConfig()"></app-dashboard-mail-config>
+  <app-dashboard-mail-config [dashboard]="dashboard" (apply)="saveMailConfig($event)" (close)="closeMailConfig()"></app-dashboard-mail-config>
 }
 @if(isVisibleModalVisible){
   <app-dashboard-visible  [dashboard]="dashboard" (apply)="saveVisibleModal($event)" (close)="closeVisibleModal()"></app-dashboard-visible>
