@@ -20,6 +20,7 @@ imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule, Mu
 })
 export class DashboardCustomActionDialog{
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Output() apply: EventEmitter<any> = new EventEmitter<any>();
   @Input() dashboard: DashboardPageV2;
   public form: UntypedFormGroup;
   public display: boolean = false;
@@ -130,7 +131,7 @@ export class DashboardCustomActionDialog{
 
   public onApply() {
     this.display = false;
-    this.close.emit(this.urls);
+    this.apply.emit(this.urls);
   }
 
   public disableApply(): boolean {

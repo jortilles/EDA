@@ -16,6 +16,7 @@ import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 })
 export class DashboardVisibleModal {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Output() apply: EventEmitter<any> = new EventEmitter<any>();
   @Input() dashboard: DashboardPageV2;
   public dialog: EdaDialog;
   public form: UntypedFormGroup;
@@ -91,7 +92,7 @@ private initializeForm(): void {
 
   public onApply() {
     this.display = false;
-    this.close.emit(this.form.value);
+    this.apply.emit(this.form.value);
   }
 
   public disableApply(): boolean {

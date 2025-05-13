@@ -17,6 +17,7 @@ import * as _ from 'lodash';
 
 export class DashboardMailConfigModal {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Output() apply: EventEmitter<any> = new EventEmitter<any>();
   public display: boolean = false;
 
   public newTag: any;
@@ -32,7 +33,7 @@ export class DashboardMailConfigModal {
   
   public onApply() {
     this.display = false;
-    this.close.emit(this.selectedTags);
+    this.apply.emit(this.selectedTags);
   }
 
   public disableApply(): boolean {

@@ -25,6 +25,7 @@ import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 })
 export class DashboardEditStyleDialog {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Output() apply: EventEmitter<any> = new EventEmitter<any>();
   @Input() dashboard: DashboardPageV2;
   public dialog: EdaDialog;
   public form: UntypedFormGroup;
@@ -230,7 +231,7 @@ export class DashboardEditStyleDialog {
 				fontColor: this.panelFontColor
 			},
 		}
-		this.close.emit(response);
+		this.apply.emit(response);
 	}
 
   public onApply() {
