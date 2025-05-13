@@ -1,11 +1,11 @@
 <eda-dialog2 [display]="display"
-  header="Configuración de los envíos por email" width="50vw" height="75vh"
+  header="Configuración de los envíos por email" width="50vw" height="65vh"
   [disableApply]="disableApply()"
   (apply)="onApply()"
   (close)="onClose()">
 
   <div content class="p-6">
-    <div class="grid grid-flow-col columns-3xs gap-6">
+    <div class="grid grid-cols-3 gap-6">
 
         <div class="grid grid-flow-row auto-rows-auto gap-4">
 
@@ -15,7 +15,7 @@
                     <label i18n="@@SendMailEvery">Enviar mail de alerta cada: </label>
                 </p-floatLabel>
             </div>
-    
+
             <div class="flex items-center space-x-2">
                 <input type="radio" name="groupname" value="days" [(ngModel)]="units" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300"/>
                 <span class="text-l">{{daysSTR}}</span>
@@ -35,21 +35,21 @@
             </div>
     
             <div>
-                <h6 i18n="@@noMail">Sin alertas de correo</h6>
-                <p-inputSwitch id="switchCache" class="mt-2" [(ngModel)]="disabled" tooltipPosition="left"></p-inputSwitch>
+                @if (!disabled) {<h6 i18n="@@noMail">Sin alertas de correo</h6>}
+                @else {<h6 i18n="@@opcionMail">Enviar por email</h6>}
+                <p-inputSwitch id="switchCache" class="mt-4" [(ngModel)]="disabled" tooltipPosition="left"></p-inputSwitch>
             </div>
 
         </div>
     
         <div> 
             <h6 i18n="@@SendMailWho"> Destinatarios </h6>
-
-            <div>            
-                <p-multiSelect formControlName="selectedUsers" [options]="users" [filter]="true" optionLabel="label" defaultLabel="Selecciona los destinatarios *"
-                    class="w-full bg-gray-100 rounded-md border text-gray-700" >
+            <div class="w-full">
+                <p-multiSelect 
+                [(ngModel)]="selectedUsers" [options]="users" optionLabel="label" 
+                    defaultLabel="Selecciona los destinatarios *" class="w-full fixed-multiselect" [maxSelectedLabels]="1">
                 </p-multiSelect>
             </div>
-    
         </div>
     
         <div>    

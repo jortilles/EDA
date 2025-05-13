@@ -30,11 +30,12 @@ export class DashboardEditStyleDialog {
   public dialog: EdaDialog;
   public form: UntypedFormGroup;
   public visibleTypes: SelectItem[] = [];
+  
 
   public display: boolean = false;
   public backgroundColor: string = DEFAULT_BACKGROUND_COLOR;
   public panelColor: string = DEFAULT_PANEL_COLOR;
-
+  public properties: boolean = true;
   
   public fonts: Array<any> =
   [
@@ -121,7 +122,7 @@ export class DashboardEditStyleDialog {
   }
 
   assignValues(styles: DashboardStyles): void {
-	/** Global colors */
+	  /** Global colors */
 	this.backgroundColor = styles.backgroundColor;  
 	this.panelColor = styles.panelColor;
 	  

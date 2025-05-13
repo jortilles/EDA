@@ -23,184 +23,190 @@
       </div>
 
       <div class="flex gap-3">
-        <div>Properties</div>
-        <div>CSS</div>
+        <h6 (click)="properties=true" class="cursor-pointer underline" >Properties</h6>
+        <h6 (click)="properties=false" class="cursor-pointer underline">CSS</h6>
       </div>
 
-      <div class="p-4 bg-white border border-black rounded shadow-lg">
-        <div class="grid grid-flow-col grid-cols-6 gap-6">
-          <div class="bg-white border-black rounded shadow p-4">
-            <h6 class="text-base font-semibold">{{ titleHeader }}</h6>
-            <div style="display: flex; flex-direction: column; margin: 1em" class="div-card-body">
-              <div>
-                <h6 i18n="@@ChangeFontFamily" class="mb-2">Tipo de fuente</h6>
-                <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  [(ngModel)]="selectedTitleFont" (ngModelChange)="setSampleTitleStyle()">
-                  @for (font of fonts; track $index) {
-                    <option [value]="font.value">{{ font.value }}</option>
-                  }
-                </select>
-
-              </div>
-
-              <div>
-                <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2"> Tamaño de fuente </h6>
-                <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="titleFontSize" (change)="setSampleTitleStyle()" 
-                class="w-full border border-black rounded h-2 bg-gray-200 accent-blue-500"/>
-              </div>
-
-              <div>
-                <h6 i18n="@@ChangeFontColor" class="mt-2 mb-2">Color de la fuente</h6>
-                <p-colorPicker [(ngModel)]="titleFontColor" format="hex" appendTo="body" class="border border-black" (onChange)="setSampleTitleStyle()"/>
-                <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="titleFontColor" (focusout)="setSampleTitleStyle()"/>
-              </div>
-
-              <div>
-                <h6 i18n="@@ChangelignTitle" style="margin-top: 1.1em">Alineación</h6>
-                <div class="space-y-4">
-                  <label class="flex items-center space-x-2">
-                    <input type="radio" name="alignDasboardTitle" value="flex-start" [(ngModel)]="alignDasboardTitle" (change)="setSampleTitleStyle()"
-                      class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300"/>
-                    <span class="text-xs">{{left}}</span>
-                  </label>
-                  <label class="flex items-center space-x-2">
-                    <input type="radio" name="alignDasboardTitle" value="center" [(ngModel)]="alignDasboardTitle" (change)="setSampleTitleStyle()"
-                      class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300"/>
-                    <span class="text-xs">{{center}}</span>
-                  </label>
-                  <label class="flex items-center space-x-2">
-                    <input type="radio" name="alignDasboardTitle" value="flex-end" [(ngModel)]="alignDasboardTitle" (change)="setSampleTitleStyle()"
-                      class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300"/>
-                    <span class="text-xs">{{right}}</span>
-                  </label>
+      <div class="p-4 bg-white border border-black rounded shadow-lg h-full">
+        @if(properties){
+          <div class="grid grid-flow-col grid-cols-6 gap-6">
+            <div class="bg-white border-black rounded shadow p-4">
+              <h6 class="text-base font-semibold">{{ titleHeader }}</h6>
+              <div style="display: flex; flex-direction: column; margin: 1em" class="div-card-body">
+                <div>
+                  <h6 i18n="@@ChangeFontFamily" class="mb-2">Tipo de fuente</h6>
+                  <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    [(ngModel)]="selectedTitleFont" (ngModelChange)="setSampleTitleStyle()">
+                    @for (font of fonts; track $index) {
+                      <option [value]="font.value">{{ font.value }}</option>
+                    }
+                  </select>
+  
                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="bg-white border-black rounded shadow p-4">
-            <h6 class="text-base font-semibold">{{ filtersHeader }}</h6>
-            <div style="display: flex; flex-direction: column; margin: 1em" class="div-card-body">
-              <div>
-                <h6 i18n="@@ChangeFontFamily" class="mb-2">Tipo de fuente</h6>
-                <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  [(ngModel)]="selectedFiltersFont" (ngModelChange)="setSampleFIltersStyle()">
-                  @for (font of fonts; track $index) {
-                    <option [value]="font.value">{{ font.value }}</option>
-                  }
-                </select>
-              </div>
-              <div>
-                <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2">Tamaño de fuente</h6>
-                <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="filtersFontSize" (change)="setSampleFIltersStyle()"
+  
+                <div>
+                  <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2"> Tamaño de fuente </h6>
+                  <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="titleFontSize" (change)="setSampleTitleStyle()" 
                   class="w-full border border-black rounded h-2 bg-gray-200 accent-blue-500"/>
-              </div>
-              <div>
-                <h6 i18n="@@ChangeFontColor" class="mt-2 mb-2">Color de la fuente</h6>
-                <p-colorPicker [(ngModel)]="filtersFontColor" format="hex" appendTo="body" (change)="setSampleFIltersStyle()"/>
-                <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="filtersFontColor" minlength="7" (focusout)="setSampleFIltersStyle()"/>
-              </div>
-            </div>
-          </div>
-          <div class="bg-white border-black rounded shadow p-4">
-            <h6 class="text-base font-semibold">{{ panelTitleHeader }}</h6>
-            <div style="display: flex; flex-direction: column; margin: 1em" class="div-card-body">
-              <div>
-                <h6 i18n="@@ChangeFontFamily" class="mb-2">Tipo de fuente</h6>
-                <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  [(ngModel)]="selectedPanelTitleFont" (ngModelChange)="setPanelTitleStyle()">
-                  @for (font of fonts; track $index) {<option [value]="font.value">{{ font.value }}</option>}
-                </select>
-              </div>
-
-              <div>
-                <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2">Tamaño de fuente</h6>
-                <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="panelTitleFontSize" (change)="setPanelTitleStyle()" 
-                  class="w-full border border-black rounded h-2 bg-gray-200 accent-blue-500"/>
-              </div>
-
-              <div>
-                <h6 i18n="@@ChangeFontColor" class="mt-2 mb-2">Color de la fuente</h6>
-                <p-colorPicker [(ngModel)]="panelTitleFontColor" format="hex" appendTo="body" class="border border-black" (onChange)="setPanelTitleStyle()"/>
-                <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="panelTitleFontColor"/>
-              </div>
-
-              <div>
-                <h6 i18n="@@ChangelignTitle" style="margin-top: 1.1em">Alineación</h6>
-                <div class="space-y-4">
-                  <label class="flex items-center space-x-2">
-                    <input type="radio" name="alignPanelTitle" value="flex-start" [(ngModel)]="alignPanelTitle" 
-                      class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300" (ngModelChange)="setPanelTitleStyle()"/>
-                    <span class="text-xs">{{left}}</span>
-                  </label>
-                  <label class="flex items-center space-x-2">
-                    <input type="radio" name="alignPanelTitle" value="center" [(ngModel)]="alignPanelTitle" 
-                      class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300" (ngModelChange)="setPanelTitleStyle()"/>
-                    <span class="text-xs">{{center}}</span>
-                  </label>
-                  <label class="flex items-center space-x-2">
-                    <input type="radio" name="alignPanelTitle" value="flex-end" [(ngModel)]="alignPanelTitle" 
-                      class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300" (ngModelChange)="setPanelTitleStyle()"/>
-                    <span class="text-xs">{{right}}</span>
-                  </label>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="rounded-md bg-white border-black rounded shadow p-4">
-            <h6 class="text-base font-semibold">{{ panelContentHeader }}</h6>
-            <div style="display: flex; flex-direction: column; margin: 1em" class="div-card-body">
-              <div>
-                <h6 i18n="@@ChangeFontFamily" class="mb-2">Tipo de fuente</h6>
-                <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  [(ngModel)]="selectedPanelFont" (ngModelChange)="setPanelContentStyle()">
-                  @for (font of fonts; track $index) {<option [value]="font.value">{{ font.value }}</option>}
-                </select>
-              </div>
-              <div>
-                <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2">Tamaño de fuente</h6>
-                <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="panelFontSize" (change)="setPanelContentStyle()" 
-                  class="w-full border border-black rounded h-2 bg-gray-200 accent-blue-500"/>
-              </div>
-              <div>
-                <h6 i18n="@@ChangeFontColor" class="mt-2 mb-2">Color de la fuente</h6>
-                <p-colorPicker [(ngModel)]="panelFontColor" format="hex" appendTo="body" (onChange)="setPanelContentStyle()"/>
-                <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="panelFontColor" minlength="7" (focusout)="setPanelContentStyle()"/>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white border-black rounded shadow p-4 col-span-2">
-            <h6 class="text-base font-semibold">{{ samplePanelTitle }}</h6>
-            <div [style]="sampleGlobalStyle" class="div-card-body m-4 p-2">
-              <h3 [style]="sampleTitleStyle">{{samplePanelDBName}}</h3>
-              <div class="m-2>">
-                <button [style]="sampleFiltersStyle" pButton pRipple type="button" style="margin-right: 0.3em" class="p-button-raised p-button-outlined" icon="pi pi-filter"></button>
-              </div>
-              <div style="display: flex; flex-direction: row">
-                <div style="margin: 0.5em" class="card-simulator" [style]="{'background-color':dashBoardStyles.panelColor}">
-                  <div>
-                    <h6 [style]="samplePanelTitleStyle">{{samplePanelName}}</h6>
-                    <p [style]="samplePanelContentStyle">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua
-                    </p>
-                  </div>
+  
+                <div>
+                  <h6 i18n="@@ChangeFontColor" class="mt-2 mb-2">Color de la fuente</h6>
+                  <p-colorPicker [(ngModel)]="titleFontColor" format="hex" appendTo="body" class="border border-black" (onChange)="setSampleTitleStyle()"/>
+                  <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="titleFontColor" (focusout)="setSampleTitleStyle()"/>
                 </div>
-                <div style="margin: 0.5em" class="card-simulator" [style]="{'background-color':dashBoardStyles.panelColor}">
-                  <div>
-                    <h6 [style]="samplePanelTitleStyle">{{samplePanelName}}</h6>
-                    <p [style]="samplePanelContentStyle">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua
-                    </p>
+  
+                <div>
+                  <h6 i18n="@@ChangelignTitle" style="margin-top: 1.1em">Alineación</h6>
+                  <div class="space-y-4">
+                    <label class="flex items-center space-x-2">
+                      <input type="radio" name="alignDasboardTitle" value="flex-start" [(ngModel)]="alignDasboardTitle" (change)="setSampleTitleStyle()"
+                        class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300"/>
+                      <span class="text-xs">{{left}}</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                      <input type="radio" name="alignDasboardTitle" value="center" [(ngModel)]="alignDasboardTitle" (change)="setSampleTitleStyle()"
+                        class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300"/>
+                      <span class="text-xs">{{center}}</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                      <input type="radio" name="alignDasboardTitle" value="flex-end" [(ngModel)]="alignDasboardTitle" (change)="setSampleTitleStyle()"
+                        class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300"/>
+                      <span class="text-xs">{{right}}</span>
+                    </label>
                   </div>
                 </div>
               </div>
             </div>
+            <div class="bg-white border-black rounded shadow p-4">
+              <h6 class="text-base font-semibold">{{ filtersHeader }}</h6>
+              <div style="display: flex; flex-direction: column; margin: 1em" class="div-card-body">
+                <div>
+                  <h6 i18n="@@ChangeFontFamily" class="mb-2">Tipo de fuente</h6>
+                  <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    [(ngModel)]="selectedFiltersFont" (ngModelChange)="setSampleFIltersStyle()">
+                    @for (font of fonts; track $index) {
+                      <option [value]="font.value">{{ font.value }}</option>
+                    }
+                  </select>
+                </div>
+                <div>
+                  <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2">Tamaño de fuente</h6>
+                  <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="filtersFontSize" (change)="setSampleFIltersStyle()"
+                    class="w-full border border-black rounded h-2 bg-gray-200 accent-blue-500"/>
+                </div>
+                <div>
+                  <h6 i18n="@@ChangeFontColor" class="mt-2 mb-2">Color de la fuente</h6>
+                  <p-colorPicker [(ngModel)]="filtersFontColor" format="hex" appendTo="body" (change)="setSampleFIltersStyle()"/>
+                  <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="filtersFontColor" minlength="7" (focusout)="setSampleFIltersStyle()"/>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white border-black rounded shadow p-4">
+              <h6 class="text-base font-semibold">{{ panelTitleHeader }}</h6>
+              <div style="display: flex; flex-direction: column; margin: 1em" class="div-card-body">
+                <div>
+                  <h6 i18n="@@ChangeFontFamily" class="mb-2">Tipo de fuente</h6>
+                  <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    [(ngModel)]="selectedPanelTitleFont" (ngModelChange)="setPanelTitleStyle()">
+                    @for (font of fonts; track $index) {<option [value]="font.value">{{ font.value }}</option>}
+                  </select>
+                </div>
+  
+                <div>
+                  <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2">Tamaño de fuente</h6>
+                  <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="panelTitleFontSize" (change)="setPanelTitleStyle()" 
+                    class="w-full border border-black rounded h-2 bg-gray-200 accent-blue-500"/>
+                </div>
+  
+                <div>
+                  <h6 i18n="@@ChangeFontColor" class="mt-2 mb-2">Color de la fuente</h6>
+                  <p-colorPicker [(ngModel)]="panelTitleFontColor" format="hex" appendTo="body" class="border border-black" (onChange)="setPanelTitleStyle()"/>
+                  <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="panelTitleFontColor"/>
+                </div>
+  
+                <div>
+                  <h6 i18n="@@ChangelignTitle" style="margin-top: 1.1em">Alineación</h6>
+                  <div class="space-y-4">
+                    <label class="flex items-center space-x-2">
+                      <input type="radio" name="alignPanelTitle" value="flex-start" [(ngModel)]="alignPanelTitle" 
+                        class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300" (ngModelChange)="setPanelTitleStyle()"/>
+                      <span class="text-xs">{{left}}</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                      <input type="radio" name="alignPanelTitle" value="center" [(ngModel)]="alignPanelTitle" 
+                        class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300" (ngModelChange)="setPanelTitleStyle()"/>
+                      <span class="text-xs">{{center}}</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                      <input type="radio" name="alignPanelTitle" value="flex-end" [(ngModel)]="alignPanelTitle" 
+                        class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300" (ngModelChange)="setPanelTitleStyle()"/>
+                      <span class="text-xs">{{right}}</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="rounded-md bg-white border-black rounded shadow p-4">
+              <h6 class="text-base font-semibold">{{ panelContentHeader }}</h6>
+              <div style="display: flex; flex-direction: column; margin: 1em" class="div-card-body">
+                <div>
+                  <h6 i18n="@@ChangeFontFamily" class="mb-2">Tipo de fuente</h6>
+                  <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    [(ngModel)]="selectedPanelFont" (ngModelChange)="setPanelContentStyle()">
+                    @for (font of fonts; track $index) {<option [value]="font.value">{{ font.value }}</option>}
+                  </select>
+                </div>
+                <div>
+                  <h6 i18n="@@ChangeFontSize" class="mb-2 mt-2">Tamaño de fuente</h6>
+                  <input type="range" min="-5" max="5" step="0.5" [(ngModel)]="panelFontSize" (change)="setPanelContentStyle()" 
+                    class="w-full border border-black rounded h-2 bg-gray-200 accent-blue-500"/>
+                </div>
+                <div>
+                  <h6 i18n="@@ChangeFontColor" class="mt-2 mb-2">Color de la fuente</h6>
+                  <p-colorPicker [(ngModel)]="panelFontColor" format="hex" appendTo="body" (onChange)="setPanelContentStyle()"/>
+                  <input type="text" pInputText class="eda-color-pick mt-2" [(ngModel)]="panelFontColor" minlength="7" (focusout)="setPanelContentStyle()"/>
+                </div>
+              </div>
+            </div>
+  
+            <div class="bg-white border-black rounded shadow p-4 col-span-2">
+              <h6 class="text-base font-semibold">{{ samplePanelTitle }}</h6>
+              <div [style]="sampleGlobalStyle" class="div-card-body m-4 p-2">
+                <h3 [style]="sampleTitleStyle">{{samplePanelDBName}}</h3>
+                <div class="m-2>">
+                  <button [style]="sampleFiltersStyle" pButton pRipple type="button" style="margin-right: 0.3em" class="p-button-raised p-button-outlined" icon="pi pi-filter"></button>
+                </div>
+                <div style="display: flex; flex-direction: row">
+                  <div style="margin: 0.5em" class="card-simulator" [style]="{'background-color':dashBoardStyles.panelColor}">
+                    <div>
+                      <h6 [style]="samplePanelTitleStyle">{{samplePanelName}}</h6>
+                      <p [style]="samplePanelContentStyle">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna
+                        aliqua
+                      </p>
+                    </div>
+                  </div>
+                  <div style="margin: 0.5em" class="card-simulator" [style]="{'background-color':dashBoardStyles.panelColor}">
+                    <div>
+                      <h6 [style]="samplePanelTitleStyle">{{samplePanelName}}</h6>
+                      <p [style]="samplePanelContentStyle">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore magna
+                        aliqua
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        } @else {
+          <div class="w-full h-full" >
+            <textarea [(ngModel)]="css" class="w-full h-full" ></textarea>
+          </div>
+        }
       </div>
     </div>
   </div>
