@@ -330,7 +330,7 @@ export class DashboardSidebarComponent {
     this.isVisibleModalVisible = false;
     this.dashboard.dashboard.config.visible = privacity.visible;
     if (privacity.visible === 'group')
-      this.dashboard.dashboard.group = privacity.group;
+      this.dashboard.dashboard.group = privacity.group.map(grup => grup._id);
     else
       this.dashboard.dashboard.group = []
   }

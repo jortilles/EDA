@@ -66,7 +66,8 @@ private initializeForm(): void {
           this.visibleTypes.splice(1, 1);
         }
         if (this.showGroups) {
-          this.form.controls['group'].setValue(this.grups.filter(grup => this.dashboard.dashboard.group.includes(grup['_id'])));
+          this.form.controls['group'].setValue(this.grups.filter(grup =>
+            this.dashboard.dashboard.group.includes(grup['_id'])));
         }
       }, err => {
         this.alertService.addError(err)
@@ -92,6 +93,7 @@ private initializeForm(): void {
 
   public onApply() {
     this.display = false;
+    console.log(this.form.value)
     this.apply.emit(this.form.value);
   }
 
