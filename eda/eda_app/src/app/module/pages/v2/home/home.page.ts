@@ -41,9 +41,9 @@ export class HomePageV2 implements OnInit {
 
 
   //Variables de control de edició Modificar
-  isEditing: boolean = false;
-  editingReportId: number;
-  editTitle: string = ''; 
+  isEditing = false;
+  editingReportId: string | null = null;
+  editTitle: string = '';
   sortingType: string = sessionStorage.getItem('homeSorting') || 'name';
 
   constructor(private userService: UserService) { }
@@ -177,9 +177,16 @@ export class HomePageV2 implements OnInit {
 
   // Activar modo edición de un reporte
   renameReport(report: any) {
+    //Reseteo de variables
     this.isEditing = true;
     this.editingReportId = report._id;
-    this.editTitle = report.config.title;
+    this.editTitle = report.config?.title || '';
+
+    //Apartado para añadir focus
+    setTimeout(() => {
+      const inputElement = document.querySelector<HTMLInputElement>('.edit-title-input');
+      if (inputElement) {inputElement.focus();} //Añadir focus si es el elemento seleccionado
+    }, 0);
   }
 
   //Manejar flow de edición
