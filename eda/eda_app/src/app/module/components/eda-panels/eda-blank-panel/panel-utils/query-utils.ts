@@ -181,7 +181,7 @@ export const QueryUtils = {
 
       // Execute query
       const response = await QueryUtils.switchAndRun(ebp, query);
-      console.log('response :::: --->',response)
+      //console.log('response :::: --->',response)
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
       ebp.chartData = response[1].map(item => item.map(a => {
 
@@ -195,8 +195,7 @@ export const QueryUtils = {
         return a;
 
       })); // canviem els null y els '' per valor customitzable
-      // ebp.chartData = response[1].map(item => item.map(a => a === '' ? 'EMPTY_VALUE' : a)); // canviem els null per valor customitzable
-      
+       
       // ebp.chartData = response[1];       // Chart data
       ebp.ableBtnSave();                 // Button save
       /* Labels i Data - Arrays */
