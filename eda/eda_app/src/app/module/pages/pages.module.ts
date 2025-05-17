@@ -29,7 +29,7 @@ import { TablePermissionDialogComponent } from './data-sources/data-source-detai
 import { ColumnValueListDialogComponent } from './data-sources/data-source-detail/column-value-list-dialog/column-value-list-dialog.component';
 import { ModelPermissionDialogComponent } from './data-sources/data-source-detail/model-permissions-dialog/model-permission-dialog.component';
 import { MapDialogComponent } from './data-sources/data-source-detail/mapsDialog/maps-dialog.component';
-import { ViewDialogComponent } from './data-sources/data-source-detail/viewDialog/view-dialog.component';
+import { ViewDialogComponent } from './data-sources/data-source-detail/view-dialog/view-dialog.component';
 import {AddCsvComponent} from './data-sources/data-source-list/addCSV/add-csv.component';
 import { AddTagComponent } from './data-sources/data-source-list/addTag/add-tag.component';
 import { ModelSettingsComponent } from './model-settings/model-settings.component';

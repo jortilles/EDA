@@ -39,10 +39,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public mapController: EdaDialogController;
     public tagController: EdaDialogController;
     public viewController: EdaDialogController;
+    public showViewDialog: boolean = false;
     public csvPanelController: EdaDialogController;
     public cacheController : EdaDialogController;
     public securityController : EdaDialogController;
     public items: MenuItem[];
+    public user: any;
     // public hideAllTablesBool : boolean = false;
     // public hideAllRelationsBool : boolean = false;
 
@@ -118,9 +120,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         private queryBuilderService: QueryBuilderService,
         private spinnerService: SpinnerService,
         private router: Router) {
-        //
-        const _me = this;
-
+        this.user = sessionStorage.getItem('user');
         this.navigationSubscription = this.router.events.subscribe(
             (res: any) => {
                 if (res instanceof NavigationEnd) {
@@ -579,17 +579,16 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         })
     }
-    openNewViewDialog() {
-        this.viewController = new EdaDialogController({
-            params: { user: localStorage.getItem('user'), model_id: this.dataModelService.model_id },
-            close: (event, response) => {
-                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    this.dataModelService.addView(response);
 
-                }
-                this.viewController = undefined;
-            }
-        })
+    openNewViewDialog() {
+        this.showViewDialog = true;
+    }
+
+    onCloseViewDialog(response?: any) {
+        this.showViewDialog = false;
+        if (response) {
+            this.dataModelService.addView(response);
+        }
     }
 
     openNewMapDialog() {
