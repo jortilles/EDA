@@ -37,9 +37,13 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public modelPermissionsController: EdaDialogController;
     public newColController: EdaDialogController;
     public mapController: EdaDialogController;
+    
     public tagController: EdaDialogController;
+    public showAddTagDialog: boolean = false;
+
     public viewController: EdaDialogController;
     public showViewDialog: boolean = false;
+
     public csvPanelController: EdaDialogController;
     public cacheController : EdaDialogController;
     public securityController : EdaDialogController;
@@ -619,17 +623,16 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
     
     openTagDialog() {
-        
-        this.tagController = new EdaDialogController({
-            params: { model_id: this.dataModelService.model_id, tagArray: this.modelPanel.metadata.tags },
-            close: (event, response) => {
-                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    this.dataModelService.addTags(response);
-                    this.update();
-                }
-                this.tagController = undefined;
-            }
-        })
+        this.showAddTagDialog = true;
+    }
+
+    onCloseTagDialog(response?: any) {
+        this.showAddTagDialog = false;
+
+        if (response) {
+            this.dataModelService.addTags(response);
+            this.update();
+        }
     }
 
     openCacheDialog() {
