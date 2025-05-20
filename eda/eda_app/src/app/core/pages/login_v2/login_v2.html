@@ -33,23 +33,21 @@
 
         <!-- Welcome Text -->
         <div class="mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800" i18n="@@loginWelcome">Benvingut/da.</h2>
-            <h3 class="text-xl text-gray-800" i18n="Login section title@@loginTitle">Inici de sessió.</h3>
+            <h2 class="text-2xl font-semibold text-gray-800" i18n="@@loginTitle">Inicio de sesión</h2>
         </div>
 
         <!-- Login Form -->
         <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()" class="space-y-4">
             <div class="space-y-1">
-                <label for="email" class="block text-sm text-gray-600" i18n="@@loginEmailLabel">
+                <label for="email" class="block text-sm text-gray-600" i18n="@@direccionMail">
                     Dirección Email
                 </label>
                 <input type="email" id="email" formControlName="email"
-                    class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]"
-                    placeholder="Usuari">
+                    class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
             </div>
 
             <div class="space-y-1">
-                <label for="password" class="block text-sm text-gray-600" i18n="@@loginPasswordLabel">
+                <label for="password" class="block text-sm text-gray-600" i18n="@@passwordLogin">
                     Contraseña
                 </label>
                 <input type="password" id="password" formControlName="password"
@@ -59,19 +57,19 @@
             <div class="flex items-center space-x-2">
                 <input type="checkbox" id="remember" formControlName="remember"
                     class="rounded border-gray-300 text-blue-500 focus:ring-blue-500/20">
-                <label for="remember" class="text-sm text-gray-600" i18n="@@loginRememberMe">Recuérdame</label>
+                <label for="remember" class="text-sm text-gray-600" i18n="@@spanRememberme">Recuérdame</label>
             </div>
 
             <button type="submit"
                 class="w-full py-2 text-white rounded-md bg-[#00bcd4] hover:bg-[#00acc1] transition-colors">
-                <span i18n="@@loginSubmitButton">Entrar</span>
+                <span i18n="@@signinBtn">Entrar</span>
             </button>
 
-            <a routerLink="/forgot-password"
+            <!-- <a routerLink="/forgot-password"
                 class="block text-center text-sm text-blue-600 pointer hover:text-blue-800 hover:underline transition-colors"
                 i18n="@@loginForgotPassword">
                 He oblidat la meva contrasenya
-            </a>
+            </a> -->
         </form>
 
         <!-- Copyright -->

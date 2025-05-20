@@ -4301,6 +4301,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Activar funciones del mouse</source>
         <target>Activate mouse functions</target>
       </trans-unit>
+      <trans-unit id="loginTitle">
+        <source>Inicio de sesión</source>
+        <target>Login</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

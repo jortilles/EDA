@@ -8,7 +8,7 @@ interface NavItem {
   icon?: string;
   isActive?: boolean;
   label?: string;
-  items?: { path: string; label: string; icon?: string }[];
+  items?: { path?: string; lang?: string; label: string; icon?: string }[];
   showOverlay?: boolean;
   hideTimeout?: any;
 }
@@ -49,10 +49,10 @@ export class MainLeftSidebarComponent {
       icon: 'settings',
       items: [
         { path: '/v2/profile', label: 'Perfil', icon: 'profile' },
-        { path: '/', label: 'English', icon: 'en-flag' },//TODO
-        { path: '/', label: 'Español', icon: 'es-flag' },//TODO
-        { path: '/', label: 'Català', icon: 'cat-flag' },//TODO
-        { path: '/', label: 'Polski', icon: 'pl-flag' },//TODO
+        { lang: 'EN', label: 'English', icon: 'en-flag' },//TODO
+        { lang: 'ES', label: 'Español', icon: 'es-flag' },//TODO
+        { lang: 'CA', label: 'Català', icon: 'cat-flag' },//TODO
+        { lang: 'PO', label: 'Polski', icon: 'pl-flag' },//TODO
       ]
     },
     {
@@ -83,8 +83,25 @@ export class MainLeftSidebarComponent {
     if (item.path) {
       this.router.navigate([item.path]);
     } else {
-        // TODO internacionalizacion
-      console.log('do something else')
+      // internacionalizacion
+      this.redirectLocale(item.lang);
     }
   }
+
+  public redirectLocale(lan: string) {
+    let baseUrl = window.location.href.split('#')[0];
+
+    if (baseUrl.slice(-4) == '/es/' ||
+        baseUrl.slice(-4) == '/ca/' ||
+        baseUrl.slice(-4) == '/pl/' ||
+        baseUrl.slice(-4) == '/en/') {
+        baseUrl = baseUrl.slice(0, baseUrl.length - 3)
+    }
+    switch (lan) {
+      case 'EN': window.location.href = baseUrl + 'en/#/v2'; break;
+      case 'CAT': window.location.href = baseUrl + 'ca/#/v2'; break;
+      case 'ES': window.location.href = baseUrl + 'es/#/v2'; break;
+      case 'PL'  : window.location.href = baseUrl + 'pl/#/v2'; break;
+    }
+}
 }
