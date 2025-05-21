@@ -13,7 +13,6 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { RadioButtonModule } from 'primeng/radiobutton';
 
 
-import { DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_FAMILY } from "@eda/configs/personalitzacio/customizables";
 import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 
 @Component({
@@ -33,8 +32,10 @@ export class DashboardEditStyleDialog {
   
 
   public display: boolean = false;
-  public backgroundColor: string = DEFAULT_BACKGROUND_COLOR;
-  public panelColor: string = DEFAULT_PANEL_COLOR;
+  public backgroundColor: string = this.stylesProviderService.DEFAULT_BACKGROUND_COLOR;
+  public panelColor: string = this.stylesProviderService.DEFAULT_PANEL_COLOR;
+  public selectedPalette: string = this.stylesProviderService.DEFAULT_PALETTE_COLOR;
+  public allPalettes: any = this.stylesProviderService.ChartsPalettes;
   public properties: boolean = true;
   
   public fonts: Array<any> =
@@ -93,7 +94,7 @@ export class DashboardEditStyleDialog {
 
 
 
-  public sampleTextFont: string = DEFAULT_FONT_FAMILY;
+  public sampleTextFont: string = this.stylesProviderService.DEFAULT_FONT_FAMILY;
   public sampleTextStle: {} = {};
 
   /**Sample panel */
@@ -111,8 +112,8 @@ export class DashboardEditStyleDialog {
       this.dashBoardStyles = {} as DashboardStyles;
   }
 
-  ngOnInit(): void {
-    this.dashBoardStyles = this.dashboard.dashboard.config.styles;
+	ngOnInit(): void {
+	this.dashBoardStyles = this.dashboard.dashboard.config.styles;	
 	this.assignValues(this.dashBoardStyles);
 	this.setSampleTitleStyle();
 	this.setSampleFIltersStyle();
@@ -125,6 +126,8 @@ export class DashboardEditStyleDialog {
 	  /** Global colors */
 	this.backgroundColor = styles.backgroundColor;  
 	this.panelColor = styles.panelColor;
+	this.selectedPalette = styles.palette;  
+
 	  
 	/**Title */
 	this.selectedTitleFont = styles.filters.fontFamily;
@@ -198,12 +201,7 @@ export class DashboardEditStyleDialog {
 		};
 	}
 
-	public setCustomStyle() {
-
-  }
-  
-
-  public saveConfig(): void {
+  	public saveConfig(): void {
 		// this.dashBoardStyles.fontFamily = this.selectedFont.value;
 		const response: DashboardStyles = {
 			backgroundColor: this.backgroundColor,
@@ -231,6 +229,7 @@ export class DashboardEditStyleDialog {
 				fontSize: this.panelFontSize,
 				fontColor: this.panelFontColor
 			},
+			palette: this.selectedPalette
 		}
 		this.apply.emit(response);
 	}

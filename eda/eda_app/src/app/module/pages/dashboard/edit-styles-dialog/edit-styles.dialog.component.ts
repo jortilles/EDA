@@ -226,6 +226,7 @@ export class EditStylesDialogComponent extends EdaDialogAbstract {
 				fontSize: this.panelFontSize,
 				fontColor: this.panelFontColor
 			},
+			palette: this.dashBoardStyles.palette
 		}
 
 		this.onClose(EdaDialogCloseEvent.NEW, response);

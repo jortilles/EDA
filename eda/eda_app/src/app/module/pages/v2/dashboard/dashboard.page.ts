@@ -7,7 +7,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MenuModule } from 'primeng/menu';
 import { MessageModule } from 'primeng/message';
 import { CompactType, DisplayGrid, GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent, GridType } from 'angular-gridster2';
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles } from '@eda/services/service.index';
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService } from '@eda/services/service.index';
 import { EdaPanel, EdaPanelType, InjectEdaPanel } from '@eda/models/model.index';
 import { DashboardSidebarComponent } from '../components/dashboard-sidebar/dashboard-sidebar.component';
 import { GlobalFilterV2Component } from '../components/global-filter/global-filter.component';
@@ -33,6 +33,7 @@ export class DashboardPageV2 implements OnInit {
   private alertService = inject(AlertService);
   private fileUtils = inject(FileUtiles);
   private route = inject(ActivatedRoute);
+  private chartUtils = inject(ChartUtilsService);
 
   public title: string = $localize`:@@loading:Cargando informe...`;
   public styles: DashboardStyles;
@@ -185,9 +186,9 @@ export class DashboardPageV2 implements OnInit {
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
       this.globalFilter.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
-      console.log('dashboard', dashboard)
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
-      this.stylesProviderService.setStyles(this.styles);
+      this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
+      
       // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
       // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
       // me.selectedTags = me.selectedTagsForDashboard(me.tags, config.tag)
@@ -377,12 +378,6 @@ export class DashboardPageV2 implements OnInit {
   }
 
   public async saveDashboard() {
-    // this.triggerTimer();
-
-    // if (this.form.invalid) {
-    //   this.display_v.rightSidebar = false;
-    //   this.alertService.addError($localize`:@@mandatoryFields:Recuerde rellenar los campos obligatorios`);
-    // } else {
     console.log(this)
     const body = {
       config: {

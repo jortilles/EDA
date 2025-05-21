@@ -21,6 +21,45 @@ export const ChartsColors = [
     [85,85,85]
 ];
 
+export const ChartsPalettes = [
+    {
+        paleta: [
+            '#10B4BD', '#50B0BA', '#6BB1BA', '#81B0BA', '#96B1BA',
+            '#AAB1BB', '#C3B0BB', '#D6B2BB', '#EAB1BB', '#FDB0BA'
+        ]
+        , name: 'DEFAULT'
+    },{
+        paleta: [
+            '#024873', '#0FA697', '#F2C53D', '#BF814B', '#591202',
+            '#FFAE57', '#A9D531', '#FF8400', '#E77770', '#555555',
+            '#1F9DA5', '#2BD7E3', '#FEB714', '#B3CD7D', '#34956F',
+            '#FFAE57', '#A9D531', '#FF8400', '#E77770', '#555555'
+        ]
+        , name: 'Original'
+    },
+    {
+        paleta:[
+            '#1CEDB1', '#00B0BA', '#6CBEED', '#1CA1ED', '#1C5FED',
+            '#1C1DED', '#023E8A', '#000000', '#477679', '#7A7F7B'
+        ]
+        , name: 'Nueva2'
+    },
+    {
+        paleta: [
+            '#CAF0F8', '#ADE8F4', '#90E0EF', '#48CAE4', '#00B4D8',
+            '#0096C7', '#0077B6', '#023E8A', '#03045E', '#000000'
+        ]
+        , name: 'Nueva3'
+    },
+    {
+        paleta: [
+            '#425EEB', '#9342EB', '#5C42EB', '#4192EB', '#CA42EB', '#9E90EB'
+        ]
+        , name: 'Nueva4'
+    },
+    
+];
+
 export const LogoImage = 'assets/images/logos/logo.png';
 
 export const LogoSidebar = 'assets/images/logos/logo.png';
@@ -33,6 +72,7 @@ export const Tema = 'default-dark';
 
 export const TemaUrl = 'assets/css/colors/sass/default-dark.css';
 
+
 export const DEFAULT_BACKGROUND_COLOR: string = '#f1f0f0';
 export const DEFAULT_PANEL_COLOR: string = '#ffffff';
 export const DEFAULT_FONT_COLOR: string = '#455a64'
@@ -41,3 +81,4 @@ export const DEFAULT_FONT_SIZE: number = 0;
 export const DEFAULT_TITLE_ALIGN : string = 'center';
 export const DEFAULT_PANEL_TITLE_ALIGN : string = 'left';
 export const NULL_VALUE : string = 'null' ;
+export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === 'DEFAULT');

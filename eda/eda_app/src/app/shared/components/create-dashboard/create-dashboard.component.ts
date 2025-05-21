@@ -37,7 +37,7 @@ export class CreateDashboardComponent implements OnInit {
         private groupService: GroupService,
         private dashboardService: DashboardService,
         // private sidebarService: SidebarService,
-        // private stylesProviderService: StyleProviderService
+        private stylesProviderService: StyleProviderService
     ) {
         this.initializeForm();
     }
@@ -114,7 +114,7 @@ export class CreateDashboardComponent implements OnInit {
                     visible: this.form.value.visible,
                     tag: null, 
                     refreshTime:null, 
-                    styles: null, //TODO this.stylesProviderService.generateDefaultStyles(),
+                    styles: this.stylesProviderService.generateDefaultStyles(),
                     external: null
                 },
                 group: this.form.value.group

@@ -2,7 +2,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, Input, ViewChild } from "@an
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import { DashboardPageV2 } from "../../dashboard/dashboard.page";
-import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService } from "@eda/services/service.index";
+import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
 import { EdaPanel, EdaPanelType, EdaTitlePanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
 import { DashboardSaveAsDialog } from "../dashboard-save-as/dashboard-save-as.dialog";
@@ -52,6 +52,7 @@ export class DashboardSidebarComponent {
   private spinner = inject(SpinnerService);
   private alertService = inject(AlertService);
   private stylesProviderService =  inject(StyleProviderService)
+  private ChartUtilsService =  inject(ChartUtilsService)
   
   
   @ViewChild('popover') popover!: OverlayPanel;
@@ -320,7 +321,18 @@ export class DashboardSidebarComponent {
   public saveStyles(newStyles: any) {
     this.isEditStyleDialogVisible = false;
     this.dashboard.dashboard.config.styles = newStyles;
-  }
+    this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
+
+    // Elimina los colores específicos de cada panel para aplicar la paleta global
+    if (Array.isArray(this.dashboard.panels)) {
+        this.dashboard.panels.forEach(panel => {
+            if (panel.content?.query?.output?.config) {
+                panel.content.query.output.config.colors = undefined;
+            }
+        });
+    }
+    this.dashboard.refreshPanels();
+}
 
   public closeVisibleModal() {
     this.isVisibleModalVisible = false;

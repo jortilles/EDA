@@ -3902,10 +3902,15 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Kolor tła </target>
   </trans-unit>
 
-     <trans-unit id="ChangePaneColor">
+  <trans-unit id="ChangePaneColor">
     <source>Color del panel</source>
     <target>Kolor panelu</target>
   </trans-unit>
+
+  <trans-unit id="ChangeDefaultsColors">
+    <source>Color del los gráficos</source>
+    <target>Kolor wykresy</target>
+  </trans-unit> 
 
   <trans-unit id="opcionEditarEstilos">
     <source>EDITAR ESTILOS</source>
