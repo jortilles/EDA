@@ -287,36 +287,11 @@ export const PanelOptions = {
       label: $localize`:@@panelOptions6:Pregunte a la IA`,
       icon: 'fas fa-brain',
       command: () => {
-        console.log('panelComponent ::::: ', panelComponent)
-        // panelComponent.contextMenu.hideContextMenu();
-        // panelComponent.removePanel();
-      }
-    });
-
-
-    return new EdaContextMenuItem({
-      label: $localize`:@@panelOptions1:Editar consulta`,
-      icon: 'fa fa-cog',
-      command: () => {
-        if (panelComponent.panel.content) {
-
-          panelComponent.panelDeepCopy = _.cloneDeep(panelComponent.panel.content, true);
-          if (panelComponent.selectedQueryMode == 'EDA2') {
-            panelComponent.panelDeepCopy.rootTable = _.cloneDeep(panelComponent.rootTable);
-          }
-          panelComponent.display_v.disablePreview = false;
-
-        } else {
-          panelComponent.display_v.disablePreview = true;
-        }
-        if (Object.entries(panelComponent.graficos).length !== 0) {
-          panelComponent.colorsDeepCopy = _.cloneDeep(panelComponent.graficos);
-        }
+        panelComponent.isVisibleEbpChatGpt = true;
         panelComponent.contextMenu.hideContextMenu();
-        panelComponent.openEditarConsulta();
-        panelComponent.index = 0;
       }
     });
+    
   } 
 
 }

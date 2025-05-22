@@ -5,7 +5,7 @@ import { CoreModule } from '../../core/core.module';
 import { SharedModule } from '../../shared/shared.module';
 import { EdaBlankPanelComponent } from './eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { PanelChartComponent} from './eda-panels/eda-blank-panel/panel-charts/panel-chart.component'
-
+import { EbpChatgptComponent } from '../pages/v2/components/ebp-chatgpt/ebp-chatgpt.component'
 
 // Component
 import {
@@ -61,7 +61,8 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
         PrimengModule,
         CoreModule,
         SharedModule,
-        IconComponent
+        IconComponent,
+        EbpChatgptComponent
     ],
     declarations: [
         EdaBlankPanelComponent,
