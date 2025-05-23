@@ -44,6 +44,7 @@
         "nodemailer": "^6.7.2",
         "nodemon": "^2.0.20",
         "object-hash": "^3.0.0",
+        "openai": "^4.103.0",
         "oracledb": "^5.0.0",
         "password_hash": "^1.1.0",
         "pg": "^8.2.1",

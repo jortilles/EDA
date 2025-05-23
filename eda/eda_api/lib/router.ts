@@ -9,7 +9,7 @@ import FuncionalidadUrl from './module/funcionalidadUrl/funcionalidadUrl.router'
 import DocuRouter from './routes/api/api-docs'
 import ExcelRouter from './module/excel/excel-sheet.router';
 import ThirdPartyRouter from './module/thirdParty/thirdParty.router';
-
+import ChatGptRouter from './module/chatgpt/chatgpt.router'
 
 const router = express.Router();
 
@@ -30,6 +30,8 @@ router.use('/funcionalidadUrl', FuncionalidadUrl);
 router.use('/excel-sheets',ExcelRouter);
 
 router.use('/tp', ThirdPartyRouter);
+
+router.use('/chatgpt', ChatGptRouter);
 
 /* ruta per documentació*/
 router.use("/api-docs", DocuRouter);
