@@ -124,13 +124,10 @@
           {{ report.config?.title }}
         </h3>
       }@else {
-        <input class="text-base font-semibold px-2 py-1" 
-          [(ngModel)]="editTitle"  
-          (blur)="handleEditing('done', report)"
-          (keydown.enter)="handleEditing('done', report)"
-          (keydown.escape)="handleEditing('cancel', report)"
-          (click)="$event.stopPropagation()"
-          autofocus
+        <input class="edit-title-input text-base font-semibold px-2 py-1"
+        [(ngModel)]="editTitle" (blur)="handleEditing('done', report)"
+        (keydown.enter)="handleEditing('done', report)" (keydown.escape)="handleEditing('cancel', report)"
+        (click)="$event.stopPropagation()"autofocus
         />
       }
 

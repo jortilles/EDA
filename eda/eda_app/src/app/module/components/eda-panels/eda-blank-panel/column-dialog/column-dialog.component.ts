@@ -298,7 +298,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     /**Gestiona las agregaciones de la columna seleccionada */
     public handleAggregationType(): void {
         const column = this.selectedColumn;
-
         const matchingQuery = this.controller.params.currentQuery.find((c: any) =>
             c.table_id === column.table_id &&
             c.column_name === column.column_name &&
@@ -315,13 +314,13 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             // Si ja s'ha carregat el panell i tenim dades a this.select
             if (selectedAggregation) {
                 tmpAggTypes.push(...column.aggregation_type);
-                  
+
                 if (matchingQuery) {
                     this.aggregationsTypes = JSON.parse(JSON.stringify(matchingQuery.aggregation_type));
                 }
 
                 return;
-            } else{
+            } else {
                 this.aggregationsTypes = JSON.parse(JSON.stringify(this.controller.params.selectedColumn.aggregation_type));
             }
         } else {
@@ -570,7 +569,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     getAggName(value: string) {
-        return aggTypes.filter(agg => agg.value === value)[0].label;
+        return aggTypes.find(agg => agg.value === value)?.label;
     }
 
     processPickerEvent(event) {

@@ -220,8 +220,8 @@ export const QueryUtils = {
       }
 
       /**
-          * Too much rows check
-          */
+     * Too much rows check
+     */
       const totalTableCount = ebp.currentQuery.reduce((a, b) => {
         return a + parseInt(b.tableCount);
       }, 0);

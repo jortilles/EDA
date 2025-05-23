@@ -215,9 +215,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         const dataTypes = this.props.query.map(column => column.column_type);
-    
         let values = _.cloneDeep(this.props.data.values);
-
         /**
         * add comparative
         */
@@ -299,22 +297,20 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         chartConfig.chartLabels = chartData[0];
         chartConfig.chartDataset = chartData[1];
-        chartConfig.chartDataset = chartData[1];
         chartConfig.chartOptions = config.chartOptions;
-        chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
-        
-        // chartColors unicamente se reflejan si estan dentro del chartDataset 
-        if (!chartData[1][0]?.backgroundColor){
-            chartData[1].forEach(( e,i) => {
-                try{
-                    e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
-                    e.borderColor = chartConfig.chartColors[i].borderColor;
-                }catch(err){
-                    // si tinc una tendencia no tinc color per aquesta grafica. No hauria de ser aixi.....
-                    e.backgroundColor =   this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor;
-                    e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
-                }
-            });
+
+        const numberOfSlices = chartConfig.chartLabels.length;
+        chartConfig.chartColors = this.chartUtils.recoverChartColors(
+            this.props.chartType,
+            this.props.config,
+            numberOfSlices
+        );
+
+     
+        if (chartConfig && chartConfig.chartDataset && chartConfig.chartDataset.length > 0) {
+            const dataset = chartConfig.chartDataset[0]; 
+            dataset.backgroundColor = chartConfig.chartColors.map(colorObj => colorObj.backgroundColor.toUpperCase());
+            dataset.borderColor = chartConfig.chartColors.map(colorObj => colorObj.borderColor.toUpperCase());
         }
 
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
@@ -501,10 +497,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.edaChart.chartLabels = chartData[0];
         chartConfig.edaChart.chartDataset = chartData[1];
         chartConfig.edaChart.chartOptions = chartOptions.chartOptions;
-        chartConfig.edaChart.chartColors = this.chartUtils.recoverChartColors(chartType, this.props.config) || [];
-        
-        // chartColors unicamente se reflejan si estan dentro del chartDataset
-        if (chartConfig.edaChart.chartColors.length>0) {
+        chartConfig.edaChart.chartColors = this.chartUtils.recoverChartColors(
+            this.props.chartType,
+            this.props.config,
+            1
+        );        
+
+        if (chartConfig.edaChart.chartColors.length > 0) {
             chartConfig.edaChart.chartDataset[0].backgroundColor = chartConfig.edaChart.chartColors[0].backgroundColor;
             chartConfig.edaChart.chartDataset[0].borderColor = chartConfig.edaChart.chartColors[0].borderColor;
         }

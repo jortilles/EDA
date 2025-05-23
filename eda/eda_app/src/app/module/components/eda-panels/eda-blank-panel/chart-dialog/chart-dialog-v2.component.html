@@ -4,10 +4,7 @@
     <div class="p-6 flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
       <div class="relative h-full w-full">
         @if (display) {
-          <panel-chart #PanelChartComponent
-            [props]="panelChartConfig"
-            class="h-full w-full block"
-          ></panel-chart>
+        <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-full w-full block"></panel-chart>
         }
       </div>
     </div>
@@ -16,22 +13,14 @@
     <div class="p-6 flex-1 overflow-y-auto">
       <!-- Tabs -->
       <div class="mb-6 w-full grid grid-cols-2">
-        <button 
-          (click)="setActiveTab('display')" 
-          class="py-2 px-4 text-center transition-colors" 
-          [class.bg-slate-100]="activeTab === 'display'"
-          [class.border-b-2]="activeTab === 'display'"
-          [class.border-primary]="activeTab === 'display'"
-          [class.font-medium]="activeTab === 'display'">
+        <button (click)="setActiveTab('display')" class="py-2 px-4 text-center transition-colors"
+          [class.bg-slate-100]="activeTab === 'display'" [class.border-b-2]="activeTab === 'display'"
+          [class.border-primary]="activeTab === 'display'" [class.font-medium]="activeTab === 'display'">
           <span i18n="@@TODO">Visualización</span>
         </button>
-        <button 
-          (click)="setActiveTab('colors')" 
-          class="py-2 px-4 text-center transition-colors" 
-          [class.bg-slate-100]="activeTab === 'colors'"
-          [class.border-b-2]="activeTab === 'colors'"
-          [class.border-primary]="activeTab === 'colors'"
-          [class.font-medium]="activeTab === 'colors'">
+        <button (click)="setActiveTab('colors')" class="py-2 px-4 text-center transition-colors"
+          [class.bg-slate-100]="activeTab === 'colors'" [class.border-b-2]="activeTab === 'colors'"
+          [class.border-primary]="activeTab === 'colors'" [class.font-medium]="activeTab === 'colors'">
           <span i18n="@@colorsChartH6">Colores</span>
         </button>
       </div>
@@ -46,61 +35,72 @@
 
           <div class="space-y-4">
             @if (panelChartConfig.edaChart !== 'histogram') {
-              <!-- Tendencia -->
-              @if (showTrend) {
-                <div class="flex items-center justify-between">
-                  <div class="space-y-0.5">
-                    <div class="flex items-center gap-2">
-                      <label i18n="@@addtrend" for="tendencia" class="font-medium">
-                        Tendencia
-                      </label>
-                      <div class="relative group">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <path d="M12 16v-4"></path>
-                          <path d="M12 8h.01"></path>
-                        </svg>
-                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                          Mostrar línea de tendencia en el gráfico
-                        </div>
-                      </div>
-                    </div>
-                    <p class="text-md text-slate-500">Muestra la línea de tendencia en el gráfico</p>
-                  </div>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="addTrend" class="sr-only peer" (ngModelChange)="checkTrend()">
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
+            <!-- Tendencia -->
+            @if (showTrend) {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@addtrend" for="tendencia" class="font-medium">
+                    Tendencia
                   </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      Mostrar línea de tendencia en el gráfico
+                    </div>
+                  </div>
                 </div>
-              }
+                <p class="text-md text-slate-500">Muestra la línea de tendencia en el gráfico</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="addTrend" class="sr-only peer" (ngModelChange)="checkTrend()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                </div>
+              </label>
+            </div>
+            }
 
-              <!-- Comparativa -->
-              @if (showComparative) {
-                <div class="flex items-center justify-between">
-                  <div class="space-y-0.5">
-                    <div class="flex items-center gap-2">
-                      <label i18n="@@addComparative" for="comparativa" class="font-medium">
-                        Comparativa
-                      </label>
-                      <div class="relative group">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <path d="M12 16v-4"></path>
-                          <path d="M12 8h.01"></path>
-                        </svg>
-                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                          Habilita la comparación con períodos anteriores
-                        </div>
-                      </div>
-                    </div>
-                    <p class="text-md text-slate-500">Compara con datos de períodos anteriores</p>
-                  </div>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" [(ngModel)]="addComparative" class="sr-only peer" (ngModelChange)="setComparative()">
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
+            <!-- Comparativa -->
+            @if (showComparative) {
+            <div class="flex items-center justify-between">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <label i18n="@@addComparative" for="comparativa" class="font-medium">
+                    Comparativa
                   </label>
+                  <div class="relative group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 16v-4"></path>
+                      <path d="M12 8h.01"></path>
+                    </svg>
+                    <div
+                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                      Habilita la comparación con períodos anteriores
+                    </div>
+                  </div>
                 </div>
-              }
+                <p class="text-md text-slate-500">Compara con datos de períodos anteriores</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="addComparative" class="sr-only peer"
+                  (ngModelChange)="setComparative()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                </div>
+              </label>
+            </div>
+            }
             }
             <!-- Mostrar Etiquetas -->
             <div class="flex items-center justify-between">
@@ -110,12 +110,15 @@
                     Mostrar Etiquetas
                   </label>
                   <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
                       <circle cx="12" cy="12" r="10"></circle>
                       <path d="M12 16v-4"></path>
                       <path d="M12 8h.01"></path>
                     </svg>
-                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                    <div
+                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       Muestra las etiquetas de cada segmento
                     </div>
                   </div>
@@ -124,7 +127,9 @@
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="showLabels" class="sr-only peer" (ngModelChange)="setShowLables()">
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                </div>
               </label>
             </div>
 
@@ -136,12 +141,15 @@
                     Mostrar Etiquetas en Porcentajes
                   </label>
                   <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="text-slate-400">
                       <circle cx="12" cy="12" r="10"></circle>
                       <path d="M12 16v-4"></path>
                       <path d="M12 8h.01"></path>
                     </svg>
-                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
+                    <div
+                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       Muestra los porcentajes en las etiquetas
                     </div>
                   </div>
@@ -149,8 +157,11 @@
                 <p class="text-md text-slate-500">Muestra el valor porcentual de cada segmento</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" [(ngModel)]="showLabelsPercent" class="sr-only peer" (ngModelChange)="setShowLablesPercent()">
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]"></div>
+                <input type="checkbox" [(ngModel)]="showLabelsPercent" class="sr-only peer"
+                  (ngModelChange)="setShowLablesPercent()">
+                <div
+                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+                </div>
               </label>
             </div>
           </div>
@@ -160,35 +171,53 @@
 
       <!-- Colors Tab -->
       @if (activeTab === 'colors') {
-        <div class="space-y-6">
-          <div class="space-y-4">
-            <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colors</h3>
+      <div class="space-y-6">
+        <div class="space-y-4">
+          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colors</h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              @for (item of series; track item.label) {
-                <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-                  <span class="font-medium">{{ item.label }}</span>
-                  <div class="flex items-center gap-2">
-                    <span class="text-md text-slate-500 font-mono">{{ item.bg }}</span>
-                    <p-colorPicker [(ngModel)]="item.bg" (onChange)="handleInputColor(item)" format="hex" appendTo="body"/>
-                    <!-- <div class="w-6 h-6 rounded-full border border-slate-200" [style.backgroundColor]="item.bg"></div> -->
-                  </div>
+          <div class="grid gap-4 grid-rows-auto gap-6">
+            <div>
+              <h6 i18n="@@@@ChangeDefaultsColors" class="mb-1">Color del los gráficos:</h6>
+              <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
+                [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+                @for (palette of allPalettes; track $index) {
+                <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+                }
+              </select>
+
+              <div class="grid grid-cols-2">
+                @for (serie of series; track serie) {
+                <div>
+                  <input type="text" pInputText [value]="serie.label" disabled="true"
+                    [style.border-color]="serie.bg['borderColor']" />
+
+                  <p-colorPicker [(ngModel)]="serie.bg['backgroundColor']" (onChange)="handleInputColor(serie)"
+                    format="hex" appendTo="body">
+                  </p-colorPicker>
+
+                  <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg['backgroundColor']"
+                    (input)="handleInputColor(serie)" minlength="7">
                 </div>
-              }
+                }
+              </div>
             </div>
           </div>
         </div>
+      </div>
       }
     </div>
   </div>
 
   <div footer>
     <div class="flex justify-end p-2 border-t gap-1.5">
-      <button  class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
+      <button class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md"
+        (click)="closeChartConfig()">
         <i class="fa fa-times"></i>
         <span i18n-label="@@cancelarBtn">Cancelar</span>
       </button>
-      <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" (click)="saveChartConfig()">
+      <button
+        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md"
+        (click)="saveChartConfig()">
         <i class="fa fa-check"></i> <span>Confirmar</span>
       </button>
     </div>

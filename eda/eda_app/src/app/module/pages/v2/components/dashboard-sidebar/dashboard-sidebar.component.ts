@@ -2,7 +2,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, Input, ViewChild } from "@an
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import { DashboardPageV2 } from "../../dashboard/dashboard.page";
-import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService } from "@eda/services/service.index";
+import { AlertService, DashboardService, FileUtiles, SpinnerService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
 import { EdaPanel, EdaPanelType, EdaTitlePanel } from "@eda/models/model.index";
 import { lastValueFrom } from "rxjs";
 import { DashboardSaveAsDialog } from "../dashboard-save-as/dashboard-save-as.dialog";
@@ -52,6 +52,7 @@ export class DashboardSidebarComponent {
   private spinner = inject(SpinnerService);
   private alertService = inject(AlertService);
   private stylesProviderService =  inject(StyleProviderService)
+  private ChartUtilsService =  inject(ChartUtilsService)
   
   
   @ViewChild('popover') popover!: OverlayPanel;
@@ -303,27 +304,58 @@ export class DashboardSidebarComponent {
     }
   }
 
-  public closeSaveStyles(newStyles: any) {
-    //Devuelve DashboardStyles, import? 
+
+  public closeCustomAction() {
+    this.isCustomActionDialogVisible = false;
+  }
+
+  public saveCustomAction(url: any) {
+    this.isCustomActionDialogVisible = false;
+    this.dashboard.dashboard.config.urls = url;
+  }
+
+  public closeStyles() {
     this.isEditStyleDialogVisible = false;
-    if(newStyles !== undefined) // onClose devuelve undefined 
-      this.dashboard.dashboard.config.styles = newStyles;
-  }
-  public closeCustomAction(url: any) {
-    this.isCustomActionDialogVisible = false;
-    if(url !== undefined) // onClose devuelve undefined
-      this.dashboard.dashboard.config.urls = url;
   }
 
-  public closeMailConfig(mailconfig: any) {
-    this.isCustomActionDialogVisible = false;
-    this.dashboard.sendViaMailConfig = mailconfig;
-  }
+  public saveStyles(newStyles: any) {
+    this.isEditStyleDialogVisible = false;
+    this.dashboard.dashboard.config.styles = newStyles;
+    this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
 
-  public closeVisibleModal(visibility: any) {
+    // Elimina los colores específicos de cada panel para aplicar la paleta global
+    if (Array.isArray(this.dashboard.panels)) {
+        this.dashboard.panels.forEach(panel => {
+            if (panel.content?.query?.output?.config) {
+                panel.content.query.output.config.colors = undefined;
+            }
+        });
+    }
+    this.dashboard.refreshPanels();
+}
+
+  public closeVisibleModal() {
     this.isVisibleModalVisible = false;
-    this.dashboard.dashboard.config.visible = visibility.visible;
   }
+
+  public saveVisibleModal(privacity: any) {
+    this.isVisibleModalVisible = false;
+    this.dashboard.dashboard.config.visible = privacity.visible;
+    if (privacity.visible === 'group')
+      this.dashboard.dashboard.group = privacity.group.map(grup => grup._id);
+    else
+      this.dashboard.dashboard.group = []
+  }
+
+  public closeMailConfig() {
+    this.isCustomActionDialogVisible = false;
+  }
+
+  public saveMailConfig(mailConfig: any) {
+    this.isCustomActionDialogVisible = false;
+    //this.dashboard.sendViaMailConfig = mailConfig;  
+  }
+
 
   public closeTagModal(tags: any[]) {
     this.isTagModalVisible = false;

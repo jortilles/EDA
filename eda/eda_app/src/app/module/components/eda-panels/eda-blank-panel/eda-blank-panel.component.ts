@@ -60,6 +60,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @Output() remove: EventEmitter<any> = new EventEmitter();
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();
+    @Output() panelConfigChanged: EventEmitter<any> = new EventEmitter<IPanelAction>();
 
     /** propietats que s'injecten al dialog amb les propietats específiques de cada gràfic. */
     public configController: EdaDialogController;
@@ -724,7 +725,7 @@ export class EdaBlankPanelComponent implements OnInit {
      * Move column with drag and drop
      * @param event 
      */
-    public drop(event: any) {
+    public drop(event: any, list?: any) {
         if (event.previousContainer === event.container) {
             //Reordeno
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -732,8 +733,9 @@ export class EdaBlankPanelComponent implements OnInit {
             transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
             //obor dialeg o filre
             const column = <Column><unknown>event.container.data[event.currentIndex];
+            const className = list || event.container.element.nativeElement.className.toString() || '';
 
-            if(event.container.element.nativeElement.className.toString().includes('select-list')) {
+            if(className.includes('select-list')) {
                 this.moveItem(column);
                 this.openColumnDialog(column);
             } else {
@@ -948,6 +950,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 const layout = new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType, this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels, this.graficos.showLabelsPercent,this.graficos.numberOfColumns));
 
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
+                this.panelConfigChanged.emit(this.panel);
             }
             //not saved alert message
             this.dashboardService._notSaved.next(true);

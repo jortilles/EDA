@@ -14,6 +14,7 @@ import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/kpi-config';
+import { DEFAULT_PALETTE_COLOR } from '@eda/configs/index';
 
 export interface EdaChartType {
     label: string;
@@ -115,6 +116,7 @@ export class ChartUtilsService {
 
     public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
 
+    public MyPaletteColors: string[] = DEFAULT_PALETTE_COLOR;
 
     /*
         Funció especifica per transformar les dades per el velocímetre (knob)
@@ -808,62 +810,140 @@ export class ChartUtilsService {
         return notAllowed;
     }
 
+
+
+
+
+
+//REPLACE
+
+
     /**
      * Check if actual config is compatible with actual chart and returns a valid color configuration
      * @param currentChartype
      * @param layout
      */
-    public recoverChartColors(currentChartype: string, layout: ChartConfig) {
-        let config = layout.getConfig();
+     
 
-        if (config instanceof KpiConfig) {
-            config = config.edaChart;
+    private generateRGBGradientScale(
+        numberOfColors: number,
+        baseColors: string[]
+    ): Array<{ backgroundColor: string, borderColor: string }> {
+
+        // Charts de un único color
+        if (numberOfColors === 1) {
+            const color = baseColors[0].toUpperCase();
+            return [{ backgroundColor: color, borderColor: color }];
         }
 
-        if (config && (<ChartJsConfig>config).chartType.includes(currentChartype)) {
-            return this.mergeColors(layout)
-        } else {
-            return this.generateColors(currentChartype);
+        const colorList: Array<{ backgroundColor: string, borderColor: string }> = [];
+        const numSegments = baseColors.length - 1;
+        const baseRgbColors = baseColors.map(hex => this.hex2rgb(hex));
+
+        //Generamos lista en rgb y pasamos a hex
+        for (let i = 0; i < numberOfColors; i++) {
+            const globalFactor = i / (numberOfColors - 1);
+            let segmentIndex = Math.floor(globalFactor * numSegments);
+            if (segmentIndex >= numSegments) {
+                segmentIndex = numSegments - 1;
+            }
+
+            const [r1, g1, b1] = baseRgbColors[segmentIndex];
+            const [r2, g2, b2] = baseRgbColors[segmentIndex + 1];
+
+            const localFactor = (globalFactor * numSegments) - segmentIndex;
+            const t = (i === numberOfColors - 1) ? 1 : localFactor;
+
+            const r_interp = r1 + t * (r2 - r1);
+            const g_interp = g1 + t * (g2 - g1);
+            const b_interp = b1 + t * (b2 - b1);
+
+            const interpolatedColorHex = this.rgbToHex(r_interp, g_interp, b_interp).toUpperCase();
+            colorList.push({ backgroundColor: interpolatedColorHex, borderColor: interpolatedColorHex });
+        }
+        return colorList;
+    }
+
+
+    public recoverChartColors(currentChartype: string, layout: ChartConfig, numberOfColors: number): Array<{ backgroundColor: string, borderColor: string }> {
+        let config = layout.getConfig();
+        
+        if (config instanceof KpiConfig) { config = config.edaChart; }
+
+        const configColors = (<ChartJsConfig>config)?.colors;
+
+        // Si hay colores en la configuración, tienen la estructura correcta y son suficientes, los recupera.
+        if (configColors && Array.isArray(configColors) && configColors.length >= numberOfColors &&
+            configColors.every(c =>
+                c !== null && typeof c === 'object' &&
+                'backgroundColor' in c && typeof c.backgroundColor === 'string' &&
+                'borderColor' in c && typeof c.borderColor === 'string'
+            ))
+        {
+            const typedConfigColorsSlice = configColors.slice(0, numberOfColors) as Array<{ backgroundColor: string, borderColor: string }>;
+             return typedConfigColorsSlice.map(c => ({
+                 backgroundColor: c.backgroundColor,
+                 borderColor: c.borderColor
+             }));
+
+        } else { // Si no hay colores en la configuración o no son válidos/suficientes, genera.
+            return this.generateColors(currentChartype, numberOfColors);
         }
     }
 
-    public generateColors(type: string) {
-        type = type.replace('kpi', '');
-
-        switch (type) {
-            case 'doughnut': return EdaChartComponent.generatePiecolors();
-            case 'polarArea': return EdaChartComponent.generatePiecolors();
-            case 'bar': return EdaChartComponent.generateChartColors();
-            case 'radar': return EdaChartComponent.generateChartColors();
-            case 'line': return EdaChartComponent.generateChartColors();
-            case 'horizontalBar': return EdaChartComponent.generateChartColors();
-            case 'histogram': return EdaChartComponent.generateChartColors();
+    public generateColors(type: string, numberOfColors: number): Array<{ backgroundColor: string, borderColor: string }> {
+        const cleanType = type.replace('kpi', '');
+        switch (cleanType) {
+            case 'doughnut':
+            case 'polarArea':
+                return this.generateRGBGradientScale(numberOfColors, this.MyPaletteColors);
+            case 'bar':
+            case 'radar':
+            case 'line':
+            case 'horizontalBar':
+            case 'histogram':
+                return this.generateRGBGradientScale(1, this.MyPaletteColors);
+            default:
+                return [];
         }
     }
 
-    public mergeColors(layout: ChartConfig) {
-        let config = layout.getConfig();
+    // Funciones de transformaciones de codigos de colores
+    private toHex(c: number): string {
+        const hex = Math.max(0, Math.min(255, Math.round(c))).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+    }
 
-        if (config instanceof KpiConfig) {
-            config = config.edaChart;
-        }
+    public hex2rgb(hex: string): [number, number, number] {
+        const cleanHex = hex.replace(/^#/, '');
+        const fullHex = cleanHex.length === 3 ?
+            cleanHex[0] + cleanHex[0] + cleanHex[1] + cleanHex[1] + cleanHex[2] + cleanHex[2] :
+            cleanHex;
+        if (fullHex.length !== 6) { return [0, 0, 0]; }
+        const bigint = parseInt(fullHex, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return [r, g, b];
+    }
 
-        if (!(<ChartJsConfig>config).colors) {
-            return this.generateColors((<ChartJsConfig>config).chartType);
-        }
+    public rgbToHex(r: number, g: number, b: number): string {
+        return `#${this.toHex(r)}${this.toHex(g)}${this.toHex(b)}`;
+    }
 
-        if ((<ChartJsConfig>config).chartType === 'doughnut' || (<ChartJsConfig>config).chartType === 'polarArea') {
-            let edaColors = EdaChartComponent.generatePiecolors();
+    public rgbaToHex(rgbaString: string): string {
+        const parts = rgbaString.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d*\.?\d+))?\)$/);
+        if (!parts) { return '#000000'; }
+        const r = parseInt(parts[1], 10);
+        const g = parseInt(parts[2], 10);
+        const b = parseInt(parts[3], 10);
+        return this.rgbToHex(r, g, b);
+    }
 
-            (<ChartJsConfig>config).colors[0]['backgroundColor'].forEach((element, i) => {
-                edaColors[0].backgroundColor[i] = element;
-            });
-
-            (<ChartJsConfig>config).colors[0]['backgroundColor'] = edaColors[0].backgroundColor;
-
-        }
-
-        return (<ChartJsConfig>config).colors;
+    public hexToRgbaString(hex: string, opacity: number): string {
+        const [r, g, b] = this.hex2rgb(hex); // 
+        const alpha = Math.max(0, Math.min(1, opacity / 100));
+        return `rgba(${Math.round(r)},${Math.round(g)},${Math.round(b)},${alpha.toFixed(2)})`;
     }
 
     public describeData(currentQuery: any, labels: any) {

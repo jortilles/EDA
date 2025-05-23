@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import {DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_COLOR, DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE, DEFAULT_TITLE_ALIGN,DEFAULT_PANEL_TITLE_ALIGN  } from  "../../config/personalitzacio/customizables";
+import {DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_COLOR, DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE, DEFAULT_TITLE_ALIGN,DEFAULT_PANEL_TITLE_ALIGN, DEFAULT_PALETTE_COLOR, ChartsPalettes  } from  "../../config/personalitzacio/customizables";
 
 
 export interface StyleConfig {
@@ -15,6 +15,7 @@ export interface DashboardStyles {
 	titleAlign: string;
 	panelTitleAlign: string;
 	customCss: string;
+	palette: string;
 	title: StyleConfig;
 	filters: StyleConfig;
 	panelTitle: StyleConfig;
@@ -33,9 +34,14 @@ export class StyleProviderService {
 	public DEFAULT_FONT_SIZE: number = DEFAULT_FONT_SIZE;
 	public DEFAULT_TITLE_ALIGN: string = DEFAULT_TITLE_ALIGN;
 	public DEFAULT_PANEL_TITLE_ALIGN: string = DEFAULT_PANEL_TITLE_ALIGN;
+	public DEFAULT_PALETTE_COLOR: string = DEFAULT_PALETTE_COLOR;
+	public ChartsPalettes: any = ChartsPalettes;
 
 	public DEFAULT_CUSTOM_CSS: string = '';
 	
+	/**Page palette */
+	private _pagePalette = new BehaviorSubject<string>(this.DEFAULT_PALETTE_COLOR);
+	public pagePalette = this._pagePalette.asObservable();
 
 	/**Page background */
 	private _pageBackground = new BehaviorSubject<string>(this.DEFAULT_BACKGROUND_COLOR);
@@ -105,6 +111,7 @@ export class StyleProviderService {
 
 	public setStyles(styles: DashboardStyles) {
 
+		this._pagePalette.next(styles.palette);
 		this._pageBackground.next(styles.backgroundColor);
 		this._panelColor.next(styles.panelColor);
 
@@ -197,6 +204,7 @@ export class StyleProviderService {
 				fontSize: this.DEFAULT_FONT_SIZE,
 				fontColor: this.DEFAULT_FONT_COLOR
 			},
+			palette: this.DEFAULT_PALETTE_COLOR,
 		}
 
 		return styles

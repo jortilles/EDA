@@ -924,17 +924,23 @@
 </div>
 
 
-
+<!-- TODO -->
 <app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
 <app-column-value-list-dialog *ngIf="valueListController" [controller]="valueListController"></app-column-value-list-dialog>
 <app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController"></app-column-permission-dialog>
 <app-table-permission-dialog *ngIf="tablePermissionsController" [controller]="tablePermissionsController"></app-table-permission-dialog>
 <app-model-permission-dialog *ngIf="modelPermissionsController" [controller]="modelPermissionsController"></app-model-permission-dialog>
 <app-calculated-column-dialog *ngIf="newColController" [controller]="newColController"></app-calculated-column-dialog>
-<app-map-dialog *ngIf="mapController" [controller]="mapController"></app-map-dialog>
-<app-view-dialog id="viewDialog" *ngIf="viewController" [controller]="viewController"></app-view-dialog>
 <app-add-csv-dialog *ngIf="csvPanelController" [controller]="csvPanelController"></app-add-csv-dialog>
-<app-add-tag-dialog *ngIf="tagController" [controller]="tagController"></app-add-tag-dialog>
 <eda-cache-dialog *ngIf="cacheController" [controller]="cacheController"></eda-cache-dialog>
 <eda-security-dialog *ngIf="securityController" [controller]="securityController"></eda-security-dialog>
+
+<!-- Alex -->
+<app-map-dialog *ngIf="mapController" [controller]="mapController"></app-map-dialog>
+<!-- V2 -->
+<app-view-dialog *ngIf="showViewDialog" [model_id]="dataModelService.model_id" [user]="user" (close)="onCloseViewDialog($event)"></app-view-dialog>
+<app-add-tag-dialog *ngIf="showAddTagDialog" [model_id]="dataModelService.model_id" [tagArray]="modelPanel.metadata.tags" (close)="onCloseTagDialog($event)"></app-add-tag-dialog>
+
+
+
 

@@ -4358,6 +4358,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>El grupo no se ha podido actualizar</source>
         <target>El grup no s'ha pogut actualitzar</target>
       </trans-unit>
+      <trans-unit id="loginTitle">
+        <source>Inicio de sesión</source>
+        <target>Inici de sessió</target>
+      </trans-unit>
       <trans-unit id="panelOptions6">
         <source>Pregunte a la IA</source>
         <target>Pregunta a la IA</target>

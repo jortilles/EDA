@@ -45,3 +45,7 @@
     color: #00BFB3;
     border-bottom: 2px solid;
 }
+
+::ng-deep .p-dialog-header {
+    padding-bottom: 0.5em;
+}

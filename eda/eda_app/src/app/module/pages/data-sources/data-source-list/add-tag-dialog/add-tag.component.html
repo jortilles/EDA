@@ -1,0 +1,37 @@
+<eda-dialog2 [display]="display"
+  header="Add View" width="50vw" height="70vh"
+  (apply)="saveTags()"
+  (close)="closeDialog()">
+
+
+  <div content> 
+    <div class="grid space-y-5">
+      <div class="">
+        <label for="newTag" class="font-medium" i18n="@@newTagPlaceholder">Agregar nuevo tag</label>
+        <input
+          id="newTag"
+          type="text"
+          [(ngModel)]="newTag"
+          class="w-full border rounded-md p-2 focus:ring-1 focus:ring-emerald-500"
+        />
+        <button class="flex items-center gap-2 mt-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md hover:bg-[#00B0BA] hover:text-white" (click)="addItem()">
+          <i class="fa fa-save"></i>
+          <span i18n="@@saveNewTag">Añadir Tag</span>
+       </button>
+      </div>
+
+      <div class="">
+        <label for="selectedTags" class="font-medium">Tags seleccionados<span class="text-red-500">*</span></label>
+        <p-multiSelect
+          id="selectedTags"
+          [options]="tags"
+          [(ngModel)]="selectedTags"
+          [virtualScroll]="true"
+          [itemSize]="30"
+          [style]="{width: '100%'}"
+        ></p-multiSelect>
+      </div>
+    </div>
+  </div>
+  
+</eda-dialog2>
