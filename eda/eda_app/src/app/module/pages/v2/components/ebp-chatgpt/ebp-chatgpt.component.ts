@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 
 // Modulos necesarios
 import { SharedModule } from "@eda/shared/shared.module";
@@ -15,10 +15,12 @@ import { CommonModule } from '@angular/common';
   templateUrl: './ebp-chatgpt.component.html',
   styleUrl: './ebp-chatgpt.component.css'
 })
-export class EbpChatgptComponent implements OnInit{
+export class EbpChatgptComponent implements OnInit, AfterViewChecked{
 
   @Input() dataChatGpt: any;
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @ViewChild('messageContainer') private messageContainer!: ElementRef;
+  
   public display: boolean = false;
   public messages: { sender: 'user' | 'bot'; content: string }[] = [];
   public userInput: string = '';
@@ -29,6 +31,10 @@ export class EbpChatgptComponent implements OnInit{
   ngOnInit(): void {
     console.log('Inicio del componente ...')
     console.log('recibiendo la data: ', this.dataChatGpt);
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
   }
 
   sendMessage() { 
@@ -53,6 +59,7 @@ export class EbpChatgptComponent implements OnInit{
         const content = response.response.choices[0].message?.content;
         this.messages.push({ sender: 'bot', content: content });
         this.loading = false;
+        this.scrollToBottom();
       },
       error: (err) => {
         this.messages.push({ sender: 'bot', content: 'Error al conectar con ChatGPT.' });
@@ -61,6 +68,16 @@ export class EbpChatgptComponent implements OnInit{
       }
     })
 
+    // this.scrollToBottom();
+
+  }
+
+  scrollToBottom(): void {
+    try {
+      this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.warn('Error haciendo scroll:', err);
+    }
   }
 
 
