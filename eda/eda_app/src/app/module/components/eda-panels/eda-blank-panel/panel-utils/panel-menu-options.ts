@@ -287,6 +287,8 @@ export const PanelOptions = {
       label: $localize`:@@panelOptions6:Pregunte a la IA`,
       icon: 'fas fa-brain',
       command: () => {
+        // Entregamos la data al componente de ChatGpt
+        panelComponent.dataChatGpt = _.cloneDeep(panelComponent.panelChartConfig.data);
         panelComponent.isVisibleEbpChatGpt = true;
         panelComponent.contextMenu.hideContextMenu();
       }

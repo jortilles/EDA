@@ -6,6 +6,7 @@ import OpenAI from "openai";
 // Importanto elemento del ChatGpt
 const API_KEY = require('../../../config/chatgpt').API_KEY;
 const MODEL = require('../../../config/chatgpt').MODEL;
+const CONTEXT = require('../../../config/chatgpt').CONTEXT;
 
 
 export class ChatGptController {
@@ -24,7 +25,10 @@ export class ChatGptController {
 
             const response = await openai.chat.completions.create({
                 model: MODEL,
-                messages: [{ role: "user", content: input }],
+                messages: [
+                    { role: "user", content: CONTEXT },
+                    { role: "user", content: input }
+                ],
             })
 
             res.status(200).json({

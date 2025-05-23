@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 // Modulos necesarios
 import { SharedModule } from "@eda/shared/shared.module";
@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 })
 export class EbpChatgptComponent implements OnInit{
 
+  @Input() dataChatGpt: any;
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
   public display: boolean = false;
   public messages: { sender: 'user' | 'bot'; content: string }[] = [];
@@ -27,20 +28,28 @@ export class EbpChatgptComponent implements OnInit{
 
   ngOnInit(): void {
     console.log('Inicio del componente ...')
+    console.log('recibiendo la data: ', this.dataChatGpt);
   }
 
   sendMessage() { 
-    const input = this.userInput.trim();
+    let input = this.userInput.trim();
+
     if(!input) return;
 
-    this.messages.push({ sender: 'user', content: input });
+    const stringifiedData = this.dataChatGpt.values.map(row => {
+      return this.dataChatGpt.labels.map((label, i) => `${label}: ${row[i]}`).join(', ');
+    }).join('\n');
+
+    input = 'Responde con esta data: ' + stringifiedData + ` ${this.userInput}`
+
+    this.messages.push({ sender: 'user', content: this.userInput });
     this.userInput = '';
     this.loading = true;
 
     this.chatgptService.responseChatGpt(input).subscribe({
       next: (response) => {
 
-        console.log('response : ', response);
+        console.log('resupesta: ', response);
         const content = response.response.choices[0].message?.content;
         this.messages.push({ sender: 'bot', content: content });
         this.loading = false;
@@ -53,8 +62,6 @@ export class EbpChatgptComponent implements OnInit{
     })
 
   }
-
-
 
 
   public onApply() {

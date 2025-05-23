@@ -195,6 +195,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     // Dialog para el ChatGpt
     public isVisibleEbpChatGpt = false;
+    public dataChatGpt: any;
 
     // for the drag-drop component
     public axes:any[]=[]; 
