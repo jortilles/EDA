@@ -1,19 +1,17 @@
-// import { HttpClient } from '@angular/common/http';
-// import { Injectable } from '@angular/core';
-// import { Observable } from 'rxjs';
-// import { URL_SERVICES } from '../../config/config';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { ApiService } from './api.service';
+import { Observable } from 'rxjs';
 
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class ChatgptService {
-//   public API = URL_SERVICES;
+@Injectable({
+  providedIn: 'root'
+})
+export class ChatgptService extends ApiService{
 
-//   constructor(protected http: HttpClient) { }
+  public chatGptRoute = '/chatgpt';
 
-//   responseChatGpt(): Observable<any> {
-//     return this.http.post(this.API/)
-//   }
+  responseChatGpt(input: any): Observable<any> {
+    return this.post(`${this.chatGptRoute}/response`, input)
+  }
 
-
-// }
+}
