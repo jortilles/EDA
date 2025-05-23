@@ -1,13 +1,47 @@
 <eda-dialog2 
     [display]="display"
-    header="Preguntale a Ed  😊" width="50vw" height="50vh"
+    header="Preguntale a Eddie  😊" width="100vw" height="100vh"
     [disableApply]="disableApply()"
     (apply)="onApply()"
     (close)="onClose()">
 >
 
     <div content class="p-6">
-        <h1>Acá desarrollamos a Ed ...</h1>
+        <h1>Acá desarrollamos a Eddie ...</h1>
+
+        <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div class="w-full max-w-2xl bg-white rounded-xl shadow-md p-6 flex flex-col gap-4">
+            <h1 class="text-2xl font-bold mb-2">Chat con ChatGPT</h1>
+
+            <div class="flex-1 overflow-y-auto max-h-[400px] space-y-2">
+            <div *ngFor="let msg of messages" class="animate-in fade-in slide-in-from-bottom duration-300">
+                <div
+                [ngClass]="{
+                    'bg-blue-500 text-white self-end': msg.sender === 'user',
+                    'bg-gray-200 text-gray-900 self-start': msg.sender === 'bot'
+                }"
+                class="rounded-xl px-4 py-2 max-w-xs w-fit"
+                >
+                {{ msg.content }}
+                </div>
+            </div>
+            </div>
+
+            <form (ngSubmit)="sendMessage()" class="flex gap-2 items-center">
+            <input
+                [(ngModel)]="userInput"
+                name="chatInput"
+                class="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Escribe tu mensaje..."
+                autocomplete="off"
+            />
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition">
+                Enviar
+            </button>
+            </form>
+        </div>
+        </div>
+
 
     </div>
 

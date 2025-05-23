@@ -10,8 +10,8 @@ export class ChatgptService extends ApiService{
 
   public chatGptRoute = '/chatgpt';
 
-  responseChatGpt(input: any): Observable<any> {
-    return this.post(`${this.chatGptRoute}/response`, input)
+  responseChatGpt(message: string): Observable<any> {
+    return this.post(`${this.chatGptRoute}/response`, {input: message})
   }
 
 }
