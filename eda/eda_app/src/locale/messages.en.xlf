@@ -4305,6 +4305,46 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Inicio de sesión</source>
         <target>Login</target>
       </trans-unit>
+      <trans-unit id="restrictionAccess">
+        <source>Restringir Acceso</source>
+        <target>Restrict Access</target>
+      </trans-unit>
+      <trans-unit id="restrictionAccessDescription">
+        <source>Activar para limitar el acceso solo a usuarios autorizados</source>
+        <target>Enable to limit access to authorized users only</target>
+      </trans-unit>
+      <trans-unit id="permissionType">
+        <source>Tipo de Permisos</source>
+        <target>Permission Type</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeDescription">
+        <source>Selecciona cómo quieres gestionar los permisos</source>
+        <target>Select how you want to manage permissions</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeUser">
+        <source>Permisos por Usuario</source>
+        <target>User-Based Permissions</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroup">
+        <source>Permisos por Grupo</source>
+        <target>Group-Based Permissions</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeUserDescription">
+        <source>Asignar permisos individualmente a usuarios específicos</source>
+        <target>Assign permissions individually to specific users</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroupDescription">
+        <source>Asignar permisos a grupos de usuarios</source>
+        <target>Assign permissions to user groups</target>
+      </trans-unit>
+      <trans-unit id="selectUsers">
+        <source>Seleccionar Usuarios</source>
+        <target>Select Users</target>
+      </trans-unit>
+      <trans-unit id="selectGroups">
+        <source>Seleccionar Grupos</source>
+        <target>Select Groups</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

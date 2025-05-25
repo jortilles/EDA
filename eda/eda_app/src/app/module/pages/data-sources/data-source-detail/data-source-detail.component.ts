@@ -34,7 +34,10 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public valueListController: EdaDialogController;
     public permissionsController: EdaDialogController;
     public tablePermissionsController: EdaDialogController;
+
     public modelPermissionsController: EdaDialogController;
+    public showModelPermissionDialog: boolean = false;
+
     public newColController: EdaDialogController;
     public mapController: EdaDialogController;
     
@@ -700,16 +703,26 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     openModelPermissionsDialog() {
-        this.modelPermissionsController = new EdaDialogController({
-            params: {   },
-            close: (event, response) => {
-                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    this.dataModelService.addPermission(response);
-                    this.update();
-                }
-                this.modelPermissionsController = undefined;
-            }
-        });
+        this.showModelPermissionDialog = true;
+        // this.modelPermissionsController = new EdaDialogController({
+        //     params: {   },
+        //     close: (event, response) => {
+        //         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        //             this.dataModelService.addPermission(response);
+        //             this.update();
+        //         }
+        //         this.modelPermissionsController = undefined;
+        //     }
+        // });
+    }
+
+    closeModelPermissionsDialog(response: any) {
+        if (response) {
+            this.dataModelService.addPermission(response);
+            this.update();
+        }
+
+        this.showModelPermissionDialog = false;
     }
 
 

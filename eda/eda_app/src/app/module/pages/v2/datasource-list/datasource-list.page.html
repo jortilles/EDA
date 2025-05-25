@@ -22,7 +22,7 @@
       <tbody class="font-semibold">
         @for (dataSource of paginatedDataSources; track dataSource._id) {
         <tr>
-          <td class="p-3">{{ dataSource.model_name }}</td>
+          <td class="p-3 cursor-pointer" (click)="handleEditDataSource(dataSource)">{{ dataSource.model_name }}</td>
           <td class="p-3 text-right">
             <button class="rounded-md p-2 cursor-pointer hover:bg-muted" (click)="handleEditDataSource(dataSource)">
               <eda-icon name="pencil"></eda-icon>

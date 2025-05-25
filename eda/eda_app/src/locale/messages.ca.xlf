@@ -4362,6 +4362,46 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Inicio de sesión</source>
         <target>Inici de sessió</target>
       </trans-unit>
+      <trans-unit id="restrictionAccess">
+        <source>Restringir Acceso</source>
+        <target>Restringir Accés</target>
+      </trans-unit>
+      <trans-unit id="restrictionAccessDescription">
+        <source>Activar para limitar el acceso solo a usuarios autorizados</source>
+        <target>Activar per limitar l'accés només a usuaris autoritzats</target>
+      </trans-unit>
+      <trans-unit id="permissionType">
+        <source>Tipo de Permisos</source>
+        <target>Tipus de Permisos</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeDescription">
+        <source>Selecciona cómo quieres gestionar los permisos</source>
+        <target>Selecciona com vols gestionar els permisos</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeUser">
+        <source>Permisos por Usuario</source>
+        <target>Permisos per Usuari</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroup">
+        <source>Permisos por Grupo</source>
+        <target>Permisos per Grup</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeUserDescription">
+        <source>Asignar permisos individualmente a usuarios específicos</source>
+        <target>Assignar permisos individualment a usuaris específics</target>
+      </trans-unit>
+      <trans-unit id="permissionTypeGroupDescription">
+        <source>Asignar permisos a grupos de usuarios</source>
+        <target>Assignar permisos a grups d'usuaris</target>
+      </trans-unit>
+      <trans-unit id="selectUsers">
+        <source>Seleccionar Usuarios</source>
+        <target>Seleccionar Usuaris</target>
+      </trans-unit>
+      <trans-unit id="selectGroups">
+        <source>Seleccionar Grupos</source>
+        <target>Seleccionar Grups</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

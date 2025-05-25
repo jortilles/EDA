@@ -1,134 +1,141 @@
-import { Component } from "@angular/core";
-import {   UserService, GroupService  } from "@eda/services/service.index";
-import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
-
+import { Component, EventEmitter, OnInit, Output, signal } from "@angular/core";
+import { UserService, GroupService } from "@eda/services/service.index";
 
 
 
 @Component({
-    selector: 'app-model-permission-dialog',
-    templateUrl: './model-permission-dialog.component.html',
-    styleUrls: ['./model-permission-dialog.component.css']
+  selector: 'app-model-permission-dialog',
+  templateUrl: './model-permission-dialog.component.html',
+  styleUrls: ['./model-permission-dialog.component.css']
 })
 
-export class ModelPermissionDialogComponent extends EdaDialogAbstract {
+export class ModelPermissionDialogComponent implements OnInit {
+  @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  public display: boolean = false;
 
-    public dialog: EdaDialog;
+  isUserSelectorOpen = signal(false)
+  isGroupSelectorOpen = signal(false)
 
-    /*model */
-    public dbModel: any;
+  /*model */
+  public dbModel: any;
 
-    /* MultiSelects Vars */
-    public users: Array<object>;
-    public selectedUsers: Array<any> = [];
+  /* MultiSelects Vars */
+  public users: any[] = [];
+  public selectedUsers: any[] = [];
 
-    public roles: Array<object>;
-    public selectedRoles: Array<any> = [];
-
-
-    public permission : boolean = true;
-    public anyoneCanSee : boolean = false;
-    public none : boolean = false;
-    public type : string; 
-
-    public usersLabel = $localize`:@@usersPermissions:Permisos de usuario`;
-    public groupsLabel = $localize`:@@groupsPersmissions:Permisos de grupo`;
-    public usersDefaultLabel = $localize`:@@users:Usuarios`;
-    public groupsDefaultLabel = $localize`:@@groups:Grupos`;
+  public roles: any[] = [];
+  public selectedRoles: any[] = [];
 
 
+  public permission: boolean = true;
+  public anyoneCanSee: boolean = false;
+  public none: boolean = false;
+  public type: string;
 
-    constructor(private userService: UserService,
-                private groupService: GroupService) {
-        super();
+  public usersLabel = $localize`:@@usersPermissions:Permisos de usuario`;
+  public groupsLabel = $localize`:@@groupsPersmissions:Permisos de grupo`;
+  public usersDefaultLabel = $localize`:@@users:Usuarios`;
+  public groupsDefaultLabel = $localize`:@@groups:Grupos`;
 
-        this.dialog = new EdaDialog({
-            show: () => this.onShow(),
-            hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@addModelPermissions:Añadir permiso a nivel de modelo`
-        });
+  public title = $localize`:@@addModelPermissions:Añadir permiso a nivel de modelo`;
 
-        this.dialog.style = { width: '40%', height:'65%', top:"-4em", left:'1em'};
+  constructor(private userService: UserService,
+    private groupService: GroupService) {
+
+  }
+
+  ngOnInit(): void {
+    this.display = true;
+    this.load();
+  }
+
+  load() {
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.userService.getUsers().subscribe(
+      res => this.users = res.map(user => ({label: user.name, value: user})),
+      err => console.log(err)
+    );
+    this.groupService.getGroups().subscribe(
+      res => this.roles = res.map(group => ({label:group.name, value: group})),
+      err => console.log(err)
+    )
+  }
+
+  savePermission() {
+    let permissionFilter = {};
+
+    if (this.anyoneCanSee === true) {
+      permissionFilter = {
+        users: ["(~ => All)"],
+        usersName: ["(~ => All)"],
+        none: this.none ? true : false,
+        table: "fullModel",
+        column: "fullModel",
+        global: true,
+        permission: this.anyoneCanSee ? true : false,
+        type: 'anyoneCanSee'
+      };
+    } else {
+
+      if (this.type === 'users') {
+        permissionFilter = {
+          users: this.selectedUsers.map(usr => usr._id),
+          usersName: this.selectedUsers.map(usr => usr.name),
+          none: this.none ? true : false,
+          table: "fullModel",
+          column: "fullModel",
+          global: true,
+          permission: this.permission ? true : false,
+          type: 'users'
+        };
+      }
+      else if (this.type === 'groups') {
+        permissionFilter = {
+          groups: this.selectedRoles.map(usr => usr._id),
+          groupsName: this.selectedRoles.map(usr => usr.name),
+          none: this.none ? true : false,
+          table: "fullModel",
+          column: "fullModel",
+          global: true,
+          permission: this.permission,
+          type: 'groups'
+        };
+      }
     }
 
-    onShow() {
-        this.load();
-    }
+    this.onClose(permissionFilter);
+  }
 
-    load() {
-        this.loadDataSource();
-        this.loadUsers();
-    }
+  resetValues() {
+    if (this.type === 'users') this.selectedRoles = [];
+    else this.selectedUsers = [];
+  }
 
-    loadDataSource() {
-    }
+  setPermissionType(type: "users" | "groups") {
+    this.type = type;
+  }
 
-    loadUsers() {
-        this.userService.getUsers().subscribe(
-            res => this.users = res.map(user => ({label: user.name, value: user})),
-            err => console.log(err)
-        );
-        this.groupService.getGroups().subscribe(
-            res => this.roles = res.map(group => ({label:group.name, value: group})),
-            err => console.log(err)
-        )
-    }
+  // Métodos para manejar usuarios
+  toggleUserSelector() {
+    this.isUserSelectorOpen.update((open) => !open)
+  }
 
-    savePermission() {
-        let permissionFilter = {};
+  // Métodos para manejar grupos
+  toggleGroupSelector() {
+    this.isGroupSelectorOpen.update((open) => !open)
+  }
 
-        if(this.anyoneCanSee === true){
-            permissionFilter = {
-                users : ["(~ => All)"],
-                usersName : ["(~ => All)"],
-                none : this.none ? true : false,
-                table : "fullModel",
-                column : "fullModel",
-                global : true,
-                permission : this.anyoneCanSee ? true : false,
-                type : 'anyoneCanSee'
-            };
-        }else{
+  closeDialog() {
+    this.selectedUsers = [];
+    this.onClose();
+  }
 
-            if(this.type === 'users'){
-                permissionFilter = {
-                    users : this.selectedUsers.map(usr => usr._id),
-                    usersName : this.selectedUsers.map(usr => usr.name),
-                    none : this.none ? true : false,
-                    table : "fullModel",
-                    column : "fullModel",
-                    global : true,
-                    permission : this.permission ? true : false,
-                    type : 'users'
-                };
-            }
-            else if(this.type === 'groups'){
-                permissionFilter = {
-                    groups : this.selectedRoles.map(usr => usr._id),
-                    groupsName : this.selectedRoles.map(usr => usr.name),
-                    none : this.none ? true : false,
-                    table : "fullModel",
-                    column : "fullModel",
-                    global : true,
-                    permission : this.permission,
-                    type : 'groups'
-                };
-            }
-        }
-        this.onClose(EdaDialogCloseEvent.NEW, permissionFilter);
-    }
-
-    resetValues(){
-        if(this.type === 'users') this.selectedRoles = [];
-        else this.selectedUsers = [];
-    }
-
-    closeDialog() {
-        this.selectedUsers = [];
-        this.onClose(EdaDialogCloseEvent.NONE);
-    }
-
-    onClose(event: EdaDialogCloseEvent, response?: any): void {
-        return this.controller.close(event, response);
-    }
+  onClose(response?: any): void {
+    this.display = false;
+    this.display = false;
+    this.close.emit(response);
+  }
 }

@@ -929,7 +929,6 @@
 <app-column-value-list-dialog *ngIf="valueListController" [controller]="valueListController"></app-column-value-list-dialog>
 <app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController"></app-column-permission-dialog>
 <app-table-permission-dialog *ngIf="tablePermissionsController" [controller]="tablePermissionsController"></app-table-permission-dialog>
-<app-model-permission-dialog *ngIf="modelPermissionsController" [controller]="modelPermissionsController"></app-model-permission-dialog>
 <app-calculated-column-dialog *ngIf="newColController" [controller]="newColController"></app-calculated-column-dialog>
 <app-add-csv-dialog *ngIf="csvPanelController" [controller]="csvPanelController"></app-add-csv-dialog>
 <eda-cache-dialog *ngIf="cacheController" [controller]="cacheController"></eda-cache-dialog>
@@ -937,6 +936,7 @@
 
 <!-- Alex -->
 <app-map-dialog *ngIf="mapController" [controller]="mapController"></app-map-dialog>
+<app-model-permission-dialog *ngIf="showModelPermissionDialog" (close)="closeModelPermissionsDialog($event)"></app-model-permission-dialog>
 <!-- V2 -->
 <app-view-dialog *ngIf="showViewDialog" [model_id]="dataModelService.model_id" [user]="user" (close)="onCloseViewDialog($event)"></app-view-dialog>
 <app-add-tag-dialog *ngIf="showAddTagDialog" [model_id]="dataModelService.model_id" [tagArray]="modelPanel.metadata.tags" (close)="onCloseTagDialog($event)"></app-add-tag-dialog>
