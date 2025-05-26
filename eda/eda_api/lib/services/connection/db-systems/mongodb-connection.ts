@@ -1,8 +1,9 @@
 import { MongoDBBuilderService } from '../../query-builder/qb-systems/mongodb-builder-service';
 import { AbstractConnection } from '../abstract-connection';
-import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 import { MongoClient } from "mongodb";
 import _ from 'lodash';
+const databaseUrl = require('../../../../config/database.config');
+
 
 export class MongoDBConnection extends AbstractConnection {
 
@@ -30,6 +31,9 @@ export class MongoDBConnection extends AbstractConnection {
 
             if(authSource == undefined || authSource == null){
                 authSource = 'admin';
+                const parsedUrl = new URL(databaseUrl?.url);
+                authSource =  parsedUrl.search.split('=')[1];
+                console.log('it is needed to add the authshource in the mongo connection');
             }
 
             this.connectUrl = `${type}://${credentialStr}${host}:${port}/${db}?authSource=${authSource}`;
