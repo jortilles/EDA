@@ -21,11 +21,7 @@ export class DashboardController {
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
       if (isAdmin) {
-        admin = await DashboardController.getAllDashboardToAdmin(req)
-        publics = admin[0]
-        privates = admin[1]
-        group = admin[2]
-        shared = admin[3]
+        [publics, privates, group, shared] =  await DashboardController.getAllDashboardToAdmin(req)
       } else {
         group = await DashboardController.getGroupsDashboards(req)
         privates = await DashboardController.getPrivateDashboards(req)
