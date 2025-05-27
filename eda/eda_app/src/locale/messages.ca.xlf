@@ -4402,6 +4402,142 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Seleccionar Grupos</source>
         <target>Seleccionar Grups</target>
       </trans-unit>
+      <trans-unit id="DataModelHeader">
+        <source>Configurar nuevo orígen de datos</source>
+        <target>Configurar nou origen de dades</target>
+      </trans-unit>
+      <trans-unit id="newDataSourceDescription">
+        <source>Conéctese a su base de datos para comenzar a consultar y visualizar sus datos</source>
+        <target>Connecteu-vos a la vostra base de dades per començar a consultar i visualitzar les vostres dades</target>
+      </trans-unit>
+      <trans-unit id="name">
+        <source>Nombre</source>
+        <target>Nom</target>
+      </trans-unit>
+      <trans-unit id="nameRequired">
+        <source>El nombre es obligatorio</source>
+        <target>El nom és obligatori</target>
+      </trans-unit>
+      <trans-unit id="type">
+        <source>Tipo</source>
+        <target>Tipus</target>
+      </trans-unit>
+      <trans-unit id="server">
+        <source>Servidor</source>
+        <target>Servidor</target>
+      </trans-unit>
+      <trans-unit id="account">
+        <source>Cuenta</source>
+        <target>Compte</target>
+      </trans-unit>
+      <trans-unit id="serverRequired">
+        <source>Url del servidor es obligatorio</source>
+        <target>L’URL del servidor és obligatòria</target>
+      </trans-unit>
+      <trans-unit id="accountRequired">
+        <source>El nombre de cuenta es obligatorio</source>
+        <target>El nom del compte és obligatori</target>
+      </trans-unit>
+      <trans-unit id="port">
+        <source>Puerto</source>
+        <target>Port</target>
+      </trans-unit>
+      <trans-unit id="portRequired">
+        <source>El puerto es obligatorio</source>
+        <target>El port és obligatori</target>
+      </trans-unit>
+      <trans-unit id="database">
+        <source>Base de datos</source>
+        <target>Base de dades</target>
+      </trans-unit>
+      <trans-unit id="databaseRequired">
+        <source>Base de datos es obligatorio</source>
+        <target>La base de dades és obligatòria</target>
+      </trans-unit>
+      <trans-unit id="schema">
+        <source>Esquema</source>
+        <target>Esquema</target>
+      </trans-unit>
+      <trans-unit id="username">
+        <source>Usuario</source>
+        <target>Usuari</target>
+      </trans-unit>
+      <trans-unit id="usernameRequired">
+        <source>El usuario es obligatorio</source>
+        <target>L’usuari és obligatori</target>
+      </trans-unit>
+      <trans-unit id="password">
+        <source>Contraseña</source>
+        <target>Contrasenya</target>
+      </trans-unit>
+      <trans-unit id="passwordRequired">
+        <source>La contraseña es obligatorio</source>
+        <target>La contrasenya és obligatòria</target>
+      </trans-unit>
+      <trans-unit id="bigqueryKeyDragDrop">
+        <source>Sube un archivo de claves</source>
+        <target>Pugeu un fitxer de claus</target>
+      </trans-unit>
+      <trans-unit id="filters">
+        <source>Filtros</source>
+        <target>Filtres</target>
+      </trans-unit>
+      <trans-unit id="optionalFilterDescription">
+        <source>Optional filters to limit the scope of your connection</source>
+        <target>Filtres opcionals per limitar l’abast de la vostra connexió</target>
+      </trans-unit>
+      <trans-unit id="connectionOptions">
+        <source>Opciones de conexión</source>
+        <target>Opcions de connexió</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueries">
+        <source>Optimizar consultas</source>
+        <target>Optimitzar consultes</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesTooltipDescription">
+        <source>Optimice automáticamente las consultas para un mejor rendimiento</source>
+        <target>Optimitza automàticament les consultes per millorar el rendiment</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesDescription">
+        <source>Mejore el rendimiento de las consultas con la optimización automática</source>
+        <target>Milloreu el rendiment de les consultes amb l’optimització automàtica</target>
+      </trans-unit>
+      <trans-unit id="allowCache">
+        <source>Permitir caché</source>
+        <target>Permetre memòria cau</target>
+      </trans-unit>
+      <trans-unit id="allowCacheTooltipDescription">
+        <source>Almacenar en caché los resultados de las consultas para mejorar el rendimiento de los datos a los que se accede con frecuencia</source>
+        <target>Emmagatzema en memòria cau els resultats de les consultes per millorar el rendiment de les dades accedides amb freqüència</target>
+      </trans-unit>
+      <trans-unit id="allowCacheDescription">
+        <source>Almacenar en caché los resultados de las consultas para una recuperación de datos más rápida</source>
+        <target>Emmagatzema en memòria cau els resultats de les consultes per a una recuperació de dades més ràpida</target>
+      </trans-unit>
+      <trans-unit id="sslConnection">
+        <source>Conexión SSL</source>
+        <target>Connexió SSL</target>
+      </trans-unit>
+      <trans-unit id="sslConnectionTooltipDescription">
+        <source>Utilice SSL para cifrar la conexión a su base de datos para una mayor seguridad</source>
+        <target>Utilitzeu SSL per xifrar la connexió a la base de dades i augmentar-ne la seguretat</target>
+      </trans-unit>
+      <trans-unit id="sslConnectionDescription">
+        <source>Proteja su conexión con encriptación SSL</source>
+        <target>Protegiu la vostra connexió amb encriptació SSL</target>
+      </trans-unit>
+      <trans-unit id="testConnection">
+        <source>Probar conexión</source>
+        <target>Provar connexió</target>
+      </trans-unit>
+      <trans-unit id="basicInformation">
+        <source>Información básica</source>
+        <target>Informació bàsica</target>
+      </trans-unit>
+      <trans-unit id="advancedSettings">
+        <source>Configuración avanzada</source>
+        <target>Configuració avançada</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

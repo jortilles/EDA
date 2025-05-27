@@ -10,7 +10,9 @@ import { AlertService } from '../alerts/alert.service';
 import { User } from '@eda/models/model.index';
 import Swal from 'sweetalert2';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class UserService extends ApiService {
     private route = '/admin/user';
     private routeThirdParty = '/tp/url';

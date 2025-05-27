@@ -2,6 +2,7 @@ import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
+import { UserService } from '@eda/services/service.index';
 
 interface NavItem {
   path: string;
@@ -22,6 +23,7 @@ interface NavItem {
 })
 export class MainLeftSidebarComponent {
   private router = inject(Router);
+  private userService = inject(UserService);
 
   navItems: NavItem[] = [
     { path: '/v2', icon: 'home', isActive: true },
@@ -80,7 +82,9 @@ export class MainLeftSidebarComponent {
 
   menuCommand(item: any) {
     console.log('menuCommand', item.path)
-    if (item.path) {
+    if ((item.path||'').includes('logout')) {
+        this.userService.logout();
+    } else if (item.path) {
       this.router.navigate([item.path]);
     } else {
       // internacionalizacion

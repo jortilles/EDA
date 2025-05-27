@@ -4345,6 +4345,142 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Seleccionar Grupos</source>
         <target>Select Groups</target>
       </trans-unit>
+      <trans-unit id="DataModelHeader">
+        <source>Configurar nuevo orígen de datos</source>
+        <target>Configure new data source</target>
+      </trans-unit>
+      <trans-unit id="newDataSourceDescription">
+        <source>Conéctese a su base de datos para comenzar a consultar y visualizar sus datos</source>
+        <target>Connect to your database to start querying and visualizing your data</target>
+      </trans-unit>
+      <trans-unit id="name">
+        <source>Nombre</source>
+        <target>Name</target>
+      </trans-unit>
+      <trans-unit id="nameRequired">
+        <source>El nombre es obligatorio</source>
+        <target>Name is required</target>
+      </trans-unit>
+      <trans-unit id="type">
+        <source>Tipo</source>
+        <target>Type</target>
+      </trans-unit>
+      <trans-unit id="server">
+        <source>Servidor</source>
+        <target>Server</target>
+      </trans-unit>
+      <trans-unit id="account">
+        <source>Cuenta</source>
+        <target>Account</target>
+      </trans-unit>
+      <trans-unit id="serverRequired">
+        <source>Url del servidor es obligatorio</source>
+        <target>Server URL is required</target>
+      </trans-unit>
+      <trans-unit id="accountRequired">
+        <source>El nombre de cuenta es obligatorio</source>
+        <target>Account name is required</target>
+      </trans-unit>
+      <trans-unit id="port">
+        <source>Puerto</source>
+        <target>Port</target>
+      </trans-unit>
+      <trans-unit id="portRequired">
+        <source>El puerto es obligatorio</source>
+        <target>Port is required</target>
+      </trans-unit>
+      <trans-unit id="database">
+        <source>Base de datos</source>
+        <target>Database</target>
+      </trans-unit>
+      <trans-unit id="databaseRequired">
+        <source>Base de datos es obligatorio</source>
+        <target>Database is required</target>
+      </trans-unit>
+      <trans-unit id="schema">
+        <source>Esquema</source>
+        <target>Schema</target>
+      </trans-unit>
+      <trans-unit id="username">
+        <source>Usuario</source>
+        <target>Username</target>
+      </trans-unit>
+      <trans-unit id="usernameRequired">
+        <source>El usuario es obligatorio</source>
+        <target>Username is required</target>
+      </trans-unit>
+      <trans-unit id="password">
+        <source>Contraseña</source>
+        <target>Password</target>
+      </trans-unit>
+      <trans-unit id="passwordRequired">
+        <source>La contraseña es obligatorio</source>
+        <target>Password is required</target>
+      </trans-unit>
+      <trans-unit id="bigqueryKeyDragDrop">
+        <source>Sube un archivo de claves</source>
+        <target>Upload a key file</target>
+      </trans-unit>
+      <trans-unit id="filters">
+        <source>Filtros</source>
+        <target>Filters</target>
+      </trans-unit>
+      <trans-unit id="optionalFilterDescription">
+        <source>Optional filters to limit the scope of your connection</source>
+        <target>Optional filters to limit the scope of your connection</target>
+      </trans-unit>
+      <trans-unit id="connectionOptions">
+        <source>Opciones de conexión</source>
+        <target>Connection options</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueries">
+        <source>Optimizar consultas</source>
+        <target>Optimize queries</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesTooltipDescription">
+        <source>Optimice automáticamente las consultas para un mejor rendimiento</source>
+        <target>Automatically optimize queries for better performance</target>
+      </trans-unit>
+      <trans-unit id="optimizedQueriesDescription">
+        <source>Mejore el rendimiento de las consultas con la optimización automática</source>
+        <target>Improve query performance with automatic optimization</target>
+      </trans-unit>
+      <trans-unit id="allowCache">
+        <source>Permitir caché</source>
+        <target>Allow caching</target>
+      </trans-unit>
+      <trans-unit id="allowCacheTooltipDescription">
+        <source>Almacenar en caché los resultados de las consultas para mejorar el rendimiento de los datos a los que se accede con frecuencia</source>
+        <target>Cache query results to improve performance for frequently accessed data</target>
+      </trans-unit>
+      <trans-unit id="allowCacheDescription">
+        <source>Almacenar en caché los resultados de las consultas para una recuperación de datos más rápida</source>
+        <target>Cache query results for faster data retrieval</target>
+      </trans-unit>
+      <trans-unit id="sslConnection">
+        <source>Conexión SSL</source>
+        <target>SSL Connection</target>
+      </trans-unit>
+      <trans-unit id="sslConnectionTooltipDescription">
+        <source>Utilice SSL para cifrar la conexión a su base de datos para una mayor seguridad</source>
+        <target>Use SSL to encrypt the connection to your database for enhanced security</target>
+      </trans-unit>
+      <trans-unit id="sslConnectionDescription">
+        <source>Proteja su conexión con encriptación SSL</source>
+        <target>Protect your connection with SSL encryption</target>
+      </trans-unit>
+      <trans-unit id="testConnection">
+        <source>Probar conexión</source>
+        <target>Test connection</target>
+      </trans-unit>
+      <trans-unit id="basicInformation">
+        <source>Información básica</source>
+        <target>Basic information</target>
+      </trans-unit>
+      <trans-unit id="advancedSettings">
+        <source>Configuración avanzada</source>
+        <target>Advanced settings</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
