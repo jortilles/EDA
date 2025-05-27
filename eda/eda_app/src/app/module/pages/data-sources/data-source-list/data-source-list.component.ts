@@ -48,7 +48,6 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
       this.getDataSourceId();
         this.dataModelService.currentTreeData.subscribe(
             (data) => {
-                console.log(data);
                 this.treeData = data
             },
             (err) => this.alertService.addError(err)
@@ -95,7 +94,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
                     () => {
                         Swal.fire($localize`:@@Deleted:¡Eliminado!`, $localize`:@@DeleteSuccess:Modelo eliminado correctamente.`, 'success');
                         this.dataModelService.cleanAll();
-                        this.router.navigate(['/home']);
+                        this.router.navigate(['v2', 'home']);
                         this.spinnerService.off();
                     }, err => {
                         this.alertService.addError(err);

@@ -13,6 +13,10 @@ export const pagesV2Routes: Routes = [
         loadComponent: () => import('./home/home.page').then(c => c.HomePageV2)
       },
       {
+        path: 'home',
+        loadComponent: () => import('./home/home.page').then(c => c.HomePageV2)
+      },
+      {
         path: 'about',
         loadComponent: () => import('./about-eda/abaout-eda.page').then(c => c.AboutEdaPage)
       },

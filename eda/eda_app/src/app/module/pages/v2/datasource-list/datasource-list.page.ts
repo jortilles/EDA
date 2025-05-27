@@ -80,6 +80,7 @@ export class DataSourceListPage implements OnInit {
   }
 
   handleCreateDataSource() {
+    this.router.navigate(['/v2/admin/data-source/new']);
   }
 
 }

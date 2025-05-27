@@ -87,7 +87,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       name: ["", Validators.required],
       type: ["postgres", Validators.required],
       host: ["", Validators.required],
-      db: ["", Validators.required],
+      database: ["", Validators.required],
       schema: [""],
       port: ["5432", Validators.required],
       user: ["eda@jortilles.com", Validators.required],
@@ -180,7 +180,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
     const connection = {
       name: value.name,
       type: value.type,
-      database: value.db,
+      database: value.database,
       project_id: this.bigQueryProjectId,
       optimize: value.optimize,
       allowCache: value.allowCache,
@@ -200,7 +200,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       });
 
       this.spinnerService.off();
-      this.router.navigate(['/data-source/', res.data_source_id]);
+      this.router.navigate(['/v2/data-source/', res.data_source_id]);
     } catch (err) {
       this.spinnerService.off();
       this.alertService.addError(err);
@@ -226,7 +226,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       });
 
       this.spinnerService.off();
-      this.router.navigate(['/data-source/', res.data_source_id]);
+      this.router.navigate(['/v2/data-source/', res.data_source_id]);
     } catch (err) {
       this.spinnerService.off();
       this.alertService.addError(err);
@@ -254,7 +254,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
         this.spinnerService.off();
         this.alertService.addSuccess($localize`:@@CollectionText:Colección creada correctamente`,);
-        this.router.navigate(['/data-source/', res.data_source_id]);
+        this.router.navigate(['/v2/data-source/', res.data_source_id]);
       } catch (err) {
         this.spinnerService.off();
         this.alertService.addError(err);
