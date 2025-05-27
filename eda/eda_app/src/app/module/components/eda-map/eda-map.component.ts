@@ -59,10 +59,15 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {
         //center: [41.38879, 2.15899],
-        center: this.getCenter(validData),
-        zoom: this.inject.zoom ? this.inject.zoom : 12,
-        dragging: !L.Browser.mobile,
+        center:  this.mapUtilsService.getCoordinates() as unknown as LatLngExpression ??
+          this.getCenter(validData),
+
+        zoom: this.mapUtilsService.getZoom() ??
+          this.inject.zoom ??
+          12,
+        dragging: this.draggable,
         tap: !L.Browser.mobile,
+        scrollWheelZoom: this.draggable,
       });
       const tiles = L.tileLayer(
         "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
@@ -85,12 +90,15 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
         this.inject.linkedDashboard,
         this.mapActualConfig
       );
+      // Check coords & zoom origin
       this.map.on("moveend", (event) => {
         let c = this.map.getCenter();
         this.inject.coordinates = [c.lat, c.lng];
+        this.mapUtilsService.setCoordinates(this.inject.coordinates);
       });
       this.map.on("zoomend", (event) => {
         this.inject.zoom = this.map.getZoom();
+          this.mapUtilsService.setZoom(this.inject.zoom);
       });
     }
   };

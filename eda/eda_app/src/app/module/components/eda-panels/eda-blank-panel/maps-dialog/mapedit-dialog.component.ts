@@ -20,6 +20,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
 
   public color: string = "";
   public logarithmicScale: boolean = false;
+  public baseLayer: boolean = true;
   public draggable: boolean;
   public legendPosition: string;
 
@@ -56,14 +57,13 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     this.onClose(EdaDialogCloseEvent.UPDATE, {
       color: this.color,
       logarithmicScale: this.logarithmicScale,
+      baseLayer: this.baseLayer,
       legendPosition: this.legendPosition,
       draggable: this.draggable,
       zoom: this.myPanelChartComponent.componentRef.instance.inject.zoom,
       coordinates:
         this.myPanelChartComponent.componentRef.instance.inject.coordinates,
     });
-    this.mapUtilsService.setCoordinates(null);
-    this.mapUtilsService.setZoom(null);
   }
 
   handleInputColor() {
@@ -83,6 +83,11 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     leafletMap.switchNoMouse(this.draggable);
   }
 
+  modifyBaseLayer() {
+    const leafletMap = this.myPanelChartComponent.componentRef.instance;
+    leafletMap.modifyBaseLayer(this.baseLayer);
+  }
+
   changeLegend() {
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     leafletMap.changeLegend(this.legendPosition);
@@ -90,6 +95,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
 
   closeChartConfig() {
     this.onClose(EdaDialogCloseEvent.NONE);
+    this.mapUtilsService.cancelChartProps();
   }
 
   onShow(): void {
@@ -97,6 +103,7 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     this.zoom = this.controller.params.zoom;
     this.coordinates = this.controller.params.coordinates;
     this.legendPosition = this.controller.params.legendPosition;
+    this.baseLayer = this.controller.params.baseLayer !== undefined ? this.controller.params.baseLayer :  true;
     this.color = this.controller.params.color;
     this.logarithmicScale = this.controller.params.logarithmicScale;
     this.draggable = this.controller.params.draggable;

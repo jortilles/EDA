@@ -8,3 +8,18 @@
   z-index: 999999;
 }
 
+.panel-chart-style {
+  height: 350px
+}
+
+@media (min-width: 480px) {
+  .panel-chart-style {
+    height: 378px
+  }
+}
+
+@media (min-width: 1290px) {
+  .panel-chart-style {
+    height: 550px
+  }
+}

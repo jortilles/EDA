@@ -3,6 +3,8 @@ import {
   Input,
   AfterViewChecked,
   SecurityContext,
+  Output,
+  EventEmitter,
 } from "@angular/core";
 import { Component, AfterViewInit } from "@angular/core";
 import { MapUtilsService } from "@eda/services/service.index";
@@ -29,6 +31,7 @@ export class EdaGeoJsonMapComponent
   implements OnInit, AfterViewInit, AfterViewChecked
 {
   @Input() inject: EdaMap;
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   private map: any;
   private geoJson: any;
@@ -41,6 +44,8 @@ export class EdaGeoJsonMapComponent
   private serverMap: any = null;
   public color: string = "#006400";
   public logarithmicScale: boolean;
+  public baseLayerLayer: any;
+  public baseLayer: boolean;
   public draggable: boolean;
   public BASE_COLOR: string = "#006400";
   public legendPosition: string;
@@ -74,15 +79,19 @@ export class EdaGeoJsonMapComponent
       this.mapUtilsService.initShapes(this.serverMap["mapID"]); /** to delete */
     }
     this.color = this.inject.color ? this.inject.color : this.BASE_COLOR;
-    this.logarithmicScale = this.inject.logarithmicScale
-      ? this.inject.logarithmicScale
-      : false;
-    this.draggable =
-      this.inject.draggable === undefined ? true : this.inject.draggable;
+    this.logarithmicScale = this.inject.logarithmicScale ? this.inject.logarithmicScale : false;
+    this.baseLayer = this.inject.baseLayer === undefined ? true : this.inject.baseLayer;
+    this.draggable = this.inject.draggable === undefined ? true : this.inject.draggable;
     this.legendPosition = this.inject.legendPosition
       ? this.inject.legendPosition
       : "bottomright";
     this.legend = new L.Control({ position: this.legendPosition });
+    this.baseLayerLayer = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+          {
+            maxZoom: 19,
+            attribution:'&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+          }
+    );
   }
 
   ngAfterViewInit(): void {
@@ -129,8 +138,17 @@ export class EdaGeoJsonMapComponent
       layer.on("mouseout", function () {
         layer.closePopup();
       });
-      layer.on("click", () =>
-        this.openLinkedDashboard(layer.feature.properties.name)
+      layer.on("click", (mouseevent, data) => {
+        if (this.inject.linkedDashboard) {
+          this.openLinkedDashboard(layer.feature.properties.name)
+        }
+        else{
+          //Passem aquestes dades
+          const label = layer.feature.properties.name;
+          const filterBy = this.inject.labels[this.inject.data[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({ label, filterBy });
+        }
+      }
       );
     });
     if (this.map) {
@@ -169,32 +187,33 @@ export class EdaGeoJsonMapComponent
     if (L.DomUtil.get(this.inject.div_name) !== null) {
       this.map = L.map(this.inject.div_name, {
         minZoom: 0,
-        maxZoom: 10,
+        maxZoom: 16,
         center:
           this.mapUtilsService.getCoordinates() ??
           this.getCenter(this.inject.data),
         zoom:
           this.mapUtilsService.getZoom() ??
           this.inject.zoom ??
-          0,
+          12,
         dragging: this.draggable,
+        baseLayer: this.inject.baseLayer,
         tap: !L.Browser.mobile,
         scrollWheelZoom: this.draggable,
       });
+
+      if (this.baseLayer) {this.baseLayerLayer.addTo(this.map);}
+      else {this.map.removeLayer(this.baseLayerLayer)}
+      
 
       // Check coords & zoom origin
       this.map.on("moveend", (event) => {
         let c = this.map.getCenter();
         this.inject.coordinates = [c.lat, c.lng];
-        if (!this.mapUtilsService.isMapEditOpen()) {
-          this.mapUtilsService.setCoordinates(this.inject.coordinates);
-        }
+        this.mapUtilsService.setCoordinates(this.inject.coordinates);
       });
       this.map.on("zoomend", (event) => {
         this.inject.zoom = this.map.getZoom();
-        if (!this.mapUtilsService.isMapEditOpen()) {
           this.mapUtilsService.setZoom(this.inject.zoom);
-        }
       });
       this.map.options.minZoom = 1;
       //tiles.addTo(this.map);
@@ -413,6 +432,12 @@ export class EdaGeoJsonMapComponent
       this.inject.labels[this.dataIndex],
       this.color
     );
+  }
+
+  public modifyBaseLayer(baseLayerActivated: boolean) {
+    this.baseLayer = baseLayerActivated;
+    if (this.baseLayer) {this.baseLayerLayer.addTo(this.map);}
+    else {this.map.removeLayer(this.baseLayerLayer)}
   }
 
   public changeLegend = (legendPosition: string) => {

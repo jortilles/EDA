@@ -6,7 +6,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { ComponentsModule } from '../components/components.module';
 import { GridsterModule } from 'angular2gridster';
 
-// Component
+// Components
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
@@ -22,6 +22,7 @@ import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.compon
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 import { DataSourceDetailComponent } from './data-sources/data-source-detail/data-source-detail.component';
 import { TableRelationsDialogComponent } from './data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component';
+import { TableEditRelationsDialogComponent } from './data-sources/data-source-detail/table-edit-relations-dialog/table-edit-relations-dialog.component';
 import { ColumnPermissionDialogComponent } from './data-sources/data-source-detail/column-permissions-dialog/column-permission-dialog.component';
 import { TablePermissionDialogComponent } from './data-sources/data-source-detail/table-permissions-dialog/table-permission-dialog.component';
 import { ColumnValueListDialogComponent } from './data-sources/data-source-detail/column-value-list-dialog/column-value-list-dialog.component';
@@ -37,6 +38,7 @@ import { AlertsManagementComponent } from './alerts-management/alerts-management
 import { MailManagementComponent } from './mail-management/mail-management.component';
 import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
 import { UrlsActionComponent } from './dashboard/urls-action/urls-action.component';
+import { LogsComponent } from './logs/logs.component';
 
 
 // Routes
@@ -46,7 +48,6 @@ import { UploadFileComponent } from './data-sources/data-source-detail/upload-fi
 import { SaveAsDialogComponent } from './dashboard/saveAsDialog/save-as-dialog.component';
 import { EditStylesDialogComponent } from './dashboard/edit-styles-dialog/edit-styles.dialog.component';
 import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.component';
-
 
 
 @NgModule({
@@ -68,6 +69,7 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
         DataSourceListComponent,
         DataSourceDetailComponent,
         TableRelationsDialogComponent,
+        TableEditRelationsDialogComponent,
         GroupListComponent,
         GroupDetailComponent,
         DashboardFilterDialogComponent,
@@ -92,7 +94,8 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
         DashboardMailDialogComponent,
         SaveAsDialogComponent,
         EditStylesDialogComponent,
-        UrlsActionComponent
+        UrlsActionComponent,
+        LogsComponent,
     ]
 })
 export class PagesModule { }

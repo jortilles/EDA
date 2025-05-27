@@ -1,8 +1,9 @@
 import { MongoDBBuilderService } from '../../query-builder/qb-systems/mongodb-builder-service';
 import { AbstractConnection } from '../abstract-connection';
-import { AggregationTypes } from '../../../module/global/model/aggregation-types';
 import { MongoClient } from "mongodb";
 import _ from 'lodash';
+const databaseUrl = require('../../../../config/database.config');
+
 
 export class MongoDBConnection extends AbstractConnection {
 
@@ -30,6 +31,9 @@ export class MongoDBConnection extends AbstractConnection {
 
             if(authSource == undefined || authSource == null){
                 authSource = 'admin';
+                const parsedUrl = new URL(databaseUrl?.url);
+                authSource =  parsedUrl.search.split('=')[1];
+                console.log('it is needed to add the authshource in the mongo connection');
             }
 
             this.connectUrl = `${type}://${credentialStr}${host}:${port}/${db}?authSource=${authSource}`;
@@ -60,7 +64,7 @@ export class MongoDBConnection extends AbstractConnection {
     }
 
     async execQuery(query: any): Promise<any> {
-        console.log(query);
+        //console.log(query);
         const client = await this.getclient()
 
         try {
@@ -124,7 +128,7 @@ export class MongoDBConnection extends AbstractConnection {
                 query.pipeline.push({ ['$sort']: $sort });
             }
 
-            console.log("Info de la consulta: ", JSON.stringify(query.pipeline));
+            //console.log("Info de la consulta: ", JSON.stringify(query.pipeline));
             data = await collection.aggregate(query.pipeline).toArray();
 
 
@@ -157,8 +161,8 @@ export class MongoDBConnection extends AbstractConnection {
         return this.execQuery(query);
     }
 
-    override async getQueryBuilded(queryData: any, dataModel: any, user: any) {
-        this.queryBuilder = new MongoDBBuilderService(queryData, dataModel, user);
+    override async getQueryBuilded(queryData: any, dataModel: any, user: any, limit: number) {
+        this.queryBuilder = new MongoDBBuilderService(queryData, dataModel, user, limit);
         return this.queryBuilder.builder();
     }
 

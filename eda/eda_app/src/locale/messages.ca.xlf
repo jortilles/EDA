@@ -1572,6 +1572,14 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="linenumber">19</context>
 </context-group>
 </trans-unit>
+<trans-unit id="placeholderRelationName" datatype="html">
+<source>Nombre relación </source>
+<target>Nom relació </target>
+<context-group purpose="location">
+<context context-type="sourcefile">app/module/pages/data-sources/data-source-detail/table-relations-dialog/table-relations-dialog.component.html</context>
+<context context-type="linenumber">19</context>
+</context-group>
+</trans-unit>
 <trans-unit id="placeholderTargetColumnDesc" datatype="html">
 <source>Columna con la descripción </source>
 <target>Columna amb la descripció</target>
@@ -1798,6 +1806,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="originRel">
 <source>Origen</source>
 <target>Origen</target>
+</trans-unit>
+
+<trans-unit id="nameRel">
+<source>Nombre</source>
+<target>Nom</target>
 </trans-unit>
 
 <trans-unit id="userTable">
@@ -2423,6 +2436,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="addRelationTo">
 <source>Añadir relación a la tabla</source>
 <target>Afegir relació a la taula</target>
+</trans-unit>
+<trans-unit id="modifyRelationTo">
+<source>Modificar relación de la tabla</source>
+<target>Modificar relació de la taula</target>
 </trans-unit>
 
 <trans-unit id="chartInfo1">
@@ -4271,7 +4288,223 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Activar funciones del mouse</source>
         <target>Activar funcions del mouse</target>       
       </trans-unit>
+      <trans-unit id="noBaseLayerH6">
+        <source>Activar capa base</source>
+        <target>Activar capa base</target>       
+      </trans-unit>
+        <trans-unit id="chartTypesTableAnalized" datatype="html">
+        <source>Tabla DataQuality</source>
+        <target>Taula DataQuality</target>
+      </trans-unit>
+      <trans-unit id="atributoLabel" datatype="html">
+        <source>Atributo</source>
+        <target>Atribut</target>
+      </trans-unit>
+      <trans-unit id="atributoConsulta" datatype="html">
+        <source>Consulta</source>
+        <target>Consulta</target>
+      </trans-unit>
+      <trans-unit id="atributoValor" datatype="html">
+        <source>Valor</source>
+        <target>Valor</target>
+      </trans-unit>
+      <trans-unit id="count_tablesLabel" datatype="html">
+        <source>Tablas implicadas</source>
+        <target>Taules implicades</target>
+      </trans-unit>
+      <trans-unit id="count_rowsLabel" datatype="html">
+        <source>Total de registros</source>
+        <target>Total de registres</target>
+      </trans-unit>
+      <trans-unit id="count_nullsLabel" datatype="html">
+        <source>Total nulos</source>
+        <target>Total nulls</target>
+      </trans-unit>
+      <trans-unit id="count_emptyLabel" datatype="html">
+        <source>Total cadenas vacías</source>
+        <target>Total cadenes buides</target>
+      </trans-unit>
+      <trans-unit id="count_distinctLabel" datatype="html">
+        <source>Total valores distintos</source>
+        <target>Total valors distints</target>
+      </trans-unit>
+      <trans-unit id="most_duplicatedLabel" datatype="html">
+        <source>Más repetido</source>
+        <target>Mes repetit</target>
+      </trans-unit>
+      <trans-unit id="least_duplicatedLabel" datatype="html">
+        <source>Menos repetido</source>
+        <target>Menys repetit</target>
+      </trans-unit>
+      <trans-unit id="maxLabel" datatype="html">
+        <source>Valor máximo</source>
+        <target>Valor màxim</target>
+      </trans-unit>
+      <trans-unit id="minLabel" datatype="html">
+        <source>Valor mínimo</source>
+        <target>Valor mínim</target>
+      </trans-unit>
+      <trans-unit id="moda_countsLabel" datatype="html">
+        <source>Moda</source>
+        <target>Moda</target>
+      </trans-unit>
+      <trans-unit id="avgLabel" datatype="html">
+        <source>Media</source>
+        <target>Mitjana</target>
+      </trans-unit>
+      <trans-unit id="medianLabel" datatype="html">
+        <source>Mediana</source>
+        <target>Mediana</target>
+      </trans-unit>
+      <trans-unit id="median_count_bymonthLabel" datatype="html">
+        <source>Mediana por mes</source>
+        <target>Mediana per mes</target>
+      </trans-unit>
+      <trans-unit id="max_bymonthLabel" datatype="html">
+        <source>Máximos por mes</source>
+        <target>Màxims per mes</target>
+      </trans-unit>
+      <trans-unit id="min_bymonthLabel" datatype="html">
+        <source>Mínimos por mes</source>
+        <target>Mínims per mes</target>
+      </trans-unit>
 
+      <trans-unit id="NameTablaQuality">
+        <source>Tabla DataQuality</source>
+        <target>Taula DataQuality</target>       
+      </trans-unit>
+      <trans-unit id="SureDataQuality">
+        <source>¿Estás seguro de que deseas continuar con la visualización de DataQuality? Esta acción puede tomar un poco de tiempo.</source>
+        <target>Segur que vols continuar amb la visualització de DataQuality? Aquesta acció pot trigar una mica de temps.</target>       
+      </trans-unit>
+      <trans-unit id="ContinueTablaQuality">
+        <source>Continuar</source>
+        <target>Continuar</target>       
+      </trans-unit>
+      <trans-unit id="CancelTablaQuality">
+        <source>Cancelar</source>
+        <target>Cancel·la</target>       
+      </trans-unit>
+      <trans-unit id="filteredReportMessage">
+        <source>Por favor, espera un momento mientras procesamos la selección.</source>
+        <target>Si us plau, espera un moment mentre processem la selecció.</target>
+      </trans-unit>
+      <trans-unit id="logsManagement">
+        <source>Gestión de logs</source>
+        <target>Gestió de logs</target>
+      </trans-unit>
+      <trans-unit id="logFileBtn">
+        <source>Logs</source>
+        <target>Logs</target>
+      </trans-unit>
+      <trans-unit id="logErrorFileBtn">
+        <source>Logs Error</source>
+        <target>Logs Error</target>
+      </trans-unit>
+      <trans-unit id="filterByTreetable">
+      <source>Filtrar por</source>
+      <target>Filtrar per</target>
+      </trans-unit>
+      <trans-unit id="EmptyValueMessage">
+      <source>Sin Informar</source>
+      <target>Sense Informar</target>
+      </trans-unit>
+
+
+
+      <trans-unit id="DatePickerNull">
+        <source>Fecha nula</source>
+        <target>Data nula</target>
+      </trans-unit>
+      <trans-unit id="removeColumnGlobalFilter">
+        <source>No se puede eliminar la columna porque hay vinculado un Filtro</source>
+        <target>No es pot eliminar la columna perquè té un filtre vinculat</target>
+      </trans-unit>
+
+      <trans-unit id="invalidPathForm">
+        <source>Ruta incorrecta para el filtro seleccionado</source>
+        <target>Ruta incorrecta pel filtre seleccionat</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorEDA">
+        <source>Modo EDA</source>
+        <target>Mode EDA</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorSQL">
+        <source>Modo SQL</source>
+        <target>Mode SQL</target>
+      </trans-unit>
+      <trans-unit id="PanelModeSelectorTree">
+        <source>Modo Árbol</source>
+        <target>Mode Arbre</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeX">
+        <source> • Eje vertical: Arrastre aquí los campos.</source>
+        <target>• Eix vertical: Arrossegueu aquí els camps.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeY">
+        <source> • Eje horizontal: Arrastre aquí los campos para el eje horizontal de la tabla cruzada.</source>
+        <target>• Eix horitzontal: Arrossegueu aquí els camps per a l'eix horitzontal de la taula creuada.</target>
+      </trans-unit>
+      <trans-unit id="textoTablaCruzadaEjeZ">
+        <source> • Eje numérico: Arrastre aquí solo los campos numéricos.</source>
+        <target>• Eix numèric: Arrossegueu aquí només els camps numèrics.</target>
+      </trans-unit>
+            <trans-unit id="whereMessage">
+        <source>Filtro sobre todos los registros</source>
+        <target>Filtre sobre tots els registres</target>
+      </trans-unit>
+      <trans-unit id="havingMessage">
+        <source>Filtro sobre los resultados</source>
+        <target>Filtre sobre els resultats</target>
+      </trans-unit>
+      <trans-unit id="whereMessageLabel">
+        <source>Aplicar el filtro sobre todos los registros</source>
+        <target>Aplica el filtre sobre tots els registres</target>
+      </trans-unit>
+      <trans-unit id="havingMessageLabel">
+        <source>Aplicar el filtro sobre los resultados</source>
+        <target>Aplica el filtre sobre els resultats</target>
+      </trans-unit>
+      <trans-unit id="aggregationText">
+        <source>Agregación</source>
+        <target>Agregació</target>
+      </trans-unit>
+      <trans-unit id="ptooltipViewTextRanges">
+        <source>Al configurar un Rango las agregaciones quedarán bloqueadas, Ejemplo de un rango válido - 12:18:50:100 </source>
+        <target>Al configurar un rang les agregacions quedaran bloquejades. Exemple de rang vàlid: 12:18:50:100 </target>
+      </trans-unit>
+      <trans-unit id="rangesExpresionH5">
+        <source>Rangos: </source>
+        <target>Rangs: </target>
+      </trans-unit>
+      <trans-unit id="addRange">
+        <source>Añadir Rango</source>
+        <target>Afegeix un rang</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionB">
+        <source>Rango</source>
+        <target>Rang</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionNumberError">
+        <source>El correcto orden de los límites del rango van de menor a mayor</source>
+        <target>L'ordre correcte dels límits del rang és de més petit a més gran</target>
+      </trans-unit>
+      <trans-unit id="rangeDescriptionCharacterError">
+        <source>El último caracter del rango debe ser un número</source>
+        <target>El darrer caràcter del rang ha de ser numèric</target>
+      </trans-unit>
+      <trans-unit id="ptooltipNotAvailableRanges">
+        <source>No es posible crear un rango nuevo por que ya existe uno configurado</source>
+        <target>No és possible crear un rang nou perquè ja n'hi ha un de configurat</target>
+      </trans-unit>
+      <trans-unit id="textBetween">
+        <source>Entre</source>
+        <target>Entre</target>
+      </trans-unit>
+      <trans-unit id="filterSettings">
+        <source>Configuración de filtros</source>
+        <target>Configuració de filtres</target>
+  </trans-unit>
       <trans-unit id="tutorialTitleHome">
         <source>Tutorial</source>
         <target>Tutorial</target>       
