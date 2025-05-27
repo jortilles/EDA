@@ -1160,12 +1160,20 @@ export class DashboardController {
 
       /**---------------------------------------------------------------------------------------------------------*/
 
+
+       /* Edalitics Free console.log(
+          Edalitics Free  '\x1b[32m%s\x1b[0m',
+          Edalitics Free  `QUERY for user ${req.user.name}, with ID: ${req.user._id
+          Edalitics Free  },  at: ${formatDate(new Date())}  for Dashboard:${req.body.dashboard.dashboard_id
+          Edalitics Free  } and Panel:${req.body.dashboard.panel_id}  `
+          Edalitics Free )*/
+
+
       console.log(
         '\x1b[32m%s\x1b[0m',
-        `QUERY for user ${req.user.name}, with ID: ${req.user._id
-        },  at: ${formatDate(new Date())}  for Dashboard:${req.body.dashboard.dashboard_id
-        } and Panel:${req.body.dashboard.panel_id}  `
+        `QUERY   at: ${formatDate(new Date())}  `
       )
+
       console.log(query)
       console.log('\n-------------------------------------------------------------------------------\n');
 
@@ -1345,7 +1353,12 @@ export class DashboardController {
           return next(new HttpException(500,'Queries in format "select x from A, B" are not suported'));
         }
 
-        console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
+        /* Edalitics Free  console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
+         Edalitics Free console.log(query)
+         Edalitics Free console.log('\n-------------------------------------------------------------------------------\n');
+         Edalitics Free  */
+
+        console.log('\x1b[32m%s\x1b[0m', `QUERY   at: ${formatDate(new Date())} `);
         console.log(query)
         console.log('\n-------------------------------------------------------------------------------\n');
 
