@@ -48,7 +48,10 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public showViewDialog: boolean = false;
 
     public csvPanelController: EdaDialogController;
+
     public cacheController : EdaDialogController;
+    public showCacheDialog: boolean = false;
+    
     public securityController : EdaDialogController;
     public items: MenuItem[];
     public user: any;
@@ -639,15 +642,25 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     openCacheDialog() {
-        this.cacheController = new EdaDialogController({
-            params: { model_id: this.dataModelService.model_id, config:this.modelPanel.metadata.cache_config },
-            close: (event, response) => {
-                if (response) {
-                    this.dataModelService.addCacheConfig(response);
-                }
-                this.cacheController = undefined;
-            }
-        })
+        this.showCacheDialog = true;
+        
+        // this.cacheController = new EdaDialogController({
+        //     params: { model_id: this.dataModelService.model_id, config:this.modelPanel.metadata.cache_config },
+        //     close: (event, response) => {
+        //         if (response) {
+        //             this.dataModelService.addCacheConfig(response);
+        //         }
+        //         this.cacheController = undefined;
+        //     }
+        // })
+    }
+
+    onCloseCacheDialog(response?: any) {
+        if (response) {
+            this.dataModelService.addCacheConfig(response);
+        }
+
+        this.showCacheDialog = false;
     }
 
     openSecurityDialog(){

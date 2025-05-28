@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { AlertService, DataSourceService } from '@eda/services/service.index';
 
@@ -6,10 +6,16 @@ import { AlertService, DataSourceService } from '@eda/services/service.index';
 @Component({
   selector: 'eda-cache-dialog',
   templateUrl: './cache-dialog.component.html',
-  //styleUrls: ['../../../../../../assets/sass/eda-styles/components/dialog-component.css']
 })
 
-export class CacheDialogComponent extends EdaDialogAbstract {
+export class CacheDialogComponent implements OnInit {
+  public display: boolean = false;
+  @Input() config: any;
+  @Input() model_id: any;
+  @Output() close: EventEmitter<any> = new EventEmitter<any>();
+
+
+  public title = $localize`:@@adChacheConfig:Configurar caché del modelo`;
 
   public dialog: EdaDialog;
   public units: string;
@@ -24,28 +30,20 @@ export class CacheDialogComponent extends EdaDialogAbstract {
     private alertService: AlertService,
     public dataModelService: DataSourceService
   ) {
-    super();
-
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@adChacheConfig:Configurar caché del modelo `
-    });
-
-    this.dialog.style = { width: '45%', height:'60%', top:"-4em", left:'1em'};
 
   }
-  onShow(): void {
 
-    const config = this.controller.params.config;
-
+  ngOnInit(): void {
+    const config = this.config;
     this.units = config.units;
     this.quantity = config.quantity;
     this.hours = `${config.hours}:${config.minutes}`;
     this.noCache = !config.enabled;
   }
-  onClose(event: EdaDialogCloseEvent, response?: any): void {
-    return this.controller.close(event, response);
+
+  onClose(response?: any): void {
+    this.display = false;
+    this.close.emit(response);
   }
 
   closeDialog() {
@@ -53,14 +51,13 @@ export class CacheDialogComponent extends EdaDialogAbstract {
   }
 
   saveConfig() {
-
     const hours = this.hours && typeof this.hours === 'string' ? this.hours.slice(0, 2) :
       this.hours ? this.fillWithZeros(this.hours.getHours()) : null;
+
     const minutes = this.hours && typeof this.hours === 'string' ? this.hours.slice(3, 5) :
       this.hours ? this.fillWithZeros(this.hours.getMinutes()) : null;
 
-    this.onClose(EdaDialogCloseEvent.NEW, { units: this.units, quantity: this.quantity, hours: hours, minutes: minutes, enabled: !this.noCache });
-
+    this.onClose({ units: this.units, quantity: this.quantity, hours: hours, minutes: minutes, enabled: !this.noCache });
   }
 
   fillWithZeros(n: number) {
@@ -69,7 +66,6 @@ export class CacheDialogComponent extends EdaDialogAbstract {
   }
 
   checkForm() {
-
     if (this.noCache) return false;
     if (!this.units || !this.quantity) return true
     if (this.units === 'days' && !this.hours) return true;
@@ -77,7 +73,7 @@ export class CacheDialogComponent extends EdaDialogAbstract {
   }
 
   deleteCache() {
-    this.dataModelService.removeCache(this.controller.params.model_id).subscribe(
+    this.dataModelService.removeCache(this.model_id).subscribe(
       res => { this.alertService.addSuccess($localize`:@@CacheDeletedOK:Caché eliminada correctamente`); },
       err => { this.alertService.addError($localize`:@@IncorrectCacheDelete:No ha sido posible eliminar la caché`); }
     );

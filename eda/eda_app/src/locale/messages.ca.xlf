@@ -4538,6 +4538,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Configuración avanzada</source>
         <target>Configuració avançada</target>
       </trans-unit>
+      <trans-unit id="noCacheDescription">
+        <source>Desactiva el sistema de caché para obtener datos en tiempo real</source>
+        <target>Desactiva el sistema de memòria cau per obtenir dades en temps real</target>
+      </trans-unit>
+      <trans-unit id="atTime">
+        <source>A las:</source>
+        <target>A les:</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

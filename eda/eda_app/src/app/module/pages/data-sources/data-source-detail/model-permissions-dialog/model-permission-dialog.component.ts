@@ -135,7 +135,6 @@ export class ModelPermissionDialogComponent implements OnInit {
 
   onClose(response?: any): void {
     this.display = false;
-    this.display = false;
     this.close.emit(response);
   }
 }

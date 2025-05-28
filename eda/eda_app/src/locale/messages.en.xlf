@@ -4481,6 +4481,15 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Configuración avanzada</source>
         <target>Advanced settings</target>
       </trans-unit>
+      <trans-unit id="noCacheDescription">
+        <source>Desactiva el sistema de caché para obtener datos en tiempo real</source>
+        <target>Disable the cache system to get real-time data</target>
+      </trans-unit>
+
+      <trans-unit id="atTime">
+        <source>A las:</source>
+        <target>At:</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

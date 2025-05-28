@@ -1,65 +1,109 @@
-<eda-dialog [inject]="dialog">
+<eda-dialog2 [display]="display" [header]="title" width="40vw" height="60vh"
+  [disableApply]="checkForm()" (apply)="saveConfig()"
+  (close)="closeDialog()">
 
 
+  <div content class="p-2 space-y-6">
+    <!-- <div class="px-6 py-6 space-y-6"> -->
+      <!-- Update Frequency Section -->
+      <div *ngIf="!noCache" class="bg-gray-50 rounded-lg p-4">
+        <div class="space-y-4">
+          <div class="flex items-center gap-2">
+            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+            </svg>
+            <label class=" font-medium text-gray-700" i18n="@@RefreshCacheTitle">
+              Actualizar los datos del modelo cada:
+            </label>
+          </div>
 
-  <div body class='grid'>
+          <div class="flex items-center gap-3">
+            <input
+              type="number"
+              [(ngModel)]="quantity"
+              [disabled]="noCache"
+              min="1"
+              class="w-20 px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+            />
 
-    <div *ngIf="!noCache" class="col-4" >
+            <div class="flex gap-4">
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="timeUnit"
+                  value="days"
+                  [(ngModel)]="units"
+                  [disabled]="noCache"
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
+                />
+                <span class=" text-gray-700" i18n="@@days">Día/s</span>
+              </label>
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="timeUnit"
+                  value="hours"
+                  [(ngModel)]="units"
+                  [disabled]="noCache"
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 disabled:opacity-50"
+                />
+                <span class=" text-gray-700" i18n="@@hours">Hora/s</span>
+              </label>
+            </div>
+          </div>
 
-      <div class="col-12">
-        <h6 i18n="@@RefreshCacheTitle"> Actualizar los datos del modelo cada: </h6>
+          <div *ngIf="units==='days'" class="flex items-center gap-3">
+            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <label for="updateTime" class=" text-gray-700" i18n="@@atTime">A las:</label>
+            <input
+              id="updateTime"
+              type="time"
+              [(ngModel)]="hours"
+              [disabled]="noCache"
+              class="w-32 px-3 py-2 border border-gray-300 rounded-md  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+            />
+          </div>
+        </div>
       </div>
 
-      <div class="col-12">
-        <p-inputNumber [(ngModel)]="quantity" [disabled]="noCache"></p-inputNumber>
+      <!-- Separator -->
+      <hr *ngIf="!noCache" class="border-gray-200">
+
+      <!-- Cache Controls Section -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="space-y-1">
+            <label class=" font-medium text-gray-700" i18n="@@noCache">Sin caché</label>
+            <p class="text-gray-500" i18n="@@noCacheDescription">
+              Desactiva el sistema de caché para obtener datos en tiempo real
+            </p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              [(ngModel)]="noCache"
+              class="sr-only peer"
+            />
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
+        </div>
+
+        <button
+          (click)="deleteCache()"
+          [disabled]="noCache"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-md  font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          <span i18n="@@deleteCache">Borrar cache del modelo</span>
+        </button>
       </div>
-      <div class="col-12">
-        <p-radioButton name="groupname" value="days" [label]="daysSTR" [(ngModel)]="units" [disabled]="noCache">
-        </p-radioButton>
-      </div>
-      <div class="col-12" *ngIf="units==='days'">
-        <span> A las </span>
-        <p-calendar [timeOnly]="true" [(ngModel)]="hours"></p-calendar>
-      </div>
-      <div class="col-12">
-        <p-radioButton name="groupname" value="hours" [label]="hoursSTR" [(ngModel)]="units" [disabled]="noCache">
-        </p-radioButton>
-      </div>
-    </div>
-
-    <div class="col-4">
-
-      <div class="col-12">
-        <h6 i18n="@@noCache">Sin cache</h6>
-        <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="noCache" tooltipPosition="left">
-        </p-inputSwitch>
-      </div>
-
-
-
-    </div>
-
-    <div class="col-4">
-      <div class='col-12'>
-
-        <!-- <h6 i18n="@@deleteCache">Borrar cache del modelo</h6> -->
-        <button type="button" pButton (click)="deleteCache()" class="ui-button-success ml-2" i18n-label='@@deleteCache'
-          label="Borrar caché"></button>
-
-      </div>
-    </div>
-
+    <!-- </div> -->
   </div>
-
-  <div footer>
-    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-      <button type="button" pButton (click)="saveConfig()" class="ui-button" i18n-label="@@guardarBtn"
-        [disabled]="checkForm()" icon="fa fa-check" label="Confirmar">
-      </button>
-      <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
-        label="Cerrar"></button>
-    </div>
-  </div>
-
-
-</eda-dialog>
+</eda-dialog2>
