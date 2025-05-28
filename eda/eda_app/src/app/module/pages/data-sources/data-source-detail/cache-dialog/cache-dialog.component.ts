@@ -47,7 +47,7 @@ export class CacheDialogComponent implements OnInit {
   }
 
   closeDialog() {
-    this.onClose(EdaDialogCloseEvent.NONE);
+    this.onClose();
   }
 
   saveConfig() {

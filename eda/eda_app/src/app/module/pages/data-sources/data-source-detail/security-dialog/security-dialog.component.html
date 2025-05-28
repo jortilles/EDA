@@ -1,6 +1,7 @@
-<eda-dialog [inject]="dialog">
+<eda-dialog2 [display]="display" [header]="title" width="60vw" height="80vh"
+  (close)="closeDialog()">
 
-  <div body>
+  <div content class="p-2 space-y-6">
     <h5 i18n="@@rolesPermisos">Roles y permisos de fila</h5>
     <eda-table style="margin-top: 3em;" [inject]="securityTable"></eda-table>
     <h5 i18n="@@rolesPermisosTabla">Visibilidad de tablas</h5>
@@ -9,12 +10,4 @@
     <eda-table style="margin-top: 3em;" [inject]="securityModelTableLevel"></eda-table>
   </div>
 
-  <div footer>
-    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-      <button type="button" pButton (click)="closeDialog()" class="ui-button" i18n-label="@@guardarBtn"
-        icon="fa fa-check" label="Confirmar">
-      </button>
-    </div>
-  </div>
-
-</eda-dialog>
+</eda-dialog2>

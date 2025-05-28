@@ -53,6 +53,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public showCacheDialog: boolean = false;
     
     public securityController : EdaDialogController;
+    public showSecurityDialog: boolean = false;
+
     public items: MenuItem[];
     public user: any;
     // public hideAllTablesBool : boolean = false;
@@ -664,12 +666,13 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     openSecurityDialog(){
-        this.securityController = new EdaDialogController({
-            params: { model: this.modelPanel },
-            close: (event) => {
-                this.securityController = undefined;
-            }
-        })
+        this.showSecurityDialog = true;
+        // this.securityController = new EdaDialogController({
+        //     params: { model: this.modelPanel },
+        //     close: (event) => {
+        //         this.securityController = undefined;
+        //     }
+        // })
     }
 
     openValueListDialog() {
