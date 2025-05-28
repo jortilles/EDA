@@ -1,10 +1,11 @@
-<eda-dialog [inject]="dialog">
-  <div body>
+<eda-dialog2 [display]="display" [header]="title" width="40vw" height="60vh"
+  [disableApply]="(selectedUsers.length < 1 && selectedRoles.length < 1)" (apply)="savePermission()"
+  (close)="closeDialog()">
 
+  <div content class="p-2 space-y-6">
     <div class="grid">
 
       <div class="col-12">
-
         <div style="margin: 1em;">
           <p-radioButton name="groupname" value="users" [label]="usersLabel" [(ngModel)]="type"
             (onClick)="resetValues()">
@@ -17,7 +18,6 @@
       </div>
 
       <!-- USERS -->
-
       <div *ngIf="type==='users'" class="col-12">
         <p-multiSelect [options]="users" [(ngModel)]="selectedUsers" [virtualScroll]="true" [itemSize]="30"
           [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '60%' }"
@@ -33,46 +33,13 @@
         </p-multiSelect>
       </div>
 
-
-
       <!-- COMMON -->
-
       <div style="margin-left: 1em;" *ngIf="type" class="col-12">
         <div i18n="@@tablePermissionNO" *ngIf="!permission">No tiene permiso para ver esta tabla</div>
         <div i18n="@@tablePpermissionYES" *ngIf="permission">SI tiene permiso para ver esta tabla</div>
         <p-inputSwitch [(ngModel)]="permission"></p-inputSwitch>
       </div>
     </div>
-
   </div>
 
-  <div footer>
-
-    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-      <button type="button" pButton (click)="savePermission()"
-        [disabled]="(selectedUsers.length < 1 && selectedRoles.length < 1) "
-        class="ui-button" icon="fa fa-check" i18n-label="@@guardarBtn" label="Confirmar"
-        id="eda_column_permission_confirmar"></button>
-      <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
-        label="Cerrar"></button>
-    </div>
-
-
-  </div>
-
-  <div footer class="flex justify-end p-2 border-t gap-1.5">
-    <button
-      class="rounded-md px-4 py-2 border"
-      (click)="closeDialog()"
-      i18n="@@cancelarBtn">
-      Cancelar
-    </button>
-    <button
-      class="rounded-md px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white"
-      (click)="savePermission()"
-      [disabled]="(selectedUsers.length < 1 && selectedRoles.length < 1) "
-      i18n="@@guardarBtn">
-      Confirmar
-    </button>
-  </div>
-</eda-dialog>
+</eda-dialog2>

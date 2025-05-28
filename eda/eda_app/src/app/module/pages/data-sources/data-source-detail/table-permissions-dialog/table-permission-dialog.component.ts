@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { DataSourceService, QueryBuilderService, UserService, GroupService, QueryParams } from "@eda/services/service.index";
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 
@@ -10,7 +10,12 @@ import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from "@eda/shared/c
     templateUrl: './table-permission-dialog.component.html'
 })
 
-export class TablePermissionDialogComponent extends EdaDialogAbstract {
+export class TablePermissionDialogComponent implements OnInit {
+    public display: boolean = false;
+    @Input() table: any;
+    @Output() close: EventEmitter<any> = new EventEmitter<any>();
+    
+    public title = $localize`:@@addPermissions:Añadir permiso`;
 
     public dialog: EdaDialog;
 
@@ -35,28 +40,25 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
     public groupsDefaultLabel = $localize`:@@groups:Grupos`;
 
     /* filterProps */
-    private table: any;
 
     constructor(public dataSourceService: DataSourceService,
                 private userService: UserService,
                 private groupService: GroupService) {
-        super();
 
-        this.dialog = new EdaDialog({
-            show: () => this.onShow(),
-            hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-            title: $localize`:@@addPermissions:Añadir permiso`
-        });
+        // this.dialog = new EdaDialog({
+        //     show: () => this.onShow(),
+        //     hide: () => this.onClose(EdaDialogCloseEvent.NONE),
+        //     title: $localize`:@@addPermissions:Añadir permiso`
+        // });
 
-        this.dialog.style = { width: '40%', height:'65%', top:"-4em", left:'1em'};
+        // this.dialog.style = { width: '40%', height:'65%', top:"-4em", left:'1em'};
     }
 
-    onShow() {
+    ngOnInit() {
         this.load();
     }
 
     load() {
-        this.table =  this.controller.params.table;
         this.loadDataSource();
         this.loadUsers();
     }
@@ -83,7 +85,7 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
                 users : this.selectedUsers.map(usr => usr._id),
                 usersName : this.selectedUsers.map(usr => usr.name),
                 none : this.none ? true : false,
-                table : this.controller.params.table.technical_name,
+                table : this.table.technical_name,
                 column : "fullTable",
                 global : true,
                 permission : this.permission ? true : false,
@@ -95,14 +97,14 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
                 groups : this.selectedRoles.map(usr => usr._id),
                 groupsName : this.selectedRoles.map(usr => usr.name),
                 none : this.none ? true : false,
-                table : this.controller.params.table.technical_name,
+                table : this.table.technical_name,
                 column : "fullTable",
                 global : true,
                 permission : this.permission,
                 type : 'groups'
             };
         }
-        this.onClose(EdaDialogCloseEvent.NEW, permissionFilter);
+        this.onClose(permissionFilter);
     }
 
     resetValues(){
@@ -112,10 +114,11 @@ export class TablePermissionDialogComponent extends EdaDialogAbstract {
 
     closeDialog() {
         this.selectedUsers = [];
-        this.onClose(EdaDialogCloseEvent.NONE);
+        this.onClose();
     }
 
-    onClose(event: EdaDialogCloseEvent, response?: any): void {
-        return this.controller.close(event, response);
-    }
+    onClose(response?: any): void {
+        this.display = false;
+        this.close.emit(response);
+      }
 }

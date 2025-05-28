@@ -1,7 +1,6 @@
 <eda-dialog [inject]="dialog">
 
     <div body>
-
         <div class="col-12 xl:col-4">
             <p-dropdown [options]="targetTables" filter="true" optionLabel="label"
             [(ngModel)]="targetTable" [style]="{width:'100%'}"  (onChange)="getColumnsByTable()" 
@@ -22,72 +21,19 @@
                 [(ngModel)]="targetDescCol" [style]="{width:'100%'}" id="targetDescCol">
             </p-dropdown>
         </div>
-
-        <!--
-        <form [formGroup]="form" class="form-horizontal form-material">
-            <div class="grid" style="max-height: 20em;">
-
-                <div class="col-12 xl:col-4">
-                    <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true" optionLabel="label"
-                        i18n-placeholder="@@placeholderTargetTables" placeholder="tabla destino"
-                        id="eda_add_relation_targetTable" [style]="{width:'150px'}">
-                    </p-dropdown>
-                </div>
-
-                <div class="col-12 xl:col-4">
-                    <p-dropdown [options]="sourceCols" formControlName="sourceCol" filter="true"
-                        optionLabel="display_name.default" i18n-placeholder="@@placeholderSourceColumns"
-                        placeholder="Columna origen" (onChange)="getColumnsByTable()" id="eda_add_relation_sourceCols" [style]="{width:'150px'}">
-                    </p-dropdown>
-                </div>
-
-                <div class="col-12 xl:col-4">
-                    <p-dropdown [options]="targetCols" formControlName="targetCol" filter="true"
-                        i18n-placeholder="@@placeholderTargetColumns" placeholder="Columna destino "
-                        id="eda_add_relation_targetCol" [style]="{width:'150px'}">
-                    </p-dropdown>
-                </div>
-
-                <div class="col-12" style="margin: 1em;">
-                    <h6 i18n="@@addRelation"> Añadir relación </h6>
-
-                    <button pButton pRipple type="button" icon="pi pi-plus"
-                        class="p-button-rounded p-button-outlined" (click)="addRelation()" style="margin:0.2em"
-                        i18n-title="@@Refresh" title="Refrescar modelo de datos"
-                        [disabled]="!this.form.controls.targetTable.value  ||  !this.form.value.sourceCol || !this.form.value.targetCol ">
-                    </button>
-                </div>
-
-                <div class="col-10" style="margin: 1em;">
-                    <ul>
-                        <div id="box_wrapper">
-                            <li *ngFor="let sourceCol of selectedSourceCols; let i=index">
-                                <i class="fa fa-close" style="color: #c0555e;"
-                                    (click)="deleteRelation(i)"></i>&nbsp;&nbsp;
-                                {{this.controller.params.table.description}}.{{sourceCol.display_name.default}} ⇴
-                                {{targetTable}}.{{selectedTargetCols[i].display_name.default}}
-                            </li>
-                        </div>
-                    </ul>
-                </div>
-            </div>
-
-        </form>
-        -->
     </div>
 
-    <div footer>
-        <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-
-            <button type="button" pButton (click)="saveValueListSource()" class="ui-button" i18n-label="@@guardarBtn"
-                icon="fa fa-check" label="Confirmar" id="eda_add_value_list_confirm" >
-            </button>
-
-            <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
-                label="Cerrar" id="eda_add_value_list__close">
-            </button>
-
-        </div>
+    <div footer class="flex justify-end p-2 border-t gap-1.5">
+      <button
+        class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md"
+        (click)="closeDialog()">
+        <i class="fa fa-times"></i>
+        <span i18n="@@cancelarBtn">Cancelar</span>
+      </button>
+      <button
+        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md"
+        (click)="saveValueListSource()">
+        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
+      </button>
     </div>
-
 </eda-dialog>
