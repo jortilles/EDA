@@ -1,7 +1,7 @@
 import { AlertService } from './../../../../../services/alerts/alert.service';
 import { SpinnerService } from './../../../../../services/shared/spinner.service';
 import { SelectItem } from 'primeng/api';
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { EdaDialogAbstract, EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { NgxCsvParser } from 'ngx-csv-parser';
 import { AddTableService } from '@eda/services/api/createTable.service';
@@ -13,8 +13,14 @@ import { AddTableService } from '@eda/services/api/createTable.service';
   styleUrls: ['./add-csv.component.css']
 })
 
-export class AddCsvComponent extends EdaDialogAbstract {
+export class AddCsvComponent implements OnInit {
+  public display: boolean = false;
+  @Input() config: any;
+  @Input() model_id: any;
+  @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
+
+  public title = $localize`:@@addTableTitle:Añadir Tabla`;
   @ViewChild('file', { static: false }) file: { nativeElement: { files: { [key: string]: File; }; value: string; click: () => void; }; };
 
   public dialog: EdaDialog;
@@ -30,7 +36,6 @@ export class AddCsvComponent extends EdaDialogAbstract {
   public decSeparators : SelectItem[];
   public editFieldsHeaders: Array<string>;
   public names: Array<string>;
-  private model_id: string;
   public tableAdded: boolean = false;
 
   constructor(
@@ -39,14 +44,13 @@ export class AddCsvComponent extends EdaDialogAbstract {
     private spinnerService: SpinnerService,
     private alertService: AlertService
   ) {
-    super();
 
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@addTableTitle:Añadir Tabla`
-    });
-    this.dialog.style = { width: '80%', height: '65%', top:"-4em", left:'1em' };
+    // this.dialog = new EdaDialog({
+    //   show: () => this.onShow(),
+    //   hide: () => this.onClose(EdaDialogCloseEvent.NONE),
+    //   title: $localize`:@@addTableTitle:Añadir Tabla`
+    // });
+    // this.dialog.style = { width: '80%', height: '65%', top:"-4em", left:'1em' };
 
     this.names = ['type', 'format', 'separator'];
 
@@ -78,17 +82,17 @@ export class AddCsvComponent extends EdaDialogAbstract {
       { label: ',', value: ',' },
       { label: '.', value: "." }
     ];
+  }
 
-  }
-  onShow(): void {
-    this.model_id = this.controller.params.model_id;
-  }
-  onClose(event: EdaDialogCloseEvent, response?: any): void {
-    return this.controller.close(event, response);
+  ngOnInit(): void { }
+  
+  onClose(response?: any): void {
+    this.display = false;
+    this.close.emit(response);
   }
 
   closeDialog() {
-    this.onClose(EdaDialogCloseEvent.NEW, this.tableAdded);
+    this.onClose(this.tableAdded);
   }
 
   async onFilesAdded() {

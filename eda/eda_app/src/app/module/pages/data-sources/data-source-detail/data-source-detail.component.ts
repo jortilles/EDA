@@ -48,6 +48,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public showViewDialog: boolean = false;
 
     public csvPanelController: EdaDialogController;
+    public showCsvDialog: boolean = false;
 
     public cacheController : EdaDialogController;
     public showCacheDialog: boolean = false;
@@ -619,15 +620,24 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     openCSVDialog() {
-        this.csvPanelController = new EdaDialogController({
-            params: { model_id: this.dataModelService.model_id },
-            close: (event, response) => {
-                if (response) {
-                    this.onTableCreated.emit();
-                }
-                this.csvPanelController = undefined;
-            }
-        })
+        this.showCsvDialog = true;
+        // this.csvPanelController = new EdaDialogController({
+        //     params: { model_id: this.dataModelService.model_id },
+        //     close: (event, response) => {
+        //         if (response) {
+        //             this.onTableCreated.emit();
+        //         }
+        //         this.csvPanelController = undefined;
+        //     }
+        // })
+    }
+
+    closeCSVDialog(response?: any) {
+        if (response) {
+            this.onTableCreated.emit();
+        }
+
+        this.showCsvDialog = false;
     }
     
     openTagDialog() {
