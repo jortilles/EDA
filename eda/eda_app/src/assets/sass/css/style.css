@@ -1372,13 +1372,13 @@ pre {
 
 
 
-.p-datatable-thead tr{
+/* .p-datatable-thead tr{
     background:  #e9ecef !important;
   }
   .p-datatable .p-datatable-thead > tr > th{
     background: #e9ecef !important;
     border: 1px solid #fff;
-  }
+  } */
 
 
 
@@ -1485,9 +1485,9 @@ pre {
     /* border-width: 0 0 1px 1px!important; */
 }
 
-.p-datatable-thead tr {
+/* .p-datatable-thead tr {
     background: #e9ecef00 !important;
-}
+} */
 
 
 .component .p-paginator {
