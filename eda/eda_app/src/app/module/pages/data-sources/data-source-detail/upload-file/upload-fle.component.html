@@ -8,15 +8,15 @@
       <button pButton pRipple type="button" icon="pi pi-save"   class="p-button-rounded p-button-outlined" [disabled]="!canBeClosed" (click)="uploadFile()"
       style="margin:0.2em"></button>
       
-      <ul>
+      <ul *ngIf="files">
         <div class="col-4 ui-md-4" id="wrapper">
           <li *ngFor="let item of files">
             &nbsp;&nbsp; {{item.name}}
           </li>
         </div>
       </ul>
-      <div class="col-12 ui-md-12" style="padding: 5px;">
-        <p-progressBar *ngIf="progressBar" mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
+      <div *ngIf="progressBar" class="col-12 ui-md-12" style="padding: 5px;">
+        <p-progressBar  mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
       </div>
     </div>
   </div>

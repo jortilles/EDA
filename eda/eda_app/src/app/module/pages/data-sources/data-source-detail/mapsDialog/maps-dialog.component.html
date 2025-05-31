@@ -1,66 +1,235 @@
-<eda-dialog [inject]="dialog">
-  <div body class="grid">
+<eda-dialog2 [display]="display" [header]="title" width="60vw" height="80vh"
+  (apply)="saveMap()" (close)="closeDialog()">
 
-    <div class="col-12 xl:col-4">
-
-      <p-card>
-        <div class="grid">
-          <form [formGroup]="form" class="form-horizontal form-material">
-
-            <h5 class="headerH5" i18n="@@inputMapTables">Propiedades del mapa</h5>
-
-            <div style="margin-bottom: 0" class="col-12 md:col-12">
-              <h6 i18n="@@inputMapURL"> Subir archivo GeoJson (JSON)</h6>
-              <app-uploadFile #fileUploader (onFileSaved)="fileLoaded()"></app-uploadFile>
-            </div>
-
-            <div style="margin-bottom: 10px" class="col-12 md:col-12">
-              <h6 i18n="@@inputMapField"> Campo a usar para vincular el modelo con el mapa</h6>
-              <p-dropdown [options]="fields" formControlName="selectedField" placeholder="Selecciona un campo"
-                optionLabel="campo" [showClear]="true" optionLabel="label" [style]="{'width':'209px'}" ></p-dropdown>
-
-              <div style="margin-top: 10px">
-                <h6 i18n="@@inputMapName"> Nombre del mapa</h6>
-                <p><input pInputText type="text" formControlName="mapName" size="30" id="map_name"></p>
-              </div>
-
-            </div>
-            <div style="margin-bottom: 10px" class="col-12 ui-md-12">
-              <span>
-                <h6 i18n="@@inputx">Centro del mapa (Latitud, Longitud)</h6>
-                <p i18n="@@inputxDescription">Si desconoces las coordenadas del centro las calcularemos automáticamente
-                </p>
-              </span>
-              <p><input pInputText type="text" formControlName="x" size="30" style="margin-right: 2px">
-                <input pInputText type="text" formControlName="y" size="30">   
-              </p>
-            </div>
-
-          </form>
-        </div>
-      </p-card>
+  <div content class="p-2 space-y-6">
+    <!-- Tabs -->
+    <div class="grid w-full grid-cols-3 gap-3">
+      <!-- <button 
+            (click)="setDashboardTab('export')" 
+            class="flex items-center justify-center px-3 py-2 font-semibold rounded-l-md transition-colors"
+            [class.bg-[#00BFB3]]="dashboardTab() === 'export'"
+            [class.text-white]="dashboardTab() === 'export'"
+            [class.bg-gray-100]="dashboardTab() !== 'export'"
+            [class.dark:bg-gray-800]="dashboardTab() !== 'export'"
+          >
+            <eda-icon name="export" class="mr-2"></eda-icon>
+            Exportar
+          </button> -->
+      <button 
+        [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'properties', 'bg-gray-100': activeTab !== 'properties'}"
+        class="px-3 py-2 font-semibold rounded-md transition-colors"
+        (click)="setActiveTab('properties')">
+        <span i18n="@@inputMapTables">Propiedades del mapa</span>
+      </button>
+      <button 
+        [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'columns', 'bg-gray-100': activeTab !== 'columns'}"
+        class="px-3 py-2 font-semibold rounded-md transition-colors"
+        (click)="setActiveTab('columns')">
+        <span i18n="@@inputMapColumnsText">Vincular columnas al mapa</span>
+      </button>
+      <button 
+        [ngClass]="{'bg-[#00BFB3] text-white': activeTab === 'available', 'bg-gray-100': activeTab !== 'available'}"
+        class="px-3 py-2 font-semibold rounded-md transition-colors"
+        (click)="setActiveTab('available')">
+        <span i18n="@@avaliableMaps">Mapas disponibles</span>
+      </button>
     </div>
 
-    <div class="col-12 xl:col-4">
+    <!-- Tab Content -->
+    <form [formGroup]="mapForm">
+      <!-- Map Properties Tab -->
+      <div *ngIf="activeTab === 'properties'" class="space-y-6">
+        <div class="bg-white rounded-lg border p-4">
+          <div class="mb-3">
+            <h3 class="text-lg font-medium flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                <line x1="9" x2="9" y1="3" y2="18"/>
+                <line x1="15" x2="15" y1="6" y2="21"/>
+              </svg>
+              <span i18n="@@inputMapTables">Propiedades del mapa</span>
+            </h3>
+            <p class=" text-gray-500" i18n="@@mapDescription">Configurar las propiedades básicas de la visualización de su mapa</p>
+          </div>
 
-      <p-card>
-        <div class="grid">
-          <div class="col-12 md:col-12">
-            <h5 class="headerH5" i18n="@@inputMapColumnsText">Vincular columnas al mapa</h5>
-
-
-            <div style="margin-bottom: 10px">
-              <h6 i18n="@@inputMapTables">Tablas</h6>
-              <p-dropdown [options]="tables" [(ngModel)]="selectedTable" placeholder="Selecciona una tabla"
-                optionLabel="Tabla" [showClear]="true" (onChange)="getColumns()" [style]="{'width':'209px'}"  optionLabel="label"></p-dropdown>
+          <div class="space-y-6">
+            <!-- GeoJSON Upload -->
+            <div class="space-y-2">
+              <label for="geojson" class="block  font-medium" i18n="@@inputMapURL">Subir archivo GeoJson (JSON)</label>
+              <div class="flex items-center gap-2">
+                <app-uploadFile #fileUploader (onFileSaved)="fileLoaded()"></app-uploadFile>
+                <!-- <div class="relative flex-1">
+                <input 
+                    type="file" 
+                    id="geojson" 
+                    accept=".json,.geojson" 
+                    class="absolute inset-0 opacity-0 cursor-pointer"
+                    (change)="handleFileUpload($event)">
+                <button class="w-full flex justify-center items-center gap-2 px-4 py-2 border rounded-md bg-white hover:bg-gray-50 ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" x2="12" y1="3" y2="15"/>
+                    </svg>
+                    Choose File
+                </button>
+                </div> -->
+                <!-- <button class="p-2 border rounded-md hover:bg-gray-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" x2="12" y1="15" y2="3"/>
+                </svg>
+                </button> -->
+              </div>
             </div>
 
-            <div style="margin-bottom: 10px">
-              <h6 i18n="@@inputMapColumns">Columnas</h6>
-              <p-dropdown [options]="columns" [(ngModel)]="selectedColumn" placeholder="Selecciona una columna"
-                optionLabel="Columna" [showClear]="true" (onChange)="pushItem()" [style]="{'width':'209px'}" optionLabel="label"></p-dropdown>
+            <hr class="border-gray-200">
+
+            <!-- Data Model Field -->
+            <div class="space-y-2">
+              <label for="datamodel" class="block  font-medium flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-database">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                </svg>
+                <span i18n="@@inputMapField">Campo a usar para vincular el modelo con el mapa</span>
+              </label>
+              <select 
+                id="datamodel" 
+                formControlName="dataModelField"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
+                <option value="" disabled selected i18n="@@selectField">Selecciona un campo</option>
+                <option *ngFor="let field of fields" [value]="field.value">{{ field.label }}</option>
+              </select>
             </div>
 
+            <!-- Map Name -->
+            <div class="space-y-2">
+              <label for="map-name" class="block  font-medium" i18n="@@inputMapName">Nombre del mapa</label>
+              <input 
+                type="text" 
+                id="map-name" 
+                formControlName="mapName"
+                placeholder="Enter a descriptive name for your map" 
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
+            </div>
+
+            <!-- Map Center -->
+            <div class="space-y-2">
+              <label for="latitude" class="block  font-medium flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span i18n="@@inputx">Centro del mapa (Latitud, Longitud)</span>
+              </label>
+              <p class=" text-gray-500" i18n="@@inputxDescription">Si desconoces las coordenadas del centro las calcularemos automáticamente</p>
+              <div class="grid grid-cols-2 gap-2">
+                <input 
+                  type="text" 
+                  id="latitude" 
+                  formControlName="latitude"
+                  placeholder="Latitude (e.g. 40.7128)" 
+                  class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+                >
+                <input 
+                  type="text" 
+                  id="longitude" 
+                  formControlName="longitude"
+                  placeholder="Longitude (e.g. -74.0060)" 
+                  class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Link Columns Tab -->
+      <div *ngIf="activeTab === 'columns'" class="space-y-6">
+        <div class="bg-white rounded-lg border p-4">
+          <div class="mb-3">
+            <h3 class="text-lg font-medium flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-columns">
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                <line x1="12" x2="12" y1="3" y2="21"/>
+              </svg>
+              <span i18n="@@inputMapColumnsText">Vincular columnas al mapa</span>
+            </h3>
+            <p class=" text-gray-500" i18n="@@linkMapColumnsDescription">Conecte sus columnas de datos a la visualización geográfica</p>
+          </div>
+
+          <div class="space-y-6">
+            <!-- Table Selection -->
+            <div class="space-y-2">
+              <label for="table" class="block  font-medium flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-table-2">
+                  <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/>
+                </svg>
+                <span i18n="@@inputMapTables">Tablas</span>
+              </label>
+              <select 
+                id="table" 
+                formControlName="selectedTable"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
+                (ngModelChange)="getColumns()">
+                <option value="" disabled selected i18n="@@selectTable">Selecciona una tabla</option>
+                <option *ngFor="let table of tables" [value]="table.value">{{ table.label }}</option>
+              </select>
+            </div>
+
+            <!-- Column Selection -->
+            <div class="space-y-2">
+              <label for="column" class="block  font-medium">
+                <span i18n="@@inputMapColumns">Columnas</span>
+              </label>
+              <select 
+                id="column" 
+                formControlName="selectedColumn"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]">
+                <option value="" disabled selected i18n="@@selectColumn">Selecciona una columna</option>
+                <option *ngFor="let column of columns" [value]="column.value">{{ column.label }}</option>
+              </select>
+            </div>
+
+            <!-- Link Button -->
+            <div class="pt-4">
+              <button 
+                (click)="pushItem()"
+                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md  font-medium">
+                <span i18n="@@linkColumn">Vincular columna</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Linked Columns List -->
+        <div *ngIf="linkedColumns.length > 0" class="bg-white rounded-lg border p-4">
+          <div class="space-y-2">
+            <div 
+              *ngFor="let link of linkedColumns" 
+              class="flex items-center justify-between p-3 border rounded-md bg-gray-50">
+              <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link text-red-500">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                <span class="text-sm text-gray-700">{{ link.table }} : {{ link.col.column_name }}</span>
+              </div>
+              <button 
+                type="button"
+                (click)="deleteLink(link)"
+                class="p-1 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
+                  <path d="M18 6 6 18"/>
+                  <path d="m6 6 12 12"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <!-- <div class="space-y-6">
             <ul>
               <div id="box_wrapper">
                 <li *ngFor="let item of linkedColumns">
@@ -71,46 +240,66 @@
                 </li>
               </div>
             </ul>
-          </div>
+          </div> -->
         </div>
-      </p-card>
-    </div>
-    <div class="col-12 xl:col-4">
-      <p-card>
-        <div class="grid">
-          <div class="col-12 md:col-12">
-            <h5 class="headerH5" i18n="@@avaliableMaps">Mapas disponibles</h5>
+      </div>
 
-            <div>
-              <ul>
-                <li *ngFor="let item of serverMaps">
-                  <i class="fa fa-close" style="color: #c0555e;" (click)="deleteMap(item)"></i>&nbsp;&nbsp;
-                  {{item.name}}  &nbsp;   {{item.field}} ->
-                  <span *ngFor="let el of item.linkedColumns">
-                       <br> {{el.table}}  -   {{el.col.display_name.default}}
-                    </span>
-                </li>
-              </ul>
+      <!-- Available Maps Tab -->
+      <div *ngIf="activeTab === 'available'" class="space-y-6">
+        <div class="bg-white rounded-lg border p-4">
+          <div *ngIf="serverMaps.length > 0" class="mb-3">
+            <h3 class="text-lg font-medium flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+              <span i18n="@@avaliableMaps" i18n="@@mapsAvailable">Mapas disponibles</span>
+            </h3>
+            <p class=" text-gray-500" i18n="@@mapsAvailableDescription">Mapas que están actualmente configurados y disponibles para su uso</p>
+          </div>
+
+          <!-- @for (attr of columns; track attr.name) { -->
+          @for (map of serverMaps; track map) {
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between p-3 border rounded-md bg-slate-50">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-1 bg-white border rounded-md">{{ map.name }} - {{map.field}}</span>
+                  <span> [
+                      @for (el of map.linkedColumns; track el) {
+                        {{el.table}} - {{el.col.display_name.default}},
+                      }
+                    ]
+                 </span>
+                </div>
+                <button 
+                  (click)="removeMap(map)"
+                  class="p-1 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x">
+                    <path d="M18 6 6 18"/>
+                    <path d="m6 6 12 12"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- TODO Preview -->
+              <!-- <div class="h-[200px] mt-4 bg-slate-100 rounded-md flex items-center justify-center border border-dashed">
+                <p class=" text-gray-500">Map preview would appear here</p>
+              </div> -->
             </div>
+          }
+
+          <div *ngIf="serverMaps.length === 0" class="flex flex-col items-center justify-center py-8 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe text-gray-300 mb-2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            <p class="text-gray-500" i18n="@@noMapsAvailable">No hay mapas disponibles</p>
+            <p class=" text-gray-400 mt-1" i18n="@@noMapsAvailableDescription">Configurar un mapa en la pestaña Propiedades del mapa</p>
           </div>
-
         </div>
-      </p-card>
-    </div>
-
+      </div>
+    </form>
   </div>
-
-  <div footer >
-
-    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
-      <button type="button" pButton (click)="saveMap()" class="ui-button" icon="fa fa-check" i18n-label="@@guardarBtn"
-        label="Confirmar" id="eda_column_permission_confirmar"></button>
-      <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
-        label="Cerrar"></button>
-    </div>
-
-  </div>
+</eda-dialog2>
 
 
-
-</eda-dialog>

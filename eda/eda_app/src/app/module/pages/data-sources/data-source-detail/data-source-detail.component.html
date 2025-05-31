@@ -925,7 +925,7 @@
 
 
 <!-- TODO -->
-<app-map-dialog *ngIf="mapController" [controller]="mapController"></app-map-dialog> 
+<app-map-dialog *ngIf="showMapDialog" (close)="closeMapDialog($event)"></app-map-dialog> 
 
 <!-- Looks Good -->
 <app-column-value-list-dialog *ngIf="valueListController" [controller]="valueListController"></app-column-value-list-dialog>

@@ -1,44 +1,48 @@
-import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { EdaDialogAbstract, EdaDialogCloseEvent, EdaDialog } from '@eda/shared/components/shared-components.index';
-import {  DataSourceService } from '@eda/services/service.index';
+import { UntypedFormGroup, UntypedFormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { DataSourceService } from '@eda/services/service.index';
 import { SelectItem } from 'primeng/api';
 import { UploadFileComponent } from '../upload-file/upload-file.component';
 
 @Component({
   selector: 'app-map-dialog',
   templateUrl: './maps-dialog.component.html',
-  styleUrls: ['./maps-dialog.component.css']
+//   styleUrls: ['./maps-dialog.component.css']
 })
 
-export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
+export class MapDialogComponent implements OnInit {
+  public display: boolean = false;
+  @Output() close: EventEmitter<any> = new EventEmitter<any>();
+
+
+  public title = $localize`:@@MapDatamodel:Mapas`;
 
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
 
-  public dialog: EdaDialog;
   public form: UntypedFormGroup;
   public fields: SelectItem[];
   public selectedField: string;
   public tables: SelectItem[];
-  public selectedTable: SelectItem;
   public columns: SelectItem[];
-  public selectedColumn: SelectItem;
-  public linkedColumns: Array<any> = [];
-  public serverMaps: Array<any> = [];
-  public center: Array<number>;
-  // public selectedMap : string;
+  public linkedColumns: any[] = [];
+  public serverMaps: any[] = [];
+  public center: any[];
+  
+  activeTab = "properties"
+  selectedMap = "customers - Country"
+
+  public mapForm = new FormGroup({
+    mapName: new FormControl("", Validators.required),
+    latitude: new FormControl(""),
+    longitude: new FormControl(""),
+    dataModelField: new FormControl(""),
+    selectedTable: new FormControl(""),
+    selectedColumn: new FormControl(""),
+  })
 
   constructor(
     private formBuilder: UntypedFormBuilder,
     private dataSourceService: DataSourceService) {
-    super();
-    this.dialog = new EdaDialog({
-      show: () => this.onShow(),
-      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
-      title: $localize`:@@MapDatamodel:Mapas`
-    });
-    this.dialog.style= {width: '80%', height:'75%', 'top':"-4em", 'left':'1em'};
-
     this.form = this.formBuilder.group({
       mapURL: [null],
       selectedField: [null],
@@ -46,10 +50,25 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
       x: [null],
       y: [null]
     });
+
+    this.mapForm.get('selectedTable')!.valueChanges.subscribe(valor => {
+      this.getColumns();
+    });
   }
 
   ngOnInit(): void {
+    this.display = true;
     this.serverMaps = this.dataSourceService.getMaps() || [];
+    this.tables = this.dataSourceService.getModel().map(table => ({ label: table.display_name.default, value: table.table_name })).sort();
+  }
+
+  setActiveTab(tab: string): void {
+    this.activeTab = tab
+  }
+
+  linkColumn(): void {
+    // console.log("Linking column:", this.mapForm.value.selectedColumn)
+    // Logic to link column to map
   }
 
   fileLoaded() {
@@ -58,13 +77,13 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
     let bs = geoJson.features.map(f => {
       let type = f.geometry.type;
       if (type === 'MultiPolygon') {
-       return  [
+        return [
           f.geometry.coordinates[0][0].map(cord => cord[0]),
           f.geometry.coordinates[0][0].map(cord => cord[1])
 
         ]
       } else {
-       return [
+        return [
           f.geometry.coordinates[0].map(cord => cord[0]),
           f.geometry.coordinates[0].map(cord => cord[1])
 
@@ -72,6 +91,7 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
       }
 
     });
+
     let bounds = bs.reduce((a, b) => [[].concat.apply(a[0], b[0]), [].concat.apply(a[1], b[1])]);
     let minX = bounds[0].reduce((min, v) => min >= v ? v : min, Infinity);
     let minY = bounds[1].reduce((min, v) => min >= v ? v : min, Infinity);
@@ -83,16 +103,21 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
   }
 
   getColumns() {
-    if (this.selectedTable) {
-      this.columns = this.dataSourceService.getModel().filter(table => table.table_name === this.selectedTable.value)[0].columns
-        .map(col => ({ label: col.display_name.default, value: { table: this.selectedTable.value, col: col } }));
+    const selectedTable = this.mapForm.value.selectedTable;
+
+    if (selectedTable) {
+      this.columns = this.dataSourceService.getModel().filter(table => table.table_name === selectedTable)[0].columns
+        .map(col => ({ label: col.display_name.default, value: JSON.stringify({ table: selectedTable, col: col } ) }));
     }
   }
+
   pushItem() {
-    if (this.selectedColumn) {
-      this.linkedColumns.push(this.selectedColumn.value);
+    const selectedColumn = this.mapForm.value.selectedColumn;
+    if (selectedColumn) {
+      this.linkedColumns.push(JSON.parse(selectedColumn));
     }
   }
+
   saveMap() {
     let newMap = false;
     //If map uploaded push to current maps (loaded - eventualy deleted + new)
@@ -102,12 +127,12 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
         {
           mapID: this.fileUploader.currentFile.file._id,
           field: this.form.value.selectedField.value,
-          name: this.form.value.mapName ? this.form.value.mapName : '-' ,
+          name: this.form.value.mapName ? this.form.value.mapName : '-',
           center: this.center,
           linkedColumns: this.linkedColumns
         });
     }
-    this.onClose(EdaDialogCloseEvent.NEW,
+    this.onClose(
       {
         mapID: this.fileUploader.currentFile ? this.fileUploader.currentFile.file._id : null,
         newMap: newMap ? true : false,
@@ -115,21 +140,23 @@ export class MapDialogComponent extends EdaDialogAbstract implements OnInit {
         serverMaps: this.serverMaps
       });
   }
-  deleteMap(map: any) {
+
+  removeMap(map: any) {
     this.serverMaps = this.serverMaps.filter(m => m.mapID !== map.mapID);
   }
+
   deleteLink(link) {
     this.linkedColumns = this.linkedColumns.filter(col => col.col.column_name !== link.col.column_name);
   }
-  closeDialog() {
-    this.onClose(EdaDialogCloseEvent.NONE);
-  }
-  onShow(): void {
-    this.tables = this.dataSourceService.getModel().map(table => ({ label: table.display_name.default, value: table.table_name })).sort();
 
+  closeDialog() {
+    this.onClose();
   }
-  onClose(event: EdaDialogCloseEvent, response?: any): void {
-    return this.controller.close(event, response);
+
+
+  onClose(response?: any): void {
+    this.display = false;
+    this.close.emit(response);
   }
 
 }

@@ -4490,6 +4490,57 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>A las:</source>
         <target>At:</target>
       </trans-unit>
+
+      <trans-unit id="mapDescription">
+        <source>Configurar las propiedades básicas de la visualización de su mapa</source>
+        <target>Configure the basic properties of your map visualization</target>
+      </trans-unit>
+      
+      <trans-unit id="selectField">
+        <source>Selecciona un campo</source>
+        <target>Select a field</target>
+      </trans-unit>
+
+      <trans-unit id="linkMapColumnsDescription">
+        <source>Conecte sus columnas de datos a la visualización geográfica</source>
+        <target>Connect your data columns to the geographic visualization</target>
+      </trans-unit>
+
+      <trans-unit id="selectTable">
+        <source>Selecciona una tabla</source>
+        <target>Select a table</target>
+      </trans-unit>
+
+      <trans-unit id="selectColumn">
+        <source>Selecciona una columna</source>
+        <target>Select a column</target>
+      </trans-unit>
+
+      <trans-unit id="linkColumn">
+        <source>Vincular columna</source>
+        <target>Link column</target>
+      </trans-unit>
+
+      <trans-unit id="avaliableMaps">
+        <source>Mapas disponibles</source>
+        <target>Available maps</target>
+      </trans-unit>
+
+      <trans-unit id="mapsAvailableDescription">
+        <source>Mapas que están actualmente configurados y disponibles para su uso</source>
+        <target>Maps currently configured and available for use</target>
+      </trans-unit>
+
+      <trans-unit id="noMapsAvailable">
+        <source>No hay mapas disponibles</source>
+        <target>No maps available</target>
+      </trans-unit>
+
+      <trans-unit id="noMapsAvailableDescription">
+        <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
+        <target>Configure a map in the Map Properties tab</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

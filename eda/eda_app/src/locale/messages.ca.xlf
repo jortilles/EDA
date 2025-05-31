@@ -4546,6 +4546,56 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>A las:</source>
         <target>A les:</target>
       </trans-unit>
+      <trans-unit id="mapDescription">
+        <source>Configurar las propiedades básicas de la visualización de su mapa</source>
+        <target>Configura les propietats bàsiques de la visualització del teu mapa</target>
+      </trans-unit>
+
+      <trans-unit id="selectField">
+        <source>Selecciona un campo</source>
+        <target>Selecciona un camp</target>
+      </trans-unit>
+
+      <trans-unit id="linkMapColumnsDescription">
+        <source>Conecte sus columnas de datos a la visualización geográfica</source>
+        <target>Connecta les teves columnes de dades amb la visualització geogràfica</target>
+      </trans-unit>
+
+      <trans-unit id="selectTable">
+        <source>Selecciona una tabla</source>
+        <target>Selecciona una taula</target>
+      </trans-unit>
+
+      <trans-unit id="selectColumn">
+        <source>Selecciona una columna</source>
+        <target>Selecciona una columna</target>
+      </trans-unit>
+
+      <trans-unit id="linkColumn">
+        <source>Vincular columna</source>
+        <target>Vincular columna</target>
+      </trans-unit>
+
+      <trans-unit id="avaliableMaps">
+        <source>Mapas disponibles</source>
+        <target>Mapes disponibles</target>
+      </trans-unit>
+
+      <trans-unit id="mapsAvailableDescription">
+        <source>Mapas que están actualmente configurados y disponibles para su uso</source>
+        <target>Mapes que actualment estan configurats i disponibles per al seu ús</target>
+      </trans-unit>
+
+      <trans-unit id="noMapsAvailable">
+        <source>No hay mapas disponibles</source>
+        <target>No hi ha mapes disponibles</target>
+      </trans-unit>
+
+      <trans-unit id="noMapsAvailableDescription">
+        <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
+        <target>Configura un mapa a la pestanya Propietats del mapa</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

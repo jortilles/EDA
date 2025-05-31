@@ -41,7 +41,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public showModelPermissionDialog: boolean = false;
 
     public newColController: EdaDialogController;
+
     public mapController: EdaDialogController;
+    public showMapDialog: boolean = false;
     
     public tagController: EdaDialogController;
     public showAddTagDialog: boolean = false;
@@ -607,18 +609,32 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     openNewMapDialog() {
-        this.mapController = new EdaDialogController({
-            params: {},
-            close: (event, response) => {
-                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                    if (response.newMap) {
-                        this.dataModelService.addLinkedToMapColumns(response.linkedColumns, response.mapID);
-                    }
-                    this.dataModelService.updateMaps(response.serverMaps);
-                }
-                this.mapController = undefined;
+        this.showMapDialog = true;
+
+        // this.mapController = new EdaDialogController({
+        //     params: {},
+        //     close: (event, response) => {
+        //         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+        //             if (response.newMap) {
+        //                 this.dataModelService.addLinkedToMapColumns(response.linkedColumns, response.mapID);
+        //             }
+        //             this.dataModelService.updateMaps(response.serverMaps);
+        //         }
+        //         this.mapController = undefined;
+        //     }
+        // })
+    }
+
+    closeMapDialog(response?: any) {
+        if (response) {
+            if (response.newMap) {
+                this.dataModelService.addLinkedToMapColumns(response.linkedColumns, response.mapID);
             }
-        })
+            
+            this.dataModelService.updateMaps(response.serverMaps);
+        }
+
+        this.showMapDialog = false;
     }
 
     openCSVDialog() {
