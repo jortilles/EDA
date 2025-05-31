@@ -14,14 +14,11 @@ export class MapDialogComponent implements OnInit {
   public display: boolean = false;
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
 
-
   public title = $localize`:@@MapDatamodel:Mapas`;
 
   @ViewChild('fileUploader', { static: false }) fileUploader: UploadFileComponent;
 
-  public form: UntypedFormGroup;
   public fields: SelectItem[];
-  public selectedField: string;
   public tables: SelectItem[];
   public columns: SelectItem[];
   public linkedColumns: any[] = [];
@@ -40,17 +37,7 @@ export class MapDialogComponent implements OnInit {
     selectedColumn: new FormControl(""),
   })
 
-  constructor(
-    private formBuilder: UntypedFormBuilder,
-    private dataSourceService: DataSourceService) {
-    this.form = this.formBuilder.group({
-      mapURL: [null],
-      selectedField: [null],
-      mapName: [null],
-      x: [null],
-      y: [null]
-    });
-
+  constructor(private dataSourceService: DataSourceService) {
     this.mapForm.get('selectedTable')!.valueChanges.subscribe(valor => {
       this.getColumns();
     });
@@ -64,11 +51,6 @@ export class MapDialogComponent implements OnInit {
 
   setActiveTab(tab: string): void {
     this.activeTab = tab
-  }
-
-  linkColumn(): void {
-    // console.log("Linking column:", this.mapForm.value.selectedColumn)
-    // Logic to link column to map
   }
 
   fileLoaded() {
@@ -121,13 +103,13 @@ export class MapDialogComponent implements OnInit {
   saveMap() {
     let newMap = false;
     //If map uploaded push to current maps (loaded - eventualy deleted + new)
-    if (this.fileUploader.currentFile && this.form.value.selectedField && this.form.value) {
+    if (this.fileUploader.currentFile && this.mapForm.value.dataModelField && this.mapForm.value) {
       newMap = true;
       this.serverMaps.push(
         {
           mapID: this.fileUploader.currentFile.file._id,
-          field: this.form.value.selectedField.value,
-          name: this.form.value.mapName ? this.form.value.mapName : '-',
+          field: this.mapForm.value.dataModelField,
+          name: this.mapForm.value.mapName ? this.mapForm.value.mapName : '-',
           center: this.center,
           linkedColumns: this.linkedColumns
         });
