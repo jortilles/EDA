@@ -4770,6 +4770,55 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <source>Administrar las configuraciones de correo electrónico del panel</source>
   <target>Administra les configuracions de correu electrònic del panell</target>
 </trans-unit>
+<trans-unit id="chartDisplayTitle">
+  <source>Visualización</source>
+  <target>Visualització</target>
+</trans-unit>
+
+<trans-unit id="chartDisplayOptionsTitle">
+  <source>Opciones de visualización</source>
+  <target>Opcions de visualització</target>
+</trans-unit>
+
+<trans-unit id="chartTrendOption">
+  <source>Mostrar línea de tendencia en el gráfico</source>
+  <target>Mostra la línia de tendència al gràfic</target>
+</trans-unit>
+
+<trans-unit id="chartTrendOptionDescription">
+  <source>Muestra la línea de tendencia en el gráfico</source>
+  <target>Mostra la línia de tendència al gràfic</target>
+</trans-unit>
+
+<trans-unit id="chartComparationOption">
+  <source>Habilita la comparación con períodos anteriores</source>
+  <target>Habilita la comparació amb períodes anteriors</target>
+</trans-unit>
+
+<trans-unit id="chartComparationOptionDescription">
+  <source>Compara con datos de períodos anteriores</source>
+  <target>Compara amb dades de períodes anteriors</target>
+</trans-unit>
+
+<trans-unit id="chartLabelOption">
+  <source>Muestra las etiquetas de cada segmento</source>
+  <target>Mostra les etiquetes de cada segment</target>
+</trans-unit>
+
+<trans-unit id="chartLabelOptionDescription">
+  <source>Muestra el nombre de cada segmento</source>
+  <target>Mostra el nom de cada segment</target>
+</trans-unit>
+
+<trans-unit id="chartLabelPercentOption">
+  <source>Muestra los porcentajes en las etiquetas</source>
+  <target>Mostra els percentatges a les etiquetes</target>
+</trans-unit>
+
+<trans-unit id="chartLabelPercentOptionDescription">
+  <source>Muestra el valor porcentual de cada segmento</source>
+  <target>Mostra el valor percentual de cada segment</target>
+</trans-unit>
 
     </body>
   </file>

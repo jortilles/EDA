@@ -133,9 +133,14 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 }
                 break;
             default:
+                //Potser ha canviat algo del dataset
+                this.chart.chartDataset.forEach((dataset: any) => {
+                    dataset.backgroundColor = Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor[0] : dataset.backgroundColor;
+                });
+
                 this.series = this.chart.chartDataset.map(dataset => ({
                     label: dataset.label,
-                    bg: this.rgb2hex(dataset.backgroundColor),
+                    bg: this.rgb2hex( Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor[0] : dataset.backgroundColor ), //Potser ha canviat algo del dataset
                     border: dataset.borderColor
                 }));
                 this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor: s.border }));

@@ -1,5 +1,13 @@
+
+@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700");
+@import url(../css/icons/material-design-iconic-font/css/materialdesignicons.min.css);
+@import url(../css/spinners.css);
+@import url(../css/animate.css);
+@import url(../eda-styles/index-styles.css);
+
 @import "primeng/resources/themes/lara-light-blue/theme.css";
 @import "primeng/resources/primeng.css";
+@import url(./custom.css);
 
 /* Tailwind CSS: Organización por capas */
 @layer tailwind-base, primeng, tailwind-utilities;
@@ -72,15 +80,6 @@
     @apply ring-2 ring-ring outline-none;
   }
 }
-
-/* ====== IMPORTACIONES EXTERNAS AL FINAL ====== */
-@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700");
-@import url(../css/icons/material-design-iconic-font/css/materialdesignicons.min.css);
-@import url(../css/spinners.css);
-@import url(../css/animate.css);
-/* @import url(../eda-styles/index-styles.css); */
-
-@import url(./custom.css);
 
 /* TODO Ring Focus, Dark */
 /* border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white

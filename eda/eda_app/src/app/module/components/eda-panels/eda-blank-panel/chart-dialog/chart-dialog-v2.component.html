@@ -16,7 +16,7 @@
         <button (click)="setActiveTab('display')" class="py-2 px-4 text-center transition-colors"
           [class.bg-slate-100]="activeTab === 'display'" [class.border-b-2]="activeTab === 'display'"
           [class.border-primary]="activeTab === 'display'" [class.font-medium]="activeTab === 'display'">
-          <span i18n="@@TODO">Visualización</span>
+          <span i18n="@@chartDisplayTitle">Visualización</span>
         </button>
         <button (click)="setActiveTab('colors')" class="py-2 px-4 text-center transition-colors"
           [class.bg-slate-100]="activeTab === 'colors'" [class.border-b-2]="activeTab === 'colors'"
@@ -29,7 +29,7 @@
       @if (activeTab === 'display') {
       <div class="space-y-6">
         <div class="space-y-4">
-          <h3 class="font-medium text-slate-500 uppercase">
+          <h3 class="font-medium text-slate-500 uppercase" i18n="@@chartDisplayOptionsTitle">
             Opciones de visualización
           </h3>
 
@@ -53,11 +53,11 @@
                     </svg>
                     <div
                       class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      Mostrar línea de tendencia en el gráfico
+                      <span i18n="@@chartTrendOption">Mostrar línea de tendencia en el gráfico</span>
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500">Muestra la línea de tendencia en el gráfico</p>
+                <p class="text-md text-slate-500" i18n="@@chartTrendOptionDescription">Muestra la línea de tendencia en el gráfico</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="addTrend" class="sr-only peer" (ngModelChange)="checkTrend()">
@@ -86,11 +86,11 @@
                     </svg>
                     <div
                       class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      Habilita la comparación con períodos anteriores
+                      <span i18n="@@chartComparationOption">Habilita la comparación con períodos anteriores</span>
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500">Compara con datos de períodos anteriores</p>
+                <p class="text-md text-slate-500" i18n="@@chartComparationOptionDescription">Compara con datos de períodos anteriores</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="addComparative" class="sr-only peer"
@@ -119,11 +119,11 @@
                     </svg>
                     <div
                       class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      Muestra las etiquetas de cada segmento
+                      <span i18n="@@chartLabelOption">Muestra las etiquetas de cada segmento</span>
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500">Muestra el nombre de cada segmento</p>
+                <p class="text-md text-slate-500" i18n="@@chartLabelOptionDescription">Muestra el nombre de cada segmento</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="showLabels" class="sr-only peer" (ngModelChange)="setShowLables()">
@@ -150,11 +150,11 @@
                     </svg>
                     <div
                       class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
-                      Muestra los porcentajes en las etiquetas
+                      <span i18n="@@chartLabelPercentOption">Muestra los porcentajes en las etiquetas</span>
                     </div>
                   </div>
                 </div>
-                <p class="text-md text-slate-500">Muestra el valor porcentual de cada segmento</p>
+                <p class="text-md text-slate-500" i18n="@@chartLabelPercentOptionDescription">Muestra el valor porcentual de cada segmento</p>
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="showLabelsPercent" class="sr-only peer"
@@ -177,7 +177,7 @@
 
           <div class="grid gap-4 grid-rows-auto gap-6">
             <div>
-              <h6 i18n="@@@@ChangeDefaultsColors" class="mb-1">Color del los gráficos:</h6>
+              <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color del los gráficos:</h6>
               <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
                 [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
                 @for (palette of allPalettes; track $index) {
@@ -218,7 +218,7 @@
       <button
         class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md"
         (click)="saveChartConfig()">
-        <i class="fa fa-check"></i> <span>Confirmar</span>
+        <i class="fa fa-check"></i> <span i18n="@@guardarBtn">Confirmar</span>
       </button>
     </div>
   </div>

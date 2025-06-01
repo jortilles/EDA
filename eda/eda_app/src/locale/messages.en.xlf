@@ -4715,6 +4715,55 @@ Once configured you can invoke it whenever you want from the button.</target>
   <source>Administrar las configuraciones de correo electrónico del panel</source>
   <target>Manage dashboard email configurations</target>
 </trans-unit>
+<trans-unit id="chartDisplayTitle">
+  <source>Visualización</source>
+  <target>Display</target>
+</trans-unit>
+
+<trans-unit id="chartDisplayOptionsTitle">
+  <source>Opciones de visualización</source>
+  <target>Display options</target>
+</trans-unit>
+
+<trans-unit id="chartTrendOption">
+  <source>Mostrar línea de tendencia en el gráfico</source>
+  <target>Show trend line in the chart</target>
+</trans-unit>
+
+<trans-unit id="chartTrendOptionDescription">
+  <source>Muestra la línea de tendencia en el gráfico</source>
+  <target>Displays the trend line in the chart</target>
+</trans-unit>
+
+<trans-unit id="chartComparationOption">
+  <source>Habilita la comparación con períodos anteriores</source>
+  <target>Enable comparison with previous periods</target>
+</trans-unit>
+
+<trans-unit id="chartComparationOptionDescription">
+  <source>Compara con datos de períodos anteriores</source>
+  <target>Compares with data from previous periods</target>
+</trans-unit>
+
+<trans-unit id="chartLabelOption">
+  <source>Muestra las etiquetas de cada segmento</source>
+  <target>Show labels for each segment</target>
+</trans-unit>
+
+<trans-unit id="chartLabelOptionDescription">
+  <source>Muestra el nombre de cada segmento</source>
+  <target>Displays the name of each segment</target>
+</trans-unit>
+
+<trans-unit id="chartLabelPercentOption">
+  <source>Muestra los porcentajes en las etiquetas</source>
+  <target>Show percentages in labels</target>
+</trans-unit>
+
+<trans-unit id="chartLabelPercentOptionDescription">
+  <source>Muestra el valor porcentual de cada segmento</source>
+  <target>Displays the percentage value of each segment</target>
+</trans-unit>
 
     </body>
   </file>
