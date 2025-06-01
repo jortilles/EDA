@@ -4495,7 +4495,7 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Configurar las propiedades básicas de la visualización de su mapa</source>
         <target>Configure the basic properties of your map visualization</target>
       </trans-unit>
-      
+
       <trans-unit id="selectField">
         <source>Selecciona un campo</source>
         <target>Select a field</target>
@@ -4539,6 +4539,46 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="noMapsAvailableDescription">
         <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
         <target>Configure a map in the Map Properties tab</target>
+      </trans-unit>
+
+      <trans-unit id="homeTitle">
+        <source>Mis informes</source>
+        <target>My reports</target>
+      </trans-unit>
+
+      <trans-unit id="filterReports">
+        <source>FILTRAR INFORMES:</source>
+        <target>FILTER REPORTS:</target>
+      </trans-unit>
+
+      <trans-unit id="addTag">
+        <source>Añadir etiqueta</source>
+        <target>Add tag</target>
+      </trans-unit>
+
+      <trans-unit id="searchTags">
+        <source>Buscar etiquetas...</source>
+        <target>Search tags...</target>
+      </trans-unit>
+
+      <trans-unit id="sortReports">
+        <source>ORDENAR INFORMES:</source>
+        <target>SORT REPORTS:</target>
+      </trans-unit>
+
+      <trans-unit id="createdAt">
+        <source>Data creación (asc.)</source>
+        <target>Created date (asc.)</target>
+      </trans-unit>
+
+      <trans-unit id="name">
+        <source>Nombre</source>
+        <target>Name</target>
+      </trans-unit>
+
+      <trans-unit id="withoutContentYet">
+        <source>Sin contenido</source>
+        <target>No content yet</target>
       </trans-unit>
 
     </body>

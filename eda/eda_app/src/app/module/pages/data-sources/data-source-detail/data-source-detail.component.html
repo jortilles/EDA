@@ -924,9 +924,6 @@
 </div>
 
 
-<!-- TODO -->
-<app-map-dialog *ngIf="showMapDialog" (close)="closeMapDialog($event)"></app-map-dialog> 
-
 <!-- Looks Good -->
 <app-column-value-list-dialog *ngIf="valueListController" [controller]="valueListController"></app-column-value-list-dialog>
 <app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
@@ -935,6 +932,7 @@
 
 
 <!-- V2 -->
+<app-map-dialog *ngIf="showMapDialog" (close)="closeMapDialog($event)"></app-map-dialog> 
 <app-model-permission-dialog *ngIf="showModelPermissionDialog" (close)="closeModelPermissionsDialog($event)"></app-model-permission-dialog>
 <eda-cache-dialog *ngIf="showCacheDialog" [model_id]="dataModelService.model_id" [config]="modelPanel.metadata.cache_config" (close)="onCloseCacheDialog($event)"></eda-cache-dialog>
 <eda-security-dialog *ngIf="showSecurityDialog" [model]="modelPanel" (close)="showSecurityDialog=false;"></eda-security-dialog>

@@ -6,14 +6,13 @@ import { lastValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '@eda/services/api/user.service';
 import { AlertService, DashboardService } from '@eda/services/service.index';
+import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
-import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
-import { CreateDashboardComponent } from '@eda/shared/components/create-dashboard/create-dashboard.component';
 @Component({
   selector: 'app-v2-home-page',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet, IconComponent, CreateDashboardComponent],
+  imports: [FormsModule, NgTemplateOutlet, IconComponent],
   templateUrl: './home.page.html'
 })
 export class HomePageV2 implements OnInit {
@@ -28,8 +27,6 @@ export class HomePageV2 implements OnInit {
   roleReports: any[] = [];
   sharedReports: any[] = [];
   reportMap: any = {};
-
-  activeFilters: string[] = ['Veure tots', 'Ajuntament'];
   
   tags: any[] = [];
   selectedTags = signal<any[]>(JSON.parse(sessionStorage.getItem('activeTags') ? sessionStorage.getItem('activeTags') : '[]').map(
@@ -45,6 +42,11 @@ export class HomePageV2 implements OnInit {
   editingReportId: string | null = null;
   editTitle: string = '';
   sortingType: string = sessionStorage.getItem('homeSorting') || 'name';
+
+  public publicTitle: string = $localize`:@@tituloGrupoPublicos:PUBLICOS`;
+  public commonTitle: string = $localize`:@@tituloGrupoComunes:COMUNES`;
+  public groupTitle: string = $localize`:@@tituloGrupoMisGrupos:MIS GRUPOS`;
+  public privateTitle: string = $localize`:@@tituloGrupoPersonales:PRIVADOS`;
 
   constructor(private userService: UserService) { }
 

@@ -4595,6 +4595,46 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
         <target>Configura un mapa a la pestanya Propietats del mapa</target>
       </trans-unit>
+      
+      <trans-unit id="homeTitle">
+        <source>Mis informes</source>
+        <target>Els meus informes</target>
+      </trans-unit>
+
+      <trans-unit id="filterReports">
+        <source>FILTRAR INFORMES:</source>
+        <target>FILTRAR INFORMES:</target>
+      </trans-unit>
+
+      <trans-unit id="addTag">
+        <source>Añadir etiqueta</source>
+        <target>Afegir etiqueta</target>
+      </trans-unit>
+
+      <trans-unit id="searchTags">
+        <source>Buscar etiquetas...</source>
+        <target>Cercar etiquetes...</target>
+      </trans-unit>
+
+      <trans-unit id="sortReports">
+        <source>ORDENAR INFORMES:</source>
+        <target>ORDENAR INFORMES:</target>
+      </trans-unit>
+
+      <trans-unit id="createdAt">
+        <source>Data creación (asc.)</source>
+        <target>Data de creació (asc.)</target>
+      </trans-unit>
+
+      <trans-unit id="name">
+        <source>Nombre</source>
+        <target>Nom</target>
+      </trans-unit>
+
+      <trans-unit id="withoutContentYet">
+        <source>Sin contenido</source>
+        <target>Sense contingut</target>
+      </trans-unit>
 
     </body>
   </file>
