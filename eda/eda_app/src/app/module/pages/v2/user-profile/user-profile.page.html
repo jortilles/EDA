@@ -1,8 +1,8 @@
 <div class="container flex justify-center py-10 my-10 mx-auto px-4 bg-background rounded-lg">
   <div class="max-w-6xl space-y-6">
     <div>
-      <h1 class="text-3xl font-bold tracking-tight">Mi Perfil</h1>
-      <p class="text-gray-500 dark:text-gray-400">
+      <h1 class="text-3xl font-bold tracking-tight" i18n="@@profileTitle">Perfil del usuario</h1>
+      <p class="text-gray-500 dark:text-gray-400" i18n="@@profileSubtitle">
         Administra tu información personal y preferencias de cuenta
       </p>
     </div>
@@ -13,8 +13,8 @@
       <!-- Información Personal -->
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="p-6">
-          <h2 class="text-xl font-semibold">Información Personal</h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
+          <h2 class="text-xl font-semibold" i18n="@@profileInfoTitle">Información Personal</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileInfoSubtitle">
             Actualiza tu información básica de perfil
           </p>
         </div>
@@ -22,7 +22,7 @@
         <div class="p-6 pt-0">
           <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="space-y-6">
             <div class="space-y-2">
-              <label for="username" class="block text-sm font-medium">Nombre de usuario</label>
+              <label for="username" class="block text-sm font-medium" i18n="@@labelNombreUsuario">Nombre de usuario</label>
               <div class="flex items-center">
                 <span class="mr-2 text-gray-500">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user">
@@ -39,12 +39,12 @@
                 >
               </div>
               @if (profileForm.get('username')?.invalid && profileForm.get('username')?.touched) {
-                <p class="text-sm text-red-500">El nombre de usuario debe tener al menos 2 caracteres.</p>
+                <p class="text-sm text-red-500" i18n="@@usernameLengthValidation">El nombre de usuario debe tener al menos 2 caracteres.</p>
               }
             </div>
             @if (!user.google) {
               <div class="space-y-2">
-                <label for="email" class="block text-sm font-medium">Correo electrónico</label>
+                <label for="email" class="block text-sm font-medium" i18n="@@labelUsuarioEmail">Correo electrónico</label>
                 <div class="flex items-center">
                   <span class="mr-2 text-gray-500">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail">
@@ -61,7 +61,7 @@
                   >
                 </div>
                 @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
-                  <p class="text-sm text-red-500">Por favor ingresa un email válido.</p>
+                  <p class="text-sm text-red-500" i18n="@@emailValidation">Por favor ingresa un email válido.</p>
                 }
               </div>
             }
@@ -69,10 +69,10 @@
             <div class="h-px bg-gray-200 dark:bg-gray-700 w-full"></div>
             
             <div class="space-y-4">
-              <h3 class="text-lg font-medium">Cambiar contraseña</h3>
+              <h3 class="text-lg font-medium" i18n="@@changePassword">Cambiar contraseña</h3>
               
               <div class="space-y-2">
-                <label for="password" class="block text-sm font-medium">Nueva contraseña</label>
+                <label for="password" class="block text-sm font-medium" i18n="@@newPassword">Nueva contraseña</label>
                 <input 
                   type="password" 
                   id="password" 
@@ -83,7 +83,7 @@
               </div>
               
               <div class="space-y-2">
-                <label for="confirmPassword" class="block text-sm font-medium">Confirmar nueva contraseña</label>
+                <label for="confirmPassword" class="block text-sm font-medium" i18n="@@confirmNewPassword">Confirmar nueva contraseña</label>
                 <input 
                   type="password" 
                   id="confirmPassword" 
@@ -92,7 +92,7 @@
                   placeholder="••••••••"
                 >
                 @if (profileForm.hasError('passwordMismatch')) {
-                  <p class="text-sm text-red-500">Las contraseñas no coinciden</p>
+                  <p class="text-sm text-red-500" i18n="@@passwordValidation">Las contraseñas no coinciden</p>
                 }
               </div>
             </div>
@@ -102,7 +102,7 @@
               class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] bg-[#00BFB3] text-white hover:bg-[#00BFB3]/90 h-10 px-4 py-2 w-full"
               [disabled]="profileForm.invalid"
             >
-              Guardar cambios
+              <span i18n="@@saveChanges">Guardar cambios</span>
             </button>
           </form>
         </div>
@@ -112,8 +112,8 @@
         <!-- Foto de perfil -->
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
           <div class="p-6">
-            <h2 class="text-xl font-semibold">Foto de perfil</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <h2 class="text-xl font-semibold" i18n="@@profileImage">Foto de perfil</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileImageSubtitle">
               Actualiza tu foto de perfil
             </p>
           </div>
@@ -139,7 +139,7 @@
                       <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
                   </div>
-                  <span class="sr-only">Subir imagen</span>
+                  <span class="sr-only" i18n="@@uploadImage">Subir imagen</span>
                 </label>
                 <input
                   id="picture"
@@ -151,7 +151,7 @@
               </div>
             </div>
             <div class="text-center text-sm text-gray-500 dark:text-gray-400">
-              {{ profileImage() ? "Imagen seleccionada" : "No hay imagen seleccionada" }}
+              {{ profileImage() ? selectedImage : noImageSelected }}
             </div>
             <button 
               (click)="handleImageUpload()" 
@@ -166,8 +166,8 @@
         <!-- Preferencias de cuenta -->
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
           <div class="p-6">
-            <h2 class="text-xl font-semibold">Preferencias de cuenta</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <h2 class="text-xl font-semibold" i18n="@@profilePreferences">Preferencias de cuenta</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileNotificationsPrefrences">
               Administra tus preferencias de notificaciones
             </p>
           </div>
@@ -191,7 +191,7 @@
                   [class.border-transparent]="activeTab() !== 'push'"
                   (click)="setActiveTab('push')"
                 >
-                  Notificaciones
+                  <span i18n="@@profileNotifications">Notificaciones</span>
                 </button>
               </div>
             </div>
@@ -200,21 +200,21 @@
               <div class="space-y-4 pt-4">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="font-medium">Actualizaciones</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Recibe actualizaciones sobre nuevas funciones</p>
+                    <p class="font-medium" i18n="@@profileUpdates">Actualizaciones</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileUpdatesSubtitle">Recibe actualizaciones sobre nuevas funciones</p>
                   </div>
                   <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] border border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 h-9 px-3">
-                    Activado
+                    <span i18n="@@activated">Activado</span>
                   </button>
                 </div>
                 <div class="h-px bg-gray-200 dark:bg-gray-700 w-full"></div>
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="font-medium">Boletín</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Recibe nuestro boletín mensual</p>
+                    <p class="font-medium" i18n="@@newsletter">Boletín</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@newsletterDescription">Recibe nuestro boletín mensual</p>
                   </div>
                   <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] border border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 h-9 px-3">
-                    Desactivado
+                    <span i18n="@@inactivated">Desactivado</span>
                   </button>
                 </div>
               </div>
@@ -224,11 +224,11 @@
               <div class="space-y-4 pt-4">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="font-medium">Mensajes</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Recibe notificaciones de nuevos mensajes</p>
+                    <p class="font-medium" i18n="@@profileMessages">Mensajes</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileMessagesDescription">Recibe notificaciones de nuevos mensajes</p>
                   </div>
                   <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] border border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 h-9 px-3">
-                    Activado
+                    <span i18n="@@activated">Activado</span>
                   </button>
                 </div>
               </div>

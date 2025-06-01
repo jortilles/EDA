@@ -28,6 +28,9 @@ export class UserListPage implements OnInit {
   private userService = inject(UserService);
   private groupService = inject(GroupService);
 
+  public addUserTitle = $localize`:@@newUser:Crear Nuevo Usuario`;
+  public updateUserTitle = $localize`:@@editUser:Editar Usuario`;
+
   groups: any[] = [];
   users: User[] = [];
 

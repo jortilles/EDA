@@ -3,8 +3,8 @@
     <!-- Email Configuration Card -->
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       <div class="p-6">
-        <h2 class="text-xl font-semibold" i18n="@@@@mailmanagementHeader">Gestión de correo</h2>
-        <p class="text-gray-500 dark:text-gray-400">Configure los ajustes y credenciales de su servidor de correo electrónico</p>
+        <h2 class="text-xl font-semibold" i18n="@@adminEmail">Gestión de correo</h2>
+        <p class="text-gray-500 dark:text-gray-400" i18n="@@adminEmailSubtitle">Configure los ajustes y credenciales de su servidor de correo electrónico</p>
       </div>
       <div class="p-6 pt-0">
         <form [formGroup]="emailForm" (ngSubmit)="sendMailconfig()">
@@ -124,7 +124,7 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="p-6">
           <h2 class="text-xl font-semibold" i18n="@@alertsConfigTitle">Gestión de alertas</h2>
-          <p class="text-gray-500 dark:text-gray-400">Manage your alert configurations</p>
+          <p class="text-gray-500 dark:text-gray-400" i18n="@@alertsConfigSubtitle">Administra tus configuraciones de alertas</p>
         </div>
         <div class="p-6 pt-0">
           <div class="rounded-md border">
@@ -206,7 +206,7 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="p-6">
           <h2 class="text-xl font-semibold" i18n="@@dashbaordsMailingHeader">Envio de informes por email</h2>
-          <p class="text-gray-500 dark:text-gray-400">Manage dashboard email configurations</p>
+          <p class="text-gray-500 dark:text-gray-400" i18n="@@dashbaordsMailingSubtitle">Administrar las configuraciones de correo electrónico del panel</p>
         </div>
         <div class="p-6 pt-0">
           <div class="rounded-md border">

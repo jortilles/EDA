@@ -1,24 +1,24 @@
 <div class="container mx-auto my-10 py-10 px-4 bg-background rounded-lg">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold tracking-tight">Gestión de Usuarios</h1>
+    <h1 class="text-3xl font-bold tracking-tight" i18n="@@adminUsers">Gestión de Usuarios</h1>
     <button (click)="handleCreateUser()" class="bg-[#00BFB3] hover:bg-[#00BFB3]/90 px-4 py-2 rounded font-semibold text-white flex items-center">
       <eda-icon name="plus" class="mr-2"></eda-icon>
-      Crear Usuario
+      <span i18n="@@addUser">Crear Usuario</span>
     </button>
   </div>
 
   <div class="flex items-center mb-6">
-    <input [(ngModel)]="searchTerm" placeholder="Buscar usuarios..." class="border p-2 rounded w-full" />
+    <input [(ngModel)]="searchTerm" i18n-placeholder="@@searchUsers" placeholder="Buscar usuarios..." class="border p-2 rounded w-full" />
   </div>
 
   <div class="border rounded-lg overflow-hidden">
     <table class="w-full">
       <thead class="bg-gray-100">
         <tr>
-          <th (click)="handleSort('email')" class="cursor-pointer p-3">Email</th>
-          <th (click)="handleSort('name')" class="cursor-pointer p-3">Nombre</th>
-          <th (click)="handleSort('role')" class="cursor-pointer p-3">Grupo</th>
-          <th class="p-3 text-right">Acciones</th>
+          <th (click)="handleSort('email')" class="text-left cursor-pointer p-3" i18n="@@email">Email</th>
+          <th (click)="handleSort('name')" class="text-left cursor-pointer p-3" i18n="@@name">Nombre</th>
+          <th (click)="handleSort('role')" class="text-left cursor-pointer p-3" i18n="@@group">Grupo</th>
+          <th class="p-3 text-right" i18n="@@actions">Acciones</th>
         </tr>
       </thead>
       <tbody class="font-semibold">
@@ -44,12 +44,12 @@
       </tbody>
     </table>
   </div>
-  <p class="mt-1 font-semibold text-right text-gray-500">{{ filteredUsers.length }} usuarios encontrados</p>
+  <p class="mt-1 font-semibold text-right text-gray-500">{{ filteredUsers.length }} <span i18n="@@foundUsers">usuarios encontrados</span></p>
   <div class="flex justify-center items-center gap-2 mt-4">
     <button (click)="setPage(currentPage - 1)" [disabled]="currentPage === 1" class="px-4 py-2 font-semibold rounded">
       <eda-icon name="chevron-left"></eda-icon>
     </button>
-    <span class="font-semibold">Página {{ currentPage }} de {{ totalPages() }}</span>
+    <span class="font-semibold"> <span i18n="@@tablePage">Página</span> {{ currentPage }} <span i18n="@@tablePageOf">de</span> {{ totalPages() }}</span>
     <button (click)="setPage(currentPage + 1)" [disabled]="currentPage === totalPages()" class="px-4 py-2 font-semibold rounded">
       <eda-icon name="chevron-right"></eda-icon>
     </button>
@@ -59,23 +59,23 @@
 
 <eda-dialog2 *ngIf="showUserDetail"
   [display]="showUserDetail"
-  [header]="!selectedUser.isnew ? 'Editar Usuario' : 'Crear Nuevo Usuario'"
-  width="50vw" height="auto"
+  [header]="!selectedUser.isnew ? updateUserTitle : addUserTitle"
+  width="50vw" height="50vh"
   (close)="showUserDetail = false;"
   (apply)="onApplyUserDetail()">
   
   <div content>
     <div class="mt-4">
-      <label class="block text-sm font-medium">Nombre</label>
+      <label class="block text-sm font-medium" i18n="@@name">Nombre</label>
       <input [(ngModel)]="selectedUser.name" class="w-full border p-2 rounded mt-1" />
 
-      <label class="block text-sm font-medium mt-2">Email</label>
+      <label class="block text-sm font-medium mt-2" i18n="@@email">Email</label>
       <input [(ngModel)]="selectedUser.email" class="w-full border p-2 rounded mt-1" />
 
-      <label class="block text-sm font-medium mt-2">Contraseña</label>
+      <label class="block text-sm font-medium mt-2" i18n="@@password">Contraseña</label>
       <input type="password" [(ngModel)]="selectedUser.password" class="w-full border p-2 rounded mt-1" />
 
-      <label class="block text-sm font-medium mt-2">Grupo</label>
+      <label class="block text-sm font-medium mt-2" i18n="@@group">Grupo</label>
       <select [(ngModel)]="selectedUser.role" class="w-full border p-2 rounded mt-1">
         @for (group of groups; track $index) {
           <option value={{group.name}}>{{group.name}}</option>

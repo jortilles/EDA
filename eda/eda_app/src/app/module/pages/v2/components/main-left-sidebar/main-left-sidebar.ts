@@ -31,30 +31,30 @@ export class MainLeftSidebarComponent {
       path: '/data-source',
       icon: 'plus',
       items: [
-        { path: '/v2', label: 'Nuevo Dashboard', icon: 'plus' },
-        { path: '/v2/admin/data-source/new', label: 'Nuevo DataSource', icon: 'plus' },
+        { path: '/v2', label: $localize`:@@tituloNuevoInforme:Crear nuevo informe`, icon: 'plus' },
+        { path: '/v2/admin/data-source/new', label: $localize`:@@addDatasource: Crear DataSource`, icon: 'plus' },
       ]
     },
     {
       path: '/network',
       icon: 'molecula',
       items: [
-        { path: '/v2/admin/users', label: `Gestión de usuarios`, icon: 'users' },
-        { path: '/v2/admin/groups', label: 'Gestión de grupos', icon: 'rectangle-group' },
-        { path: '/v2/admin/data-source', label: 'Gestión de datasource', icon: 'rectangle-group' },
-        { path: '/v2/admin/models/import-export', label: 'Data Export/Import', icon: 'arrow-down-on-square-stack' },
-        { path: '/v2/admin/email-settings', label: `Gestión de email`, icon: 'at-symbol' },
+        { path: '/v2/admin/users', label: $localize`:@@adminUsers:Gestión de usuarios`, icon: 'users' },
+        { path: '/v2/admin/groups', label: $localize`:@@adminGroupsTitle:Gestión de grupos`, icon: 'rectangle-group' },
+        { path: '/v2/admin/data-source', label: $localize`:@@adminDatasource:Gestión de datasource`, icon: 'rectangle-group' },
+        { path: '/v2/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
+        { path: '/v2/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
       ]
     },
     {
       path: '/settings',
       icon: 'settings',
       items: [
-        { path: '/v2/profile', label: 'Perfil', icon: 'profile' },
-        { lang: 'EN', label: 'English', icon: 'en-flag' },//TODO
-        { lang: 'ES', label: 'Español', icon: 'es-flag' },//TODO
-        { lang: 'CA', label: 'Català', icon: 'cat-flag' },//TODO
-        { lang: 'PO', label: 'Polski', icon: 'pl-flag' },//TODO
+        { path: '/v2/profile', label:  $localize`:@@profile:Perfil`, icon: 'profile' },
+        { lang: 'EN', label: 'English', icon: 'en-flag' },
+        { lang: 'ES', label: 'Español', icon: 'es-flag' },
+        { lang: 'CA', label: 'Català', icon: 'cat-flag' },
+        { lang: 'PO', label: 'Polski', icon: 'pl-flag' },
       ]
     },
     {

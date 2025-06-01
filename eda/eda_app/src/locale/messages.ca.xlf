@@ -1155,8 +1155,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="labelUsuarioEmail" datatype="html">
-<source>Correo de usuario</source>
-<target>Correo de l'usuari</target>
+<source>Correo electrónico</source>
+<target>Correo electronic</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
 <context context-type="linenumber">18</context>
@@ -4595,7 +4595,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Configurar un mapa en la pestaña Propiedades del mapa</source>
         <target>Configura un mapa a la pestanya Propietats del mapa</target>
       </trans-unit>
-      
+
       <trans-unit id="homeTitle">
         <source>Mis informes</source>
         <target>Els meus informes</target>
@@ -4635,6 +4635,141 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Sin contenido</source>
         <target>Sense contingut</target>
       </trans-unit>
+
+      <trans-unit id="searchGroups">
+        <source>Buscar grupos...</source>
+        <target>Cercar grups...</target>
+      </trans-unit>
+
+      <trans-unit id="newGroup">
+        <source>Crear Nuevo Grupo</source>
+        <target>Crear Nou Grup</target>
+      </trans-unit>
+
+      <trans-unit id="editGroup">
+        <source>Editar Grupo</source>
+        <target>Edita el Grup</target>
+      </trans-unit>
+
+      <trans-unit id="adminGroupsTitle">
+        <source>Gestión de Grupos</source>
+        <target>Gestió de Grups</target>
+      </trans-unit>
+
+      <trans-unit id="addGroup">
+        <source>Crear Grupo</source>
+        <target>Crear Grup</target>
+      </trans-unit>
+
+      <trans-unit id="actions">
+        <source>Acciones</source>
+        <target>Accions</target>
+      </trans-unit>
+
+      <trans-unit id="foundGroups">
+        <source>grupos encontrados</source>
+        <target>grups trobats</target>
+      </trans-unit>
+
+      <trans-unit id="tablePage">
+        <source>Página</source>
+        <target>Pàgina</target>
+      </trans-unit>
+
+      <trans-unit id="tablePageOf">
+        <source>de</source>
+        <target>de</target>
+      </trans-unit>
+
+      <trans-unit id="role">
+        <source>Rol</source>
+        <target>Rol</target>
+      </trans-unit>
+      <trans-unit id="newUser">
+  <source>Crear Nuevo Usuario</source>
+  <target>Crear Nou Usuari</target>
+</trans-unit>
+<trans-unit id="editUser">
+  <source>Editar Usuario</source>
+  <target>Edita Usuari</target>
+</trans-unit>
+<trans-unit id="adminUsers">
+  <source>Gestión de Usuarios</source>
+  <target>Gestió d'usuaris</target>
+</trans-unit>
+<trans-unit id="addUser">
+  <source>Crear Usuario</source>
+  <target>Crear Usuari</target>
+</trans-unit>
+<trans-unit id="searchUsers">
+  <source>Buscar usuarios...</source>
+  <target>Cercar usuaris...</target>
+</trans-unit>
+<trans-unit id="foundUsers">
+  <source>usuarios encontrados</source>
+  <target>usuaris trobats</target>
+</trans-unit>
+<trans-unit id="group">
+  <source>Grupo</source>
+  <target>Grup</target>
+</trans-unit>
+<trans-unit id="adminDatasource">
+  <source>Gestión de DataSources</source>
+  <target>Gestió de DataSources</target>
+</trans-unit>
+<trans-unit id="addDatasource">
+  <source>Crear DataSource</source>
+  <target>Crear DataSource</target>
+</trans-unit>
+<trans-unit id="foundGroups">
+  <source>datasources encontrados</source>
+  <target>datasources trobats</target>
+</trans-unit>
+<trans-unit id="profileTitle"><source>Perfil del usuario</source><target>Perfil de l'usuari</target></trans-unit>
+<trans-unit id="profileSubtitle"><source>Administra tu información personal y preferencias de cuenta</source><target>Administra la teva informació personal i preferències del compte</target></trans-unit>
+<trans-unit id="profileInfoTitle"><source>Información Personal</source><target>Informació personal</target></trans-unit>
+<trans-unit id="profileInfoSubtitle"><source>Actualiza tu información básica de perfil</source><target>Actualitza la teva informació bàsica del perfil</target></trans-unit>
+<trans-unit id="labelNombreUsuario"><source>Nombre de usuario</source><target>Nom d'usuari</target></trans-unit>
+<trans-unit id="usernameLengthValidation"><source>El nombre de usuario debe tener al menos 2 caracteres.</source><target>El nom d'usuari ha de tenir almenys 2 caràcters.</target></trans-unit>
+<trans-unit id="labelUsuarioEmail"><source>Correo electrónico</source><target>Correu electrònic</target></trans-unit>
+<trans-unit id="emailValidation"><source>Por favor ingresa un email válido.</source><target>Si us plau, introdueix un correu electrònic vàlid.</target></trans-unit>
+<trans-unit id="changePassword"><source>Cambiar contraseña</source><target>Canviar contrasenya</target></trans-unit>
+<trans-unit id="newPassword"><source>Nueva contraseña</source><target>Nova contrasenya</target></trans-unit>
+<trans-unit id="confirmNewPassword"><source>Confirmar nueva contraseña</source><target>Confirmar nova contrasenya</target></trans-unit>
+<trans-unit id="passwordValidation"><source>Las contraseñas no coinciden</source><target>Les contrasenyes no coincideixen</target></trans-unit>
+<trans-unit id="saveChanges"><source>Guardar cambios</source><target>Desar canvis</target></trans-unit>
+<trans-unit id="profileImage"><source>Foto de perfil</source><target>Foto de perfil</target></trans-unit>
+<trans-unit id="profileImageSubtitle"><source>Actualiza tu foto de perfil</source><target>Actualitza la teva foto de perfil</target></trans-unit>
+<trans-unit id="uploadImage"><source>Subir imagen</source><target>Pujar imatge</target></trans-unit>
+<trans-unit id="profilePreferences"><source>Preferencias de cuenta</source><target>Preferències del compte</target></trans-unit>
+<trans-unit id="profileNotificationsPrefrences"><source>Administra tus preferencias de notificaciones</source><target>Administra les teves preferències de notificacions</target></trans-unit>
+<trans-unit id="profileNotifications"><source>Notificaciones</source><target>Notificacions</target></trans-unit>
+<trans-unit id="profileUpdates"><source>Actualizaciones</source><target>Actualitzacions</target></trans-unit>
+<trans-unit id="profileUpdatesSubtitle"><source>Recibe actualizaciones sobre nuevas funciones</source><target>Rep actualitzacions sobre noves funcions</target></trans-unit>
+<trans-unit id="activated"><source>Activado</source><target>Activat</target></trans-unit>
+<trans-unit id="newsletter"><source>Boletín</source><target>Butlletí</target></trans-unit>
+<trans-unit id="newsletterDescription"><source>Recibe nuestro boletín mensual</source><target>Rep el nostre butlletí mensual</target></trans-unit>
+<trans-unit id="inactivated"><source>Desactivado</source><target>Desactivat</target></trans-unit>
+<trans-unit id="profileMessages"><source>Mensajes</source><target>Missatges</target></trans-unit>
+<trans-unit id="profileMessagesDescription"><source>Recibe notificaciones de nuevos mensajes</source><target>Rep notificacions de nous missatges</target></trans-unit>
+<trans-unit id="selectedImage"><source>Imagen seleccionada</source><target>Imatge seleccionada</target></trans-unit>
+<trans-unit id="noImageSelected"><source>No hay imagen seleccionada</source><target>Cap imatge seleccionada</target></trans-unit>
+<trans-unit id="adminEmail">
+  <source>Gestión de correo</source>
+  <target>Gestió de correu</target>
+</trans-unit>
+<trans-unit id="adminEmailSubtitle">
+  <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
+  <target>Configura els ajustos i les credencials del teu servidor de correu electrònic</target>
+</trans-unit>
+<trans-unit id="alertsConfigSubtitle">
+  <source>Administra tus configuraciones de alertas</source>
+  <target>Administra les teves configuracions d'alertes</target>
+</trans-unit>
+<trans-unit id="dashbaordsMailingSubtitle">
+  <source>Administrar las configuraciones de correo electrónico del panel</source>
+  <target>Administra les configuracions de correu electrònic del panell</target>
+</trans-unit>
 
     </body>
   </file>

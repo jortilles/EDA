@@ -1,15 +1,15 @@
 // app/components/user-management/user-management.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { GroupService, UserService } from '@eda/services/service.index';
+import { FormsModule } from '@angular/forms';
+import { GroupService } from '@eda/services/service.index';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { SharedModule } from '@eda/shared/shared.module';
 import { lastValueFrom } from 'rxjs';
+import { IGroup } from '@eda/services/service.index';
 import * as _ from 'lodash';
 import Swal from 'sweetalert2';
-import { EdaListComponent } from '@eda/shared/components/eda-list/eda-list.component';
-import { IGroup } from '@eda/services/service.index';
+
 type Group = {
   _id?: string;
   name?: string;
@@ -23,7 +23,7 @@ type Group = {
   selector: 'app-group-list',
   templateUrl: './group-list.page.html',
   standalone: true,
-  imports: [SharedModule, CommonModule, FormsModule, IconComponent, EdaListComponent],
+  imports: [SharedModule, CommonModule, FormsModule, IconComponent],
 })
 export class GroupListPage implements OnInit {
   private groupService = inject(GroupService);
@@ -37,6 +37,9 @@ export class GroupListPage implements OnInit {
 
   currentPage: number = 1;
   itemsPerPage: number = 10;
+
+  public addGroupTitle = $localize`:@@newGroup:Crear Nuevo Grupo`;
+  public updateGroupTitle = $localize`:@@editGroup:Editar Grupo`;
 
   get filteredGroups() {
     return [...this.groups]

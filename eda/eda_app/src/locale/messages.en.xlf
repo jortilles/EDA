@@ -1154,7 +1154,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="labelUsuarioEmail" datatype="html">
-<source>Correo de usuario</source>
+<source>Correo electrónico</source>
 <target>User email</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
@@ -4580,6 +4580,141 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Sin contenido</source>
         <target>No content yet</target>
       </trans-unit>
+
+      <trans-unit id="searchGroups">
+        <source>Buscar grupos...</source>
+        <target>Search groups...</target>
+      </trans-unit>
+
+      <trans-unit id="newGroup">
+        <source>Crear Nuevo Grupo</source>
+        <target>Create New Group</target>
+      </trans-unit>
+
+      <trans-unit id="editGroup">
+        <source>Editar Grupo</source>
+        <target>Edit Group</target>
+      </trans-unit>
+
+      <trans-unit id="adminGroupsTitle">
+        <source>Gestión de Grupos</source>
+        <target>Group Management</target>
+      </trans-unit>
+
+      <trans-unit id="addGroup">
+        <source>Crear Grupo</source>
+        <target>Create Group</target>
+      </trans-unit>
+
+      <trans-unit id="actions">
+        <source>Acciones</source>
+        <target>Actions</target>
+      </trans-unit>
+
+      <trans-unit id="foundGroups">
+        <source>grupos encontrados</source>
+        <target>groups found</target>
+      </trans-unit>
+
+      <trans-unit id="tablePage">
+        <source>Página</source>
+        <target>Page</target>
+      </trans-unit>
+
+      <trans-unit id="tablePageOf">
+        <source>de</source>
+        <target>of</target>
+      </trans-unit>
+
+      <trans-unit id="role">
+        <source>Rol</source>
+        <target>Role</target>
+      </trans-unit>
+<trans-unit id="newUser">
+  <source>Crear Nuevo Usuario</source>
+  <target>Create New User</target>
+</trans-unit>
+<trans-unit id="editUser">
+  <source>Editar Usuario</source>
+  <target>Edit User</target>
+</trans-unit>
+<trans-unit id="adminUsers">
+  <source>Gestión de Usuarios</source>
+  <target>User Management</target>
+</trans-unit>
+<trans-unit id="addUser">
+  <source>Crear Usuario</source>
+  <target>Create User</target>
+</trans-unit>
+<trans-unit id="searchUsers">
+  <source>Buscar usuarios...</source>
+  <target>Search users...</target>
+</trans-unit>
+<trans-unit id="foundUsers">
+  <source>usuarios encontrados</source>
+  <target>users found</target>
+</trans-unit>
+<trans-unit id="group">
+  <source>Grupo</source>
+  <target>Group</target>
+</trans-unit>
+<trans-unit id="adminDatasource">
+  <source>Gestión de DataSources</source>
+  <target>DataSource Management</target>
+</trans-unit>
+<trans-unit id="addDatasource">
+  <source>Crear DataSource</source>
+  <target>Create DataSource</target>
+</trans-unit>
+<trans-unit id="foundGroups">
+  <source>datasources encontrados</source>
+  <target>datasources found</target>
+</trans-unit>
+<trans-unit id="profileTitle"><source>Perfil del usuario</source><target>User Profile</target></trans-unit>
+<trans-unit id="profileSubtitle"><source>Administra tu información personal y preferencias de cuenta</source><target>Manage your personal information and account preferences</target></trans-unit>
+<trans-unit id="profileInfoTitle"><source>Información Personal</source><target>Personal Information</target></trans-unit>
+<trans-unit id="profileInfoSubtitle"><source>Actualiza tu información básica de perfil</source><target>Update your basic profile information</target></trans-unit>
+<trans-unit id="labelNombreUsuario"><source>Nombre de usuario</source><target>Username</target></trans-unit>
+<trans-unit id="usernameLengthValidation"><source>El nombre de usuario debe tener al menos 2 caracteres.</source><target>Username must be at least 2 characters long.</target></trans-unit>
+<trans-unit id="labelUsuarioEmail"><source>Correo electrónico</source><target>Email</target></trans-unit>
+<trans-unit id="emailValidation"><source>Por favor ingresa un email válido.</source><target>Please enter a valid email address.</target></trans-unit>
+<trans-unit id="changePassword"><source>Cambiar contraseña</source><target>Change Password</target></trans-unit>
+<trans-unit id="newPassword"><source>Nueva contraseña</source><target>New Password</target></trans-unit>
+<trans-unit id="confirmNewPassword"><source>Confirmar nueva contraseña</source><target>Confirm New Password</target></trans-unit>
+<trans-unit id="passwordValidation"><source>Las contraseñas no coinciden</source><target>Passwords do not match</target></trans-unit>
+<trans-unit id="saveChanges"><source>Guardar cambios</source><target>Save changes</target></trans-unit>
+<trans-unit id="profileImage"><source>Foto de perfil</source><target>Profile picture</target></trans-unit>
+<trans-unit id="profileImageSubtitle"><source>Actualiza tu foto de perfil</source><target>Update your profile picture</target></trans-unit>
+<trans-unit id="uploadImage"><source>Subir imagen</source><target>Upload image</target></trans-unit>
+<trans-unit id="profilePreferences"><source>Preferencias de cuenta</source><target>Account preferences</target></trans-unit>
+<trans-unit id="profileNotificationsPrefrences"><source>Administra tus preferencias de notificaciones</source><target>Manage your notification preferences</target></trans-unit>
+<trans-unit id="profileNotifications"><source>Notificaciones</source><target>Notifications</target></trans-unit>
+<trans-unit id="profileUpdates"><source>Actualizaciones</source><target>Updates</target></trans-unit>
+<trans-unit id="profileUpdatesSubtitle"><source>Recibe actualizaciones sobre nuevas funciones</source><target>Receive updates about new features</target></trans-unit>
+<trans-unit id="activated"><source>Activado</source><target>Enabled</target></trans-unit>
+<trans-unit id="newsletter"><source>Boletín</source><target>Newsletter</target></trans-unit>
+<trans-unit id="newsletterDescription"><source>Recibe nuestro boletín mensual</source><target>Receive our monthly newsletter</target></trans-unit>
+<trans-unit id="inactivated"><source>Desactivado</source><target>Disabled</target></trans-unit>
+<trans-unit id="profileMessages"><source>Mensajes</source><target>Messages</target></trans-unit>
+<trans-unit id="profileMessagesDescription"><source>Recibe notificaciones de nuevos mensajes</source><target>Receive notifications of new messages</target></trans-unit>
+<trans-unit id="selectedImage"><source>Imagen seleccionada</source><target>Selected image</target></trans-unit>
+<trans-unit id="noImageSelected"><source>No hay imagen seleccionada</source><target>No image selected</target></trans-unit>
+<trans-unit id="adminEmail">
+  <source>Gestión de correo</source>
+  <target>Mail Management</target>
+</trans-unit>
+<trans-unit id="adminEmailSubtitle">
+  <source>Configure los ajustes y credenciales de su servidor de correo electrónico</source>
+  <target>Configure your email server settings and credentials</target>
+</trans-unit>
+<trans-unit id="alertsConfigSubtitle">
+  <source>Administra tus configuraciones de alertas</source>
+  <target>Manage your alert configurations</target>
+</trans-unit>
+<trans-unit id="dashbaordsMailingSubtitle">
+  <source>Administrar las configuraciones de correo electrónico del panel</source>
+  <target>Manage dashboard email configurations</target>
+</trans-unit>
 
     </body>
   </file>

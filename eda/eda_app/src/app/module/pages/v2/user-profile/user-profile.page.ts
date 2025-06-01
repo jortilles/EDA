@@ -14,6 +14,9 @@ import { User } from "@eda/models/model.index";
   templateUrl: "./user-profile.page.html",
 })
 export class UserProfilePage {
+  public selectedImage = $localize`:@@selectedImage:Imagen seleccionada`;
+  public noImageSelected = $localize`:@@noImageSelected:No hay imagen seleccionada`;
+  
   private fb = inject(FormBuilder);
   private userService = inject(UserService);
 
