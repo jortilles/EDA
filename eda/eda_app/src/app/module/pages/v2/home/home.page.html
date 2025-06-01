@@ -136,8 +136,12 @@
     </div>
         <div class="flex items-center justify-between border-t px-4 py-2">
           <div class="flex items-center gap-2 text-sm text-muted-foreground">
+            @if (report.config?.author && report.config?.author != 'Undefined') {
               <span>{{report.config.author}}</span>
+            }
+            @if (report.config?.createdAt) {
               <span>{{report.config.createdAt}}</span>
+            }
           </div>
           <div class="flex items-center gap-2">
           @if (!isEditing || editingReportId !== report._id) {

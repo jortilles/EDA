@@ -13,11 +13,13 @@ import { DashboardSidebarComponent } from '../components/dashboard-sidebar/dashb
 import { GlobalFilterV2Component } from '../components/global-filter/global-filter.component';
 import { EdaBlankPanelComponent, IPanelAction } from '@eda/components/eda-panels/eda-blank-panel/eda-blank-panel.component';
 import { ComponentsModule } from '@eda/components/components.module';
+import { FormsModule } from '@angular/forms';
+import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 
 @Component({
   selector: 'app-v2-dashboard-page',
   standalone: true,
-  imports: [GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, GlobalFilterV2Component, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule,],
+  imports: [FormsModule, GridsterComponent, GridsterItemComponent, DashboardSidebarComponent, GlobalFilterV2Component, ComponentsModule, ButtonModule, DropdownModule, MenuModule, MessageModule, FocusOnShowDirective],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -40,6 +42,7 @@ export class DashboardPageV2 implements OnInit {
   public gridsterOptions: GridsterConfig;
   public gridsterDashboard: GridsterItem[];
 
+  titleClick: boolean = false;
   sidebarVisible = false;
   notSaved: boolean = false;
 

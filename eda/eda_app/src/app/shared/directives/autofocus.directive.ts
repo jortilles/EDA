@@ -2,6 +2,7 @@ import { Directive, ElementRef, OnInit } from '@angular/core';
 
 @Directive({
     selector: '[autofocusOnShow]',
+    standalone: true
 })
 export class FocusOnShowDirective implements OnInit {
 

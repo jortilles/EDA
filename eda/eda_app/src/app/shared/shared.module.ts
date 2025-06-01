@@ -31,7 +31,6 @@ import { EdaListComponent } from './components/eda-list/eda-list.component';
         EdaDialog2Component,
         EdaContextMenuComponent,
         EdaInputComponent,
-        FocusOnShowDirective,
         EdaDatePickerComponent,
         EdaFieldComponent,
         GlobalFilterDialogComponent,
@@ -39,6 +38,7 @@ import { EdaListComponent } from './components/eda-list/eda-list.component';
     imports: [
         PrimengModule,
         CoreModule,
+        FocusOnShowDirective,
         EdaListComponent,
         SweetAlert2Module.forRoot(),
         PipesModule
