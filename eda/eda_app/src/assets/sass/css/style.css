@@ -1,87 +1,87 @@
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+
+/* Tailwind CSS: Organización por capas */
+@layer tailwind-base, primeng, tailwind-utilities;
+
+@layer tailwind-base {
+  @tailwind base;
+}
+
+@layer primeng {
+  /* Aquí puedes incluir estilos específicos para PrimeNG si necesitas */
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
+
+/* ====== Custom Base Styles ====== */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --primary: 177 100% 37%;            /* #00B0BA */
+    --primary-foreground: 0 0% 100%;
+    --ring: 177 100% 37%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 20 14.3% 4.1%;
+    --foreground: 0 0% 95%;
+    --card: 24 9.8% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 177 100% 37%;
+    --primary-foreground: 0 0% 100%;
+    --ring: 177 100% 37%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 12 6.5% 15.1%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+  }
+
+  /* ==== Focus ring personalizado para elementos interactivos ==== */
+  input:focus,
+  textarea:focus,
+  select:focus,
+  button:focus {
+    @apply ring-2 ring-ring outline-none;
+  }
+}
+
+/* ====== IMPORTACIONES EXTERNAS AL FINAL ====== */
 @import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700");
 @import url(../css/icons/material-design-iconic-font/css/materialdesignicons.min.css);
 @import url(../css/spinners.css);
 @import url(../css/animate.css);
-@import url(../eda-styles/index-styles.css);
-@import "primeng/resources/themes/lara-light-blue/theme.css";
-@import "primeng/resources/primeng.css";
+/* @import url(../eda-styles/index-styles.css); */
+
 @import url(./custom.css);
 
-/* TailwindCss */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/**
-* Table Of Content
-*
-* 	1. Globals
-*	2. Headers
-*	3. Navigations
-*	4. Banners
-*	5. Footers
-*	6. app
-*	7. Widgets
-*	8. Custom Templates
-*/
-
-@layer tailwind-base, primeng, tailwind-utilities;
-@layer tailwind-base {
-@tailwind base;
-}
-@layer primeng;
-@layer tailwind-utilities {
-@tailwind components;
-@tailwind utilities;
-}
-/* PrimaryColor #00B0BA */
-/* TailwinCss Customer layer */
-@layer base {
-    :root {
-      --background: 0 0% 100%;
-      --primary: 177 100% 37%; /* Color #00BFB3 en formato HSL */
-      --primary-foreground: 0 0% 100%;
-      --ring: 177 100% 37%;
-      --card: 0 0% 100%;
-      --card-foreground: 240 10% 3.9%;
-      --popover: 0 0% 100%;
-      --popover-foreground: 240 10% 3.9%;
-      --secondary: 240 4.8% 95.9%;
-      --secondary-foreground: 240 5.9% 10%;
-      --muted: 240 4.8% 95.9%;
-      --muted-foreground: 240 3.8% 46.1%;
-      --accent: 240 4.8% 95.9%;
-      --accent-foreground: 240 5.9% 10%;
-      --destructive: 0 84.2% 60.2%;
-      --destructive-foreground: 0 0% 98%;
-      --border: 240 5.9% 90%;
-      --input: 240 5.9% 90%;
-      --ring: 177 100% 37%;
-      --radius: 0.5rem;
-    }
-   
-    .dark {
-      --background: 20 14.3% 4.1%;
-      --foreground: 0 0% 95%;
-      --card: 24 9.8% 10%;
-      --card-foreground: 0 0% 95%;
-      --popover: 0 0% 9%;
-      --popover-foreground: 0 0% 95%;
-      --primary: 177 100% 37%;
-      --primary-foreground: 0 0% 100%;
-      --ring: 177 100% 37%;
-      --secondary: 240 3.7% 15.9%;
-      --secondary-foreground: 0 0% 98%;
-      --muted: 0 0% 15%;
-      --muted-foreground: 240 5% 64.9%;
-      --accent: 12 6.5% 15.1%;
-      --accent-foreground: 0 0% 98%;
-      --destructive: 0 62.8% 30.6%;
-      --destructive-foreground: 0 85.7% 97.3%;
-      --border: 240 3.7% 15.9%;
-      --input: 240 3.7% 15.9%;
-    }
-}
 /* TODO Ring Focus, Dark */
 /* border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white
 placeholder:text-gray-500 focus:outline-none focus:ring-2
@@ -435,52 +435,6 @@ a.link:focus {
 html body .mdi:before,
 html body .mdi-set {
     line-height: initial;
-}
-
-/*******************
- Headings
- *******************/
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: #455a64;
-    font-family:   var(--DEFAULT_FONT_FAMILY); /*"Questrial";*/
-    font-weight: 400;
-}
-
-h1 {
-    line-height: 40px;
-    font-size: 36px;
-}
-
-h2 {
-    line-height: 36px;
-    font-size: 24px;
-}
-
-h3 {
-    line-height: 30px;
-    font-size: 21px;
-}
-
-h4 {
-    line-height: 22px;
-    font-size: 18px;
-}
-
-h5 {
-    line-height: 18px;
-    font-size: 16px;
-    font-weight: 400;
-}
-
-h6 {
-    line-height: 16px;
-    font-size: 14px;
-    font-weight: 400;
 }
 
 /*Theme Colors*/

@@ -238,22 +238,6 @@ body .ui-accordion .ui-accordion-header a {
 
     cursor: pointer;
     z-index: 99999 !important;
-
-    /* display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5em 0.2em;
-    box-sizing: border-box;
-    background: #fff;
-    cursor: pointer;
-    z-index: 99999 !important;
-    box-shadow: 0 1px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
-    border-radius: 4px;
-    margin: 0.3em;
-    cursor: pointer;
-    background-color: #395f79c7;
-    color: white; */
 }
 
 .our-table-box:hover {
@@ -336,23 +320,6 @@ body .ui-accordion .ui-accordion-header a {
     cursor: move;
     z-index: 99999 !important;
 }
-
-/* .column-box {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5em 0.2em;
-    box-sizing: border-box;
-    color: var(--header-bg-color);
-    background: #fff;
-    cursor:grab;
-    z-index: 99999 !important;
-    box-shadow: 0 1px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%);
-    border-radius: 4px;
-    margin: 0.3em;
-    background-color: #d6e4e8;
-} */
 
 .button-whatif {
     border: solid 2px #ccc!important;

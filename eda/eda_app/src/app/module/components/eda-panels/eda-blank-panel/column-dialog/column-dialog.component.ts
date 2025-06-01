@@ -9,15 +9,14 @@ import {
     OrdenationType,
     ColumnUtilsService, FormatDates, QueryBuilderService
 } from '@eda/services/service.index';
-import { Column, Query } from '@eda/models/model.index';
-import * as _ from 'lodash';
-
+import { Column } from '@eda/models/model.index';
 import { aggTypes } from 'app/config/aggretation-types';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'app-column-dialog',
     templateUrl: './column-dialog.component.html',
-    styleUrls: []
+    styleUrls: ['../eda-blank-panel.component.css']
 })
 
 export class ColumnDialogComponent extends EdaDialogAbstract {
