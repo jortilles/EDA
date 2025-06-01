@@ -5,7 +5,7 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
 import { LogoSidebar } from '@eda/configs/index';
 interface NavItem {
-  path: string;
+  path?: string;
   icon?: string;
   isActive?: boolean;
   label?: string;
@@ -27,9 +27,8 @@ export class MainLeftSidebarComponent {
   public logoSidebar = LogoSidebar;
 
   navItems: NavItem[] = [
-    { path: '/v2', icon: 'home', isActive: true },
+    { path: '/v2', icon: 'home' },
     {
-      path: '/data-source',
       icon: 'plus',
       items: [
         { path: '/v2', label: $localize`:@@tituloNuevoInforme:Crear nuevo informe`, icon: 'plus' },
@@ -37,7 +36,6 @@ export class MainLeftSidebarComponent {
       ]
     },
     {
-      path: '/network',
       icon: 'molecula',
       items: [
         { path: '/v2/admin/users', label: $localize`:@@adminUsers:Gestión de usuarios`, icon: 'users' },
@@ -48,7 +46,6 @@ export class MainLeftSidebarComponent {
       ]
     },
     {
-      path: '/settings',
       icon: 'settings',
       items: [
         { path: '/v2/profile', label:  $localize`:@@profile:Perfil`, icon: 'profile' },
@@ -87,8 +84,7 @@ export class MainLeftSidebarComponent {
         this.userService.logout();
     } else if (item.path) {
       this.router.navigate([item.path]);
-    } else {
-      // internacionalizacion
+    } else if (item.lang) {
       this.redirectLocale(item.lang);
     }
   }
