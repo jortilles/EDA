@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
-
+import { LogoSidebar } from '@eda/configs/index';
 interface NavItem {
   path: string;
   icon?: string;
@@ -24,6 +24,7 @@ interface NavItem {
 export class MainLeftSidebarComponent {
   private router = inject(Router);
   private userService = inject(UserService);
+  public logoSidebar = LogoSidebar;
 
   navItems: NavItem[] = [
     { path: '/v2', icon: 'home', isActive: true },
