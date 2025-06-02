@@ -31,6 +31,18 @@ export class EdaTreeTable implements OnInit {
 
   ngOnInit(): void {
 
+    const col1 = this.inject.query[0];
+    const col2 = this.inject.query[1];
+
+    if(col1.column_type === 'numeric' && col2.column_type === 'numeric') {
+      this.initBasicTreeTable()
+    } else {
+      this.initDynamicTreeTable()
+    }
+
+  }
+
+  initBasicTreeTable() {
     // Recolección de las etiquetas titulo para el Treetable
     this.inject.query.slice(2).forEach((e: any) => {
       this.labels.push(e.display_name.default)
@@ -86,6 +98,21 @@ export class EdaTreeTable implements OnInit {
     });
 
     return Promise.resolve(result); // Promesa enviada para esperar gran cantidad de datos
+  }
+
+  initDynamicTreeTable() {
+    console.log('Ejecutando initDynamicTreeTable ...');
+    console.log('INJECT : ', this.inject);
+    this.buildDynamicHierarchyTreetable(this.inject.data);
+    console.log('Ha Finalizado la ejecución ... ');
+
+  }
+
+  buildDynamicHierarchyTreetable(data: Object) {
+    console.log('Ejecutando la función ....')
+    console.log('data ....', data)
+
+
   }
 
 }

@@ -750,7 +750,12 @@ export class ChartUtilsService {
         }
 
         //treetable (Al menos tres columnas y dos numéricas que son id y las relaciones_id)
-        if(dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 1) {
+        // if(dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 1) {
+        //     notAllowed.splice(notAllowed.indexOf('treetable'), 1);
+        // }
+
+        // Pruebas con hacer dinámico el treeTable
+        if(dataDescription.totalColumns > 2) {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }
 
