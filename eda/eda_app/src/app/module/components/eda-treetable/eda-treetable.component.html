@@ -1,6 +1,6 @@
 
 <div class="container-treetable">
-    <p-treeTable #tt [value]="files" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}" selectionMode="single" [filterMode]="filterMode">
+    <p-treeTable #tt [value]="files" [scrollable]="true" [tableStyle]="{'min-width':'50rem'}" selectionMode="single" [filterMode]="filterMode" *ngIf="!isDynamic">
         <!-- ng-template para los títulos  -->
         <ng-template pTemplate="header">
             <tr>
@@ -34,5 +34,29 @@
             </tr>
         </ng-template>
     </p-treeTable>
+
+    <p-treeTable
+        [value]="dynamicFiles"
+        [columns]="dynamicCols"
+        [scrollable]="true"
+        [tableStyle]="{'min-width': '50rem'}"
+        *ngIf="isDynamic"
+        >
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+            <th *ngFor="let col of columns">{{ col.header }}</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+            <tr [ttRow]="rowNode">
+            <td *ngFor="let col of columns; let i = index">
+                <p-treeTableToggler *ngIf="i === 0" [rowNode]="rowNode"></p-treeTableToggler>
+                {{ rowData[col.field] }}
+            </td>
+            </tr>
+        </ng-template>
+    </p-treeTable>
+
 </div>
 

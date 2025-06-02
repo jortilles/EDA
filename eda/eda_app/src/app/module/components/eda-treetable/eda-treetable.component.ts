@@ -8,6 +8,11 @@ import { TreeTableModule  } from 'primeng/treetable';
 // Constante personalizada
 import { FATHER_ID } from './../../../config/personalitzacio/customizables'
 
+interface Column {
+    field: string;
+    header: string;
+}
+
 @Component({
   selector: 'app-eda-treetable',
   templateUrl: './eda-treetable.component.html',
@@ -27,6 +32,11 @@ export class EdaTreeTable implements OnInit {
 
   public filterBy: string = $localize`:@@filterByTreetable:Filtrar por`;
 
+  // Para la tabla árbol dinámica
+  dynamicFiles!: TreeNode[];
+  dynamicCols!: Column[];
+  isDynamic: Boolean = false;
+
   constructor() { }
 
   ngOnInit(): void {
@@ -35,8 +45,10 @@ export class EdaTreeTable implements OnInit {
     const col2 = this.inject.query[1];
 
     if(col1.column_type === 'numeric' && col2.column_type === 'numeric') {
+      this.isDynamic = false;
       this.initBasicTreeTable()
     } else {
+      this.isDynamic = true;
       this.initDynamicTreeTable()
     }
 
@@ -103,15 +115,83 @@ export class EdaTreeTable implements OnInit {
   initDynamicTreeTable() {
     console.log('Ejecutando initDynamicTreeTable ...');
     console.log('INJECT : ', this.inject);
-    this.buildDynamicHierarchyTreetable(this.inject.data);
+    this.dynamicFiles = this.buildDynamicHierarchyTreetable(this.inject.data);
+
+    console.log('dynamicFiles: ', this.dynamicFiles);
     console.log('Ha Finalizado la ejecución ... ');
 
   }
 
-  buildDynamicHierarchyTreetable(data: Object) {
+
+  buildDynamicHierarchyTreetable(data: { labels: string[], values: any[][] }) {
     console.log('Ejecutando la función ....')
     console.log('data ....', data)
 
+    const { labels, values } = data;
+
+    // Convert rows into array of objects
+    const rows = values.map(row => {
+      const obj: { [key: string]: any } = {};
+      labels.forEach((label, i) => {
+        obj[label] = row[i];
+      });
+      return obj;
+    });
+
+    // Determine uniqueness of each label
+    const isUniqueLabel: { [key: string]: boolean } = {};
+    labels.forEach(label => {
+      const seen = new Set();
+      rows.forEach(row => seen.add(row[label]));
+      isUniqueLabel[label] = seen.size === rows.length;
+    });
+
+    // Grouping levels (non-unique labels in order)
+    const hierarchyLabels = labels.filter(label => !isUniqueLabel[label]);
+
+    // Leaf level: use only unique labels
+    const leafLabels = labels.filter(label => isUniqueLabel[label]);
+
+
+    console.log('hierarchyLabels: ', hierarchyLabels);
+    console.log('leafLabels: ', leafLabels);
+
+    this.dynamicCols = leafLabels.map(item => {
+        return { field: item.toLowerCase(), header: item}
+    })
+
+    console.log('dynamicCols', this.dynamicCols);
+
+    // Recursive tree builder
+    function buildLevel(entries: any[], level: number): any[] {
+      if (level >= hierarchyLabels.length) {
+        return entries.map(entry => {
+          const leaf: any = {};
+          leafLabels.forEach(label => {
+            leaf[label.toLowerCase()] = entry[label];
+          });
+          return { data: leaf };
+        });
+      }
+
+      const currentLabel = hierarchyLabels[level];
+      const grouped: { [key: string]: any[] } = {};
+
+      for (const entry of entries) {
+        const key = entry[currentLabel];
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(entry);
+      }
+
+      return Object.keys(grouped).map(groupValue => ({
+        data: {
+          [leafLabels[0]]: `${currentLabel}: ${groupValue}`
+        },
+        children: buildLevel(grouped[groupValue], level + 1)
+      }));
+    }
+
+    return buildLevel(rows, 0);
 
   }
 
