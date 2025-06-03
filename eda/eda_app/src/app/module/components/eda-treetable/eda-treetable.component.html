@@ -35,14 +35,7 @@
         </ng-template>
     </p-treeTable>
 
-    <p-treeTable
-        #ttt
-        [value]="dynamicFiles"
-        [columns]="dynamicCols"
-        [scrollable]="true"
-        [tableStyle]="{'min-width': '50rem'}"
-        *ngIf="isDynamic"
-        >
+    <p-treeTable #ttt [value]="dynamicFiles" [columns]="dynamicCols" [scrollable]="true" [tableStyle]="{'min-width': '50rem'}" *ngIf="isDynamic">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="header-style" *ngFor="let col of columns">{{ col.header }}</th>
@@ -70,6 +63,5 @@
             </tr>
         </ng-template>
     </p-treeTable>
-
 </div>
 
