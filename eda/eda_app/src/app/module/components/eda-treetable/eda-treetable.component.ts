@@ -35,7 +35,7 @@ export class EdaTreeTable implements OnInit {
   // Para la tabla árbol dinámica
   dynamicFiles!: TreeNode[];
   dynamicCols!: Column[];
-  isDynamic: Boolean = false;
+  isDynamic: Boolean = false; // Pregunta si se utiliza la tabla dinámica
 
   constructor() { }
 
@@ -113,19 +113,12 @@ export class EdaTreeTable implements OnInit {
   }
 
   initDynamicTreeTable() {
-    console.log('Ejecutando initDynamicTreeTable ...');
-    console.log('INJECT : ', this.inject);
+    // console.log('Inject : ', this.inject);
     this.dynamicFiles = this.buildDynamicHierarchyTreetable(this.inject.data);
-
-    console.log('dynamicFiles: ', this.dynamicFiles);
-    console.log('Ha Finalizado la ejecución ... ');
-
   }
 
 
   buildDynamicHierarchyTreetable(data: { labels: string[], values: any[][] }) {
-    console.log('Ejecutando la función ....')
-    console.log('data ....', data)
 
     const { labels, values } = data;
 
@@ -138,7 +131,7 @@ export class EdaTreeTable implements OnInit {
       return obj;
     });
 
-    // Determine uniqueness of each label
+    // Determinamos unicos para cada label
     const isUniqueLabel: { [key: string]: boolean } = {};
     labels.forEach(label => {
       const seen = new Set();
@@ -152,15 +145,10 @@ export class EdaTreeTable implements OnInit {
     // Leaf level: use only unique labels
     const leafLabels = labels.filter(label => isUniqueLabel[label]);
 
-
-    console.log('hierarchyLabels: ', hierarchyLabels);
-    console.log('leafLabels: ', leafLabels);
-
+    // Información de los labels con las columnas de valores únicos
     this.dynamicCols = leafLabels.map(item => {
         return { field: item.toLowerCase(), header: item}
     })
-
-    console.log('dynamicCols', this.dynamicCols);
 
     // Recursive tree builder
     function buildLevel(entries: any[], level: number): any[] {
@@ -192,7 +180,6 @@ export class EdaTreeTable implements OnInit {
     }
 
     return buildLevel(rows, 0);
-
   }
 
 }
