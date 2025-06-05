@@ -5,7 +5,7 @@
 }
 
 body .eda-table tr {
-    height: 1.6em!important;
+    height: 1.1em!important;
 }
 
 body .eda-table .header-title th {
@@ -25,9 +25,18 @@ body .eda-table .ui-table-caption .ui-inputtext {
     font-size: 1em;
 }
 
-body .eda-table .ui-table-thead tr th {
-    padding: .25em .5em!important;
-}
+
+
+.p-datatable .p-datatable-tbody > tr > td {
+    padding: 4px !important;
+  }
+
+  .p-datatable .p-datatable-tbody > tr > td {
+    text-align: left;
+    border: 1px solid #e5e7eb;
+    border-width: 0 0 1px 0;
+    padding: 1rem 1rem;
+  }
 
 body .eda-table .ui-table-tbody tr td {
     padding-top: 1px!important;
