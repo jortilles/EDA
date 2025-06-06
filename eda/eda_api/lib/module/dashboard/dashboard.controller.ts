@@ -13,19 +13,29 @@ import _ from 'lodash'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
+
+
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
       let admin, privates, group, publics, shared = [];
       const groups = await Group.find({ users: { $in: req.user._id } }).exec();
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
+ console.log('Es groups? ' , groups);
+      console.log('Es admin? ' , isAdmin);
+
+      const dataSources = await DataSource.find(
+        {},
+        'ds.metadata'
+      )
+
 
       if (isAdmin) {
         [publics, privates, group, shared] =  await DashboardController.getAllDashboardToAdmin(req)
       } else {
         privates = await DashboardController.getPrivateDashboards(req)
         group = await DashboardController.getGroupsDashboards(req)
-        publics = await DashboardController.getPublicsDashboards(req)
+        publics = await DashboardController.getPublicsDashboards(req , dataSources)
         shared = await DashboardController.getSharedDashboards(req)
       }
 
@@ -60,11 +70,14 @@ export class DashboardController {
     try {
       const dashboards = await Dashboard.find(
         { user: req.user._id },
-        'config.title config.visible config.tag config.onlyIcanEdit'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds user'
       ).populate('user','name').exec()
       const privates = []
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'private') {
+          // Obtain the name of the data source
+          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+
           privates.push(dashboard)
         }
       }
@@ -105,8 +118,8 @@ export class DashboardController {
       }).exec();
       const dashboards = await Dashboard.find(
         { group: { $in: userGroups.map(g => g._id) } },
-        'config.title config.visible group config.tag config.onlyIcanEdit'
-      ).exec()
+        'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds user'
+      ).populate('user','name').exec()
       const groupDashboards = []
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
         const dashboard = dashboards[i]
@@ -152,17 +165,70 @@ export class DashboardController {
     }
   }
 
-  static async getPublicsDashboards(req: Request) {
+/**
+ * 
+ * @param req  request
+ * @param ds  datasource 
+ * This function returns true or false depending on if the user can see the dashboard. It is used to determine if the dashboard should be added to the available dashobards list.
+ */
+    static iCanSeeTheDashboard(req: Request, ds: any ) :boolean{
+      if( ds.ds.metadata.model_granted_roles.length == 0){ // si no hay permisos puedo verlo.
+        console.log('salgo por permisos');
+        return true;
+      }
+      const user = req.user;
+      ds.ds.metadata.model_granted_roles.forEach(e => {
+      if(e.table == 'fullModel' ){
+          if(e.users?.indexOf( user._id ) > 0  ){ // el usuario puede ver el modelo
+              console.log('salgo por usuarios');
+              return true;
+              }
+          if(  e.role?.length > 0 ) { // si el rol puede verlo lo ve
+              user.role.forEach( r=> {
+                if (  e.role.indexOf( r ) > 0 ){
+                  console.log('salgo por role');
+                  return true;
+                }
+              })
+
+        } 
+      }       
+      });
+
+        console.log()
+        console.log('salgo por falso');
+        return false;
+    }
+
+
+  static async getPublicsDashboards(req: Request, dss: any[]) {
     try {
       const dashboards = await Dashboard.find(
         {},
-        'config.title config.visible config.tag config.onlyIcanEdit'
+        'config.title config.visible config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds user'
       ).populate('user','name').exec()
       const publics = []
 
+     
+
       for (const dashboard of dashboards) {
+
+
         if (dashboard.config.visible === 'public') {
-          publics.push(dashboard)
+
+          const ds = dss.find( e=> e._id == dashboard.config.ds._id );
+          console.log( '=======================================>>>>'  ) ;
+          console.log( dashboard.config.title  ) ;
+          console.log( ds  ) 
+          dashboard.config.ds.name =  ds.ds?.metadata?.model_name ?? 'N/A';
+          //dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+          console.log(dashboard.config.ds.name);
+          console.log( this.iCanSeeTheDashboard(req, ds));
+          if(  this.iCanSeeTheDashboard(req, ds) == true ){
+            console.log('lo meto');
+             publics.push(dashboard);
+          }
+         
         }
       }
 
