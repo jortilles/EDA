@@ -4,7 +4,6 @@ import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/c
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { StyleProviderService } from '@eda/services/service.index';
-import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
 
 
 @Component({
@@ -100,7 +99,7 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
       this.colors = newColors.map(({ color }) => color);
       
       // Actualizar los colores del chart
-      this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(this.colors.map(color => this.hex2rgb(color))));
+      this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.colors.map(color => this.hex2rgb(color))));
       this.myPanelChartComponent.changeChartType();
   }
   
