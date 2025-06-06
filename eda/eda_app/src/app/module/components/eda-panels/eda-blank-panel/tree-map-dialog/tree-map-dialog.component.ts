@@ -4,7 +4,6 @@ import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { TreeMapConfig } from '../panel-charts/chart-configuration-models/treeMap-config';
 import { StyleProviderService } from '@eda/services/service.index';
-import { ChartUtilsService } from '@eda/services/service.index';
 
 @Component({
   selector: 'app-tree-map-dialog',
@@ -23,7 +22,7 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
   public selectedPalette: string = this.stylesProviderService.DEFAULT_PALETTE_COLOR;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
-  constructor(private stylesProviderService: StyleProviderService, private chartUtilsService: ChartUtilsService) {
+  constructor(private stylesProviderService: StyleProviderService) {
 
     super();
 
