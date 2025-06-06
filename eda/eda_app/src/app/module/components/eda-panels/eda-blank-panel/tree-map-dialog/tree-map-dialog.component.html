@@ -4,10 +4,7 @@
     <div class="p-6 flex-[2] flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
       <div class="relative w-full h-full">
         @if (display) {
-          <panel-chart #PanelChartComponent
-            [props]="panelChartConfig"
-            class="h-full w-full block"
-          ></panel-chart>
+        <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-full w-full block"></panel-chart>
         }
       </div>
     </div>
@@ -15,6 +12,13 @@
     <div class="p-6 flex-1 overflow-y-auto">
       <div class="space-y-6">
         <div class="space-y-4">
+          <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color del los gráficos:</h6>
+          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
+            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+            @for (palette of allPalettes; track $index) {
+            <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+            }
+          </select>
           <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colors</h3>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -23,7 +27,7 @@
               <span class="font-medium">{{ item }}</span>
               <div class="flex items-center gap-2">
                 <span class="text-md text-slate-500 font-mono">{{ colors[idx] }}</span>
-                <p-colorPicker [(ngModel)]="colors[idx]" (onChange)="handleInputColor()" format="hex" appendTo="body"/>
+                <p-colorPicker [(ngModel)]="colors[idx]" (onChange)="handleInputColor()" format="hex" appendTo="body" />
               </div>
             </div>
             }
@@ -35,11 +39,14 @@
 
   <div footer>
     <div class="flex justify-end p-2 border-t gap-1.5">
-      <button  class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
+      <button class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md"
+        (click)="closeChartConfig()">
         <i class="fa fa-times"></i>
         <span i18n-label="@@cancelarBtn">Cancelar</span>
       </button>
-      <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" (click)="saveChartConfig()">
+      <button
+        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md"
+        (click)="saveChartConfig()">
         <i class="fa fa-check"></i> <span>Confirmar</span>
       </button>
     </div>
