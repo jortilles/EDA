@@ -171,35 +171,49 @@ export class DashboardController {
  * 
  * @param req  request
  * @param ds  datasource 
- * This function returns true or false depending on if the user can see the dashboard. It is used to determine if the dashboard should be added to the available dashobards list.
+ * This function returns true or false depending on if the user can see the datasource. It is used to determine if the dashboard should be added to the available dashobards list.
  */
     static iCanSeeTheDashboard(req: Request, ds: any ) :boolean{
+      let result = false;
       if( ds.ds.metadata.model_granted_roles.length == 0){ // si no hay permisos puedo verlo.
-        console.log('salgo por permisos');
-        return true;
+        result  =  true;
       }
-      const user = req.user;
-      ds.ds.metadata.model_granted_roles.forEach(e => {
-      if(e.table == 'fullModel' ){
-          if(e.users?.indexOf( user._id ) > 0  ){ // el usuario puede ver el modelo
-              console.log('salgo por usuarios');
-              return true;
-              }
-          if(  e.role?.length > 0 ) { // si el rol puede verlo lo ve
-              user.role.forEach( r=> {
-                if (  e.role.indexOf( r ) > 0 ){
-                  console.log('salgo por role');
-                  return true;
-                }
-              })
+      if( result == false ){
+                const user = req.user;
+                ds.ds.metadata.model_granted_roles.forEach(e => {
+                if(e.table == 'fullModel' ){
+                    if(e.users?.indexOf( user._id ) >= 0  ){ // el usuario puede ver el modelo
+                         result  = true;
+                        }
+                if(e.type ==  'anyoneCanSee' ){ // Todos pueden ver el modelo.
+                         result  = true;
+                        }
+                    if(  e.role?.length > 0 ) { // si el rol puede verlo lo ve
+                        user.role.forEach( r=> {
+                          if (  e.role.indexOf( r ) >= 0 ){
+                             result  = true;
+                          }
+                        })
+                    } 
+                    
+                }else{  // si  veo algo.
+                    if(e.permission == true ){
+                        if(e.users?.indexOf( user._id ) >= 0  ){ // el usuario puede ver el algo de alguna tabla
+                            result  = true;
+                            }
+                        if(  e.role?.length > 0 ) { // si el rol puede ver algo de alguna tabla 
+                            user.role.forEach( r=> {
+                              if (  e.role.indexOf( r ) >= 0 ){
+                                 result  = true;
+                              }
+                            })
+                        } 
 
-        } 
-      }       
-      });
-
-        console.log()
-        console.log('salgo por falso');
-        return false;
+                      }     
+                    }
+            });
+      }
+      return result;
     }
 
 
@@ -214,23 +228,13 @@ export class DashboardController {
      
 
       for (const dashboard of dashboards) {
-
-
         if (dashboard.config.visible === 'public') {
-
           const ds = dss.find( e=> e._id == dashboard.config.ds._id );
-          console.log( '=======================================>>>>'  ) ;
-          console.log( dashboard.config.title  ) ;
-          console.log( ds  ) 
           dashboard.config.ds.name =  ds.ds?.metadata?.model_name ?? 'N/A';
-          //dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
-          console.log(dashboard.config.ds.name);
-          console.log( this.iCanSeeTheDashboard(req, ds));
           if(  this.iCanSeeTheDashboard(req, ds) == true ){
-            console.log('lo meto');
              publics.push(dashboard);
           }
-         
+
         }
       }
 
