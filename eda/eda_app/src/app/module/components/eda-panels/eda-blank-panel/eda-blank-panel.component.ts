@@ -82,6 +82,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public scatterPlotController: EdaDialogController;
     public knobController: EdaDialogController;
     public sunburstController: EdaDialogController;
+    public treeTableController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
 
@@ -1125,6 +1126,12 @@ export class EdaBlankPanelComponent implements OnInit {
             this.dashboardService._notSaved.next(true);
         }
         this.treeMapController = undefined;
+    }
+
+    public onCloseTreeTableProperties(event, response) {
+        console.log('Hace Algo onCloseTreeTableProperties');
+        console.log('event:', event);
+        console.log('response:', response);
     }
 
     public onCloseFunnelProperties(event, response): void {
