@@ -13,6 +13,7 @@ import { TableConfig } from '../panel-charts/chart-configuration-models/table-co
 import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
 import { SunburstConfig } from '../panel-charts/chart-configuration-models/sunburst-config';
 import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
+import { TreeTableConfig } from '../panel-charts/chart-configuration-models/treeTable-config';
 
 export const ChartsConfigUtils = {
 
@@ -124,6 +125,8 @@ export const ChartsConfigUtils = {
             return new SankeyConfig([],[]);
         } else if (type === 'treeMap') {
             return new TreeMapConfig([],[]);
+        } else if(type === 'treetable') {
+          return new TreeTableConfig(true, [], []);
         } else if (type === 'scatterPlot') {
             return new ScatterConfig([],[]);
         } else if (type === 'funnel') {
@@ -145,7 +148,7 @@ export const ChartsConfigUtils = {
         }
     },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | KnobConfig | FunnelConfig | BubblechartConfig |SunburstConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig |SunburstConfig) => {
 
     return new ChartConfig(config);
 
