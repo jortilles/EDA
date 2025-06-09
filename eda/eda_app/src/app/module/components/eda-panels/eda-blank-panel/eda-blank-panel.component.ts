@@ -1132,6 +1132,10 @@ export class EdaBlankPanelComponent implements OnInit {
         console.log('Hace Algo onCloseTreeTableProperties');
         console.log('event:', event);
         console.log('response:', response);
+
+        // Al final de todo
+        this.treeTableController = undefined;
+
     }
 
     public onCloseFunnelProperties(event, response): void {

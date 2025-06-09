@@ -28,21 +28,24 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
   }
 
   ngOnInit(): void {
+    this.onShow();
   }
 
   onShow(): void {
-    
+    this.panelChartConfig = this.controller.params.panelChart;
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
-    
+    return this.controller.close(event, response);
   }
 
   saveChartConfig() {
+    console.log('saveChartConfig ')
     this.onClose(EdaDialogCloseEvent.UPDATE, "properties");
   }
 
   closeChartConfig() {
+    console.log('closeChartConfig ')
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
