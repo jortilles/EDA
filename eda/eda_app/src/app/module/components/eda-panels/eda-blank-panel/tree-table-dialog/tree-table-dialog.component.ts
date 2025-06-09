@@ -33,6 +33,8 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
 
   onShow(): void {
     this.panelChartConfig = this.controller.params.panelChart;
+
+    console.log('this.panelChartConfig: ', this.panelChartConfig);
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
