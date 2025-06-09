@@ -1,15 +1,49 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog';
+import { PanelChartComponent } from '../panel-charts/panel-chart.component';
+import { EdaDialogAbstract } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-abstract';
+import { PanelChart } from '../panel-charts/panel-chart';
+
 
 @Component({
   selector: 'app-tree-table-dialog',
   templateUrl: './tree-table-dialog.component.html',
   styleUrls: ['./tree-table-dialog.component.css']
 })
-export class TreeTableDialogComponent implements OnInit {
+export class TreeTableDialogComponent extends EdaDialogAbstract implements OnInit {
 
-  constructor() { }
+  @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
+  public dialog: EdaDialog;
+  public panelChartConfig: PanelChart = new PanelChart();
+  
+
+  constructor() {
+    super();
+
+    this.dialog = new EdaDialog({
+      show: () => this.onShow(),
+      hide: () => this.onClose(EdaDialogCloseEvent.NONE),
+    });
+    this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
+  }
 
   ngOnInit(): void {
+  }
+
+  onShow(): void {
+    
+  }
+
+  onClose(event: EdaDialogCloseEvent, response?: any): void {
+    
+  }
+
+  saveChartConfig() {
+    this.onClose(EdaDialogCloseEvent.UPDATE, "properties");
+  }
+
+  closeChartConfig() {
+    this.onClose(EdaDialogCloseEvent.NONE);
   }
 
 }
