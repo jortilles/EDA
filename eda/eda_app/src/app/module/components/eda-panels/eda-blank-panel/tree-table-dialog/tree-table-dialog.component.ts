@@ -17,7 +17,8 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public config: any;
-  
+  public treeTableTitleDialog = $localize`:@@treeTableTitleDialog:Propiedades de la tabla árbol`;
+
 
   constructor() {
     super();
@@ -25,6 +26,7 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
     this.dialog = new EdaDialog({
       show: () => this.onShow(),
       hide: () => this.onClose(EdaDialogCloseEvent.NONE),
+      title: this.treeTableTitleDialog,
     });
     this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
   }

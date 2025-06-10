@@ -4577,6 +4577,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Configuración de filtros</source>
         <target>Configuració de filtres</target>
       </trans-unit>
+      <trans-unit id="treeTableTitleDialog">
+        <source>Propiedades de la tabla árbol</source>
+        <target>Propietats de la taula arbre</target>
+      </trans-unit>
 
     </body>
   </file>
