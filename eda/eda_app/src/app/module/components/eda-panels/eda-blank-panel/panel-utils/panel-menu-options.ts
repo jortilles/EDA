@@ -136,6 +136,19 @@ export const PanelOptions = {
               },
               close: (event, response) => { panelComponent.onCloseTreeMapProperties(event, response) }
             });
+          }
+          else if(panelComponent.graficos.chartType === 'treetable') {
+            panelComponent.contextMenu.hideContextMenu();
+
+            panelComponent.treeTableController = new EdaDialogController({
+              // si el treeTableController es diferente de undefined se mostrara el dialog
+              params: {
+                panelID: _.get(panelComponent.panel, 'id'),
+                panelChart: panelComponent.panelChartConfig
+              },
+              close: (event, response) => { panelComponent.onCloseTreeTableProperties(event, response) }
+            })
+
 
           }
 
