@@ -239,14 +239,12 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     
     onPaletteSelected() { 
         const numberOfColors = this.chart.chartLabels?.length ? this.chart.chartLabels.length :
-            this.chart.chartDataset[0]?.data?.length || this.chart.chartDataset.length;
-                
-        const originalServicePalette = this.chartUtils.MyPaletteColors; 
+            this.chart.chartDataset[0]?.data?.length || this.chart.chartDataset.length;        
+        
         // Recuperamos paleta actual y creamos colores
         this.chartUtils.MyPaletteColors = this.selectedPalette['paleta']; 
         const newColors = this.chartUtils.generateColors(this.chart.chartType,numberOfColors);
         
-        this.chartUtils.MyPaletteColors = originalServicePalette; 
         const targetDataset = this.chart.chartDataset[0];
 
         let mutableBackgroundColors: string[] = Array.isArray(targetDataset.backgroundColor)
@@ -260,11 +258,12 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             }
         }
 
+        
         targetDataset.backgroundColor = mutableBackgroundColors;
         targetDataset.borderColor = mutableBackgroundColors;
-    
+        
         this.chart.chartColors = newColors;
-    
+        
         // Actualizar los color pickers individuales al modificar la paleta
         if (this.chart.chartLabels && Array.isArray(this.chart.chartLabels) &&
             this.chart.chartColors && Array.isArray(this.chart.chartColors)) {
@@ -279,9 +278,9 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 };
             });
         }
-        this.chart = { ...this.chart }; // Esto hace que el chart del dialog se modifique visualmente?
+        this.chart = { ...this.chart }; 
         this.panelChartComponent.componentRef.instance.inject = this.chart;
-        this.panelChartComponent.componentRef.instance.updateChart();
+        this.panelChartComponent.updateComponent();
     }
 
     SetNumberOfColumns(){

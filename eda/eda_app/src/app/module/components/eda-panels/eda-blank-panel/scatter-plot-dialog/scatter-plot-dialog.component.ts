@@ -3,6 +3,7 @@ import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/c
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
+import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
 
 
 @Component({
@@ -19,8 +20,10 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
   public colors: Array<string>;
   public labels: Array<string>;
   public display:boolean=false;
+  public selectedPalette: string = this.stylesProviderService.DEFAULT_PALETTE_COLOR;
+  public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
-  constructor() {
+  constructor(private stylesProviderService: StyleProviderService, private d3ChartUtils: ChartUtilsService) {
 
     super();
 
@@ -35,7 +38,7 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
     if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
+        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.d3ChartUtils.rgb2hexD3(color));
         this.labels = this.myPanelChartComponent.componentRef.instance.data[0].category 
         ?  this.myPanelChartComponent.componentRef.instance.firstColLabels
         :  [this.myPanelChartComponent.componentRef.instance.inject.dataDescription.otherColumns[0].name];
@@ -54,7 +57,7 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
   }
 
   saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors.map(color => this.hex2rgb(color))});
+    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors.map(color => this.d3ChartUtils.hex2rgbD3(color))});
   }
 
   closeChartConfig() {
@@ -62,25 +65,25 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
   }
 
   handleInputColor() {
-    this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors.map(color => this.hex2rgb(color))));
+    this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors.map(color => this.d3ChartUtils.hex2rgbD3(color))));
     this.myPanelChartComponent.changeChartType();
   }
 
-  hex2rgb(hex, opacity = 100): string {
-    hex = hex.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-
-    return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
+  onPaletteSelected() { 
+      // Saber numero de segmentos para interpolar colores
+      const numberOfColors = this.myPanelChartComponent.componentRef.instance.colors.length;
+      
+      // Recuperamos paleta seleccionada y creamos colores
+      this.myPanelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
+      const newColors = this.d3ChartUtils.generateRGBColorGradientScaleD3(numberOfColors, this.myPanelChartComponent['chartUtils'].MyPaletteColors);
+      
+      // Actualizar los color pickers individuales al modificar la paleta
+      this.colors = newColors.map(({ color }) => color);
+      
+      // Actualizar los colores del chart
+      this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors.map(color => this.d3ChartUtils.hex2rgbD3(color))));
+      this.myPanelChartComponent.changeChartType();
   }
-
-  rgb2hex(rgb): string {
-    rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-    return (rgb && rgb.length === 4) ? '#' +
-      ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-      ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-      ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
-  }
-
+    
+    
 }

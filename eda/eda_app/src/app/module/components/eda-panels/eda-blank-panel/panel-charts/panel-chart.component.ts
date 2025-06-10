@@ -36,6 +36,12 @@ import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
+import { TreeMapConfig } from './chart-configuration-models/treeMap-config';
+import { ChartType } from 'chart.js';
+import { SunburstConfig } from './chart-configuration-models/sunburst-config';
+import { SankeyConfig } from './chart-configuration-models/sankey-config';
+import { ScatterConfig } from './chart-configuration-models/scatter-config';
+import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
 
 
 @Component({
@@ -804,11 +810,42 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public updateComponent() {
         if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
             try {
-                this.componentRef.instance?.updateChart();
+                if (this.componentRef.instance.inject?.edaChart)
+                    this.componentRef.instance?.updateChart();
+                else
+                    this.updateD3ChartColors(this.props.chartType)
+                
             } catch(err) {
                 console.error(err);
             }
         }
+    }
+
+    public updateD3ChartColors(chartType: string) {
+        console.log(chartType)
+        const numberOfColors = this.componentRef.instance.colors.length;
+        const newColors = this.chartUtils.generateRGBColorGradientScaleD3(numberOfColors, this['chartUtils'].MyPaletteColors);
+
+        switch (chartType) {
+            case 'treeMap':
+                this.props.config.setConfig(new TreeMapConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
+                this.renderTreeMap();
+                break;
+            case 'sunburst':
+                this.props.config.setConfig(new SunburstConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
+                this.renderSunburst();
+            case 'parallelSets':
+                this.props.config.setConfig(new SankeyConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
+                this.renderParallelSets();
+            case 'scatterPlot':
+                this.props.config.setConfig(new ScatterConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
+                this.renderScatter();
+            case 'bubblechart':
+                this.props.config.setConfig(new BubblechartConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
+                this.renderBubblechart();
+            default:
+                break;
+        }        
     }
 
     /**

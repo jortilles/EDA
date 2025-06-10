@@ -2026,4 +2026,74 @@ export class ChartUtilsService {
         return options;
     }
 
+
+    // APARTADO PARA LOS D3
+    hex2rgbD3(hex, opacity = 100): string {
+        hex = hex.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+    
+        return 'rgba(' + r + ',' + g + ',' + b + ',' + opacity / 100 + ')';
+      }
+    
+    rgb2hexD3(rgb): string {
+    rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+    return (rgb && rgb.length === 4) ? '#' +
+        ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
+        ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
+        ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
+    }
+
+
+    // METODOS PARA HACER LA GENERACIÓN DE COLORES DEL TREEMAP CON PALETA, REVISAR SI SE PUEDE UNIFICAR EN UN SERVICE 
+    public generateRGBColorGradientScaleD3(
+        numberOfColors: number,
+        baseColors: string[]
+      ): Array<{ color: string }> {
+        // Charts de un único color
+        if (numberOfColors === 1) {
+            const color = baseColors[0].toUpperCase();
+            return [{ color: color }];
+        }
+        const colorList: Array<{ color: string }> = [];
+        const numSegments = baseColors.length - 1;
+        const baseRgbColors = baseColors.map(hex => this.hex2rgbNumericD3(hex));
+        //Generamos lista en rgb y pasamos a hex
+        for (let i = 0; i < numberOfColors; i++) {
+            const globalFactor = i / (numberOfColors - 1);
+            let segmentIndex = Math.floor(globalFactor * numSegments);
+            if (segmentIndex >= numSegments) {
+                segmentIndex = numSegments - 1;
+            }
+          
+            const [r1, g1, b1] = baseRgbColors[segmentIndex];
+            const [r2, g2, b2] = baseRgbColors[segmentIndex + 1];
+    
+            const localFactor = (globalFactor * numSegments) - segmentIndex;
+            const t = (i === numberOfColors - 1) ? 1 : localFactor;
+    
+            const r_interp = r1 + t * (r2 - r1);
+            const g_interp = g1 + t * (g2 - g1);
+            const b_interp = b1 + t * (b2 - b1);
+            const interpolatedColorHex = this.rgbToHex(r_interp, g_interp, b_interp).toUpperCase();
+            colorList.push({ color: interpolatedColorHex });
+          }
+        return colorList;
+      }
+      
+      public hex2rgbNumericD3(hex: string): [number, number, number] {
+        const cleanHex = hex.replace(/^#/, '');
+        const fullHex = cleanHex.length === 3 ?
+            cleanHex[0] + cleanHex[0] + cleanHex[1] + cleanHex[1] + cleanHex[2] + cleanHex[2] :
+            cleanHex;
+        if (fullHex.length !== 6) { return [0, 0, 0]; }
+        const bigint = parseInt(fullHex, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return [r, g, b];
+      }
+    
+
 }
