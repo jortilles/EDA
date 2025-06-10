@@ -21,9 +21,6 @@ export class DashboardController {
       const groups = await Group.find({ users: { $in: req.user._id } }).exec();
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
- console.log('Es groups? ' , groups);
-      console.log('Es admin? ' , isAdmin);
-
       const dataSources = await DataSource.find(
         {},
         'ds.metadata'
