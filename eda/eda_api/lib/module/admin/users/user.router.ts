@@ -63,10 +63,6 @@ router.post('/sso', UserController.singleSingnOn)
 
 router.get('', authGuard,  UserController.getUsers);
 
-router.get('/log-file', authGuard,  UserController.getLogFile);
-
-router.get('/log-error-file',  authGuard,   UserController.getLogErrorFile);
-
 router.get('/profile-img/:img', authGuard, UserController.findProfileImg);
 
 router.get('/refresh-token', authGuard, UserController.refreshToken);

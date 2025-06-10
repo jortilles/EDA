@@ -33,14 +33,6 @@ export class UserService extends ApiService {
         return this.get(this.route);
     }
 
-    getLogFile(): Observable<any> {
-        return this.get(`${this.route}/log-file`);
-    }
-
-    getLogErrorFile(): Observable<any> {
-        return this.get(`${this.route}/log-error-file`);
-    }
-
     getUser(id: string): Observable<any> {
         return this.get(`${this.route}/${id}`);
     }
