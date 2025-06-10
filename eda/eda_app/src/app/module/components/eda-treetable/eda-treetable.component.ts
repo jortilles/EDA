@@ -183,7 +183,7 @@ export class EdaTreeTable implements OnInit {
 
       return Object.keys(grouped).map(groupValue => ({
         data: {
-          [leafLabels[0]?.toLowerCase()]: `${currentLabel}: ${groupValue}`
+          [leafLabels[0]?.toLowerCase()]: `<b>${currentLabel}</b>: ${groupValue}`
         },
         children: buildLevel(grouped[groupValue], level + 1)
       }));
