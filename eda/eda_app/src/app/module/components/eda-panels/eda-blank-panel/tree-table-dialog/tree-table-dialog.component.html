@@ -12,6 +12,8 @@
         [sourceStyle]="{ height: '30rem' }" 
         [targetStyle]="{ height: '30rem' }" 
         breakpoint="1400px"
+        (onMoveToTarget)="handleMoveToTarget($event)"
+        (onMoveToSource)="handleMoveToSource($event)"
         >
         
         <ng-template let-product pTemplate="item">

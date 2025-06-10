@@ -69,4 +69,16 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
+  handleMoveToSource(event: any) {
+    console.log('event to source: ', event)
+    console.log('source:', this.sourceProducts);
+    console.log('target:', this.targetProducts);
+  }
+
+  handleMoveToTarget(event: any) {
+    console.log('event to target: ', event)
+    console.log('source:', this.sourceProducts);
+    console.log('target:', this.targetProducts);
+  }
+
 }
