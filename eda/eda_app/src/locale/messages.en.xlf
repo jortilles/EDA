@@ -4566,6 +4566,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Configuración de filtros</source>
         <target>Filter settings</target>
       </trans-unit>
+      <trans-unit id="treeTableTitleDialog">
+        <source>Propiedades de la tabla árbol</source>
+        <target>Tree table properties</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -13,6 +13,7 @@ import { TableConfig } from '../panel-charts/chart-configuration-models/table-co
 import { ScatterConfig } from '../panel-charts/chart-configuration-models/scatter-config';
 import { SunburstConfig } from '../panel-charts/chart-configuration-models/sunburst-config';
 import { BubblechartConfig } from '../panel-charts/chart-configuration-models/bubblechart.config';
+import { TreeTableConfig } from '../panel-charts/chart-configuration-models/treeTable-config';
 
 export const ChartsConfigUtils = {
 
@@ -72,8 +73,15 @@ export const ChartsConfigUtils = {
         draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
         
       }
-    }  
-    else if (ebp.panelChart.props.chartType === 'coordinatesMap') {
+    } else if(ebp.panelChart.props.chartType === 'treetable') {
+      config = {
+        chartType: ebp.panelChart.props.chartType,
+        editedTreeTable: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['editedTreeTable'] : false,
+        hierarchyLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['hierarchyLabels'] : [],
+        leafLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['leafLabels'] : [],
+      }
+
+    }  else if (ebp.panelChart.props.chartType === 'coordinatesMap') {
       config = {
         zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
         coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
@@ -124,6 +132,8 @@ export const ChartsConfigUtils = {
             return new SankeyConfig([],[]);
         } else if (type === 'treeMap') {
             return new TreeMapConfig([],[]);
+        } else if(type === 'treetable') {
+          return new TreeTableConfig(false, [], []);
         } else if (type === 'scatterPlot') {
             return new ScatterConfig([],[]);
         } else if (type === 'funnel') {
@@ -145,7 +155,7 @@ export const ChartsConfigUtils = {
         }
     },
 
-  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | KnobConfig | FunnelConfig | BubblechartConfig |SunburstConfig) => {
+  recoverConfig: (type: string, config: TableConfig | KpiConfig | DynamicTextConfig | ChartJsConfig | MapConfig | SankeyConfig | TreeMapConfig | TreeTableConfig | KnobConfig | FunnelConfig | BubblechartConfig |SunburstConfig) => {
 
     return new ChartConfig(config);
 
