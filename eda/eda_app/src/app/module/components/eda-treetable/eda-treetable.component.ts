@@ -140,10 +140,23 @@ export class EdaTreeTable implements OnInit {
     });
 
     // Grouping levels (non-unique labels in order)
-    const hierarchyLabels = labels.filter(label => !isUniqueLabel[label]);
+    let hierarchyLabels = labels.filter(label => !isUniqueLabel[label]);
 
     // Leaf level: use only unique labels
-    const leafLabels = labels.filter(label => isUniqueLabel[label]);
+    let leafLabels = labels.filter(label => isUniqueLabel[label]);
+
+    console.log('this.inject: ', this.inject);
+
+    if(this.inject.config.config.editedTreeTable) {
+      console.log('ya no es nuevoo')
+      hierarchyLabels = this.inject.config.config.hierarchyLabels;
+      leafLabels = this.inject.config.config.leafLabels;
+    } else {
+      console.log('Es la primera vez....')
+      this.inject.config.config.hierarchyLabels = hierarchyLabels;
+      this.inject.config.config.leafLabels = leafLabels;
+    }
+
 
     // Información de los labels con las columnas de valores únicos
     this.dynamicCols = leafLabels.map(item => {

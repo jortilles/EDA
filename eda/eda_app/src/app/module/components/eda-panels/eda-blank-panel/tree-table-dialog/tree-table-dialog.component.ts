@@ -51,8 +51,8 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
   saveChartConfig() {
 
     this.config.editedTreeTable = true;
-    this.config.hierarchyLabels = ['valor'];
-    this.config.leafLabels = ['hello'];
+    this.config.hierarchyLabels.pop();
+    this.config.leafLabels.push('valor');
 
     this.onClose(EdaDialogCloseEvent.UPDATE, this.config);
   }
