@@ -3,6 +3,7 @@ import { EdaDialog, EdaDialogCloseEvent } from '@eda/shared/components/eda-dialo
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { EdaDialogAbstract } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-abstract';
 import { PanelChart } from '../panel-charts/panel-chart';
+import { TreeTableConfig } from '../panel-charts/chart-configuration-models/treeTable-config';
 
 
 @Component({
@@ -15,6 +16,7 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
   @ViewChild('PanelChartComponent', { static: false }) myPanelChartComponent: PanelChartComponent;
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
+  public config: any;
   
 
   constructor() {
@@ -33,7 +35,12 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
 
   onShow(): void {
     this.panelChartConfig = this.controller.params.panelChart;
+    console.log('Aca hacemos el cambio ...');
+    this.config = (<TreeTableConfig>this.panelChartConfig.config.getConfig())
 
+    console.log('config :::: ', this.config);
+
+    
     console.log('this.panelChartConfig: ', this.panelChartConfig);
   }
 
@@ -42,8 +49,12 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
   }
 
   saveChartConfig() {
-    console.log('saveChartConfig ')
-    this.onClose(EdaDialogCloseEvent.UPDATE, "properties");
+
+    this.config.editedTreeTable = true;
+    this.config.hierarchyLabels = ['valor'];
+    this.config.leafLabels = ['hello'];
+
+    this.onClose(EdaDialogCloseEvent.UPDATE, this.config);
   }
 
   closeChartConfig() {

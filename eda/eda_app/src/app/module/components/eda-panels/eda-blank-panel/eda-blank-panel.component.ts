@@ -1129,9 +1129,14 @@ export class EdaBlankPanelComponent implements OnInit {
     }
 
     public onCloseTreeTableProperties(event, response) {
-        console.log('Hace Algo onCloseTreeTableProperties');
-        console.log('event:', event);
-        console.log('response:', response);
+
+        if(!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            console.log('event:', event);
+            console.log('response:', response);
+            console.log('response.editedTreeTable:', response.editedTreeTable);
+            console.log('response.hierarchyLabels:', response.hierarchyLabels);
+            console.log('response.leafLabels:', response.leafLabels);
+        }
 
         // Al final de todo
         this.treeTableController = undefined;

@@ -19,6 +19,8 @@ export const ChartsConfigUtils = {
 
   setConfig: (ebp: EdaBlankPanelComponent) => {
 
+    console.log('ebp :::: ',ebp);
+
     let tableRows: number;
     let config: any = null;
 
@@ -73,8 +75,15 @@ export const ChartsConfigUtils = {
         draggable: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.draggable : null,
         
       }
-    }  
-    else if (ebp.panelChart.props.chartType === 'coordinatesMap') {
+    } else if(ebp.panelChart.props.chartType === 'treetable') {
+      config = {
+        chartType: ebp.panelChart.props.chartType,
+        editedTreeTable: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['editedTreeTable'] : false,
+        hierarchyLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['hierarchyLabels'] : [],
+        leafLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['leafLabels'] : [],
+      }
+
+    }  else if (ebp.panelChart.props.chartType === 'coordinatesMap') {
       config = {
         zoom: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.zoom : null,
         coordinates: ebp.panelChart.componentRef ? ebp.panelChart.componentRef.instance.inject.coordinates : null,
@@ -126,7 +135,7 @@ export const ChartsConfigUtils = {
         } else if (type === 'treeMap') {
             return new TreeMapConfig([],[]);
         } else if(type === 'treetable') {
-          return new TreeTableConfig(true, [], []);
+          return new TreeTableConfig(false, [], []);
         } else if (type === 'scatterPlot') {
             return new ScatterConfig([],[]);
         } else if (type === 'funnel') {
