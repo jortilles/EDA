@@ -2776,6 +2776,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
   color: #495057;
   background: #ffffff;
   margin: 0;
+  z-index: 1060 !important; /* z-index modificado para el drag-drap de la edición de la tabla árbol se superponga */
 }
 
 .p-timeline .p-timeline-event-marker {

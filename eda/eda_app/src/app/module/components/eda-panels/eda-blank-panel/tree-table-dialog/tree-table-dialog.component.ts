@@ -19,6 +19,8 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
   public config: any;
   public treeTableTitleDialog = $localize`:@@treeTableTitleDialog:Propiedades de la tabla árbol`;
 
+  sourceProducts: any[] = [];
+  targetProducts: any[] = [];
 
   constructor() {
     super();
@@ -39,6 +41,9 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
     this.panelChartConfig = this.controller.params.panelChart;
     console.log('Aca hacemos el cambio ...');
     this.config = (<TreeTableConfig>this.panelChartConfig.config.getConfig())
+
+    this.sourceProducts = this.config.hierarchyLabels;
+    this.targetProducts = this.config.leafLabels;
 
     console.log('config :::: ', this.config);
 

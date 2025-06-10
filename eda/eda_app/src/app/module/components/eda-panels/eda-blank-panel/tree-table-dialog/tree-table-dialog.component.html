@@ -1,9 +1,39 @@
 <eda-dialog [inject]="dialog" >
   <div body>
 
-    <div>
-      <h1>Hola</h1>
+    <div class="card">
+      <p-pickList 
+        [source]="sourceProducts" 
+        [target]="targetProducts" 
+        sourceHeader="Etiquetas de jerarquía"
+        targetHeader="Etiquetas de hojas" 
+        [dragdrop]="true" 
+        [responsive]="true"
+        [sourceStyle]="{ height: '30rem' }" 
+        [targetStyle]="{ height: '30rem' }" 
+        breakpoint="1400px"
+        >
+        
+        <ng-template let-product pTemplate="item">
+          <div class="flex flex-wrap p-2 align-items-center gap-3">
+            <!-- <img 
+              class="w-4rem shadow-2 flex-shrink-0 border-round" 
+              src="https://primefaces.org/cdn/primeng/images/demo/product/{{ product.image }}"
+              alt="{{ product.name }}" /> -->
+            <div class="flex-1 flex flex-column gap-2">
+              <span class="font-bold">{{ product }}</span>
+              <!-- <div class="flex align-items-center gap-2">
+                <i class="pi pi-tag text-sm"></i>
+                <span>{{ product.category }}</span>
+              </div> -->
+            </div>
+            <!-- <span class="font-bold text-900">{{ '$' + product.price }}</span> -->
+          </div>
+        </ng-template>
+
+      </p-pickList>
     </div>
+
 
     <div class="col-12" id="tableDiv" style="margin-top: 50px; background-color: var(--panel-color);" class="table-div">
       <panel-chart  #PanelChartComponent class="component" [props]="panelChartConfig">
