@@ -145,14 +145,11 @@ export class EdaTreeTable implements OnInit {
     // Leaf level: use only unique labels
     let leafLabels = labels.filter(label => isUniqueLabel[label]);
 
-    console.log('this.inject: ', this.inject);
 
     if(this.inject.config.config.editedTreeTable) {
-      console.log('ya no es nuevoo')
       hierarchyLabels = this.inject.config.config.hierarchyLabels;
       leafLabels = this.inject.config.config.leafLabels;
     } else {
-      console.log('Es la primera vez....')
       this.inject.config.config.hierarchyLabels = hierarchyLabels;
       this.inject.config.config.leafLabels = leafLabels;
     }
