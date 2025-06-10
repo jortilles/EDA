@@ -126,7 +126,6 @@ export class DashboardController {
       for (let i = 0, n = dashboards.length; i < n; i += 1) {
         const dashboard = dashboards[i]
         for (const dashboardGroup of dashboard.group) {
-          //dashboard.group = groups.filter(g => JSON.stringify(g._id) === JSON.stringify(group));
           for (const userGroup of userGroups) {
             if (
               JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup)

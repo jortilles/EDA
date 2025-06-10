@@ -10,6 +10,10 @@ router.use('/user', UserRouter);
 
 router.use('/groups', GroupsRouter);
 
+router.use('/groups', GroupsRouter);
+
 router.use('/log', LogRouter);
+
+
 
 export default router;
