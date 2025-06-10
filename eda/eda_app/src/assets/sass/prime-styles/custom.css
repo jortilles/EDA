@@ -2710,6 +2710,17 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 .p-picklist .p-picklist-buttons .p-button {
   margin-bottom: 0.5rem;
 }
+
+/* Oculta el botón ">>" (mover todos a la derecha) */
+.p-picklist-buttons .p-button:nth-child(2) {
+  display: none !important;
+}
+
+/* Oculta el botón "<<" (mover todos a la izquierda) */
+.p-picklist-buttons .p-button:nth-child(4) {
+  display: none !important;
+}
+
 .p-picklist .p-picklist-header {
   background: #f8f9fa;
   color: #495057;

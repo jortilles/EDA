@@ -1131,13 +1131,6 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseTreeTableProperties(event, response) {
 
         if(!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            console.log('event:', event);
-            console.log('response:', response);
-            console.log('response.editedTreeTable:', response.editedTreeTable);
-            console.log('response.hierarchyLabels:', response.hierarchyLabels);
-            console.log('response.leafLabels:', response.leafLabels);
-            console.log('this.panel.content.query.output.config: ', this.panel.content.query.output.config);
-
             this.panel.content.query.output.config = response;
             const config = new ChartConfig(response);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);

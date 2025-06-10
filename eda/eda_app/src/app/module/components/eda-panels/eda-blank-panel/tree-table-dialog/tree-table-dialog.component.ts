@@ -4,6 +4,7 @@ import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { EdaDialogAbstract } from '@eda/shared/components/eda-dialogs/eda-dialog/eda-dialog-abstract';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { TreeTableConfig } from '../panel-charts/chart-configuration-models/treeTable-config';
+import * as _ from 'lodash';
 
 
 @Component({
@@ -39,16 +40,10 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
 
   onShow(): void {
     this.panelChartConfig = this.controller.params.panelChart;
-    console.log('Aca hacemos el cambio ...');
     this.config = (<TreeTableConfig>this.panelChartConfig.config.getConfig())
-
     this.sourceProducts = this.config.hierarchyLabels;
     this.targetProducts = this.config.leafLabels;
-
-    console.log('config :::: ', this.config);
-
-    
-    console.log('this.panelChartConfig: ', this.panelChartConfig);
+    // console.log('this.panelChartConfig: ', this.panelChartConfig);
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -58,27 +53,16 @@ export class TreeTableDialogComponent extends EdaDialogAbstract implements OnIni
   saveChartConfig() {
 
     this.config.editedTreeTable = true;
-    this.config.hierarchyLabels.pop();
-    this.config.leafLabels.push('valor');
+    this.config.hierarchyLabels =  _.cloneDeep(this.sourceProducts);
+    this.config.leafLabels =  _.cloneDeep(this.targetProducts);
 
     this.onClose(EdaDialogCloseEvent.UPDATE, this.config);
   }
 
   closeChartConfig() {
-    console.log('closeChartConfig ')
+    this.sourceProducts = [];
+    this.targetProducts = [];
     this.onClose(EdaDialogCloseEvent.NONE);
-  }
-
-  handleMoveToSource(event: any) {
-    console.log('event to source: ', event)
-    console.log('source:', this.sourceProducts);
-    console.log('target:', this.targetProducts);
-  }
-
-  handleMoveToTarget(event: any) {
-    console.log('event to target: ', event)
-    console.log('source:', this.sourceProducts);
-    console.log('target:', this.targetProducts);
   }
 
 }

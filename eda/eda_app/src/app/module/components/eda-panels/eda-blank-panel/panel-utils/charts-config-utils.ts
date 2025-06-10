@@ -19,8 +19,6 @@ export const ChartsConfigUtils = {
 
   setConfig: (ebp: EdaBlankPanelComponent) => {
 
-    console.log('ebp :::: ',ebp);
-
     let tableRows: number;
     let config: any = null;
 
