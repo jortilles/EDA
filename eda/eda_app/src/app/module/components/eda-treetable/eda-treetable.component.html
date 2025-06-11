@@ -15,6 +15,7 @@
                             pInputText
                             (input)="tt.filter($event.target.value, label, 'contains')"
                             [placeholder]="filterBy + ' ' +label" 
+                            [ngStyle]="{width: dynamicCols.length >= 12 ? '100px' : 'auto'}"
                     />
                 </th>
             </tr>
@@ -49,6 +50,7 @@
                             pInputText
                             (input)="ttt.filter($event.target.value, label.field, 'contains')"
                             [placeholder]="filterBy + ' ' +label.field" 
+                            [ngStyle]="{width: dynamicCols.length >= 12 ? '100px' : 'auto'}"
                     />
                 </th>
             </tr>

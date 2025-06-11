@@ -4474,8 +4474,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Logs Error</target>
       </trans-unit>
       <trans-unit id="filterByTreetable">
-      <source>Filtrar por</source>
-      <target>Filtrar per</target>
+      <source>Filtro: </source>
+      <target>Filtre: </target>
       </trans-unit>
       <trans-unit id="EmptyValueMessage">
       <source>Sin Informar</source>

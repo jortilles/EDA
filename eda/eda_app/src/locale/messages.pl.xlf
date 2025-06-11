@@ -4289,8 +4289,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <target>Logs Error</target>
   </trans-unit>
   <trans-unit id="filterByTreetable">
-  <source>Filtrar por</source>
-  <target>Filtruj według</target>
+  <source>Filtro: </source>
+  <target>Filtr: </target>
   </trans-unit>
   <trans-unit id="EmptyValueMessage">
   <source>Sin Informar</source>
