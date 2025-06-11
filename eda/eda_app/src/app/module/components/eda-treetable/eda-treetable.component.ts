@@ -40,7 +40,6 @@ export class EdaTreeTable implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-
     const col1 = this.inject.query[0];
     const col2 = this.inject.query[1];
 
@@ -113,8 +112,16 @@ export class EdaTreeTable implements OnInit {
   }
 
   initDynamicTreeTable() {
-    // console.log('Inject : ', this.inject);
-    this.dynamicFiles = this.buildDynamicHierarchyTreetable(this.inject.data);
+
+    let data: any;
+    let labelsDisplay = this.inject.query.map((c: any) => c.display_name.default); 
+
+    data = {
+      labels: labelsDisplay,
+      values: this.inject.data.values,
+    }
+
+    this.dynamicFiles = this.buildDynamicHierarchyTreetable(data);
   }
 
 
