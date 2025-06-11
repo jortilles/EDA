@@ -30,7 +30,7 @@ export class EdaTreeTable implements OnInit {
 
   id_label: string = '';
 
-  public filterBy: string = $localize`:@@filterByTreetable:Filtrar por`;
+  public filterBy: string = $localize`:@@filterByTreetable:Filtro: `;
 
   // Para la tabla árbol dinámica
   dynamicFiles!: TreeNode[];

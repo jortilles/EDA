@@ -5906,8 +5906,8 @@ Once configured you can invoke it whenever you want from the button.</target>
         <target>Logs Error</target>
       </trans-unit>
       <trans-unit id="filterByTreetable">
-      <source>Filtrar por</source>
-      <target>Filter by</target>
+      <source>Filtro: </source>
+      <target>Filter: </target>
       </trans-unit>
       <trans-unit id="EmptyValueMessage">
       <source>Sin Informar</source>
