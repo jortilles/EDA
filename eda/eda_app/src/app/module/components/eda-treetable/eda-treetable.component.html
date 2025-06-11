@@ -15,7 +15,7 @@
                             pInputText
                             (input)="tt.filter($event.target.value, label, 'contains')"
                             [placeholder]="filterBy + ' ' +label" 
-                            [ngStyle]="{width: dynamicCols.length >= 12 ? '100px' : 'auto'}"
+                            [ngStyle]="{width: labels.length >= 12 ? '100px' : 'auto'}"
                     />
                 </th>
             </tr>
