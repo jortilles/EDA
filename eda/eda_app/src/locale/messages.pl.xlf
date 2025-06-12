@@ -4823,6 +4823,27 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Analizalos.</source>
         <target>Analizuj je tak jak każde inne źródło danych.</target>
       </trans-unit>
+      <trans-unit id="tutorialTitleMapPanel" datatype="html">
+        <source>Mapas con edalitics:</source>
+        <target>Mapy z edalitics:</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_1" datatype="html">
+        <source>Creas un modelo de datos con datos con una referencia geográfica. País, región, ciudad, etc</source>
+        <target>Tworzysz model danych z danymi z odniesieniem geograficznym. Kraj, region, miasto itp.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_2" datatype="html">
+        <source>Cagas un fichero GEOJSON con capas geográficas.</source>
+        <target>Przesyłasz plik GEOJSON zawierający warstwy geograficzne.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_3" datatype="html">
+        <source>Vinculas el campo de la tabla con la información geográfica con el atributo de la capa que contiene el nombre. Ambos deben coincidir. Nombre de país con nombre de país por ejemplo.</source>
+        <target>Łączysz pole tabeli z informacjami geograficznymi z atrybutem warstwy zawierającym nazwę. Oba muszą być zgodne. Na przykład nazwa kraju z nazwą kraju.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_3" datatype="html">
+        <source>Ahora, cuando hagas un panel en un informe con el atributo geográfico, el país por ejemplo. Podrás visualizarlo como un mapa.</source>
+        <target>Teraz, gdy utworzysz w raporcie pulpit nawigacyjny z atrybutem geograficznym, takim jak kraj, będziesz mógł go wyświetlić jako mapę.</target>
+      </trans-unit>
+
 </body>
 </file>
 </xliff>

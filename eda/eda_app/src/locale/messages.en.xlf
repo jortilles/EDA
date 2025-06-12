@@ -5237,8 +5237,28 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Analizalos.</source>
         <target>Analyze them like any other data source.</target>
       </trans-unit>
+      <trans-unit id="tutorialTitleMapPanel" datatype="html">
+        <source>Mapas con edalitics:</source>
+        <target>Maps with edalitics:</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_1" datatype="html">
+        <source>Creas un modelo de datos con datos con una referencia geográfica. País, región, ciudad, etc</source>
+        <target>You create a data model with data with a geographic reference. Country, region, city, etc.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_2" datatype="html">
+        <source>Cagas un fichero GEOJSON con capas geográficas.</source>
+        <target>You upload a GEOJSON file with geographic layers.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_3" datatype="html">
+        <source>Vinculas el campo de la tabla con la información geográfica con el atributo de la capa que contiene el nombre. Ambos deben coincidir. Nombre de país con nombre de país por ejemplo.</source>
+        <target>You link the table field with the geographic information to the layer attribute containing the name. Both must match. Country name with country name, for example.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_3" datatype="html">
+        <source>Ahora, cuando hagas un panel en un informe con el atributo geográfico, el país por ejemplo. Podrás visualizarlo como un mapa.</source>
+        <target>Now, when you create a dashboard in a report with a geographic attribute, such as country, you'll be able to view it as a map.</target>
+      </trans-unit>
 
-      
+
     </body>
   </file>
 </xliff>

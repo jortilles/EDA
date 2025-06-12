@@ -4926,6 +4926,28 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Analizalos.</source>
         <target>Analitza'ls com qualsevol altra font de dades.</target>
       </trans-unit>
+      <trans-unit id="tutorialTitleMapPanel" datatype="html">
+        <source>Mapas con edalitics:</source>
+        <target>Maps with edalitics:</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_1" datatype="html">
+        <source>Creas un modelo de datos con datos con una referencia geográfica. País, región, ciudad, etc</source>
+        <target>Creeu un model de dades amb dades amb una referència geogràfica. País, regió, ciutat, etc.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_2" datatype="html">
+        <source>Cagas un fichero GEOJSON con capas geográficas.</source>
+        <target>Cagues un fitxer GEOJSON amb capes geogràfiques.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_3" datatype="html">
+        <source>Vinculas el campo de la tabla con la información geográfica con el atributo de la capa que contiene el nombre. Ambos deben coincidir. Nombre de país con nombre de país por ejemplo.</source>
+        <target>Vinculeu el camp de la taula amb la informació geogràfica amb l'atribut de la capa que conté el nom. Tots dos han de coincidir. Nom de país amb nom de país per exemple.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_3" datatype="html">
+        <source>Ahora, cuando hagas un panel en un informe con el atributo geográfico, el país por ejemplo. Podrás visualizarlo como un mapa.</source>
+        <target>Ara, quan feu un panell en un informe amb l'atribut geogràfic, el país per exemple. Podràs visualitzar-lo com un mapa.</target>
+      </trans-unit>
+
+
 
     </body>
   </file>
