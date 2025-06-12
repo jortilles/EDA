@@ -190,7 +190,7 @@ export class DashboardPageV2 implements OnInit {
       this.globalFilter.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
-      this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
+      this.chartUtils.MyPaletteColors = this.styles?.palette['paleta'] || [];
       
       // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
       // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"

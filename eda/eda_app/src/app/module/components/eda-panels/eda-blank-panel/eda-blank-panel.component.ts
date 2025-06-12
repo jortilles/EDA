@@ -83,7 +83,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
 
-
+    public indextab = 0;
 
     public inputs: any = {};
 

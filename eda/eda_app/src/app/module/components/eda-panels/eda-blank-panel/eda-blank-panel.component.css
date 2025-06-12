@@ -208,7 +208,6 @@ eda-blank-panel :root {
   /* border: solid 1px #ccc; */
   border-radius: 4px;
   min-height: 40px;
-  background: #1b69822e;
   /*  overflow: visible; */
   overflow-wrap: anywhere;
   margin-top: 0.5em;
@@ -223,7 +222,6 @@ eda-blank-panel :root {
   /* border: solid 1px #ccc; */
   border-radius: 4px;
   min-height: 40px;
-  background: #6f9c672e;
   overflow-wrap: anywhere;
   margin-top: 0.5em;
 }

@@ -55,7 +55,7 @@
   .container-2 {
     width: 600px;
     max-width: 100%;
-    margin: 0 25px 25px 0;
+    margin: 0 0 2px 0;
     display: inline-block;
     vertical-align: top;
   }
@@ -111,10 +111,8 @@
   .container-3 {
     width: 600px;
     max-width: 100%;
-    margin: 0 25px 25px 0;
     display: inline-block;
     vertical-align: top;
-    margin-top: 30px;
   }
 
   @media(min-width: 1450px) {
