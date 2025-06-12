@@ -5218,6 +5218,27 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>3. KPIs y alertas con edalitics:</source>
         <target>3. KPIs and alerts with edalitics:</target>
       </trans-unit>
+
+
+      <trans-unit id="tutorialTitleExcelPanel" datatype="html">
+        <source>Analiza datos de un excel con edalitics:</source>
+        <target>Analyze data from an Excel spreadsheet with edalitics:</target>
+      </trans-unit>
+
+      <trans-unit id="tutorialExcelParagraph1" datatype="html">
+        <source>Puedes ver cómo funciona en este</source>
+        <target>You can see how it works in this</target>
+      </trans-unit>
+      <trans-unit id="tutorialExcel_1" datatype="html">
+        <source>Carga los datos del excel.</source>
+        <target>Load the data from Excel.</target>
+      </trans-unit>
+      <trans-unit id="tutorialExcel_2" datatype="html">
+        <source>Analizalos.</source>
+        <target>Analyze them like any other data source.</target>
+      </trans-unit>
+
+      
     </body>
   </file>
 </xliff>

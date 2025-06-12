@@ -4908,6 +4908,25 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <target>Configuració de filtres</target>
       </trans-unit>
 
+      <trans-unit id="tutorialTitleExcelPanel" datatype="html">
+        <source>Analiza datos de un excel con edalitics:</source>
+        <target>Analitza dades d'un excel amb edalitics:</target>
+      </trans-unit>
+
+      <trans-unit id="tutorialExcelParagraph1" datatype="html">
+        <source>Puedes ver cómo funciona en este</source>
+        <target>Pots veure com funciona en aquest</target>
+      </trans-unit>
+
+      <trans-unit id="tutorialExcel_1" datatype="html">
+        <source>Carga los datos del excel.</source>
+        <target>Carregueu les dades de l'excel.</target>
+      </trans-unit>
+      <trans-unit id="tutorialExcel_2" datatype="html">
+        <source>Analizalos.</source>
+        <target>Analitza'ls com qualsevol altra font de dades.</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

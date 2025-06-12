@@ -4806,6 +4806,23 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Configuración de filtros</source>
         <target>Filter settings</target>
       </trans-unit>
+      
+      <trans-unit id="tutorialTitleExcelPanel" datatype="html">
+        <source>Analiza datos de un excel con edalitics:</source>
+        <target>Analizuj dane z arkusza kalkulacyjnego Excel za pomocą edalitics:</target>
+      </trans-unit>
+      <trans-unit id="tutorialExcelParagraph1" datatype="html">
+        <source>Puedes ver cómo funciona en este</source>
+        <target>Jak to działa, możesz zobaczyć tutaj</target>
+      </trans-unit>      
+      <trans-unit id="tutorialExcel_1" datatype="html">
+        <source>Carga los datos del excel.</source>
+        <target>Załaduj dane z programu Excel.</target>
+      </trans-unit>
+      <trans-unit id="tutorialExcel_2" datatype="html">
+        <source>Analizalos.</source>
+        <target>Analizuj je tak jak każde inne źródło danych.</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>
