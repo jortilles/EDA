@@ -594,7 +594,7 @@
     @if(indextab == 1){
     <div class="grid grid-cols-5 gap-x-4">
       <div class="col-span-4">
-        <div class="rounded-lg border p-4 bg-muted/30 h-auto overflow-scroll">
+        <div class="rounded-lg border p-4 bg-muted/30 h-auto">
           <panel-chart #panelChartComponentPreview [props]="panelChartConfig"></panel-chart>
         </div>
       </div>
@@ -658,17 +658,16 @@
   </div>
 
 
-
   <ng-container footer>
-    <button class="rounded-md px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white"
+    <button class="execute-button"
       [disabled]="disableRunQuery()" (click)="runManualQuery()">
       Execute
     </button>
-    <button class="rounded-md px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white" [disabled]="display_v.btnSave"
-      (click)="savePanel()">
+    <button class="confirm-button" 
+      [disabled]="isCrosstableModified()" (click)="savePanel();">
       Confirm
     </button>
-    <button class="rounded-md px-4 py-2 border" (click)="closeEditarConsulta(); indextab = 0">
+    <button class="rounded-md px-4 py-2 border" (click)="closeEditarConsulta()">
       Cancel
     </button>
   </ng-container>

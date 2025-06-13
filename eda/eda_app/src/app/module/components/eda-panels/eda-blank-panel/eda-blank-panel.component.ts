@@ -34,6 +34,7 @@ import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
 import { computed } from '@angular/core';
 import { inject } from '@angular/core';
+import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
 
 export interface IPanelAction {
     code: string;
@@ -52,6 +53,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @ViewChild('PanelChartComponent', { static: false }) panelChart: PanelChartComponent;
     @ViewChild('panelChartComponentPreview', { static: false }) panelChartPreview: PanelChartComponent;
     @ViewChild('op', { static: false }) op: any;
+    @ViewChild(DragDropComponent) dragDrop: DragDropComponent;
 
 
 
@@ -509,6 +511,7 @@ export class EdaBlankPanelComponent implements OnInit {
      */
     public savePanel() {
         // this.panel.title = this.panel.title;
+        this.indextab = 0;
 
         if (this.panel?.content) {
             this.panel.content.query.query.queryMode = this.selectedQueryMode;
@@ -910,6 +913,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.saved_panel = false;
         this.columns = [];
         this.currentQuery = [];
+        this.indextab = 0;
 
         if (this.panelDeepCopy.query) {
             this.panelDeepCopy.query.query.filters = this.mergeFilters(this.panelDeepCopy.query.query.filters, this.globalFilters);
@@ -1221,7 +1225,11 @@ export class EdaBlankPanelComponent implements OnInit {
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
-        QueryUtils.runManualQuery(this)
+        if (this.panelChart.props.chartType == 'crosstable' && this.indextab === 1)
+            this.makeNewCrosstable();
+        else
+            QueryUtils.runManualQuery(this);
+        this.indextab = 1;
     };
 
     public moveItem = (column: any) => {
@@ -1414,7 +1422,6 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public disableRunQuery(): boolean {
         let disable = false;
-
         if (this.selectedQueryMode !== 'SQL') {
             if (this.currentQuery.length === 0 && this.index === 0) {
                 disable = true;
@@ -1423,6 +1430,10 @@ export class EdaBlankPanelComponent implements OnInit {
             if (_.isNil(this.sqlOriginTables)) {
                 disable = true;
             }
+        }
+
+        if (this.panelChart.props.chartType == 'crosstable' && this.indextab === 1) {
+            if (!this.isCrosstableValid()) return true;
         }
 
         return disable;
@@ -1494,6 +1505,24 @@ export class EdaBlankPanelComponent implements OnInit {
     // Método para verificar si una sección está abierta
     isSectionOpen(section: string): boolean {
         return this.sqlIndicationOpenSection === section
+    }
+
+    // Método que compara la tabla original con la actual (solo crosstable)
+    isCrosstableModified(): boolean {
+        if (this.panelChart.props.chartType == 'crosstable' && this.indextab === 1) {
+            return this.dragDrop?.newAxesOrdering!=this.axes && this.dragDrop?.newAxesOrdering.length !== 0;
+        }
+        return false;
+    }
+
+    // Método que ejecuta el aplicar de la crosstable
+    makeNewCrosstable() {
+        this.dragDrop.temporalExecution();
+    }
+
+    // Método que verifica si es o no aceptable la crosstable
+    isCrosstableValid():boolean {
+        return this.dragDrop?.validated;
     }
 
 }

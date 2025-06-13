@@ -526,3 +526,33 @@ span.state-label {
 .icon-hover:hover {
   color: #689F38;
 }
+
+.execute-button {
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;   
+  color: white;            
+  background: linear-gradient(to right, #00B0BA, #14B8A6); 
+  border: none;
+  cursor: pointer;
+}
+
+.execute-button:disabled {
+  background: #d1d5db;
+  color: #6b7280;     
+  cursor: not-allowed;
+}
+
+.confirm-button {
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;   
+  color: white;            
+  background: linear-gradient(to right, #00B0BA, #14B8A6); 
+  border: none;
+  cursor: pointer;
+}
+
+.confirm-button:disabled {
+  background: #d1d5db;
+  color: #6b7280;     
+  cursor: not-allowed;
+}

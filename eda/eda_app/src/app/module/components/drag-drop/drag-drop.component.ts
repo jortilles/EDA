@@ -20,7 +20,7 @@ export class DragDropComponent implements OnChanges {
   itemY = [];
   itemZ = [];
   validated: boolean = false;
-
+  sameAxes: boolean = false;
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -30,11 +30,10 @@ export class DragDropComponent implements OnChanges {
   initialization() {
 
     const copiaAxes = JSON.parse(JSON.stringify(this.axes));
-
     this.itemX = copiaAxes[0].itemX;
     this.itemY = copiaAxes[0].itemY;
     this.itemZ = copiaAxes[0].itemZ;
-    
+
     this.validated = true;
   }
 
@@ -42,7 +41,7 @@ export class DragDropComponent implements OnChanges {
     this.validated = (this.itemX.length>=1 && this.itemY.length>=1 && this.itemZ.length>=1) ? true : false;  
 
     if(this.validated) {
-      this.newAxesOrdering = [{itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ}]
+      this.newAxesOrdering = [{ itemX: this.itemX, itemY: this.itemY, itemZ: this.itemZ }]
     }
   }
 
@@ -72,6 +71,5 @@ export class DragDropComponent implements OnChanges {
     if(data.filter((e:any) => e.description==value)[0].column_type!=='numeric') return false;
     return true;
   }
-
 
 }
