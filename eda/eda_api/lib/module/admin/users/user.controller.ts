@@ -16,14 +16,6 @@ const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 const crypto = require('crypto');
 
-function AASingleSingnOn(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    const originalMethod = descriptor.value;
-  
-    descriptor.value = async function (req: Request, res: Response, next: NextFunction) {
-      console.log('Nueva lógica de Single Sign On', req.body);
-      return res.status(200).json({ok: 'nuevo sign on'});
-    };
-}
 
 export class UserController {
 
@@ -147,12 +139,6 @@ export class UserController {
         }
     }
 
-    @AASingleSingnOn
-    static async singleSingnOn(req:Request, res:Response, next:NextFunction){
-
-        console.log('Single Sign On', req.body);
-        return res.status(200).json({user:req.body.userMail})
-    }
 
     static async getUserInfoByEmail(usuari: string, ad: boolean): Promise<any> {
 
@@ -331,7 +317,6 @@ export class UserController {
                         return next(new HttpException(500, 'Error waiting for user groups'));
                     }
                     const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
-                    //console.log(isDataSourceCrator);
                     return res.status(200).json({ isDataSourceCreator });
                 });
             });
