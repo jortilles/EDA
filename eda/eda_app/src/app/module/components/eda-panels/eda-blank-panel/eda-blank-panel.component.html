@@ -376,7 +376,8 @@
                                     </span>
                                 </div>
                                 <!-- SDA CUSTOM div class="col-4 md:col-12 flex infoJoin" -->
-                                <!-- SDA CUSTOM--><div class="col-6 md:col-12 flex infoJoin" >
+                                <!-- SDA CUSTOM-->
+                                 <div class="col-6 md:col-12 flex infoJoin" >
                                     <span i18n="@@joinTypeH4">
                                         Tipo de intersección: &nbsp;
                                     </span>
@@ -387,9 +388,13 @@
                                     </p-selectButton>
                                 </div>
 
-                                <!-- SDA CUSTOM div class="col-2 col-offset-3 md:col-12 infoFiltres d-flex justify-content-end">
+                                <!-- div class="col-2 col-offset-3 md:col-12 infoFiltres d-flex justify-content-end">
                                     <button pButton (click)="onWhatIfDialog()" icon="pi pi-question-circle" class="p-button-info p-button-outlined button-whatif ml-2" label="What IF"></button>
                                 </div-->
+
+                                <div class="col-3 md:col-12 buttonAndOr d-flex justify-content-end">
+                                    <button pButton (click)="filterAndOrDialog()" icon="pi pi-filter" class="p-button-outlined ml-2" i18n-label="@@filterSettings" label="Configuración de filtros"></button>
+                                </div>
 
                                 <div class="col-12 md:col-12 info-query" *ngIf="currentQuery.length !== 0">
                                     <div #myQuery>
@@ -594,9 +599,9 @@
 
 </eda-page-dialog>
 
-<app-column-dialog *ngIf="configController" [controller]="configController"></app-column-dialog>
+<app-column-dialog *ngIf="configController" [controller]="configController" (updateSortedFiltersColumnDialog)="updateSortedFiltersColumnDialogFunction($event)"></app-column-dialog>
 
-<app-filter-dialog *ngIf="filterController" [controller]="filterController"></app-filter-dialog>
+<app-filter-dialog *ngIf="filterController" [controller]="filterController" (updateSortedFiltersFilterDialog)="updateSortedFiltersFilterDialogFunction($event)"></app-filter-dialog>
 
 <app-chart-dialog *ngIf="chartController" [controller]="chartController"></app-chart-dialog>
 
@@ -631,3 +636,5 @@
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>
 
 <app-whatif-dialog *ngIf="display_v.whatIf_dialog" [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>
+
+<filter-and-or-dialog *ngIf="display_v.filterAndOr_dialog" [(selectedFilters)]="selectedFilters" [(globalFilters)] ="globalFilters" [tables]="tables" (close)="onCloseFilterAndOrDialog()" (newSortedFilters)="newSortedFiltersFunction($event)" [sortedFilters]="sortedFilters"></filter-and-or-dialog>

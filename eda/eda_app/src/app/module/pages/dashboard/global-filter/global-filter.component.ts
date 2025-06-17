@@ -47,6 +47,10 @@ export class GlobalFilterComponent implements OnInit {
         this.isDashboardCreator = this.dashboard.isDashboardCreator;
         this.setFiltersVisibility();
         this.setFilterButtonVisibilty();
+
+        this.globalFilters.forEach(filter => {
+            this.setGlobalEmptyFilter(filter);
+        })
     }
 
     private setFiltersVisibility(): void {
@@ -99,6 +103,17 @@ export class GlobalFilterComponent implements OnInit {
             });
     }
 
+    // Adding a Global filter 
+    public addingGlobalFilter(filter: any): void {
+        const formatedFilter = this.globalFilterService.formatFilter(filter);
+
+        filter.panelList
+            .map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
+            .forEach((panel: EdaBlankPanelComponent) => {
+                if (panel) panel.addingGlobalFilterEbp(formatedFilter);
+            });
+    }
+
     public setGlobalFilterItems(filter: any) {
         this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
             if (filter.panelList.includes(panel.panel.id)) {
@@ -112,6 +127,19 @@ export class GlobalFilterComponent implements OnInit {
                 }
             }
         })
+    }
+
+    public setGlobalEmptyFilter(filter: any) {
+
+        setTimeout(() => {
+            this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+                if (filter.panelList.includes(panel.panel.id)) {
+                        const formatedFilter = this.globalFilterService.formatFilter(filter);
+                        panel.assertGlobalEmptyFilter(formatedFilter);
+                }
+            })
+        }, 500);
+
     }
 
     // Main Global Filter
@@ -144,6 +172,7 @@ export class GlobalFilterComponent implements OnInit {
 
             if (this.globalFilter.isnew) {
                 this.globalFilters.push(this.globalFilter);
+                this.addingGlobalFilter(this.globalFilter); // Adding a Global filter
             }
 
             for (const filter of this.globalFilters) {
@@ -288,6 +317,9 @@ export class GlobalFilterComponent implements OnInit {
     }
 
     public removeGlobalFilter(filter: any, reload?: boolean): void {
+
+        const formatedFilter = filter;
+
         // Remove 'applytoall' filter if it's the same fitler
         if (this.dashboard.applyToAllfilter && this.dashboard.applyToAllfilter.id === filter.id) {
             this.dashboard.applyToAllfilter = { present: false, refferenceTable: null, id: null };
@@ -296,11 +328,17 @@ export class GlobalFilterComponent implements OnInit {
         
         // Update fileterList and clean panels' filters
         this.globalFilters = this.globalFilters.filter((f: any) => f.id !== filter.id);
+
         
         this.dashboard.edaPanels.forEach(panel => {
             panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
         });
 
+        // Verifying global filters in panels
+        filter.panelList.map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
+        .forEach((panel: EdaBlankPanelComponent) => { // Entire array of panels that contain the global filter
+            if (panel) panel.rebootGlobalFilter(formatedFilter);
+        });
 
         if (reload) {
             //not saved alert message

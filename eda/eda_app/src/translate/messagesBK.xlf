@@ -1839,6 +1839,41 @@
           <context context-type="linenumber">51</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="filterSettings" datatype="html">
+        <source>Configuración de filtros</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
+          <context context-type="linenumber">396</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="descriptionFilterSettings" datatype="html">
+        <source>Configuración avanzada de los todos los filtros</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/filter-and-or-dialog/filter-and-or-dialog.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="filterSettingsReboot" datatype="ts">
+        <source>La configuración de filtros se ha reiniciado</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.ts</context>
+          <context context-type="linenumber">1623</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="globalFilterSettingsReboot" datatype="ts">
+        <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.ts</context>
+          <context context-type="linenumber">492</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="withoutFilters" datatype="ts">
+        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.ts</context>
+          <context context-type="linenumber">1529</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

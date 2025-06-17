@@ -1,0 +1,88 @@
+
+.gridster {
+    background-color: transparent;
+    border: 1px solid #13d60c00;  /* Border lines around each item  */
+    /* position: static; */
+    width: 96%;
+    /* It is the value for which it will give space to write the query  */
+    /* width: 65%;  */
+    height: 50%;
+}
+
+.gridster .gridster-column {
+    border-left: 1px solid rgb(240, 240, 243);
+    border-right: 1px solid rgb(240, 240, 243);
+    outline: 1px solid rgb(240, 240, 243);
+}
+.gridster .gridster-row {
+    border-top: 1px solid rgb(240, 240, 243);
+    border-bottom: 1px solid rgb(240, 240, 243);
+    outline: 1px solid rgb(240, 240, 243);
+}
+
+.gridster-item {
+    background-color: #ffffff; 
+    border: 1.5px solid #b5b2b2c3;  /* Border lines around each item */
+    cursor: pointer;
+    padding: 0 10px;
+    border-radius: 5px;
+}
+
+/* Change item preview colorChange item preview color */
+.gridster-preview {
+    background-color: transparent; /* Change this value to the color of your choice */
+}
+
+/* Adjusting the button size */
+.small-button .p-button {
+    padding: 3px 6px !important;  /* Reduce padding */
+    height: 22px !important;      /* Reduce button height */
+    min-width: 20px !important;   /* Adjust minimum button width */
+    font-size: 8px !important;   /* Change font size */
+    font-style: italic;
+    font-weight: 500;
+}
+
+/* Make sure the container is also small */
+.small-button .p-selectbutton {
+    height: 22px !important;      /* Reduces height */
+}
+
+.texto-filtro {
+    font-style: italic;
+    font-size: 1rem;
+    color: rgb(73, 80, 87);
+    margin: 5px 10px 5px 10px;
+}
+
+/* Class that aligns text to the right when there is no button */
+/* .texto-derecha {
+    margin-left: auto; Pushes text to the right
+} */
+
+.text-query {
+    font-weight: bold;
+    font-size: 0.7rem;
+}
+
+
+.gridster-item .d-flex {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+}
+
+.global-filter{
+  border: 3px solid #99dd9b;
+}
+
+.panel-filter{
+  border: 3px solid #c5ccc6;
+}
+
+.custom-tooltip {
+  max-width: 6500px !important;
+  white-space: normal !important;
+  word-wrap: break-word;
+}

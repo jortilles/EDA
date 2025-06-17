@@ -140,7 +140,6 @@ export class MysqlConnection extends AbstractConnection {
                     tables[i].columns[j] = this.setColumns(tables[i].columns[j], tables[i].tableCount);
                 }
             }
-            // console.log(this.client.itsConnected());
             // if (!this.pool && this.client.itsConnected()) this.client.end();
             
             /**Return datamodel with foreign-keys-relations if exists or custom relations if not */

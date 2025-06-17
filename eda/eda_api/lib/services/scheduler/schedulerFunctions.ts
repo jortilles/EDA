@@ -38,8 +38,6 @@ export class SchedulerFunctions {
     let lastUpdated = new Date(Date.parse(currLastUpdated));
     console.log('Ultima actualizacion');
     console.log(lastUpdated);
-    //console.log('Fecha de referencia');
-    //console.log(date);
 
     let min = lastUpdated.getMinutes() + parseInt(minutes);
     let hour = lastUpdated.getHours() + parseInt(hours);
@@ -52,8 +50,6 @@ export class SchedulerFunctions {
     if(nextUpdate >= date){
       //Se ha recargado hoy...
       console.log('Actualizando caché a las : ' + date)
-      //console.log(lastUpdated);
-      //console.log(date);
       return true;
     }else{
       console.log('No se ha actualizado la caché');

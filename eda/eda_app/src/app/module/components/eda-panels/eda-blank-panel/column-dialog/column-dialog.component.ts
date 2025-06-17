@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 import { EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract, EdaDatePickerComponent } from '@eda/shared/components/shared-components.index';
 import {
@@ -24,6 +24,7 @@ import { aggTypes } from 'app/config/aggretation-types';
 export class ColumnDialogComponent extends EdaDialogAbstract {
 
     @ViewChild('myCalendar', { static: false }) datePicker: EdaDatePickerComponent;
+    @Output() updateSortedFiltersColumnDialog: EventEmitter<any> = new EventEmitter<any>();
 
     public dialog: EdaDialog;
     public selectedColumn: Column;
@@ -150,7 +151,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             this.availableRange = true;
         }
 
-        console.log('selectedColum', this.selectedColumn);
     }
 
     private carregarValidacions(): void {
@@ -205,9 +205,25 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         // Regresando al valor inicial el WHERE / HAVING
         this.filterBeforeAfter.filterBeforeGrouping = true;
         this.filterBeforeAfterSelected = this.filterBeforeAfter.elements[0]
+
+        const addToSortedFilters = {
+            add: true,
+            filter: filter
+        };
+        
+        this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
+
     }
 
     removeFilter(item: any) {
+
+        const addToSortedFilters = {
+            add: false,
+            filter: item
+        };
+
+        this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
+
         this.filter.selecteds.find(f => _.startsWith(f.filter_id, item.filter_id)).removed = true;
 
         this.filter.forDisplay = this.filter.selecteds.filter(f => {
@@ -649,10 +665,14 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     }
 
     getAggregationText(value: any) {
-        const label = aggTypes.filter(agg => {
-            return (agg.value === value.aggregation_type);
-        })[0].label;
-        return label;
+        if(!value.aggregation_type){
+            return 'none'; // if there isn`t aggregation, none is added
+        } else {
+            const label = aggTypes.filter(agg => {
+                return (agg.value === value.aggregation_type);
+            })[0].label;
+            return label;
+        }
     }
 
     getFilterText(value) {
@@ -735,7 +755,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 // Verificar si el número actual es menor o igual al anterior
                 if (ranges[i] >= ranges[i + 1]) {
                     this.ranges=[];
-                    // console.log('El correcto orden de los límites del rango van de menor a mayor')
                     this.alertService.addError('El correcto orden de los límites del rango van de menor a mayor');
                     return;
                 }
@@ -757,7 +776,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             addAggr.ranges = this.ranges;
         }
         else {
-            // console.log('El último caracter del rango debe ser un número')
             this.alertService.addError('El último caracter del rango debe ser un número');
             return;
         }

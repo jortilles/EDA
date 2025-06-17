@@ -4394,9 +4394,29 @@
         <source>Entre</source>
         <target>Entre</target>
       </trans-unit>
+      <trans-unit id="filterSettings">
+        <source>Configuración de filtros</source>
+        <target>Configuración de filtros</target>
+      </trans-unit>
+      <trans-unit id="descriptionFilterSettings">
+        <source>Configuración avanzada de los todos los filtros</source>
+        <target>Configuración avanzada de los todos los filtros</target>
+      </trans-unit>
         <trans-unit id="emptyStringTxt">
         <source>Vacío</source>
         <target>(Vacío)</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsReboot">
+        <source>La configuración de filtros se ha reiniciado</source>
+        <target>La configuración de filtros se ha reiniciado</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSettingsReboot">
+        <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+        <target>La configuración de filtros del panel involucrado se ha reiniciado</target>
+      </trans-unit>
+      <trans-unit id="withoutFilters">
+        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+        <target>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</target>
       </trans-unit>
     </body>
   </file>

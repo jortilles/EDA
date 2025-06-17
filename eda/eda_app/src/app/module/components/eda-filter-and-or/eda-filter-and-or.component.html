@@ -1,0 +1,49 @@
+
+<div class="col-12 foot-card">
+
+  <p-scrollPanel [style]="{width: '98%', height: '80px'}" styleClass="custombar1">
+    <p class="text-query"  [innerHTML]="stringQuery"></p>
+  </p-scrollPanel>
+
+</div>
+
+<div class="text-right">
+  <span class="rounded pl-6 pr-6 global-filter" i18n="@@globalFilter">Filtro de informe</span>&nbsp;
+  <span class="rounded pl-6 pr-6 panel-filter" i18n="@@globalFilter">Filtro de panel</span>
+</div>
+<br>
+
+<div>
+    <gridster class="gridster" [options]="options">
+        <gridster-item 
+          [item]="item" 
+          *ngFor="let item of dashboard" 
+          class="gridster-item" 
+          [class.global-filter]="item.isGlobal"
+          [class.panel-filter]="!item.isGlobal"
+          [pTooltip]="getFilterJoins(item) + tooltipDescription(item)"
+          [tooltipStyleClass]="'custom-tooltip'"
+          >
+
+          <div class="d-flex">
+              <div class="button-holder" *ngIf="!(item.x==0 && item.y==0)">
+
+                  <p-selectButton
+                      [options]="selectedButton"
+                      [(ngModel)]="item.value"
+                      [disabled]="(item.x==0 && item.y==0)"
+                      class="small-button"
+                      (click)="onButtonClick()"
+                  ></p-selectButton>
+
+              </div>
+              <span 
+                class="texto-filtro" 
+                [class.texto-derecha]="item.x == 0 && item.y == 0" 
+                [innerHTML]="getDisplayFilterStrAndOr(item)"
+              ></span>
+
+          </div>
+        </gridster-item>
+    </gridster>
+  </div>

@@ -295,8 +295,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     e.borderColor = chartConfig.chartColors[i].borderColor;
                 }catch(err){
                     // si tinc una tendencia no tinc color per aquesta grafica. No hauria de ser aixi.....
-                       //console.log('Recuperando color...');
-                        //console.log(this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor);
                         e.backgroundColor =   this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor;
                         e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
                 }

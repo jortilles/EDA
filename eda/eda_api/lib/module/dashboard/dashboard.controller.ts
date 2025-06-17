@@ -841,10 +841,6 @@ export class DashboardController {
         req.user._id
       )
 
-    //console.log('uniquesForbiddenTables', uniquesForbiddenTables);
-    //console.log('req.body.query', req.body.query);
-
-
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
       if(includesAdmin){
         //the admin sees everything
@@ -879,6 +875,8 @@ export class DashboardController {
           }
           myQuery.filters = req.body.query.filters
         }
+
+        myQuery.sortedFilters = req.body.query.sortedFilters;
       } else {
         // Labels are the technical name...
         myQuery = JSON.parse(JSON.stringify(req.body.query))
@@ -926,18 +924,23 @@ export class DashboardController {
       let nullFilter = {};
       const filters = myQuery.filters;
 
+
+
+      // We follow this approach when applying a filter that includes multiple elements, one of which is null. For example: filtering by [3, 5, null, 7].
       filters.forEach(a => {
       // Filter nulls and empty values ​​from the dashboard . If the selector contains empty values, should they be treated as SDA CUSTOM? 
         a.filter_elements.forEach(b => {
           if( b.value1){
             if ( b.value1.includes('emptyString')  && b.value1.length  == 1 ){
               // if it is one I turn it into a null or empty
-              a.filter_type = 'null_or_empty'
+              a.filter_type = 'null_or_empty';
+              // The sortedFilters are controlled in the getSortedFilters function of mySql-builder.service.ts
             }if ( b.value1.includes('emptyString')  && b.value1.length  > 1 ){
              // if there are more than one, I remove them to a separate filter.
              const nullFilter = JSON.parse(JSON.stringify(a));
              nullFilter.filter_id = 'is_null';
              nullFilter.filter_type = 'null_or_empty';
+             nullFilter.source_filter_id = a.filter_id; // Added filter_id from the source
              nullFilter.filter_elements = [{value1:['null']}];
               b.value1 = b.value1.filter(c => c != 'emptyString')
               filters.push(nullFilter);
@@ -993,7 +996,6 @@ export class DashboardController {
       }) 
 
       myQuery.filters = filters;
-
 
       if(uniquesForbiddenTables.length > 0){
         if(   myQuery.filters.filter( f=> uniquesForbiddenTables.includes( f.filter_table.split('.')[0]) ).length > 0 ){

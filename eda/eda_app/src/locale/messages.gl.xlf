@@ -4395,9 +4395,29 @@
         <source>Entre</source>
         <target>Entre</target>
       </trans-unit>
+      <trans-unit id="filterSettings">
+        <source>Configuración de filtros</source>
+        <target>Configuración do filtro</target>
+      </trans-unit>
+      <trans-unit id="descriptionFilterSettings">
+        <source>Configuración avanzada de los todos los filtros</source>
+        <target>Configuración avanzada para todos os filtros</target>
+       </trans-unit>
       <trans-unit id="emptyStringTxt">
         <source>Vacío</source>
         <target>(Baleiro)</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsReboot">
+        <source>La configuración de filtros se ha reiniciado</source>
+        <target>Restableceuse a configuración do filtro</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSettingsReboot">
+        <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+        <target>Restablecéronse a configuración do filtro para o panel implicado</target>
+      </trans-unit>
+      <trans-unit id="withoutFilters">
+        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+        <target>Aínda non configuraches os filtros. Usar o panel de filtros ou os filtros globais</target>
       </trans-unit>
     </body>
   </file>

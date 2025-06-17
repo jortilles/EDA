@@ -13,6 +13,7 @@ export * from './eda-map/eda-map.component';
 export * from './eda-map/eda-geoJsonMap.component';
 export * from './eda-funnel/eda-funnel.component';
 export * from './eda-d3-bubblechart/eda-bubblechart.component';
+export * from './eda-filter-and-or/eda-filter-and-or.component';
 
  // export * from './eda-d3/eda-d3.component';
 
@@ -58,3 +59,4 @@ export { FunnelDialog } from './eda-panels/eda-blank-panel/funnel-dialog/funnel-
 export { BubblechartDialog } from './eda-panels/eda-blank-panel/bubblechart-dialog/bubblechart-dialog.component';
 export { EdaSunburstComponent } from './eda-sunburst/eda-sunburst.component';
 export { SunburstDialogComponent } from './eda-panels/eda-blank-panel/sunbrust-dialog/sunburst-dialog.component';
+export { FilterAndOrDialogComponent } from './eda-panels/eda-blank-panel/filter-and-or-dialog/filter-and-or-dialog.component';

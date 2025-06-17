@@ -104,6 +104,17 @@ export const QueryUtils = {
  * @param globalFilters flag to apply when runQuery() is called from dashboard component.
  */
   runQuery: async (ebp: EdaBlankPanelComponent, globalFilters: boolean) => {
+
+    // Update of the globalFilters Elements
+
+    if(ebp.sortedFilters === undefined) ebp.sortedFilters = []; // if it is an old report, we define the report as empty
+
+    for(let i=0; i<ebp.sortedFilters.length; i++){
+      if(ebp.sortedFilters[i].isGlobal) {
+        ebp.sortedFilters[i].filter_elements = ebp.globalFilters.find((globalFilter: any) => globalFilter.filter_id === ebp.sortedFilters[i].filter_id).filter_elements;
+      }
+    }
+
     /** Manages duplicate columns. If I have two columns with the same name, I add the suffix _1, _2, _3, etc. */
     let dup = [];
     let cont = 0;
@@ -277,7 +288,9 @@ export const QueryUtils = {
       queryLimit: ebp.queryLimit,
       joinType: ebp.joinType,
       rootTable: ebp.rootTable?.table_name,
+      sortedFilters: ebp.sortedFilters,
     };
+
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode);
   },
 

@@ -618,6 +618,19 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public reloadPanels(): void {
+
+        const globalFilters = this.gFilter?.globalFilters;
+        
+        if(globalFilters.length !== 0) {
+            globalFilters.forEach(filter => {
+                this.gFilter.setGlobalEmptyFilter(filter);
+            })
+        } else {
+            this.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+                panel.variableTemporal = [];
+            })
+        }
+
         this.edaPanels.forEach(async (panel) => {
             if (panel.currentQuery.length !== 0) {
                 panel.display_v.chart = '';
@@ -790,6 +803,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public reloadOnGlobalFilter(): void {
+
         //not saved alert message
         this.dashboardService._notSaved.next(true);
 
@@ -803,6 +817,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public async onPanelAction(event: IPanelAction): Promise<void> {
         if (event.code === 'ADDFILTER') {
+
+            /*SDA CUSTOM  THIS FUNCTION IS DISABLED BECAUSE IT WOUDL GENERATE AN INCONSISTENCY IN THE TREE MODE QUERY 
             const data = event?.data;
             const panel = event?.data?.panel;
             if (!_.isNil(data?.inx)) {
@@ -826,6 +842,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.reloadOnGlobalFilter();
                 }
             }
+                */
         } else if (event.code === 'QUERYMODE') {
             this.setPanelsQueryMode();
         }

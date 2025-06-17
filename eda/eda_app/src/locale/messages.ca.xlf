@@ -4395,6 +4395,26 @@
         <source>Vacío</source>
         <target>(Buit)</target>
       </trans-unit>
+      <trans-unit id="filterSettings">
+        <source>Configuración de filtros</source>
+        <target>Configuració de filtres</target>
+      </trans-unit>
+      <trans-unit id="descriptionFilterSettings">
+        <source>Configuración avanzada de los todos los filtros</source>
+        <target>Configuració avançada dels tots els filtres</target>
+      </trans-unit>
+      <trans-unit id="filterSettingsReboot">
+        <source>La configuración de filtros se ha reiniciado</source>
+        <target>La configuració de filtres s'ha reiniciat</target>
+      </trans-unit>
+      <trans-unit id="globalFilterSettingsReboot">
+        <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
+        <target>La configuració de filtres del panell involucrat s'ha reiniciat</target>
+      </trans-unit>
+      <trans-unit id="withoutFilters">
+        <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
+        <target>Encara no heu configurat filtres. Fes servir el panell de filtres o els filtres globals</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
