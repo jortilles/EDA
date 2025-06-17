@@ -1510,7 +1510,8 @@ export class EdaBlankPanelComponent implements OnInit {
     // Método que compara la tabla original con la actual (solo crosstable)
     isCrosstableModified(): boolean {
         if (this.panelChart.props.chartType == 'crosstable' && this.indextab === 1) {
-            return this.dragDrop?.newAxesOrdering!=this.axes && this.dragDrop?.newAxesOrdering.length !== 0;
+            if(this.dragDrop?.newAxesOrdering.length !== 0)
+                return this.dragDrop?.newAxesOrdering!=this.axes;
         }
         return false;
     }
