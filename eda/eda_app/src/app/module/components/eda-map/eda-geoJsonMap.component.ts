@@ -155,7 +155,7 @@ export class EdaGeoJsonMapComponent
       this.geoJson.addTo(this.map);
       if (this.inject.zoom) this.map.zoom = this.inject.zoom;
       else this.map.fitBounds(this.boundaries);
-      this.map.setMaxBounds(this.boundaries);
+      //this.map.setMaxBounds(this.boundaries); esto hace que el mapa se centre
     } else {
       console.log("map not yet ready");
     }
