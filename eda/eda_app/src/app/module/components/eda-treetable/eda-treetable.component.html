@@ -61,6 +61,7 @@
             <td *ngFor="let col of columns; let i = index">
                 <p-treeTableToggler *ngIf="i === 0" [rowNode]="rowNode"></p-treeTableToggler>
                 <span [innerHTML]="rowData[col.field]"></span>
+                <span *ngIf="col.field==='alianzas'">Hola Marc</span>
             </td>
             </tr>
         </ng-template>

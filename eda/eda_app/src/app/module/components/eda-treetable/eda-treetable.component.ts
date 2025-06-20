@@ -50,7 +50,7 @@ export class EdaTreeTable implements OnInit {
       this.isDynamic = true;
       this.initDynamicTreeTable()
     }
-
+    console.log(this)
   }
 
   initBasicTreeTable() {

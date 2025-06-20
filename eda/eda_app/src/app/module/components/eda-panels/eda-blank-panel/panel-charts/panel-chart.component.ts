@@ -918,6 +918,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaTreeTable);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject; // inject como input al componente Treetable
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
     private randomID() {

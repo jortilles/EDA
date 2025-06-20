@@ -784,6 +784,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     
     //Si es modo arbol o SQL no aplica filtros
     if (event.code === "ADDFILTER" && modeEDA) {
+
+      console.log('event :::: ',event);
+
       const data = event?.data;
       const panel = event?.data?.panel;
       let column: any;
