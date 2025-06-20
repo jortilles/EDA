@@ -46,11 +46,13 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
 
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
+    console.log('rebem aixo',response)
     return this.controller.close(event, response);
   }
 
   saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors.map(color => this.hex2rgb(color))});
+    console.log('passem aixo', this.colors.map(color => this.hex2rgb(color)))
+    this.onClose(EdaDialogCloseEvent.UPDATE, {colors: this.colors.map(color => this.hex2rgb(color))} );
   }
 
   closeChartConfig() {

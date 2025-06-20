@@ -1174,6 +1174,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.scatterPlotController = undefined;
     }
     public onCloseSunburstProperties(event, response): void {
+        console.log(response)
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             //Recorremos todos los assignedColors que tenemos
             this.panelChart.componentRef.instance.assignedColors.forEach((e) => {

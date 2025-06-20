@@ -25,6 +25,7 @@ export class ChartConfig {
     return this.config;
   }
   setConfig(config: ChartJsConfig | TableConfig | KpiConfig | DynamicTextConfig | MapConfig | MapCoordConfig | SankeyConfig | TreeMapConfig | ScatterConfig | KnobConfig | FunnelConfig | BubblechartConfig | SunburstConfig):void{
+    console.log(config)
     this.config = config;
   }
 }

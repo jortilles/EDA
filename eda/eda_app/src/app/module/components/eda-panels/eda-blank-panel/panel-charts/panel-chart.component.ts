@@ -887,6 +887,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
 
     private renderSunburst() {
+        console.log(this)
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
         let inject: SunBurst = new SunBurst;
         inject.size = this.props.size;
@@ -987,6 +988,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private assignedColorsWork(config, inject) { 
+        console.log('config',config)
+        console.log('inject',inject)
         inject.data.values.forEach((injectValue, index) => {
             //Primer string encontrado(valor del filtro)
             const injectValueString = injectValue.find(value => typeof value === 'string');
