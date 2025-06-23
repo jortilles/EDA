@@ -989,7 +989,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     private assignedColorsWork(config, inject) { 
         console.log('config',config)
-        console.log('inject',inject)
+        console.log('inject', inject)
         inject.data.values.forEach((injectValue, index) => {
             //Primer string encontrado(valor del filtro)
             const injectValueString = injectValue.find(value => typeof value === 'string');

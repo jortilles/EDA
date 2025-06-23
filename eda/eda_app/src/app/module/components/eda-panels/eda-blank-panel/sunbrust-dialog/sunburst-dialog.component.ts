@@ -16,7 +16,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public colors: Array<string>;
-  public labels: Array<string>;
+  public labels: Array<any>;
   public display:boolean=false;
 
   constructor() {
@@ -32,12 +32,13 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   }
   ngAfterViewChecked(): void {
     if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
+      console.log('this', this)
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
-        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
+        this.colors = this.myPanelChartComponent.componentRef.instance.inject.assignedColors.map(color => this.rgb2hex(color.color));
+        this.labels = [...new Set(this.myPanelChartComponent.componentRef.instance.firstColLabels)];
       }, 0)
-    }
+    }console.log(this.colors)
   }
 
   onShow(): void {
@@ -59,7 +60,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor(serie) {
+  handleInputColor() {
     this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(this.colors.map(color => this.hex2rgb(color)),[]));
     this.myPanelChartComponent.changeChartType();
   }

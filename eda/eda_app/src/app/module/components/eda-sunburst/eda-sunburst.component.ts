@@ -38,7 +38,7 @@ export class EdaSunburstComponent implements AfterViewInit {
       this.inject.colors : this.getColors(this.labels.length, ChartsColors);
     this.assignedColors = this.inject.assignedColors || []; 
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
-    /*
+  
     const cityMap = new Map();
 
     for (const [city, year, value] of this.inject.data.values) {
@@ -53,11 +53,10 @@ export class EdaSunburstComponent implements AfterViewInit {
      .map(([city, { year, total }]) => [city, year, total])
      .sort((a, b) => b[2] - a[2]); 
       
-    console.log(result);
 
-    this.firstColLabels = result.map((row) => row[firstNonNumericColIndex]);
-    */
-   this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
+    //this.firstColLabels = result.map((row) => row[firstNonNumericColIndex]);
+  
+    this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
   }
 

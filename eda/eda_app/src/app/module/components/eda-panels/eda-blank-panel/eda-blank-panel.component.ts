@@ -34,7 +34,7 @@ import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config'
 import { QueryService } from '@eda/services/api/query.service';
 import { ConfirmationService } from 'primeng/api';
 import Swal from 'sweetalert2';
-
+¡
 
 export interface IPanelAction {
     code: string;
@@ -1173,26 +1173,73 @@ export class EdaBlankPanelComponent implements OnInit {
         }
         this.scatterPlotController = undefined;
     }
-    public onCloseSunburstProperties(event, response): void {
-        console.log(response)
-        if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            //Recorremos todos los assignedColors que tenemos
-            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
+    public onCloseSunburstProperties(event: any, response: any): void {
+        const chartInstance = this.panelChart?.componentRef?.instance;
+        const dataDescription = chartInstance?.inject?.dataDescription;
+        const otherColumns = dataDescription?.otherColumns;
+    
+        // Validación principal para continuar
+        if (otherColumns && Array.isArray(otherColumns) && otherColumns.length > 1) {
+            if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                // Extraemos los valores string del data
+                let chartValues: string[] = chartInstance.data.map((item: any[]) => {
+                    const found = item.find(value => typeof value === 'string');
+                    return found ? found.split("|")[0] : "";
+                });
+    
+                console.log("Chart Values:", chartValues);
+    
+                chartInstance.assignedColors.forEach((assignedColor: any) => {
+                    console.log("Assigned Color:", assignedColor);
+    
+                    // Verificamos si algún valor del chart coincide con el valor del color asignado
+                    const indexColor = chartValues.findIndex(value => value === assignedColor.value);
+                    if (indexColor >= 0 && response.colors && response.colors[indexColor]) {
+                        console.log("Match found, assigning color");
+                        assignedColor.color = response.colors[indexColor];
+                    }
+                });
+    
+                // Asignamos los nuevos colores al config
+                this.panel.content.query.output.config = {
+                    colors: response.colors,
+                    assignedColors: chartInstance.assignedColors
+                };
+    
+                const config = new ChartConfig(this.panel.content.query.output.config);
+    
+                this.renderChart(
+                    this.currentQuery,
+                    this.chartLabels,
+                    this.chartData,
+                    this.graficos.chartType,
+                    this.graficos.edaChart,
+                    config
+                );
+    
+                // Indicamos que hay cambios no guardados
+                this.dashboardService._notSaved.next(true);
+            }
+        
+    } else {
+            if(!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                //Recorremos todos los assignedColors que tenemos
                 //Valores label que tenemos en el chart
                 let chartValues = this.panelChart.componentRef.instance.data.map(item => item.find(value => typeof value === 'string'));
-                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
-                if (chartValues.includes(e.value)) {
-                    let indexColor = chartValues.findIndex(element => element === e.value)
-                    e.color = response.colors[indexColor]
-                }
-            });
+                this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
+                    // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                    if (chartValues.some(value => value.includes(e.value))) {
+                        let indexColor = chartValues.findIndex(element => element === e.value)
+                        e.color = response.colors[indexColor]
+                    }
+                });
+                this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+                const config = new ChartConfig(this.panel.content.query.output.config);
+                this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
-            const config = new ChartConfig(this.panel.content.query.output.config);
-            this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
-            this.dashboardService._notSaved.next(true);
-        }
+                this.dashboardService._notSaved.next(true);
+            }  
+        } 
         // Fa que desapareixi el dialeg
         this.sunburstController = undefined;
     }
