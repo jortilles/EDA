@@ -1,5 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Necesario para las directivas
+import * as _ from 'lodash';
 
 // Módulos para el Treetable
 import { TreeNode } from 'primeng/api';
@@ -23,10 +24,13 @@ interface Column {
 export class EdaTreeTable implements OnInit {
 
   @Input() inject: any; // El inject contiene dos arreglos => (labels y values)
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
+  
   files!: TreeNode[];
   labels: any[] = [];
   labelsInputs: any[] = [];
   filterMode = 'lenient'; // Modo indulgente activado, activar botones para opciones de modos => indulgente / estricto
+  public lodash: any = _;
 
   id_label: string = '';
 
@@ -50,7 +54,6 @@ export class EdaTreeTable implements OnInit {
       this.isDynamic = true;
       this.initDynamicTreeTable()
     }
-    console.log(this)
   }
 
   initBasicTreeTable() {
@@ -198,5 +201,19 @@ export class EdaTreeTable implements OnInit {
 
     return buildLevel(rows, 0);
   }
+
+
+  handleClick(item: any, colname: string) {
+    if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
+        const props = this.inject.linkedDashboardProps;
+        const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
+        window.open(url, "_blank");
+    } else {
+      const indexFilterBy = this.inject.data.values.find(row => row.includes(item));
+      const filterBy = indexFilterBy ? this.inject.data.labels[indexFilterBy.indexOf(item)] : null;
+      let label = item;
+      this.onClick.emit({label, filterBy});
+    }
+}
 
 }
