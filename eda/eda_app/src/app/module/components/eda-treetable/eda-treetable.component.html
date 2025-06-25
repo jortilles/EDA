@@ -60,7 +60,7 @@
             <tr [ttRow]="rowNode">
             <td *ngFor="let col of columns; let i = index">
                 <p-treeTableToggler *ngIf="i === 0" [rowNode]="rowNode"></p-treeTableToggler>
-                <span [innerHTML]="rowData[col.field]"></span>
+                <span style="cursor:pointer" (click)="handleClick(lodash.get(rowData, col.field), col.field)" [innerHTML]="rowData[col.field]"></span>
             </td>
             </tr>
         </ng-template>

@@ -784,10 +784,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     
     //Si es modo arbol o SQL no aplica filtros
     if (event.code === "ADDFILTER" && modeEDA) {
+
+
       const data = event?.data;
       const panel = event?.data?.panel;
       let column: any;
       column = this.getCorrectColumnFiltered(event)
+      //column = event.data.filterBy
       const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
       if (column && table) {
         let config = this.setPanelsToFilter(panel);
@@ -852,7 +855,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         
         // NO TENEMOS NINGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
         else { 
-            // Creamos un filtro nuevo con from chart true
+          // Creamos un filtro nuevo con from chart true
             this.chartFilter = {
               id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
               isGlobal: true,
@@ -1454,15 +1457,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public getCorrectColumnFiltered(event): string {
-        if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
+        if (['doughnut', 'polarArea', 'bar', 'line', 'radar',''].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
           if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
              return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
           else 
             return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);         
         }
-        else if ('table'.includes(event.data.panel.content.chart)) {
+        else if (['table','crosstable','treetable'].includes(event.data.panel.content.chart)) {
             return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);  
-        } else {
+        }
+        else {
             //Si el evento es de un chart de la libreria D3Chart o Leaflet
             return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
           }
