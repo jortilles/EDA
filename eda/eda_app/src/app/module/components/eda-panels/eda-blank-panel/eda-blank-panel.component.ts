@@ -34,7 +34,7 @@ import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config'
 import { QueryService } from '@eda/services/api/query.service';
 import { ConfirmationService } from 'primeng/api';
 import Swal from 'sweetalert2';
-¡
+
 
 export interface IPanelAction {
     code: string;
@@ -1182,20 +1182,19 @@ export class EdaBlankPanelComponent implements OnInit {
         if (otherColumns && Array.isArray(otherColumns) && otherColumns.length > 1) {
             if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
                 // Extraemos los valores string del data
-                let chartValues: string[] = chartInstance.data.map((item: any[]) => {
-                    const found = item.find(value => typeof value === 'string');
-                    return found ? found.split("|")[0] : "";
-                });
+                let chartValues: string[] = Array.from(
+                    new Set(
+                        chartInstance.data.map((item: any[]) => {
+                            const found = item.find(value => typeof value === 'string');
+                            return found ? found.split("|")[0] : "";
+                        })
+                    )
+                );  
     
-                console.log("Chart Values:", chartValues);
-    
-                chartInstance.assignedColors.forEach((assignedColor: any) => {
-                    console.log("Assigned Color:", assignedColor);
-    
+                chartInstance.assignedColors.forEach((assignedColor: any) => {    
                     // Verificamos si algún valor del chart coincide con el valor del color asignado
                     const indexColor = chartValues.findIndex(value => value === assignedColor.value);
                     if (indexColor >= 0 && response.colors && response.colors[indexColor]) {
-                        console.log("Match found, assigning color");
                         assignedColor.color = response.colors[indexColor];
                     }
                 });

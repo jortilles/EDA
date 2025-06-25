@@ -32,13 +32,12 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   }
   ngAfterViewChecked(): void {
     if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
-      console.log('this', this)
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.inject.assignedColors.map(color => this.rgb2hex(color.color));
-        this.labels = [...new Set(this.myPanelChartComponent.componentRef.instance.firstColLabels)];
+        this.colors = this.groupSimilarColors(this.myPanelChartComponent.componentRef.instance.inject.assignedColors.map(color => this.rgb2hex(color.color)));
+        this.labels = Array.from(new Set(this.myPanelChartComponent.componentRef.instance.firstColLabels));
       }, 0)
-    }console.log(this.colors)
+    }
   }
 
   onShow(): void {
@@ -47,12 +46,10 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
 
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
-    console.log('rebem aixo',response)
     return this.controller.close(event, response);
   }
 
   saveChartConfig() {
-    console.log('passem aixo', this.colors.map(color => this.hex2rgb(color)))
     this.onClose(EdaDialogCloseEvent.UPDATE, {colors: this.colors.map(color => this.hex2rgb(color))} );
   }
 
@@ -63,6 +60,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   handleInputColor() {
     this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(this.colors.map(color => this.hex2rgb(color)),[]));
     this.myPanelChartComponent.changeChartType();
+    console.log(this)
   }
 
   hex2rgb(hex, opacity = 100): string {
@@ -85,4 +83,29 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
     return label.replaceAll('|+-+|', ' - ') + ': ';
   }
 
+  groupSimilarColors(colors: string[]): string[] {
+    const colorGroups: Map<string, string[]> = new Map();
+
+    // Agrupar los colores sin eliminar duplicados
+    for (const color of colors) {
+        if (!colorGroups.has(color)) {
+            colorGroups.set(color, []);
+        }
+        colorGroups.get(color)!.push(color);
+    }
+
+    // Preservar orden de aparición
+    const seen = new Set<string>();
+    const grouped: string[] = [];
+
+    for (const color of colors) {
+        if (!seen.has(color)) {
+            seen.add(color);
+            grouped.push(...colorGroups.get(color)!);
+        }
+    }
+
+    return grouped;
+  }
+  
 }

@@ -29,7 +29,6 @@ export class EdaSunburstComponent implements AfterViewInit {
   metricIndex: number
   constructor(private chartUtilService : ChartUtilsService) {}
   ngOnInit(): void {
-    console.log('inject',this.inject)
     this.id = `sunburst_${this.inject.id}` ;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.data = this.formatData(this.inject.data, this.inject.dataDescription);
