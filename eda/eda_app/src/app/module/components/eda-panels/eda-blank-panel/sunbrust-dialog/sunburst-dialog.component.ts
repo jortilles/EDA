@@ -15,7 +15,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
-  public colors: Array<string>;
+  public colors: Array<any>;
   public labels: Array<any>;
   public display:boolean=false;
 
@@ -32,10 +32,29 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   }
   ngAfterViewChecked(): void {
     if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
+      console.log(this)
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.groupSimilarColors(this.myPanelChartComponent.componentRef.instance.inject.assignedColors.map(color => this.rgb2hex(color.color)));
-        this.labels = Array.from(new Set(this.myPanelChartComponent.componentRef.instance.firstColLabels));
+        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
+        
+        let colorMap: { [key: string]: { value: string; color: string } } = {};
+
+        console.log(this.myPanelChartComponent.componentRef.instance.inject.assignedColors)
+        console.log(this.myPanelChartComponent.props.config.getConfig())
+
+        this.myPanelChartComponent.props.config.getConfig()['assignedColors'].forEach(item => {
+          colorMap[item.value] = item;
+        });
+        const sortedAssignedColors = this.labels
+        .map(label => colorMap[label])
+        .filter((item): item is { value: string; color: string } => !!item);
+        
+        sortedAssignedColors.forEach(obj => {
+          if (this.isHex(obj.color)) {
+            obj.color = this.hex2rgb(obj.color);
+          }
+        });
+        this.colors = [...new Set(sortedAssignedColors.map(color => this.rgb2hex(color.color)))];
       }, 0)
     }
   }
@@ -58,9 +77,21 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   }
 
   handleInputColor() {
-    this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(this.colors.map(color => this.hex2rgb(color)),[]));
+    let colorValue = {};
+    let newColors = [];
+    let colorIndex = 0;
+
+    this.myPanelChartComponent.props.config.getConfig()['data'].values.forEach((item, index) => {
+      let value = item[0];    
+      if (!colorValue[value]) {
+        colorValue[value] = [... this.colors][colorIndex];
+          colorIndex++;
+      } 
+      newColors[index] = colorValue[value];
+    });
+
+    this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(newColors,[]));
     this.myPanelChartComponent.changeChartType();
-    console.log(this)
   }
 
   hex2rgb(hex, opacity = 100): string {
@@ -83,29 +114,8 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
     return label.replaceAll('|+-+|', ' - ') + ': ';
   }
 
-  groupSimilarColors(colors: string[]): string[] {
-    const colorGroups: Map<string, string[]> = new Map();
-
-    // Agrupar los colores sin eliminar duplicados
-    for (const color of colors) {
-        if (!colorGroups.has(color)) {
-            colorGroups.set(color, []);
-        }
-        colorGroups.get(color)!.push(color);
-    }
-
-    // Preservar orden de aparición
-    const seen = new Set<string>();
-    const grouped: string[] = [];
-
-    for (const color of colors) {
-        if (!seen.has(color)) {
-            seen.add(color);
-            grouped.push(...colorGroups.get(color)!);
-        }
-    }
-
-    return grouped;
+  isHex(color) {
+    return /^#([A-Fa-f0-9]{3}){1,2}$/.test(color);
   }
-  
+ 
 }

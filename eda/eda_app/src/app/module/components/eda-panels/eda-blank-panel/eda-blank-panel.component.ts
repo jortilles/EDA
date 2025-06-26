@@ -1220,27 +1220,27 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.dashboardService._notSaved.next(true);
             }
         
-    } else {
-            if(!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-                //Recorremos todos los assignedColors que tenemos
-                //Valores label que tenemos en el chart
-                let chartValues = this.panelChart.componentRef.instance.data.map(item => item.find(value => typeof value === 'string'));
-                this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
-                    // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
-                    if (chartValues.some(value => value.includes(e.value))) {
-                        let indexColor = chartValues.findIndex(element => element === e.value)
-                        e.color = response.colors[indexColor]
-                    }
-                });
-                this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
-                const config = new ChartConfig(this.panel.content.query.output.config);
-                this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
+        } else {
+                if(!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    //Recorremos todos los assignedColors que tenemos
+                    //Valores label que tenemos en el chart
+                    let chartValues = this.panelChart.componentRef.instance.data.map(item => item.find(value => typeof value === 'string'));
+                    this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
+                        // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                        if (chartValues.some(value => value.includes(e.value))) {
+                            let indexColor = chartValues.findIndex(element => element === e.value)
+                            e.color = response.colors[indexColor]
+                        }
+                    });
+                    this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
+                    const config = new ChartConfig(this.panel.content.query.output.config);
+                    this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
-                this.dashboardService._notSaved.next(true);
-            }  
-        } 
-        // Fa que desapareixi el dialeg
-        this.sunburstController = undefined;
+                    this.dashboardService._notSaved.next(true);
+                }  
+            } 
+            // Fa que desapareixi el dialeg
+            this.sunburstController = undefined;
     }
     public onCloseKnobProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
