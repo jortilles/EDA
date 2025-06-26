@@ -13,7 +13,6 @@ import { EventEmitter } from '@angular/core';
 import { EdaColumnChart } from './eda-columns/eda-column-chart';
 import { ToastModule } from 'primeng/toast';
 import { Key } from 'protractor';
-// import { FindValueSubscriber } from 'rxjs/internal/operators/find';
 import { values } from 'd3';
 import { title } from 'process';
 

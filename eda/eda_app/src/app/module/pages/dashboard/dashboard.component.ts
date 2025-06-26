@@ -1346,4 +1346,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+  public getCorrectColumnFiltered(event): string {
+        if (['doughnut', 'polarArea', 'bar', 'line', 'radar',''].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
+          if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
+             return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
+          else 
+            return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);         
+        }
+        else if (['table','crosstable','treetable'].includes(event.data.panel.content.chart)) {
+            return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);  
+        }
+        else {
+            //Si el evento es de un chart de la libreria D3Chart o Leaflet
+            return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
+          }
+        
+      
+  }
+
 }
