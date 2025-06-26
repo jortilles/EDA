@@ -629,7 +629,7 @@ export class EdaBlankPanelComponent implements OnInit {
         if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(config?.chartType) ||   //NG2 CHARTS
             ['treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
             'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
-            ['table', 'crosstable'].includes(this.panelChart.props.chartType)) // tables
+            ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
         {
             this.action.emit({ code: 'ADDFILTER', data: {...event, panel: this.panel} });
         }
