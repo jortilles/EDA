@@ -16,6 +16,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public colors: Array<any>;
+  public initialColors: Array<any>;
   public labels: Array<any>;
   public display:boolean=false;
 
@@ -39,22 +40,21 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
         
         let colorMap: { [key: string]: { value: string; color: string } } = {};
 
-        console.log(this.myPanelChartComponent.componentRef.instance.inject.assignedColors)
-        console.log(this.myPanelChartComponent.props.config.getConfig())
-
         this.myPanelChartComponent.props.config.getConfig()['assignedColors'].forEach(item => {
           colorMap[item.value] = item;
         });
+
         const sortedAssignedColors = this.labels
-        .map(label => colorMap[label])
-        .filter((item): item is { value: string; color: string } => !!item);
+          .map(label => colorMap[label])
+          .filter((item): item is { value: string; color: string } => !!item);
         
         sortedAssignedColors.forEach(obj => {
           if (this.isHex(obj.color)) {
             obj.color = this.hex2rgb(obj.color);
           }
         });
-        this.colors = [...new Set(sortedAssignedColors.map(color => this.rgb2hex(color.color)))];
+        this.colors = sortedAssignedColors.map(color => this.rgb2hex(color.color));
+        this.initialColors = this.myPanelChartComponent.props.config.getConfig()['assignedColors'];
       }, 0)
     }
   }
@@ -73,6 +73,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   }
 
   closeChartConfig() {
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = [... this.initialColors];
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
@@ -81,6 +82,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
     let newColors = [];
     let colorIndex = 0;
 
+    // Recorrer valores repetidos y asignar los colores que pertocan
     this.myPanelChartComponent.props.config.getConfig()['data'].values.forEach((item, index) => {
       let value = item[0];    
       if (!colorValue[value]) {
@@ -89,8 +91,10 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
       } 
       newColors[index] = colorValue[value];
     });
-
-    this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(newColors,[]));
+    this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(newColors, []));
+    // Revisar esto para hacerlo mejor a posterior
+    //this.myPanelChartComponent.props.config.getConfig()['colors'] = this.colors.map(color => this.rgb2hex(color.color));
+    
     this.myPanelChartComponent.changeChartType();
   }
 

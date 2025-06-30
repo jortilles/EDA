@@ -152,7 +152,7 @@ export class EdaSunburstComponent implements AfterViewInit {
           const total = siblings.length;
       
           const minOpacity = 0.25;
-          const maxOpacity = 0.75;
+          const maxOpacity = 1;
       
           // Distribuye linealmente entre min y max, primero más opaco
           if (total > 1) { opacity = maxOpacity - (index * (maxOpacity - minOpacity) / (total - 1)); }
