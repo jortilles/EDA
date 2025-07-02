@@ -50,6 +50,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public direction: any = { label: '', value: '' };
     public stacked: any;
 
+    public originalSeries: any[] = [];
     public series: any[] = [];
     public id: any;
 
@@ -96,7 +97,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
         this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] ||false;
-        this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;
+        this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;      
         this.oldChart = _.cloneDeep(this.controller.params.chart);
         this.chart = this.controller.params.chart;
         this.showTrend = this.chart.chartType === 'line';
@@ -125,7 +126,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                     }));
                     this.chart.chartColors[0].backgroundColor = this.series.map(d => (this.hex2rgb(d.bg, 90)));
                 }
-                break;
+                break;  
             default:
 
                 this.series = this.chart.chartDataset.map(dataset => ({
@@ -133,9 +134,11 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                     bg: this.rgb2hex(dataset.backgroundColor),
                     border: dataset.borderColor
                 }));
-                this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor: s.border }));
+                this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor:  this.hex2rgb(s.border, 90) }));
                 break;
         }
+        if (!this.originalSeries || this.originalSeries.length === 0)
+            this.originalSeries = _.cloneDeep(this.series);
     }
 
     handleInputColor(event) {
@@ -417,9 +420,18 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     //On cancel send prev state
     closeChartConfig() {
-        this.onClose(EdaDialogCloseEvent.NONE), this.oldChart;
+        if (this.originalSeries?.length) {
+          const type = this.chart.chartType;
+          this.series = _.cloneDeep(this.originalSeries);
+      
+          if (type === 'doughnut' || type === 'polarArea') {
+            this.chart.chartColors[0].backgroundColor = this.series.map(s => this.hex2rgb(s.bg, 90));
+          } else {
+            // Charts generics
+          }
+        }
+        this.onClose(EdaDialogCloseEvent.NONE);
     }
-
     onClose(event: EdaDialogCloseEvent, response?: any): void {
 
         return this.controller.close(event, response);
