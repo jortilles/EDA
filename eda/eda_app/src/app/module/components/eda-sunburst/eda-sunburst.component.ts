@@ -28,7 +28,7 @@ export class EdaSunburstComponent implements AfterViewInit {
   heigth: number
   metricIndex: number
   constructor(private chartUtilService : ChartUtilsService) {}
-  ngOnInit (): void {
+  ngOnInit(): void {
     this.id = `sunburst_${this.inject.id}` ;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.data = this.formatData(this.inject.data, this.inject.dataDescription);
@@ -138,11 +138,33 @@ export class EdaSunburstComponent implements AfterViewInit {
       )
       .join('path')
       .attr('fill', d => {
+        let original = d;
+        let opacity = 1;
+        
+        // Subimos al primer nivel para asignar color base
         while (d.depth > 1) d = d.parent;
-        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
-        return  colorsSunburst[valuesSunburst.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
+        const rgbColor = d3.rgb(colorsSunburst[valuesSunburst.findIndex(item => d.data.name.includes(item))] || color(d.data.name)); 
+      
+        // Cálculo de opacidad
+        if (original.depth > 1) {
+          const siblings = original.parent.children;
+          const index = siblings.indexOf(original);
+          const total = siblings.length;
+      
+          const minOpacity = 0.25;
+          const maxOpacity = 1;
+      
+          // Distribuye linealmente entre min y max, primero más opaco
+          if (total > 1) { opacity = maxOpacity - (index * (maxOpacity - minOpacity) / (total - 1)); }
+          else { opacity = maxOpacity; } // Solo un hijo
+        }
+      
+        return `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${opacity})`;
       })
+      
+      
       .attr('d', arc)
+    
       
 
     svg
@@ -255,6 +277,8 @@ export class EdaSunburstComponent implements AfterViewInit {
   }
 
   getColors (dataLength, colors) {
+    console.log('output', dataLength)
+    console.log('output', colors)
     const colorsLength = colors.length
     let outputColors: Array<any> = colors
 
@@ -264,6 +288,9 @@ export class EdaSunburstComponent implements AfterViewInit {
         outputColors = [...outputColors, ...colors]
       }
     }
+
+    console.log('output', outputColors)
+
 
     return outputColors
       .filter((_, index) => index < dataLength)
