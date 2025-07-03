@@ -61,16 +61,12 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
   }
 
   handleInputColor(): void {
-    const rgbColors = this.colors.map(c => this.hex2rgb(c));
-    const config = new SankeyConfig(rgbColors, []);
-    this.myPanelChartComponent.props.config.setConfig(config);
+    this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.colors.map(c => this.hex2rgb(c)), []));
     this.myPanelChartComponent.changeChartType();
 
-    // Restaurar config original tras preview
+    // Restauramos internamente el config original a la version anterior
     setTimeout(() => {
-      const originalRgbColors = this.originalColors.map(c => this.hex2rgb(c));
-      const originalConfig = new SankeyConfig(originalRgbColors, []);
-      this.myPanelChartComponent.props.config.setConfig(originalConfig);
+      this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.originalColors.map(c => this.hex2rgb(c)), []));
     }, 0);
   }
 

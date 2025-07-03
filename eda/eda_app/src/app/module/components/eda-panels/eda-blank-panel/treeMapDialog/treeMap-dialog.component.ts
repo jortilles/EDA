@@ -72,11 +72,10 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
 
   handleInputColor(): void {
     const rgbColors = this.colors.map(c => this.hex2rgb(c));
-    const config = this.myPanelChartComponent.props.config.getConfig();
-    const original = JSON.parse(JSON.stringify(config['assignedColors']));
+    const original = JSON.parse(JSON.stringify(this.myPanelChartComponent.props.config.getConfig()['assignedColors']));
     // Recuperar colores de assignedColor (chart)
     this.labels.forEach((label, i) => {
-      const match = config['assignedColors'].find(c => c.value === label);
+      const match = this.myPanelChartComponent.props.config.getConfig()['assignedColors'].find(c => c.value === label);
       if (match) match.color = rgbColors[i];
     });
 

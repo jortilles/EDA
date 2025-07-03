@@ -60,16 +60,12 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
   }
 
   handleInputColor(): void {
-    const rgbColors = this.colors.map(c => this.hex2rgb(c));
-    const config = new FunnelConfig(rgbColors);
-    this.myPanelChartComponent.props.config.setConfig(config);
+    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(this.colors.map(c => this.hex2rgb(c))));
     this.myPanelChartComponent.changeChartType();
 
     // Restaurar configuración original tras preview
     setTimeout(() => {
-      const originalRgbColors = this.originalColors.map(c => this.hex2rgb(c));
-      const originalConfig = new FunnelConfig(originalRgbColors);
-      this.myPanelChartComponent.props.config.setConfig(originalConfig);
+      this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(this.originalColors.map(c => this.hex2rgb(c))));
     }, 0);
   }
 

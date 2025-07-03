@@ -31,7 +31,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
     this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
   }
   ngAfterViewChecked(): void {
-    if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
+    if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
