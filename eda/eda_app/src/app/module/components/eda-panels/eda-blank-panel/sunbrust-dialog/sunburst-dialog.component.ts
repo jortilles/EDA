@@ -32,21 +32,19 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   }
   ngAfterViewChecked(): void {
     if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
-      console.log(this)
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
-        
         let colorMap: { [key: string]: { value: string; color: string } } = {};
-
+        // Recuperamos valores de assignedColor {label: , color:}
         this.myPanelChartComponent.props.config.getConfig()['assignedColors'].forEach(item => {
           colorMap[item.value] = item;
         });
-
+        // Asignamos el mismo color a los que tienen el mismo label
         const sortedAssignedColors = this.labels
           .map(label => colorMap[label])
           .filter((item): item is { value: string; color: string } => !!item);
-        
+        // Transformación para los colorPicker del dialog
         this.colors = sortedAssignedColors.map(color => this.rgb2hex(color.color));
       }, 0)
     }

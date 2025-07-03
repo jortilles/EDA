@@ -2,10 +2,7 @@ import { Component, ViewChild, AfterViewChecked } from '@angular/core';
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from '@eda/shared/components/shared-components.index';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
-import { TreeMapConfig } from '../panel-charts/chart-configuration-models/treeMap-config';
 import { FunnelConfig } from '../panel-charts/chart-configuration-models/funnel.config';
-import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
-
 
 @Component({
   selector: 'app-funnel-dialog',
@@ -18,7 +15,8 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
-  public colors: Array<string> ;
+  public originalColors: string[];
+  public colors: Array<string>;
   public labels: Array<number>;
   public display:boolean=false;
 
@@ -34,15 +32,14 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
     this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
   }
   ngAfterViewChecked(): void {
-    
-    if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
+    if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
+        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(c => this.rgb2hex(c));
+        this.originalColors = [...this.colors];
         this.labels = [0, 1];
-      })
+      }, 0);
     }
-
   }
 
   onShow(): void {
@@ -62,11 +59,18 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor() {
-
-    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(this.colors.map(color => this.hex2rgb(color))));
+  handleInputColor(): void {
+    const rgbColors = this.colors.map(c => this.hex2rgb(c));
+    const config = new FunnelConfig(rgbColors);
+    this.myPanelChartComponent.props.config.setConfig(config);
     this.myPanelChartComponent.changeChartType();
 
+    // Restaurar configuración original tras preview
+    setTimeout(() => {
+      const originalRgbColors = this.originalColors.map(c => this.hex2rgb(c));
+      const originalConfig = new FunnelConfig(originalRgbColors);
+      this.myPanelChartComponent.props.config.setConfig(originalConfig);
+    }, 0);
   }
 
   hex2rgb(hex, opacity = 100): string {

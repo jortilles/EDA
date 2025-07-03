@@ -418,20 +418,23 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     }
 
-    //On cancel send prev state
     closeChartConfig() {
-        if (this.originalSeries?.length) {
-          const type = this.chart.chartType;
-          this.series = _.cloneDeep(this.originalSeries);
-      
-          if (type === 'doughnut' || type === 'polarArea') {
+        if (!this.originalSeries?.length) return this.onClose(EdaDialogCloseEvent.NONE);
+
+        const type = this.chart.chartType;
+        this.series = _.cloneDeep(this.originalSeries);
+        const [restored] = this.series;
+
+        if (type === 'doughnut' || type === 'polarArea') {
             this.chart.chartColors[0].backgroundColor = this.series.map(s => this.hex2rgb(s.bg, 90));
-          } else {
-            // Charts generics
-          }
+        } else if (this.chart.chartDataset?.[0]) {
+            this.chart.chartDataset[0].backgroundColor = this.hex2rgb(restored.bg, 90);
+            this.chart.chartDataset[0].borderColor = restored.border ?? this.hex2rgb(restored.bg, 100);
         }
+
         this.onClose(EdaDialogCloseEvent.NONE);
     }
+
     onClose(event: EdaDialogCloseEvent, response?: any): void {
 
         return this.controller.close(event, response);
