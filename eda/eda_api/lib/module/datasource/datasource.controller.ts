@@ -203,7 +203,7 @@ export class DataSourceController {
             });
 
         } else {
-            // Si l'usuari NO es admin retorna els seus.
+           // if the user is not admin it return his own ones. 
             DataSource.find( { 'ds.metadata.model_owner': { $in:[  req.user._id ] } } , '_id ds.metadata.model_name ds.metadata.model_owner', options, (err, ds) => {
                 if (!ds) {
                     return next(new HttpException(500, 'Error loading DataSources'));
