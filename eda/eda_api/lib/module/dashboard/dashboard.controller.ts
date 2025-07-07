@@ -459,11 +459,18 @@ export class DashboardController {
             if (!datasource) {
               return next(new HttpException(400, 'Datasouce not found with id'))
             }
-            let toJson = JSON.parse(JSON.stringify(datasource))
+            let toJson = JSON.parse(JSON.stringify(datasource));
 
             // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
             // Per si de cas es fa servir a una relació.
             const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+              toJson,
+              userGroups,
+              req.user._id
+            )
+
+            // Filtre de seguretat per les columnes. Si no es te permis sobre una columna es posa com a oculta.
+            const uniquesForbiddenColumns = DashboardController.getForbiddenColumns (
               toJson,
               userGroups,
               req.user._id
@@ -550,6 +557,19 @@ export class DashboardController {
                 }
               });
             });
+
+
+            // Si tengo columnas prohividas las pongo invisibles en el modelo.
+            try{
+              if(uniquesForbiddenColumns.length > 0){
+                uniquesForbiddenColumns.forEach( fc => {
+                  toJson.ds.model.tables.filter( t=> t.table_name == fc.table  )[0].columns.filter( c=> c.column_name == fc.column)[0].visible = false ;
+                });
+              }
+            }catch(e){
+              console.log('Error handling columns permissions');
+              console.log(e);
+            }
 
             const ds = {
               _id: datasource._id,
@@ -717,9 +737,36 @@ export class DashboardController {
     }
   }
 
+  /**
+   *  Filtra columnas  prohibidas en un modelo de datos. Devuelve el listado de columnas prohibidas para un usuario.
+   */
+  static getForbiddenColumns(
+    dataModelObject: any,
+    userGroups: Array<String>,
+    user: string
+  ) {
+    let forbiddenColumns = [];
+    if(dataModelObject.ds.metadata.model_granted_roles.length > 0 ){ /** SI HAY PERMISOS DEFINIDOS. SI NO, NO HAY SEGURIDAD */
+      if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.none == true ).length > 0 ){
+        dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.none == true ).forEach( c => {
+          if(  c.users?.includes(user) ){
+            forbiddenColumns.push(c);
+          }
+          userGroups.forEach( g=> { 
+            if( c.groups?.includes(g) ){
+              forbiddenColumns.push(c);
+            }
+          });
+        });
+      }
+  }
+    return forbiddenColumns;
+  }
+
+
 
   /**
-   *  Filtra tablas prohividas en un modelo de datos. Devuelve el listado de tablas prohividas para un usuario.
+   *  Filtra tablas prohibidas en un modelo de datos. Devuelve el listado de tablas prohibidas para un usuario.
    */
   static getForbiddenTables(
     dataModelObject: any,
@@ -929,12 +976,31 @@ export class DashboardController {
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       // Si el usuario puede ver todo el modelo.
       if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
+                                                                    && r.column == 'fullModel'  
                                                                     && r.permission == true 
                                                                     && r.users?.includes(user) 
                                                                 ).length > 0 ){
         // El usuairo puede ver todo.
         forbiddenTables = [];
-        return forbiddenTables;
+        // Excepto lo que le prohibo  explicitamente.                                                         
+        dataModelObject.ds.metadata.model_granted_roles.forEach(r => {
+          if(r.column == 'fullTable'   && r.users?.includes(user)  && r.permission == false   ){
+            forbiddenTables.push( r.table);
+          }
+          // Excepto lo que le prohibo  explicitamente al grupo
+          userGroups.forEach(
+                group=>{
+                  if ( r.column == 'fullTable' && r.permission == false &&  r.groups?.includes(group)  ){
+                      forbiddenTables.push( r.table);
+                    }
+                }
+          );
+
+
+
+        });;
+
+        return forbiddenTables;   
       }
       // Si el grupo puede ver todo el modelo.
       let groupCan =  0;
