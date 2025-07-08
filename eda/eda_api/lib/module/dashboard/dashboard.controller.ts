@@ -517,7 +517,7 @@ export class DashboardController {
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body
-
+      body.config.author = req.user.name;
       const dashboard: IDashboard = new Dashboard({
         config: body.config,
         user: req.user._id
@@ -550,7 +550,6 @@ export class DashboardController {
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
       const body = req.body;
-
       Dashboard.findById(req.params.id, (err, dashboard: IDashboard) => {
         if (err) {
           return next(new HttpException(500, 'Error searching the dashboard'))
@@ -1683,7 +1682,6 @@ export class DashboardController {
         user: req.user._id, // Set the current user as the owner of the cloned dashboard
         group: originalDashboard.group // Maintain the same group permissions
       });
-      console.log(clonedDashboard)
 
       // Save the cloned dashboard to the database
       const savedDashboard = await clonedDashboard.save();

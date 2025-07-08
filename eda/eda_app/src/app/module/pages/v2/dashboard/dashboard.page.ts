@@ -381,7 +381,6 @@ export class DashboardPageV2 implements OnInit {
   }
 
   public async saveDashboard() {
-    console.log(this)
     const body = {
       config: {
         title: this.title,
@@ -396,11 +395,11 @@ export class DashboardPageV2 implements OnInit {
         // sendViaMailConfig: this.sendViaMailConfig,
         onlyIcanEdit: this.onlyIcanEdit,
         styles: this.dashboard.config.styles,
-        urls: this.dashboard.config.urls
+        urls: this.dashboard.config.urls,
+        author: this.dashboard.config?.author
       },
-      group: this.dashboard.group ? _.map(this.dashboard.group, '_id') : undefined
+      group: this.dashboard.group ? _.map(this.dashboard.group, '_id') : undefined,
     };
-    console.log(body)
 
     this.edaPanels.forEach(panel => { panel.savePanel(); });
     body.config.panel = this.panels;
