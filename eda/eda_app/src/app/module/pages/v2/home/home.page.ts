@@ -71,7 +71,7 @@ export class HomePageV2 implements OnInit {
   };
 
   this.handleSorting();
-  this.loadReportTags();
+    this.loadReportTags();
   }
 
   private async loadReportTags() {
@@ -197,14 +197,21 @@ export class HomePageV2 implements OnInit {
       case 'done': // Guardar cambios
         if (this.editTitle.trim()) {
           report.config.title = this.editTitle;
-          //TODO s'ha de canviar a updateDashboardSpecific
-          this.dashboardService.updateDashboard(report._id.toString(), report).subscribe(
-          () => {
-            this.allDashboards[this.allDashboards.findIndex(d => d._id === report._id)] = report;
-            this.alertService.addSuccess($localize`:@@DashboardUpdatedInfo:Report successfully updated.`);
-          },
-          err => this.alertService.addError(err)
-        );
+
+          const payload = {
+            data: {
+              key: 'config.title',
+              newValue: report.config.title
+            }
+          };
+          
+          this.dashboardService.updateDashboardSpecific(report._id.toString(), payload).subscribe(
+            () => {
+              this.allDashboards[this.allDashboards.findIndex(d => d._id === report._id)].config.title = report.config.title;
+              this.alertService.addSuccess($localize`:@@DashboardUpdatedInfo:Report successfully updated.`);
+            },
+            err => this.alertService.addError(err)
+          );
       }
         break;
       case 'cancel': // Cancelar y no guardar los cambios
