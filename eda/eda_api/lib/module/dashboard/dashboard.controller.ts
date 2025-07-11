@@ -238,6 +238,10 @@ export class DashboardController {
       let tags: Array<any> = req.qs.tags;
 
       if (_.isEmpty(tags)) {
+          publics.push(       
+          {_id: "6758afd0dcb6053e674dda34",config: {title: "Edalitics Sample Dasboard",visible: "public",tag: []  }, 
+            user: {_id: "6758afcf888b55e554483273", name: "Jortilles" } }  );
+
         return publics;
 
       } else {

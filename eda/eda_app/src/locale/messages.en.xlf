@@ -4951,11 +4951,318 @@ Once configured you can invoke it whenever you want from the button.</target>
       <trans-unit id="filterSettings">
         <source>Configuración de filtros</source>
         <target>Filter settings</target>
+ 		</trans-unit>
+      
+      <trans-unit id="tutorialTitleHome">
+        <source>Tutorial</source>
+        <target>Tutorial</target>       
       </trans-unit>
       <trans-unit id="treeTableTitleDialog">
         <source>Propiedades de la tabla árbol</source>
         <target>Tree table properties</target>
       </trans-unit>
+      <trans-unit id="firstAboutParagraphHome_1" datatype="html">
+        <source>Toda la potencia de Edalitics para información pública o de uso personal. </source>
+        <target>All the power of Edalitics for public information or personal use. </target>
+      </trans-unit>
+      <trans-unit id="firstAboutParagraphHome_2" datatype="html">
+        <source> es el servicio cloud que ofrece </source>
+        <target> is the cloud service that offers </target>
+      </trans-unit>
+      <trans-unit id="firstAboutParagraphHome_3" datatype="html">
+        <source> sobre </source>
+        <target> about </target>
+      </trans-unit>
+      <trans-unit id="firstAboutParagraphHome_4" datatype="html">
+        <source>. Edalitics Free te permite analizar toda la información que quieras de forma gratuita siempre que hagas un uso razonable. </source>
+        <target>. Edalitics Free allows you to analyse as much information as you want for free as long as you make reasonable use of it. </target>
+      </trans-unit>
+
+      <trans-unit id="secondAboutParagraphHome_1" datatype="html">
+        <source>A continuación tienes una guía rápida. Toda la información que necesites está disponible en la </source>
+        <target>Below is a quick guide. All the information you need is available at the </target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraphHome_2" datatype="html">
+        <source>documentación</source>
+        <target>documentation</target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraphHome_3" datatype="html">
+        <source> o puedes pedir ayuda en los </source>
+        <target> or you can ask for help at the </target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraphHome_4" datatype="html">
+        <source>grupos de discusión.</source>
+        <target>focus groups.</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstParagraphHome" datatype="html">
+        <source>Para analizar la información con Edalitics necesitarás:</source>
+        <target>To analyse the information with Edalitics you will need:</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstOrdListHome_1" datatype="html">
+        <source>Crear una fuente de datos</source>
+        <target>Create a data source</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstOrdListHome_2" datatype="html">
+        <source>: Conectar tus datos a Edalitics.</source>
+        <target>: Connect your data to Edalitics.</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondOrdListHome_1" datatype="html">
+        <source>Crear un informe</source>
+        <target>Create a report</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondOrdListHome_2" datatype="html">
+        <source>: Analizar  tus datos a Edalitics.</source>
+        <target>: Analyse your data at Edalitics.</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstPPanelParagraph_1" datatype="html">
+        <source>Hay una explicación más detallada en la </source>
+        <target>There is a more detailed explanation in the </target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstPPanelParagraph_2" datatype="html">
+        <source>documentación.</source>
+        <target>documentation.</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstPPanelParagraph_3" datatype="html">
+        <source> O puedes ver este</source>
+        <target> Or you can look at this</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstPPanelParagraph_4" datatype="html">
+        <source> video-tutorial.</source>
+        <target> video tutorial.</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondPPanelParagraph_1" datatype="html">
+        <source>Edalitics permite analizar datos de una </source>
+        <target>Edalitics allows you to analyse data from a </target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondPPanelParagraph_2" datatype="html">
+        <source>base de dades</source>
+        <target>data base</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondPPanelParagraph_3" datatype="html">
+        <source>, un </source>
+        <target>, a  </target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondPPanelParagraph_4" datatype="html">
+        <source>webservice</source>
+        <target>webservice</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondPPanelParagraph_5" datatype="html">
+        <source> o un archivo </source>
+        <target> or a file </target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP1_1" datatype="html">
+        <source>En el menú de la izquierda elegimos </source>
+        <target>In the menu on the left we choose </target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP1_2" datatype="html">
+        <source>fuente de datos</source>
+        <target>source of data</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP1_3" datatype="html">
+        <source>, al desplegarse el menú:</source>
+        <target>, when the menu is displayed:</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP1_4" datatype="html">
+        <source> nueva fuente de datos.</source>
+        <target> new source of data.</target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP2" datatype="html">
+        <source>Una vez en la configuración el damos un nombre y elegimos el tipo de orígen de datos. </source>
+        <target>Once in the configuration we give it a name and choose the type of data source. </target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP3" datatype="html">
+        <source>Configuramos los datos necesarios. </source>
+        <target>We set up the necessary data. </target>
+      </trans-unit>
+      <trans-unit id="tutorialFirstUnordListHomeP4" datatype="html">
+        <source>Personalizamos, si queremos, nuestra fuente de datos.</source>
+        <target>We customise, if we want to, our data source.</target>
+      </trans-unit>
+      <trans-unit id="tutorialThirdPPanelParagraph_1" datatype="html">
+        <source>Hay una explicación más detallada en la </source>
+        <target>There is a more detailed explanation in the </target>
+      </trans-unit>
+      <trans-unit id="tutorialThirdPPanelParagraph_2" datatype="html">
+        <source>documentación.</source>
+        <target>documentation. </target>
+      </trans-unit>
+      <trans-unit id="tutorialThirdPPanelParagraph_3" datatype="html">
+        <source> O puedes ver este </source>
+        <target> Or you can look at this </target>
+      </trans-unit>
+      <trans-unit id="tutorialThirdPPanelParagraph_4" datatype="html">
+        <source>video-tutorial.</source>
+        <target>video tutorial.</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondUnordListHomeP1_1" datatype="html">
+        <source>En la parte superior de la pantalla tenemos el botón </source>
+        <target>At the top of the screen there is the button </target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondUnordListHomeP1_2" datatype="html">
+        <source>crear nuevo informe</source>
+        <target>create new report</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondUnordListHomeP1_3" datatype="html">
+        <source>, el cual nos abre un pop up que contiene los campos de nuevo nombre de informe y selección de una fuente de datos.</source>
+        <target>, which opens a pop up containing the fields for new report name and selection of a data source.</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondUnordListHomeP2" datatype="html">
+        <source>Le damos un nombre al informe y elegimos la fuente de datos sobre la que queremos hacer el informe.</source>
+        <target>We name the report and choose the data source we want to report on.</target>
+      </trans-unit>
+      <trans-unit id="tutorialSecondUnordListHomeP3" datatype="html">
+        <source>Agregamos paneles de datos, filtros o textos a nuestro informe. </source>
+        <target>We add data panels, filters or texts to our report. </target>
+      </trans-unit>
+      <trans-unit id="tutorialThird_1" datatype="html">
+        <source>Una vez creado un KPI en un informe. </source>
+        <target>Once a KPI has been created in a report.</target>
+      </trans-unit>
+      <trans-unit id="tutorialThird_2" datatype="html">
+        <source>Se puede definir una alerta que se enviará por email en caso de que la condición del KPI se cumpla.</source>
+        <target>You can define an alert that will be sent by email if the KPI condition is met.</target>
+      </trans-unit>
+      <trans-unit id="tutorialThird_3" datatype="html">
+        <source>Llegará un mail a la hora definida con el texto indicado.</source>
+        <target>An email will arrive at the defined time with the indicated text.</target>
+      </trans-unit>
+      <trans-unit id="firstAboutParagraphSpan_1" datatype="html">
+        <source>
+          es una aplicación web de código libre que permite realizar informes gráficos e interactivos de
+          forma sencilla. EDA es una aplicación que se puede instalar en tus propios servidores o se puede difrutar en su versión SaaS
+        </source>
+        <target>
+          is an open source web application that allows you to easily create graphical and interactive reports.
+          in a simple way. EDA is an application that can be installed on your own servers or can be enjoyed in its SaaS version.
+        </target>
+      </trans-unit>
+      <trans-unit id="firstAboutParagraphSpan_2" datatype="html">
+        <source>
+          Edalitics permite disfrutar de toda la potencia de EDA sin tener que preocuparte de instalaciones, 
+          configuraciones, actualizaciones, etc. Conectas tus fuentes de datos y listo.
+        </source>
+        <target>
+          Edalitics allows you to enjoy the full power of EDA without having to worry about installations, 
+          configurations, updates, etc. You just connect your data sources and that's it.
+        </target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraph_1" datatype="html">
+        <source>EDA ha sido desarrollado por </source>
+        <target>EDA has been developed by </target>
+      </trans-unit>
+      <trans-unit id="secondAboutParagraph_2" datatype="html">
+        <source>
+          Si necesita soporte empresarial, no dude en contactar con nosotros. Así mismo cómo si quiere solicitar nuevas
+          funcionalidades o carácteristicas. Jortilles financia el desarrollo de EDA mediante las suscripciones a Edalitics
+          y el soporte empresarial que ofrece a sus clientes.
+        </source>
+        <target>
+          If you need business support, do not hesitate to contact us. As well as if you want to request new
+          functionalities or features. Jortilles finances the development of EDA through the subscriptions to Edalitics
+          and the business support it offers to its customers.       
+        </target>
+      </trans-unit>
+      <trans-unit id="thirdAboutParagraph" datatype="html">
+        <source>El código fuente de EDA está disponible en </source>
+        <target>The EDA source code is available at </target>
+      </trans-unit>
+      <trans-unit id="fourthAboutParagraph_1" datatype="html">
+        <source>La documentación de EDA está disponible en </source>
+        <target>EDA documentation is available at </target>
+      </trans-unit>
+      <trans-unit id="fourthAboutParagraph_2" datatype="html">
+        <source>Este Link</source>
+        <target>This Link</target>
+      </trans-unit>
+      <trans-unit id="fifthAboutParagraph_1" datatype="html">
+        <source>Existe un foro donde puedes compartir tu experiencia con la comunidad en </source>
+        <target>There is a forum where you can share your experience with the community at </target>
+      </trans-unit>
+      <trans-unit id="fifthAboutParagraph_2" datatype="html">
+        <source>Este Link</source>
+        <target>This Link</target>
+      </trans-unit>
+      <trans-unit id="firstAboutVideo_1" datatype="html">
+        <source>Como crear un modelo de datos en </source>
+        <target>How to create a data model in </target>
+      </trans-unit>
+      <trans-unit id="firstAboutVideo_2" datatype="html">
+        <source>La plataforma cloud de</source>
+        <target>The cloud platform of</target>
+      </trans-unit>
+      <trans-unit id="secondAboutVideo_1" datatype="html">
+        <source>Como crear un informe en </source>
+        <target>How to create a report in </target>
+      </trans-unit>
+      <trans-unit id="secondAboutVideo_2" datatype="html">
+        <source>La plataforma cloud de </source>
+        <target>The cloud platform of</target>
+      </trans-unit>
+      <trans-unit id="thirdAboutVideo_1" datatype="html">
+        <source>¿Quieres probar </source>
+        <target>Would you like to try </target>
+      </trans-unit>
+      <trans-unit id="thirdAboutVideo_2" datatype="html">
+        <source>en el cloud?</source>
+        <target>in the cloud?</target>
+      </trans-unit>
+      <trans-unit id="thirdAboutVideo_3" datatype="html">
+        <source>te permitirá estar siempre a la última sin preocuparte por nada.</source>
+        <target>will allow you to be always up to date without worrying about anything.</target>
+      </trans-unit>
+      <trans-unit id="tutorialTitleFirstPPanel" datatype="html">
+        <source>1. Crear una fuente de datos:</source>
+        <target>1. Create a data source:</target>
+      </trans-unit>
+      <trans-unit id="tutorialTitleSecondPPanel" datatype="html">
+        <source>2. Creación de un nuevo informe y paneles de visualización de datos:</source>
+        <target>2. Creation of a new report and data visualisation panels:</target>
+      </trans-unit>
+      <trans-unit id="tutorialTitleThirdPPanel" datatype="html">
+        <source>3. KPIs y alertas con edalitics:</source>
+        <target>3. KPIs and alerts with edalitics:</target>
+      </trans-unit>
+
+
+      <trans-unit id="tutorialTitleExcelPanel" datatype="html">
+        <source>Analiza datos de un excel con edalitics:</source>
+        <target>Analyze data from an Excel spreadsheet with edalitics:</target>
+      </trans-unit>
+
+      <trans-unit id="tutorialExcelParagraph1" datatype="html">
+        <source>Puedes ver cómo funciona en este</source>
+        <target>You can see how it works in this</target>
+      </trans-unit>
+      <trans-unit id="tutorialExcel_1" datatype="html">
+        <source>Carga los datos del excel.</source>
+        <target>Load the data from Excel.</target>
+      </trans-unit>
+      <trans-unit id="tutorialExcel_2" datatype="html">
+        <source>Analizalos.</source>
+        <target>Analyze them like any other data source.</target>
+      </trans-unit>
+      <trans-unit id="tutorialTitleMapPanel" datatype="html">
+        <source>Mapas con edalitics:</source>
+        <target>Maps with edalitics:</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_1" datatype="html">
+        <source>Creas un modelo de datos con datos con una referencia geográfica. País, región, ciudad, etc</source>
+        <target>You create a data model with data with a geographic reference. Country, region, city, etc.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_2" datatype="html">
+        <source>Cagas un fichero GEOJSON con capas geográficas.</source>
+        <target>You upload a GEOJSON file with geographic layers.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_3" datatype="html">
+        <source>Vinculas el campo de la tabla con la información geográfica con el atributo de la capa que contiene el nombre. Ambos deben coincidir. Nombre de país con nombre de país por ejemplo.</source>
+        <target>You link the table field with the geographic information to the layer attribute containing the name. Both must match. Country name with country name, for example.</target>
+      </trans-unit>
+      <trans-unit id="tutorialMap_3" datatype="html">
+        <source>Ahora, cuando hagas un panel en un informe con el atributo geográfico, el país por ejemplo. Podrás visualizarlo como un mapa.</source>
+        <target>Now, when you create a dashboard in a report with a geographic attribute, such as country, you'll be able to view it as a map.</target>
+      </trans-unit>
+
+
     </body>
   </file>
 </xliff>
