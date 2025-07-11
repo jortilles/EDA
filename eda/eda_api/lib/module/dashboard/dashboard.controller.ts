@@ -33,7 +33,7 @@ export class DashboardController {
         privates = await DashboardController.getPrivateDashboards(req)
         group = await DashboardController.getGroupsDashboards(req)
         /*EDA publics = await DashboardController.getPublicsDashboards() */
-        /*Edalitics Free */publics = await DashboardController.getPublicsDashboards(req)
+        /*Edalitics Free */publics = await DashboardController.getPublicsDashboards(req, dataSources)
         /*EDA shared = await DashboardController.getSharedDashboards() */
         /*Edalitics Free */shared = await DashboardController.getSharedDashboards(req)
       }
