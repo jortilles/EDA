@@ -34,7 +34,7 @@ const router = express.Router();
  */
 router.post('/login', UserController.login);
 router.get('/fake-login/:usermail/:token', originGuard, UserController.provideToken );
-router.post('/sso', UserController.singleSingnOn)
+
 
 
 // User Routes // Role Guard
@@ -62,10 +62,6 @@ router.post('/sso', UserController.singleSingnOn)
  */
 
 router.get('', authGuard,  UserController.getUsers);
-
-router.get('/log-file', authGuard,  UserController.getLogFile);
-
-router.get('/log-error-file',  authGuard,   UserController.getLogErrorFile);
 
 router.get('/profile-img/:img', authGuard, UserController.findProfileImg);
 

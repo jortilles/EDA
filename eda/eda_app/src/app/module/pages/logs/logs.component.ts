@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 // Servicio
-import { UserService } from '@eda/services/service.index';
+import { LogService } from '@eda/services/service.index';
 
 @Component({
   selector: 'app-logs',
@@ -17,7 +17,7 @@ export class LogsComponent implements OnInit {
   logErrorFileBoolean: boolean = false;
 
 
-  constructor(private userService: UserService,) { }
+  constructor(private logService: LogService) { }
 
   ngOnInit(): void {
   }
@@ -25,7 +25,7 @@ export class LogsComponent implements OnInit {
   logsFile() {
 
     // Aca agrego el servicio para mostrar los logs. 
-    this.userService.getLogFile().subscribe((resp: any) => {
+    this.logService.getLogFile().subscribe((resp: any) => {
         console.log('data:  ',resp.content);
         this.logs_file = resp.content.replace(/(?:\r\n|\r|\n)/g, '<br>');
         this.logErrorFileBoolean = false;
@@ -35,7 +35,7 @@ export class LogsComponent implements OnInit {
 
   logsErrorFile() {
     // Aca agrego el servicio para mostrar los logs de error. 
-    this.userService.getLogErrorFile().subscribe((resp: any) => {
+    this.logService.getLogErrorFile().subscribe((resp: any) => {
       console.log('data:  ',resp.content);
       this.logs_error_file = resp.content.replace(/(?:\r\n|\r|\n)/g, '<br>');
       this.logFileBoolean = false;

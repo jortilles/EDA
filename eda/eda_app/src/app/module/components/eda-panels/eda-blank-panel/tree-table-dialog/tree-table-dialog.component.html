@@ -1,0 +1,46 @@
+<eda-dialog [inject]="dialog" >
+  <div body>
+
+    <div class="card" style="margin-top: 30px; margin-left: 50px; margin-right: 50px; margin-bottom: 50px;">
+      <p-pickList 
+        [source]="sourceProducts" 
+        [target]="targetProducts" 
+        sourceHeader="Etiquetas de jerarquía"
+        targetHeader="Etiquetas de hojas" 
+        [dragdrop]="true" 
+        [responsive]="true"
+        [sourceStyle]="{ height: '20rem' }" 
+        [targetStyle]="{ height: '20rem' }" 
+        breakpoint="1400px"
+        [showSourceControls]="false"
+        [showTargetControls]="false"
+        >
+        
+        <ng-template let-product pTemplate="item">
+          <div class="flex flex-wrap p-2 align-items-center gap-3">
+            <div class="flex-1 flex flex-column gap-2">
+              <span class="font-bold">{{ product }}</span>
+            </div>
+          </div>
+        </ng-template>
+
+      </p-pickList>
+    </div>
+  </div>
+
+  <div footer>
+
+    <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
+
+      <button type="submit" pButton (click)="saveChartConfig()" icon="fa fa-check"
+        class="p-button-raised p-button-success" i18n-label="@@guardarButton" label="Confirmar"
+        id="eda_table_dialog_confirmar">
+      </button>
+
+      <button type="button" pButton (click)="closeChartConfig()" icon="fa fa-times"
+        class="p-button-raised p-button-danger" i18n-label="@@cancelarButton" label="Cancelar">
+      </button>
+    </div>
+
+  </div>
+</eda-dialog>

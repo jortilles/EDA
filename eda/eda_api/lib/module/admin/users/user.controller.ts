@@ -19,14 +19,6 @@ const eda_api_config = require('../../../../config/eda_api_config.js');
 
 
 
-function AASingleSingnOn(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    const originalMethod = descriptor.value;
-  
-    descriptor.value = async function (req: Request, res: Response, next: NextFunction) {
-      console.log('Nueva lógica de Single Sign On', req.body);
-      return res.status(200).json({ok: 'nuevo sign on'});
-    };
-}
 
 export class UserController {
 
@@ -150,12 +142,6 @@ export class UserController {
         }
     }
 
-    @AASingleSingnOn
-    static async singleSingnOn(req:Request, res:Response, next:NextFunction){
-
-        console.log('Single Sign On', req.body);
-        return res.status(200).json({user:req.body.userMail})
-    }
 
     static async getUserInfoByEmail(usuari: string, ad: boolean): Promise<any> {
 
@@ -255,50 +241,6 @@ export class UserController {
         }
     }
 
-    static async getLogFile(req: Request, res: Response, next: NextFunction) {
-
-        try {
-            // Directorio Actual : Es el  directorio donde se encuentra el archivo principal
-            const logFilePath = eda_api_config.log_file;  
-
-            // Leer el archivo de logs
-            fs.readFile(logFilePath, 'utf8', (err, data) => {
-                if(err){
-                    console.error('Error al leer el archivo de log:', err);
-                    return next(new HttpException(500, 'Error no se puede leer el archivo del log'));
-                }
-                return res.status(200).json({ content: data });
-            })
-
-            // return res.status(200).json(saludo);
-
-        } catch (err) {
-            next(err);
-        }
-    }
-
-    static async getLogErrorFile(req: Request, res: Response, next: NextFunction) {
-
-        try {
-            // Directorio Actual : Es el  directorio donde se encuentra el archivo principal
-            const logFilePath = eda_api_config.error_log_file;  
-
-            // Leer el archivo de logs
-            fs.readFile(logFilePath, 'utf8', (err, data) => {
-                if(err){
-                    console.error('Error al leer el archivo de log:', err);
-                    return next(new HttpException(500, 'Error no se puede leer el archivo del log'));
-                }
-                return res.status(200).json({ content: data });
-            })
-
-            // return res.status(200).json(saludo);
-
-        } catch (err) {
-            next(err);
-        }
-    }
-
     /**Get all users who belong to the same grup as user */
     static filterUsersByGroup(user, users) {
 
@@ -380,7 +322,6 @@ export class UserController {
                         return next(new HttpException(500, 'Error waiting for user groups'));
                     }
                     const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
-                    //console.log(isDataSourceCrator);
                     return res.status(200).json({ isDataSourceCreator });
                 });
             });

@@ -4487,8 +4487,8 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
     <target>Logs Error</target>
   </trans-unit>
   <trans-unit id="filterByTreetable">
-  <source>Filtrar por</source>
-  <target>Filtruj według</target>
+  <source>Filtro: </source>
+  <target>Filtr: </target>
   </trans-unit>
   <trans-unit id="EmptyValueMessage">
   <source>Sin Informar</source>
@@ -4627,6 +4627,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
       <trans-unit id="filterSettings">
         <source>Configuración de filtros</source>
         <target>Filter settings</target>
+      </trans-unit>
+      <trans-unit id="treeTableTitleDialog">
+        <source>Propiedades de la tabla árbol</source>
+        <target>Właściwości tabeli drzewa</target>
       </trans-unit>
 </body>
 </file>

@@ -784,10 +784,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     
     //Si es modo arbol o SQL no aplica filtros
     if (event.code === "ADDFILTER" && modeEDA) {
+
+
       const data = event?.data;
       const panel = event?.data?.panel;
       let column: any;
       column = this.getCorrectColumnFiltered(event)
+      //column = event.data.filterBy
       const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
       if (column && table) {
         let config = this.setPanelsToFilter(panel);
@@ -852,7 +855,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         
         // NO TENEMOS NINGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
         else { 
-            // Creamos un filtro nuevo con from chart true
+          // Creamos un filtro nuevo con from chart true
             this.chartFilter = {
               id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
               isGlobal: true,
@@ -1218,24 +1221,66 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  public exportAsPDF() {
-    this.display_v.rightSidebar = false;
-    this.spinnerService.on();
-    const title = this.title;
-        domtoimage.toJpeg(document.getElementById('myDashboard'), { bgcolor: 'white' })
-      .then((dataUrl) => {
-        let img = new Image();
-        img.src = dataUrl;
-        img.onload = () => {
-          let pdf = new jspdf();
-          let width = pdf.internal.pageSize.getWidth();
-          let height = pdf.internal.pageSize.getHeight();
-          pdf.addImage(img, "JPEG", 0, 0, width, height);
-          pdf.save(`${title}.pdf`);
-        };
-        this.spinnerService.off();
-      });
-  }
+public exportAsPDF() {
+  this.display_v.rightSidebar = false;
+  this.spinnerService.on();
+  const title = this.title;
+
+  const element = document.getElementById('myDashboard');
+
+  // El objeto incrustado es para mejorar la calidad del PDF
+  domtoimage.toJpeg(element, {
+    bgcolor: 'white',
+    quality: 1,
+    height: element.scrollHeight * 2,
+    width: element.scrollWidth * 2,
+    style: {
+      transform: 'scale(2)',
+      transformOrigin: 'top left'
+    }
+  }).then((dataUrl) => {
+    let img = new Image();
+    img.src = dataUrl;
+
+    img.onload = () => {
+      const pdf = new jspdf('p', 'pt', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = img.width;
+      const imgHeight = img.height;
+      const ratio = pageWidth / imgWidth;
+      const scaledWidth = pageWidth;
+      let position = 0;
+
+      // Se crea un canvas para cortar la imagen en partes iguales para cada página
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      canvas.width = imgWidth;
+      canvas.height = pageHeight / ratio;
+
+      while (position < imgHeight) {
+        ctx.fillStyle = '#FFFFFF'; // Se establece todo el fondo de blanco
+        ctx.fillRect(0, 0, canvas.width, canvas.height);  // Se pinta todo el fondo
+
+        ctx.drawImage(img, 0, -position, imgWidth, imgHeight);
+
+        const pageData = canvas.toDataURL('image/jpeg', 1.0);
+        pdf.addImage(pageData, 'JPEG', 0, 0, scaledWidth, pageHeight);
+
+        position += canvas.height;
+
+        if (position < imgHeight) {
+          pdf.addPage();
+        }
+      }
+
+      pdf.save(`${title}.pdf`);
+      this.spinnerService.off();
+    };
+  });
+}
+
 
   public exportAsJPEG() {
     this.display_v.rightSidebar = false;
@@ -1454,15 +1499,16 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public getCorrectColumnFiltered(event): string {
-        if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
+        if (['doughnut', 'polarArea', 'bar', 'line', 'radar',''].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
           if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
              return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
           else 
             return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);         
         }
-        else if ('table'.includes(event.data.panel.content.chart)) {
+        else if (['table','crosstable','treetable'].includes(event.data.panel.content.chart)) {
             return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);  
-        } else {
+        }
+        else {
             //Si el evento es de un chart de la libreria D3Chart o Leaflet
             return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
           }

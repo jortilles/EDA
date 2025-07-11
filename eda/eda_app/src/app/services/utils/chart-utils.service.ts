@@ -750,7 +750,12 @@ export class ChartUtilsService {
         }
 
         //treetable (Al menos tres columnas y dos numéricas que son id y las relaciones_id)
-        if(dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 1) {
+        // if(dataDescription.totalColumns > 2 && dataDescription.numericColumns.length > 1) {
+        //     notAllowed.splice(notAllowed.indexOf('treetable'), 1);
+        // }
+
+        // Pruebas con hacer dinámico el treeTable
+        if(dataDescription.totalColumns > 2) {
             notAllowed.splice(notAllowed.indexOf('treetable'), 1);
         }
 
@@ -1737,6 +1742,20 @@ export class ChartUtilsService {
                     };
 
                     if (chartSubType=='pyramid') {
+                        //modificamos los valores del tooltip para que sea positivo.
+                        (<any>options.chartOptions).plugins.tooltip = {
+                            callbacks :{
+                                label :  (context) =>{
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': ';  }
+                                    if (context.parsed.x !== null) {
+                                        label += Math.abs( parseFloat( context.parsed.x )).toLocaleString('de-DE', { maximumFractionDigits: 6 }) ;
+                                    }
+                                    return label;
+                                } 
+                            },
+                        };
+
                         //modificamos los valores del eje x para que sean positivos a la vista
                         (<any>options.chartOptions).scales.y.stacked = true;
                         (<any>options.chartOptions).scales.x.ticks.callback = (value, index, ticks) => {
