@@ -1438,7 +1438,7 @@ export class EdaBlankPanelComponent implements OnInit {
             }
         }
 
-        if (this.panelChart.props.chartType == 'crosstable' && this.indextab === 1) {
+        if (this.panelChart?.props?.chartType == 'crosstable' && this.indextab === 1) {
             if (!this.isCrosstableValid()) return true;
         }
 
@@ -1515,7 +1515,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     // Método que compara la tabla original con la actual (solo crosstable)
     isCrosstableModified(): boolean {
-        if (this.panelChart.props.chartType == 'crosstable' && this.indextab === 1) {
+        if (this.panelChart?.props?.chartType == 'crosstable' && this.indextab === 1) {
             if(this.dragDrop?.newAxesOrdering.length !== 0)
                 return this.dragDrop?.newAxesOrdering!=this.axes;
         }
