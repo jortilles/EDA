@@ -5,7 +5,9 @@ import {
   AfterViewInit,
   Input,
   ViewChild,
-  ElementRef
+  ElementRef,
+  Output,
+  EventEmitter
 } from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
 import { ChartsColors } from '@eda/configs/index'
@@ -16,7 +18,9 @@ import { ChartsColors } from '@eda/configs/index'
   styleUrls: ['./eda-sunburst.component.css']
 })
 export class EdaSunburstComponent implements AfterViewInit {
-  @Input() inject: SunBurst
+  @Input() inject: SunBurst;
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
+  
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef
 
   div = null
@@ -209,6 +213,11 @@ export class EdaSunburstComponent implements AfterViewInit {
           const value = data.data.name;
           const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
+        }else {
+          //Passem aquestes dades
+          const label = data.data.name;
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({ label, filterBy });
         }
       })
   }

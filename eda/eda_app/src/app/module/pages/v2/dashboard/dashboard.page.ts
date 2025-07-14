@@ -389,13 +389,10 @@ export class DashboardPageV2 implements OnInit {
             this.lastFilters.forEach((element) => { this.globalFilter.removeGlobalFilter(element.filter, true);});
             //Añadimos filtros nuevos
             try {
-              console.log('hola2')
               await this.globalFilter.onGlobalFilterAuto(this.chartFilter, table.table_name);
-              console.log('hola3')
               this.reloadOnGlobalFilter();
             }
             catch (error) {
-              
               console.log(error)
             }
           }

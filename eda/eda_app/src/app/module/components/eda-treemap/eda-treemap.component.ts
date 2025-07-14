@@ -1,5 +1,5 @@
 
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
 import { TreeMap } from "./eda-treeMap";
@@ -18,6 +18,8 @@ import * as dataUtils from '../../../services/utils/transform-data-utils';
 export class EdaTreeMap implements AfterViewInit {
 
   @Input() inject: TreeMap;
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
+  
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
   div = null;
@@ -146,6 +148,11 @@ export class EdaTreeMap implements AfterViewInit {
           const value = data.data.name;
           const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
+        }else {
+          //Passem aquestes dades
+          const label = data.data.name;
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({ label, filterBy });
         }
       }).on('mouseover', (d, data) => {
 
