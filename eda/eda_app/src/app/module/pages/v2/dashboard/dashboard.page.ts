@@ -58,6 +58,11 @@ export class DashboardPageV2 implements OnInit {
   public refreshTime: number;
   public stopRefresh: boolean = false;
 
+
+  //Filter control variables
+  public lastFilters: any[] = [];
+  public chartFilter: any;
+
   public applyToAllfilter: {
     present: boolean,
     refferenceTable: string,
@@ -275,15 +280,157 @@ export class DashboardPageV2 implements OnInit {
     // this.height = (valor.y + valor.rows + 4) * 32;
   }
 
+  public reloadOnGlobalFilter(): void {
+    //not saved alert message
+    this.dashboardService._notSaved.next(true);
+
+    // Simula el click en el btn
+    setTimeout(() => {
+        let btn = document.getElementById('dashFilterBtn');
+        if (btn) btn.click();
+        else this.reloadPanels();
+    }, 500);
+  }
+  
+  public reloadPanels(): void {
+    this.edaPanels.forEach(async (panel) => {
+        if (panel.currentQuery.length !== 0) {
+            panel.display_v.chart = '';
+            await panel.runQueryFromDashboard(true);
+            panel.panelChart.updateComponent();
+        }
+    });
+}
+
+
   // TODO unificar onRemovePanel(),onDuplicatePanel() a onPanelAction()
   // TODO simplificar
-  onPanelAction(action: IPanelAction) {
-    if (action.code === 'ADDFILTER') {
-      this.onGlobalFilter(action.data);
-    } else if (action.code === 'QUERYMODE') {
+  public async onPanelAction(event: IPanelAction): Promise<void> {
+    //Check de modo
+    console.log('PanelAction')
+    let modeEDA: boolean = !event?.data.panel.content.query.query.modeSQL &&
+      (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA')
+
+    //Si es modo arbol o SQL no aplica filtros
+    if (event.code === "ADDFILTER" && modeEDA) {
+
+
+      const data = event?.data;
+      const panel = event?.data?.panel;
+      let column: any;
+      column = this.getCorrectColumnFiltered(event)
+      console.log('columna', column)
+      console.log('data', data)
+      console.log('table', this.dataSource.model.tables)
+
+      //column = event.data.filterBy
+      const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
+      if (column && table) {
+        let config = this.setPanelsToFilter(panel);
+        console.log('filters', this.globalFilter.globalFilters)
+        console.log('config', config)
+        //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
+        if (this.globalFilter.globalFilters) {
+          //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla, si lo hay, hay que borrarlo
+          let chartToRemove = this.globalFilter.globalFilters.find(
+            (f) => f.table?.value === table.table_name && f.column?.value?.column_name === column.column_name &&
+            f.selectedItems.includes(event?.data.label) && f.selectedItems.length === 1 && f.hasOwnProperty("fromChart")
+          );
+          if (chartToRemove) {
+            console.log('borrar filtro ya existente')
+            let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label &&
+              element.filter.table.label === chartToRemove.table.label)
+              // Borramos del global filter el filtro a borrar fromChart
+              this.globalFilter.removeGlobalFilterOnClick(chartToRemove, true);            
+              // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
+              if (filterToAddIndx !== -1 ) { 
+                await this.globalFilter.onGlobalFilterAuto(this.lastFilters[filterToAddIndx].filter, table.table_name)
+                this.lastFilters.splice(filterToAddIndx, 1);
+              }
+            
+            // Actualizamos global filter
+              this.reloadOnGlobalFilter(); 
+          } else {
+            console.log('filters', this.globalFilter.globalFilters)
+            //CREAMOS NUEVO FILTRO EN CHART
+            //Recuperamos filtros activos del global filter
+            let actualFilter = this.globalFilter.globalFilters.filter(
+              (f) =>f.table?.value === table.table_name && f.column?.value.column_name === column.column_name
+            )[0];
+            console.log('actualfilter',actualFilter)
+            if (actualFilter) {
+              //Si last filters no tiene uno con la misma label lo guardamos
+              if (!this.lastFilters.includes(actualFilter)) {
+                this.lastFilters.push({filterName: actualFilter.column.label, filter: actualFilter});
+              } else {
+                //Si label es igual lo remplazamos
+                if (this.lastFilters.includes(actualFilter.column.label)) {
+                  let filterToRemoveIndx = this.lastFilters.findIndex(element => element.filterName === actualFilter.column.label)
+                  this.lastFilters.splice(filterToRemoveIndx, 1);
+                  this.lastFilters.push(({ filterName: actualFilter.column.label, filter: actualFilter }));
+                }
+              }
+            }
+            
+            // Creamos un filtro nuevo con from chart true
+            this.chartFilter = {
+              id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
+              isGlobal: true,
+              applyToAll: config.applyToAll,
+              panelList: config.panelList.map((p) => p.id),
+              table: {label: table.display_name.default,value: table.table_name,},
+              column: {label: column.display_name.default,value: column,},
+              selectedItems: [data.label], // valor del chart que hemos clicado
+              fromChart: true, //fromChart = true indica que se ha creado mediante un click
+            };
+            
+            console.log('esto son los filtros',this.chartFilter)
+            //Borramos filtros activos del global filter, pero los mantenemos guardados
+            this.lastFilters.forEach((element) => { this.globalFilter.removeGlobalFilter(element.filter, true);});
+            //Añadimos filtros nuevos
+            try {
+              console.log('hola2')
+              await this.globalFilter.onGlobalFilterAuto(this.chartFilter, table.table_name);
+              console.log('hola3')
+              this.reloadOnGlobalFilter();
+            }
+            catch (error) {
+              
+              console.log(error)
+            }
+          }
+        } 
+        
+        // NO TENEMOS NINGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
+        else { 
+          // Creamos un filtro nuevo con from chart true
+            this.chartFilter = {
+              id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
+              isGlobal: true,
+              applyToAll: config.applyToAll,
+              panelList: config.panelList.map((p) => p.id),
+              table: { label: table.display_name.default, value: table.table_name,},
+              column: { label: column.display_name.default, value: column },
+              selectedItems: [data.label], // valor del chart que hemos clicado
+              fromChart: true, //fromChart = true indica que se ha creado mediante un click
+          };
+          // Esperamos a que se apliquen los filtros, para luego recargar el global filter
+          await this.globalFilter.onGlobalFilterAuto(this.chartFilter,table.table_name);
+          this.reloadOnGlobalFilter();
+        }
+      }
+    } else if (event.code === "QUERYMODE") {
       this.setPanelsQueryMode();
     }
   }
+/** Updates applyToAllFilter in every panel */
+public updateApplyToAllFilterInPanels(): void {
+  this.edaPanels.forEach((panel) => {
+    panel.inject.applyToAllfilter = this.applyToAllfilter;
+    panel.reloadTablesData();
+  });
+}
+
 
   onDuplicatePanel(panel: any) {
     this.panels.push(panel);
@@ -460,5 +607,20 @@ export class DashboardPageV2 implements OnInit {
     return isvalid;
   }
 
+  public getCorrectColumnFiltered(event): string {
+    if (['doughnut', 'polarArea', 'bar', 'line', 'radar',''].includes(event.data.panel.content.chart)) {  //Si el evento es de un chart de la libreria ng2Chart
+      if (event.data.query.length > 2) // Si la query tiene más de dos valores en barras, necesitamos redefinir el filterBy
+         return event.data.query.find((query: any) => query?.display_name?.default === event.data.query[0].display_name.default);
+      else 
+        return event.data.query.find((query: any) => query?.display_name?.default === event.data.filterBy);         
+    }
+    else if (['table','crosstable','treetable'].includes(event.data.panel.content.chart)) {
+        return event.data.query.find((query: any) => query?.column_name === event.data.filterBy);  
+    }
+    else {
+        //Si el evento es de un chart de la libreria D3Chart o Leaflet
+        return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
+    }   
+}
 
 }

@@ -1,4 +1,4 @@
-import { Component, ViewChild, Input, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, Input, ElementRef, OnInit, Output, EventEmitter } from '@angular/core';
 import { Table } from 'primeng/table';
 // import { FilterUtils } from 'primeng/utils';
 import { EdaTable } from './eda-table';
@@ -17,6 +17,7 @@ import { EdaColumnChartOptions } from './eda-columns/eda-column-chart-options';
 export class EdaTableComponent implements OnInit {
     @ViewChild('table', { static: false }) table: Table;
     @Input() inject: EdaTable;
+    @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
     data: any;
     chartOptions: any;
@@ -51,14 +52,18 @@ export class EdaTableComponent implements OnInit {
     }
 
     handleClick(item: any, colname: string) {
-
         if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
-
             const props = this.inject.linkedDashboardProps;
             const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
-
+            
             window.open(url, "_blank");
-
+            
+        } else {
+            let filterBy = colname;
+            let label = item;
+            //lanzo el filtro para los dos tipos de tablas
+        if(typeof label !== 'number')
+            this.onClick.emit({ label, filterBy })
         }
     }
 

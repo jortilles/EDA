@@ -130,12 +130,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             setTimeout(_ => {
                 this.NO_DATA = true;
                 if( this.props.data?.labels[0]== "noDataAllowed") {
-                    this.NO_DATA = false;    
-                    this.NO_DATA_ALLOWED = true;   
-                    this.NO_FILTER_ALLOWED = false; 
+                    this.NO_DATA = false;
+                    this.NO_DATA_ALLOWED = true;
+                    this.NO_FILTER_ALLOWED = false;
                 }else if( this.props.data?.labels[0]== "noFilterAllowed") {
-                    this.NO_DATA = false;    
-                    this.NO_DATA_ALLOWED = false;    
+                    this.NO_DATA = false;
+                    this.NO_DATA_ALLOWED = false;
                     this.NO_FILTER_ALLOWED = true;
                 }
             })
@@ -226,11 +226,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
-            // Si es un histogram faig aixó....        
+        // Si es un histogram faig aixó....        
         if (  (['histogram'].includes(this.props.edaChart))
             && this.props.query.length === 1
             && this.props.query.filter(field => field.column_type === 'numeric').length == 1
-            ) {
+        ) {
             let newCol = { name:  this.histoGramRangesTxt , index: 0 };
             dataDescription.otherColumns.push(newCol);
             dataDescription.numericColumns[0].index=1
@@ -314,7 +314,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
      
         if (chartConfig && chartConfig.chartDataset && chartConfig.chartDataset.length > 0) {
-            const dataset = chartConfig.chartDataset[0]; 
+            const dataset = chartConfig.chartDataset[0];
             dataset.backgroundColor = chartConfig.chartColors.map(colorObj => colorObj.backgroundColor.toUpperCase());
             dataset.borderColor = chartConfig.chartColors.map(colorObj => colorObj.borderColor.toUpperCase());
         }
@@ -351,6 +351,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = this.initializeTable(type, this.props.config.getConfig());
         this.componentRef.instance.inject.value = this.chartUtils.transformDataQueryForTable(  this.props.data.labels, this.props.data.values);
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
         const config = this.props.config.getConfig();
 
         if (config) {
@@ -492,7 +493,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         };
         const chartOptions = this.chartUtils.initChartOptions(
             chartType, dataDescription.numericColumns[0]?.name,
-            dataDescription.otherColumns, manySeries, false, dimensions, null, 
+            dataDescription.otherColumns, manySeries, false, dimensions, null,
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, chartSubType, ticksOptions, false
         );
         // let chartConfig: any = {};
@@ -507,7 +508,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.props.chartType,
             this.props.config,
             1
-        );        
+        );
 
         if (chartConfig.edaChart.chartColors.length > 0) {
             chartConfig.edaChart.chartDataset[0].backgroundColor = chartConfig.edaChart.chartColors[0].backgroundColor;
@@ -564,9 +565,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
 
-   /**
-   * Renders a dynamicTextComponent
-   */
+    /**
+    * Renders a dynamicTextComponent
+    */
     private renderEdadynamictext() {
         let chartConfig: any = {};
         let cfg: any = this.props.config.getConfig();
@@ -662,6 +663,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
+        // Revisar todo lo de assignedColors
+        //inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        //this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
+
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
         this.createParallelSetsComponent(inject);
@@ -672,6 +679,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaD3Component);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => {
+            this.onChartClick.emit({ ...event, query: this.props.query });
+        })
 
     }
 

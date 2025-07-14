@@ -150,20 +150,62 @@ export class GlobalFilterV2Component implements OnInit {
             this.globalFilter = globalFilter;
         }
     }
+    // Legacy Global Filter
+    public async onGlobalFilterAuto(filter: any, targetTable: string): Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                if (filter.isdeleted) {
+                    // TODO: Revisar comportament quan es borra 
+                    filter.selectedItems = [];
+                    this.applyGlobalFilter(filter);
+                    this.removeGlobalFilter(filter);
+                } else {
+                    let existFilter = this.globalFilters.find((f) => f.id === filter.id);
+
+                    if (existFilter) {
+                        existFilter.selectedItems = filter.selectedItems;
+                    } else {
+                        this.globalFilters.push(filter);
+                    }
+
+                    // Load Filter dropdwons option s
+                    if (filter.column.value.column_type === 'date' && filter.selectedItems.length > 0) {
+                        this.loadDatesFromFilter(filter);
+                    } else {
+                        await this.loadGlobalFiltersData(filter);
+                    }
+                    
+                    // Apply globalFilter to linkedPanels
+                    this.applyGlobalFilter(filter);
+
+                    // If filter apply to all panels and this dashboard hasn't any 'apllyToAllFilter' new 'apllyToAllFilter' is set
+                    if (filter.applyToAll && (this.dashboard.applyToAllfilter.present === false)) {
+                        this.dashboard.applyToAllfilter = { present: true, refferenceTable: targetTable, id: filter.id };
+                        this.dashboard.updateApplyToAllFilterInPanels();
+                    }
+                }
+                resolve();
+            } catch (err) {
+                reject(err);
+            }
+        })
+    }
+
+
 
     // Global Filter Dialog
     public async onGlobalFilter(apply: boolean, gf?: any): Promise<void> {
         if (!this.globalFilter && gf) {
             this.globalFilter = gf;
         }
-
+        
         if (apply) {
             this.dashboard.edaPanels.forEach(panel => {
                 if (!this.globalFilter.isdeleted) {
                     panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== this.globalFilter.id);
                 }
             });
-
+            
             if (this.globalFilter.isnew) {
                 this.globalFilters.push(this.globalFilter);
             }
@@ -294,6 +336,29 @@ export class GlobalFilterV2Component implements OnInit {
         // this.dashboard.edaPanels.forEach(panel => {
         //     panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
         // });
+
+
+        if (reload) {
+            //not saved alert message
+            // TODO
+            this.dashboardService._notSaved.next(true);
+            // this.reloadPanels();
+        }
+    }
+
+    public removeGlobalFilterOnClick(filter: any, reload?: boolean): void {
+        // Remove 'applytoall' filter if it's the same fitler
+        if (this.dashboard.applyToAllfilter && this.dashboard.applyToAllfilter.id === filter.id) {
+            this.dashboard.applyToAllfilter = { present: false, refferenceTable: null, id: null };
+            this.dashboard.updateApplyToAllFilterInPanels();
+        }
+        
+        // Update fileterList and clean panels' filters
+        this.globalFilters = this.globalFilters.filter((f: any) => f.id !== filter.id);
+        
+        this.dashboard.edaPanels.forEach(panel => {
+            panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
+        });
 
 
         if (reload) {

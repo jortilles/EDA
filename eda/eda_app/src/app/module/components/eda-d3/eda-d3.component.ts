@@ -1,4 +1,4 @@
-import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter } from '@angular/core';
 import * as d3 from 'd3';
 import { sankeyLinkHorizontal } from 'd3-sankey'
 import { sankey as Sankey } from 'd3-sankey';
@@ -16,6 +16,7 @@ import * as dataUtils from '../../../services/utils/transform-data-utils';
 export class EdaD3Component implements AfterViewInit, OnInit {
 
   @Input() inject: EdaD3;
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
@@ -130,6 +131,11 @@ export class EdaD3Component implements AfterViewInit, OnInit {
           const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
 
+        }else {
+          //Passem aquestes dades
+          const label = data.source.name;
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({ label, filterBy });
         }
       })
       .on('mouseover', this.showLinks)

@@ -605,9 +605,15 @@ export class EdaBlankPanelComponent implements OnInit {
     */
     public onChartClick(event: any): void {
         const config = this.panelChart.getCurrentConfig();
-        if (config?.chartType == 'doughnut' || config?.chartType == 'polarArea' || config?.chartType == 'bar'   || config?.chartType == 'line'  ) {
+        if (['doughnut', 'polarArea', 'bar', 'line', 'radar'].includes(config?.chartType) ||   //NG2 CHARTS
+            ['treeMap', 'sunburst', 'scatterPlot', 'funnel', 'bubblechart', 'parallelSets'].includes(this.panelChart.props.chartType) || //D3 CHARTS
+            'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
+            ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
+        {
+            console.log(this.panel)
             this.action.emit({ code: 'ADDFILTER', data: {...event, panel: this.panel} });
-        }else{
+        }
+        else {
             console.log('No filter here... yet');
         }
     }
