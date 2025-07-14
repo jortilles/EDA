@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../global/model/index';
 
 
-export class FuncionalidadUrlController {
+export class CustomActionCallController {
 
 
     static async checkUrl(req: Request, res: Response, next: NextFunction) {
