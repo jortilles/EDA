@@ -4,7 +4,9 @@ import {
   AfterViewInit,
   ElementRef,
   ViewChild,
-  OnInit
+  OnInit,
+  Output,
+  EventEmitter
 } from '@angular/core'
 import * as d3 from 'd3'
 import { EdaBubblechart } from './eda-bubblechart'
@@ -19,6 +21,7 @@ import * as dataUtils from '../../../services/utils/transform-data-utils';
 })
 export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   @Input() inject: EdaBubblechart
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef
 
@@ -196,6 +199,11 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
           const value = data.data.name;
           const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
+        }else {
+          //Passem aquestes dades
+          const label = data.data.name;
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({ label, filterBy });
         }
       })
               .on('mouseover', (d, data) => { 
