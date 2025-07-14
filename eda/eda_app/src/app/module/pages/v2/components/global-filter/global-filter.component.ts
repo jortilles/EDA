@@ -432,15 +432,18 @@ export class GlobalFilterV2Component implements OnInit {
 
         let targetTable: string;
         let targetColumn: any;
-
         if (globalFilter.selectedTable) {
             targetTable = globalFilter.selectedTable.table_name;
             targetColumn = globalFilter.selectedColumn;
-            targetColumn.ordenation_type = 'Asc';
+            //targetColumn.ordenation_type = 'Asc';
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+            
         } else {
             targetTable = globalFilter.table.value;
             targetColumn = globalFilter.column.value;
-            targetColumn.ordenation_type = 'Asc';
+            //targetColumn.ordenation_type = 'Asc';
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+
         }
 
         const queryParams = {
