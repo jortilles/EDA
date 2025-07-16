@@ -388,4 +388,4 @@
 <app-add-tag-dialog *ngIf="tagController" [controller]="tagController"></app-add-tag-dialog>
 <eda-cache-dialog *ngIf="cacheController" [controller]="cacheController"></eda-cache-dialog>
 <eda-security-dialog *ngIf="securityController" [controller]="securityController"></eda-security-dialog>
-
+<app-view-dialog-edition *ngIf="viewDialogEdition" [viewInEdition]="viewInEdition" (close)="onCloseViewEditionDialog($event)"></app-view-dialog-edition>

@@ -50,6 +50,9 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     // public hideAllTablesBool : boolean = false;
     // public hideAllRelationsBool : boolean = false;
 
+    public viewDialogEdition: boolean = false;
+    private viewInEdition: any
+
 
 
     /**Strings */
@@ -596,7 +599,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     openNewViewDialog() {
 
         console.log('this.dataModelService: ',this.dataModelService)
-        console.log('this.dataModelService: ',this.dataModelService)
 
         this.viewController = new EdaDialogController({
             params: { user: localStorage.getItem('user'), model_id: this.dataModelService.model_id },
@@ -771,13 +773,32 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         }).then( (borrado) => {
             if(borrado.value){
                 console.log('borrado .Si...: ', borrado)
-                this.openNewViewDialog();
+
+                // viewInEdition
+
+                // Encontrando la vista a editar:
+                let myViewInEdition;
+                let allViews = this.dataModelService.allViews();
+                myViewInEdition = allViews.find(e => e.table_name === this.tablePanel.technical_name && e.query === this.tablePanel.query && e.table_type === 'view')
+                this.viewInEdition = myViewInEdition;
+                console.log('this.viewInEdition: ', this.viewInEdition);
+                this.viewDialogEdition = true;
+                console.log('---------------------------')
+                // -------------------------------------------------------------------
+
 
             } else {
                 console.log('borrado .No...: ', borrado)
             }
         })
 
+    }
+
+    public onCloseViewEditionDialog(event) {
+
+        console.log('evento: ', event);
+
+        this.viewDialogEdition = false;
     }
 }
 

@@ -39,6 +39,7 @@ import { MailManagementComponent } from './mail-management/mail-management.compo
 import {DashboardMailDialogComponent} from './dashboard/email-dialog/dashboard-mail-dialog.component';
 import { UrlsActionComponent } from './dashboard/urls-action/urls-action.component';
 import { LogsComponent } from './logs/logs.component';
+import { ViewDialogEditionComponent } from './data-sources/data-source-detail/view-dialog-edition/view-dialog-edition.component';
 
 
 // Routes
@@ -96,6 +97,7 @@ import { GlobalFilterComponent } from './dashboard/global-filter/global-filter.c
         EditStylesDialogComponent,
         UrlsActionComponent,
         LogsComponent,
+        ViewDialogEditionComponent,
     ]
 })
 export class PagesModule { }

@@ -499,6 +499,11 @@ export class DataSourceService extends ApiService implements OnDestroy {
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
     }
 
+    allViews() {
+        const tmp_model = this._databaseModel.getValue();
+        return tmp_model;
+    }
+
     updateMaps(mapList:Array<any>){
         //get map list and model
         this._maps.next(mapList);
