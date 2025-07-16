@@ -4434,6 +4434,10 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Propiedades de la tabla árbol</source>
         <target>Właściwości tabeli drzewa</target>
       </trans-unit>
+      <trans-unit id="viewEdition">
+        <source>Edición de la vista</source>
+        <target>Edycja widoku</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

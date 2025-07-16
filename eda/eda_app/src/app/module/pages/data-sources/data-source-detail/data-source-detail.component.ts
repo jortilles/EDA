@@ -750,6 +750,10 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     hideAllRelations() {
         this.dataModelService.hideAllRelations();
     }
+
+    viewEdition() {
+        console.log('viewEdition .....')
+    }
 }
 
 

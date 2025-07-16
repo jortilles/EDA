@@ -4570,6 +4570,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Propiedades de la tabla árbol</source>
         <target>Tree table properties</target>
       </trans-unit>
+      <trans-unit id="viewEdition">
+        <source>Edición de la vista</source>
+        <target>Editing the view</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

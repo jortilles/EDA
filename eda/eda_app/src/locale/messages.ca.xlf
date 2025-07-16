@@ -4581,7 +4581,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Propiedades de la tabla árbol</source>
         <target>Propietats de la taula arbre</target>
       </trans-unit>
-
+      <trans-unit id="viewEdition">
+        <source>Edición de la vista</source>
+        <target>Edició de la vista</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
