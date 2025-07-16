@@ -6083,6 +6083,14 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
         <source>Edición de la vista</source>
         <target>Edició de la vista</target>
       </trans-unit>
+      <trans-unit id="viewEditionTitle">
+        <source>Edición de la Vista</source>
+        <target>Edició de la vista</target>
+      </trans-unit>
+      <trans-unit id="viewEditionDescription">
+        <source>La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.</source>
+        <target>L'edició de la vista només permet modificar la consulta (query), però no ha de canviar els noms de les columnes.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

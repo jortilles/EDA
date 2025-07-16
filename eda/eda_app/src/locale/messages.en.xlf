@@ -6054,6 +6054,14 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Edición de la vista</source>
         <target>Editing the view</target>
       </trans-unit>
+      <trans-unit id="viewEditionTitle">
+        <source>Edición de la Vista</source>
+        <target>Editing the view</target>
+      </trans-unit>
+      <trans-unit id="viewEditionDescription">
+        <source>La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.</source>
+        <target>Editing the view allows you to modify only the query, but should not change the column names.</target>
+      </trans-unit>
     </body>
 
 

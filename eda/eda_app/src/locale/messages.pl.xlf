@@ -5915,6 +5915,14 @@ Po skonfigurowaniu możesz go wywołać w dowolnym momencie za pomocą przycisku
         <source>Edición de la vista</source>
         <target>Edycja widoku</target>
       </trans-unit>
+      <trans-unit id="viewEditionTitle">
+        <source>Edición de la Vista</source>
+        <target>Edycja widoku</target>
+      </trans-unit>
+      <trans-unit id="viewEditionDescription">
+        <source>La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.</source>
+        <target>Edycja widoku umożliwia jedynie modyfikację zapytania, ale nie powinna powodować zmiany nazw kolumn.</target>
+      </trans-unit>
 </body>
 </file>
 </xliff>

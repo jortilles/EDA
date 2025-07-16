@@ -10,6 +10,8 @@ import { aggTypes } from 'app/config/aggretation-types';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
 import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
+import Swal from 'sweetalert2';
+
 
 @Component({
     selector: 'app-data-source-detail',
@@ -620,15 +622,18 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         })
     }
 
-    openNewViewDialog() {
-        this.showViewDialog = true;
-    }
 
-    onCloseViewDialog(response?: any) {
-        this.showViewDialog = false;
-        if (response) {
-            this.dataModelService.addView(response);
-        }
+    openNewViewDialog() {
+        this.viewController = new EdaDialogController({
+            params: { user: localStorage.getItem('user'), model_id: this.dataModelService.model_id },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addView(response);
+
+                }
+                this.viewController = undefined;
+            }
+        })
     }
 
     openNewMapDialog() {
@@ -817,7 +822,25 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
 
     viewEdition() {
-        console.log('viewEdition .....')
+        Swal.fire({
+            title: $localize`:@@viewEditionTitle:Edición de la Vista`,
+            text: $localize`:@@viewEditionDescription:La edición de la vista permite modificar únicamente la consulta (query), pero no debe cambiar los nombres de las columnas.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: $localize`:@@ContinueTablaQuality:Continuar`,
+            cancelButtonText: $localize`:@@CancelTablaQuality:Cancelar`,
+        }).then( (borrado) => {
+            if(borrado.value){
+                console.log('borrado .Si...: ', borrado)
+                this.openNewViewDialog();
+
+            } else {
+                console.log('borrado .No...: ', borrado)
+            }
+        })
+
     }
 }
 
