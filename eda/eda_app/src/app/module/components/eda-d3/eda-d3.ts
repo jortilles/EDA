@@ -6,4 +6,5 @@ export class EdaD3 {
   dataDescription : any;
   colors : Array<string>;
   linkedDashboard : LinkedDashboardProps;
+  assignedColors: any[];
 }

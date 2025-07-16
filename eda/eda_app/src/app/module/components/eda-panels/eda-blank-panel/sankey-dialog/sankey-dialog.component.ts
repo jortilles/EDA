@@ -18,10 +18,11 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public colors: Array<string>;
+  public originalColors: string[];
   public labels: Array<string>;
   public display:boolean=false;
   public selectedLabel: any;
-  public selectedPalette: string = this.stylesProviderService.DEFAULT_PALETTE_COLOR;
+  selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
   constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
@@ -35,20 +36,21 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
     });
     this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
   }
+
   ngAfterViewChecked(): void {
-    if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
+    if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.ChartUtilsService.rgb2hexD3(color));
+        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(c => this.ChartUtilsService.rgb2hexD3(c));
+        this.originalColors = [...this.colors]; // Guardamos copia original
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
-      }, 0)
+      }, 0);
     }
   }
 
   onShow(): void {
     this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
-
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
@@ -62,9 +64,14 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor() {
-    this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.colors.map(color => this.ChartUtilsService.hex2rgbD3(color))));
+  handleInputColor(): void {
+    this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.colors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
     this.myPanelChartComponent.changeChartType();
+
+    // Restauramos internamente el config original a la version anterior
+    setTimeout(() => {
+      this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.originalColors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
+    }, 0);
   }
 
   onPaletteSelected() { 
