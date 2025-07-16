@@ -663,11 +663,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
-        // Revisar todo lo de assignedColors
-        //inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
 
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        //this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
+        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
 
         inject.linkedDashboard = this.props.linkedDashboardProps;
 
@@ -783,18 +782,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
 
     private renderSunburst() {
-
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-
         let inject: SunBurst = new SunBurst;
-
         inject.size = this.props.size;
         inject.id = this.randomID();
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
         inject.linkedDashboard = this.props.linkedDashboardProps;
-
         this.createSunburst(inject);
     }
 

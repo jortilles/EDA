@@ -8,4 +8,5 @@ export class SunBurst {
   dataDescription : any;
   colors : Array<string>;
   linkedDashboard : LinkedDashboardProps;
+    assignedColors: any[];
 }
