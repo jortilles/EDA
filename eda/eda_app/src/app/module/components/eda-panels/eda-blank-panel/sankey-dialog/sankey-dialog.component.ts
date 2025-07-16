@@ -22,7 +22,7 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
   public labels: Array<string>;
   public display:boolean=false;
   public selectedLabel: any;
-  selectedPalette: { name: string; paleta: any } | null = null;
+  public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
   constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {

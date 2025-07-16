@@ -20,7 +20,7 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
   private originalColors: string[] = [];
   public labels: Array<string>;
   public display: boolean = false;
-  selectedPalette: { name: string; paleta: any } | null = null;
+  public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
   constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {

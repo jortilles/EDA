@@ -1061,14 +1061,20 @@ export class EdaBlankPanelComponent implements OnInit {
         this.bubblechartController = undefined;
     }
 
-
-    
-
-
     public onCloseScatterProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+            //Recorremos todos los assignedColors que tenemos
+            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
+                //Valores label que tenemos en el chart
+                let chartValues = this.panelChart.componentRef.instance.data.map(item => item.label);
+                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                if (chartValues.includes(e.value)) {
+                    let indexColor = chartValues.findIndex(element => element === e.value)
+                    e.color = response.colors[indexColor]
+                }
+            });
 
-            this.panel.content.query.output.config.colors = response.colors;
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
 
@@ -1077,6 +1083,7 @@ export class EdaBlankPanelComponent implements OnInit {
         }
         this.scatterPlotController = undefined;
     }
+
     public onCloseSunburstProperties(event: any, response: any): void {
         const chartInstance = this.panelChart?.componentRef?.instance;
         const dataDescription = chartInstance?.inject?.dataDescription;

@@ -19,7 +19,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   public colors: Array<string>;
   public labels: Array<string>;
   public display:boolean=false;
-  selectedPalette: { name: string; paleta: any } | null = null;
+  public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
   constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
