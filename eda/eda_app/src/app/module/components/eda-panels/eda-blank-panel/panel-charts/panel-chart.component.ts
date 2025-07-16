@@ -734,17 +734,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private renderTreeMap() {
-
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
-
         let inject: TreeMap = new TreeMap;
         inject.size = this.props.size;
         inject.id = this.randomID();
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
+        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));        
         inject.linkedDashboard = this.props.linkedDashboardProps;
-
         this.createTreeMap(inject);
     }
 
@@ -893,6 +893,23 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             return new EdaTable({ cols: tableColumns, pivot: true, ...configs });
         }
 
+    }
+    private assignedColorsWork(config, inject) { 
+        inject.data.values.forEach((injectValue, index) => {
+            //Primer string encontrado(valor del filtro)
+            const injectValueString = injectValue.find(value => typeof value === 'string');
+            if (!config || !config['assignedColors']?.some(item => item.value === injectValueString)) { 
+                inject.assignedColors.push({
+                    value: injectValueString, color: inject.colors[index] ||
+                    `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`
+                });
+            } else {
+                let mapValues = inject.assignedColors.map(item => item.value);
+                inject.colors[index] = inject.assignedColors[mapValues.findIndex(value => value === injectValueString)]['color'];
+            }
+        });
+        config = inject;
+        return config;
     }
 
     /**

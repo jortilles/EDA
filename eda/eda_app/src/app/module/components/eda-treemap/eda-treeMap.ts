@@ -7,4 +7,5 @@ export class TreeMap {
   dataDescription : any;
   colors : Array<string>;
   linkedDashboard : LinkedDashboardProps;
+  assignedColors: any[];
 }

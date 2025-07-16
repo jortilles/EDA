@@ -633,7 +633,8 @@ export class EdaBlankPanelComponent implements OnInit {
         this.graficos.edaChart = subType;
         this.graficos.addTrend = config && config.getConfig() ? config.getConfig()['addTrend'] : false;
         this.graficos.numberOfColumns = config && config.getConfig() ? config.getConfig()['numberOfColumns'] : null;
-        
+        this.graficos.assignedColors = config && config.getConfig() ? config.getConfig()['assignedColors'] : null;
+
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             _.merge(_config, config||{});
@@ -1008,13 +1009,20 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseTreeMapProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-
-            this.panel.content.query.output.config.colors = response.colors;
+            //Recorremos todos los assignedColors que tenemos
+            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
+                //Valores label que tenemos en el chart
+                let chartValues = this.panelChart.componentRef.instance.data.children.map(item => item.name);
+                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                if (chartValues.includes(e.value)) {
+                    let indexColor = chartValues.findIndex(element => element === e.value)
+                    e.color = response.colors[indexColor]
+                }
+            });
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
             this.dashboardService._notSaved.next(true);
-
         }
         this.treeMapController = undefined;
     }
