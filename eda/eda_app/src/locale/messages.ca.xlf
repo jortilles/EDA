@@ -6079,7 +6079,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 
-
+      <trans-unit id="viewEdition">
+        <source>Edición de la vista</source>
+        <target>Edició de la vista</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

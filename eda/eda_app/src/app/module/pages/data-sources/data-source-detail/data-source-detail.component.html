@@ -150,6 +150,10 @@
           <p>{{tablePanel.query}}</p>
       </div>
 
+        <div style="margin-bottom: 1rem;" *ngIf="tablePanel.query">
+            <button type="button" pButton (click)="viewEdition()" class="ui-button-success"
+                i18n-label='@@viewEdition' label="Edición de la vista"></button>
+        </div>
 
       <div>
           <h5 class="title-datamodel" i18n="@@inputEsconderTabla">Esconder tabla</h5>
