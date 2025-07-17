@@ -14,6 +14,9 @@ export class ViewDialogEditionComponent implements OnInit {
   
   public form: UntypedFormGroup;
   public display: boolean = false;
+	public ok: boolean = true;
+  public confirmed: boolean = false;
+
 
   // Elementos del formulario
   public viewName: string;
@@ -31,13 +34,7 @@ export class ViewDialogEditionComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // console.log('VARIABLEEEE: ', this.viewInEdition);
     this.initForm()
-
-    console.log('viewName',this.viewName)
-    console.log('description',this.description)
-    console.log('technical_name',this.technical_name)
-    console.log('SQLexpression',this.SQLexpression)
 
     this.form = this.formBuilder.group({
       viewName: [this.viewName, Validators.required],
@@ -45,6 +42,14 @@ export class ViewDialogEditionComponent implements OnInit {
       technical_name: [this.technical_name, Validators.required],
       SQLexpression: [this.SQLexpression, Validators.required]
     });  
+
+    // Evalúa el estado inicial
+    this.ok = !!this.form.get('SQLexpression').value?.trim();
+
+    // Escucha cambios en SQLexpression
+    this.form.get('SQLexpression').valueChanges.subscribe(value => {
+      this.ok = !!value?.trim();
+    });
 
   }
 
@@ -58,63 +63,42 @@ export class ViewDialogEditionComponent implements OnInit {
 
 
   async checkView() {
-
-		console.log('hoooollaaa')
-
+    // Recuperando la query del formulario
+    let SQLexpression = this.form.get('SQLexpression').value;
 		this.spinnerService.on();
-		// this.form.value.SQLexpression = this.form.value.SQLexpression.replace(';','')
+		SQLexpression = SQLexpression.replace(';','')
 		const body = {
 			model_id: this.dataModelService.model_id,
 			user: localStorage.getItem('user'),
-			query: "select 3"
-			// query: this.form.value.SQLexpression
+			query: SQLexpression
 		}
-
 		try {
-			const res = await this.dashboardService.executeView(body).toPromise();
-      console.log('res: ', res);
-			// const columns = [];
-			// res[0].forEach((col, idx) => {
-			// 	const column = this.buildColumn(col, idx, res[1]);
-			// 	columns.push(column);
-			// });
-			// this.table = this.buildTable(columns);
-			this.alertService.addSuccess($localize`:@@viewOk: Vista generada correctamente`);
-			// this.ok = true;
+      // Verifica si la Query es correcta
+			await this.dashboardService.executeView(body).toPromise();
+      this.SQLexpression = SQLexpression;
+      this.confirmed = true;
+      this.alertService.addSuccess($localize`:@@viewOk: Vista generada correctamente`);
 			this.spinnerService.off();
 		} catch (err) {
+      this.confirmed = false;
 			this.alertService.addError(err);
 			this.spinnerService.off();
 		}
-
 	}
 
   viewDialogEditionApply() {
-    
-    console.log('Aplicando los cambios')
-    
-    // const user = localStorage.getItem('user')
-    // const model_id = this.dataModelService.model_id
+    // Query editada antes de confirmar
+    this.viewInEdition.query = `(${this.SQLexpression}) as ${this.technical_name}`
 
-    // console.log('user: ',`${user}`);
-    // console.log('model_id: ',`${model_id}`);
-
+    // Verificar
+    this.confirmed = false;
     this.display = false;
-
-    // this.viewInEdition.query = "(select 1) as test_r"
-
     this.close.emit(this.viewInEdition);
   }
 
   viewDialogEditionClose() {
-
-    console.log('Cancelando los cambios')
-
-
     this.display = false;
     this.close.emit('cancel');
-
   }
-
 
 }

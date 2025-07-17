@@ -842,40 +842,29 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             cancelButtonText: $localize`:@@CancelTablaQuality:Cancelar`,
         }).then( (borrado) => {
             if(borrado.value){
-                console.log('borrado .Si...: ', borrado)
-
-                // viewInEdition
-
                 // Encontrando la vista a editar:
                 let myViewInEdition;
                 let allViews = this.dataModelService.allViews();
                 myViewInEdition = allViews.find(e => e.table_name === this.tablePanel.technical_name && e.query === this.tablePanel.query && e.table_type === 'view')
                 this.viewInEdition = myViewInEdition;
-                console.log('this.viewInEdition: ', this.viewInEdition);
-                console.log('tablePanel: ', this.tablePanel);
                 this.viewDialogEdition = true;
-                console.log('---------------------------')
-                // -------------------------------------------------------------------
-
-
             } else {
-                console.log('borrado .No...: ', borrado)
+                console.log('No se hace ningun cambio: ', borrado)
             }
         })
 
     }
 
     public onCloseViewEditionDialog(event) {
-
-        console.log('evento: ', event);
         if(event === 'cancel') {
             this.viewDialogEdition = false;
             return
         }
 
         // Aca se haran los cambios
-
         this.viewDialogEdition = false;
+        this.tablePanel.query = event.query;
+        this.dataModelService.editView(this.tablePanel);
     }
 }
 

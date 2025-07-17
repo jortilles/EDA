@@ -482,25 +482,19 @@ export class DataSourceService extends ApiService implements OnDestroy {
     }
 
     addView(table:any){
-
         const tmp_model = this._databaseModel.getValue();
         tmp_model.push(table);
         this._databaseModel.next(tmp_model);
-        this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
-    
+        this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));    
     }
 
-    // editView(table) {
-
-    //     const tmp_model = this._databaseModel.getValue();
-
-
-
-    //     tmp_model.push(table);
-    //     this._databaseModel.next(tmp_model);
-    //     this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
-    
-    // }
+    editView(table) {
+        let tmp_model = this._databaseModel.getValue();
+        let elemento = tmp_model.find(e => e.table_name === table.technical_name && e.query === table.query && e.table_type === 'view')
+        if(elemento) elemento.query = table.query;
+        this._databaseModel.next(tmp_model);
+        this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
+    }
 
     allViews() {
         const tmp_model = this._databaseModel.getValue();
