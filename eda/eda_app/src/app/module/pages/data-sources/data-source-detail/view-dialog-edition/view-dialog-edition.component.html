@@ -1,6 +1,7 @@
 <eda-dialog2 
     header="Edición de query de la vista" width="50vw" height= "80vh"
     [display]="display"
+    [disableApply]="!confirmed"
     (apply)="viewDialogEditionApply()"
     (close)="viewDialogEditionClose()">
 
@@ -13,17 +14,17 @@
                 <div style="margin: 10px">
                 <h6 i18n="@@inputNombre">Nombre</h6>
 
-                <input id="viewName" pInputText type="text" size="50" formControlName="viewName">
+                <input disabled id="viewName" pInputText type="text" size="50" formControlName="viewName">
                 </div>
 
                 <div style="margin: 10px">
                 <h6 i18n="@@inputDescripcion">Descripción</h6>
-                <input id="viewDescription" pInputText type="text" size="50" formControlName="description">
+                <input disabled id="viewDescription" pInputText type="text" size="50" formControlName="description">
                 </div>
 
                 <div style="margin: 10px">
                 <h6 i18n="@@inputNombreTecnico">Nombre técnico</h6>
-                <input id="viewTechName" pInputText type="text" size="50" formControlName="technical_name">
+                <input disabled id="viewTechName" pInputText type="text" size="50" formControlName="technical_name">
                 </div>
 
                 <div style="margin: 10px">
@@ -34,7 +35,7 @@
 
                 <div style="margin: 10px">
                 <button id="viewGenerate" type="button" pButton (click)="checkView()" class="ui-button-success ml-2"
-                    i18n-label="@@generateView" label="Generar vista"></button>
+                    i18n-label="@@generateView" label="Generar vista" [disabled]="!ok"></button>
                 </div>
 
             </form>
