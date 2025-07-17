@@ -36,6 +36,8 @@ export class ViewDialogComponent extends EdaDialogAbstract {
 			technical_name: [null, Validators.required],
 			SQLexpression: [null, Validators.required]
 		});
+
+		console.log('this.controller: ', this.controller)
 	}
 	onShow(): void {
 
@@ -49,6 +51,11 @@ export class ViewDialogComponent extends EdaDialogAbstract {
 	}
 
 	async checkView() {
+
+		console.log('hoooollaaa')
+		console.log('this.controller: ', this.controller)
+
+
 		this.spinnerService.on();
 		this.form.value.SQLexpression= this.form.value.SQLexpression.replace(';','')
 		const body = {
@@ -58,12 +65,14 @@ export class ViewDialogComponent extends EdaDialogAbstract {
 		}
 		try {
 			const res = await this.dashboardService.executeView(body).toPromise();
+			console.log('res: ', res);
 			const columns = [];
 			res[0].forEach((col, idx) => {
 				const column = this.buildColumn(col, idx, res[1]);
 				columns.push(column);
 			});
 			this.table = this.buildTable(columns);
+			console.log('table: ', this.table);
 			this.alertService.addSuccess($localize`:@@viewOk: Vista generada correctamente`);
 			this.ok = true;
 			this.spinnerService.off();
