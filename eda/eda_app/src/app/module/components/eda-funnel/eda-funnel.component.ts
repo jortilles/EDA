@@ -34,6 +34,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   width: number;
   heigth: number;
 
+
   // div = d3.select("body").append('div')
   //   .attr('class', 'd3tooltip')
   //   .style('opacity', 0);
@@ -186,11 +187,11 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
           const value = data?.label
           const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
-        }else {
+        }else{
           //Passem aquestes dades
           const label = data.label;
           const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
-          this.onClick.emit({ label, filterBy });
+          this.onClick.emit({label, filterBy });
         }
       });
 
@@ -221,4 +222,3 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   }
 
 }
-

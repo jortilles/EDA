@@ -1039,11 +1039,9 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseFunnelProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-
-            this.panel.content.query.output.config.colors = response.colors;
+            this.panel.content.query.output.config = { colors: response.colors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
-
             this.dashboardService._notSaved.next(true);
 
         }
@@ -1052,11 +1050,21 @@ export class EdaBlankPanelComponent implements OnInit {
 
     public onCloseBubblechartProperties(event, response): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-            this.panel.content.query.output.config.colors = response.colors;
+            //Recorremos todos los assignedColors que tenemos
+            this.panelChart.componentRef.instance.assignedColors.forEach((e) => {
+                //Valores label que tenemos en el chart
+                let chartValues = this.panelChart.componentRef.instance.data.children.map(item => item.name);
+                // Si algunos de los labels del chart coinciden con alguno de assignedColors, se remplazara
+                if (chartValues.includes(e.value)) {
+                    let indexColor = chartValues.findIndex(element => element === e.value)
+                    e.color = response.colors[indexColor]
+                }
+            });
+            
+            this.panel.content.query.output.config = { colors: response.colors, assignedColors: this.panelChart.componentRef.instance.assignedColors };
             const config = new ChartConfig(this.panel.content.query.output.config);
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, config);
             this.dashboardService._notSaved.next(true);
-
         }
         this.bubblechartController = undefined;
     }
