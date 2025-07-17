@@ -852,6 +852,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 myViewInEdition = allViews.find(e => e.table_name === this.tablePanel.technical_name && e.query === this.tablePanel.query && e.table_type === 'view')
                 this.viewInEdition = myViewInEdition;
                 console.log('this.viewInEdition: ', this.viewInEdition);
+                console.log('tablePanel: ', this.tablePanel);
                 this.viewDialogEdition = true;
                 console.log('---------------------------')
                 // -------------------------------------------------------------------
@@ -867,6 +868,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public onCloseViewEditionDialog(event) {
 
         console.log('evento: ', event);
+        if(event === 'cancel') {
+            this.viewDialogEdition = false;
+            return
+        }
+
+        // Aca se haran los cambios
 
         this.viewDialogEdition = false;
     }

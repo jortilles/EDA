@@ -1,12 +1,45 @@
 <eda-dialog2 
-    header="..................." width="50vw" height= "50vh"
+    header="Edición de query de la vista" width="50vw" height= "80vh"
     [display]="display"
     (apply)="viewDialogEditionApply()"
     (close)="viewDialogEditionClose()">
 
     <div content>
 
+        <div body>
 
+            <form [formGroup]="form" class="form-horizontal form-material">
+            
+                <div style="margin: 10px">
+                <h6 i18n="@@inputNombre">Nombre</h6>
+
+                <input id="viewName" pInputText type="text" size="50" formControlName="viewName">
+                </div>
+
+                <div style="margin: 10px">
+                <h6 i18n="@@inputDescripcion">Descripción</h6>
+                <input id="viewDescription" pInputText type="text" size="50" formControlName="description">
+                </div>
+
+                <div style="margin: 10px">
+                <h6 i18n="@@inputNombreTecnico">Nombre técnico</h6>
+                <input id="viewTechName" pInputText type="text" size="50" formControlName="technical_name">
+                </div>
+
+                <div style="margin: 10px">
+                <h6 i18n="@@sqlExp">Expresión SQL</h6>
+                <textarea id="viewSQL" pInputTextarea type="text" formControlName="SQLexpression" rows="8"
+                    cols="100"></textarea>
+                </div>
+
+                <div style="margin: 10px">
+                <button id="viewGenerate" type="button" pButton (click)="checkView()" class="ui-button-success ml-2"
+                    i18n-label="@@generateView" label="Generar vista"></button>
+                </div>
+
+            </form>
+            
+        </div>
 
 
     </div>

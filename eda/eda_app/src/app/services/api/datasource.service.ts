@@ -487,7 +487,20 @@ export class DataSourceService extends ApiService implements OnDestroy {
         tmp_model.push(table);
         this._databaseModel.next(tmp_model);
         this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
+    
     }
+
+    // editView(table) {
+
+    //     const tmp_model = this._databaseModel.getValue();
+
+
+
+    //     tmp_model.push(table);
+    //     this._databaseModel.next(tmp_model);
+    //     this._treeData.next(this.generateTree(this._modelPanel.getValue().metadata.model_name));
+    
+    // }
 
     allViews() {
         const tmp_model = this._databaseModel.getValue();
