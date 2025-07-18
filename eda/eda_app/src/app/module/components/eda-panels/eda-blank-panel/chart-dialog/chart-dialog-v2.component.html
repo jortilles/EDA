@@ -178,25 +178,27 @@
           <div class="grid gap-4 grid-rows-auto gap-6">
             <div>
               <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color del los gráficos:</h6>
+              @if(chart.chartType === 'doughnut' || chart.chartType === 'polarArea'){
               <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
                 [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+                <option [ngValue]="null" disabled hidden>
+                  -- Seleccione una paleta --
+                </option>
                 @for (palette of allPalettes; track $index) {
                 <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
                 }
               </select>
-
+            }
               <div class="grid grid-cols-2">
                 @for (serie of series; track serie) {
-                <div>
-                  <input type="text" pInputText [value]="serie.label" disabled="true"
-                    [style.border-color]="serie.bg['borderColor']" />
-
-                  <p-colorPicker [(ngModel)]="serie.bg['backgroundColor']" (onChange)="handleInputColor(serie)"
-                    format="hex" appendTo="body">
+                <div class="mb-2">
+                  <input type="text" pInputText [value]="serie.label" disabled="true" [style.border-color]="serie.border" />
+              
+                  <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex" appendTo="body">
                   </p-colorPicker>
-
-                  <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg['backgroundColor']"
-                    (input)="handleInputColor(serie)" minlength="7">
+              
+                  <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg" (input)="handleInputColor(serie)"
+                    minlength="7">
                 </div>
                 }
               </div>

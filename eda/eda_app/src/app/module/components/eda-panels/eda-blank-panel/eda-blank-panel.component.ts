@@ -952,14 +952,24 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseChartProperties(event, properties): void {
         if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
             if (properties) {
-
                 this.graficos = {};
-                this.graficos = _.cloneDeep(properties);
-                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType };
-                const layout = new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType, this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels, this.graficos.showLabelsPercent,this.graficos.numberOfColumns));
+                this.graficos = _.cloneDeep(properties);                
+            
+                //assignedColors se le modifica el color dependiendo de su label
+                this.graficos.assignedColors.forEach((e, index) => {
+                    if (this.graficos.chartLabels.includes(e.value)) {
+                        let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
+                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor]
+                    }
+                });
+        
+                this.panel.content.query.output.config = { colors: this.graficos.chartColors, chartType: this.graficos.chartType, assignedColors: this.graficos.assignedColors };
+                const layout =
+                    new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
+                    this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
+                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors));
 
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
-                this.panelConfigChanged.emit(this.panel);
             }
             //not saved alert message
             this.dashboardService._notSaved.next(true);
@@ -1210,7 +1220,8 @@ export class EdaBlankPanelComponent implements OnInit {
                     response.edaChart.addComparative,
                     response.edaChart.showLabels,
                     response.edaChart.showLabelsPercent,
-                    response.edaChart.numberOfColumns
+                    response.edaChart.numberOfColumns,
+                    response.edaChart.assignedColors
                 );
             }
             

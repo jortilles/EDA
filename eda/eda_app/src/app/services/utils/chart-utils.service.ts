@@ -865,47 +865,57 @@ export class ChartUtilsService {
     }
 
 
-    public recoverChartColors(currentChartype: string, layout: ChartConfig, numberOfColors: number): Array<{ backgroundColor: string, borderColor: string }> {
+    public recoverChartColors(currentChartype: string, layout: ChartConfig) {
         let config = layout.getConfig();
-        
-        if (config instanceof KpiConfig) { config = config.edaChart; }
 
-        const configColors = (<ChartJsConfig>config)?.colors;
+        if (config instanceof KpiConfig) {
+            config = config.edaChart;
+        }
 
-        // Si hay colores en la configuración, tienen la estructura correcta y son suficientes, los recupera.
-        if (configColors && Array.isArray(configColors) && configColors.length >= numberOfColors &&
-            configColors.every(c =>
-                c !== null && typeof c === 'object' &&
-                'backgroundColor' in c && typeof c.backgroundColor === 'string' &&
-                'borderColor' in c && typeof c.borderColor === 'string'
-            ))
-        {
-            const typedConfigColorsSlice = configColors.slice(0, numberOfColors) as Array<{ backgroundColor: string, borderColor: string }>;
-             return typedConfigColorsSlice.map(c => ({
-                 backgroundColor: c.backgroundColor,
-                 borderColor: c.borderColor
-             }));
-
-        } else { // Si no hay colores en la configuración o no son válidos/suficientes, genera.
-            return this.generateColors(currentChartype, numberOfColors);
+        if (config && (<ChartJsConfig>config).chartType.includes(currentChartype)) {
+            return this.mergeColors(layout)
+        } else {
+            return this.generateColors(currentChartype);
         }
     }
 
-    public generateColors(type: string, numberOfColors: number): Array<{ backgroundColor: string, borderColor: string }> {
-        const cleanType = type.replace('kpi', '');
-        switch (cleanType) {
-            case 'doughnut':
-            case 'polarArea':
-                return this.generateRGBGradientScale(numberOfColors, this.MyPaletteColors);
-            case 'bar':
-            case 'radar':
-            case 'line':
-            case 'horizontalBar':
-            case 'histogram':
-                return this.generateRGBGradientScale(1, this.MyPaletteColors);
-            default:
-                return [];
+    public generateColors(type: string) {
+        type = type.replace('kpi', '');
+
+        switch (type) {
+            case 'doughnut': return EdaChartComponent.generatePiecolors();
+            case 'polarArea': return EdaChartComponent.generatePiecolors();
+            case 'bar': return EdaChartComponent.generateChartColors();
+            case 'radar': return EdaChartComponent.generateChartColors();
+            case 'line': return EdaChartComponent.generateChartColors();
+            case 'horizontalBar': return EdaChartComponent.generateChartColors();
+            case 'histogram': return EdaChartComponent.generateChartColors();
         }
+    }
+
+      public mergeColors(layout: ChartConfig) {
+        let config = layout.getConfig();
+
+        if (config instanceof KpiConfig) {
+            config = config.edaChart;
+        }
+
+        if (!(<ChartJsConfig>config).colors) {
+            return this.generateColors((<ChartJsConfig>config).chartType);
+        }
+
+        if ((<ChartJsConfig>config).chartType === 'doughnut' || (<ChartJsConfig>config).chartType === 'polarArea') {
+            let edaColors = EdaChartComponent.generatePiecolors();
+
+            (<ChartJsConfig>config).colors[0]['backgroundColor'].forEach((element, i) => {
+                edaColors[0].backgroundColor[i] = element;
+            });
+
+            (<ChartJsConfig>config).colors[0]['backgroundColor'] = edaColors[0].backgroundColor;
+
+        }
+
+        return (<ChartJsConfig>config).colors;
     }
 
     // Funciones de transformaciones de codigos de colores
@@ -2044,6 +2054,48 @@ export class ChartUtilsService {
         ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
         ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
     }
+
+
+public generateChartColorsFromPalette(
+  numberOfColors: number,
+  baseColors: string[]
+): Array<{ backgroundColor: string; borderColor: string }> {
+  if (numberOfColors === 1) {
+    const color = baseColors[0].toUpperCase();
+    return [{ backgroundColor: color, borderColor: color }];
+  }
+
+  const result: Array<{ backgroundColor: string; borderColor: string }> = [];
+  const numSegments = baseColors.length - 1;
+  const baseRgbColors = baseColors.map(hex => this.hex2rgbNumericD3(hex));
+
+  for (let i = 0; i < numberOfColors; i++) {
+    const globalFactor = i / (numberOfColors - 1);
+    let segmentIndex = Math.floor(globalFactor * numSegments);
+    if (segmentIndex >= numSegments) {
+      segmentIndex = numSegments - 1;
+    }
+
+    const [r1, g1, b1] = baseRgbColors[segmentIndex];
+    const [r2, g2, b2] = baseRgbColors[segmentIndex + 1];
+
+    const localFactor = globalFactor * numSegments - segmentIndex;
+    const t = (i === numberOfColors - 1) ? 1 : localFactor;
+
+    const r_interp = r1 + t * (r2 - r1);
+    const g_interp = g1 + t * (g2 - g1);
+    const b_interp = b1 + t * (b2 - b1);
+    const interpolatedColorHex = this.rgbToHex(r_interp, g_interp, b_interp).toUpperCase();
+
+    result.push({
+      backgroundColor: interpolatedColorHex,
+      borderColor: interpolatedColorHex
+    });
+  }
+
+  return result;
+}
+
 
 
     // METODOS PARA HACER LA GENERACIÓN DE COLORES DEL TREEMAP CON PALETA, REVISAR SI SE PUEDE UNIFICAR EN UN SERVICE 
