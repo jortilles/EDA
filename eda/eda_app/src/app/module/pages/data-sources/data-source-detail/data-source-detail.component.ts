@@ -791,6 +791,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         // Aca se haran los cambios
         this.viewDialogEdition = false;
         this.tablePanel.query = event.query;
+        this.tablePanel.columns = event.columns;
         this.dataModelService.editView(this.tablePanel);
     }
 }
