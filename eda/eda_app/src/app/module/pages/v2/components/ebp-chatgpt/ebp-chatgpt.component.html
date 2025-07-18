@@ -1,0 +1,53 @@
+<eda-dialog2 
+  [display]="display"
+  header="Pregúntale a Eddie 😊" width="65vw" height="90vh"
+  [disableApply]="disableApply()"
+  (apply)="onApply()"
+  (close)="onClose()"
+>
+  <div content class="p-6 h-full flex flex-col overflow-x-hidden">
+    <h1 class="text-xl font-semibold mb-4">Pregunta sobre los datos de tu panel ...</h1>
+
+    <div class="flex-1 bg-gray-100 flex justify-center p-4 overflow-hidden overflow-x-hidden">
+      <div class="w-full max-w-2xl bg-white rounded-xl shadow-md p-6 flex flex-col gap-4 h-full overflow-x-hidden">
+
+        <h1 class="text-2xl font-bold">Chat con ChatGPT</h1>
+
+        <!-- Contenedor scrollable para mensajes -->
+        <div #messageContainer class="flex-1 overflow-y-auto space-y-2 pr-2">
+          <div *ngFor="let msg of messages" class="animate-in fade-in slide-in-from-bottom duration-300">
+            <div
+              [ngClass]="{
+                'bg-blue-500 text-white self-end': msg.sender === 'user',
+                'bg-gray-200 text-gray-900 self-start': msg.sender === 'bot'
+              }"
+              class="rounded-xl px-4 py-2 max-w-xs w-fit break-words"
+            >
+              {{ msg.content }}
+            </div>
+          </div>
+
+          <!-- Indicador de carga -->
+          <div *ngIf="loading" class="text-gray-500 text-sm italic animate-pulse self-start pl-14 break-words max-w-[70%] overflow-x-hidden">
+            Escribiendo...
+          </div>
+        </div>
+
+        <!-- Formulario fijo abajo -->
+        <form (ngSubmit)="sendMessage()" class="flex gap-2 items-center pt-2">
+          <input
+            [(ngModel)]="userInput"
+            name="chatInput"
+            class="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Escribe tu mensaje..."
+            autocomplete="off"
+          />
+          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition">
+            Enviar
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</eda-dialog2>

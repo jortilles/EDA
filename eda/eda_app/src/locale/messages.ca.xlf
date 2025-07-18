@@ -4820,6 +4820,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Mostra el valor percentual de cada segment</target>
 </trans-unit>
 
+      <trans-unit id="panelOptions6">
+        <source>Pregunte a la IA</source>
+        <target>Pregunta a la IA</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

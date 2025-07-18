@@ -256,6 +256,9 @@ export const PanelOptions = {
     const menu = [];
     const editmode = panelComponent.getEditMode();
     const type = panelComponent.getChartType();
+
+    console.log('editmode: ', editmode)
+    console.log('type: ', type)
     
     if (editmode) {
         menu.push(PanelOptions.editQuery(panelComponent));
@@ -271,12 +274,26 @@ export const PanelOptions = {
 
     menu.push(PanelOptions.exportExcel(panelComponent));
     menu.push(PanelOptions.duplicatePanel(panelComponent));
-
+    menu.push(PanelOptions.askToIA(panelComponent));
 
     if (editmode) {
         menu.push(PanelOptions.deletePanel(panelComponent));
     }
 
     return menu;
-  }
+  },
+  askToIA : (panelComponent: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: $localize`:@@panelOptions6:Pregunte a la IA`,
+      icon: 'fas fa-brain',
+      command: () => {
+        // Entregamos la data al componente de ChatGpt
+        panelComponent.dataChatGpt = _.cloneDeep(panelComponent.panelChartConfig.data);
+        panelComponent.isVisibleEbpChatGpt = true;
+        panelComponent.contextMenu.hideContextMenu();
+      }
+    });
+    
+  } 
+
 }

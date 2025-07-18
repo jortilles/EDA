@@ -195,6 +195,9 @@ export class EdaBlankPanelComponent implements OnInit {
     
     public connectionProperties: any;
 
+    // Dialog para el ChatGpt
+    public isVisibleEbpChatGpt = false;
+    public dataChatGpt: any;
 
     // for the drag-drop component
     public axes:any[]=[]; 
@@ -1527,6 +1530,11 @@ export class EdaBlankPanelComponent implements OnInit {
     public onCloseWhatIfDialog(): void {
         this.display_v.whatIf_dialog = false;
     }
+
+    public closeChatGpt(event: any) {
+        console.log('el Valor a llegado y es: ', event);
+        this.isVisibleEbpChatGpt = false;
+    } 
 
     public disableRunQuery(): boolean {
         let disable = false;

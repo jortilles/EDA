@@ -709,5 +709,8 @@
 
 <eda-context-menu [inject]="contextMenu"></eda-context-menu>
 
-<app-whatif-dialog *ngIf="display_v.whatIf_dialog" [(currentQuery)]="currentQuery"
-  (close)="onCloseWhatIfDialog()"></app-whatif-dialog>
+<app-whatif-dialog *ngIf="display_v.whatIf_dialog" [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>
+
+@if(isVisibleEbpChatGpt) {
+  <app-ebp-chatgpt (close)="closeChatGpt($event)" [dataChatGpt]="dataChatGpt"></app-ebp-chatgpt>
+}
