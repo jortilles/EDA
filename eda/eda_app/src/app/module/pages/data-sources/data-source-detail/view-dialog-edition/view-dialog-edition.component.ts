@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AlertService, DashboardService, DataSourceService, SpinnerService } from '@eda/services/service.index';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-view-dialog-edition',
@@ -23,6 +24,7 @@ export class ViewDialogEditionComponent implements OnInit {
   public description: string;
   public technical_name: string;
   public SQLexpression: string;
+  public newColums: any[] = [];
 
   constructor(
     private spinnerService: SpinnerService,
@@ -74,7 +76,16 @@ export class ViewDialogEditionComponent implements OnInit {
 		}
 		try {
       // Verifica si la Query es correcta
-			await this.dashboardService.executeView(body).toPromise();
+			let res = await this.dashboardService.executeView(body).toPromise();
+
+      const columns = [];
+			res[0].forEach((col, idx) => {
+				const column = this.buildColumn(col, idx, res[1]);
+				columns.push(column);
+			});
+
+      this.newColums = _.cloneDeep(columns);
+
       this.SQLexpression = SQLexpression;
       this.confirmed = true;
       this.alertService.addSuccess($localize`:@@viewOk: Vista generada correctamente`);
@@ -86,10 +97,59 @@ export class ViewDialogEditionComponent implements OnInit {
 		}
 	}
 
+  buildColumn(column_name: string, column_index: number, data: Array<any>) {
+		let type = 'numeric';
+		for (let i = 0; i < data.length; i++) {
+			if (data[i][column_index] !== null && !parseFloat(data[i][column_index])) {
+				type = 'text';
+				break;
+			}
+		}
+		const column = {
+			column_name: column_name,
+			display_name: { default: column_name, localized: [] },
+			description: { default: this.beautifulNames(column_name), localized: [] },
+			column_type: type,
+			aggregation_type: this.getAggregation(type),
+			column_granted_roles: [],
+			row_granted_roles: [],
+			visible: true,
+			tableCount: 0
+		}
+		return column;
+	}
+
+  beautifulNames = (name) => {
+		return name.split('_').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ')
+	}
+
+  getAggregation(type: string) {
+		if (type === 'numeric') {
+			return [
+				{ value: 'sum', display_name: 'Suma' },
+				{ value: 'avg', display_name: 'Media' },
+				{ value: 'max', display_name: 'Máximo' },
+				{ value: 'min', display_name: 'Mínimo' },
+				{ value: 'count', display_name: 'Cuenta Valores' },
+				{ value: 'count_distinct', display_name: 'Valores Distintos' },
+				{ value: 'none', display_name: 'no' }
+			]
+		} else if (type === 'text') {
+			return [
+				{ value: 'count', display_name: 'Cuenta Valores' },
+				{ value: 'count_distinct', display_name: 'Valores Distintos' },
+				{ value: 'none', display_name: 'No' }
+			];
+		} else {
+			return [{ value: 'none', display_name: 'No' }]
+		}
+
+	}
+
   viewDialogEditionApply() {
     // Query editada antes de confirmar
     this.viewInEdition.query = `(${this.SQLexpression}) as ${this.technical_name}`
-
+    this.viewInEdition.columns = _.cloneDeep(this.newColums);
     // Verificar
     this.confirmed = false;
     this.display = false;
