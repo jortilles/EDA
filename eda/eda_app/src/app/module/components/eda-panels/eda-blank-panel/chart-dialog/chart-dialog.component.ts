@@ -215,8 +215,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 }
             }
         }
-       console.log(this.series)
-       console.log(this.chart)
 
         this.panelChartComponent.componentRef.instance.inject = this.chart;
         this.panelChartComponent.componentRef.instance.updateChart();
@@ -350,7 +348,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
 
     rgb2hex(rgb): string {
-        console.log('hola', rgb)
         rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
         return (rgb && rgb.length === 4) ? '#' +
             ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
@@ -359,7 +356,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     }
 
     hex2rgb(hex, opacity = 100): string {
-        console.log('hola2', hex)
         hex = hex.replace('#', '');
         const r = parseInt(hex.substring(0, 2), 16);
         const g = parseInt(hex.substring(2, 4), 16);
