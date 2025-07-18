@@ -920,8 +920,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="vistaPrevia" datatype="html">
-<source>VISTA PREVIA</source>
-<target>VISTA PRÈVIA</target>
+<source>Vista previa</source>
+<target>Vista prèvia</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
 <context context-type="linenumber">291</context>
@@ -2820,8 +2820,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="EditQuery">
-<source>EDITAR CONSULTA</source>
-<target>EDITAR CONSULTA</target>
+<source>Editar consulta</source>
+<target>Editar consulta</target>
 </trans-unit>
 <trans-unit id="EditSQLQuery">
 <source>EDITAR CONSULTA SQL</source>

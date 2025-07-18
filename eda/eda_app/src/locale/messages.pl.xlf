@@ -913,7 +913,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </context-group>
 </trans-unit>
 <trans-unit id="vistaPrevia" datatype="html">
-<source>VISTA PREVIA</source>
+<source>Vista previa</source>
 <target>PODGLĄD</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/eda-blank-panel.component.html</context>
@@ -2799,7 +2799,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 
 <trans-unit id="EditQuery">
-<source>EDITAR CONSULTA</source>
+<source>Editar consulta</source>
 <target>EDYCJA ZAPYTANIA</target>
 </trans-unit>
 <trans-unit id="EditSQLQuery">

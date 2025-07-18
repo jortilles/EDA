@@ -1,7 +1,7 @@
 <div class="flex flex-col h-full rounded-lg p-6 shadow-sm bg-white">
   <!-- Header -->
   <div class="flex justify-between items-center mb-2">
-    <h2 class="text-lg font-medium"> {{ panel.title || title }}</h2>
+    <h2 class="text-lg font-medium pl-3"> {{ panel.title || title }}</h2>
     <i class="pi pi-ellipsis-v cursor-pointer" (click)="contextMenu.showContextMenu($event)"></i>
   </div>
 
@@ -29,12 +29,12 @@
 
 <eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="98vw" height="100vh">
   <!-- Header -->
-  <div header class="w-full flex items-center justify-between border-b px-4 py-2">
+  <div header class="w-full flex items-center justify-between border-b px-2 py-2">
     <div class="p-2" (click)="titleClick=true;">
       @if (!titleClick) {
-      <h1 class="text-lg font-semibold cursor-pointer">
+      <h2 class="text-lg font-semibold cursor-pointer">
         {{panel.title.trim().length > 0 ? panel.title : '\uD83D\uDD89'}}
-      </h1>
+      </h2>
       } @else {
       <input type="text" [(ngModel)]="panel.title" autofocusOnShow (focusout)="titleClick=false;"
         class="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
@@ -47,18 +47,18 @@
   <div content class="flex w-full flex-col rounded-lg bg-background">
     <div class="flex-1 relative">
       <!-- Tabs -->
-      <div class="flex border-b mb-4 space-x-4">
-        <h5 (click)="indextab = 0" i18n="@@vistaSeleccionador" 
-        class="cursor-pointer pb-2 font-sans uppercase transition-colors duration-200"
+      <div class="flex border-b mb-4 space-x-4 pl-3">
+        <h3 (click)="indextab = 0" i18n="@@vistaSeleccionador" 
+        class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200"
           [ngClass]="indextab === 0 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'">
           {{ selectedQueryMode !== 'SQL' ? editQuery : editSQLQuery }}
-        </h5>
+        </h3>
 
-        <h5 (click)="indextab = 1" i18n="@@vistaPrevia"
-          class="cursor-pointer pb-2 font-sans uppercase transition-colors duration-200"
+        <h3 (click)="indextab = 1" i18n="@@vistaPrevia"
+          class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200"
           [ngClass]="indextab === 1 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'">
-          VISTA PRÉVIA 
-        </h5>
+          Vista previa 
+        </h3>
 
       </div>
 
@@ -243,21 +243,22 @@
             <!-- Advanced Settings -->
             @if(currentQuery.length > 0){
 
-            <div class="columns-2">
+            <div class="columns-4">
               <div class="flex items-center justify-between">
                 <span class="flex items-center gap-1">
-                  <h3 class="text-lg font-bold cursor-pointer" [class] i18n="@@yourQuerySQL"
-                    [ngClass]="{'text-[#00bfb3]':!display_v.advancedSetting}"
+                  <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200" [class] i18n="@@yourQuerySQL"
+                    [ngClass]="!display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
                     (click)="display_v.advancedSetting = false">Mi
                     consulta SQL</h3>
-                  <i class="pi pi-info-circle cursor-pointer" [pTooltip]="ptooltipViewQuery"
-                    (click)="getQuery($event)"></i>
+                  <i class="pi pi-info-circle cursor-pointer mb-4" [pTooltip]="ptooltipViewQuery"
+                    (click)="getQuery($event)">
+                  </i>
                 </span>
               </div>
               <div>
                 <div class="mt-4">
-                  <h3 class="text-lg font-bold flex items-center cursor-pointer"
-                    [ngClass]="{'text-[#00bfb3]':display_v.advancedSetting}" (click)="display_v.advancedSetting = true">
+                  <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-fit"
+                    [ngClass]="display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'" (click)="display_v.advancedSetting = true">
                     Opciones avanzadas
                   </h3>
                 </div>
@@ -270,7 +271,7 @@
 
             @if(!display_v.advancedSetting){
             <div class="grid grid-cols-2 mt-1 ml-2 border rounded-lg bg-gray-50 min-h-[230px] ">
-              <div>
+              <div class=" ml-3">
                 <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
                 @for (attr of currentQuery; track attr.display_name.default) {
                 <p class="flex items-center">
@@ -311,25 +312,24 @@
             </div>
             }
             @else {
-            <div class="grid grid-cols-3 gap-x-8">
+            <div class="grid grid-cols-8 gap-x-8">
               <!-- Join Type -->
-              <div>
-                <h3 class="text-base font-bold">-<span i18n="@@joinTypeH4">Tipo de intersección:</span></h3>
-                <div class="flex gap-2">
-                  <button *ngFor="let type of joinTypeOptions" class="border px-3 py-1 rounded-lg hover:bg-gray-100"
-                    (click)="onJoinTypeChange(type)">
-                    {{ type.label }}
-                  </button>
-                </div>
+              <div class="col-span-3">
+                <h3 i18n="@@joinTypeH4" class="text-base font-bold inline">Tipo de intersección:</h3>
+                <button *ngFor="let type of joinTypeOptions" class="border px-3 py-1 rounded-lg ml-1 mb-4 hover:bg-gray-100"
+                  (click)="onJoinTypeChange(type)">
+                  {{ type.label }}
+                </button>
               </div>
               <!-- Show Top -->
-              <div>
-                <h3 class="text-base font-bold">-<span i18n="@@topQueryH4">Mostrar Top:</span></h3>
-                <input type="number" [(ngModel)]="queryLimit" class="w-full border p-1 rounded" (input)="onTopChange()">
+              <div class="col-span-3">
+                <h3 class="text-base font-bold inline"><span i18n="@@topQueryH4">Mostrar Top:</span></h3>
+                <input type="number" [(ngModel)]="queryLimit" class="w-2/8 border p-1 rounded ml-2" (input)="onTopChange()">
               </div>
 
-              <div>
-                <button class="border px-3 py-2 rounded-lg font-bold hover:bg-gray-100 mt-2" (click)="onWhatIfDialog()">
+              <div class="col-span-2">
+                <h3 class="text-base font-bold inline"><span>Escenarios: </span></h3>
+                <button class="border px-3 py-2 rounded-lg font-bold hover:bg-gray-100" (click)="onWhatIfDialog()">
                   What If?
                 </button>
               </div>
@@ -594,7 +594,7 @@
     @if(indextab == 1){
     <div class="grid grid-cols-5 gap-x-4">
       <div class="col-span-4">
-        <div class="rounded-lg border p-4 bg-muted/30 h-auto">
+        <div class="rounded-lg border p-4 bg-muted/30" style="height:375px">
           <panel-chart #panelChartComponentPreview [props]="panelChartConfig"></panel-chart>
         </div>
       </div>
