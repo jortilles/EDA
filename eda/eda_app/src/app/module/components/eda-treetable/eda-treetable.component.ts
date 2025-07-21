@@ -2,11 +2,11 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Necesario para las directivas
 import * as _ from 'lodash';
 
-// Módulos para el Treetable
+// Modules for the Treetable
 import { TreeNode } from 'primeng/api';
 import { TreeTableModule  } from 'primeng/treetable';
 
-// Constante personalizada
+// Custom constant
 import { FATHER_ID } from './../../../config/personalitzacio/customizables'
 
 interface Column {
@@ -18,7 +18,7 @@ interface Column {
   selector: 'app-eda-treetable',
   templateUrl: './eda-treetable.component.html',
   styleUrls: ['./eda-treetable.component.css'],
-  standalone: true, // Un componente Standalone, indica que no necesita ser declarado en los módulos
+  standalone: true, // A Standalone component indicates that it does not need to be declared in the modules
   imports: [CommonModule, TreeTableModule],
 })
 export class EdaTreeTable implements OnInit {
@@ -29,17 +29,17 @@ export class EdaTreeTable implements OnInit {
   files!: TreeNode[];
   labels: any[] = [];
   labelsInputs: any[] = [];
-  filterMode = 'lenient'; // Modo indulgente activado, activar botones para opciones de modos => indulgente / estricto
+  filterMode = 'lenient'; // Lenient mode activated, activate buttons for mode options => lenient/strict
   public lodash: any = _;
 
   id_label: string = '';
 
   public filterBy: string = $localize`:@@filterByTreetable:Filtro: `;
 
-  // Para la tabla árbol dinámica
+  // For the dynamic tree table
   dynamicFiles!: TreeNode[];
   dynamicCols!: Column[];
-  isDynamic: Boolean = false; // Pregunta si se utiliza la tabla dinámica
+  isDynamic: Boolean = false; // Ask if dynamic table is used
 
   constructor() { }
 
@@ -54,10 +54,11 @@ export class EdaTreeTable implements OnInit {
       this.isDynamic = true;
       this.initDynamicTreeTable()
     }
+
   }
 
   initBasicTreeTable() {
-    // Recolección de las etiquetas titulo para el Treetable
+    // Collecting title tags for the Treetable
     this.inject.query.slice(2).forEach((e: any) => {
       this.labels.push(e.display_name.default)
     })
@@ -67,51 +68,51 @@ export class EdaTreeTable implements OnInit {
     })
 
 
-    // Obtención de la primera etiqueta de los labels como id genérico
+    // Getting the first label of the labels as a generic id
     this.id_label = this.labelsInputs[0];
 
-    // Construcción del objeto necesario para el Treetable
-    this.buildHierarchyTreetable(this.inject.labels, this.inject.values).then( (files: any) => {
+    // Building the object needed for the Treetable
+    this.buildHierarchyTreetable(this.labelsInputs, this.inject.data.values).then( (files: any) => {
       this.files = files;
     } )
   }
 
-  // Función que brinda la lógica de ordenamiento
+  // Function that provides sorting logic
   buildHierarchyTreetable(labels: string[], values: any[]) {
     const map: { [key: number]: any } = {};
 
-    // Primero, construir el mapa de nodos
+    // First, build the node map
     values.forEach(item => {
-        const node: { [key: string]: any } = {}; // Crear un nodo con claves dinámicas
+        const node: { [key: string]: any } = {}; // Create a node with dynamic keys
 
-        // Asignar dinámicamente las propiedades usando los labels
+        // Dynamically assign properties using labels
         labels.forEach((label, index) => {
-            node[label] = item[index]; // Asignamos los valores de `values` a las propiedades definidas por `labels`
+            node[label] = item[index]; // We assign the values of `values` to the properties defined by `labels`
         });
 
-        // Almacenar el nodo en el mapa usando el ID como clave
-        map[node.id] = { 
-            data: node,  // El objeto `data` es dinámico, contiene las propiedades del nodo
-            children: []  // Inicializamos la lista de hijos vacía
+        // Store the node in the map using the ID as the key
+        map[node[`${this.id_label}`]] = { 
+            data: node,  // The `data` object is dynamic, it contains the properties of the node
+            children: []  // We initialize the empty children list
         };
     });
 
-    // Ahora, construir la jerarquía asignando los hijos a sus padres
+    // Now, build the hierarchy by assigning children to their parents.
     const result: any[] = [];
 
     values.forEach(item => {
-        const currentItem = map[item[0]]; // Nodo actual
-        const parentId = item[1]; // ID del padre
+        const currentItem = map[item[0]]; // Current node
+        const parentId = item[1]; // Father ID
 
-        // Nodo raíz empieza con FATHER_ID (constante de valor 0)
+        // Root node starts with FATHER_ID (constant value 0)
         if (parentId === FATHER_ID) {
             result.push(currentItem);
         } else if (map[parentId]) {
-            map[parentId].children.push(currentItem); // Añadir al padre
+            map[parentId].children.push(currentItem); // Add father
         }
     });
 
-    return Promise.resolve(result); // Promesa enviada para esperar gran cantidad de datos
+    return Promise.resolve(result); // Promise sent to expect large amount of data
   }
 
   initDynamicTreeTable() {
@@ -141,7 +142,7 @@ export class EdaTreeTable implements OnInit {
       return obj;
     });
 
-    // Determinamos unicos para cada label
+    // We determine unique ones for each label
     const isUniqueLabel: { [key: string]: boolean } = {};
     labels.forEach(label => {
       const seen = new Set();
@@ -156,6 +157,19 @@ export class EdaTreeTable implements OnInit {
     let leafLabels = labels.filter(label => isUniqueLabel[label]);
 
 
+    // Visualization control of the element of the treeTable
+    // -----------------------------------------------------
+    if(hierarchyLabels.length!==0 && leafLabels.length===0) {
+      leafLabels.push(hierarchyLabels[hierarchyLabels.length-1]);
+      hierarchyLabels.pop();
+    }
+
+    if(leafLabels.length!==0 && hierarchyLabels.length===0) {
+      hierarchyLabels.push(leafLabels[leafLabels.length-1]);
+      leafLabels.pop();
+    }
+    // -----------------------------------------------------
+
     if(this.inject.config.config.editedTreeTable) {
       hierarchyLabels = this.inject.config.config.hierarchyLabels;
       leafLabels = this.inject.config.config.leafLabels;
@@ -165,7 +179,7 @@ export class EdaTreeTable implements OnInit {
     }
 
 
-    // Información de los labels con las columnas de valores únicos
+    // Label information with unique value columns
     this.dynamicCols = leafLabels.map(item => {
         return { field: item.toLowerCase(), header: item}
     })
@@ -202,8 +216,7 @@ export class EdaTreeTable implements OnInit {
     return buildLevel(rows, 0);
   }
 
-
-  handleClick(item: any, colname: string) {
+    handleClick(item: any, colname: string) {
     if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
         const props = this.inject.linkedDashboardProps;
         const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
