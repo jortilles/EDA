@@ -101,7 +101,6 @@ export class QueryController {
             const querys = await connection.getQueryBuilded(myQuery, dataSourceObject, req.user);
             
             console.log('ANALIZED QUERY');
-            console.log(querys);
             console.log('\n-------------------------------------------------------------------------------\n');
             /**---------------------------------------------------------------------------------------------------------*/
 
@@ -119,7 +118,6 @@ export class QueryController {
                     
                     connection.client = await connection.getclient();
                     const getResults = (await connection.execQuery(query))[0];
-                    console.log(getResults)
                     console.log('\n-------------------------------------------------------------------------------\n');
 
                     for (const key in getResults) {
@@ -131,7 +129,6 @@ export class QueryController {
 
 
             console.log('\x1b[32m%s\x1b[0m',`Date: ${logDate} Dashboard:${dashboardId} Panel:${panelId} DONE\n`);
-            console.log(results);
 
             return res.status(200).json(results)
         } catch (err) {
