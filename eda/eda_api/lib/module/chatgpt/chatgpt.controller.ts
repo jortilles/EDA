@@ -4,9 +4,9 @@ import ChatGpt, { IChatGpt } from "../chatgpt/model/chatgpt.model" // A utilizar
 import OpenAI from "openai";
 
 // Importanto elemento del ChatGpt
-const API_KEY = require('../../../config/chatgpt').API_KEY;
-const MODEL = require('../../../config/chatgpt').MODEL;
-const CONTEXT = require('../../../config/chatgpt').CONTEXT;
+const API_KEY = require('../../../config/chatgpt.config').API_KEY;
+const MODEL = require('../../../config/chatgpt.config').MODEL;
+const CONTEXT = require('../../../config/chatgpt.config').CONTEXT;
 
 
 export class ChatGptController {
