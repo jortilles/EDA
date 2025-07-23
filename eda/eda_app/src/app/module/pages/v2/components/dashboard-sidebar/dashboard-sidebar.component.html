@@ -1,24 +1,59 @@
 <!-- Overlay Panel (Popover) -->
 <p-overlayPanel #popover (onHide)="hidePopover()">
-  <div class="w-64 p-3">
-    <h3 class="text-lg font-medium">
-        <i class="pi pi-chart-bar"></i> {{dashboard.title}}
-    </h3>
-    <hr class="my-2">
-    <div class="flex flex-col gap-2">
-      @for (item of sidebarItems; track item.label) {
-        <!-- TODO check display_mode -->
+    <div class="w-64 p-3">
+      <div class="h-full bg-gray-100">
+          <h4 class="text-lg f font-bold ">
+            {{dashboard.title}}
+          </h4>
+          <hr class="my-2">
+          <h4 class="text-lg">
+            {{dashboard.dataSource.name}}
+          </h4>
+          <hr class="my-2">
+
+      </div>
+      <div class=" bg-white bg-clip-border">
+
+
+        <div class="flex flex-col gap-2 text-lg">
+          @for (item of itemsVisibles(); track item.label) {
+          @if (['Live Dashboard', 'Guardar', 'Afegir etiqueta'].includes(item.label)) {
+          <hr />
+        }
         <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
           (click)="item.command()">
           <i [class]="item.icon + ' text-gray-600'"></i>
           <span>{{ item.label }}</span>
           @if (item.items) {
-            <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
+          <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
           }
         </button>
-      }
+        }
+        <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+          (click)="toggleOpciones()">
+          <i class="pi pi-chevron-down text-gray-600"></i>
+          <span>Más opciones</span>
+          <i class="pi pi-chevron-down ml-auto text-gray-400"
+            [style.transform]="mostrarOpciones ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s;"></i>
+        </button>
+      
+        @if (mostrarOpciones) {
+        <div class="ml-6 flex flex-col gap-2">
+          @for (item of itemsDesplegables().slice(1); track item.label) {
+          <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
+            (click)="item.command()">
+            <i [class]="item.icon + ' text-gray-600'"></i>
+            <span>{{ item.label }}</span>
+            @if (item.items) {
+            <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
+            }
+          </button>
+          }
+        </div>
+        }
+      </div>
+      </div>
     </div>
-  </div>
 </p-overlayPanel>
 <!-- Overlay Backdrop -->
 @if (isPopoverVisible) {

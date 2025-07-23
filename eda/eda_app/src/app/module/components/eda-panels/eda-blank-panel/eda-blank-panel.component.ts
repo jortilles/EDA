@@ -57,6 +57,8 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
 
+    @Input() panelContent: any;
+    @Input() panelText: any;
     @Input() panel: EdaPanel;
     @Input() inject: InjectEdaPanel;
     @Output() remove: EventEmitter<any> = new EventEmitter();
@@ -1336,7 +1338,7 @@ export class EdaBlankPanelComponent implements OnInit {
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
-        if (this.panelChart.props.chartType == 'crosstable' && this.indextab === 1)
+        if (this.panelChart?.props.chartType == 'crosstable' && this.indextab === 1)
             this.makeNewCrosstable();
         else
             QueryUtils.runManualQuery(this);

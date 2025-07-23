@@ -201,7 +201,7 @@ export class DashboardEditStyleDialog {
 		};
 	}
 
-  	public saveConfig(): void {
+	public saveConfig(): void {
 		// this.dashBoardStyles.fontFamily = this.selectedFont.value;
 		const response: DashboardStyles = {
 			backgroundColor: this.backgroundColor,
@@ -231,6 +231,7 @@ export class DashboardEditStyleDialog {
 			},
 			palette: this.selectedPalette
 		}
+		this.stylesProviderService.setStyles(response)
 		this.apply.emit(response);
 	}
 

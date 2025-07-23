@@ -1,16 +1,22 @@
-<div class="flex flex-col h-full rounded-lg p-6 shadow-sm bg-white">
+<div class="flex flex-col h-full rounded-lg p-6 shadow-sm bg-white" [ngStyle]="panelContent">
   <!-- Header -->
-  <div class="flex justify-between items-center mb-2">
-    <h2 class="text-lg font-medium pl-3"> {{ panel.title || title }}</h2>
-    <i class="pi pi-ellipsis-v cursor-pointer" (click)="contextMenu.showContextMenu($event)"></i>
+<div class="flex items-center justify-between mb-2 w-full">
+  <!-- Contenedor con alineación dinámica para el título -->
+  <div class="flex-1" [ngStyle]="panelText">
+    <h2 class="text-lg font-medium pl-3">{{ panel.title || title }}</h2>
   </div>
+
+  <!-- Ícono a la derecha -->
+  <i class="pi pi-ellipsis-v cursor-pointer ml-2" (click)="contextMenu.showContextMenu($event)"></i>
+</div>
+
 
   <div
     class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50 border border-dashed border-gray-300"
     [class.spinner-panel]="display_v.minispinner">
     @if (display_v.saved_panel && !display_v.minispinner) {
     <div class="relative w-full h-full">
-      <panel-chart #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties($event)"
+      <panel-chart #PanelChartComponent [ngStyle]="panelContent" [props]="panelChartConfig" (configUpdated)="setChartProperties($event)"
         (onChartClick)="onChartClick($event)" class="h-full w-full block">
       </panel-chart>
     </div>
@@ -27,7 +33,7 @@
   </div>
 </div>
 
-<eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="98vw" height="100vh">
+<eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="98vw" [ngStyle]="panelContent" height="100vh">
   <!-- Header -->
   <div header class="w-full flex items-center justify-between border-b px-2 py-2">
     <div class="p-2" (click)="titleClick=true;">
@@ -595,7 +601,7 @@
     <div class="grid grid-cols-5 gap-x-4">
       <div class="col-span-4">
         <div class="rounded-lg border p-4 bg-muted/30" style="height:375px">
-          <panel-chart #panelChartComponentPreview [props]="panelChartConfig"></panel-chart>
+          <panel-chart #panelChartComponentPreview [props]="panelChartConfig" [style]="panelContent"></panel-chart>
         </div>
       </div>
       <div class="col-start-5">

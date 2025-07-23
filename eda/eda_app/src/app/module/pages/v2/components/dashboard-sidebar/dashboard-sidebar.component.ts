@@ -66,6 +66,9 @@ export class DashboardSidebarComponent {
   isVisibleModalVisible = false;
   isTagModalVisible = false;
 
+  mostrarOpciones = false;
+
+
   sidebarItems = [
     {
       label: "Nou panell",
@@ -127,6 +130,7 @@ export class DashboardSidebarComponent {
         this.hidePopover();
       }
     },
+      { label: 'Más opciones', icon: 'pi pi-chevron-down' }, // nuevo ítem
     {
       label: "Editar estils",
       icon: "pi pi-palette",
@@ -163,9 +167,6 @@ export class DashboardSidebarComponent {
     },
   ]
 
-  ngOnInit(): void {
-    //console.log(this)  
-  }
   
   showPopover(event: Event) {
     this.isPopoverVisible = true;
@@ -332,6 +333,7 @@ export class DashboardSidebarComponent {
         });
     }
     this.dashboard.refreshPanels();
+    this.dashboard.assignStyles();
 }
 
   public closeVisibleModal() {
@@ -471,4 +473,21 @@ export class DashboardSidebarComponent {
 
     return mailingenabled;
   } 
+
+  
+   public indiceMasOpciones(): number {
+    return this.sidebarItems.findIndex(item => item.label === 'Más opciones');
+  }
+
+  public itemsVisibles() {
+    return this.sidebarItems.slice(0, this.indiceMasOpciones()); // antes de 'Más opciones'
+  }
+
+  public itemsDesplegables() {
+    return this.sidebarItems.slice(this.indiceMasOpciones()); // incluye 'Más opciones' y después
+  }
+
+  public toggleOpciones() {
+    this.mostrarOpciones = !this.mostrarOpciones;
+  }
 }
