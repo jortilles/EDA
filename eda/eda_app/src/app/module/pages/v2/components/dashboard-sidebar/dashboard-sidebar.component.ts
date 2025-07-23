@@ -130,7 +130,7 @@ export class DashboardSidebarComponent {
         this.hidePopover();
       }
     },
-      { label: 'Más opciones', icon: 'pi pi-chevron-down' }, // nuevo ítem
+      { label: 'Más opciones'},
     {
       label: "Editar estils",
       icon: "pi pi-palette",
@@ -326,14 +326,15 @@ export class DashboardSidebarComponent {
 
     // Elimina los colores específicos de cada panel para aplicar la paleta global
     if (Array.isArray(this.dashboard.panels)) {
-        this.dashboard.panels.forEach(panel => {
-            if (panel.content?.query?.output?.config) {
+      this.dashboard.panels.forEach(panel => {
+        if (panel.content?.query?.output?.config) {
+              console.log(panel)
                 panel.content.query.output.config.colors = undefined;
             }
         });
     }
-    this.dashboard.refreshPanels();
     this.dashboard.assignStyles();
+    this.dashboard.refreshPanels();
 }
 
   public closeVisibleModal() {
