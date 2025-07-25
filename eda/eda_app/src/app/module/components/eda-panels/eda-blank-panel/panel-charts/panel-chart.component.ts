@@ -42,6 +42,7 @@ import { SunburstConfig } from './chart-configuration-models/sunburst-config';
 import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { ScatterConfig } from './chart-configuration-models/scatter-config';
 import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
+import { ChartsColors } from '@eda/configs/index'
 
 
 @Component({
@@ -304,10 +305,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartLabels = chartData[0];
         chartConfig.chartDataset = chartData[1];
         chartConfig.chartOptions = config.chartOptions;
-        chartConfig.chartColors =  this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
+        chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
         chartConfig.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
-
-        
         
         //Si assignedColors no existe (informes viejos), lo generamos
         //Para una posterior versión se podria mirar de eliminar este bloque if else y solo mirar si existe el config
@@ -332,7 +331,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     });
                 }
             } else {
-            //Graficos con colores estandard
+                //Graficos con colores estandard
             chartData[0].forEach((element) => {
                 chartConfig.assignedColors.push({
                     value: element,
@@ -348,15 +347,26 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             //Seteamos variables: labels, colores, y indice del filtro
             const configData = chartConfig.assignedColors.flatMap((item) => item.value);
             const configColors = chartConfig.assignedColors.flatMap((item) => item.color);
+            const paletaAplicada = this.styleProviderService.ChartsPalettesActive;    
 
             if (chartConfig.chartType === "doughnut" || chartConfig.chartType === "polarArea") {
                 chartData[0].forEach((element, index) => {
                     let indexMatched = configData.findIndex(e => e === element)
                 //Si indexMatched encuentra data igual, asigna su color, sino el siguiente que no este usado
-                    if (indexMatched != -1) {
+                    if (indexMatched != -1 && !paletaAplicada) {
                         chartConfig.chartColors[0].backgroundColor[index] = configColors[indexMatched];
                         chartConfig.chartColors[0].borderColor[index] = configColors[indexMatched];
-                    } else {
+                    } else if (paletaAplicada && this.styleProviderService.pagePalette != null) { // Si la modificación de colores viene dada por cambio general de paleta de colores
+                        let paletaActual = this.styleProviderService.pagePalette.source['_value'].paleta;
+                        chartConfig.chartColors[0].backgroundColor[index] = paletaActual[index];
+                        chartConfig.chartColors[0].borderColor[index] = paletaActual[index];
+                        // Modificar los assignedColor para que la preview coincida con el cambio     
+                        chartConfig.assignedColors.forEach((element, index) => {
+                            element.color = chartConfig.chartColors[0].backgroundColor[index]
+                        });
+
+                    }
+                    else {
                         // Revisar indice
                         let config = this.props.config.getConfig();
                         let newAssignedColor = chartConfig.chartColors[0].backgroundColor[config['assignedColors'].length + index];
@@ -374,7 +384,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         // chartColors unicamente se reflejan si estan dentro del chartDataset (esto asigna colores correctamente) 
-        if (!chartData[1][0]?.backgroundColor) {
+            if (!chartData[1][0]?.backgroundColor) {
             chartData[1].forEach(( e,i) => {
                 try{
                     e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
@@ -909,7 +919,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     public updateD3ChartColors(chartType: string) {
-        console.log(chartType)
         const numberOfColors = this.componentRef.instance.colors.length;
         const newColors = this.chartUtils.generateRGBColorGradientScaleD3(numberOfColors, this['chartUtils'].MyPaletteColors);
 
@@ -982,6 +991,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         });
         config = inject;
         return config;
+    }
+
+    getColors (dataLength, colors) {
+        const colorsLength = colors.length
+        let outputColors: Array<any> = colors
+
+        if (dataLength > colorsLength) {
+            let repeat = Math.ceil(dataLength / colorsLength)
+            for (let i = 0; i < repeat - 1; i++) {
+                outputColors = [...outputColors, ...colors]
+            }
+        }
+        return outputColors
+        .filter((_, index) => index < dataLength)
+        .map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`)
     }
 
     /**

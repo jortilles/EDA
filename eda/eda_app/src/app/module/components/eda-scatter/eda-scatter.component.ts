@@ -40,8 +40,10 @@ export class EdaScatter implements AfterViewInit {
   ngOnInit(): void {
     this.id = `scatterPlot_${this.inject.id}`;
     this.data = this.formatData(this.inject.data);
-    this.colors = this.inject.colors && this.inject.colors.length >= this.data.length ? 
-    this.inject.colors : this.getColors();
+
+    
+        this.colors = this.inject.colors.length > 0 ? this.inject.colors
+      : this.getColors(this.data.children.length, ChartsColors);
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
@@ -230,18 +232,21 @@ export class EdaScatter implements AfterViewInit {
       })
   }
 
-getColors () {
-     let MAX_ITERATIONS = 1000;
-        let out = [];
-        let col = ChartsColors;
+  getColors(dataLength, colors) {
 
-        for (let i = 0; i < MAX_ITERATIONS; i += 50) {
+    const colorsLength = colors.length;
+    let outputColors: Array<any> = colors;
 
-            for (let j = 0; j < col.length; j++) {
-                out.push(`rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 0.8)`);
-            }
-        }
-        return out;
+    if (dataLength > colorsLength) {
+      let repeat = Math.ceil(dataLength / colorsLength);
+
+      for (let i = 0; i < repeat - 1; i++) {
+        outputColors = [...outputColors, ...colors]
+      }
+    }
+
+    return outputColors.filter((_, index) => index < dataLength).map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
+
   }
 
  

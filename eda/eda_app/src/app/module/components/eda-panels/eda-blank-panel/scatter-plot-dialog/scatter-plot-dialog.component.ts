@@ -23,6 +23,7 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
   public display: boolean = false;
   public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+  public activePalette: any = this.stylesProviderService.ChartsPalettesActive;
 
   constructor(private stylesProviderService: StyleProviderService, private d3ChartUtils: ChartUtilsService) {
 

@@ -167,7 +167,6 @@ export class DashboardSidebarComponent {
     },
   ]
 
-  
   showPopover(event: Event) {
     this.isPopoverVisible = true;
     this.popover.toggle(event);
@@ -321,20 +320,15 @@ export class DashboardSidebarComponent {
 
   public saveStyles(newStyles: any) {
     this.isEditStyleDialogVisible = false;
+    if (newStyles.palette != null)
+      this.stylesProviderService.ChartsPalettesActive = true;
     this.dashboard.dashboard.config.styles = newStyles;
     this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
-
-    // Elimina los colores específicos de cada panel para aplicar la paleta global
-    if (Array.isArray(this.dashboard.panels)) {
-      this.dashboard.panels.forEach(panel => {
-        if (panel.content?.query?.output?.config) {
-              console.log(panel)
-                panel.content.query.output.config.colors = undefined;
-            }
-        });
-    }
     this.dashboard.assignStyles();
     this.dashboard.refreshPanels();
+
+    // Cambiar estado de selector de paleta
+    setTimeout(() => {this.stylesProviderService.ChartsPalettesActive = false;},2000)
 }
 
   public closeVisibleModal() {

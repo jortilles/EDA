@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import {DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_COLOR, DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE, DEFAULT_TITLE_ALIGN,DEFAULT_PANEL_TITLE_ALIGN, DEFAULT_PALETTE_COLOR, ChartsPalettes  } from  "../../config/personalitzacio/customizables";
+import {DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_COLOR, DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE, DEFAULT_TITLE_ALIGN,DEFAULT_PANEL_TITLE_ALIGN, DEFAULT_PALETTE_COLOR, ChartsPalettes, ChartsPalettesActive  } from  "../../config/personalitzacio/customizables";
 
 
 export interface StyleConfig {
@@ -36,6 +36,7 @@ export class StyleProviderService {
 	public DEFAULT_PANEL_TITLE_ALIGN: string = DEFAULT_PANEL_TITLE_ALIGN;
 	public DEFAULT_PALETTE_COLOR: string = DEFAULT_PALETTE_COLOR;
 	public ChartsPalettes: any = ChartsPalettes;
+	public ChartsPalettesActive: boolean = ChartsPalettesActive;
 
 	public DEFAULT_CUSTOM_CSS: string = '';
 	

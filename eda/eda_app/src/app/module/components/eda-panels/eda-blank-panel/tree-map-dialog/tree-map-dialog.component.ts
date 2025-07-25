@@ -22,6 +22,7 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
   public display: boolean = false;
   public selectedPalette: { name: string; paleta: any } | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+  public activePalette: any = this.stylesProviderService.ChartsPalettesActive;
 
   constructor(private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
 
@@ -99,7 +100,6 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
     // Recuperamos paleta seleccionada y creamos colores
     this.myPanelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
     const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(numberOfColors, this.myPanelChartComponent['chartUtils'].MyPaletteColors);
-    console.log(this)
         
     // Actualizar los color pickers individuales al modificar la paleta
     this.colors = newColors.map(({ color }) => color);

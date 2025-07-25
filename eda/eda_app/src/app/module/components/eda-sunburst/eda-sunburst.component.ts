@@ -32,8 +32,8 @@ export class EdaSunburstComponent implements AfterViewInit {
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.data = this.formatData(this.inject.data, this.inject.dataDescription);
     this.labels =  this.generateDomain(this.data);
-    this.colors = this.inject.colors && this.inject.colors.length > 0 ? 
-      this.inject.colors : this.getColors(this.labels.length, ChartsColors);
+    this.colors = this.inject.colors.length > 0 ? this.inject.colors
+      : this.getColors(this.data.children.length, ChartsColors);
     this.assignedColors = this.inject.assignedColors || []; 
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);

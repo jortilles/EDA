@@ -173,8 +173,9 @@ export class DashboardPageV2 implements OnInit {
     
     // Texto del título del informe
     this.reportTitle = {
-      color:this.dashboard.config.styles.title.fontColor,
-      'font-size': this.dashboard.config.styles.title.fontSize,
+      background: this.dashboard.config.styles.panelColor,
+      color: this.dashboard.config.styles.title.fontColor,
+      'font-size': (20 + this.dashboard.config.styles.title.fontSize * 3) + 'px',
       'font-family': this.dashboard.config.styles.title.fontFamily,
       display: 'flex',
     'justify-content': this.dashboard.config.styles.titleAlign === 'center' ? 'center'
@@ -191,7 +192,7 @@ export class DashboardPageV2 implements OnInit {
     this.panelTitle = {
       background: this.dashboard.config.styles.panelColor,
       color: this.dashboard.config.styles.panelTitle.fontColor,
-      'font-size': this.dashboard.config.styles.panelTitle.fontSize,
+      'font-size': (20 + this.dashboard.config.styles.panelTitle.fontSize * 3) + 'px',
       'font-family': this.dashboard.config.styles.panelTitle.fontFamily,
       display: 'flex',
       'justify-content': this.dashboard.config.styles.panelTitleAlign === 'center' ? 'center'
@@ -202,8 +203,6 @@ export class DashboardPageV2 implements OnInit {
     this.panelContent = {
       background: this.dashboard.config.styles.panelColor,
     };
-
-    // Asignación colores paletas
   }
 
   private initPanels(dashboard: any) {
