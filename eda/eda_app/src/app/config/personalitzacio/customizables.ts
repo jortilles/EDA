@@ -60,6 +60,8 @@ export const ChartsPalettes = [
     
 ];
 
+export let ChartsPalettesActive = false;
+
 export const LogoImage = 'assets/images/logos/logo.png';
 
 export const LogoSidebar = 'assets/images/logos/logo.png';
