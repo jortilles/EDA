@@ -921,7 +921,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public updateD3ChartColors(chartType: string) {
         const numberOfColors = this.componentRef.instance.colors.length;
         const newColors = this.chartUtils.generateRGBColorGradientScaleD3(numberOfColors, this['chartUtils'].MyPaletteColors);
-
         switch (chartType) {
             case 'treeMap':
                 this.props.config.setConfig(new TreeMapConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
@@ -930,15 +929,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             case 'sunburst':
                 this.props.config.setConfig(new SunburstConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
                 this.renderSunburst();
+                break;
             case 'parallelSets':
                 this.props.config.setConfig(new SankeyConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
                 this.renderParallelSets();
+                break;
             case 'scatterPlot':
                 this.props.config.setConfig(new ScatterConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
                 this.renderScatter();
+                break;
             case 'bubblechart':
                 this.props.config.setConfig(new BubblechartConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
                 this.renderBubblechart();
+                break;
             default:
                 break;
         }        
