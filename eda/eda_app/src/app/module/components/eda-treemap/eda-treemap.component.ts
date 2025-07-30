@@ -1,11 +1,12 @@
 
-import { ChartUtilsService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
 import { TreeMap } from "./eda-treeMap";
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
+
 
 
 @Component({
@@ -30,7 +31,7 @@ export class EdaTreeMap implements AfterViewInit {
   metricIndex: number;
   width: number;
   heigth: number;
-  constructor(private chartUtilService : ChartUtilsService) {
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService) {
     this.update = true;
   }
 
@@ -127,7 +128,6 @@ export class EdaTreeMap implements AfterViewInit {
     //Valores de assignedColors separados
     const valuesTree = this.assignedColors.map((item) => item.value);
     const colorsTree = this.assignedColors[0]?.color ? this.assignedColors.map(item => item.color) : this.colors;
-    
     //Funcion de ordenación de colores de D3
     const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree).unknown("#ccc");
     
@@ -164,7 +164,7 @@ export class EdaTreeMap implements AfterViewInit {
         //AQUI SE PONE EL COLOR DEL TREEMAP
         while (d.depth > 1) d = d.parent;
         //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
-        return  colorsTree[valuesTree.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
+        return  valuesTree.findIndex((item) => d.data.name.includes(item)) === -1 ? color(d.data.name) : colorsTree[valuesTree.findIndex((item) => d.data.name.includes(item))];
       })
       .attr("fill-opacity", 0.6)
       .attr("width", (d) => d.x1 - d.x0)
@@ -236,11 +236,11 @@ export class EdaTreeMap implements AfterViewInit {
         return value;
       })
       .join("tspan")
-      .style("font-size", "var(--panel-big)")
+      .style("font-size", (12 + this.styleProviderService.panelFontSize.source['_value'] * 2)+'px')
       //REVISAR COLOR
       .style("pointer-events", "none")
-      .attr("fill", "white")
-      .style("font-family", "var(--panel-font-family)")
+      .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+      .style("font-family", this.styleProviderService.panelFontFamily.source['_value'])
       .attr("x", 3)
       .attr(
         "y",

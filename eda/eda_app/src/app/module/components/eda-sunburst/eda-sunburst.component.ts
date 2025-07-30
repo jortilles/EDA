@@ -1,4 +1,4 @@
-import { ChartUtilsService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 import * as d3 from 'd3'
 import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
@@ -26,7 +26,7 @@ export class EdaSunburstComponent implements AfterViewInit {
   width: number
   heigth: number
   metricIndex: number
-  constructor(private chartUtilService : ChartUtilsService) {}
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService) {}
   ngOnInit(): void {
     this.id = `sunburst_${this.inject.id}` ;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
@@ -209,8 +209,8 @@ export class EdaSunburstComponent implements AfterViewInit {
           .style('visibility', null)
           .select('.percentage')
           .text(percentage + '%')
-          .attr("font-family", "var(--panel-font-family)")
-          .attr("fill", "var(--panel-font-color)")
+          .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
+          .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
 
         var my_path = ''
         sequence.forEach(path => {
@@ -226,10 +226,10 @@ export class EdaSunburstComponent implements AfterViewInit {
             ': ' +
             d.value.toLocaleString(undefined, { maximumFractionDigits: 6 })
           )
-          .attr("font-family", "var(--panel-font-family)")
+          .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
           .attr("pointer-events", "none")
 
-          .attr("fill", "var(--panel-font-color)")
+          .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
         // per posar-ho a dalt de tot
         label.raise();
         

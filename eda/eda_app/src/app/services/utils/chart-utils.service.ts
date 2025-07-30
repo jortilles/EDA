@@ -15,6 +15,8 @@ import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/kpi-config';
 import { DEFAULT_PALETTE_COLOR } from '@eda/configs/index';
+import { StyleProviderService } from '@eda/services/service.index';
+import { color } from 'd3';
 
 export interface EdaChartType {
     label: string;
@@ -117,7 +119,6 @@ export class ChartUtilsService {
     public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
 
     public MyPaletteColors: string[] = DEFAULT_PALETTE_COLOR;
-
     /*
         Funció especifica per transformar les dades per el velocímetre (knob)
     */
@@ -823,47 +824,6 @@ export class ChartUtilsService {
      * @param currentChartype
      * @param layout
      */
-     
-
-    private generateRGBGradientScale(
-        numberOfColors: number,
-        baseColors: string[]
-    ): Array<{ backgroundColor: string, borderColor: string }> {
-
-        // Charts de un único color
-        if (numberOfColors === 1) {
-            const color = baseColors[0].toUpperCase();
-            return [{ backgroundColor: color, borderColor: color }];
-        }
-
-        const colorList: Array<{ backgroundColor: string, borderColor: string }> = [];
-        const numSegments = baseColors.length - 1;
-        const baseRgbColors = baseColors.map(hex => this.hex2rgb(hex));
-
-        //Generamos lista en rgb y pasamos a hex
-        for (let i = 0; i < numberOfColors; i++) {
-            const globalFactor = i / (numberOfColors - 1);
-            let segmentIndex = Math.floor(globalFactor * numSegments);
-            if (segmentIndex >= numSegments) {
-                segmentIndex = numSegments - 1;
-            }
-
-            const [r1, g1, b1] = baseRgbColors[segmentIndex];
-            const [r2, g2, b2] = baseRgbColors[segmentIndex + 1];
-
-            const localFactor = (globalFactor * numSegments) - segmentIndex;
-            const t = (i === numberOfColors - 1) ? 1 : localFactor;
-
-            const r_interp = r1 + t * (r2 - r1);
-            const g_interp = g1 + t * (g2 - g1);
-            const b_interp = b1 + t * (b2 - b1);
-
-            const interpolatedColorHex = this.rgbToHex(r_interp, g_interp, b_interp).toUpperCase();
-            colorList.push({ backgroundColor: interpolatedColorHex, borderColor: interpolatedColorHex });
-        }
-        return colorList;
-    }
-
 
     public recoverChartColors(currentChartype: string, layout: ChartConfig) {
         let config = layout.getConfig();
@@ -1233,9 +1193,11 @@ export class ChartUtilsService {
         numberOfColumns: number,
         chartSubType: string,
         ticksOptions: any,
-        displayLegend: boolean = true
+        displayLegend: boolean = true,
+        styleProviderService: StyleProviderService,
     ): { chartOptions: any } {
-
+        let colorStyle : any = styleProviderService.panelFontColor.source['value'];
+        let fontStyle : any = styleProviderService.panelFontFamily.source['value'];
         const t = $localize`:@@linkedTo:Vinculado con`;
         const linked = linkedDashboard ? `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
         let options = { chartOptions: {} };
@@ -1314,6 +1276,7 @@ export class ChartUtilsService {
                                     }
                               },
                                 font: {
+                                    family: fontStyle,
                                 weight: 'bold',
                                 size:  edaFontSize  ,
                                 },
@@ -1345,7 +1308,10 @@ export class ChartUtilsService {
                         animateScale: true,
                         animateRotate: true
                     },
-
+                    color: colorStyle,
+                    font: {
+                        family: fontStyle,
+                    },
                     responsive: true,
                     maintainAspectRatio: false,
                     devicePixelRatio: 2,
@@ -1360,25 +1326,33 @@ export class ChartUtilsService {
                         datalabels: dataLabelsObjt,
                         tooltip: {
                             callbacks: {
-                                title: (context) => {
-                                    return  context[0].dataset.label;
-                                },
-                                label: (context) => {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    label += parseFloat(context.raw).toLocaleString('de-DE', { maximumFractionDigits: 6 }) ;
-                                    const total = context.dataset.data.reduce((total, datapoint) => total + datapoint, 0)
-                                    const percentage = context.raw / total * 100;
-                                    label += ' ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %' ;
-                                    return label;
-                                },
-                                footer: () => { return linked },
-                                afterLabel: (t, d) => {  }
+                            title: (context) => {
+                                return context[0].dataset.label;
+                            },
+                            label: (context) => {
+                                let label = context.label || '';
+                                if (label) label += ': ';
+                                label += parseFloat(context.raw).toLocaleString('de-DE', { maximumFractionDigits: 6 });
+                                const total = context.dataset.data.reduce((total, datapoint) => total + datapoint, 0);
+                                const percentage = context.raw / total * 100;
+                                label += ' ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %';
+                                return label;
+                            },
+                            footer: () => linked,
+                            afterLabel: () => {}
                             }
                         },
-                        legend: edaPieLegend
+                        legend: {
+                            ...edaPieLegend,
+                            labels: {
+                            ...(edaPieLegend?.labels || {}),
+                            font: {
+                                family: fontStyle,
+                                size: 14,
+                                weight: 'normal'
+                            }
+                            }
+                        }
                     },
                 };
                 break;
@@ -1428,7 +1402,10 @@ export class ChartUtilsService {
                         animation: {
                             duration: 3000
                         },
-
+                        color: colorStyle,
+                        font: {
+                            family: fontStyle,
+                        },
                         responsive: true,
                         maintainAspectRatio: false,
                         devicePixelRatio: 2,
@@ -1469,49 +1446,52 @@ export class ChartUtilsService {
                             x: {
                                 stacked: stacked || false,
                                 grid: { display: false },
-
                                 ticks: {
-                                    maxRotation: ticksOptions.maxRotation || 30,
-                                    minRotation: ticksOptions.minRotation || 0,
-                                    labelOffset:  ticksOptions.labelOffset || 0, 
-                                    padding: ticksOptions.padding ||0,
-                                    maxTicksLimit: maxTicksLimit,
-                                    fontSize: edaFontSize,
-                                    fontStyle: edafontStyle,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
-                                    callback: function(val, index) {
-                                        if (this.getLabelForValue(val))
-                                            return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
-                                    },
-                                    
-                                    autoSkip: true,
+                                maxRotation: ticksOptions.maxRotation || 30,
+                                minRotation: ticksOptions.minRotation || 0,
+                                labelOffset: ticksOptions.labelOffset || 0,
+                                padding: ticksOptions.padding || 0,
+                                maxTicksLimit: maxTicksLimit,
+                                font: {
+                                    size: edaFontSize,
+                                    family: fontStyle,
+                                    style: edafontStyle
+                                },
+                                color: colorStyle,
+                                callback: function(val, index) {
+                                    const label = this.getLabelForValue(val);
+                                    return label?.length > 20 ? label.substr(0, 17) + '...' : label;
+                                },
+                                autoSkip: true
                                 }
                             },
 
                             y: {
                                 stacked: stacked || false,
                                 grid: {
-                                    drawBorder: false,
+                                drawBorder: false
                                 },
                                 display: maxTicksLimitY !== 0,
                                 beginAtZero: true,
-                                grace: (showLabels || showLabelsPercent )?'1%': '0%',
+                                grace: (showLabels || showLabelsPercent) ? '1%' : '0%',
                                 ticks: {
-                                    autoSkip: true,
-                                    maxTicksLimit: maxTicksLimitY,
-                                    beginAtZero: true,
-                                    callback: (value) => {
-                                        if (value)
-                                            return isNaN(value) ? value : this.format10thPowers(parseFloat(value)) //.toLocaleString('de-DE', { maximumFractionDigits: 6 });
-                                    },
-                                    fontSize: edaFontSize,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
+                                autoSkip: true,
+                                maxTicksLimit: maxTicksLimitY,
+                                beginAtZero: true,
+                                callback: (value) => {
+                                    if (value)
+                                    return isNaN(value) ? value : this.format10thPowers(parseFloat(value));
+                                },
+                                
+                                font: {
+                                    size: edaFontSize,
+                                    family: fontStyle,
+                                },
+                                color: colorStyle,
                                 }
                             }
+                            },
 
-                        },
 
                         plugins: {
                             datalabels: dataLabelsObjt,
@@ -1532,8 +1512,9 @@ export class ChartUtilsService {
                                 return size.height>150?context.dataset.backgroundColor:'#ffffff';
                                 },
                             font: {
-                            weight: 'bold',
-                            size:  edaFontSize  ,
+                                family: fontStyle,
+                                weight: 'bold',
+                                size:  edaFontSize  ,
                             },
                             padding: 2,
 
@@ -1610,10 +1591,12 @@ export class ChartUtilsService {
                                     minRotation: ticksOptions.minRotation || 0,
                                     labelOffset:  ticksOptions.labelOffset || 0, 
                                     padding: ticksOptions.padding ||0,
-                                    fontSize: edaFontSize, 
-                                    fontStyle: edafontStyle,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
+                                    color: colorStyle,
+                                    font: {
+                                        family: fontStyle,
+                                        size: edaFontSize,
+                                        style: edafontStyle
+                                    },
                                     maxTicksLimit: maxTicksLimit,
                                     autoSkip: true,
                                 }
@@ -1628,15 +1611,18 @@ export class ChartUtilsService {
                                 grace: (showLabels || showLabelsPercent )?'1%': '0%',
                                 ticks: {
                                     autoSkip: true,
+                                    color: colorStyle,
+                                    font: {
+                                        family: fontStyle,
+                                        size: edaFontSize,
+                                        style: edafontStyle
+                                    },
                                     maxTicksLimit: maxTicksLimitY,
                                     beginAtZero: true,
                                     callback: (value) => {
                                         if (value)
                                             return isNaN(value) ? value : this.format10thPowers(parseFloat(value)) //.toLocaleString('de-DE', { maximumFractionDigits: 6 });
                                     },
-                                    fontSize: edaFontSize,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
                                 }
                             }
 
@@ -1784,6 +1770,12 @@ export class ChartUtilsService {
                                     
                                 },
                                 ticks: {
+                                    color: colorStyle,
+                                      font: {
+                                          family: fontStyle,
+                                          size: edaFontSize,
+                                          style: edafontStyle
+                                      },
                                     callback: (value) => {
 
                                         if (value)
@@ -1791,10 +1783,6 @@ export class ChartUtilsService {
                                     },
                                     autoSkip: true,
                                     maxTicksLimit: maxTicksLimitHorizontal,
-                                    fontSize: edaFontSize,
-                                    fontStyle: edafontStyle,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
                                     beginAtZero: true
                                 }
                             },
@@ -1802,9 +1790,12 @@ export class ChartUtilsService {
                                 grid: { display: false },
                                 beginAtZero: true,
                                 ticks: {
-                                    fontSize: edaFontSize,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
+                                    color: colorStyle,
+                                      font: {
+                                          family: fontStyle,
+                                          size: edaFontSize,
+                                          style: edafontStyle
+                                      },
                                     beginAtZero: true,
                                     autoSkip: true
                                 }
@@ -1848,21 +1839,30 @@ export class ChartUtilsService {
                     animation: {
                         duration: 1500,
                     },
-                    elements: {
-                        line: {
-                            borderWidth: 1,
-                            borderColor: '#36A2EB',
-                            backgroundColor: '#9BD0F5',                    
+                    color: colorStyle,
+                    font: {
+                        family: styleProviderService.panelFontFamily.source['_value'],
+                    },
+                    scales: {
+                        r: {
+                        pointLabels: {
+                            color: styleProviderService.panelFontColor.source['_value'], 
+                            font: {
+                                family: styleProviderService.panelFontFamily.source['_value'],
+                            }
                         },
-                        point: {
-                            radius: 4, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' }
+                        ticks: {
+                            color: styleProviderService.panelFontColor.source['_value'], 
+                        },
+                        angleLines: {
+                            color: styleProviderService.panelFontColor.source['_value']
+                        },
+                        grid: {
+                            color: styleProviderService.panelFontColor.source['_value'] 
+                        }
+                        }
                     },
-                    maintainAspectRatio: false,
-                    plugins: {
-                        datalabels: dataLabelsObjt,
-                        legend: edaBarLineLegend
-                    },
-                };
+                }
                 break;      
             case 'line':
                 if(showLabels || showLabelsPercent ){
@@ -1928,6 +1928,10 @@ export class ChartUtilsService {
                     spanGaps: true,
                     responsive: true,
                     maintainAspectRatio: false,
+                    color: colorStyle,
+                    font: {
+                        family: fontStyle,
+                    },
                     onHover: (event,chartElement ) => {
                         //Canviem el cursor de normal a tipus link
                         chartElement.length == 1 ? 
@@ -1977,10 +1981,12 @@ export class ChartUtilsService {
                                         return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
                                 },
                                 autoSkip: true,
-                                fontSize: edaFontSize,
-                                fontStyle: edafontStyle,
-                                fontFamily: styles.fontFamily,
-                                fontColor: styles.fontColor,
+                                color: colorStyle,
+                                font: {
+                                    family: fontStyle,
+                                    size: edaFontSize,
+                                    style: edafontStyle
+                                },
                                 includeBounds:true,
                                 beginAtZero: true
                             }
@@ -2005,10 +2011,12 @@ export class ChartUtilsService {
 
                                 autoSkip: true,
                                 maxTicksLimit: maxTicksLimitY,
-                                fontSize: edaFontSize,
-                                fontStyle: edafontStyle,
-                                fontFamily: styles.fontFamily,
-                                fontColor: styles.fontColor,
+                                color: colorStyle,
+                                font: {
+                                    family: fontStyle,
+                                    size: edaFontSize,
+                                    style: edafontStyle
+                                },
                                 beginAtZero: true,
                                 max: minMax.max,
                                 min: minMax.min

@@ -5,7 +5,7 @@ import { sankey as Sankey } from 'd3-sankey';
 import { ChartsColors } from '@eda/configs/index';
 import { EdaD3 } from './eda-d3';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { ChartUtilsService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 
 
 @Component({
@@ -33,7 +33,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   div = null;
 
 
-  constructor(private chartUtilService : ChartUtilsService) {
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService) {
   }
 
 
@@ -208,7 +208,7 @@ export class EdaD3Component implements AfterViewInit, OnInit {
 
 
     svg.append("g")
-      .style("font", "14px")
+      .style("font",  '14px')
       .style("font-weight", 700)
       .selectAll("text")
       .data(nodes)
@@ -217,11 +217,11 @@ export class EdaD3Component implements AfterViewInit, OnInit {
       .attr("y", d => (d.y1 + d.y0) / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
-      .style("font-family", "var(--panel-font-family)")
+      .style("font-family",  this.styleProviderService.panelFontFamily.source['_value'])
       //.attr("fill", "var(--panel-font-color)")
       .style("pointer-events", "none")
-      .attr("fill", "white")
-      .style("font-size", "var(--panel-big)")
+      .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+      .style("font-size",  (12 + this.styleProviderService.panelFontSize.source['_value'] * 2)+'px')
       .text(d => d.name)
       .append("tspan")
       .attr("fill-opacity", 0.7)

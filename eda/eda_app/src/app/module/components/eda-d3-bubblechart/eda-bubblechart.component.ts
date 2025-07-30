@@ -13,7 +13,7 @@ import { EdaBubblechart } from './eda-bubblechart'
 import { ChartsColors } from '@eda/configs/index'
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
-import { ChartUtilsService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 
 @Component({
   selector: 'eda-bubblechart',
@@ -43,7 +43,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   simulation: any;
 
 
-  constructor(private chartUtilService : ChartUtilsService) { }
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService) { }
 
   ngOnInit(): void {
     this.id = `bubblechart_${this.inject.id}`
@@ -224,11 +224,10 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
                 
 
                 //Se aumenta el tamaño del contorno de la burbuja
-                //TO-DO ------------> HACER QUE EL CONTORNO SEA POR BURBUJA EN VEZ DEL TOTAL DE BURBUJAS
-                node 
-                  .transition()
-                  .duration(200)
-                  .style("stroke-width", 3);
+                d3.select(d.currentTarget)
+                    .transition()
+                    .duration(200)
+                    .style("stroke-width", 3);
                 
                 // Se crea una etiqueta que contenga los datos de cada burbuja
                 const tooltipData = this.getToolTipData(data);
@@ -304,9 +303,9 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       })
 
       .join("tspan") //Aqui se junta todos los tspan dentro del "bloque texto" para evitar que las letras esten desperdigadas por todo el area SVG     
-      .style("font-family", "var(--panel-font-family)")
+      .style("font-family", this.styleProviderService.panelFontFamily.source['_value'])
       .style("pointer-events", "none")
-      .attr("fill", "white")      
+      .attr("fill", this.styleProviderService.panelFontColor.source['_value'])      
       .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.9 : null)
       .text(d => d)//Cargamos el texto dentro del "bloque" tspan
 

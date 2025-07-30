@@ -13,18 +13,18 @@
 
         <!-- Header -->
         <ng-template pTemplate="header" let-columns>
-            <tr class="header-invisible" style="visibility: collapse!important">
+            <tr class="header-invisible" style="visibility: collapse!important" >
                 <ng-container *ngFor="let col of inject.cols">
                     <th *ngIf="col.visible === true" [width]="col.width"></th>
                 </ng-container>
             </tr>
 
-            <tr *ngFor="let serie of inject.series">
-                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan"
-                (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center">
-                    <div class="flex items-center">
+            <tr *ngFor="let serie of inject.series" >
+                <th *ngFor="let label of serie.labels" [attr.rowspan]="label.rowspan" [attr.colspan]="label.colspan" 
+                (click)="inject.onHeaderClick(label)" [pTooltip]="getTooltip(label)" style="text-align:center"  [ngStyle]="getStyle()">
+                    <div class="flex items-center"  [ngStyle]="getStyle()">
                         {{label.title}}
-                        <p-sortIcon *ngIf="label.sortable"></p-sortIcon>
+                        <p-sortIcon [ngStyle]="getStyle()" *ngIf="label.sortable"  ></p-sortIcon>
                     </div>
                 </th>
             </tr>
@@ -32,11 +32,11 @@
 
             <tr *ngIf="!inject.pivot" class="header-title">
                 <ng-container *ngFor="let col of inject.cols">
-                    <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"
+                    <th *ngIf="col.type && col.visible" [pSortableColumn]="col.field" [class]="col.styleClass" [pTooltip]="getTooltip(col)"  [ngStyle]="getStyle()"
                         [width]="col.width" [attr.rowspan]="col.rowspan">
-                        <div class="flex items-center">
+                        <div class="flex items-center "  [ngStyle]="getStyle()">
                             {{col.header}}
-                            <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
+                            <p-sortIcon *ngIf="col.sortable" [field]="col.field"  [ngStyle]="getStyle()"></p-sortIcon>
                         </div>
                     </th>
                 </ng-container>
@@ -60,7 +60,7 @@
         <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
                 <ng-container *ngFor="let col of inject.cols">
-                    <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer; height: 35px;" [ngClass]="getStyle(col, rowData)">
+                    <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer; height: 35px;" [ngClass]="getStyleClass(col, rowData)" [ngStyle]="getStyle()">
                         <ng-container [ngSwitch]="col.type">
                             <!-- ngSwitch TEXT -->
                             <ng-container *ngSwitchCase="'EdaColumnText'">

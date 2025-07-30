@@ -23,9 +23,8 @@
           <div class="chart-color-selection">
             
             <div class="mb-1">
-              <input type="text" [(ngModel)]="color" pInputText style="width: 40%"  (keyup)="handleInputColor()"  (onChange)="handleInputColor()"   />
+              <input type="text" [(ngModel)]="color" pInputText style="width: 40%"  (keyup)="handleInputColor()"  (onChange)="handleInputColor()" />
               <p-colorPicker [(ngModel)]="color" appendTo="body" (onChange)="handleInputColor()"  ></p-colorPicker>
-
             </div>         
           </div>  
         </div>
@@ -37,14 +36,17 @@
 
 
 
-  <div class="flex justify-end p-2 border-t gap-1.5">
-    <button  class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
-      <i class="fa fa-times"></i>
-      <span i18n-label="@@cancelarBtn">Cancelar</span>
-    </button>
-    <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" (click)="saveChartConfig()">
-      <i class="fa fa-check"></i> <span>Confirmar</span>
-    </button>
+  <div footer>
+    <div class="flex justify-end p-2 border-t gap-1.5">
+      <button class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="closeChartConfig()">
+        <i class="fa fa-times"></i>
+        <span i18n-label="@@cancelarBtn">Cancelar</span>
+      </button>
+      <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md"
+        (click)="saveChartConfig()">
+        <i class="fa fa-check"></i> <span>Confirmar</span>
+      </button>
+    </div>
   </div>
 
 </eda-dialog>

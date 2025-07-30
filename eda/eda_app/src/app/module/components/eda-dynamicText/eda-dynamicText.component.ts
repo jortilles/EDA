@@ -11,8 +11,8 @@ export class EdadynamicTextComponent implements OnInit {
     @Input() inject: EdadynamicText;
     @Input() color: dynamicTextDialogComponent;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
-    @ViewChild('dynamicTextContainer')
-    dynamicTextContainer: ElementRef;
+    @ViewChild('dynamicTextContainer', { static: false }) dynamicTextContainer!: ElementRef;
+
 
  
     containerHeight: number = 20;
@@ -24,41 +24,61 @@ export class EdadynamicTextComponent implements OnInit {
       
     }
 
-    getStyle():any{
-        let color;
-        try{
-            if(this.inject.color["color"]!==undefined){
-                color = this.inject.color["color"];
-            }else {   
-                color = this.inject.color;
-            }
-        }catch( e ){
-            console.log("error getting color for dynamic text component");
-            console.log(e);
-            console.log(this.inject);
-            color =null;
-        }
-        return {'font-weight': 'bold',  'font-size': this.getFontSize()  +'px' , display: 'inline','color': color}
+getStyle(): any {
+    let color: string = '#000'; 
+
+    const inputColor = this.inject?.color;
+    color = typeof inputColor === 'object' && this.inject?.color["color"]
+        ? this.inject?.color["color"]
+        : this.inject?.color || '#000';
+
+    const fontSize = this.getFontSize();
+
+    return {
+        'font-weight': 'bold',
+        'font-size': fontSize,
+        'color': color,
+    };
+}
+
+
+getFontSize(): string {
+    let result = 1;
+
+    if (!this.dynamicTextContainer) {
+        return '1px';
     }
 
-    getFontSize():string{
-        let result:number = 1;
-        //  By default is the height / 2
-        result = this.containerHeight/2;
-        // But maybe the widht is no enought.... lets check...
-        if( result*4 > this.containerWidth){
-            result =  this.containerWidth/4;
-        }
-        // But maybe the string lenght is too long... lets check 
-        let strlen =  this.inject.value.toString().length;
-        if( strlen * result > this.containerWidth*1.5 ){
-            result = result / 1.5;
-        }
-        // Ok.... we are done...
-        return result.toFixed().toString();
+    const realContainer = this.dynamicTextContainer.nativeElement
+        ?.parentElement
+        ?.parentElement
+        ?.parentElement;
 
+    const containerWidth = realContainer.offsetWidth;
+    const containerHeight = realContainer.offsetHeight;
 
+    this.containerWidth = containerWidth;
+    this.containerHeight = containerHeight;
+
+    result = containerHeight / 2;
+
+    if (result * 4 > containerWidth) {
+        result = containerWidth / 4;
     }
+
+    const text = (this.inject?.value ?? '').toString();
+    const strlen = text.length || 1;
+
+    if (strlen * result > containerWidth * 1.5) {
+        result = result / 1.5;
+    }
+
+    result = Math.max(result, 10)-5;
+
+    return `${result.toFixed()}px`;
+}
+
+
 
 
 
@@ -71,6 +91,8 @@ export class EdadynamicTextComponent implements OnInit {
             this.containerHeight = height  ;
             this.containerWidth = width  ;
         }
+          this.getFontSize();
+
       }
 
 

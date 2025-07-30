@@ -16,9 +16,16 @@
     [class.spinner-panel]="display_v.minispinner">
     @if (display_v.saved_panel && !display_v.minispinner) {
     <div class="relative w-full h-full">
-      <panel-chart #PanelChartComponent [ngStyle]="panelContent" [props]="panelChartConfig" (configUpdated)="setChartProperties($event)"
-        (onChartClick)="onChartClick($event)" class="h-full w-full block">
-      </panel-chart>
+      @if(!['kpi', 'kpibar', 'knob', 'kpiline', 'dynamicText'].includes(panelChartConfig.chartType)){
+        <panel-chart #PanelChartComponent [ngStyle]="panelContent" [props]="panelChartConfig" (configUpdated)="setChartProperties($event)"
+          (onChartClick)="onChartClick($event)" class="h-full w-full block">
+        </panel-chart>
+      }@else{
+        <panel-chart #PanelChartComponent [ngStyle]="panelContent" [props]="panelChartConfig"
+          (configUpdated)="setChartProperties($event)" (onChartClick)="onChartClick($event)"
+          class="h-full w-full flex justify-center content-center" style="flex-wrap:wrap!important;">
+        </panel-chart>
+      }
     </div>
     }
 

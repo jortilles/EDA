@@ -1,4 +1,4 @@
-import { ChartUtilsService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
@@ -33,7 +33,7 @@ export class EdaScatter implements AfterViewInit {
   width: number;
   heigth: number;
 
-  constructor(private chartUtilService : ChartUtilsService){
+  constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService){
 
   }
 
@@ -91,7 +91,7 @@ export class EdaScatter implements AfterViewInit {
       .range([height - margin.bottom, margin.top])
 
     const grid = g => g
-      .attr("stroke", "currentColor")
+      .attr("stroke", this.styleProviderService.panelFontColor.source['_value'])
       .attr("stroke-opacity", 0.1)
       .call(g => g.append("g")
         .selectAll("line")
@@ -117,8 +117,8 @@ export class EdaScatter implements AfterViewInit {
       .call(g => g.append("text")
         .attr("x", -margin.left )
         .attr("y", 30)
-        .attr("fill", "var(--panel-font-color)")
-        .attr("font-family", "var(--panel-font-family)")
+        .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+        .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
         .attr("font-size", "var(--panel-big)")
         .attr("text-anchor", "start")
         .text(`↑ ${this.inject.dataDescription.numericColumns[1].name}`))
@@ -130,12 +130,13 @@ export class EdaScatter implements AfterViewInit {
       .call(g => g.append("text")
         .attr("x", width)
         .attr("y", margin.bottom )
-        .attr("fill", "var(--panel-font-color)")
-        .attr("font-family", "var(--panel-font-family)")
+        .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+        .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
         .attr("font-size", "var(--panel-big)")
         .attr("text-anchor", "end")
         .text(`→ ${this.inject.dataDescription.numericColumns[0].name}`));
 
+    
     svg.append("g")
       .call(xAxis);
 
@@ -159,7 +160,7 @@ export class EdaScatter implements AfterViewInit {
       .attr("fill", d => { 
         while (d.depth > 1) d = d.parent;
         //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
-        return colorsScatter[valuesScatter.findIndex((item) => d.label.includes(item))] || color(d.label);
+        return valuesScatter.findIndex((item) => d.label.includes(item)) !== -1 ? colorsScatter[valuesScatter.findIndex((item) => d.label.includes(item))] : color(d.label);
       })
       .on('click', (e, data) => {
         if (this.inject.linkedDashboard) {
@@ -171,7 +172,7 @@ export class EdaScatter implements AfterViewInit {
       })
       .on('mouseover', (d, data) => {
         
-        
+
         let categoryText = data.category ? `${this.inject.dataDescription.otherColumns[0].name} : ${data.category} ` : '';
         let serieText = data.category ? `${this.inject.dataDescription.otherColumns[1].name}  : ${data.label}`
         : `${this.inject.dataDescription.otherColumns[0].name} : ${data.label}`;
@@ -229,7 +230,10 @@ export class EdaScatter implements AfterViewInit {
           this.onClick.emit({label, filterBy});
         }
     
-      })
+    })
+    svg.selectAll(".tick text")
+      .attr("stroke", this.styleProviderService.panelFontColor.source['_value'])
+      .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
   }
 
   getColors(dataLength, colors) {

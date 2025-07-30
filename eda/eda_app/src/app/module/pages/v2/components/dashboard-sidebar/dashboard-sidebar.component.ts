@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, Input, ViewChild } from "@angular/core";
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, inject, Input, Output, ViewChild } from "@angular/core";
 import { OverlayModule } from "primeng/overlay";
 import { OverlayPanel, OverlayPanelModule } from "primeng/overlaypanel";
 import { DashboardPageV2 } from "../../dashboard/dashboard.page";
@@ -57,6 +57,7 @@ export class DashboardSidebarComponent {
   
   @ViewChild('popover') popover!: OverlayPanel;
   @Input() dashboard: DashboardPageV2;
+  @Output() bgClass = new EventEmitter<string>();
 
   isPopoverVisible = false; // Controla la visibilidad del overlay
   isSaveAsDialogVisible = false;
@@ -92,17 +93,24 @@ export class DashboardSidebarComponent {
       command: () => this.cleanPanelsCache()
     },
     {
-      label: "Live Dashboard",
-      icon: "pi pi-desktop",
-      items: [],
-    },
-    {
+      label: "Privacitat informe",
+      icon: "pi pi-lock",
+      command: () => { 
+        this.isVisibleModalVisible = true;
+        this.hidePopover();
+      }
+    },{
       label: "Afegir etiqueta",
       icon: "pi pi-tag",
       command: () => {
         this.isTagModalVisible = true;
         this.hidePopover();
       }
+    },
+    {
+      label: "Live Dashboard",
+      icon: "pi pi-desktop",
+      items: [],
     },
     {
       label: "Guardar",
@@ -121,14 +129,6 @@ export class DashboardSidebarComponent {
       label: "Eliminar informe",
       icon: "pi pi-trash",
       command: () => this.removeDashboard()
-    },
-    {
-      label: "Privacitat informe",
-      icon: "pi pi-lock",
-      command: () => { 
-        this.isVisibleModalVisible = true;
-        this.hidePopover();
-      }
     },
       { label: 'Más opciones'},
     {

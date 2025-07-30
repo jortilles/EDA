@@ -2,6 +2,7 @@ import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output,
 import * as d3 from 'd3';
 import { EdaFunnel } from './eda-funnel';
 import { ChartsColors } from '@eda/configs/index';
+import { StyleProviderService } from '@eda/services/service.index';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
 
 interface FunnelData {
@@ -41,7 +42,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   div = null;
 
 
-  constructor() {
+  constructor( private styleProviderService : StyleProviderService) {
   }
 
 
@@ -164,8 +165,8 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .attr('style', `
         fill: ${values};
       `)
-      .style("font-family", "var(--panel-font-family)")
-      .attr("fill", "var(--panel-font-color)")
+      .style("font-family",this.styleProviderService.panelFontFamily.source['_value'])
+      .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
       .style("font-size", "var(--panel-big)");
 
     svg.selectAll('.labels')
@@ -177,10 +178,10 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .attr('y', 50)
       .text(({ label }) => label)
       .attr('style', `
-          font-family: var(--panel-font-family);
+          font-family: ${this.styleProviderService.panelFontFamily.source['_value']};
           font-size: 14px;
       `)
-      .attr("fill", 'var(--panel-font-color)')
+      .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
@@ -204,7 +205,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .attr('y', 70)
       .text(({ value }, index) => index === 0 ? '' : d3.format('.1%')(value / data[0].value))
       .attr('style', `
-          fill: ${percentages};
+          fill: ${this.styleProviderService.panelFontColor.source['_value']};
           font-size: 18px;
       `);
 

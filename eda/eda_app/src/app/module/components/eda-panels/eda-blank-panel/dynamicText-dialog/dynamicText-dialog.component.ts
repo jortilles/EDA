@@ -56,13 +56,18 @@ export class dynamicTextDialogComponent extends EdaDialogAbstract {
   }
 
   onShow(): void {
+    const panelChart = this.controller.params.panelChart;
     this.panelChartConfig = this.controller.params.panelChart;
-    if(this.controller.params.panelChart.config.config.color!==undefined){
-      this.color= this.controller.params.panelChart.config.config.color;
-    }else {
-      this.color= this.controller.params.panelChart.config.config;
-    }
-    
+
+    const colorConfig = panelChart?.config?.config;
+
+    if (typeof colorConfig?.color !== 'undefined') {
+      this.color = colorConfig.color;
+    } else if (typeof colorConfig !== 'undefined') {
+      this.color = colorConfig;
+    } else {
+      this.color = '#000000';
+    }    
     this.display = true;
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {

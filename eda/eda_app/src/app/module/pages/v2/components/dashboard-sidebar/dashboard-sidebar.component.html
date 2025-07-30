@@ -27,7 +27,10 @@
           <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
           }
         </button>
+        @if(item.label === "Live Dashboard" || item.label === "Nou filtre"){
+          <hr class="my-2" />
         }
+      }
 
         <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
           (click)="toggleOpciones()">

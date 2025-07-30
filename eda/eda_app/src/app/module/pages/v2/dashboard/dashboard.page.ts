@@ -143,8 +143,9 @@ export class DashboardPageV2 implements OnInit {
       this.initPanels(dashboard);
       console.log('el dashboard es:', dashboard)
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
-      this.chartUtils.MyPaletteColors = this.styles?.palette['paleta'] || [];
-      this.assignStyles();
+      //this.chartUtils.MyPaletteColors = this.styles?.palette['paleta'] || [];
+      if('palette' in (this.dashboard.config.styles ?? {}))
+        this.assignStyles();
       // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
       // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
       // me.selectedTags = me.selectedTagsForDashboard(me.tags, config.tag)
@@ -166,6 +167,7 @@ export class DashboardPageV2 implements OnInit {
   // Método que asigna los estilos
   public assignStyles() {
     // Panel del título del informe
+    this.stylesProviderService.setStyles(this.styles)
     this.reportPanel = {
       background: this.dashboard.config.styles.panelColor,
       height: 'auto',

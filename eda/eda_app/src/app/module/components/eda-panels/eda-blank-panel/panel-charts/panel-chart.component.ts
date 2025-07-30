@@ -84,12 +84,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         private chartUtils: ChartUtilsService,
         @Self() private ownRef: ElementRef,
         public styleProviderService: StyleProviderService) {
-
-        this.styleProviderService.panelFontColor.subscribe(color => {
-            this.fontColor = color;
-            if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
-        });
-
+        
+        this.fontColor = this.styleProviderService.panelFontColor.source['value'];
+        
+        
         this.styleProviderService.panelFontFamily.subscribe(family => {
             this.fontFamily = family;
             if(this.props && ['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'bubblechart','pyramid', 'radar'].includes(this.props.chartType)) this.ngOnChanges(null);
@@ -276,7 +274,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             fontColor: this.fontColor
         }
 
-
         const ticksOptions = {
             maxRotation:30,
             minRotation: 0,
@@ -286,7 +283,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
       
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart, ticksOptions   );
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService   );
 
 
         /**Add trend datasets*/
@@ -573,7 +570,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const chartOptions = this.chartUtils.initChartOptions(
             chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, false, dimensions, null,
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, chartSubType, ticksOptions, false
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, chartSubType, ticksOptions, false, this.styleProviderService
         );
         // let chartConfig: any = {};
         chartConfig.edaChart = {}
@@ -663,7 +660,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdadynamicTextComponent);
         this.componentRef = this.entry.createComponent(factory);
-        this.componentRef.instance.inject = inject;
+        this.componentRef.instance.inject = inject;  
         this.componentRef.instance.onNotify.subscribe(data => {
             const dynamicTextConfig = new DynamicTextConfig(data.color);
             (<DynamicTextConfig><unknown>this.props.config.setConfig(dynamicTextConfig));

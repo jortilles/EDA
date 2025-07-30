@@ -2942,7 +2942,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="DynamicTextColor" datatype="html">
 <source>       Cambiar Color   </source>
-<target>       Camviar Color   </target>
+<target>       Canviar Color   </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/components/eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component.html</context>
   <context context-type="linenumber">11</context>

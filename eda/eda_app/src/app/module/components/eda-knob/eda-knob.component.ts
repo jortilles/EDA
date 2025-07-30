@@ -1,4 +1,4 @@
-
+import { StyleProviderService } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { EdaKnob } from "./edaKnob";
 
@@ -21,7 +21,7 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   comprareValue: number;
   class: string;
 
-  constructor() { }
+  constructor(private styleProviderService : StyleProviderService) { }
 
   ngOnInit(): void {
     this.color = this.inject.color ? this.inject.color : "#024873";
@@ -41,10 +41,31 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
       }else{
         val = h;
       }
-      val = parseInt((val/1.2).toFixed());
+      val = parseInt((Math.min(w, h) * 1.66).toFixed());
     }
-    setTimeout(_ => { this.size =  val }, 0)
+    setTimeout(_ => { this.size = val;    this.applyTextStyle(); }, 0)
   }
+
+private applyTextStyle(): void {
+  const parent = this.parentDiv?.nativeElement;
+  const color = this.styleProviderService.panelFontColor.source['_value'];
+  const fontFamily = this.styleProviderService.panelFontFamily.source['_value'];
+
+  // Texto central del knob
+  const centerText = parent?.querySelector('.p-knob-text');
+  if (centerText) {
+    centerText.style.setProperty('color', color, 'important');
+    centerText.style.setProperty('font-family', fontFamily, 'important');
+  }
+
+  // Todos los textos dentro de SVGs (min y max)
+  const svgTexts = parent?.querySelectorAll('svg text');
+  svgTexts?.forEach(el => {
+    el.setAttribute('fill', color);
+    el.style.setProperty('fill', color, 'important'); 
+    el.style.setProperty('font-family', fontFamily, 'important');
+  });
+}
 
   public getLimits() {
 
@@ -77,6 +98,16 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
     if(limits[1] < this.value) limits[1] = this.value;
     return limits;
 
+  }
+
+  getStyle() {
+    return {
+        'color' : this.styleProviderService.panelFontColor.source['_value'], 'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+    }
+  }
+
+  getColor() {
+    return this.styleProviderService.pagePalette.source['_value'].paleta[0]
   }
 
 }

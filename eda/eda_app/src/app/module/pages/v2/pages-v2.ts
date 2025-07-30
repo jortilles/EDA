@@ -4,6 +4,7 @@ import { Router, RouterModule } from "@angular/router";
 import { MainLeftSidebarComponent } from "./components/main-left-sidebar/main-left-sidebar";
 import { CreateDashboardService } from "@eda/services/utils/create-dashboard.service";
 import { CreateDashboardComponent } from "@eda/shared/components/create-dashboard/create-dashboard.component";
+import { StyleProviderService} from '@eda/services/service.index';
 
 @Component({
     selector: 'app-v2-pages',
@@ -16,17 +17,18 @@ export class PagesV2Component implements OnInit {
     public createDashboardService = inject(CreateDashboardService);
     backgroundColor: string
     panelMode: boolean = false;
-
     // private route: ActivatedRoute,
     // private settingSerive: SettingsService,
     // private styleProviderService: StyleProviderService
-    constructor() {
+    constructor(private styleProviderService: StyleProviderService) {
 
         // this.styleProviderService.pageBackground.subscribe((backgroundColor) => {
         //     this.backgroundColor = backgroundColor;
         // })
 
     }
+    bgClass: any = this.styleProviderService.pageBackground;
+
 
     ngOnInit(): void {
         // this.settingSerive.loadingSettings();

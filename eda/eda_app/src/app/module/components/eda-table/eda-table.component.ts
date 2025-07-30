@@ -1,4 +1,5 @@
 import { Component, ViewChild, Input, ElementRef, OnInit, Output, EventEmitter } from '@angular/core';
+import { StyleProviderService } from '@eda/services/service.index';
 import { Table } from 'primeng/table';
 // import { FilterUtils } from 'primeng/utils';
 import { EdaTable } from './eda-table';
@@ -26,7 +27,7 @@ export class EdaTableComponent implements OnInit {
     public colors = {};
     public styles = {};
 
-    constructor(private elementRef: ElementRef, private styleService: StyleService) {
+    constructor(private elementRef: ElementRef, private styleService: StyleService, private styleProviderService : StyleProviderService) {
         registerLocaleData(es);
         /** Definim les caracteristiques del gràfic dintre de la taula.......................... */
         this.chartOptions = EdaColumnChartOptions;
@@ -74,8 +75,7 @@ export class EdaTableComponent implements OnInit {
         return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
     }
 
-    getStyle(col, rowData) {
-      
+    getStyleClass(col, rowData) {
         if (this.styles[col.field]) {
 
             let cellClass = null;
@@ -93,8 +93,15 @@ export class EdaTableComponent implements OnInit {
 
             return cellClass;
         }
-
         return null;
+    }
+
+    getStyle() {
+        return {
+            'color': this.styleProviderService.panelFontColor.source['_value'],
+            'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+            'background': this.styleProviderService.panelColor.source['_value'] 
+        }
     }
 
     public applyStyles(styles: Array<any>) {

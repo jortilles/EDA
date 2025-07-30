@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { StyleProviderService } from '@eda/services/service.index';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
@@ -16,7 +17,8 @@ export class EdaKpiComponent implements OnInit {
     @ViewChild('sufixContainer') sufixContainer: ElementRef;
     @ViewChild('EdaChart', { static: false }) edaChartComponent: EdaChartComponent;
     sufixClick: boolean = false;
-    color: string;
+    color: string = this.styleProviderService.panelFontColor.source['_value'];
+    family: string = this.styleProviderService.panelFontFamily.source['_value'];
     defaultColor = '#67757c';
     warningColor = '#ff8100';
     containerHeight: number = 20;
@@ -24,13 +26,13 @@ export class EdaKpiComponent implements OnInit {
 
     showChart: boolean = true;
 
-    constructor() { }
+    constructor(private styleProviderService : StyleProviderService) { }
 
     ngAfterViewInit() {
         this.initDimensions();
     }
 
-    ngOnInit() {;
+    ngOnInit() {
         try {
             registerLocaleData(es);
 
@@ -56,17 +58,23 @@ export class EdaKpiComponent implements OnInit {
 
     public initDimensions() {
         if (this.kpiContainer) {
-            const widthKpiContainer = this.kpiContainer.nativeElement.offsetWidth;
-            const heightKpiContainer = this.kpiContainer.nativeElement.offsetHeight;
+            // Subimos 3 niveles desde el contenedor original
+            const realContainer = this.kpiContainer.nativeElement
+                ?.parentElement
+                ?.parentElement
+                ?.parentElement;
+
+            const widthKpiContainer = realContainer.offsetWidth;
+            const heightKpiContainer = realContainer.offsetHeight;
             const sufixContainerReference = this.sufixContainer.nativeElement;
-    
+
             if (widthKpiContainer > 0) {
                 this.containerHeight = heightKpiContainer;
                 this.containerWidth = widthKpiContainer;
             }
-    
-            //Auto margin
-            sufixContainerReference.style.margin = "auto"
+
+            // Auto margin
+            sufixContainerReference.style.margin = "auto";
         }
     }
 
@@ -76,7 +84,10 @@ export class EdaKpiComponent implements OnInit {
     }
 
     getStyle(): any {
-        return { 'font-weight': 'bold', 'font-size': this.getFontSize(), display: 'flex', 'justify-content': 'center', color: this.color }
+        return {
+            'font-weight': 'bold', 'font-size': this.getFontSize(), display: 'flex', 'justify-content': 'center',
+            color : this.color, 'font-family': this.family
+        }
     }
 
     /**
