@@ -34,8 +34,8 @@ export class DashboardEditStyleDialog {
   public display: boolean = false;
   public backgroundColor: string = this.stylesProviderService.DEFAULT_BACKGROUND_COLOR;
   public panelColor: string = this.stylesProviderService.DEFAULT_PANEL_COLOR;
-  public selectedPalette: any | null = null;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+  public selectedPalette = this.allPalettes[0];
   public activePalette: any = this.stylesProviderService.ChartsPalettesActive;
   public properties: boolean = true;
   

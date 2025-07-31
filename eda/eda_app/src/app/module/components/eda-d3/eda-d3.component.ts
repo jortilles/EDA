@@ -155,8 +155,9 @@ export class EdaD3Component implements AfterViewInit, OnInit {
           return  colorsTree[valuesTree.findIndex((item) => d.names.includes(item))] || color(d.names[0]);
         })
         
-      .attr("stroke-width", d => d.width)
-      .style("mix-blend-mode", "multiply")
+        .attr("stroke-width", d => d.width)
+        // REVISAR ESTO
+      //.style("mix-blend-mode", "multiply")
       .on('mouseover', (d, data) => {
 
         this.showLinks(d, data);
