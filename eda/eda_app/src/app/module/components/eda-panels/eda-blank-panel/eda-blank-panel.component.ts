@@ -615,7 +615,6 @@ export class EdaBlankPanelComponent implements OnInit {
             'geoJsonMap'.includes(this.panelChart.props.chartType) || //Leaflet 
             ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
         {
-            console.log(this.panel)
             this.action.emit({ code: 'ADDFILTER', data: {...event, panel: this.panel} });
         }
         else {

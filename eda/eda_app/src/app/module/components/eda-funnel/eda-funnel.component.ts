@@ -80,6 +80,8 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
     let labels = this.data.labels;
     const gradient1 = this.colors[0];
     const gradient2 = this.colors[1];
+    const colorPanel = this.styleProviderService.panelFontColor.source['_value']
+    const fontPanel = this.styleProviderService.panelFontFamily.source['_value']
 
     const percentages = '#093a06';
     const margin = ({ top: 25, right: 25, bottom: 35, left: 70 });
@@ -165,8 +167,8 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .attr('style', `
         fill: ${values};
       `)
-      .style("font-family",this.styleProviderService.panelFontFamily.source['_value'])
-      .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+      .style("font-family",fontPanel)
+      .attr("fill", colorPanel)
       .style("font-size", "var(--panel-big)");
 
     svg.selectAll('.labels')
@@ -178,10 +180,10 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .attr('y', 50)
       .text(({ label }) => label)
       .attr('style', `
-          font-family: ${this.styleProviderService.panelFontFamily.source['_value']};
+          font-family: ${fontPanel};
           font-size: 14px;
       `)
-      .attr("fill", this.styleProviderService.panelFontColor.source['_value'])
+      .attr("fill", colorPanel)
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
@@ -205,7 +207,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .attr('y', 70)
       .text(({ value }, index) => index === 0 ? '' : d3.format('.1%')(value / data[0].value))
       .attr('style', `
-          fill: ${this.styleProviderService.panelFontColor.source['_value']};
+          fill: ${colorPanel};
           font-size: 18px;
       `);
 
@@ -218,7 +220,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .attr('x2', value => x(value))
       .attr('y2', height - 30)
       .style('stroke-width', 1)
-      .style('stroke', percentages)
+      .style('stroke', colorPanel)
       .style('fill', 'none');
   }
 

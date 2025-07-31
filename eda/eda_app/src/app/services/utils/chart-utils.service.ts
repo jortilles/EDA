@@ -1302,60 +1302,82 @@ export class ChartUtilsService {
                 }else{
                         dataLabelsObjt =   { display: false }
                 }
-                options.chartOptions = {
-                    animation: {
-                        duration: 2000,
-                        animateScale: true,
-                        animateRotate: true
-                    },
-                    color: colorStyle,
-                    font: {
-                        family: fontStyle,
-                    },
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    devicePixelRatio: 2,
-                   
-                    onHover: (event,chartElement ) => {
-                        //Canviem el cursor de normal a tipus link
-                        chartElement.length == 1 ? 
-                        event.native.target.style.cursor = "pointer" :
-                        event.native.target.style.cursor = "default";
-                    },
-                    plugins: {
-                        datalabels: dataLabelsObjt,
-                        tooltip: {
-                            callbacks: {
-                            title: (context) => {
-                                return context[0].dataset.label;
-                            },
-                            label: (context) => {
-                                let label = context.label || '';
-                                if (label) label += ': ';
-                                label += parseFloat(context.raw).toLocaleString('de-DE', { maximumFractionDigits: 6 });
-                                const total = context.dataset.data.reduce((total, datapoint) => total + datapoint, 0);
-                                const percentage = context.raw / total * 100;
-                                label += ' ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %';
-                                return label;
-                            },
-                            footer: () => linked,
-                            afterLabel: () => {}
-                            }
-                        },
-                        legend: {
-                            ...edaPieLegend,
-                            labels: {
-                            ...(edaPieLegend?.labels || {}),
-                            font: {
-                                family: fontStyle,
-                                size: 14,
-                                weight: 'normal'
-                            }
+                // Configs reutilizables
+                const gridColorConfig = {
+                    color: colorStyle
+                };
+
+                const tooltipCallbacks = {
+                title: (context) => context[0].dataset.label,
+                label: (context) => {
+                    let label = context.label || '';
+                    if (label) label += ': ';
+                    label += parseFloat(context.raw).toLocaleString('de-DE', { maximumFractionDigits: 6 });
+
+                    const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                    const percentage = context.raw / total * 100;
+                    label += ' ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %';
+
+                    return label;
+                },
+                footer: () => linked,
+                afterLabel: () => {}
+                };
+
+                const legendLabelsFont = {
+                family: fontStyle,
+                size: 14,
+                weight: 'normal'
+                };
+
+                // Escalas específicas por polarArea
+                let scaleOptions;
+                if (type === 'polarArea') { 
+                    scaleOptions =  {
+                        r: {
+                            grid: gridColorConfig,
+                            angleLines: gridColorConfig,
+                            ticks: {
+                                backdropColor: colorStyle
                             }
                         }
+                    }
+                }
+
+
+                // Configuración final del gráfico
+                options.chartOptions = {
+                animation: {
+                    duration: 2000,
+                    animateScale: true,
+                    animateRotate: true
+                },
+                color: colorStyle,
+                font: {
+                    family: fontStyle
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                devicePixelRatio: 2,
+                onHover: (event, chartElement) => {
+                    event.native.target.style.cursor = chartElement.length === 1 ? 'pointer' : 'default';
+                },
+                scales: scaleOptions,
+                plugins: {
+                    datalabels: dataLabelsObjt,
+                    tooltip: {
+                    callbacks: tooltipCallbacks
                     },
-                };
-                break;
+                    legend: {
+                    ...edaPieLegend,
+                    labels: {
+                        ...(edaPieLegend?.labels || {}),
+                        font: legendLabelsFont
+                    }
+                    }
+                }
+            };
+            break;
             case 'bar':
                 if (!['horizontalBar', 'pyramid', 'stackedbar100'].includes(chartSubType)) {
 
@@ -1457,7 +1479,8 @@ export class ChartUtilsService {
                                     family: fontStyle,
                                     style: edafontStyle
                                 },
-                                color: colorStyle,
+                                    color: colorStyle,
+                                
                                 callback: function(val, index) {
                                     const label = this.getLabelForValue(val);
                                     return label?.length > 20 ? label.substr(0, 17) + '...' : label;
@@ -1469,7 +1492,8 @@ export class ChartUtilsService {
                             y: {
                                 stacked: stacked || false,
                                 grid: {
-                                drawBorder: false
+                                    drawBorder: false,
+                                    color: colorStyle 
                                 },
                                 display: maxTicksLimitY !== 0,
                                 beginAtZero: true,
@@ -1606,6 +1630,7 @@ export class ChartUtilsService {
                                 stacked: stacked || false,
                                 grid: {
                                     drawBorder: false,
+                                    color: colorStyle 
                                 },
                                 display: true,
                                 grace: (showLabels || showLabelsPercent )?'1%': '0%',
@@ -1762,6 +1787,7 @@ export class ChartUtilsService {
                             x: {
                                 grid: {
                                     drawBorder: false,
+                                    color: colorStyle,
                                     display: true,
                                     callback: function(val, index) {
                                         if (this.getLabelForValue(val))
@@ -1841,24 +1867,24 @@ export class ChartUtilsService {
                     },
                     color: colorStyle,
                     font: {
-                        family: styleProviderService.panelFontFamily.source['_value'],
+                        family: fontStyle,
                     },
                     scales: {
                         r: {
                         pointLabels: {
                             color: styleProviderService.panelFontColor.source['_value'], 
                             font: {
-                                family: styleProviderService.panelFontFamily.source['_value'],
+                                family: fontStyle,
                             }
                         },
                         ticks: {
-                            color: styleProviderService.panelFontColor.source['_value'], 
+                            color: colorStyle, 
                         },
                         angleLines: {
-                            color: styleProviderService.panelFontColor.source['_value']
+                            color: colorStyle
                         },
                         grid: {
-                            color: styleProviderService.panelFontColor.source['_value'] 
+                            color: colorStyle
                         }
                         }
                     },
@@ -1995,6 +2021,7 @@ export class ChartUtilsService {
                             display: maxTicksLimitY !== 0,
                             grid: {
                                 drawBorder: false,
+                                color: colorStyle,
                                 display: true,
                                 zeroLineWidth: 1
                             },
