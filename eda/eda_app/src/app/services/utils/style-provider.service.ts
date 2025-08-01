@@ -10,6 +10,7 @@ export interface StyleConfig {
 }
 
 export interface DashboardStyles {
+	stylesApplied: boolean;
 	backgroundColor: string;
 	panelColor: string;
 	titleAlign: string;
@@ -43,6 +44,11 @@ export class StyleProviderService {
 	/**Page palette */
 	private _pagePalette = new BehaviorSubject<string>(this.DEFAULT_PALETTE_COLOR);
 	public pagePalette = this._pagePalette.asObservable();
+
+
+	/**Style applied */
+	private _pageStylesApplied = new BehaviorSubject<boolean>(false);
+	public pageStylesApplied = this._pageStylesApplied.asObservable();
 
 	/**Page background */
 	private _pageBackground = new BehaviorSubject<string>(this.DEFAULT_BACKGROUND_COLOR);
@@ -110,9 +116,10 @@ export class StyleProviderService {
 		this._pageBackground.next(this.DEFAULT_BACKGROUND_COLOR);
 	}
 
-	public setStyles(styles: DashboardStyles) {
-
-		this._pagePalette.next(styles.palette);
+	public setStyles(styles: DashboardStyles, initial?: boolean) {
+		if (!initial)
+			this._pagePalette.next(styles.palette);			
+		this._pageStylesApplied.next(true)
 		this._pageBackground.next(styles.backgroundColor);
 		this._panelColor.next(styles.panelColor);
 
@@ -180,6 +187,7 @@ export class StyleProviderService {
 	public generateDefaultStyles(): DashboardStyles {
 
 		const styles: DashboardStyles = {
+			stylesApplied: false,
 			backgroundColor: this.DEFAULT_BACKGROUND_COLOR,
 			panelColor: this.DEFAULT_PANEL_COLOR,
 			titleAlign: this.DEFAULT_TITLE_ALIGN,

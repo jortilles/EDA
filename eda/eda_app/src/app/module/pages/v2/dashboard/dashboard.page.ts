@@ -144,8 +144,11 @@ export class DashboardPageV2 implements OnInit {
       console.log('el dashboard es:', dashboard)
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       //this.chartUtils.MyPaletteColors = this.styles?.palette['paleta'] || [];
-      if('palette' in (this.dashboard.config.styles ?? {}))
+      if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) { 
         this.assignStyles();
+        this.stylesProviderService.setStyles(this.styles, true)
+      }
+
       // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
       // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
       // me.selectedTags = me.selectedTagsForDashboard(me.tags, config.tag)
@@ -166,16 +169,13 @@ export class DashboardPageV2 implements OnInit {
 
   // Método que asigna los estilos
   public assignStyles() {
-    // Panel del título del informe
-    this.stylesProviderService.setStyles(this.styles)
+    // Panel del título del informe    
     this.reportPanel = {
-      background: this.dashboard.config.styles.panelColor,
       height: 'auto',
     };
     
     // Texto del título del informe
     this.reportTitle = {
-      background: this.dashboard.config.styles.panelColor,
       color: this.dashboard.config.styles.title.fontColor,
       'font-size': (20 + this.dashboard.config.styles.title.fontSize * 3) + 'px',
       'font-family': this.dashboard.config.styles.title.fontFamily,
@@ -245,7 +245,7 @@ export class DashboardPageV2 implements OnInit {
 
   // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
   onItemChange(item: GridsterItem): void {
-    console.log('Cambio en el Item:', item);
+    //console.log('Cambio en el Item:', item);
     // console.log('Todos los valores => Dashboard:', this.dashboard);
 
     // let valor = this.getBottomMostItem();
@@ -299,7 +299,6 @@ export class DashboardPageV2 implements OnInit {
   // TODO simplificar
   public async onPanelAction(event: IPanelAction): Promise<void> {
     //Check de modo
-    console.log('PanelAction')
     let modeEDA: boolean = !event?.data.panel.content.query.query.modeSQL &&
       (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA')
 
@@ -311,16 +310,11 @@ export class DashboardPageV2 implements OnInit {
       const panel = event?.data?.panel;
       let column: any;
       column = this.getCorrectColumnFiltered(event)
-      console.log('columna', column)
-      console.log('data', data)
-      console.log('table', this.dataSource.model.tables)
 
       //column = event.data.filterBy
       const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
       if (column && table) {
         let config = this.setPanelsToFilter(panel);
-        console.log('filters', this.globalFilter.globalFilters)
-        console.log('config', config)
         //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
         if (this.globalFilter.globalFilters) {
           //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla, si lo hay, hay que borrarlo
@@ -329,7 +323,6 @@ export class DashboardPageV2 implements OnInit {
             f.selectedItems.includes(event?.data.label) && f.selectedItems.length === 1 && f.hasOwnProperty("fromChart")
           );
           if (chartToRemove) {
-            console.log('borrar filtro ya existente')
             let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label &&
               element.filter.table.label === chartToRemove.table.label)
               // Borramos del global filter el filtro a borrar fromChart
@@ -343,13 +336,11 @@ export class DashboardPageV2 implements OnInit {
             // Actualizamos global filter
               this.reloadOnGlobalFilter(); 
           } else {
-            console.log('filters', this.globalFilter.globalFilters)
             //CREAMOS NUEVO FILTRO EN CHART
             //Recuperamos filtros activos del global filter
             let actualFilter = this.globalFilter.globalFilters.filter(
               (f) =>f.table?.value === table.table_name && f.column?.value.column_name === column.column_name
             )[0];
-            console.log('actualfilter',actualFilter)
             if (actualFilter) {
               //Si last filters no tiene uno con la misma label lo guardamos
               if (!this.lastFilters.includes(actualFilter)) {
@@ -376,7 +367,6 @@ export class DashboardPageV2 implements OnInit {
               fromChart: true, //fromChart = true indica que se ha creado mediante un click
             };
             
-            console.log('esto son los filtros',this.chartFilter)
             //Borramos filtros activos del global filter, pero los mantenemos guardados
             this.lastFilters.forEach((element) => { this.globalFilter.removeGlobalFilter(element.filter, true);});
             //Añadimos filtros nuevos

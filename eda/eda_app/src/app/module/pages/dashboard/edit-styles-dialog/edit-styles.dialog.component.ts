@@ -201,6 +201,7 @@ export class EditStylesDialogComponent extends EdaDialogAbstract {
 	public saveConfig(): void {
 		// this.dashBoardStyles.fontFamily = this.selectedFont.value;
 		const response: DashboardStyles = {
+			stylesApplied: true,
 			backgroundColor: this.dashBoardStyles.backgroundColor,
 			panelColor: this.dashBoardStyles.panelColor,
 			titleAlign: this.alignDasboardTitle,

@@ -204,6 +204,7 @@ export class DashboardEditStyleDialog {
 	public saveConfig(): void {
 		// this.dashBoardStyles.fontFamily = this.selectedFont.value;
 		const response: DashboardStyles = {
+			stylesApplied: true,
 			backgroundColor: this.backgroundColor,
 			panelColor: this.panelColor,
 			titleAlign: this.alignDasboardTitle,
