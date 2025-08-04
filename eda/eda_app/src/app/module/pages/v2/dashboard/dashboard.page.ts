@@ -205,6 +205,8 @@ export class DashboardPageV2 implements OnInit {
     this.panelContent = {
       background: this.dashboard.config.styles.panelColor,
     };
+
+    this.stylesProviderService.ActualChartPalette = this.dashboard.config.styles.palette;
   }
 
   private initPanels(dashboard: any) {

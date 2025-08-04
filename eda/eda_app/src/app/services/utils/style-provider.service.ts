@@ -37,8 +37,9 @@ export class StyleProviderService {
 	public DEFAULT_PANEL_TITLE_ALIGN: string = DEFAULT_PANEL_TITLE_ALIGN;
 	public DEFAULT_PALETTE_COLOR: string = DEFAULT_PALETTE_COLOR;
 	public ChartsPalettes: any = ChartsPalettes;
+	public ActualChartPalette: string; 
 	public ChartsPalettesActive: boolean = ChartsPalettesActive;
-
+	
 	public DEFAULT_CUSTOM_CSS: string = '';
 	
 	/**Page palette */
@@ -117,8 +118,11 @@ export class StyleProviderService {
 	}
 
 	public setStyles(styles: DashboardStyles, initial?: boolean) {
-		if (!initial)
+		this.ChartsPalettesActive = true;
+		if (!initial) { 
 			this._pagePalette.next(styles.palette);			
+			this.ActualChartPalette = styles.palette;
+		}
 		this._pageStylesApplied.next(true)
 		this._pageBackground.next(styles.backgroundColor);
 		this._panelColor.next(styles.panelColor);

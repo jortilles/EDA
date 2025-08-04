@@ -175,6 +175,7 @@ export class DashboardSidebarComponent {
   hidePopover() {
     this.isPopoverVisible = false;
     this.popover.hide();
+    this.mostrarOpciones = false;
   }
 
   public onAddGlobalFilter(): void {

@@ -41,7 +41,7 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
     if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(c => this.ChartUtilsService.rgb2hexD3(c));
+        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(c => this.ChartUtilsService.rgb2hexD3(c) || c);
         this.originalColors = [...this.colors];
         this.labels = [0, 1];
       }, 0);

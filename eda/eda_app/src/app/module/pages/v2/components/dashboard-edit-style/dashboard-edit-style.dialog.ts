@@ -35,7 +35,7 @@ export class DashboardEditStyleDialog {
   public backgroundColor: string = this.stylesProviderService.DEFAULT_BACKGROUND_COLOR;
   public panelColor: string = this.stylesProviderService.DEFAULT_PANEL_COLOR;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-  public selectedPalette = this.allPalettes[0];
+  public selectedPalette = this.stylesProviderService.ActualChartPalette || this.allPalettes[0];
   public activePalette: any = this.stylesProviderService.ChartsPalettesActive;
   public properties: boolean = true;
   
@@ -114,14 +114,14 @@ export class DashboardEditStyleDialog {
   }
 
 	ngOnInit(): void {
-	this.dashBoardStyles = this.dashboard.dashboard.config.styles;	
-	this.assignValues(this.dashBoardStyles);
-	this.setSampleTitleStyle();
-	this.setSampleFIltersStyle();
-	this.setSampleGlobalStyle();
-	this.setPanelTitleStyle();
-    this.setPanelContentStyle();
-  }
+		this.dashBoardStyles = this.dashboard.dashboard.config.styles;	
+		this.assignValues(this.dashBoardStyles);
+		this.setSampleTitleStyle();
+		this.setSampleFIltersStyle();
+		this.setSampleGlobalStyle();
+		this.setPanelTitleStyle();
+		this.setPanelContentStyle();
+  	}
 
   assignValues(styles: DashboardStyles): void {
 	  /** Global colors */

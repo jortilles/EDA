@@ -139,7 +139,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
                 this.series = this.chart.chartDataset.map(dataset => ({
                     label: dataset.label,
-                    bg: this.rgb2hex(dataset.backgroundColor),
+                    bg: this.rgb2hex(dataset.backgroundColor) || dataset.backgroundColor,
                     border: dataset.borderColor
                 }));
                 this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor:  this.hex2rgb(s.border, 90) }));

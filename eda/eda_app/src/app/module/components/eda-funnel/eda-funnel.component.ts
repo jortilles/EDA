@@ -48,7 +48,6 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
 
 
   ngOnInit(): void {
-
     this.id = `funnel_${this.inject.id}`;
     this.data = this.inject.data;
     this.colors = this.inject.colors.length > 0 ? this.inject.colors : ChartsColors.filter((a, i) => i < 2).map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
@@ -57,7 +56,6 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
     this.labelIndex = firstNonNumericColIndex;
     this.firstColLabels = this.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
-
   }
 
   ngAfterViewInit() {
@@ -77,11 +75,17 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
     /**Vars */
     const width = this.svgContainer.nativeElement.clientWidth - 20, height = this.svgContainer.nativeElement.clientHeight - 20;
     let values = this.data.values;
+    if (this.styleProviderService.ChartsPalettesActive) { 
+      let paleta = this.styleProviderService.ActualChartPalette['paleta'] || this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
+      this.colors[0] = paleta[0];
+      this.colors[1] = paleta[paleta.length - 1];
+    }
+
     let labels = this.data.labels;
-    const gradient1 = this.colors[0];
-    const gradient2 = this.colors[1];
-    const colorPanel = this.styleProviderService.panelFontColor.source['_value']
-    const fontPanel = this.styleProviderService.panelFontFamily.source['_value']
+    let gradient2 = this.colors[1];
+    let gradient1 = this.colors[0];
+    const colorPanel = this.styleProviderService.panelFontColor.source['_value'];
+    const fontPanel = this.styleProviderService.panelFontFamily.source['_value'];
 
     const percentages = '#093a06';
     const margin = ({ top: 25, right: 25, bottom: 35, left: 70 });

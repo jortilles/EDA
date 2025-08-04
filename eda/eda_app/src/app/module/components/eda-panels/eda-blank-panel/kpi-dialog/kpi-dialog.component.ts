@@ -98,7 +98,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
             this.series = this.edaChart.chartDataset.map(dataset => ({
                 label: dataset.label,
-                bg: this.rgb2hex(dataset.backgroundColor),
+                bg: this.rgb2hex(dataset.backgroundColor) || dataset.backgroundColor,
                 border: dataset.borderColor
             }));
             
