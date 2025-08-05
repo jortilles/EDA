@@ -75,7 +75,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
     /**Vars */
     const width = this.svgContainer.nativeElement.clientWidth - 20, height = this.svgContainer.nativeElement.clientHeight - 20;
     let values = this.data.values;
-    if (this.styleProviderService.ChartsPalettesActive) { 
+    if (this.styleProviderService.loadingFromPalette) { 
       let paleta = this.styleProviderService.ActualChartPalette['paleta'] || this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
       this.colors[0] = paleta[0];
       this.colors[1] = paleta[paleta.length - 1];

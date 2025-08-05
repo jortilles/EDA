@@ -36,7 +36,6 @@ export class DashboardEditStyleDialog {
   public panelColor: string = this.stylesProviderService.DEFAULT_PANEL_COLOR;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
   public selectedPalette = this.stylesProviderService.ActualChartPalette || this.allPalettes[0];
-  public activePalette: any = this.stylesProviderService.ChartsPalettesActive;
   public properties: boolean = true;
   
   public fonts: Array<any> =

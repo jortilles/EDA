@@ -321,15 +321,11 @@ export class DashboardSidebarComponent {
 
   public saveStyles(newStyles: any) {
     this.isEditStyleDialogVisible = false;
-    if (newStyles.palette != null)
-      this.stylesProviderService.ChartsPalettesActive = true;
     this.dashboard.dashboard.config.styles = newStyles;
     this.ChartUtilsService.MyPaletteColors = newStyles.palette?.paleta || this.ChartUtilsService.MyPaletteColors;
     this.dashboard.assignStyles();
     this.dashboard.refreshPanels();
 
-    // Cambiar estado de selector de paleta
-    setTimeout(() => {this.stylesProviderService.ChartsPalettesActive = false;},2000)
 }
 
   public closeVisibleModal() {

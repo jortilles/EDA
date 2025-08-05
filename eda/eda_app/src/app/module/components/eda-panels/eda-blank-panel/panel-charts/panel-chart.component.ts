@@ -344,7 +344,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const configColors = chartConfig.assignedColors.flatMap((item) => item.color);
         
 
-        const paletaAplicada = this.styleProviderService.ChartsPalettesActive;
+        const paletaAplicada = this.styleProviderService.loadingFromPalette;
         const sortByAsCol = !this.styleProviderService.loadingFromPalette;
 
         let paletaActual = this.styleProviderService.ActualChartPalette?.['paleta'] 
