@@ -203,6 +203,7 @@ export class DashboardEditStyleDialog {
 
 	public saveConfig(): void {
 		// this.dashBoardStyles.fontFamily = this.selectedFont.value;
+		this.stylesProviderService.loadingFromPalette = true;
 		const response: DashboardStyles = {
 			stylesApplied: true,
 			backgroundColor: this.backgroundColor,
@@ -234,6 +235,11 @@ export class DashboardEditStyleDialog {
 		}
 		this.stylesProviderService.setStyles(response)
 		this.apply.emit(response);
+
+		// REFACTOR PARA TENER UN MEJOR CONTROL
+		setTimeout(() => {
+			        this.stylesProviderService.loadingFromPalette = false;
+		}, 5000);
 	}
 
   public onApply() {

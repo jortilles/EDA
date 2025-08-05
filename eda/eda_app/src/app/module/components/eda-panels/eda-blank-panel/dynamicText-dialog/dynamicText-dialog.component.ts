@@ -55,21 +55,26 @@ export class dynamicTextDialogComponent extends EdaDialogAbstract {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  onShow(): void {
-    const panelChart = this.controller.params.panelChart;
-    this.panelChartConfig = this.controller.params.panelChart;
+ onShow(): void {
+  const panelChart = this.controller.params.panelChart;
+  this.panelChartConfig = panelChart;
 
-    const colorConfig = panelChart?.config?.config;
+  const colorConfig = panelChart?.config?.config;
 
-    if (typeof colorConfig?.color !== 'undefined') {
-      this.color = colorConfig.color;
-    } else if (typeof colorConfig !== 'undefined') {
-      this.color = colorConfig;
-    } else {
-      this.color = '#000000';
-    }    
-    this.display = true;
+  // Función para encontrar el color real sin importar la profundidad
+  function getDeepColor(obj: any): string | null {
+    while (obj && typeof obj === 'object' && 'color' in obj) {
+      obj = obj.color;
+    }
+    return typeof obj === 'string' ? obj : null;
   }
+
+  const extractedColor = getDeepColor(colorConfig);
+  this.color = extractedColor || '#000000';
+
+  this.display = true;
+}
+
   onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
   }

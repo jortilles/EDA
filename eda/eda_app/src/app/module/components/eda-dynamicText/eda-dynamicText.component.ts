@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef} from '@angular/core';
 import { EdadynamicText } from './eda-dynamicText';
 import { dynamicTextDialogComponent } from './../eda-panels/eda-blank-panel/dynamicText-dialog/dynamicText-dialog.component';
+import { StyleProviderService } from '@eda/services/service.index';
 
 @Component({
     selector: 'eda-dynamicText',
@@ -18,19 +19,29 @@ export class EdadynamicTextComponent implements OnInit {
     containerHeight: number = 20;
     containerWidth: number = 20;
 
-    constructor() { }
+    constructor(private styleProviderService : StyleProviderService) { }
 
     ngOnInit() {
       
     }
 
 getStyle(): any {
-    let color: string = '#000'; 
-
     const inputColor = this.inject?.color;
-    color = typeof inputColor === 'object' && this.inject?.color["color"]
-        ? this.inject?.color["color"]
-        : this.inject?.color || '#000';
+
+    // Función para buscar el color profundamente anidado
+    function getDeepColor(obj: any): string | null {
+        while (obj && typeof obj === 'object' && 'color' in obj) {
+            obj = obj.color;
+        }
+        return typeof obj === 'string' ? obj : null;
+    }
+
+    const injectedColor = getDeepColor(inputColor);
+    let color = injectedColor;
+    if (this.styleProviderService.loadingFromPalette) {
+        color = this.styleProviderService.ActualChartPalette['paleta'][0];
+    }
+    // console.log(injectedColor,styleColor)
 
     const fontSize = this.getFontSize();
 
@@ -40,6 +51,7 @@ getStyle(): any {
         'color': color,
     };
 }
+
 
 
 getFontSize(): string {

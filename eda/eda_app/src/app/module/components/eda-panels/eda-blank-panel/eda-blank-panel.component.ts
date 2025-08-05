@@ -963,7 +963,9 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.graficos.assignedColors.forEach((e, index) => {
                     if (this.graficos.chartLabels.includes(e.value)) {
                         let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
-                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor]
+                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor].length > 1 ?
+                            this.graficos.chartColors[0].backgroundColor[indexColor] : 
+                            this.graficos.chartColors[0].backgroundColor    
                     }
                 });
         

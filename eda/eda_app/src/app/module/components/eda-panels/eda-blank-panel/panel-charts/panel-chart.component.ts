@@ -214,7 +214,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
      * Renders edaChartComponent
      * @param type 
      */
-        private renderEdaChart(type: string) {
+    private renderEdaChart(type: string) {
         const isbarline = this.props.edaChart === 'barline';
         const isstacked = this.props.edaChart === 'stackedbar' || this.props.edaChart === 'stackedbar100';
 
@@ -227,16 +227,16 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         * add comparative
         */
         let cfg: any = this.props.config.getConfig();
-            // Si es un histogram faig aixó....        
-        if (  (['histogram'].includes(this.props.edaChart))
+        // Si es un histogram faig aixó....        
+        if ((['histogram'].includes(this.props.edaChart))
             && this.props.query.length === 1
             && this.props.query.filter(field => field.column_type === 'numeric').length == 1
-            ) {
-            let newCol = { name:  this.histoGramRangesTxt , index: 0 };
+        ) {
+            let newCol = { name: this.histoGramRangesTxt, index: 0 };
             dataDescription.otherColumns.push(newCol);
-            dataDescription.numericColumns[0].index=1
+            dataDescription.numericColumns[0].index = 1
             dataDescription.totalColumns++;
-            dataDescription.numericColumns[0].name = this.histoGramDescTxt+" " +  dataDescription.numericColumns[0].name + " " + this.histoGramDescTxt2;
+            dataDescription.numericColumns[0].name = this.histoGramDescTxt + " " + dataDescription.numericColumns[0].name + " " + this.histoGramDescTxt2;
         }
         // si vull fer comparatives faig això....
         if (!!cfg.addComparative
@@ -258,7 +258,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             
         }
 
-        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart,  values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
+        const chartData = this.chartUtils.transformDataQuery(this.props.chartType, this.props.edaChart, values, dataTypes, dataDescription, isbarline, cfg.numberOfColumns);
 
         if (chartData.length == 0) {
             chartData.push([], []);
@@ -268,14 +268,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const manySeries = chartData[1]?.length > 10 ? true : false;
         
-        const styles:StyleConfig = {
+        const styles: StyleConfig = {
             fontFamily: this.fontFamily,
             fontSize: this.fontSize,
             fontColor: this.fontColor
         }
 
         const ticksOptions = {
-            maxRotation:30,
+            maxRotation: 30,
             minRotation: 0,
             labelOffset: 5,
             padding: 5
@@ -283,7 +283,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
       
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
-            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService   );
+            minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
 
 
         /**Add trend datasets*/
@@ -315,7 +315,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     chartConfig.chartLabels.forEach((element, index) => {
                         chartConfig.assignedColors.push({
                             value: element,
-                            color: chartConfig.chartColors[0].backgroundColor[index] || chartConfig.chartColors[chartData.length + index] 
+                            color: chartConfig.chartColors[0].backgroundColor[index] || chartConfig.chartColors[chartData.length + index]
                         });
                     });
                 } else {
@@ -323,79 +323,114 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                         //asignamos el valor de la data y color perteniente si lo tiene
                         chartConfig.assignedColors.push({
                             value: element,
-                            color: this.props.config.getConfig()["colors"][0].backgroundColor[index] 
+                            color: this.props.config.getConfig()["colors"][0].backgroundColor[index]
                         });
                     });
                 }
             } else {
                 //Graficos con colores estandard
-            chartData[0].forEach((element) => {
-                chartConfig.assignedColors.push({
-                    value: element,
-                    color: chartConfig.chartColors[0].backgroundColor[0]
-                });
-            });
-            }                 
-        }
-
-
-        //Si aplicamos filtro 
-        if (!["histogram", "barline"].includes(chartConfig.edaChart)) {
-            //Seteamos variables: labels, colores, y indice del filtro
-            const configData = chartConfig.assignedColors.flatMap((item) => item.value);
-            const configColors = chartConfig.assignedColors.flatMap((item) => item.color);
-            const paletaAplicada = this.styleProviderService.ChartsPalettesActive;    
-
-            if (chartConfig.chartType === "doughnut" || chartConfig.chartType === "polarArea") {
-                chartData[0].forEach((element, index) => {
-                    let indexMatched = configData.findIndex(e => e === element)
-                //Si indexMatched encuentra data igual, asigna su color, sino el siguiente que no este usado
-                    if (indexMatched != -1 && !paletaAplicada) {
-                        chartConfig.chartColors[0].backgroundColor[index] = configColors[indexMatched];
-                        chartConfig.chartColors[0].borderColor[index] = configColors[indexMatched];
-                    } else if (paletaAplicada && this.styleProviderService.pagePalette != null) { // Si la modificación de colores viene dada por cambio general de paleta de colores
-                        let paletaActual = this.styleProviderService.pagePalette.source['_value'].paleta;
-                        chartConfig.chartColors[0].backgroundColor[index] = paletaActual[index];
-                        chartConfig.chartColors[0].borderColor[index] = paletaActual[index];
-                        // Modificar los assignedColor para que la preview coincida con el cambio     
-                        chartConfig.assignedColors.forEach((element, index) => {
-                            element.color = chartConfig.chartColors[0].backgroundColor[index]
-                        });
-
-                    }
-                    else {
-                        // Revisar indice
-                        let config = this.props.config.getConfig();
-                        let newAssignedColor = chartConfig.chartColors[0].backgroundColor[config['assignedColors'].length + index];
-                        
-                        // si no lo contiene añadirlo
-                        if (!config['assignedColors'].includes(element)) { 
-                            config['assignedColors'].push({value: element, color: newAssignedColor});
-                            this.props.config.setConfig(config)
-                        } 
-                        chartConfig.chartColors[0].backgroundColor[index] = newAssignedColor;
-                        chartConfig.chartColors[0].borderColor[index] = newAssignedColor;
-                    }
+                chartData[0].forEach((element) => {
+                    chartConfig.assignedColors.push({
+                        value: element,
+                        color: chartConfig.chartColors[0].backgroundColor
+                    });
                 });
             }
         }
 
-        // chartColors unicamente se reflejan si estan dentro del chartDataset (esto asigna colores correctamente) 
-            if (!chartData[1][0]?.backgroundColor) {
-            chartData[1].forEach(( e,i) => {
-                try{
-                    e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
-                    e.borderColor = chartConfig.chartColors[i].borderColor;
-                }catch(err){
-                    // si tinc una tendencia no tinc color per aquesta grafica. No hauria de ser aixi.....
-                    e.backgroundColor =   this.chartUtils.generateColors(this.props.chartType )[i].backgroundColor;
-                    e.borderColor = this.chartUtils.generateColors(this.props.chartType )[i].borderColor;
+        //Si aplicamos filtro 
+        //Seteamos variables: labels, colores, y indice del filtro
+        const configData = chartConfig.assignedColors.flatMap((item) => item.value);
+        const configColors = chartConfig.assignedColors.flatMap((item) => item.color);
+        
+
+        const paletaAplicada = this.styleProviderService.ChartsPalettesActive;
+        const sortByAsCol = !this.styleProviderService.loadingFromPalette;
+
+        let paletaActual = this.styleProviderService.ActualChartPalette?.['paleta'] 
+            || this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'] ;
+
+        const chartColors = chartConfig.chartColors[0];
+        const assignedColors = chartConfig.assignedColors;
+        //funciona
+            if (["doughnut", "polarArea"].includes(chartConfig.chartType)) {
+                chartData[0].forEach((element, index) => {
+                    const indexMatched = configData.findIndex(e => e === element);
+
+                    if (indexMatched !== -1 && sortByAsCol) {
+                        // Usa color coincidente de configColors
+                        chartColors.backgroundColor[index] = configColors[indexMatched];
+                        chartColors.borderColor[index] = configColors[indexMatched];
+                    } else if (paletaAplicada) {
+                        // Usa color de la paleta activa
+                        const color = paletaActual[index];
+                        chartColors.backgroundColor[index] = color;
+                        chartColors.borderColor[index] = color;
+
+                        // Actualiza assignedColors para la vista previa
+                        assignedColors.forEach((item, idx) => {
+                            item.color = chartColors.backgroundColor[idx];
+                        });
+                    }
+                });
+            }
+        //funciona
+            else if (['bar', 'horizontalBar', 'radar', 'histogram', 'barline', 'line', 'area'].includes(chartConfig.edaChart)) {
+                if (sortByAsCol) {
+                    // Usa color coincidente de configColors
+                    chartConfig.chartColors[0].backgroundColor = chartConfig.assignedColors[0].color;
+                    chartConfig.chartColors[0].borderColor = chartConfig.assignedColors[0].color;
+                } else {
+                    // Usa color de la paleta activa
+                    chartConfig.chartColors[0].backgroundColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
+                    chartConfig.chartColors[0].borderColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
+                    // Modificar los assignedColor para que la preview coincida con el cambio     rgb(0,0,0,0)
+                    chartConfig.assignedColors.forEach(element => {
+                        element.color = chartConfig.chartColors[0].backgroundColor
+                    });
                 }
-            });
-        }
+            }
+            //SEPARAR LOGICAS
+            else if (chartConfig.edaChart === 'stackedbar100' || chartConfig.edaChart === 'stackedbar' || chartConfig.edaChart === 'pyramid') {
+      //      } else if(chartConfig.edaChart === 'stackedbar100'){
+                chartData[1].forEach((element, index) => {
+                    
+                    const indexMatched = configData.findIndex(e => e === element.label)
+
+                    //Si indexMatched encuentra data igual, asigna su color, sino el siguiente que no este usado
+                    if (indexMatched !== -1 && sortByAsCol) {
+                        chartConfig.chartColors[index].backgroundColor = configColors[indexMatched];
+                        chartConfig.chartColors[index].borderColor= configColors[indexMatched];
+                    } else if (paletaAplicada) { // Si la modificación de colores viene dada por cambio general de paleta de colores
+                        chartConfig.chartColors[index].backgroundColor = paletaActual[index];
+                        chartConfig.chartColors[index].borderColor = paletaActual[index];
+                        // Modificar los assignedColor para que la preview coincida con el cambio     
+                        chartConfig.assignedColors.forEach((element, index) => {
+                            element.color = chartConfig.chartColors[index].backgroundColor
+                        });
+                    }
+                });
+           
+
+           
+            } 
+            // chartColors unicamente se reflejan si estan dentro del chartDataset (esto asigna colores correctamente) 
+            if (!chartData[1][0]?.backgroundColor) {
+                chartData[1].forEach((e, i) => {
+                    try {
+                        e.backgroundColor = chartConfig.chartColors[i].backgroundColor;
+                        e.borderColor = chartConfig.chartColors[i].borderColor;
+                    } catch (err) {
+                        // si tinc una tendencia no tinc color per aquesta grafica. No hauria de ser aixi.....
+                        e.backgroundColor = this.chartUtils.generateColors(this.props.chartType)[i].backgroundColor;
+                        e.borderColor = this.chartUtils.generateColors(this.props.chartType)[i].borderColor;
+                    }
+                });
+            }
 
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
         this.createEdaChartComponent(chartConfig);
+       
     }
         
 
@@ -585,10 +620,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.props.config
         );
 
-        if (chartConfig.edaChart.chartColors.length > 0) {
-            chartConfig.edaChart.chartDataset[0].backgroundColor = chartConfig.edaChart.chartColors[0].backgroundColor;
-            chartConfig.edaChart.chartDataset[0].borderColor = chartConfig.edaChart.chartColors[0].borderColor;
-        }
+            if (this.styleProviderService.loadingFromPalette) {
+                chartConfig.edaChart.chartDataset[0].backgroundColor = this.styleProviderService.ActualChartPalette['paleta'][0];
+                chartConfig.edaChart.chartDataset[0].borderColor = this.styleProviderService.ActualChartPalette['paleta'][0];
+            } else { 
+                chartConfig.edaChart.chartDataset[0].backgroundColor = chartConfig.edaChart.chartColors[0].backgroundColor;
+                chartConfig.edaChart.chartDataset[0].borderColor = chartConfig.edaChart.chartColors[0].borderColor;
+            }
+        
 
 
         // KPI Config
@@ -904,8 +943,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public updateComponent() {
         if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
             try {
-                if (this.componentRef.instance.inject?.edaChart)
+                if (this.componentRef.instance.inject?.edaChart) { 
                     this.componentRef.instance?.updateChart();
+                }
                 else
                     this.updateD3ChartColors(this.props.chartType)
                 
@@ -916,7 +956,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     public updateD3ChartColors(chartType: string) {
-        const numberOfColors = this.componentRef.instance.colors.length;
+        const numberOfColors = this.componentRef.instance?.colors?.length || 1;
         const newColors = this.chartUtils.generateRGBColorGradientScaleD3(numberOfColors, this['chartUtils'].MyPaletteColors);
         switch (chartType) {
             case 'treeMap':

@@ -107,8 +107,8 @@ private applyTextStyle(): void {
   }
 
   getColor() {
-    if (this.styleProviderService.ChartsPalettesActive)
-        return this.styleProviderService.ActualChartPalette['paleta'][0] || this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'][0];
+    if (this.styleProviderService.loadingFromPalette)
+        return this.styleProviderService.ActualChartPalette['paleta'][0];
     else
       return this.color;
   }

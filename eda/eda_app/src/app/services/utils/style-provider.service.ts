@@ -38,7 +38,9 @@ export class StyleProviderService {
 	public DEFAULT_PALETTE_COLOR: string = DEFAULT_PALETTE_COLOR;
 	public ChartsPalettes: any = ChartsPalettes;
 	public ActualChartPalette: string; 
+	public loadingFromPalette: boolean ;
 	public ChartsPalettesActive: boolean = ChartsPalettesActive;
+
 	
 	public DEFAULT_CUSTOM_CSS: string = '';
 	
@@ -122,6 +124,7 @@ export class StyleProviderService {
 		if (!initial) { 
 			this._pagePalette.next(styles.palette);			
 			this.ActualChartPalette = styles.palette;
+			this.loadingFromPalette = true;
 		}
 		this._pageStylesApplied.next(true)
 		this._pageBackground.next(styles.backgroundColor);
