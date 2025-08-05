@@ -124,7 +124,6 @@ export class EdaTreeMap implements AfterViewInit {
   draw() {
     const width = this.svgContainer.nativeElement.clientWidth - 20,
     height = this.svgContainer.nativeElement.clientHeight - 20;
-    console.log(this.assignedColors, 'assignedcolors')
     //Valores de assignedColors separados
     const valuesTree = this.assignedColors.map((item) => item.value);
     const colorsTree = this.assignedColors[0]?.color ? this.assignedColors.map(item => item.color) : this.colors;
