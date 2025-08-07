@@ -177,6 +177,9 @@ export class AddCsvComponent extends EdaDialogAbstract {
           },
           model_id: this.model_id
         }
+
+        console.log('insertBody: ', insertBody);
+
         await this.createTableService.insertData(insertBody).toPromise();
       }
       this.spinnerService.off();
