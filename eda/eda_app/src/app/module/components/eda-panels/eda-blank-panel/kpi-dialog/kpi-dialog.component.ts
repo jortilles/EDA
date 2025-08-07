@@ -95,7 +95,6 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
     loadChartColors() {
         if (this.edaChart) {
-
             this.series = this.edaChart.chartDataset.map(dataset => ({
                 label: dataset.label,
                 bg: this.rgb2hex(dataset.backgroundColor) || dataset.backgroundColor,
@@ -152,7 +151,6 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
             const newDatasets = [];
             const dataset = this.edaChart.chartDataset;
             
-
             for (let i = 0, n = dataset.length; i < n; i += 1) {
                 if (dataset[i].label === event.label) {
                     dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
@@ -176,7 +174,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
                         }
                     }
                 }
-
+                
                 newDatasets.push(dataset[i]);
             }
 
@@ -193,6 +191,11 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
         this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
         this.panelChartComponent.componentRef.instance.updateChart();
+    }
+
+    // Función para cambiar el color con los botones
+    setColor(hex: string) {
+        this.color = hex;
     }
 
     openConfigDialog($event, alert) {

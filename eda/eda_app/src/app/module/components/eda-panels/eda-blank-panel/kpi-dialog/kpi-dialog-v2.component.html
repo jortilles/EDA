@@ -144,17 +144,16 @@
                            class="w-full px-3 py-2 border rounded-md font-mono bg-white"
                          />
                        </div>
-                       <div
-                         class="w-10 h-10 rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer"
-                         [style.backgroundColor]="color"
-                       ></div>
+
+                        <p-colorPicker class="w-fit h-fit rounded-md border shadow-sm transition-transform hover:scale-105 cursor-pointer" [(ngModel)]="color" (onChange)="handleInputColor(color)" format="hex" appendTo="body" />
+
                      </div>
                      <div class="flex items-center gap-2">
-                       <div class="w-4 h-4 rounded-full bg-red-500"></div>
-                       <div class="w-4 h-4 rounded-full bg-yellow-500"></div>
-                       <div class="w-4 h-4 rounded-full bg-green-500"></div>
-                       <div class="w-4 h-4 rounded-full bg-blue-500"></div>
-                       <div class="w-4 h-4 rounded-full bg-purple-500"></div>
+                       <div (click)="setColor('#ef4444')" class="w-4 h-4 rounded-full bg-red-500"></div>
+                       <div (click)="setColor('#eab308')" class="w-4 h-4 rounded-full bg-yellow-500"></div>
+                       <div (click)="setColor('#22c55e')" class="w-4 h-4 rounded-full bg-green-500"></div>
+                       <div (click)="setColor('#3b82f6')" class="w-4 h-4 rounded-full bg-blue-500"></div>
+                       <div (click)="setColor('#a855f7')" class="w-4 h-4 rounded-full bg-purple-500"></div>
                      </div>
                    </div>
                  </div>
