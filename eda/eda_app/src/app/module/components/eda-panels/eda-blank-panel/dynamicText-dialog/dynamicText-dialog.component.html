@@ -10,20 +10,20 @@
 
 
     <div class="col-12">
-      <h6 i18n="@@DynamicTextColor" class="custom-border-b1">
+      <h4 i18n="@@DynamicTextColor" class="custom-border-b1 font-medium text-slate-500 uppercase">
        Cambiar Color
-      </h6>
+      </h4>
 
       <div class="grid">
 
-        <div class="col-2">
-          <h6 i18n="@@colorKpiH6">
+        <div class="col-2 mt-6">
+          <h5 i18n="@@colorKpiH6">
             Color
-          </h6>
+          </h5>
           <div class="chart-color-selection">
             
             <div class="mb-1">
-              <input type="text" [(ngModel)]="color" pInputText style="width: 40%"  (keyup)="handleInputColor()"  (onChange)="handleInputColor()" />
+              <input type="text" [(ngModel)]="color" pInputText class="w-fit"  (keyup)="handleInputColor()"  (onChange)="handleInputColor()" />
               <p-colorPicker [(ngModel)]="color" appendTo="body" (onChange)="handleInputColor()"  ></p-colorPicker>
             </div>         
           </div>  
