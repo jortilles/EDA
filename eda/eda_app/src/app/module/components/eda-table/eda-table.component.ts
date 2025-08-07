@@ -97,11 +97,13 @@ export class EdaTableComponent implements OnInit {
     }
 
     getStyle() {
+        if(this.styleProviderService.pageStylesApplied.source['_value'] && !this.styleProviderService.colorCode) 
         return {
             'color': this.styleProviderService.panelFontColor.source['_value'],
             'font-family': this.styleProviderService.panelFontFamily.source['_value'],
             'background': this.styleProviderService.panelColor.source['_value'] 
-        }
+            }
+        return;
     }
 
     public applyStyles(styles: Array<any>) {

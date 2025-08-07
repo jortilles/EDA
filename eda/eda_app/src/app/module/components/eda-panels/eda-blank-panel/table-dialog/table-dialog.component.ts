@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { ChartConfig } from '../panel-charts/chart-configuration-models/chart-config';
+import { StyleProviderService } from '@eda/services/service.index';
 
 
 @Component({
@@ -65,7 +66,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
   public tableTitleDialog = $localize`:@@tableTitleDialog:Propiedades de la tabla`;
 
-  constructor() {
+  constructor(private styleProviderService : StyleProviderService) {
     super();
 
     this.dialog = new EdaDialog({
@@ -328,6 +329,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
       this.myPanelChartComponent.componentRef.instance.applyPivotSyles(this.styles);
 
     }
+    this.styleProviderService.colorCode = true;
     this.gradientMenuController = undefined;
   }
 

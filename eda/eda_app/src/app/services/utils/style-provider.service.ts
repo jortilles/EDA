@@ -39,6 +39,7 @@ export class StyleProviderService {
 	public ChartsPalettes: any = ChartsPalettes;
 	public ActualChartPalette: string; 
 	public loadingFromPalette: boolean ;
+	public colorCode: boolean = false;
 
 	
 	public DEFAULT_CUSTOM_CSS: string = '';
