@@ -26,22 +26,10 @@ export class EdadynamicTextComponent implements OnInit {
     }
 
 getStyle(): any {
-    const inputColor = this.inject?.color;
-
-    // Función para buscar el color profundamente anidado
-    function getDeepColor(obj: any): string | null {
-        while (obj && typeof obj === 'object' && 'color' in obj) {
-            obj = obj.color;
-        }
-        return typeof obj === 'string' ? obj : null;
-    }
-
-    const injectedColor = getDeepColor(inputColor);
-    let color = injectedColor;
+    let color = this.inject?.color;
     if (this.styleProviderService.loadingFromPalette) {
         color = this.styleProviderService.ActualChartPalette['paleta'][0];
     }
-    // console.log(injectedColor,styleColor)
 
     const fontSize = this.getFontSize();
 
