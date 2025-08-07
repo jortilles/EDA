@@ -20,16 +20,18 @@
           <h5 i18n="@@colorKpiH6">
             Color
           </h5>
-          <div class="chart-color-selection">
-            
-            <div class="mb-1">
-              <input type="text" [(ngModel)]="color" pInputText class="w-fit"  (keyup)="handleInputColor()"  (onChange)="handleInputColor()" />
-              <p-colorPicker [(ngModel)]="color" appendTo="body" (onChange)="handleInputColor()"  ></p-colorPicker>
-            </div>         
-          </div>  
+          
+          <div class="chart-color-selection w-1/5">
+            <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+              <span class="font-medium">Text</span>
+              <div class="flex items-center gap-2">
+                <span class="text-md text-slate-500 font-mono">{{ color }}</span>
+                <p-colorPicker [(ngModel)]="color" (onChange)="handleInputColor()" format="hex" appendTo="body" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-  
     </div>
   </div>
 
