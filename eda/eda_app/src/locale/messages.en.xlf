@@ -4570,7 +4570,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Data creación (asc.)</source>
         <target>Created date (asc.)</target>
       </trans-unit>
-
+      <trans-unit id="createdAtDesc">
+        <source>Data creación (desc.)</source>
+        <target>Created date (desc.)</target>
+      </trans-unit>
       <trans-unit id="name">
         <source>Nombre</source>
         <target>Name</target>

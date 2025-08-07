@@ -344,23 +344,46 @@ export class HomePageV2 implements OnInit {
 
   handleSorting() {
     switch (this.sortingType) {
-      case 'date':
-        this.sortingReports('createdAt', this.reportMap);
-        sessionStorage.setItem("homeSorting", "date");
+      case 'dateAsc':
+        this.sortingReports('createdAt', this.reportMap, 'asc');
+        sessionStorage.setItem("homeSorting", "dateAsc");
+        break;
+      case 'dateDesc':
+        this.sortingReports('createdAt', this.reportMap, 'desc');
+        sessionStorage.setItem("homeSorting", "dateDesc");
         break;
       default:
-        this.sortingReports('title', this.reportMap);
+        this.sortingReports('title', this.reportMap, 'asc');
         sessionStorage.setItem("homeSorting", "name");
         break;
     }
   }
 
+  sortingReports(type: string, reports: any, direction: 'asc' | 'desc' = 'asc') {
+    const compareFn = (a: any, b: any) => {
+      const valA = a.config[type];
+      const valB = b.config[type];
 
-  sortingReports(type: string, reports: any) {
-    this.publicReports = reports.public.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
-    this.privateReports = reports.private.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
-    this.roleReports = reports.group.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
-    this.sharedReports = reports.shared.sort(function (report, nextReport) {return report.config[type].localeCompare(nextReport.config[type]);});
+      // Si es fecha, convertir a Date
+      if (type === 'createdAt') {
+        const dateA = new Date(valA);
+        const dateB = new Date(valB);
+
+        return direction === 'asc'
+          ? dateA.getTime() - dateB.getTime()
+          : dateB.getTime() - dateA.getTime();
+      }
+
+      // Por defecto, ordenar strings con localeCompare
+      const comparison = valA.localeCompare(valB);
+      return direction === 'asc' ? comparison : -comparison;
+    };
+
+    this.publicReports = reports.public.sort(compareFn);
+    this.privateReports = reports.private.sort(compareFn);
+    this.roleReports = reports.group.sort(compareFn);
+    this.sharedReports = reports.shared.sort(compareFn);
   }
+
 
 }
