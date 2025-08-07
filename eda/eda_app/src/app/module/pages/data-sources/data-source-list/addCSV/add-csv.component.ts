@@ -181,6 +181,9 @@ export class AddCsvComponent implements OnInit {
           },
           model_id: this.model_id
         }
+
+        console.log('insertBody: ', insertBody);
+
         await this.createTableService.insertData(insertBody).toPromise();
       }
       this.spinnerService.off();
