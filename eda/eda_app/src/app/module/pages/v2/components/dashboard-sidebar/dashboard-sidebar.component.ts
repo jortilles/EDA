@@ -66,6 +66,7 @@ export class DashboardSidebarComponent {
   isMailConfigDialogVisible = false;
   isVisibleModalVisible = false;
   isTagModalVisible = false;
+  inputVisible: boolean = false;
 
   mostrarOpciones = false;
 
@@ -111,6 +112,9 @@ export class DashboardSidebarComponent {
       label: "Live Dashboard",
       icon: "pi pi-desktop",
       items: [],
+      command: () => {
+        this.inputVisible = !this.inputVisible;
+      },
     },
     {
       label: "Guardar",

@@ -27,8 +27,11 @@
           <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
           }
         </button>
-        @if(item.label === "Live Dashboard" || item.label === "Nou filtre"){
-          <hr class="my-2" />
+        @if (item.label === "Live Dashboard" || item.label === "Nou filtre") {
+        @if (item.label === "Live Dashboard" && inputVisible) {
+          <input type="number" class="w-full mt-1 px-2 py-1 border rounded-md" placeholder="Intervalo en X" />
+        }
+        <hr class="my-2" />
         }
       }
 
