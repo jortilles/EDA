@@ -1,59 +1,57 @@
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gray-50" id="myDashboard">
   <div class="w-full p-6 space-y-6 h-max" [ngStyle]="backgroundColor">
     <div [ngStyle]="reportPanel">
-  <!-- Header -->
-  <div class="flex items-center relative w-full">
-    
-    <div class="flex-1">
-        @if (!titleClick) {
+      <!-- Header -->
+      <div class="flex items-center relative w-full">
+
+        <div class="flex-1">
+          @if (!titleClick) {
           <h1 class="text-2xl font-semibold tracking-tight cursor-pointer" [ngStyle]="reportTitle">
             {{ title.trim().length > 0 ? title : '\uD83D\uDD89' }}
           </h1>
-        } @else {
-          <input type="text"
-                 [(ngModel)]="title"
-                 autofocusOnShow
-                 (focusout)="titleClick = false;"
-                 class="w-full max-w-md px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
+          } @else {
+          <input type="text" [(ngModel)]="title" autofocusOnShow (focusout)="titleClick = false;"
+            class="w-full max-w-md px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
+          }
+        </div>
+
+        <button class="w-6 h-6 rounded-full flex items-center justify-center ml-2" (click)="showSidebar($event)">
+          <i class="pi pi-ellipsis-v"></i>
+        </button>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="flex justify-between items-center mt-4">
+        <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
+
+        @if (notSaved) {
+        <p-message severity="warn" i18n="@@notSavedChanges" text="Hi han canvis sense guardar"
+          styleClass="w-full"></p-message>
         }
+      </div>
     </div>
-
-    <button class="w-6 h-6 rounded-full flex items-center justify-center ml-2" (click)="showSidebar($event)">
-      <i class="pi pi-ellipsis-v"></i>
-    </button>
-  </div>
-
-  <!-- Filters Section -->
-  <div class="flex justify-between items-center mt-4">
-    <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
-
-    @if (notSaved) {
-          <p-message severity="warn" i18n="@@notSavedChanges" text="Hi han canvis sense guardar" styleClass="w-full"></p-message>
-    }
-  </div>
-</div>
 
 
     <div [style.height]="'1000px'">
       <gridster [options]="gridsterOptions" class="dashboard-grid">
         @for (panel of panels; track panel) {
-          <gridster-item
-            class="gridster-item" 
-            [item]="panel" 
-            [dragAndDrop]="panel.dragAndDrop" 
-            [resizable]="panel.resizable">
+        <gridster-item class="gridster-item" [item]="panel" [dragAndDrop]="panel.dragAndDrop"
+          [resizable]="panel.resizable">
 
-            @if (panel.type===0) {
-              <eda-blank-panel #edaPanel [panel]="panel"  [inject]="injectEdaPanel" [panelContent]="panelContent" [panelText]="panelTitle" (remove)="onRemovePanel($event)" [inject]="injectEdaPanel" (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)" >
-              </eda-blank-panel>
-            }
+          @if (panel.type===0) {
+          <eda-blank-panel #edaPanel [panel]="panel" [inject]="injectEdaPanel" [panelContent]="panelContent"
+            [panelText]="panelTitle" (remove)="onRemovePanel($event)" [inject]="injectEdaPanel"
+            (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)">
+          </eda-blank-panel>
+          }
 
-            @if (panel.type===1) {
-              <eda-title-panel #edaPanel [id]="panel.id" [panel]="panel" [inject]="injectEdaPanel"  (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel" >
-              </eda-title-panel>
-            }
+          @if (panel.type===1) {
+          <eda-title-panel #edaPanel [id]="panel.id" [panel]="panel" [inject]="injectEdaPanel"
+            (remove)="onRemovePanel($event)" (duplicate)="onDuplicatePanel($event)" class="eda-text-panel">
+          </eda-title-panel>
+          }
 
-          </gridster-item>
+        </gridster-item>
         }
       </gridster>
     </div>
@@ -62,7 +60,7 @@
 </div>
 
 @if (dashboard) {
-  <app-dashboard-sidebar [dashboard]="this"></app-dashboard-sidebar>
+<app-dashboard-sidebar [dashboard]="this"></app-dashboard-sidebar>
 }
 
 

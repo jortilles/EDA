@@ -395,24 +395,33 @@ export class DashboardSidebarComponent {
 
 
 
-  public exportAsPDF() {
-    this.hidePopover();
-    this.spinner.on();
-    const title = this.dashboard.title;
-    domtoimage.toJpeg(document.getElementById('myDashboard'), { bgcolor: 'white' })
-      .then((dataUrl) => {
-        let img = new Image();
-        img.src = dataUrl;
-        img.onload = () => {
-          let pdf = new jspdf();
-          let width = pdf.internal.pageSize.getWidth();
-          let height = pdf.internal.pageSize.getHeight();
-          pdf.addImage(img, 'JPEG', 0, 0, width, height);
-          pdf.save(`${title}.pdf`);
-        }
-        this.spinner.off();
-      });
+ exportAsPDF() {
+  this.hidePopover();
+  this.spinner.on();
+
+  const node = document.getElementById('myDashboard');
+  if (!node) {
+    console.error('No se encontró el elemento del dashboard');
+    this.spinner.off();
+    return;
   }
+
+  const title = this.dashboard.title;
+
+  domtoimage.toJpeg(node, { bgcolor: 'white' })
+    .then((dataUrl) => {
+      const img = new Image();
+      img.src = dataUrl;
+      img.onload = () => {
+        const pdf = new jspdf();
+        const width = pdf.internal.pageSize.getWidth();
+        const height = pdf.internal.pageSize.getHeight();
+        pdf.addImage(img, 'JPEG', 0, 0, width, height);
+        pdf.save(`${title}.pdf`);
+      };
+      this.spinner.off();
+    });
+}
 
   public exportAsJPEG() {
     this.hidePopover();

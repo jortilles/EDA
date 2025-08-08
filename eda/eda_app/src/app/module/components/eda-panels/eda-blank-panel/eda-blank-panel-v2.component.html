@@ -23,7 +23,7 @@
       }@else{
         <panel-chart #PanelChartComponent [ngStyle]="panelContent" [props]="panelChartConfig"
           (configUpdated)="setChartProperties($event)" (onChartClick)="onChartClick($event)"
-          class="h-full w-full flex justify-center content-center" style="flex-wrap:wrap!important;">
+          class="h-full w-full flex justify-center content-center overflow-hidden" style="flex-wrap:wrap!important;">
         </panel-chart>
       }
     </div>
