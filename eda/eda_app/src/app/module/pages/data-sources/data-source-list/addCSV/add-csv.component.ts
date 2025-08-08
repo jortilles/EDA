@@ -144,9 +144,6 @@ export class AddCsvComponent extends EdaDialogAbstract {
   }
 
   async generateTable() {
-
-    console.log('holaaaaaaaaaaaaa')
-
     this.spinnerService.on();
     const createBody = {
       query: {
@@ -164,8 +161,6 @@ export class AddCsvComponent extends EdaDialogAbstract {
       await this.createTableService.createTable(createBody).toPromise();
       let start = 0;
 
-      console.log('batches: ', batches);
-
       for (let i = 0; i < batches; i++) {
         const rows = this.csvRecords.slice(start, start + BATCH_SIZE);
         start = start + BATCH_SIZE + 1;
@@ -177,8 +172,6 @@ export class AddCsvComponent extends EdaDialogAbstract {
           },
           model_id: this.model_id
         }
-
-        console.log('insertBody: ', insertBody);
 
         await this.createTableService.insertData(insertBody).toPromise();
       }
