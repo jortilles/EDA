@@ -7,6 +7,8 @@ import { DataSourceNamesService } from '@eda/services/shared/datasource-names.se
 import { DropdownModule } from 'primeng/dropdown';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-model-import-export',
@@ -18,6 +20,9 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
 export class ModelImportExportPage implements OnInit {
   private dataSourceNamesService = inject(DataSourceNamesService);
   private dashboardService = inject(DashboardService);
+  private sanitizer = inject(DomSanitizer);
+  private dataSourceService = inject(DataSourceService);
+
   // Signals para el estado
   modelTab = signal<'export' | 'import'>('export');
   dashboardTab = signal<'export' | 'import'>('export');
@@ -30,6 +35,8 @@ export class ModelImportExportPage implements OnInit {
   isDraggingModel = signal<boolean>(false);
   isDraggingDashboard = signal<boolean>(false);
 
+  private globalDSRoute = '/datasource';
+  public downloadJsonDashboardHref: any;
   public dataSources: any[] = [];
   public dashboards: any[] = [];
 
@@ -47,7 +54,7 @@ export class ModelImportExportPage implements OnInit {
     const dashboards = [].concat.apply([], [data2.dashboards, data2.group, data2.publics, data2.shared]);
 
     this.dashboards = dashboards
-      .map(elem => ({ label:  elem.config.title, value: elem }))
+      .map(elem => ({ label: elem.config.title, value: elem }))
       .sort((a, b) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }));
   }
 
@@ -130,23 +137,68 @@ export class ModelImportExportPage implements OnInit {
   }
 
   // Métodos para manejar exportación/importación
-  handleModelExport() {
-    if (!this.selectedModel()) {
-      this.showToast('Error', 'Por favor selecciona un modelo para exportar', 'error');
-      return;
-    }
-    // Lógica de exportación
-    this.showToast('Éxito', 'Modelo exportado correctamente', 'success');
+handleModelExport() {
+  const selected = this.selectedModel();
+  if (!selected) {
+    this.showToast('Error', 'Por favor selecciona un modelo para exportar', 'error');
+    return;
   }
 
-  handleDashboardExport() {
-    if (!this.selectedDashboard()) {
-      this.showToast('Error', 'Por favor selecciona un dashboard para exportar', 'error');
-      return;
+  const id = selected; 
+  this.dataSourceService.get(`${this.globalDSRoute}/${id}`).subscribe(
+    (data: any) => {
+      const theJSON = JSON.stringify(data.dataSource);
+      const blob = new Blob([theJSON], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'modelo.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      this.showToast('Éxito', 'Modelo exportado correctamente', 'success');
+    },
+    err => {
+      this.showToast('Error', 'Ocurrió un problema al exportar el modelo', 'error');
     }
-    // Lógica de exportación
-    this.showToast('Éxito', 'Dashboard exportado correctamente', 'success');
+  );
+}
+
+
+handleDashboardExport() {
+  const dashboardId = this.selectedDashboard()['_id'];
+  if (!dashboardId) {
+    this.showToast('Error', 'Por favor selecciona un dashboard para exportar', 'error');
+    return;
   }
+
+  this.dashboardService.getDashboard(dashboardId).subscribe(
+    data => {
+      const theJSON = JSON.stringify(data.dashboard);
+      const blob = new Blob([theJSON], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = this.selectedDashboard()['config'].title + '.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      this.showToast('Éxito', 'Dashboard exportado correctamente', 'success');
+    },
+    err => {
+      this.showToast('Error', 'Por favor selecciona un dashboard para exportar', 'error');
+    }
+  );
+}
+
+
+
 
   handleModelImport() {
     if (!this.modelFile()) {
