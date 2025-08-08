@@ -421,22 +421,34 @@ export class DashboardSidebarComponent {
       };
       this.spinner.off();
     });
-}
-
-  public exportAsJPEG() {
-    this.hidePopover();
-    this.spinner.on();
-
-    const title = this.dashboard.title;
-    domtoimage.toJpeg(document.getElementById('myDashboard'), { bgcolor: 'white' })
-      .then((dataUrl) => {
-        var link = document.createElement('a');
-        link.download = `${title}.jpeg`;
-        link.href = dataUrl;
-        link.click();
-        this.spinner.off();
-      });
   }
+  
+public exportAsJPEG() {
+  this.hidePopover();
+  this.spinner.on();
+
+  const node = document.getElementById('myDashboard');
+  if (!node) {
+    console.error('No se encontró el elemento "myDashboard" en el DOM');
+    this.spinner.off();
+    return;
+  }
+
+  const title = this.dashboard.title;
+
+  domtoimage.toJpeg(node, { bgcolor: 'white' })
+    .then((dataUrl) => {
+      const link = document.createElement('a');
+      link.download = `${title}.jpeg`;
+      link.href = dataUrl;
+      link.click();
+      this.spinner.off();
+    })
+    .catch((error) => {
+      console.error('Error exportando como JPEG:', error);
+      this.spinner.off();
+    });
+}
 
 
 
