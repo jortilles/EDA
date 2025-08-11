@@ -7,6 +7,8 @@ import { DataSourceNamesService } from '@eda/services/shared/datasource-names.se
 import { DropdownModule } from 'primeng/dropdown';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-model-import-export',
@@ -18,6 +20,9 @@ import { IconComponent } from '@eda/shared/components/icon/icon.component';
 export class ModelImportExportPage implements OnInit {
   private dataSourceNamesService = inject(DataSourceNamesService);
   private dashboardService = inject(DashboardService);
+  private sanitizer = inject(DomSanitizer);
+  private dataSourceService = inject(DataSourceService);
+
   // Signals para el estado
   modelTab = signal<'export' | 'import'>('export');
   dashboardTab = signal<'export' | 'import'>('export');
@@ -30,6 +35,8 @@ export class ModelImportExportPage implements OnInit {
   isDraggingModel = signal<boolean>(false);
   isDraggingDashboard = signal<boolean>(false);
 
+  private globalDSRoute = '/datasource';
+  public downloadJsonDashboardHref: any;
   public dataSources: any[] = [];
   public dashboards: any[] = [];
 
@@ -47,7 +54,7 @@ export class ModelImportExportPage implements OnInit {
     const dashboards = [].concat.apply([], [data2.dashboards, data2.group, data2.publics, data2.shared]);
 
     this.dashboards = dashboards
-      .map(elem => ({ label:  elem.config.title, value: elem }))
+      .map(elem => ({ label: elem.config.title, value: elem }))
       .sort((a, b) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }));
   }
 
@@ -130,41 +137,171 @@ export class ModelImportExportPage implements OnInit {
   }
 
   // Métodos para manejar exportación/importación
-  handleModelExport() {
-    if (!this.selectedModel()) {
-      this.showToast('Error', 'Por favor selecciona un modelo para exportar', 'error');
-      return;
-    }
-    // Lógica de exportación
-    this.showToast('Éxito', 'Modelo exportado correctamente', 'success');
+handleModelExport() {
+  const selected = this.selectedModel();
+  if (!selected) {
+    this.showToast('Error', 'Por favor selecciona un modelo para exportar', 'error');
+    return;
   }
 
-  handleDashboardExport() {
-    if (!this.selectedDashboard()) {
+  const id = selected; 
+  this.dataSourceService.get(`${this.globalDSRoute}/${id}`).subscribe(
+    (data: any) => {
+      const theJSON = JSON.stringify(data.dataSource);
+      const blob = new Blob([theJSON], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'modelo.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      this.showToast('Éxito', 'Modelo exportado correctamente', 'success');
+    },
+    err => {
+      this.showToast('Error', 'Ocurrió un problema al exportar el modelo', 'error');
+    }
+  );
+}
+
+
+handleDashboardExport() {
+  const dashboardId = this.selectedDashboard()['_id'];
+  if (!dashboardId) {
+    this.showToast('Error', 'Por favor selecciona un dashboard para exportar', 'error');
+    return;
+  }
+
+  this.dashboardService.getDashboard(dashboardId).subscribe(
+    data => {
+      const theJSON = JSON.stringify(data.dashboard);
+      const blob = new Blob([theJSON], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = this.selectedDashboard()['config'].title + '.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      this.showToast('Éxito', 'Dashboard exportado correctamente', 'success');
+    },
+    err => {
       this.showToast('Error', 'Por favor selecciona un dashboard para exportar', 'error');
-      return;
     }
-    // Lógica de exportación
-    this.showToast('Éxito', 'Dashboard exportado correctamente', 'success');
+  );
+}
+
+
+
+
+handleModelImport() {
+  if (!this.modelFile()) {
+    this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
+    return;
   }
 
-  handleModelImport() {
-    if (!this.modelFile()) {
-      this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
-      return;
+  // Antiguo onModelFilesAdded() modificado, separar logica?
+  const fileReader = new FileReader();
+  fileReader.onload = () => {
+    try {
+      const json = JSON.parse(fileReader.result as string);
+      const modelId = json._id;
+      const tables = json.ds.model.tables;
+      const modelInconsistencies: string[] = [];
+      let isInconsistentDM = true;
+
+      // Recorremos dashboards para comprobar integridad
+      this.dashboards.forEach(({ value }) => {
+        this.dashboardService.getDashboard(value._id).subscribe({
+          next: ({ dashboard }) => {
+            if (modelId === dashboard.config.ds._id) {
+              dashboard.config.panel.forEach(panel => {
+                panel.content.query.query.fields.forEach(field => {
+                  const table = tables.find(t => t.table_name === field.table_id);
+                  if (!table) {
+                    isInconsistentDM = false;
+                    if (!modelInconsistencies.includes(dashboard.config.title)) {
+                      modelInconsistencies.push(dashboard.config.title);
+                    }
+                  } else {
+                    const column = table.columns.find(c => c.column_name === field.column_name);
+                    if (!column) {
+                      isInconsistentDM = false;
+                      if (!modelInconsistencies.includes(dashboard.config.title)) {
+                        modelInconsistencies.push(dashboard.config.title);
+                      }
+                    }
+                  }
+                });
+              });
+            }
+          },
+          error: () => this.showToast('Error', 'Error al verificar integridad del modelo', 'error')
+        });
+      });
+
+      // Actualizamos el modelo en el servidor --> Antiguo importModel()
+      this.dataSourceService.updateModelInServer(modelId, json).subscribe({
+        next: () => this.showToast('Éxito', 'Modelo importado correctamente', 'success'),
+        error: () => this.showToast('Error', 'Ha ocurrido un error al importar el modelo', 'error')
+      });
+    } catch {
+      this.showToast('Error', 'El archivo no tiene un formato JSON válido', 'error');
     }
-    // Lógica de importación
-    this.showToast('Éxito', 'Modelo importado correctamente', 'success');
+  };
+  fileReader.readAsText(this.modelFile());
+}
+
+
+
+handleDashboardImport() {
+  if (!this.dashboardFile()) {
+    this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
+    return;
   }
 
-  handleDashboardImport() {
-    if (!this.dashboardFile()) {
-      this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
-      return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const importedDashboard = JSON.parse(reader.result as string);
+
+      // Guardamos el dashboard importado en memoria
+      this.dashboardFile = importedDashboard;
+
+      // Intentar actualizar
+      this.dashboardService.updateDashboard(importedDashboard._id, importedDashboard).subscribe(
+        () => {
+          this.showToast('Éxito', 'Dashboard actualizado correctamente', 'success');
+        },
+        () => {
+          // Si falla, intentar crear
+          this.dashboardService.addNewDashboard(importedDashboard).subscribe(
+            () => {
+              this.showToast('Éxito', 'Dashboard creado correctamente', 'success');
+            },
+            err => {
+              this.showToast('Error', 'No se pudo importar el dashboard: ' + err.message, 'error');
+            }
+          );
+        }
+      );
+    } catch (e) {
+      this.showToast('Error', 'El archivo no tiene un formato JSON válido', 'error');
     }
-    // Lógica de importación
-    this.showToast('Éxito', 'Dashboard importado correctamente', 'success');
-  }
+  };
+
+  reader.onerror = () => {
+    this.showToast('Error', 'No se pudo leer el archivo seleccionado', 'error');
+  };
+
+  reader.readAsText(this.dashboardFile());
+}
 
   // Método para mostrar notificaciones
   showToast(title: string, message: string, type: 'success' | 'error') {
