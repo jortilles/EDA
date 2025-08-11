@@ -205,9 +205,60 @@ handleModelImport() {
     this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
     return;
   }
-    // Lógica de importación
-    this.showToast('Éxito', 'Modelo importado correctamente', 'success');
+
+  // Antiguo onModelFilesAdded() modificado, separar logica?
+  const fileReader = new FileReader();
+  fileReader.onload = () => {
+    try {
+      const json = JSON.parse(fileReader.result as string);
+      const modelId = json._id;
+      const tables = json.ds.model.tables;
+      const modelInconsistencies: string[] = [];
+      let isInconsistentDM = true;
+
+      // Recorremos dashboards para comprobar integridad
+      this.dashboards.forEach(({ value }) => {
+        this.dashboardService.getDashboard(value._id).subscribe({
+          next: ({ dashboard }) => {
+            if (modelId === dashboard.config.ds._id) {
+              dashboard.config.panel.forEach(panel => {
+                panel.content.query.query.fields.forEach(field => {
+                  const table = tables.find(t => t.table_name === field.table_id);
+                  if (!table) {
+                    isInconsistentDM = false;
+                    if (!modelInconsistencies.includes(dashboard.config.title)) {
+                      modelInconsistencies.push(dashboard.config.title);
+                    }
+                  } else {
+                    const column = table.columns.find(c => c.column_name === field.column_name);
+                    if (!column) {
+                      isInconsistentDM = false;
+                      if (!modelInconsistencies.includes(dashboard.config.title)) {
+                        modelInconsistencies.push(dashboard.config.title);
+                      }
+                    }
+                  }
+                });
+              });
+            }
+          },
+          error: () => this.showToast('Error', 'Error al verificar integridad del modelo', 'error')
+        });
+      });
+
+      // Actualizamos el modelo en el servidor --> Antiguo importModel()
+      this.dataSourceService.updateModelInServer(modelId, json).subscribe({
+        next: () => this.showToast('Éxito', 'Modelo importado correctamente', 'success'),
+        error: () => this.showToast('Error', 'Ha ocurrido un error al importar el modelo', 'error')
+      });
+    } catch {
+      this.showToast('Error', 'El archivo no tiene un formato JSON válido', 'error');
+    }
+  };
+  fileReader.readAsText(this.modelFile());
 }
+
+
 
 handleDashboardImport() {
   if (!this.dashboardFile()) {
