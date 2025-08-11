@@ -200,23 +200,57 @@ handleDashboardExport() {
 
 
 
-  handleModelImport() {
-    if (!this.modelFile()) {
-      this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
-      return;
-    }
+handleModelImport() {
+  if (!this.modelFile()) {
+    this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
+    return;
+  }
     // Lógica de importación
     this.showToast('Éxito', 'Modelo importado correctamente', 'success');
+}
+
+handleDashboardImport() {
+  if (!this.dashboardFile()) {
+    this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
+    return;
   }
 
-  handleDashboardImport() {
-    if (!this.dashboardFile()) {
-      this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
-      return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const importedDashboard = JSON.parse(reader.result as string);
+
+      // Guardamos el dashboard importado en memoria
+      this.dashboardFile = importedDashboard;
+
+      // Intentar actualizar
+      this.dashboardService.updateDashboard(importedDashboard._id, importedDashboard).subscribe(
+        () => {
+          this.showToast('Éxito', 'Dashboard actualizado correctamente', 'success');
+        },
+        () => {
+          // Si falla, intentar crear
+          this.dashboardService.addNewDashboard(importedDashboard).subscribe(
+            () => {
+              this.showToast('Éxito', 'Dashboard creado correctamente', 'success');
+            },
+            err => {
+              this.showToast('Error', 'No se pudo importar el dashboard: ' + err.message, 'error');
+            }
+          );
+        }
+      );
+    } catch (e) {
+      this.showToast('Error', 'El archivo no tiene un formato JSON válido', 'error');
     }
-    // Lógica de importación
-    this.showToast('Éxito', 'Dashboard importado correctamente', 'success');
-  }
+  };
+
+  reader.onerror = () => {
+    this.showToast('Error', 'No se pudo leer el archivo seleccionado', 'error');
+  };
+
+  reader.readAsText(this.dashboardFile());
+}
 
   // Método para mostrar notificaciones
   showToast(title: string, message: string, type: 'success' | 'error') {
