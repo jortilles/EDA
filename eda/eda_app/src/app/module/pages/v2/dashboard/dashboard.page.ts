@@ -163,6 +163,11 @@ export class DashboardPageV2 implements OnInit {
         this.stylesProviderService.setStyles(this.styles, true)
       }
 
+      if (dashboard.refreshTime) {
+        this.stopRefresh = false;
+        this.startCountdown(dashboard.refreshTime);
+      }
+
       // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
       // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
       // me.selectedTags = me.selectedTagsForDashboard(me.tags, config.tag)
@@ -525,6 +530,8 @@ public updateApplyToAllFilterInPanels(): void {
   }
 
   public async saveDashboard() {
+    // LiveDashboardTimer
+    this.triggerTimer();
     const body = {
       config: {
         title: this.title,
@@ -534,7 +541,7 @@ public updateApplyToAllFilterInPanels(): void {
         applyToAllfilter: this.applyToAllfilter,
         visible: this.dashboard.config.visible,
         // tag: this.saveTag(),
-        refreshTime: (this.refreshTime > 5) ? this.refreshTime : this.refreshTime ? 5 : null,
+        refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
         // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
         // sendViaMailConfig: this.sendViaMailConfig,
         onlyIcanEdit: this.onlyIcanEdit,
@@ -583,6 +590,66 @@ public updateApplyToAllFilterInPanels(): void {
 
     return filtersCleaned;
   }
+
+  // Funcioens para el live dashboard 
+  public startCountdown(seconds: number) {
+
+    if (!this.stopRefresh) {
+        let counter = seconds;
+        const interval = setInterval(() => {
+
+            counter--;
+            if (counter < 0 && !this.stopRefresh) {
+                clearInterval(interval);
+                this.onResetWidgets();
+                this.startCountdown(seconds);
+            } else if (this.stopRefresh) {
+                clearInterval(interval);
+                return;
+            }
+        }, 1000);
+    } else return;
+  }
+  
+  public onResetWidgets(): void {
+    // Get the queries in the dashboard for delete it from cache
+    const queries = [];
+    this.panels.forEach( p=> {
+            if(p.content  !== undefined && p.content.query  !== undefined && p.content.query.query  !== undefined){
+                queries.push( p.content.query.query );
+            }
+        });
+    let body =
+    {
+        model_id: this.dataSource._id,
+        queries: queries
+    }
+
+    this.dashboardService.cleanCache(body).subscribe(
+        res => {
+            this.loadDashboard();
+            this.dashboardService._notSaved.next(false);
+        },
+        err => console.log(err)
+    )
+  }
+
+  triggerTimer() {
+
+    this.stopRefresh = !this.stopRefresh;
+
+    //Give time to stop counter if any
+    setTimeout(() => {
+        if (!this.refreshTime) this.stopRefresh = true;
+        else if (this.refreshTime) this.stopRefresh = false;
+
+        if (this.refreshTime && this.refreshTime < 5) this.refreshTime = 5;
+
+        this.startCountdown(this.refreshTime);
+
+    }, 2000)
+
+  } 
 
   public validateDashboard(action: string): boolean {
     let isvalid = true;

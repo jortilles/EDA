@@ -67,6 +67,7 @@ export class DashboardSidebarComponent {
   isVisibleModalVisible = false;
   isTagModalVisible = false;
   inputVisible: boolean = false;
+  public refreshTime: number = null;
 
   mostrarOpciones = false;
 
@@ -171,6 +172,10 @@ export class DashboardSidebarComponent {
     },
   ]
 
+  ngOnInit(): void {
+    this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
+  }
+
   showPopover(event: Event) {
     this.isPopoverVisible = true;
     this.popover.toggle(event);
@@ -248,6 +253,10 @@ export class DashboardSidebarComponent {
   }
 
   private async saveDashboard() {
+    // Actualizar el refreshTime si es necesarii
+    this.dashboard.dashboard.config.refreshTime = this.refreshTime || this.dashboard.dashboard.config.refreshTime; 
+    
+    // Guardar Dashboard
     await this.dashboard.saveDashboard();
     this.hidePopover();
   }
@@ -452,6 +461,7 @@ public exportAsJPEG() {
 
 
 
+
   // Funcion que agrega urls para acción personalizada
   public openUrlsConfig() {
     this.hidePopover();
@@ -490,6 +500,8 @@ public exportAsJPEG() {
 
     return mailingenabled;
   } 
+
+  
 
   
    public indiceMasOpciones(): number {
