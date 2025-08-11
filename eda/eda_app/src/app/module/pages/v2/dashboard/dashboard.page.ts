@@ -163,9 +163,9 @@ export class DashboardPageV2 implements OnInit {
         this.stylesProviderService.setStyles(this.styles, true)
       }
 
-      if (dashboard.refreshTime) {
-        this.stopRefresh = false;
-        this.startCountdown(dashboard.refreshTime);
+      if (dashboard.config.refreshTime) {
+        dashboard.config.stopRefresh = false;
+        this.startCountdown(dashboard.config.refreshTime);
       }
 
       // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
@@ -591,26 +591,29 @@ public updateApplyToAllFilterInPanels(): void {
     return filtersCleaned;
   }
 
-  // Funcioens para el live dashboard 
-  public startCountdown(seconds: number) {
+private countdownInterval: any;
 
-    if (!this.stopRefresh) {
-        let counter = seconds;
-        const interval = setInterval(() => {
+public startCountdown(seconds: number) {
 
-            counter--;
-            if (counter < 0 && !this.stopRefresh) {
-                clearInterval(interval);
-                this.onResetWidgets();
-                this.startCountdown(seconds);
-            } else if (this.stopRefresh) {
-                clearInterval(interval);
-                return;
-            }
-        }, 1000);
-    } else return;
-  }
-  
+  if (this.dashboard.config.stopRefresh) return;
+
+  let counter = seconds;
+
+  // Evita intervalos duplicados
+  clearInterval(this.countdownInterval);
+  this.countdownInterval = setInterval(() => {
+    if (this.dashboard.config.stopRefresh) {
+      clearInterval(this.countdownInterval);
+      return;
+    }    
+    counter--; 
+    if (counter < 0) {
+      this.onResetWidgets();
+      counter = seconds; // Cambio de recursividad a contador
+    }
+  }, 1000);
+}
+
   public onResetWidgets(): void {
     // Get the queries in the dashboard for delete it from cache
     const queries = [];
