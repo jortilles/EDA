@@ -16,6 +16,7 @@ import { ComponentsModule } from '@eda/components/components.module';
 import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
+import { ChatgptService } from '@eda/services/api/chatgpt.service';
 
 
 @Component({
@@ -49,6 +50,7 @@ export class DashboardPageV2 implements OnInit {
   public backgroundColor: any;
   public panelTitle: any;
   public panelContent: any;
+  public availableChatGpt: any = false;
 
   titleClick: boolean = false;
   sidebarVisible = false;
@@ -84,12 +86,24 @@ export class DashboardPageV2 implements OnInit {
 
   public selectedTags: any[] = [];
 
+  constructor(public chatgptService: ChatgptService) {
+
+  }
+
   ngOnInit(): void {
     this.initGridsterOptions();
     this.loadDashboard();
     this.dashboardService.notSaved.subscribe(
       (data) => this.notSaved = data
     );
+
+    this.chatgptService.availableChatGpt().subscribe((resp: any) => {
+      if(resp.response.available) {
+        this.availableChatGpt = true;
+      } else {
+        this.availableChatGpt = false;
+      }
+    })
   }
 
   ngOnDestroy() {

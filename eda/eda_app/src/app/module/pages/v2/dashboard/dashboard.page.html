@@ -40,8 +40,8 @@
 
           @if (panel.type===0) {
           <eda-blank-panel #edaPanel [panel]="panel" [inject]="injectEdaPanel" [panelContent]="panelContent"
-            [panelText]="panelTitle" (remove)="onRemovePanel($event)" [inject]="injectEdaPanel"
-            (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)">
+            [panelText]="panelTitle" (remove)="onRemovePanel($event)"
+            (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)" [availableChatGpt]="availableChatGpt">
           </eda-blank-panel>
           }
 

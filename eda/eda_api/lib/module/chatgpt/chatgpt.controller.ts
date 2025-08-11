@@ -7,6 +7,7 @@ import OpenAI from "openai";
 const API_KEY = require('../../../config/chatgpt.config').API_KEY;
 const MODEL = require('../../../config/chatgpt.config').MODEL;
 const CONTEXT = require('../../../config/chatgpt.config').CONTEXT;
+const AVAILABLE = require('../../../config/chatgpt.config').AVAILABLE;
 
 
 export class ChatGptController {
@@ -14,9 +15,7 @@ export class ChatGptController {
     static async responseChatGpt(req: Request, res: Response, next: NextFunction) {
         
         
-        try {
-            console.log('CHATGPT: req.body', req.body);
-            
+        try {            
             const { input } = req.body;
 
             const openai = new OpenAI({
@@ -42,5 +41,28 @@ export class ChatGptController {
         }
 
     }
+
+    static async availableChatGpt(req: Request, res: Response, next: NextFunction) {
+        
+        
+        try {
+            const apiKeyAvailable = AVAILABLE;            
+            const response = {
+                available: apiKeyAvailable,
+            }
+
+            res.status(200).json({
+                ok: true,
+                response: response
+            })
+            
+        } catch (err) {
+            console.log(err);
+            next(new HttpException(400, 'some Error occurred with the ChatGpt availability'))
+        }
+
+    }
+
+
 
 }

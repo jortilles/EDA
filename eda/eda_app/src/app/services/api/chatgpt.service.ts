@@ -14,4 +14,8 @@ export class ChatgptService extends ApiService{
     return this.post(`${this.chatGptRoute}/response`, {input: message})
   }
 
+  availableChatGpt(): Observable<any> {
+    return this.get(`${this.chatGptRoute}/availableChatGpt`)
+  }
+
 }

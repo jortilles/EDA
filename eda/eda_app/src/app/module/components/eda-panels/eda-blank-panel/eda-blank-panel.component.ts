@@ -61,6 +61,7 @@ export class EdaBlankPanelComponent implements OnInit {
     @Input() panelText: any;
     @Input() panel: EdaPanel;
     @Input() inject: InjectEdaPanel;
+    @Input() availableChatGpt: any;
     @Output() remove: EventEmitter<any> = new EventEmitter();
     @Output() duplicate: EventEmitter<any> = new EventEmitter();
     @Output() action: EventEmitter<IPanelAction> = new EventEmitter<IPanelAction>();

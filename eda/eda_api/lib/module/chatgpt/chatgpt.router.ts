@@ -6,9 +6,7 @@ const router = express.Router();
 
 router.post('/response', authGuard, ChatGptController.responseChatGpt);
 
-
-
-
+router.get('/availableChatGpt', authGuard, ChatGptController.availableChatGpt);
 
 
 

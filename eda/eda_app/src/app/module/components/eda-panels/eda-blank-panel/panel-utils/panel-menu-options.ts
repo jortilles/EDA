@@ -274,7 +274,10 @@ export const PanelOptions = {
 
     menu.push(PanelOptions.exportExcel(panelComponent));
     menu.push(PanelOptions.duplicatePanel(panelComponent));
-    menu.push(PanelOptions.askToIA(panelComponent));
+    
+    if(panelComponent.availableChatGpt) {
+      menu.push(PanelOptions.askToIA(panelComponent));
+    }
 
     if (editmode) {
         menu.push(PanelOptions.deletePanel(panelComponent));
