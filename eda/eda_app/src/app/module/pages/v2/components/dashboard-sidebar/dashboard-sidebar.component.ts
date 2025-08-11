@@ -253,8 +253,8 @@ export class DashboardSidebarComponent {
   }
 
   private async saveDashboard() {
-    // Actualizar el refreshTime si es necesarii
-    this.dashboard.dashboard.config.refreshTime = this.refreshTime || this.dashboard.dashboard.config.refreshTime; 
+    // Actualizar el refreshTime si es necesario
+    this.dashboard.dashboard.config.refreshTime = this.refreshTime || null; 
     
     // Guardar Dashboard
     await this.dashboard.saveDashboard();
