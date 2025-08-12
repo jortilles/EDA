@@ -620,7 +620,7 @@ export class EdaTable {
 
         //esta primera iteración con this.noRepetitions en false se hace para devolver las palabras repetidas al diálogo.
         //Es una secuencia similar a la de quitar los valores, pero opuesta.
-        if (!this.noRepetitions) {
+        if (!this.noRepetitions && this.noRepetitions !== undefined) {
            this.value = this.origValues  ;
         } else {
             //separamos valores de claves
