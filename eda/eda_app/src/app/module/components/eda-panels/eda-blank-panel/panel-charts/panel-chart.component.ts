@@ -375,7 +375,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
             }
         //funciona
-            else if (['bar', 'horizontalBar', 'radar', 'barline', 'line', 'area'].includes(chartConfig.edaChart)) {
+            else if (['bar', 'horizontalBar', 'radar', 'barline', 'line', 'area','histogram'].includes(chartConfig.edaChart)) {
                 if (sortByAsCol) {
                     // Usa color coincidente de configColors
                     chartConfig.chartColors[0].backgroundColor = chartConfig.assignedColors[0].color;
@@ -391,13 +391,26 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     });
                 }
             }
+            else if (['histogram'].includes(chartConfig.edaChart)) {
+                if (sortByAsCol) {
+                    // Usa color coincidente de configColors
+                    chartConfig.chartColors[0].backgroundColor = chartConfig.encontrarBackgroundColor(assignedColors[0].color);
+                    chartConfig.chartColors[0].borderColor = chartConfig.encontrarBackgroundColor(assignedColors[0].color);
+                } else {
+                    // Usa color de la paleta activa
+                    chartConfig.chartColors[0].backgroundColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
+                    chartConfig.chartColors[0].borderColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
+                  
+                    // Modificar los assignedColor para que la preview coincida con el cambio
+                    chartConfig.assignedColors.forEach(element => {
+                        element.color = chartConfig.chartColors[0].backgroundColor
+                    });
+                }
+            }
             //SEPARAR LOGICAS
-            else if (chartConfig.edaChart === 'stackedbar100' || chartConfig.edaChart === 'stackedbar' || chartConfig.edaChart === 'pyramid') {
-      //      } else if(chartConfig.edaChart === 'stackedbar100'){
+            else if (chartConfig.edaChart === 'pyramid' || chartConfig.edaChart === 'stackedbar' || chartConfig.edaChart === 'stackedbar100') {
                 chartData[1].forEach((element, index) => {
-                    
                     const indexMatched = configData.findIndex(e => e === element.label)
-
                     //Si indexMatched encuentra data igual, asigna su color, sino el siguiente que no este usado
                     if (indexMatched !== -1 && sortByAsCol) {
                         chartConfig.chartColors[index].backgroundColor = configColors[indexMatched];
@@ -405,16 +418,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     } else if (paletaAplicada) { // Si la modificación de colores viene dada por cambio general de paleta de colores
                         chartConfig.chartColors[index].backgroundColor = paletaActual[index];
                         chartConfig.chartColors[index].borderColor = paletaActual[index];
-                        // Modificar los assignedColor para que la preview coincida con el cambio     
-                        chartConfig.assignedColors.forEach((element, index) => {
-                            element.color = chartConfig.chartColors[index].backgroundColor
-                        });
                     }
-                });
-           
-
-           
+                });           
             } 
+
+
             // chartColors unicamente se reflejan si estan dentro del chartDataset (esto asigna colores correctamente) 
             if (!chartData[1][0]?.backgroundColor) {
                 chartData[1].forEach((e, i) => {
@@ -1052,6 +1060,29 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         .filter((_, index) => index < dataLength)
         .map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`)
     }
+
+encontrarBackgroundColor(obj) {
+    console.log(obj)
+  if (!obj || typeof obj !== "object") return null;
+
+  if (obj.backgroundColor && typeof obj.backgroundColor === "string") {
+    return obj.backgroundColor;
+  }
+
+  // Buscar en la propiedad backgroundColor si es otro objeto
+  if (obj.backgroundColor && typeof obj.backgroundColor === "object") {
+    return this.encontrarBackgroundColor(obj.backgroundColor);
+  }
+
+  // Buscar en otras propiedades si existe
+  for (let key in obj) {
+      if (typeof obj[key] === "object") {
+      const resultado = this.encontrarBackgroundColor(obj[key]);
+      if (resultado) return resultado;
+    }
+  }
+
+  return null;    }
 
     /**
      * @return current chart config
