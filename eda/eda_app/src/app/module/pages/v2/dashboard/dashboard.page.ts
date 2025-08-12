@@ -107,6 +107,8 @@ export class DashboardPageV2 implements OnInit {
   }
 
   ngOnDestroy() {
+    // Poner estilos como predefinidios
+    this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles())
   }
 
 
