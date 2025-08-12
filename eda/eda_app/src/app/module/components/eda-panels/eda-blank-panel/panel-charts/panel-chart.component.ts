@@ -375,7 +375,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
             }
         //funciona
-            else if (['bar', 'horizontalBar', 'radar', 'histogram', 'barline', 'line', 'area'].includes(chartConfig.edaChart)) {
+            else if (['bar', 'horizontalBar', 'radar', 'barline', 'line', 'area'].includes(chartConfig.edaChart)) {
                 if (sortByAsCol) {
                     // Usa color coincidente de configColors
                     chartConfig.chartColors[0].backgroundColor = chartConfig.assignedColors[0].color;
@@ -384,7 +384,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     // Usa color de la paleta activa
                     chartConfig.chartColors[0].backgroundColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
                     chartConfig.chartColors[0].borderColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
-                    // Modificar los assignedColor para que la preview coincida con el cambio     rgb(0,0,0,0)
+                  
+                    // Modificar los assignedColor para que la preview coincida con el cambio
                     chartConfig.assignedColors.forEach(element => {
                         element.color = chartConfig.chartColors[0].backgroundColor
                     });
@@ -619,17 +620,21 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             this.props.chartType,
             this.props.config
         );
-
-            if (this.styleProviderService.loadingFromPalette) {
-                chartConfig.edaChart.chartDataset[0].backgroundColor = this.styleProviderService.ActualChartPalette['paleta'][0];
-                chartConfig.edaChart.chartDataset[0].borderColor = this.styleProviderService.ActualChartPalette['paleta'][0];
-            } else { 
-                chartConfig.edaChart.chartDataset[0].backgroundColor = chartConfig.edaChart.chartColors[0].backgroundColor;
-                chartConfig.edaChart.chartDataset[0].borderColor = chartConfig.edaChart.chartColors[0].borderColor;
-            }
         
+        // Determinar color base del gráfico paleta / asCol
+        const baseColor = this.styleProviderService.loadingFromPalette
+            ? this.styleProviderService.ActualChartPalette['paleta'][0]
+            : this.props.config.getConfig()['edaChart'].colors[0].backgroundColor;
 
+        // Asignar colores a la configuración
+        chartConfig.edaChart.chartColors[0].backgroundColor = baseColor;
+        chartConfig.edaChart.chartDataset[0] = {
+            ...chartConfig.edaChart.chartDataset[0],
+            backgroundColor: baseColor,
+            borderColor: baseColor
+        };
 
+        
         // KPI Config
         let kpiValue: number;
         let kpiLabel = this.props.query.find((c: any) => c.column_type == 'numeric')?.display_name?.default;
