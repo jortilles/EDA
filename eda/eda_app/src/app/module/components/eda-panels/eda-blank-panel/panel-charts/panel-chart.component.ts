@@ -106,6 +106,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.NO_FILTER_ALLOWED = false;
     }
 
+    ngAfterContentInit(): void {
+        this.styleProviderService.checkLoadPan();
+    }
     ngOnChanges(changes: SimpleChanges): void {
         /**
          * If data change chart type

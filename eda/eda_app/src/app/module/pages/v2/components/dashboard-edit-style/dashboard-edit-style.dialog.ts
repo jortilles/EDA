@@ -202,6 +202,7 @@ export class DashboardEditStyleDialog {
 
 	public saveConfig(): void {
 		// this.dashBoardStyles.fontFamily = this.selectedFont.value;
+		this.stylesProviderService.loadedPanels = this.dashboard.dashboard.config.panel.length;
 		this.stylesProviderService.loadingFromPalette = true;
 		const response: DashboardStyles = {
 			stylesApplied: true,
@@ -233,12 +234,8 @@ export class DashboardEditStyleDialog {
 			palette: this.selectedPalette
 		}
 		this.stylesProviderService.setStyles(response)
+		this.stylesProviderService.colorCode = false; // Priorizar estilos sobre codigo de color
 		this.apply.emit(response);
-
-		// REFACTOR PARA TENER UN MEJOR CONTROL
-		setTimeout(() => {
-			        this.stylesProviderService.loadingFromPalette = false;
-		}, 5000);
 	}
 
   public onApply() {

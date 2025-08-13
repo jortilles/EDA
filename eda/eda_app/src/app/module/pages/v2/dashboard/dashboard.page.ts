@@ -226,7 +226,6 @@ export class DashboardPageV2 implements OnInit {
     this.panelContent = {
       background: this.dashboard.config.styles.panelColor,
     };
-
     this.stylesProviderService.ActualChartPalette = this.dashboard.config.styles.palette;
   }
 
@@ -264,6 +263,7 @@ export class DashboardPageV2 implements OnInit {
       applyToAllfilter: this.applyToAllfilter,
       isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
     }
+    this.stylesProviderService.loadedPanels = dashboard.config.panel.length;
   }
 
   // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
@@ -309,11 +309,11 @@ export class DashboardPageV2 implements OnInit {
   
   public reloadPanels(): void {
     this.edaPanels.forEach(async (panel) => {
-        if (panel.currentQuery.length !== 0) {
-            panel.display_v.chart = '';
-            await panel.runQueryFromDashboard(true);
-            panel.panelChart.updateComponent();
-        }
+      if (panel.currentQuery.length !== 0) {
+        panel.display_v.chart = '';
+        await panel.runQueryFromDashboard(true);
+        panel.panelChart.updateComponent();
+      }
     });
 }
 

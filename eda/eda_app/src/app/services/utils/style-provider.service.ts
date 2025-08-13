@@ -37,8 +37,9 @@ export class StyleProviderService {
 	public DEFAULT_PANEL_TITLE_ALIGN: string = DEFAULT_PANEL_TITLE_ALIGN;
 	public DEFAULT_PALETTE_COLOR: string = DEFAULT_PALETTE_COLOR;
 	public ChartsPalettes: any = ChartsPalettes;
-	public ActualChartPalette: string; 
-	public loadingFromPalette: boolean ;
+	public ActualChartPalette: string;
+	public loadingFromPalette: boolean;
+	public loadedPanels: number;
 	public colorCode: boolean = false;
 
 	
@@ -120,8 +121,8 @@ export class StyleProviderService {
 	}
 
 	public setStyles(styles: DashboardStyles, initial?: boolean) {
-		if (!initial) { 
-			this._pagePalette.next(styles.palette);			
+		if (!initial) {
+			this._pagePalette.next(styles.palette);
 			this.ActualChartPalette = styles.palette;
 			this.loadingFromPalette = true;
 		}
@@ -225,4 +226,12 @@ export class StyleProviderService {
 		return styles
 	}
 
+	checkLoadPan() {
+		console.log('???')
+		console.log(this.loadedPanels)
+		this.loadedPanels--;
+		if (this.loadedPanels === 0) {
+			this.loadingFromPalette = false;
+		}
+	}
 }
