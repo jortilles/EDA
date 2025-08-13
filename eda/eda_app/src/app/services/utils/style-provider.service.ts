@@ -227,8 +227,6 @@ export class StyleProviderService {
 	}
 
 	checkLoadPan() {
-		console.log('???')
-		console.log(this.loadedPanels)
 		this.loadedPanels--;
 		if (this.loadedPanels === 0) {
 			this.loadingFromPalette = false;
