@@ -107,10 +107,9 @@ private applyTextStyle(): void {
   }
 
   getColor() {
-    if (this.styleProviderService.loadingFromPalette)
-        return this.styleProviderService.ActualChartPalette['paleta'][0];
-    else
-      return this.color;
+    if (this.styleProviderService.loadingFromPalette || this.styleProviderService.palKnob)
+      this.color = this.styleProviderService.ActualChartPalette['paleta'][0]; 
+    return this.color;
   }
 
 }

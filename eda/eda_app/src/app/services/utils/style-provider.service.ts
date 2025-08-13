@@ -39,8 +39,9 @@ export class StyleProviderService {
 	public ChartsPalettes: any = ChartsPalettes;
 	public ActualChartPalette: string;
 	public loadingFromPalette: boolean;
-	public loadedPanels: number;
 	public colorCode: boolean = false;
+	public loadedPanels: number;
+	public palKnob: boolean = false;
 
 	
 	public DEFAULT_CUSTOM_CSS: string = '';

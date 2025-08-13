@@ -2,6 +2,8 @@ import { Component, ViewChild } from "@angular/core";
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
 import { PanelChart } from "../panel-charts/panel-chart";
 import { PanelChartComponent } from "../panel-charts/panel-chart.component";
+import { StyleProviderService } from '@eda/services/service.index';
+
 
 @Component({
     selector: 'knob-dialog',
@@ -21,7 +23,7 @@ export class KnobDialogComponent extends EdaDialogAbstract {
     public label: string;
     public display: boolean = false;
 
-    constructor() {
+    constructor(private styleProviderService : StyleProviderService) {
         super();
 
         this.dialog = new EdaDialog({
@@ -63,7 +65,7 @@ export class KnobDialogComponent extends EdaDialogAbstract {
             color: this.color,
             limits: [this.min, this.max]
         }
-
+        this.styleProviderService.palKnob = false;
         this.onClose(EdaDialogCloseEvent.UPDATE, properties)
     }
 
