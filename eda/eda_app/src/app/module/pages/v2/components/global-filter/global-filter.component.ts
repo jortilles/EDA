@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, inject, Input, OnInit } from "@angular/core";
 import { AlertService, DashboardService, GlobalFiltersService, QueryBuilderService, UserService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import { EdaDialogCloseEvent, EdaDialogController } from "@eda/shared/components/shared-components.index";
@@ -10,18 +10,25 @@ import { MultiSelectModule } from "primeng/multiselect";
 import { FormsModule } from "@angular/forms";
 import { IconComponent } from "@eda/shared/components/icon/icon.component";
 import { SharedModule } from "../../../../../shared/shared.module";
+import { StyleProviderService } from '@eda/services/service.index';
+import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
+
 
 @Component({
     selector: 'app-v2-global-filter',
     templateUrl: './global-filter.component.html',
     standalone: true,
-    imports: [FormsModule, MultiSelectModule, IconComponent, SharedModule],
+    imports: [FormsModule, MultiSelectModule, IconComponent, SharedModule, CommonModule],
     styleUrls: ['./global-filter.component.css']
 })
 export class GlobalFilterV2Component implements OnInit {
     @Input() dashboard: DashboardPageV2;
     public globalFilters: any[] = [];
     public globalFilter: any;
+    public styleButton: any;
+    private styleSub: Subscription;
+
 
     public filterController: EdaDialogController;
 
@@ -29,6 +36,7 @@ export class GlobalFilterV2Component implements OnInit {
     public isAdmin: boolean = false;
     public isDashboardCreator: boolean = false;
     public filterButtonVisibility = { public: false, readOnly: false };
+    private styleProviderService = inject(StyleProviderService)
 
     //Date filter ranges Dropdown
     public datePickerConfigs: {} = {};
@@ -40,12 +48,32 @@ export class GlobalFilterV2Component implements OnInit {
         private dashboardService: DashboardService,
         private queryBuilderService: QueryBuilderService,
         private alertService: AlertService,
-        private userService: UserService) { }
+        private userService: UserService,
+    ) { }
 
     public ngOnInit(): void {
         this.isAdmin = this.userService.isAdmin;
         // this.isDashboardCreator = this.dashboard.isDashboardCreator;
         // this.hideFilters = this.dashboard.display_v.panelMode;
+        this.updateStyleButton();
+        // Suscripción si los estilos cambian dinámicamente
+        this.styleProviderService.filtersFontColor.subscribe(() => {this.updateStyleButton();});
+        this.styleProviderService.filtersFontFamily.subscribe(() => {this.updateStyleButton();});
+        this.styleProviderService.filtersFontSize.subscribe(() => {this.updateStyleButton();});
+        this.styleProviderService.panelColor.subscribe(() => {this.updateStyleButton();});
+    }
+
+    ngOnDestroy(): void {
+        this.styleSub.unsubscribe(); // desuscribe todas las subs
+    }
+
+    updateStyleButton() {
+        this.styleButton = {
+            color: this.styleProviderService.filtersFontColor.source['_value'],
+            backgroundColor: this.styleProviderService.panelColor.source['_value'],
+            fontSize: (this.styleProviderService.filtersFontSize.source['_value']*2 + 14) + 'px',
+            fontFamily: this.styleProviderService.filtersFontFamily.source['_value'],
+        };
     }
 
     public initGlobalFilters(filters: any[]): void {

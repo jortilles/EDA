@@ -2,6 +2,7 @@
   @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
     <button
       class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+      [style]="styleButton"
       (click)="dashboard.refreshPanels()">
       <i class="pi pi-filter"></i>
       Filtrar
@@ -11,7 +12,11 @@
   @for (filter of globalFilters; track filter.filter_id) {
     @if (isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)) {
       <div class="flex items-center gap-2">
-        <span class="text-sm text-gray-500">{{getFilterLabel(filter)}}:</span>
+        <span class="text-sm text-gray-500"       
+          [style.color]="styleButton.color"
+          [style.font-size]="styleButton.fontSize"
+          [style.font-family]="styleButton.fontFamily"
+        >{{getFilterLabel(filter)}}:</span>
       </div>
 
       @if (getFilterType(filter)=='date') {
@@ -22,7 +27,8 @@
           (onDatesChanges)="processPickerEvent($event, filter)">
 
           <ng-container footer>
-            <button id="dashFilterConf"
+            <button         
+              id="dashFilterConf"
               type="button"
               (click)="onShowGlobalFilter(false, filter)"
               class="rounded-full border p-2.5 m-2">
@@ -31,28 +37,30 @@
           </ng-container>
         </eda-date-picker>
       } @else {
-        <p-multiSelect
-          [options]="filter.data"
-          [(ngModel)]="filter.selectedItems"
-          [virtualScroll]="true"
-          [defaultLabel]="getFilterLabel(filter)"
-          [disabled]="disableGlobalFilter(filter)"
-          [itemSize]="30"
-          class="customMultiselect filters-size"
-          [style]="{'max-width': '250px', 'min-width':'200px', 'font-family':'var(--eda-filters-font-family)'}"
-          (onChange)="setGlobalFilterItems(filter)">
 
-          @if (dashboard.isEditable()) {
-            <ng-template pTemplate="footer">
-              <button id="dashFilterConf"
-                type="button"
-                (click)="onShowGlobalFilter(false, filter)"
-                class="rounded-full border p-2.5 m-2">
-                <eda-icon name="settings"></eda-icon>
-              </button>
-            </ng-template>
-          }
-        </p-multiSelect>
+          <p-multiSelect
+            [style]="styleButton"
+            [panelStyle]="styleButton"
+            [options]="filter.data"
+            [(ngModel)]="filter.selectedItems"
+            [virtualScroll]="true"
+            [defaultLabel]="getFilterLabel(filter)"
+            [disabled]="disableGlobalFilter(filter)"
+            [itemSize]="30"
+            class="customMultiselect filters-size"
+            (onChange)="setGlobalFilterItems(filter)">
+  
+            @if (dashboard.isEditable()) {
+                <ng-template pTemplate="footer">
+                  <button id="dashFilterConf"
+                    type="button"
+                    (click)="onShowGlobalFilter(false, filter)"
+                    class="rounded-full border p-2.5 m-2">
+                    <eda-icon name="settings"></eda-icon>
+                  </button>
+                </ng-template>
+            }
+          </p-multiSelect>
       }
     }
   }
