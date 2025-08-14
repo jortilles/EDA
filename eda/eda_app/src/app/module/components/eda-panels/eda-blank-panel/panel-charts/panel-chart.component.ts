@@ -395,9 +395,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 }
             }
             else if (['histogram'].includes(chartConfig.edaChart)) {
-                
-                
-                
                 if (chartConfig.chartLabels.length === 0) {
                     chartConfig.chartLabels = [chartConfig.assignedColors[0].value];
                     chartConfig.chartDataset[0].data = [1];
@@ -424,9 +421,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                         element.color = chartConfig.chartColors[0].backgroundColor
                     });
                 }
-
             }
-            //SEPARAR LOGICAS
             else if (chartConfig.edaChart === 'pyramid' || chartConfig.edaChart === 'stackedbar' || chartConfig.edaChart === 'stackedbar100') {
                 chartData[1].forEach((element, index) => {
                     const indexMatched = configData.findIndex(e => e === element.label)
@@ -1081,7 +1076,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
 encontrarBackgroundColor(obj) {
-    console.log(obj)
   if (!obj || typeof obj !== "object") return null;
 
   if (obj.backgroundColor && typeof obj.backgroundColor === "string") {
