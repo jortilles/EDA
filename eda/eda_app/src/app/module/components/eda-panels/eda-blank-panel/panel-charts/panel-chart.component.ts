@@ -378,7 +378,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
             }
         //funciona
-            else if (['bar', 'horizontalBar', 'radar', 'barline', 'line', 'area','histogram'].includes(chartConfig.edaChart)) {
+            else if (['bar', 'horizontalBar', 'radar', 'barline', 'line', 'area'].includes(chartConfig.edaChart)) {
                 if (sortByAsCol) {
                     // Usa color coincidente de configColors
                     chartConfig.chartColors[0].backgroundColor = chartConfig.assignedColors[0].color;
@@ -395,10 +395,25 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 }
             }
             else if (['histogram'].includes(chartConfig.edaChart)) {
+                
+                
+                
+                if (chartConfig.chartLabels.length === 0) {
+                    chartConfig.chartLabels = [chartConfig.assignedColors[0].value];
+                    chartConfig.chartDataset[0].data = [1];
+                }
                 if (sortByAsCol) {
                     // Usa color coincidente de configColors
-                    chartConfig.chartColors[0].backgroundColor = chartConfig.encontrarBackgroundColor(assignedColors[0].color);
-                    chartConfig.chartColors[0].borderColor = chartConfig.encontrarBackgroundColor(assignedColors[0].color);
+                    const assignedColor = chartConfig.assignedColors[0].color;
+
+                    chartConfig.chartColors[0] = {
+                        backgroundColor: assignedColor,
+                        borderColor: assignedColor,
+                        pointBackgroundColor: assignedColor,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: assignedColor
+                    };
                 } else {
                     // Usa color de la paleta activa
                     chartConfig.chartColors[0].backgroundColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
@@ -409,6 +424,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                         element.color = chartConfig.chartColors[0].backgroundColor
                     });
                 }
+
             }
             //SEPARAR LOGICAS
             else if (chartConfig.edaChart === 'pyramid' || chartConfig.edaChart === 'stackedbar' || chartConfig.edaChart === 'stackedbar100') {
