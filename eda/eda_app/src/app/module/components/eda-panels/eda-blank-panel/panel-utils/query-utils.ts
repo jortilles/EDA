@@ -39,7 +39,7 @@ export const QueryUtils = {
    * @param query query to run
    *
    */
-  switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
+  switchAndRun_old: async (ebp: EdaBlankPanelComponent, query: Query) => {
     try {
       if (ebp.selectedQueryMode != 'SQL') {
         const queryData = JSON.parse(JSON.stringify(query));
@@ -79,7 +79,52 @@ export const QueryUtils = {
       throw err;
     }
   },
+  
+  /**
+   * Switch sql mode or eda mode and run query
+   * @param ebp edaBlankPanelComponent
+   * @param query query to run
+   *
+   */
+  switchAndRun: async (ebp: EdaBlankPanelComponent, query: Query) => {
+    const isSqlMode = ebp.selectedQueryMode === 'SQL';
 
+    const executeEdaQuery = async (): Promise<any> => {
+      const filteredQuery: Query = {
+        ...query,
+        query: {
+          ...query.query,
+          filters: query.query.filters.filter(f =>
+            (f.filter_elements[0]?.value1?.length > 0) ||
+            ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
+          )
+        }
+      };
+      return ebp.dashboardService.executeQuery(filteredQuery).toPromise();
+    };
+
+    const executeSqlQuery = async (): Promise<any> => {
+      const response = await ebp.dashboardService.executeSqlQuery(query).toPromise();
+      const [headers, rows] = response;
+
+      const types = headers.map((_, i) => {
+        for (const row of rows) {
+          const field = row[i];
+          if (typeof field === 'number') return 'numeric';
+          if (typeof field === 'string') return 'text';
+        }
+        return null;
+      });
+
+      ebp.currentQuery = headers.map((header, i) =>
+        QueryUtils.createColumn(header, types[i], ebp.sqlOriginTable)
+      );
+
+      return response;
+    };
+
+    return isSqlMode ? await executeSqlQuery() : await executeEdaQuery();
+  },
 
   getQueryFromServer: async (ebp: EdaBlankPanelComponent, query: Query): Promise<string> => {
     const serverquery = await ebp.dashboardService.getBuildedQuery(query).toPromise();
@@ -262,7 +307,7 @@ export const QueryUtils = {
 
     const params = {
       table: '',
-      dataSource: ebp.inject.dataSource._id,
+      dataSource: ebp.dataSource._id,
       panel: ebp.panel.id,
       dashboard: ebp.inject.dashboard_id,
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
@@ -283,7 +328,7 @@ export const QueryUtils = {
     const config = ChartsConfigUtils.setConfig(ebp);
     const params = {
       table: '',
-      dataSource: ebp.inject.dataSource._id,
+      dataSource: ebp.dataSource._id,
       panel: ebp.panel.id,
       dashboard: ebp.inject.dashboard_id,
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),

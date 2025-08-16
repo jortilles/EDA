@@ -32,9 +32,10 @@ import { ActivatedRoute } from '@angular/router';
 
 import {NULL_VALUE} from '../../../../config/personalitzacio/customizables'
 import { KpiConfig } from './panel-charts/chart-configuration-models/kpi-config';
-import { computed } from '@angular/core';
-import { inject } from '@angular/core';
+import { inject, computed } from '@angular/core';
 import { DragDropComponent } from '@eda/components/drag-drop/drag-drop.component';
+import { lastValueFrom } from 'rxjs';
+import { DashboardPageV2 } from 'app/module/pages/v2/dashboard/dashboard.page';
 
 export interface IPanelAction {
     code: string;
@@ -47,8 +48,6 @@ export interface IPanelAction {
     styleUrls: ['./eda-blank-panel.component.css'],
 })
 export class EdaBlankPanelComponent implements OnInit {
-    private cd = inject(ChangeDetectorRef);
-    @ViewChild('pdialog', { static: false }) pdialog: EdaPageDialogComponent;
     @ViewChild('edaChart', { static: false }) edaChart: EdaChartComponent;
     @ViewChild('PanelChartComponent', { static: false }) panelChart: PanelChartComponent;
     @ViewChild('panelChartComponentPreview', { static: false }) panelChartPreview: PanelChartComponent;
@@ -59,6 +58,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
     @Input() panelContent: any;
     @Input() panelText: any;
+    @Input() dashboard: DashboardPageV2;
     @Input() panel: EdaPanel;
     @Input() inject: InjectEdaPanel;
     @Input() availableChatGpt: any;
@@ -87,6 +87,10 @@ export class EdaBlankPanelComponent implements OnInit {
     public sunburstController: EdaDialogController;
     public contextMenu: EdaContextMenu;
     public lodash: any = _;
+
+    public dataSource: any;
+    public isImported: boolean = false;
+    public readonly: boolean = false;
 
     public indextab = 0;
 
@@ -117,7 +121,8 @@ export class EdaBlankPanelComponent implements OnInit {
         disableQueryInfo: true,
         notSaved: false,
         minispinnerSQL: false,
-        advancedSetting: false
+        advancedSetting: false,
+        filterMapperDialog: false
     };
 
     public index: number;
@@ -225,17 +230,38 @@ export class EdaBlankPanelComponent implements OnInit {
         this.initializeBlankPanelUtils();
         this.initializeInputs();
         this.connectionProperties = computed(() => this.route.snapshot.paramMap.get('cnproperties'));
+
+        this.dashboardService.notSaved.subscribe(
+            (data) => this.display_v.notSaved = data,
+            (err) => this.alertService.addError(err)
+        );
     }
 
-    ngOnInit(): void {
+    public async setPanelDataSource() {
+        if (!this.dataSource) {
+            const panelDataSource = this.panel.dataSource?._id;
+
+            if (panelDataSource && panelDataSource !== this.inject.dataSource._id) {
+                this.dataSource = await lastValueFrom(this.dashboardService.getDataSource(panelDataSource));
+                this.isImported = true;
+            } else {
+                this.dataSource = this.inject.dataSource;
+            }
+        }
+    }
+
+    async ngOnInit() {
         this.index = 0;
-        this.setTablesData();
+        this.readonly = this.panel.readonly;
+
+        await this.setTablesData();
+
         /**If panel comes from server */
         if (this.panel.content) {
             try{
                 const contentQuery = this.panel.content.query;
 
-                // Comptabilitzar dashboard antics sense queryMode informat
+                // Compatibilitzar dashboard antics sense queryMode informat
                 const modeSQL = contentQuery.query.modeSQL; 
                 let queryMode = contentQuery.query.queryMode;
 
@@ -262,11 +288,6 @@ export class EdaBlankPanelComponent implements OnInit {
                 throw e;
             }
         }
-
-        this.dashboardService.notSaved.subscribe(
-            (data) => this.display_v.notSaved = data,
-            (err) => this.alertService.addError(err)
-        );
 
         this.contextMenu = new EdaContextMenu({
             header: $localize`:@@panelOptions0:OPCIONES DEL PANEL`,
@@ -338,7 +359,13 @@ export class EdaBlankPanelComponent implements OnInit {
         }
     }
 
-    getEditMode() {
+    isEditable() {
+        const user = localStorage.getItem('user');
+        const userName = JSON.parse(user).name;
+        return (userName !== 'edaanonim' && !this.inject.isObserver) && !this.readonly;
+    }
+
+    isRemovable() {
         const user = localStorage.getItem('user');
         const userName = JSON.parse(user).name;
         return (userName !== 'edaanonim' && !this.inject.isObserver);
@@ -420,8 +447,10 @@ export class EdaBlankPanelComponent implements OnInit {
         return out;
     }
 
-    public setTablesData = () => {
-        const tables = TableUtils.getTablesData(this.inject.dataSource.model.tables, this.inject.applyToAllfilter);
+    public async setTablesData()  {
+        await this.setPanelDataSource();
+
+        const tables = TableUtils.getTablesData(this.dataSource.model.tables, this.inject.applyToAllfilter);
         this.tables = [].concat(_.cloneDeep(tables.allTables), this.assertedTables);
         this.tablesToShow = [].concat(_.cloneDeep(tables.tablesToShow), this.assertedTables);
         this.sqlOriginTables = _.cloneDeep(tables.sqlOriginTables);
@@ -436,79 +465,92 @@ export class EdaBlankPanelComponent implements OnInit {
 
     /**
      * Runs a query and sets global config for this panel
-     * @param panelContent panel content to build query .
+     * @param panelContent Panel content with query to execute
      */
     async loadChartsData(panelContent: any) {
-        if (this.panel.content) {
-            this.display_v.minispinner = true;
-            try {
-                const response = await QueryUtils.switchAndRun(this, panelContent.query);
-                this.chartLabels = this.chartUtils.uniqueLabels(response[0]);
-                this.chartData = response[1].map(item => item.map(a => a == null ? NULL_VALUE : a)); // canviem els null per valor customitzable
-                this.buildGlobalconfiguration(panelContent);
-            } catch (err) {
-                this.alertService.addError(err);
-                this.display_v.minispinner = false;
-                throw err;
-            }
-        }
+        try {
+            if (!panelContent?.query) return;
 
+            this.display_v.minispinner = true;            
+            
+            PanelInteractionUtils.handleGlobalFilterMapper(this);
+
+            console.log(JSON.stringify(panelContent.query));
+
+            const response = await QueryUtils.switchAndRun(this, panelContent.query);
+
+            const [labels, values] = response;
+
+            this.chartLabels = this.chartUtils.uniqueLabels(labels);
+            this.chartData = values.map(row =>
+                row.map(value => value == null ? NULL_VALUE : value)
+            );
+
+            this.buildGlobalconfiguration(panelContent);
+        } catch (err) {
+            this.alertService.addError(err);
+            throw err;
+        }
     }
 
     /**
      * Sets configuration dialog and chart
-     * @param panelContent panel content to build configuration .
+     * @param panelContent Panel content to build configuration
      */
-
-    public buildGlobalconfiguration(panelContent: any) {
-        const modeSQL = panelContent.query.query.modeSQL;
+    public buildGlobalconfiguration(panelContent: any): void {
+        const { query, chart, edaChart } = panelContent;
+        const { modeSQL, fields, filters, queryLimit, config } = query.query;
         const queryMode = this.selectedQueryMode;
 
-        const currentQuery = panelContent.query.query.fields;
+        const isEditable = !this.readonly;
+        const isEdaMode = queryMode && queryMode !== 'SQL';
+        const isModeSqlDisabled = modeSQL === false;
 
-        if ((queryMode && queryMode != 'SQL') || modeSQL === false) {
+        // Sólo procesar si no estamos en modo SQL ni readonly! 
+        if (isEdaMode || isModeSqlDisabled) {
+            if (queryMode === 'EDA2') {
+                this.rootTable = this.tables.find(t => t.table_name === this.rootTable);
 
-            try {
-                if (queryMode == 'EDA2') {
-                    this.rootTable = this.tables.find((t) => t.table_name == this.rootTable);
-                    // Assert Relation Tables
-                    for (const column of currentQuery) {
-                        PanelInteractionUtils.assertTable(this, column);
-                    }
-
-                    PanelInteractionUtils.handleCurrentQuery2(this);
-                    this.reloadTablesData();
-                    PanelInteractionUtils.loadTableNodes(this);
-                    this.userSelectedTable = undefined;
-                    this.columns = [];
-                } else {
-                    PanelInteractionUtils.handleCurrentQuery(this);
-                    this.columns = this.columns.filter((c) => !c.isdeleted);
+                for (const column of fields) {
+                    PanelInteractionUtils.assertTable(this, column);
                 }
-                
-            } catch(e) {
-                console.error('Error loading columns to define query in blank panel compoment........ Do you have deleted any column?????');
-                console.error(e);
-                throw e;
+
+                PanelInteractionUtils.handleCurrentQuery2(this);
+                this.reloadTablesData();
+                PanelInteractionUtils.loadTableNodes(this);
+
+                this.userSelectedTable = undefined;
+                this.columns = [];
+            } else {
+                PanelInteractionUtils.handleCurrentQuery(this);
+                this.columns = this.columns.filter(c => !c.isdeleted);
             }
         }
 
-        this.queryLimit = panelContent.query.query.queryLimit;
-        PanelInteractionUtils.handleFilters(this, panelContent.query.query);
-        PanelInteractionUtils.handleFilterColumns(this, panelContent.query.query.filters, panelContent.query.query.fields);
-        this.chartForm.patchValue({chart: this.chartUtils.chartTypes.find(o => o.subValue === panelContent.edaChart)});
+        // Configuración global del panel
+        this.queryLimit = queryLimit;
+
+        PanelInteractionUtils.handleFilters(this, query.query);
+        PanelInteractionUtils.handleFilterColumns(this, filters, fields);
         PanelInteractionUtils.verifyData(this);
 
-        const config = ChartsConfigUtils.recoverConfig(panelContent.chart, panelContent.query.output.config);
-        this.changeChartType(panelContent.chart, panelContent.edaChart, config);
+        console.log('selectedFilters >>>', this.selectedFilters)
+        // Configurar tipo de gráfico
+        const chartOption = this.chartUtils.chartTypes.find(c => c.subValue === edaChart);
+        this.chartForm.patchValue({ chart: chartOption });
 
+        const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, config);
+        this.changeChartType(chart, edaChart, recoveredConfig);
+
+        // Mostrar panel y configurar tipo gráfico
         this.display_v.saved_panel = true;
         this.display_v.minispinner = false;
 
-        this.graphicType = this.chartForm.value.chart.value;// iniciamos el tipo de gráfico crossTable
+        this.graphicType = chartOption?.value;
 
-        // Verifica si es una tabla cruzada para mostrarlo en pantalla de inicio
-        this.dragAndDropAvailable = !this.chartTypes.filter( grafico => grafico.subValue === 'crosstable')[0].ngIf;
+        // Verificar si el gráfico es una tabla cruzada
+        const crossTableChart = this.chartTypes.find(g => g.subValue === 'crosstable');
+        this.dragAndDropAvailable = !crossTableChart?.ngIf;
     }
 
 
@@ -516,7 +558,6 @@ export class EdaBlankPanelComponent implements OnInit {
      * Updates panel content with actual state
      */
     public savePanel() {
-        // this.panel.title = this.panel.title;
         this.indextab = 0;
 
         if (this.panel?.content) {
@@ -586,7 +627,7 @@ export class EdaBlankPanelComponent implements OnInit {
             chartType: type,
             config: chartConfig,
             edaChart: subType,
-            maps: this.inject.dataSource.model.maps,
+            maps: this.dataSource.model.maps,
             size: { x: this.panel.w, y: this.panel.h },
             linkedDashboardProps: this.panel.linkedDashboardProps,
 
@@ -617,8 +658,7 @@ export class EdaBlankPanelComponent implements OnInit {
             ['table', 'crosstable', 'treetable'].includes(this.panelChart.props.chartType)) // tables
         {
             this.action.emit({ code: 'ADDFILTER', data: {...event, panel: this.panel} });
-        }
-        else {
+        } else {
             console.log('No filter here... yet');
         }
     }
@@ -643,7 +683,7 @@ export class EdaBlankPanelComponent implements OnInit {
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             _.merge(_config, config||{});
-            
+
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
 
@@ -759,7 +799,6 @@ export class EdaBlankPanelComponent implements OnInit {
                     c.aggregation_type.forEach( e=> e.selected = false);
                     c.aggregation_type.map( e=> e.value == 'none'? e.selected = true:true );
                 }catch(e){
-                    console.error(e)
                     throw e;
                 }
             }
@@ -1340,10 +1379,14 @@ export class EdaBlankPanelComponent implements OnInit {
     * Runs actual query when execute button is pressed to check for heavy queries
     */
     public runManualQuery = () => {
-        if (this.panelChart?.props.chartType == 'crosstable' && this.indextab === 1)
+        const chartType = this.panelChart?.props?.chartType || '';
+
+        if (chartType == 'crosstable' && this.indextab === 1) {
             this.makeNewCrosstable();
-        else
+        } else {
             QueryUtils.runManualQuery(this);
+        }
+
         this.indextab = 1;
     };
 
@@ -1399,7 +1442,7 @@ export class EdaBlankPanelComponent implements OnInit {
         this.display_v.minispinnerSQL = true;
         this.queryFromServer = null;
 
-        this.op.toggle($event);
+        // this.op.toggle($event);
 
         const query = QueryUtils.initEdaQuery(this);
         let serverQuery = await QueryUtils.getQueryFromServer(this, query);
@@ -1538,7 +1581,23 @@ export class EdaBlankPanelComponent implements OnInit {
     public closeChatGpt(event: any) {
         console.log('el Valor a llegado y es: ', event);
         this.isVisibleEbpChatGpt = false;
-    } 
+    }
+
+    public onFilterMapper() {
+        this.display_v.filterMapperDialog = true;
+    }
+
+    public onCloseFilterMapperDialog(response?: any): void {
+        if (response) {
+            this.panel.globalFilterMap = response.connections || [];
+        }
+
+        this.display_v.filterMapperDialog = false;
+    }
+
+    public isSpecialChart(type: string): boolean {
+        return ['kpi', 'kpibar', 'knob', 'kpiline', 'dynamicText'].includes(type);
+    }
 
     public disableRunQuery(): boolean {
         let disable = false;

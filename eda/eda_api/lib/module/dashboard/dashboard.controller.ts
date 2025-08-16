@@ -362,7 +362,7 @@ export class DashboardController {
         .map(dashboard => dashboard._id)
         .filter(id => id.toString() === req.params.id)
 
-      Dashboard.findOne({ _id: req.params.id }, (err, dashboard) => {
+      Dashboard.findOne({ _id: req.params.id }, async (err, dashboard) => {
         if (err) {
           console.log('Dashboard not found with this id:' + req.params.id)
           return next(
@@ -370,21 +370,17 @@ export class DashboardController {
           )
         }
 
-        const visibilityCheck = !['shared', 'public'].includes(
-          dashboard.config.visible
-        )
+        await DashboardController.initDashboardPanels(dashboard);
+
+        const visibilityCheck = !['shared', 'public'].includes(dashboard.config.visible);
+
         const roleCheck =
           !userRoles.includes('EDA_ADMIN') &&
           userGroupDashboards.length === 0 &&
           dashboard.user.toString() !== user
 
         if (visibilityCheck && roleCheck) {
-          console.log(
-            "You don't have permission " +
-            user +
-            ' for dashboard ' +
-            req.params.id
-          )
+          console.log("You don't have permission " + user + ' for dashboard ' + req.params.id);
           return next(new HttpException(500, "You don't have permission"))
         }
 
@@ -512,6 +508,59 @@ export class DashboardController {
     } catch (err) {
       next(err)
     }
+  }
+  
+  static async getDataSourceModel(req: Request, res: Response, next: NextFunction) {
+    const model_id = req.params.id;
+    const user = req['user']._id;
+    const userGroups = req['user'].role;
+
+    DataSource.findById(
+      { _id: model_id },
+      (err, datasource) => {
+        if (err) {
+          return next(
+            new HttpException(500, 'Error searching the DataSource')
+          )
+        }
+
+        if (!datasource) {
+          return next(new HttpException(400, 'Datasouce not found with id'))
+        }
+
+        let toJson = JSON.parse(JSON.stringify(datasource))
+
+        // Filtre de seguretat per les taules. Si no es te permis sobre una taula es posa com a oculta.
+        // Per si de cas es fa servir a una relació.
+        const uniquesForbiddenTables = DashboardController.getForbiddenTables(
+          toJson,
+          userGroups,
+          req.user._id
+        )
+
+        const includesAdmin = req.user.role.includes("135792467811111111111110")
+
+        // Se agrega false a autorelation y bridge
+        toJson.ds.model.tables.forEach(table => {
+          table.relations.forEach(r => {
+            if (r.autorelation == undefined) {
+              r.autorelation = false;
+            }
+            if (r.bridge == undefined) {
+              r.bridge = false;
+            }
+          });
+        });
+
+        const ds = {
+          _id: datasource._id,
+          model: toJson.ds.model,
+          name: toJson.ds.metadata.model_name
+        }
+
+        return res.status(200).json(ds)
+      }
+    )
   }
 
   static async create(req: Request, res: Response, next: NextFunction) {
@@ -654,6 +703,53 @@ export class DashboardController {
       })
     } catch (err) {
       next(err)
+    }
+  }
+
+  static async initDashboardPanels(dashboard: any) {
+    const panels = dashboard.config.panel || [];
+
+    if (!panels.length) return;
+
+    // Map panel.id -> referenced dashboard ID
+    const importedPanelMap: Record<string, string> = {};
+
+    for (const panel of panels) {
+      const panelDashboardId = panel.dashboard?._id;
+      if (panelDashboardId && panelDashboardId !== dashboard._id) {
+        importedPanelMap[panel.id] = panelDashboardId;
+      }
+    }
+
+    const referencedDashboardIds = [...new Set(Object.values(importedPanelMap))];
+
+    if (!referencedDashboardIds.length) return;
+
+    // Fetch all referenced dashboards in a single query
+    const dashboards = await Dashboard.find({
+      _id: { $in: referencedDashboardIds }
+    });
+
+    const dashboardsById = dashboards.reduce((acc, dash) => {
+      acc[dash._id.toString()] = dash;
+      return acc;
+    }, {} as Record<string, any>);
+
+    for (const panel of panels) {
+      const referencedDashboardId = importedPanelMap[panel.id];
+      if (!referencedDashboardId) continue;
+
+      const referencedDashboard = dashboardsById[referencedDashboardId];
+      if (!referencedDashboard) continue;
+
+      // Buscar el panel que tenga el mismo ID que este dentro del dashboard importado
+      const matchedPanel = referencedDashboard.config?.panel?.find(
+        (p: any) => p.id === panel.id
+      );
+
+      if (matchedPanel?.content) {
+        panel.content = matchedPanel.content;
+      }
     }
   }
 

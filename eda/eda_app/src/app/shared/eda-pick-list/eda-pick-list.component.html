@@ -1,0 +1,101 @@
+<div class="w-full max-w-2xl">
+  <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+    <!-- Header -->
+    <div class="p-6 pb-4 border-b border-gray-100">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">{{ config.title || 'Seleccionar Elementos' }}</h3>
+        <button 
+          *ngIf="selectedItems().length > 0"
+          (click)="clearAll()"
+          class="px-3 py-1 text-sm font-medium text-gray-600 bg-transparent border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+        >
+          Limpiar todo
+        </button>
+      </div>
+
+      <!-- Selected Items Display -->
+      <div *ngIf="selectedItems().length > 0" class="space-y-2 mb-4">
+        <div class="font-medium text-gray-600">
+          Seleccionados ({{ selectedItems().length }})
+        </div>
+        <div class="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg min-h-[3rem]">
+          <span 
+            *ngFor="let item of displayedSelectedItems(); trackBy: trackByItemId"
+            class="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 text-gray-800 rounded-md text-sm font-medium"
+          >
+            {{ item.label }}
+            <button
+              (click)="removeSelected(item.id)"
+              class="ml-1 w-4 h-4 flex items-center justify-center hover:bg-red-500 hover:text-white rounded-full transition-colors"
+            >
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </span>
+          <span 
+            *ngIf="selectedItems().length > maxSelectedDisplay"
+            class="inline-flex items-center px-2 py-1 bg-gray-100 border border-gray-300 text-gray-600 rounded-md text-sm"
+          >
+            +{{ selectedItems().length - maxSelectedDisplay }} más
+          </span>
+        </div>
+      </div>
+
+      <!-- Search Input -->
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          [placeholder]="config.searchPlaceholder || 'Buscar elementos...'"
+          class="block w-full pl-9 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+        >
+      </div>
+    </div>
+
+    <!-- Items List -->
+    <div class="p-6 pt-0">
+      <div [class]="'border border-gray-200 rounded-md ' + (config.height || 'h-80') + ' overflow-y-auto'">
+        <div *ngIf="filteredItems().length === 0" class="flex items-center justify-center h-full text-gray-500">
+          {{ searchTerm() ? 'No se encontraron elementos' : 'No hay elementos disponibles' }}
+        </div>
+        <div *ngIf="filteredItems().length > 0" class="p-2 space-y-1">
+          <div
+            *ngFor="let item of filteredItems(); trackBy: trackByItemId"
+            (click)="toggleSelection(item)"
+            [class]="getItemClasses(item)"
+          >
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div [class]="'font-medium text-sm ' + (isSelected(item.id) ? 'text-blue-600' : 'text-gray-900')">
+                  {{ item.label }}
+                </div>
+                <div *ngIf="item.description" class="text-sm text-gray-500 mt-1">
+                  {{ item.description }}
+                </div>
+              </div>
+              <div *ngIf="isSelected(item.id)" class="ml-2 flex-shrink-0">
+                <div class="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center">
+                  <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="flex justify-between items-center mt-3 text-sm text-gray-500">
+        <span>{{ filteredItems().length }} elementos disponibles</span>
+        <span>{{ selectedItems().length }} seleccionados</span>
+      </div>
+    </div>
+  </div>
+</div>

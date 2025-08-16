@@ -94,7 +94,6 @@ export class GlobalFilterV2Component implements OnInit {
 
     // métode per descobrir o amagar el botó de filtrar al dashboard
     private setFilterButtonVisibilty(): void {
-        
         let myFilters = _.cloneDeep(this.globalFilters);
         if(!this.isDashboardCreator  || !this.isAdmin){
             myFilters= myFilters.filter((f: any) => {
@@ -111,6 +110,7 @@ export class GlobalFilterV2Component implements OnInit {
             }
         });
     }
+
 
     public fillFiltersData() {
         for (const filter of this.globalFilters) {
@@ -135,15 +135,26 @@ export class GlobalFilterV2Component implements OnInit {
     }
 
     public setGlobalFilterItems(filter: any) {
-        this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
-            if (filter.panelList.includes(panel.panel.id)) {
-                const filterApplied = panel.globalFilters.find((gf: any) => gf.filter_id === filter.id);
+        this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
+            const filterMap = ebp.panel.globalFilterMap || [];
+
+            if (filter.panelList.includes(ebp.panel.id)) {
+                const filterApplied = ebp.globalFilters.find((gf: any) => gf.filter_id === filter.id);
 
                 if (filterApplied) {
                     filterApplied.filter_elements = this.globalFilterService.assertGlobalFilterItems(filter);
                 } else {
                     const formatedFilter = this.globalFilterService.formatFilter(filter);
-                    panel.assertGlobalFilter(formatedFilter);
+                    ebp.assertGlobalFilter(formatedFilter);
+                }
+
+            } else if (filterMap.length) {
+                const map = filterMap.find((f) => f.targetId == filter.id);
+                const panelFilter = ebp.selectedFilters.find((f) => f.filter_id === map?.sourceId);
+                if (panelFilter?.filter_id) {
+                    const items = this.globalFilterService.assertGlobalFilterItems(filter);
+                    panelFilter.filter_elements = items;
+                    map.filter_elements = items;
                 }
             }
         })
@@ -163,7 +174,6 @@ export class GlobalFilterV2Component implements OnInit {
                 ...filter
             };
             
-
             if (!isnew) {
                 if (!globalFilter.selectedTable) {
                     globalFilter.selectedTable = { table_name: filter.table.value };
@@ -218,8 +228,6 @@ export class GlobalFilterV2Component implements OnInit {
             }
         })
     }
-
-
 
     // Global Filter Dialog
     public async onGlobalFilter(apply: boolean, gf?: any): Promise<void> {
@@ -330,11 +338,16 @@ export class GlobalFilterV2Component implements OnInit {
     public getFilterType(globalFilter: any): string {
         let type = '';
 
-        if (globalFilter.selectedColumn) {
+        if (globalFilter.filter_column_type) {
+            type = globalFilter.filter_column_type;
+        } else if (globalFilter.selectedColumn) {
             type = globalFilter.selectedColumn.column_type;
         } else {
             type = globalFilter.column.value.column_type;
         }
+
+        // New filter_column_type property on globalFilters
+        globalFilter.filter_column_type = type;
 
         return type;
     }
@@ -353,29 +366,6 @@ export class GlobalFilterV2Component implements OnInit {
 
     public removeGlobalFilter(filter: any, reload?: boolean): void {
         // Remove 'applytoall' filter if it's the same fitler
-        // if (this.dashboard.applyToAllfilter && this.dashboard.applyToAllfilter.id === filter.id) {
-        //     this.dashboard.applyToAllfilter = { present: false, refferenceTable: null, id: null };
-        //     // this.updateApplyToAllFilterInPanels(); TODO
-        // }
-        
-        // Update fileterList and clean panels' filters
-        this.globalFilters = this.globalFilters.filter((f: any) => f.id !== filter.id);
-        
-        // this.dashboard.edaPanels.forEach(panel => {
-        //     panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
-        // });
-
-
-        if (reload) {
-            //not saved alert message
-            // TODO
-            this.dashboardService._notSaved.next(true);
-            // this.reloadPanels();
-        }
-    }
-
-    public removeGlobalFilterOnClick(filter: any, reload?: boolean): void {
-        // Remove 'applytoall' filter if it's the same fitler
         if (this.dashboard.applyToAllfilter && this.dashboard.applyToAllfilter.id === filter.id) {
             this.dashboard.applyToAllfilter = { present: false, refferenceTable: null, id: null };
             this.dashboard.updateApplyToAllFilterInPanels();
@@ -383,18 +373,38 @@ export class GlobalFilterV2Component implements OnInit {
         
         // Update fileterList and clean panels' filters
         this.globalFilters = this.globalFilters.filter((f: any) => f.id !== filter.id);
-        
+
+        this.removeMapFilter(filter);
+
+        if (reload) {
+            this.dashboardService._notSaved.next(true);
+        }
+    }
+
+
+    public removeGlobalFilterOnClick(filter: any, reload?: boolean): void {
         this.dashboard.edaPanels.forEach(panel => {
             panel.globalFilters = panel.globalFilters.filter((f: any) => f.filter_id !== filter.id);
         });
 
+        this.removeGlobalFilter(filter, reload);
+    }
 
-        if (reload) {
-            //not saved alert message
-            // TODO
-            this.dashboardService._notSaved.next(true);
-            // this.reloadPanels();
-        }
+    public removeMapFilter(filter: any): void {
+        this.dashboard.edaPanels.forEach((ebp: EdaBlankPanelComponent) => {
+            const filterMap = ebp.panel.globalFilterMap ?? [];
+            if (!filterMap.length) return;
+
+            const mapping = filterMap.find(f => f.targetId === filter.id);
+            if (!mapping) return;
+
+
+            const panelFilter = ebp.selectedFilters.find(f => f.filter_id === mapping.sourceId);
+
+            if (!panelFilter) return;
+
+            ebp.panel.globalFilterMap = filterMap.filter(f => f.filter_id !== panelFilter.filter_id);
+        });
     }
 
     /**

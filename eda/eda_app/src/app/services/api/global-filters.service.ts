@@ -11,7 +11,6 @@ export class GlobalFiltersService {
         const panelsTables = [];
         const panelsToDisplay: any[] = [];
 
-
         if (refferencePanel.content) {
             const panelQuery = refferencePanel.content.query.query;
 
@@ -42,7 +41,8 @@ export class GlobalFiltersService {
                         active: inlcludePanel,
                         avaliable: true,
                         visible: true,
-                        content: panel.content
+                        content: panel.content,
+                        globalFilterMap: panel.globalFilterMap
                     });
                 }
             }
@@ -156,6 +156,7 @@ export class GlobalFiltersService {
             const firstPanelRelatedTables = this.findRelatedTables(tables, rootPanel);
 
             filteredPanels.forEach((panel: any) => {
+                console.log('forEachPanel ->>>', panel)
                 let panelIncluded = true;
                 panel.active = panel.active || true;
                 panel.avaliable = panel.avaliable || true;
@@ -300,24 +301,30 @@ export class GlobalFiltersService {
     }
 
     private formatGlobalFilter(globalFilter: any) {
-        const isDate = globalFilter.column.value.column_type === 'date';
+        const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
+        const filterTable = globalFilter.table?.value || globalFilter.selectedTable?.table_name;
+        const filterColumn = globalFilter.column?.value?.column_name || globalFilter.selectedColumn?.column_name;
+        const valueListSource = globalFilter.column?.value?.valueListSource || globalFilter.selectedColumn?.valueListSource;
+        const isDate = columnType === 'date';
 
         const formatedFilter = {
             filter_id: globalFilter.id,
-            filter_table: globalFilter.table.value,
-            filter_column: globalFilter.column.value.column_name,
+            filter_table: filterTable,
+            filter_column: filterColumn,
+            filter_column_type: columnType,
             filter_type: isDate ? 'between' : 'in',
             filter_elements: this.assertGlobalFilterItems(globalFilter),
             isGlobal: true,
             applyToAll: globalFilter.applyToAll,
-            valueListSource: globalFilter.column.value.valueListSource
+            valueListSource: valueListSource
         }
 
         return formatedFilter;
     }
 
     private formatGlobalFilterTree(globalFilter: any) {
-        const isDate = globalFilter.selectedColumn.column_type === 'date';
+        const columnType = globalFilter.selectedColumn.column_type;
+        const isDate = columnType === 'date';
 
         const pathList = _.cloneDeep(globalFilter.pathList);
         for (const key in pathList) {
@@ -328,6 +335,7 @@ export class GlobalFiltersService {
             filter_id: globalFilter.id,
             filter_table: globalFilter.table_id || globalFilter.selectedTable.table_name,
             filter_column: globalFilter.selectedColumn.column_name,
+            filter_column_type: columnType,
             filter_type: isDate ? 'between' : 'in',
             filter_elements: this.assertGlobalFilterItems(globalFilter),
             pathList: pathList,
@@ -369,6 +377,40 @@ export class GlobalFiltersService {
         return isDate
             ? [{ value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] }, { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }]
             : [{ value1: globalFilter.selectedItems }];
+    }
+
+    public formatFilterItems(columnType: string, items: any[]) {
+        const isDate = columnType === 'date';
+
+        if (isDate && items[0] && !items[1]) {
+            const input = items[0];
+
+            // Año completo (e.g., "2025")
+            if (/^\d{4}$/.test(input)) {
+                const year = input;
+                items = [`${year}-01-01`, `${year}-12-31`];
+
+            // Año y mes (e.g., "2025-08")
+            } else if (/^\d{4}-\d{2}$/.test(input)) {
+                const [year, month] = input.split('-').map(Number);
+                const lastDay = new Date(year, month, 0).getDate();
+                const paddedDay = String(lastDay).padStart(2, '0');
+                items = [`${input}-01`, `${input}-${paddedDay}`];
+
+            // Fecha completa o desconocido (lo dejamos igual)
+            } else {
+                items = [input, input];
+            }
+        }
+
+        if (isDate) {
+            return [
+                { value1: items[0] ? [items[0]] : [] },
+                { value2: items[1] ? [items[1]] : [] }
+            ];
+        }
+
+        return [{ value1: items }];
     }
 
 }

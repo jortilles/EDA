@@ -1,5 +1,7 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, AfterViewInit, ViewChild, ElementRef, ContentChild, AfterContentInit, ChangeDetectorRef } from '@angular/core';
 import { EdaDialog2 } from './eda-dialog2';
+import { Dialog } from 'primeng/dialog';
+import { ContentMarkerDirective } from '@eda/shared/directives/content.directive';
 
 @Component({
     selector: 'eda-dialog2',
@@ -8,12 +10,38 @@ import { EdaDialog2 } from './eda-dialog2';
       ::ng-deep .p-dialog .p-dialog-footer {
         padding-bottom: 0.5rem;
       }
+
+      :host ::ng-deep .p-dialog {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
     `
 })
-export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnDestroy {
+export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterViewInit, OnDestroy {
+    @ViewChild('dialogRef') dialogRef!: Dialog;
+    @ViewChild('contentWrapper') contentWrapper!: ElementRef;
+
+
+    private resizeObserver!: ResizeObserver;
     public ifShowApply: boolean;
     public ifShowClose: boolean;
-    constructor() {
+
+    // Traducido automáticamente para PrimeNG
+    get translatedBreakpoints(): Record<string, string> {
+        const result: Record<string, string> = {};
+        for (const key in this.breakpoints) {
+            const pixel = this.sizeMap[key];
+            if (pixel) {
+                result[pixel] = this.breakpoints[key];
+            }
+        }
+        return result;
+    }
+
+
+
+    constructor(private cd: ChangeDetectorRef) {
         super();
     }
 
@@ -24,8 +52,27 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, OnDestroy
         this.ifShowClose = this.close.observers.length > 0 && this.showClose;
     }
 
+    ngAfterViewInit(): void {
+        // console.log('ngAfterViewInit', this.contentWrapper)
+        // console.log('ngAfterViewInit', this.dialogRef)
+        if (this.contentWrapper?.nativeElement) {
+            this.resizeObserver = new ResizeObserver(() => {
+                setTimeout(() => {
+                    console.log('obersavando...')
+                    this.dialogRef.center();
+                    this.cd.detectChanges();
+                }, 1000);
+                // this.dialogRef?.center();
+                // this.dialogRef?.resetPosition();
+            });
+
+            this.resizeObserver.observe(this.contentWrapper.nativeElement);
+        }
+    }
+
     public ngOnDestroy(): void {
         this.display = false;
+        this.resizeObserver?.disconnect();
     }
 
 }
