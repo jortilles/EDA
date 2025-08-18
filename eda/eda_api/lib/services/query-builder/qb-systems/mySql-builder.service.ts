@@ -215,7 +215,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     if (forSelector === true) {
       myQuery = `SELECT DISTINCT ${columns.join(', ')} \nFROM ${o}`;
     }
- 
+    
 
     // JOINS
     let joinString: any[];
@@ -267,14 +267,20 @@ export class MySqlBuilderService extends QueryBuilderService {
       myQuery = `${myQuery}\norder by 1`;
     }
 
-    if (limit) myQuery += `\nlimit ${limit}`;
+    if (limit){
+      myQuery += `\nlimit ${limit}`;
+    }else{
+      myQuery += `\nlimit 100000`; // Por defecto limit 100000
+    }    
 
     if (alias) {
+
+      console.log('alias', alias);
+
       for (const key in alias) {
         myQuery = myQuery.split(key).join(`\`${alias[key]}\``);
       }
     }
-
 
     return myQuery;
   };
