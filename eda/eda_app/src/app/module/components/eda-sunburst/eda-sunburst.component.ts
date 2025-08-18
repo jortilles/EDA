@@ -32,8 +32,8 @@ export class EdaSunburstComponent implements AfterViewInit {
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.data = this.formatData(this.inject.data, this.inject.dataDescription);
     this.labels =  this.generateDomain(this.data);
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors
-      : this.getColors(this.data.children.length, ChartsColors);
+    this.colors = this.inject.colors?.length > 0 ? this.inject.colors
+      : this.getColors(this.data.children?.length, ChartsColors);
     this.assignedColors = this.inject.assignedColors || []; 
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
@@ -148,7 +148,7 @@ export class EdaSunburstComponent implements AfterViewInit {
         if (original.depth > 1) {
           const siblings = original.parent.children;
           const index = siblings.indexOf(original);
-          const total = siblings.length;
+          const total = siblings?.length;
       
           const minOpacity = 0.25;
           const maxOpacity = 1;
@@ -276,8 +276,6 @@ export class EdaSunburstComponent implements AfterViewInit {
   }
 
   getColors (dataLength, colors) {
-    console.log('output', dataLength)
-    console.log('output', colors)
     const colorsLength = colors.length
     let outputColors: Array<any> = colors
 
@@ -287,9 +285,6 @@ export class EdaSunburstComponent implements AfterViewInit {
         outputColors = [...outputColors, ...colors]
       }
     }
-
-    console.log('output', outputColors)
-
 
     return outputColors
       .filter((_, index) => index < dataLength)

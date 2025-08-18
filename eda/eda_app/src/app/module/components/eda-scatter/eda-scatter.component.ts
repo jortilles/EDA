@@ -40,10 +40,9 @@ export class EdaScatter implements AfterViewInit {
   ngOnInit(): void {
     this.id = `scatterPlot_${this.inject.id}`;
     this.data = this.formatData(this.inject.data);
-
     
-        this.colors = this.inject.colors.length > 0 ? this.inject.colors
-      : this.getColors(this.data.children.length, ChartsColors);
+    this.colors = this.inject.colors.length > 0 ? this.inject.colors
+      : this.getColors(this.data.children?.length, ChartsColors);
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
