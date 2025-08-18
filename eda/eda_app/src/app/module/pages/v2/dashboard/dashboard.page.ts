@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { FocusOnShowDirective } from '@eda/shared/directives/autofocus.directive';
 import { CommonModule } from '@angular/common';
 import { ChatgptService } from '@eda/services/api/chatgpt.service';
-
+import { DashboardSidebarService } from '@eda/services/shared/dashboard-sidebar.service';
 
 @Component({
   selector: 'app-v2-dashboard-page',
@@ -32,6 +32,7 @@ export class DashboardPageV2 implements OnInit {
   @ViewChild(GlobalFilterV2Component) globalFilter: GlobalFilterV2Component;
   @ViewChildren(EdaBlankPanelComponent) edaPanels: QueryList<EdaBlankPanelComponent>;
   
+  private sidebarService = inject(DashboardSidebarService)
   private globalFiltersService = inject(GlobalFiltersService);
   private stylesProviderService = inject(StyleProviderService);
   private dashboardService = inject(DashboardService);
@@ -144,6 +145,7 @@ export class DashboardPageV2 implements OnInit {
   }
 
   public async loadDashboard() {
+    console.log('loadDashboard');
     const dashboardId = this.route.snapshot.paramMap.get('id');
     const data = await lastValueFrom(this.dashboardService.getDashboard(dashboardId));
     const dashboard = data.dashboard;
@@ -151,6 +153,7 @@ export class DashboardPageV2 implements OnInit {
 
 
     if (dashboard?.config) {
+      console.log('dashboard?.config');
       this.dashboardId = dashboardId;
       this.dashboard = dashboard;
       this.title = dashboard.config.title;
@@ -230,6 +233,7 @@ export class DashboardPageV2 implements OnInit {
   }
 
   private initPanels(dashboard: any) {
+    console.log('initPanels');
     if (!dashboard.config.panel) {
       this.panels.push(
         new EdaPanel({
@@ -264,6 +268,7 @@ export class DashboardPageV2 implements OnInit {
       isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
     }
     this.stylesProviderService.loadedPanels = dashboard.config.panel.length;
+    console.log(this.injectEdaPanel)
   }
 
   // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
@@ -322,11 +327,14 @@ export class DashboardPageV2 implements OnInit {
   // TODO simplificar
   public async onPanelAction(event: IPanelAction): Promise<void> {
     //Check de modo
-    let modeEDA: boolean = !event?.data.panel.content.query.query.modeSQL &&
+    let modeEDA = false;
+    if (event?.data?.panel) {
+      modeEDA = !event?.data.panel.content.query.query.modeSQL &&
       (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA')
+    }
 
     //Si es modo arbol o SQL no aplica filtros
-    if (event.code === "ADDFILTER" && modeEDA) {
+    if (modeEDA && event.code === "ADDFILTER") {
 
 
       const data = event?.data;
@@ -423,18 +431,25 @@ export class DashboardPageV2 implements OnInit {
       }
     } else if (event.code === "QUERYMODE") {
       this.setPanelsQueryMode();
+    } else if (event.code === 'MAPFILTERS') {
+      this.onMapFilters();
     }
   }
-/** Updates applyToAllFilter in every panel */
-public updateApplyToAllFilterInPanels(): void {
-  this.edaPanels.forEach((panel) => {
-    panel.inject.applyToAllfilter = this.applyToAllfilter;
-    panel.reloadTablesData();
-  });
-}
 
+  /** Updates applyToAllFilter in every panel */
+  public updateApplyToAllFilterInPanels(): void {
+    this.edaPanels.forEach((panel) => {
+      panel.inject.applyToAllfilter = this.applyToAllfilter;
+      panel.reloadTablesData();
+    });
+  }
 
-  onDuplicatePanel(panel: any) {
+  public onMapFilters() {
+    console.log('onMapFilters')
+    this.sidebarService.invokeMethod('onImportPanel');
+  }
+
+  public onDuplicatePanel(panel: any) {
     this.panels.push(panel);
     this.dashboardService._notSaved.next(true);
   }
@@ -554,8 +569,8 @@ public updateApplyToAllFilterInPanels(): void {
       group: this.dashboard.group ? _.map(this.dashboard.group, '_id') : undefined,
     };
 
-    this.edaPanels.forEach(panel => { panel.savePanel(); });
-    body.config.panel = this.panels;
+
+    body.config.panel = this.savePanels();
 
     try {
       await lastValueFrom(this.dashboardService.updateDashboard(this.dashboardId, body));
@@ -565,6 +580,25 @@ public updateApplyToAllFilterInPanels(): void {
       this.alertService.addError(err);
       throw err;
     }
+  }
+
+  private savePanels(): any[] {
+    // Each EdaBlankPanel component save method
+    this.edaPanels.forEach(panel => { panel.savePanel(); });
+
+    const _panels = JSON.parse(JSON.stringify(this.panels));
+
+    for (const panel of _panels) {
+      const dashboardId = panel.dashboard?._id;
+
+      // check if panel is imported from other Dashboard
+      if (dashboardId && dashboardId != this.dashboardId) {
+        // remove content from panel, only store panel references
+        delete (panel.content);
+      }
+    }
+
+    return _panels;
   }
 
   public cleanFiltersData() {

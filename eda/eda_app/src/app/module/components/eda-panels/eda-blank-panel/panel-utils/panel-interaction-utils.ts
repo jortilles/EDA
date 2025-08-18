@@ -73,7 +73,7 @@ export const PanelInteractionUtils = {
       if (rootTable) {
 
         // Tablas visibles para el usuario. Visibles una vez aplicada la seguridad
-        const visibleTables = ebp.inject.dataSource.model.tables.filter( t => t.visible == true);
+        const visibleTables = ebp.dataSource.model.tables.filter( t => t.visible == true);
         const visibleTableNames = visibleTables.map( t=> t.table_name );
         ebp.tableNodes = [];
         const table = visibleTables.find((source) => source.table_name == rootTable);
@@ -133,9 +133,9 @@ export const PanelInteractionUtils = {
    */ 
   expandTableNode: (ebp: EdaBlankPanelComponent, expandNode: any) => {
 
-    const dataSource = ebp.inject.dataSource.model.tables;
+    const dataSource = ebp.dataSource.model.tables;
     // Tablas visibles para el usuario. Visibles una vez aplicada la seguridad
-    const visibleTables = ebp.inject.dataSource.model.tables.filter( t => t.visible == true).map( t=>t.table_name);
+    const visibleTables = dataSource.model.tables.filter(t => t.visible == true).map(t=>t.table_name);
     /** @rootNode have table_id @childNode have child_id ("table_name.column_name")  */
     const table_id = expandNode.table_id || expandNode.child_id.split('.')[0];
     
@@ -221,15 +221,44 @@ export const PanelInteractionUtils = {
     }
   },
 
+  handleGlobalFilterMapper: (ebp: EdaBlankPanelComponent): void => {
+    const content = ebp.panel.content;
+    const filters = content.query?.query?.filters || [];
+    const globalFilterMap = ebp.panel.globalFilterMap || [];
+
+    for (const map of globalFilterMap) {
+      if (!map?.filter_elements) continue;
+
+      const matchedFilter = filters.find(f => f.filter_id === map.sourceId);
+      if (matchedFilter) {
+        matchedFilter.filter_elements = map.filter_elements;
+      }
+    }
+  },
+
   /**
-     * set local and global filters
-     * @param column 
-     */
+   * Set local and global filters
+   */
   handleFilters: (ebp: EdaBlankPanelComponent, content: any): void => {
-    ebp.selectedFilters = _.cloneDeep(content.filters);
-    ebp.globalFilters = content.filters.filter(f => f.isGlobal === true);
-    ebp.selectedFilters.forEach(filter => { filter.removed = false; });
-    ebp.selectedFilters = ebp.selectedFilters.filter(f => f.isGlobal === false);
+      const clonedFilters = _.cloneDeep(content.filters || []);
+
+      // Marcar todos como no removidos
+      clonedFilters.forEach((filter: any) => {
+        filter.removed = false;
+
+        if (!filter.filter_column_type) {
+            const table = ebp.tables.find((t) => t.table_name === filter.filter_table);
+            const column = (table?.columns||[]).find((c) => c.column_name === filter.filter_column);
+
+            if (column?.column_type) {
+                filter.filter_column_type = column.column_type;
+            }
+        }
+      });
+
+      // Separar filtros globales y locales
+      ebp.globalFilters = clonedFilters.filter(f => f.isGlobal === true);
+      ebp.selectedFilters = clonedFilters.filter(f => f.isGlobal === false);
   },
 
   handleFilterColumns: (ebp: EdaBlankPanelComponent, filterList: Array<any>, query: Array<any>): void => {
@@ -425,7 +454,7 @@ export const PanelInteractionUtils = {
       // Selected table   
       const originTable = ebp.tables.filter(t => t.table_name === c.table_id)[0];
       // Map with all related tables
-      const tablesMap = TableUtils.findRelationsRecursive(ebp.inject.dataSource.model.tables, originTable, new Map());
+      const tablesMap = TableUtils.findRelationsRecursive(ebp.dataSource.model.tables, originTable, new Map());
       ebp.tablesToShow = Array.from(tablesMap.values());
       ebp.tablesToShow = ebp.tablesToShow
         .filter(table => table.visible === true)
@@ -732,7 +761,7 @@ export const PanelInteractionUtils = {
     // Buscar relacións per tornar a mostrar totes les taules
     if (ebp.currentQuery.length === 0 && ebp.filtredColumns.length === 0) {
       ebp.rootTable = undefined;
-      ebp.tablesToShow = ebp.inject.dataSource.model.tables.filter( t => t.visible == true);
+      ebp.tablesToShow = ebp.dataSource.model.tables.filter( t => t.visible == true);
       ebp.tablesToShow.sort((a, b) => (a.display_name.default > b.display_name.default) ? 1 : ((b.display_name.default > a.display_name.default) ? -1 : 0));
 
     } else {

@@ -34,7 +34,9 @@ const router = express.Router();
  */
 router.get('', authGuard,  DashboardController.getDashboards);
 
-router.post('/clean-refresh', authGuard, DashboardController.cleanDashboardCache)
+router.post('/clean-refresh', authGuard, DashboardController.cleanDashboardCache);
+
+router.get('/datasource/:id', authGuard, DashboardController.getDataSourceModel);
 
 /**
  * @openapi

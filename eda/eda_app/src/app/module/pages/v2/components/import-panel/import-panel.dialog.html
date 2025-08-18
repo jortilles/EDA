@@ -1,0 +1,79 @@
+<eda-dialog2 [display]="display"
+  header="Importar panells" width="40vw" height="80vh"
+  [disableApply]="disableApply()"
+  (apply)="onApply()"
+  (close)="onClose()">
+
+  <div content class="p-6">
+    <div class="grid space-y-4">
+      @if (!displayMapper) {
+        <div class="mt-6">
+          <p-dropdown [(ngModel)]="_import.fromDashboard" [options]="dashboardOptions"
+            [filter]="true" filterBy="config.title" [showClear]="true" [style]="{'minWidth':'100%'}"
+            (onChange)="onSelectDashboard()" appendTo="body">
+              <ng-template pTemplate="filter" let-options="options">
+                <div class="flex gap-1">
+                  <div class="p-inputgroup" (click)="$event.stopPropagation()">
+                    <span class="p-inputgroup-addon"><i class="pi pi-search"></i></span>
+                    <input 
+                      type="text"
+                      pInputText
+                      placeholder="Filter"
+                      [(ngModel)]="filterValue"
+                      (keyup)="filterDashboards($event, options)"
+                      />
+                      <!-- [(ngModel)]="filterValue"
+                      (keyup)="customFilterFunction($event, options)" -->
+                  </div>
+                  <!-- <div class="p-inputgroup" (click)="$event.stopPropagation()">
+                    <span class="p-inputgroup-addon"><i class="pi pi-search"></i></span>
+                    <input 
+                      type="text"
+                      pInputText
+                      placeholder="Filter" 
+                      />
+                  </div> -->
+                </div>
+            </ng-template>
+            <ng-template pTemplate="selectedItem" let-selectedOption>
+              <div class="flex align-items-center gap-2">
+                  <div>{{ selectedOption?.config?.title }}</div>
+              </div>
+            </ng-template>
+            <ng-template let-option pTemplate="item">
+              <div class="flex align-items-center gap-2">
+                  <div>{{ option?.config?.title }}</div>
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
+
+        @if (_import.fromDashboard?._id) {
+          <div class="mt-6">
+            <eda-pick-list [config]="pickListConfig" [availableItems]="dashboardPanels" (selectionChange)="onPanelsChange($event)"></eda-pick-list>
+          </div>
+        }
+      } @else {
+        <!-- Tabs -->
+        <div class="mb-6 w-full grid grid-cols-4">
+          @for (panel of _import.panelsRef; track panel.id) {
+            <button (click)="setActiveTab(panel.id)" class="py-2 px-4 text-center transition-colors"
+              [class.bg-slate-100]="activeTab === panel.id" [class.border-b-2]="activeTab === panel.id"
+              [class.border-primary]="activeTab === panel.id" [class.font-medium]="activeTab === panel.id">
+              <span>{{panel.label}}</span>
+            </button>
+          }
+        </div>
+
+        @if (activeTab) {
+          <eda-filter-mapper [panelFilters]="_filterMapper[activeTab].panelFilters" [dashboardFilters]="_filterMapper[activeTab].dashboardFilters" [(connections)]="_filterMapper[activeTab].connections">
+            <div header>
+              <h1 class="text-2xl font-bold text-gray-900 mb-1">Mapear Filtros </h1>
+              <p class="text-gray-600 mb-3">Conecta los filtros entre el dashboard y el panel</p>
+            </div>
+          </eda-filter-mapper>
+        }
+      }
+    </div>
+  </div>
+</eda-dialog2>

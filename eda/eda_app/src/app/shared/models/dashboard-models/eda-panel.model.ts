@@ -19,11 +19,14 @@ export class EdaPanel {
     public y: number;
     public content: any[any];
     public inject: any = {};
-    public tamanyMobil: IMobileSizes = {x: 0, y: 0, w: 0, h: 0};
-    public tamanyMig: IMidSizes = {x: 0, y: 0, w: 0, h: 0};
-    public size : number ;
-    public linkedDashboard : boolean = false;
-    public linkedDashboardProps : LinkedDashboardProps;
+    public dataSource: any;
+    public tamanyMobil: IMobileSizes = { x: 0, y: 0, w: 0, h: 0 };
+    public tamanyMig: IMidSizes = { x: 0, y: 0, w: 0, h: 0 };
+    public size: number;
+    public linkedDashboard: boolean = false;
+    public linkedDashboardProps: LinkedDashboardProps;
+    public readonly: boolean = false;
+    public globalFilterMap: any[];
 
     constructor(init?: Partial<EdaPanel>) {
         Object.assign(this, init);

@@ -39,7 +39,7 @@
                 <p-dropdown
                   [options]="publicRoHidden" [(ngModel)]="globalFilter.visible"
                   i18n-title="@@filterVisibleScope"
-                  title="Definir la visibilidad del filtro. Público: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
+                  title="Definir la visibilidad del filtro. Públi'Los filtros deben ser del mismo tipaje!'co: todos pueden usarlo.  Deshabilitado: El resto de usuarios pueden ver el filtro pero no pueden modificarlo.  Oculto: El resto de usuarios no pueden ver el filtro, pero se les aplica"
                   [style]="{'width': '100%'}" selected="publicRoHiddenOption"
                 ></p-dropdown>
               </div>
@@ -150,20 +150,31 @@
                 
                 <div class="w-full"> 
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      <button
-                        *ngFor="let panel of allPanels"
-                        (click)="togglePanel(panel)"
-                        class="flex items-center justify-start h-auto py-2 px-3 rounded-md font-medium transition-colors"
-                        [ngClass]="{'bg-[#00BFB3]': isPanelSelected(panel) }"
-                        [class.text-white]="isPanelSelected(panel)"
-                        [class.border]="!isPanelSelected(panel)"
-                        [class.border-gray-300]="!isPanelSelected(panel)"
-                      >
-                        <svg *ngIf="isPanelSelected(panel.id)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4 shrink-0">
-                          <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                        <span class="truncate">{{ panel.title }}</span>
-                      </button>
+                      @for (panel of allPanels; track panel.id) {
+                        <span
+                          [pTooltip]="isPanelReadOnly(panel) ? 'Panel importado de otro dashboard. Ajusta la configuración desde el mapeador de filtros.' : null"
+                          tooltipPosition="top"
+                        >
+                          <button
+                            (click)="togglePanel(panel)"
+                            class="flex items-center justify-start w-full h-auto py-2 px-3 rounded-md font-medium transition-colors"
+                            [ngClass]="{
+                              'bg-gray-200 text-gray-600 cursor-not-allowed': isPanelReadOnly(panel),
+                              'bg-[#00BFB3] text-white': isPanelSelected(panel)
+                            }"
+                            [class.border]="!isPanelSelected(panel)"
+                            [class.border-gray-300]="!isPanelSelected(panel)"
+                            [disabled]="isPanelReadOnly(panel)"
+                          >
+                            @if (isPanelSelected(panel.id)) {
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4 shrink-0">
+                                <polyline points="20 6 9 17 4 12"/>
+                              </svg>
+                            }
+                            <span class="truncate">{{ panel.title }}</span>
+                          </button>
+                      </span>
+                      }
                     </div>
                 </div>
               </div>

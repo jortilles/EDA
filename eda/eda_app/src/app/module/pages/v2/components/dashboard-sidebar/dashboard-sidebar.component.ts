@@ -15,12 +15,15 @@ import jspdf from 'jspdf';
 import Swal from 'sweetalert2';
 import { DashboardMailConfigModal } from "../dashboard-mail-config/dashboard-mail-config.modal";
 import { DashboardVisibleModal } from "../dashboard-visible/dashboard-visible.modal";
+import { ImportPanelDialog } from "../import-panel/import-panel.dialog";
+import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
+import { ExposeMethod } from "@eda/shared/decorators/expose-method.decorator";
 
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
   imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog,
-    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal],
+    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -46,6 +49,7 @@ import { DashboardVisibleModal } from "../dashboard-visible/dashboard-visible.mo
   `
 })
 export class DashboardSidebarComponent {
+  private sidebarService = inject(DashboardSidebarService)
   private dashboardService = inject(DashboardService);
   private fileUtils = inject(FileUtiles);
   private router = inject(Router);
@@ -54,10 +58,11 @@ export class DashboardSidebarComponent {
   private stylesProviderService =  inject(StyleProviderService)
   private ChartUtilsService =  inject(ChartUtilsService)
   
-  
   @ViewChild('popover') popover!: OverlayPanel;
   @Input() dashboard: DashboardPageV2;
   @Output() bgClass = new EventEmitter<string>();
+
+  public exposedMethods: Record<string, (...args: any[]) => void> = {};
 
   isPopoverVisible = false; // Controla la visibilidad del overlay
   isSaveAsDialogVisible = false;
@@ -67,10 +72,11 @@ export class DashboardSidebarComponent {
   isVisibleModalVisible = false;
   isTagModalVisible = false;
   inputVisible: boolean = false;
-  public refreshTime: number = null;
+  refreshTime: number = null;
 
   mostrarOpciones = false;
 
+  isImportPanelVisible = false;
 
   sidebarItems = [
     {
@@ -87,6 +93,12 @@ export class DashboardSidebarComponent {
       label: "Nou filtre",
       icon: "pi pi-filter",
       command: () => this.onAddGlobalFilter()
+      
+    },
+    {
+      label: "Importar panell",
+      icon: "pi pi-plus-circle",
+      command: () => this.onImportPanel()
       
     },
     {
@@ -174,6 +186,24 @@ export class DashboardSidebarComponent {
 
   ngOnInit(): void {
     this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
+    const methodNames: string[] = (this as any).__proto__.__exposedMethods || [];
+
+    for (const name of methodNames) {
+      const method = (this as any)[name];
+      if (typeof method === 'function') {
+        this.exposedMethods[name] = method.bind(this);
+      }
+    }
+
+    // Subscribe to method execution commands
+    this.sidebarService.command$.subscribe(({ method, args }) => {
+      const fn = this.exposedMethods[method];
+      if (fn) {
+        fn(...(args || []));
+      } else {
+        console.warn(`Method '${method}' is not exposed on DashboardSidebarComponent`);
+      }
+    }); 
   }
 
   showPopover(event: Event) {
@@ -190,6 +220,23 @@ export class DashboardSidebarComponent {
   public onAddGlobalFilter(): void {
     this.dashboard.globalFilter.onShowGlobalFilter(true);
     this.hidePopover();
+  }
+
+  @ExposeMethod()
+  public onImportPanel(): void {
+    this.isImportPanelVisible = true;
+    this.hidePopover();
+  }
+
+  public closeImportPanelModal(response?: any) {
+    this.isImportPanelVisible = false;
+
+    if (response) {
+      for (const item of response) {
+        this.dashboard.panels.push(item as EdaPanel);
+      }
+    }
+
   }
 
   public onAddWidget(): void {

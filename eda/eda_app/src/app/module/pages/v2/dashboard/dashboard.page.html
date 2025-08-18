@@ -25,8 +25,7 @@
         <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
 
         @if (notSaved) {
-        <p-message severity="warn" i18n="@@notSavedChanges" text="Hi han canvis sense guardar"
-          styleClass="w-full"></p-message>
+          <p-message severity="warn" i18n="@@notSavedChanges" text="Hay cambios sin guardar..." styleClass="w-full"></p-message>
         }
       </div>
     </div>
@@ -38,12 +37,12 @@
         <gridster-item class="gridster-item" [item]="panel" [dragAndDrop]="panel.dragAndDrop"
           [resizable]="panel.resizable">
 
-          @if (panel.type===0) {
-          <eda-blank-panel #edaPanel [panel]="panel" [inject]="injectEdaPanel" [panelContent]="panelContent"
-            [panelText]="panelTitle" (remove)="onRemovePanel($event)"
-            (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)" [availableChatGpt]="availableChatGpt">
-          </eda-blank-panel>
-          }
+            @if (panel.type===0) {
+              <eda-blank-panel #edaPanel [dashboard]="this" [panel]="panel" [inject]="injectEdaPanel" [panelContent]="panelContent" [panelText]="panelTitle"
+                (remove)="onRemovePanel($event)" (action)="onPanelAction($event)" (duplicate)="onDuplicatePanel($event)"
+                [availableChatGpt]="availableChatGpt">
+              </eda-blank-panel>
+            }
 
           @if (panel.type===1) {
           <eda-title-panel #edaPanel [id]="panel.id" [panel]="panel" [inject]="injectEdaPanel"

@@ -251,39 +251,6 @@ export const PanelOptions = {
     }
 
     panelComponent.contextMenu.hideContextMenu();
-},
-  generateMenu : (panelComponent : EdaBlankPanelComponent ) => {
-    const menu = [];
-    const editmode = panelComponent.getEditMode();
-    const type = panelComponent.getChartType();
-
-    console.log('editmode: ', editmode)
-    console.log('type: ', type)
-    
-    if (editmode) {
-        menu.push(PanelOptions.editQuery(panelComponent));
-    }
-
-    menu.push(PanelOptions.editChart(panelComponent));
-    
-    if (editmode && type) {
-        if (![ "crosstable", "kpi", "dynamicText"].includes(type) && !type.includes('kpi')) {
-            menu.push(PanelOptions.linkPanel(panelComponent)); 
-        }
-    }
-
-    menu.push(PanelOptions.exportExcel(panelComponent));
-    menu.push(PanelOptions.duplicatePanel(panelComponent));
-    
-    if(panelComponent.availableChatGpt) {
-      menu.push(PanelOptions.askToIA(panelComponent));
-    }
-
-    if (editmode) {
-        menu.push(PanelOptions.deletePanel(panelComponent));
-    }
-
-    return menu;
   },
   askToIA : (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
@@ -296,7 +263,67 @@ export const PanelOptions = {
         panelComponent.contextMenu.hideContextMenu();
       }
     });
-    
-  } 
+  },
+  filtersMapper: (ebp: EdaBlankPanelComponent) => {
+    return new EdaContextMenuItem({
+      label: $localize`:@@panelOptionsMapFilters:Mapear filtros`,
+      icon: 'mdi mdi-file',
+      command: () => {
+        // ebp.action.emit({ code: 'MAPFILTERS', data: {} })
+        ebp.onFilterMapper();
+        ebp.contextMenu.hideContextMenu();
+      }
+    });
+  },
 
+  generateMenu: (ebp: EdaBlankPanelComponent) => {
+    const isEditable = ebp.isEditable();
+    const isRemovable = ebp.isRemovable();
+    const isImported = ebp.isImported;
+    const type = ebp.getChartType();
+
+    const isLinkableChart =
+      type &&
+      !["crosstable", "kpi", "dynamicText"].includes(type) &&
+      !type.includes("kpi");
+
+    // Declaramos cada opción en orden visual deseado
+    const MENU_DEFINITION = [
+      {
+        show: isEditable,
+        item: () => PanelOptions.editQuery(ebp),
+      },
+      {
+        show: true,
+        item: () => PanelOptions.editChart(ebp),
+      },
+      {
+        show: isImported,
+        item: () => PanelOptions.filtersMapper(ebp),
+      },
+      {
+        show: isEditable && isLinkableChart,
+        item: () => PanelOptions.linkPanel(ebp),
+      },
+      {
+        show: true,
+        item: () => PanelOptions.exportExcel(ebp),
+      },
+      {
+        show: true,
+        item: () => PanelOptions.duplicatePanel(ebp),
+      },
+      {
+        show: ebp.availableChatGpt,
+        item: () => PanelOptions.askToIA(ebp),
+      },
+      {
+        show: isRemovable,
+        item: () => PanelOptions.deletePanel(ebp),
+      },
+    ];
+
+    // Filtramos y ejecutamos solo las opciones visibles
+    return MENU_DEFINITION.filter(def => def.show).map(def => def.item());
+  }
 }

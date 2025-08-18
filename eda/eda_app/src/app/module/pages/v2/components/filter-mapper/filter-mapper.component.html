@@ -1,0 +1,193 @@
+<div class="w-full">
+  <div class="max-w-5xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+      <ng-content select="[header]"></ng-content>
+
+      <div class="flex gap-2">
+        <button
+          (click)="clearAllConnections()"
+          class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-600 bg-transparent border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+        >
+          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Limpiar
+        </button>
+        <span class="inline-flex items-center px-2 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md">
+          {{ connections.length }} conexiones
+        </span>
+      </div>
+    </div>
+
+    <!-- Paneles principales -->
+    <div class="grid grid-cols-2 gap-6 mb-6">
+      <!-- Panel Izquierdo -->
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
+        <div class="bg-white border-b border-gray-100 py-3 px-4 rounded-t-lg">
+          <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+            <div class="w-2 h-2 bg-[#00bfb3] rounded-full"></div>
+            Filtros del panel
+          </h2>
+        </div>
+        <div class="p-3 space-y-2">
+          <div
+            *ngFor="let item of getAvailablePanelFilters()"
+            [id]="'item-' + item.id"
+            class="group relative p-3 rounded-lg border-2 cursor-pointer transition-all duration-200"
+            [ngClass]="{
+              'border-[#00bfb3] bg-blue-50 shadow-md': isItemSelected(item.id),
+              'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm': !isItemSelected(item.id)
+            }"
+            (click)="handleItemClick(item.id, 'panel')"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                <span class="mdi {{getAttributeTypeIcon(item.type)}}"></span>
+                <span class="font-medium text-gray-900">{{ item.label }}</span>
+              </div>
+              <svg
+                *ngIf="isItemSelected(item.id)"
+                class="w-3 h-3 text-[#00bfb3] animate-pulse"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div
+            *ngIf="getAvailablePanelFilters().length === 0"
+            class="text-center py-6 text-gray-500"
+          >
+            <div class="text-sm">Todos los elementos están conectados</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Derecho -->
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg">
+        <div class="bg-white border-b border-gray-100 py-3 px-4 rounded-t-lg">
+          <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+            Filtros del dashboard
+          </h2>
+        </div>
+        <div class="p-3 space-y-2">
+          <div
+            *ngFor="let item of getAvailableDashboardFilters()"
+            [id]="'item-' + item.id"
+            class="group relative p-3 rounded-lg border-2 cursor-pointer transition-all duration-200"
+            [ngClass]="{
+              'border-green-500 bg-green-50 shadow-md': isItemSelected(item.id),
+              'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm': !isItemSelected(item.id)
+            }"
+            (click)="handleItemClick(item.id, 'dashboard')"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                <span class="mdi {{getAttributeTypeIcon(item.type)}}"></span>
+                <span class="font-medium text-gray-900">{{ item.label }}</span>
+              </div>
+              <svg
+                *ngIf="isItemSelected(item.id)"
+                class="w-3 h-3 text-green-500 animate-pulse"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div
+            *ngIf="getAvailableDashboardFilters().length === 0"
+            class="text-center py-6 text-gray-500"
+          >
+            <div class="text-sm">Todos los elementos están conectados</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de Conexiones Activas -->
+    <div *ngIf="connections.length > 0" class="bg-white shadow-sm border border-gray-200 rounded-lg">
+      <div class="bg-white border-b border-gray-100 py-3 px-4 rounded-t-lg">
+        <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+          </svg>
+          Conexiones Activas ({{ connections.length }})
+        </h2>
+      </div>
+      <div class="p-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3">
+          <div
+            *ngFor="let connection of connections"
+            class="group p-3 rounded-lg border transition-all duration-200 cursor-pointer"
+            [ngClass]="{
+              'shadow-md border-gray-300 bg-gray-50': hoveredConnection === connection.id,
+              'shadow-sm border-gray-200 bg-white hover:shadow-md hover:border-gray-300': hoveredConnection !== connection.id
+            }"
+            (mouseenter)="onConnectionHover(connection.id)"
+            (mouseleave)="onConnectionHover(null)"
+          >
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-1">
+                <div
+                  class="w-2 h-2 rounded-full"
+                  [style.background-color]="connection.color"
+                ></div>
+                <span class="text-sm font-medium text-gray-500 uppercase tracking-wide">Conexión</span>
+              </div>
+              <button
+                (click)="removeConnection(connection.id)"
+                class="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 rounded flex items-center justify-center"
+              >
+                <svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <div class="flex-1 text-center">
+                <div class="font-medium text-gray-900 text-sm">
+                  {{ getItemLabel(connection.sourceId, 'panel') }}
+                </div>
+                <div class="text-sm text-gray-500 mt-0.5">Panel</div>
+              </div>
+
+              <svg class="w-3 h-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+
+              <div class="flex-1 text-center">
+                <div class="font-medium text-gray-900 text-sm">
+                  {{ getItemLabel(connection.targetId, 'dashboard') }}
+                </div>
+                <div class="text-sm text-gray-500 mt-0.5">Dashboard</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="connections.length === 0" class="text-center py-8">
+      <svg class="w-10 h-10 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+      </svg>
+      <h3 class="text-base font-medium text-gray-900 mb-1">No hay conexiones activas</h3>
+      <p class="text-gray-500 max-w-md mx-auto">
+        Selecciona un elemento del listado izquierdo y luego uno del listado derecho para crear una conexión 1:1.
+      </p>
+    </div>
+  </div>
+</div>
