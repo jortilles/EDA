@@ -34,9 +34,9 @@ export class EdaTableComponent implements OnInit {
     ngOnInit(): void {
         
         
-        if(this.inject.styles && !this.inject.pivot){
+        if(this?.inject?.styles && !this.inject.pivot){
             this.applyStyles(this.inject.styles)
-        }else if(this.inject.styles && this.inject.pivot){
+        }else if(this?.inject?.styles && this.inject.pivot){
             this.applyPivotSyles(this.inject.styles)
         }
 
