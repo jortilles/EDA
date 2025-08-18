@@ -21,10 +21,11 @@
         [props]="panelChartConfig"
         (configUpdated)="setChartProperties($event)"
         (onChartClick)="onChartClick($event)"
-        [ngClass]="{
-          'h-full w-full block': !isSpecialChart(panelChartConfig.chartType),
-          'h-full w-full flex justify-center content-center overflow-hidden flex-wrap': isSpecialChart(panelChartConfig.chartType)
-        }"
+        [ngStyle]="panelContent"
+        [ngClass]="isSpecialChart(panelChartConfig.chartType) 
+          ? 'h-full w-full flex justify-center content-center overflow-hidden flex-wrap' 
+          : 'h-full w-full block'"
+          style="flex-wrap:wrap!important;"
       ></panel-chart>
     </div>
     }
