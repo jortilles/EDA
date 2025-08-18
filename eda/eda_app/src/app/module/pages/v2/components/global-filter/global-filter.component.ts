@@ -13,6 +13,8 @@ import { SharedModule } from "../../../../../shared/shared.module";
 import { StyleProviderService } from '@eda/services/service.index';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DestroyRef } from '@angular/core';
 
 
 @Component({
@@ -49,6 +51,7 @@ export class GlobalFilterV2Component implements OnInit {
         private queryBuilderService: QueryBuilderService,
         private alertService: AlertService,
         private userService: UserService,
+        private destroyRef: DestroyRef,
     ) { }
 
     public ngOnInit(): void {
@@ -56,15 +59,15 @@ export class GlobalFilterV2Component implements OnInit {
         // this.isDashboardCreator = this.dashboard.isDashboardCreator;
         // this.hideFilters = this.dashboard.display_v.panelMode;
         this.updateStyleButton();
-        // Suscripción si los estilos cambian dinámicamente
-        this.styleProviderService.filtersFontColor.subscribe(() => {this.updateStyleButton();});
-        this.styleProviderService.filtersFontFamily.subscribe(() => {this.updateStyleButton();});
-        this.styleProviderService.filtersFontSize.subscribe(() => {this.updateStyleButton();});
-        this.styleProviderService.panelColor.subscribe(() => {this.updateStyleButton();});
-    }
-
-    ngOnDestroy(): void {
-        this.styleSub.unsubscribe(); // desuscribe todas las subs
+        // Suscripción si los estilos cambian dinámicamente y unsubscribe cuando se haga destroy
+        this.styleProviderService.filtersFontColor.pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.updateStyleButton());
+        this.styleProviderService.filtersFontFamily.pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.updateStyleButton());
+        this.styleProviderService.filtersFontSize.pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.updateStyleButton());
+        this.styleProviderService.panelColor.pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.updateStyleButton());
     }
 
     updateStyleButton() {
