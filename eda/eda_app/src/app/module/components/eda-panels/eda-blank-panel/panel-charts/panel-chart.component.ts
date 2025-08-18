@@ -645,8 +645,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         
         // Determinar color base del gráfico paleta / asCol
         const baseColor = this.styleProviderService.loadingFromPalette
-            ? this.styleProviderService.ActualChartPalette['paleta'][0]
-            : this.props.config.getConfig()['edaChart'].colors[0].backgroundColor;
+        ? this.styleProviderService?.ActualChartPalette?.['paleta']?.[0] // color por defecto
+        : this.props.config.getConfig()?.['edaChart']?.colors?.[0]?.backgroundColor ?? '#5c20f3ff';
 
         // Asignar colores a la configuración
         chartConfig.edaChart.chartColors[0].backgroundColor = baseColor;
