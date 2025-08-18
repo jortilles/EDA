@@ -379,7 +379,6 @@ export abstract class QueryBuilderService {
           }
         return true;
     }
-
     
     public getGraph(graph, origin, dest) {
         let new_origin = origin;
