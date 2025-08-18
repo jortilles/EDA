@@ -1199,10 +1199,6 @@ export class DashboardController {
   }
 
 
-
-
-
-
   /**
    * Executa una consulta EDA per un dashboard
    */
