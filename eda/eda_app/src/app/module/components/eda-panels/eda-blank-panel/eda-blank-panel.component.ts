@@ -56,7 +56,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
 
 
-    @Input() panelContent: any;
+    @Input() panelContent: any = {};
     @Input() panelText: any;
     @Input() dashboard: DashboardPageV2;
     @Input() panel: EdaPanel;
@@ -253,9 +253,9 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
-
+        
         await this.setTablesData();
-
+        
         /**If panel comes from server */
         if (this.panel.content) {
             try{
@@ -471,13 +471,12 @@ export class EdaBlankPanelComponent implements OnInit {
         try {
             if (!panelContent?.query) return;
 
-            this.display_v.minispinner = true;            
+            this.display_v.minispinner = true;
             
             PanelInteractionUtils.handleGlobalFilterMapper(this);
 
-            console.log(JSON.stringify(panelContent.query));
 
-            const response = await QueryUtils.switchAndRun(this, panelContent.query);
+                const response = await QueryUtils.switchAndRun(this, panelContent.query);
 
             const [labels, values] = response;
 
@@ -486,11 +485,11 @@ export class EdaBlankPanelComponent implements OnInit {
                 row.map(value => value == null ? NULL_VALUE : value)
             );
 
-            this.buildGlobalconfiguration(panelContent);
-        } catch (err) {
-            this.alertService.addError(err);
-            throw err;
-        }
+                this.buildGlobalconfiguration(panelContent);
+            } catch (err) {
+                this.alertService.addError(err);
+                throw err;
+            }
     }
 
     /**
@@ -512,19 +511,19 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.rootTable = this.tables.find(t => t.table_name === this.rootTable);
 
                 for (const column of fields) {
-                    PanelInteractionUtils.assertTable(this, column);
-                }
+                        PanelInteractionUtils.assertTable(this, column);
+                    }
 
-                PanelInteractionUtils.handleCurrentQuery2(this);
-                this.reloadTablesData();
-                PanelInteractionUtils.loadTableNodes(this);
+                    PanelInteractionUtils.handleCurrentQuery2(this);
+                    this.reloadTablesData();
+                    PanelInteractionUtils.loadTableNodes(this);
 
-                this.userSelectedTable = undefined;
-                this.columns = [];
-            } else {
-                PanelInteractionUtils.handleCurrentQuery(this);
+                    this.userSelectedTable = undefined;
+                    this.columns = [];
+                } else {
+                    PanelInteractionUtils.handleCurrentQuery(this);
                 this.columns = this.columns.filter(c => !c.isdeleted);
-            }
+                }
         }
 
         // Configuración global del panel
@@ -534,12 +533,12 @@ export class EdaBlankPanelComponent implements OnInit {
         PanelInteractionUtils.handleFilterColumns(this, filters, fields);
         PanelInteractionUtils.verifyData(this);
 
-        console.log('selectedFilters >>>', this.selectedFilters)
         // Configurar tipo de gráfico
         const chartOption = this.chartUtils.chartTypes.find(c => c.subValue === edaChart);
         this.chartForm.patchValue({ chart: chartOption });
 
-        const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, config);
+
+        const recoveredConfig = ChartsConfigUtils.recoverConfig(chart, panelContent.query.output.config);
         this.changeChartType(chart, edaChart, recoveredConfig);
 
         // Mostrar panel y configurar tipo gráfico
@@ -571,7 +570,7 @@ export class EdaBlankPanelComponent implements OnInit {
 
             const query = this.initObjectQuery();
             const chart = this.chartForm.value.chart.value ? this.chartForm.value.chart.value : this.chartForm.value.chart;
-            const edaChart = this.panelChart.props.edaChart;
+            const edaChart = this.panelChart?.props.edaChart;
 
             this.panel.content = { query, chart, edaChart };
 
@@ -683,7 +682,7 @@ export class EdaBlankPanelComponent implements OnInit {
         if (!_.isEqual(this.display_v.chart, 'no_data') && !allow.ngIf && !allow.tooManyData) {
             const _config = new ChartConfig(ChartsConfigUtils.setVoidChartConfig(type));
             _.merge(_config, config||{});
-
+            
             this.renderChart(this.currentQuery, this.chartLabels, this.chartData, type, subType, _config);
         }
 
@@ -1581,7 +1580,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public closeChatGpt(event: any) {
         console.log('el Valor a llegado y es: ', event);
         this.isVisibleEbpChatGpt = false;
-    }
+    } 
 
     public onFilterMapper() {
         this.display_v.filterMapperDialog = true;

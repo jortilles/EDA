@@ -267,8 +267,7 @@ export class DashboardPageV2 implements OnInit {
       applyToAllfilter: this.applyToAllfilter,
       isObserver: this.grups.filter(group => group.name === 'EDA_RO' && group.users.includes(userID)).length !== 0
     }
-    this.stylesProviderService.loadedPanels = dashboard.config.panel.length;
-    console.log(this.injectEdaPanel)
+    this.stylesProviderService.loadedPanels = dashboard.config?.panel?.length || -1;
   }
 
   // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento

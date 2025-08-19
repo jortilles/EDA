@@ -721,15 +721,14 @@
 
 <sunburst-dialog *ngIf="sunburstController" [controller]="sunburstController"> </sunburst-dialog>
 
-<eda-context-menu [inject]="contextMenu"></eda-context-menu>
 
-<<<<<<< HEAD
-<app-whatif-dialog *ngIf="display_v.whatIf_dialog" [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>
+@if(contextMenu){
+  <eda-context-menu [inject]="contextMenu"></eda-context-menu>
+}
 
 @if(isVisibleEbpChatGpt) {
   <app-ebp-chatgpt (close)="closeChatGpt($event)" [dataChatGpt]="dataChatGpt"></app-ebp-chatgpt>
 }
-=======
 @if (display_v.whatIf_dialog) {
   <app-whatif-dialog [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>
 }
@@ -737,4 +736,3 @@
 @if (display_v.filterMapperDialog) {
   <app-filter-mapper-dialog [dashboard]="dashboard" [panel]="panel" (close)="onCloseFilterMapperDialog($event)"></app-filter-mapper-dialog>
 }
->>>>>>> caf4b473 (importPanels)

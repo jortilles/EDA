@@ -28,7 +28,7 @@ export class GlobalFilterV2Component implements OnInit {
     @Input() dashboard: DashboardPageV2;
     public globalFilters: any[] = [];
     public globalFilter: any;
-    public styleButton: any;
+    public styleButton: any = {};
     private styleSub: Subscription;
 
 
