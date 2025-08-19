@@ -77,13 +77,12 @@ export class DashboardMailConfigModal {
       quantity: this.quantity,
       hours: hours,
       minutes: minutes,
-      users: this.selectedUsers.map(user => user.value),
+      users: this.selectedUsers.map(user => user.name),
       mailMessage: this.mailMessage,
       lastUpdated: new Date().toISOString(),
       enabled: !this.disabled,
       dashboard: this.dashboard
     };
-    console.log(response)
     this.apply.emit(response);
   }
 

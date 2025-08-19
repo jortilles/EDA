@@ -152,7 +152,6 @@ export class DashboardPageV2 implements OnInit {
 
 
     if (dashboard?.config) {
-      console.log('dashboard?.config');
       this.dashboardId = dashboardId;
       this.dashboard = dashboard;
       this.title = dashboard.config.title;

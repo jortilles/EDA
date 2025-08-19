@@ -402,12 +402,12 @@ export class DashboardSidebarComponent {
   }
 
   public closeMailConfig() {
-    this.isCustomActionDialogVisible = false;
+    this.isMailConfigDialogVisible = false;
   }
 
   public saveMailConfig(mailConfig: any) {
-    this.isCustomActionDialogVisible = false;
-    //this.dashboard.sendViaMailConfig = mailConfig;  
+    this.isMailConfigDialogVisible = false;
+    this.dashboard.dashboard.config.sendViaMailConfig = mailConfig;  
   }
 
 
