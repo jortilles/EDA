@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GroupService, UserService } from '@eda/services/service.index';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { SharedModule } from '@eda/shared/shared.module';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { lastValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
@@ -22,7 +23,7 @@ type User = {
   selector: 'app-user-list',
   templateUrl: './user-list.page.html',
   standalone: true,
-  imports: [SharedModule, CommonModule, FormsModule, IconComponent],
+  imports: [SharedModule, CommonModule, FormsModule, IconComponent,MultiSelectModule],
 })
 export class UserListPage implements OnInit {
   private userService = inject(UserService);
@@ -101,6 +102,8 @@ export class UserListPage implements OnInit {
 
   handleEditUser(user: User) {
     this.selectedUser = user;
+    this.selectedUser.role = Array.isArray(this.selectedUser.role) ?
+      this.selectedUser.role : this.selectedUser.role.split(','); 
     this.showUserDetail = true;
   }
 
@@ -111,7 +114,6 @@ export class UserListPage implements OnInit {
 
   handleDeleteUser(userId: string) {
     // Control de no borrar el propio usuario
-    this.users = this.users.filter(user => user._id !== userId);
     if (userId === this.userService.getUserObject()._id) {
         Swal.fire($localize`:@@cantDeleteUser:No se puede borrar el usuario`, $localize`:@@cantSelfDelete:No se puede borrar a si mismo`, 'error');
         return;
@@ -129,6 +131,7 @@ export class UserListPage implements OnInit {
         confirmButtonText: $localize`:@@DeleteUser:Si, ¡Bórralo!`
     }).then(deleted => {
       if (deleted.value === true) { 
+        this.users = this.users.filter(user => user._id !== userId);
         this.userService.deleteUser(userId).subscribe(
         res => {
             Swal.fire($localize`:@@UserDeletedOk:El usuario a sido eliminado correctamente`, res.email, 'success');
@@ -143,16 +146,19 @@ export class UserListPage implements OnInit {
 
   onApplyUserDetail() {
     this.showUserDetail = false;
-    
-    // TODO arreglar agregació password pasa algo raro
-
     if (this.selectedUser.isnew) { //Estamos creando usuario
+      
+      let roleIds = (this.selectedUser?.role ?? [])
+        .map(name => this.groups.find(group => group.name === name)?._id)
+        .filter(id => id);
+
       let user: User = {
         name: this.selectedUser.name,
         email: this.selectedUser.email,
         password: this.selectedUser.password,
-        role: this.groups.find(group => group.name === this.selectedUser.role)._id,
-      }
+        ...(roleIds.length ? { role: roleIds } : {}) // solo incluye role si hay 
+      };
+
       this.userService.createUser(user).subscribe(
         res => {
           Swal.fire($localize`:@@CreatedUser:Usuario creado`, res.email, 'success');
@@ -168,8 +174,9 @@ export class UserListPage implements OnInit {
       userToModify.name = this.selectedUser.name; 
       userToModify.email =  this.selectedUser.email,
       userToModify.password = this.selectedUser.password; 
-      userToModify.role = this.groups.find(group => group.name === this.selectedUser.role)._id; 
-
+      userToModify.role = this.groups
+        .filter(group => this.selectedUser.role.includes(group.name))
+        .map(group => group._id);
       if (userToModify.password && userToModify.password !== '') {
         this.userService.manageUpdateUsers(userToModify).subscribe(
           res => {
