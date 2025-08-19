@@ -15,9 +15,9 @@
             <table class="w-full">
               <thead class="bg-gray-100">
                 <tr>
-                  <th class="cursor-pointer p-3">Url</th>
-                  <th class="cursor-pointer p-3">Nombre</th>
-                  <th class="cursor-pointer p-3">Descripción</th>
+                  <th class="p-3">Url</th>
+                  <th class="p-3">Nombre</th>
+                  <th class="p-3">Descripción</th>
                   <th class="p-3 text-right">Acciones</th>
                 </tr>
               </thead>
@@ -40,7 +40,7 @@
                           </button>       
                         </td>               
                     } @else{
-                      <td class="p-3">{{ url.url }}</td>
+                      <td class="p-3"><button (click)="customAction(url)" class="cursor-pointer p-3">{{ url.url }}</button></td>
                       <td class="p-3">{{ url.name }}</td>
                       <td class="p-3">{{ url.description }}</td>
                       <td class="p-3 text-right">
