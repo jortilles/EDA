@@ -145,7 +145,6 @@ export class DashboardPageV2 implements OnInit {
   }
 
   public async loadDashboard() {
-    console.log('loadDashboard');
     const dashboardId = this.route.snapshot.paramMap.get('id');
     const data = await lastValueFrom(this.dashboardService.getDashboard(dashboardId));
     const dashboard = data.dashboard;
@@ -160,7 +159,6 @@ export class DashboardPageV2 implements OnInit {
       this.applyToAllfilter = dashboard.config.applyToAllfilter || { present: false, refferenceTable: null, id: null };
       this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
-      console.log('el dashboard es:', dashboard)
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
       //this.chartUtils.MyPaletteColors = this.styles?.palette['paleta'] || [];
       if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) { 
@@ -233,7 +231,6 @@ export class DashboardPageV2 implements OnInit {
   }
 
   private initPanels(dashboard: any) {
-    console.log('initPanels');
     if (!dashboard.config.panel) {
       this.panels.push(
         new EdaPanel({
@@ -444,7 +441,6 @@ export class DashboardPageV2 implements OnInit {
   }
 
   public onMapFilters() {
-    console.log('onMapFilters')
     this.sidebarService.invokeMethod('onImportPanel');
   }
 
