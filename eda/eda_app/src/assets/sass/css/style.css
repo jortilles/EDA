@@ -399,6 +399,44 @@ body .ui-tree {
 
 /*=============*/
 
+/* css para el picklist de grouplist */
+.p-picklist-custom .p-picklist-filter-input {
+  border: 1px solid black !important;
+}
+
+/* Controles del medio centrados */
+.p-picklist-custom .p-picklist-buttons-wrapper {
+  position: sticky;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+/* Contenedor de items con scroll independiente */
+.p-picklist-custom .p-picklist-source-wrapper,
+.p-picklist-custom .p-picklist-target-wrapper {
+  max-height: 300px;   /* altura total de la lista */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scroll solo en los items */
+.p-picklist-custom .p-picklist-list {
+  overflow-y: auto;
+  flex-grow: 1;        /* ocupa todo el espacio disponible dentro del wrapper */
+}
+
+/* Ajuste de padding solo lateral para los headers */
+.p-picklist-custom .p-picklist-header {
+  padding-top: 0.3125rem;   /* ejemplo: 5px arriba */
+  padding-bottom: 0rem;/* 5px abajo */
+  padding-left: 1.25rem;    /* lateral */
+  padding-right: 1.25rem;
+}
+
+
+/*=============*/
+
 html {
     position: relative;
     min-height: 100%;

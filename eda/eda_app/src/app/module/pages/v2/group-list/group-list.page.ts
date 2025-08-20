@@ -2,13 +2,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { GroupService } from '@eda/services/service.index';
+import { GroupService, UserService } from '@eda/services/service.index';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { SharedModule } from '@eda/shared/shared.module';
 import { lastValueFrom } from 'rxjs';
 import { IGroup } from '@eda/services/service.index';
 import * as _ from 'lodash';
 import Swal from 'sweetalert2';
+import { PickListModule } from "primeng/picklist";
 
 type Group = {
   _id?: string;
@@ -23,16 +24,19 @@ type Group = {
   selector: 'app-group-list',
   templateUrl: './group-list.page.html',
   standalone: true,
-  imports: [SharedModule, CommonModule, FormsModule, IconComponent],
+  imports: [SharedModule, CommonModule, FormsModule, IconComponent, PickListModule],
 })
 export class GroupListPage implements OnInit {
   private groupService = inject(GroupService);
+  private userService = inject(UserService);
 
   groups: any[] = [];
 
   searchTerm: string = '';
   sortConfig: { key: any; direction: 'asc' | 'desc' } | null = null;
   selectedGroup: any = {};
+  users: any = {};
+  availableUsers: any = {};
   showGroupDetail: boolean = false;
 
   currentPage: number = 1;
@@ -61,12 +65,31 @@ export class GroupListPage implements OnInit {
 
   ngOnInit(): void {
     this.loadGroups();
+    this.loadUserList();
   }
 
 
+  // Carga de todos los grupos
   async loadGroups() {
     this.groups = await lastValueFrom(this.groupService.getGroups());
-}
+    this.groups.sort((a, b) => a.name.localeCompare(b.name));
+    }
+  
+  // Carga de todos los usuarios
+  async loadUserList() {
+    const users = await lastValueFrom(this.userService.getUsers());
+
+    for (const user of users) {
+      const stringGroups = [];
+      stringGroups.push(_.map(user.role, 'name'));
+      user.role = stringGroups.join(', ');
+    }
+
+    this.users = users;
+
+    // Eliminamos usuarios vacios
+    this.users = this.users.filter(u => u.name && u.name.trim() !== '');
+  }
 
   handleSort(key: any) {
     this.sortConfig = this.sortConfig?.key === key && this.sortConfig.direction === 'asc'
@@ -82,15 +105,35 @@ export class GroupListPage implements OnInit {
     this.currentPage = page;
   }
 
+  // Edición de usuarios
+handleEditGroup(group: Group) {
+  this.selectedGroup = { ...group };
 
-  handleEditGroup(group: Group) {
-    this.selectedGroup = group;
-    this.showGroupDetail = true;
-  }
+  // Clonamos la lista completa de usuarios disponibles
+  this.availableUsers = [...this.users];
+
+  // Convertimos los IDs de selectedGroup a objetos user
+  const selectedUsers = this.users.filter(user =>
+    group.users.includes(user._id)
+  ).map(user => ({ ...user }));
+
+  this.selectedGroup.users = selectedUsers;
+
+  // Eliminamos los usuarios seleccionados de availableUsers
+  this.availableUsers = this.availableUsers.filter(user =>
+    !this.selectedGroup.users.some(u => u._id === user._id)
+  );
+
+  this.showGroupDetail = true;
+}
+
 
   handleCreateGroup() {
-    this.selectedGroup = { isnew: true };
-    this.showGroupDetail = true;
+    this.availableUsers = this.users;
+    this.selectedGroup = {
+      isnew: true,
+      users: this.selectedGroup?.users || []
+    };      this.showGroupDetail = true;
   }
 
   handleDeleteGroup(groupId: string) {
@@ -120,12 +163,14 @@ export class GroupListPage implements OnInit {
 
   onApplyGroupDetail() {
     this.showGroupDetail = false;
+    // Reconversión para guardar solo sus IDs
     if (this.selectedGroup.isnew) { //Estamos creando grupo  
       let group: IGroup = {
         name: this.selectedGroup.name,
         role: { label: this.selectedGroup.name, value: this.selectedGroup.role },
-        users: [],
+        users: this.selectedGroup.users,
       }
+
       this.groupService.insertGroup(group).subscribe(
         res => {
           Swal.fire($localize`:@@GroupCreated:Grupo creado`, res.name, 'success');
@@ -136,6 +181,7 @@ export class GroupListPage implements OnInit {
       );   
     }
     else { //Estamos modificando grupo  
+      this.selectedGroup.users = this.selectedGroup.users.map(user => user._id );
       let groupToModify = this.groups.find(group => group._id === this.selectedGroup._id);
       groupToModify.name = this.selectedGroup.name; 
       groupToModify.role =  this.selectedGroup.role,
