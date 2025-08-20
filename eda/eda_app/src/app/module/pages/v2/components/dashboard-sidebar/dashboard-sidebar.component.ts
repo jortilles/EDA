@@ -355,7 +355,7 @@ export class DashboardSidebarComponent {
       this.dashboardService._notSaved.next(false);
       // TODO ==> Done?
       this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-      this.router.navigate(['/v2/dashboard/', res.dashboard._id]).then(() => { // TODO ==> deixo v2 per ara  a la url 
+      this.router.navigate(['/dashboard/', res.dashboard._id]).then(() => {
         window.location.reload();
       });
     } catch (err) {
@@ -437,7 +437,7 @@ export class DashboardSidebarComponent {
           await lastValueFrom(this.dashboardService.deleteDashboard(dashboardId));
 
           // La app se direcciona al home EDA
-          this.router.navigate(['/v2/']).then(() => {
+          this.router.navigate(['/']).then(() => {
             window.location.reload();
           });
         } catch (err) {

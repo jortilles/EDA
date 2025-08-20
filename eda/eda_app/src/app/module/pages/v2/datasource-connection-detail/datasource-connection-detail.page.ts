@@ -200,7 +200,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       });
 
       this.spinnerService.off();
-      this.router.navigate(['/v2/data-source/', res.data_source_id]);
+      this.router.navigate(['/data-source/', res.data_source_id]);
     } catch (err) {
       this.spinnerService.off();
       this.alertService.addError(err);
@@ -226,7 +226,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
       });
 
       this.spinnerService.off();
-      this.router.navigate(['/v2/data-source/', res.data_source_id]);
+      this.router.navigate(['/data-source/', res.data_source_id]);
     } catch (err) {
       this.spinnerService.off();
       this.alertService.addError(err);
@@ -254,7 +254,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
 
         this.spinnerService.off();
         this.alertService.addSuccess($localize`:@@CollectionText:Colección creada correctamente`,);
-        this.router.navigate(['/v2/data-source/', res.data_source_id]);
+        this.router.navigate(['/data-source/', res.data_source_id]);
       } catch (err) {
         this.spinnerService.off();
         this.alertService.addError(err);

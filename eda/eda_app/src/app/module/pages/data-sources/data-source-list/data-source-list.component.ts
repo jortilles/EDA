@@ -94,7 +94,7 @@ export class DataSourceListComponent implements OnInit, OnDestroy {
                     () => {
                         Swal.fire($localize`:@@Deleted:¡Eliminado!`, $localize`:@@DeleteSuccess:Modelo eliminado correctamente.`, 'success');
                         this.dataModelService.cleanAll();
-                        this.router.navigate(['v2', 'home']);
+                        this.router.navigate(['', 'home']);
                         this.spinnerService.off();
                     }, err => {
                         this.alertService.addError(err);

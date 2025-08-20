@@ -128,7 +128,7 @@ export class MailManagementComponent implements OnInit {
             label: $localize`:@@gotodashboard:Ir al informe`, command: () => {
 
               const elem = this.alertsTable.getContextMenuRow().data;
-              this.router.navigate(['/v2/dashboard/', elem._id]);
+              this.router.navigate(['/dashboard/', elem._id]);
             }
           })
         ]
@@ -155,7 +155,7 @@ export class MailManagementComponent implements OnInit {
             label: $localize`:@@gotodashboard:Ir al informe`, command: () => {
 
               const elem = this.dashboardsTable.getContextMenuRow().data;
-              this.router.navigate(['/v2/dashboard/', elem._id]);
+              this.router.navigate(['/dashboard/', elem._id]);
             }
           })
         ]

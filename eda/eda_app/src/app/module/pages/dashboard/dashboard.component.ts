@@ -806,7 +806,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                                     this.dashboardService._notSaved.next(false);
                                     this.display_v.rightSidebar = false;
                                     this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
-                                    this.router.navigate(['/v2/dashboard/', r.dashboard._id]).then(() => {
+                                    this.router.navigate(['/dashboard/', r.dashboard._id]).then(() => {
                                         window.location.reload();
                                     });
 
@@ -858,7 +858,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
                     await this.dashboardService.deleteDashboard(dashboardId).toPromise();
 
                     // La app se direcciona al home EDA
-                    this.router.navigate(['/v2/home/']).then(() => {
+                    this.router.navigate(['/home/']).then(() => {
                         window.location.reload();
                     });
                 } catch (err) {

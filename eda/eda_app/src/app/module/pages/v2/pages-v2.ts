@@ -47,6 +47,6 @@ export class PagesV2Component implements OnInit {
     }
 
     onCloseCreateDashboard(event: any) {
-        if (event) this.router.navigate(['/v2/dashboard', event._id]);
+        if (event) this.router.navigate(['/dashboard', event._id]);
     }
 }

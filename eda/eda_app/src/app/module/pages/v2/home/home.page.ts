@@ -92,7 +92,7 @@ export class HomePageV2 implements OnInit {
   }
 
   public openReport(report: any) {
-    this.router.navigate(['/v2/dashboard', report._id]);
+    this.router.navigate(['/dashboard', report._id]);
   }
 
   public handleTagSelect(option: any): void {

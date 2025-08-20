@@ -76,11 +76,11 @@ export class DataSourceListPage implements OnInit {
 
 
   handleEditDataSource(dataSource: any) {
-    this.router.navigate(['/v2/data-source/', dataSource._id]);
+    this.router.navigate(['/data-source/', dataSource._id]);
   }
 
   handleCreateDataSource() {
-    this.router.navigate(['/v2/admin/data-source/new']);
+    this.router.navigate(['/admin/data-source/new']);
   }
 
 }
