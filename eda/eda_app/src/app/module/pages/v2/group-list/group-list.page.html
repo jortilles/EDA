@@ -8,7 +8,7 @@
   </div>
 
   <div class="flex items-center mb-6">
-    <input [(ngModel)]="searchTerm" i18n-placeholder="@@searchGroups" placeholder="Buscar grupos..." class="border p-2 rounded w-full" />
+    <input [(ngModel)]="searchTerm" (ngModelChange)="currentPage = 1" i18n-placeholder="@@searchGroups" placeholder="Buscar grupos..." class="border p-2 rounded w-full" />
   </div>
 
   <div class="border rounded-lg overflow-hidden">
