@@ -8,7 +8,7 @@
   </div>
 
   <div class="flex items-center mb-6">
-    <input [(ngModel)]="searchTerm" i18n-placeholder="@@searchGroups" placeholder="Buscar grupos..." class="border p-2 rounded w-full" />
+    <input [(ngModel)]="searchTerm" (ngModelChange)="currentPage = 1" i18n-placeholder="@@searchGroups" placeholder="Buscar grupos..." class="border p-2 rounded w-full" />
   </div>
 
   <div class="border rounded-lg overflow-hidden">
@@ -55,13 +55,10 @@
 </div>
 
 
-<eda-dialog2 *ngIf="showGroupDetail"
-  [display]="showGroupDetail"
-  [header]="!selectedGroup.isnew ? updateGroupTitle : addGroupTitle"
-  width="50vw" height="80vh"
-  (close)="showGroupDetail = false;"
-  (apply)="onApplyGroupDetail()">
-  
+<eda-dialog2 *ngIf="showGroupDetail" [display]="showGroupDetail"
+  [header]="!selectedGroup.isnew ? updateGroupTitle : addGroupTitle" width="50vw" height="80vh"
+  (close)="showGroupDetail = false;" (apply)="onApplyGroupDetail()">
+
   <div content>
     <div class="mt-4">
       <label class="block text-sm font-medium" i18n="@@name">Nombre</label>
@@ -73,17 +70,19 @@
         <option value="EDA_USER_ROLE">USER</option>
       </select>
 
-    <p-pickList [source]="availableUsers" [target]="selectedGroup.users" sourceHeader="Usuarios disponibles"
-      targetHeader="Usuarios seleccionados" [filterBy]="'name,email'" filterPlaceholder="Buscar usuario..."
-      [showSourceControls]="false" [showTargetControls]="false" [dragdrop]="true" [metaKeySelection]="true"
-      [class]="'p-picklist-custom'">
-      <ng-template let-user pTemplate="item" class="border border-gray-300 rounded">
-        <div class="flex flex-col p-2 mb-1 border border-gray-300 rounded">
-          <span class="font-semibold">{{ user.name }}</span>
-          <small class="text-gray-500">{{ user.email }}</small>
-        </div>
-      </ng-template>
-    </p-pickList>
+      <p-pickList [source]="availableUsers" [target]="selectedGroup.users" sourceHeader="Usuarios disponibles"
+        targetHeader="Usuarios seleccionados" [filterBy]="'name,email'" filterPlaceholder="Buscar usuario..."
+        [showSourceControls]="false" [showTargetControls]="false" [dragdrop]="true" [metaKeySelection]="true"
+        class="p-picklist-custom">
+
+        <ng-template let-user pTemplate="item" class="border border-gray-300 rounded">
+          <div class="flex flex-col p-2 mb-1 border border-gray-300 rounded">
+            <span class="font-semibold">{{ user.name }}</span>
+            <small class="text-gray-500">{{ user.email }}</small>
+          </div>
+        </ng-template>
+      </p-pickList>
     </div>
   </div>
 </eda-dialog2>
+

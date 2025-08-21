@@ -423,7 +423,7 @@ body .ui-tree {
 /* Contenedor de items con scroll independiente */
 .p-picklist-custom .p-picklist-source-wrapper,
 .p-picklist-custom .p-picklist-target-wrapper {
-  max-height: 300px;   /* altura total de la lista */
+  max-height: 46vh;   /* altura total de la lista */
   display: flex;
   flex-direction: column;
 }
