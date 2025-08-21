@@ -63,7 +63,9 @@
             *ngIf="getAvailablePanelFilters().length === 0"
             class="text-center py-6 text-gray-500"
           >
-            <div class="text-sm">Todos los elementos están conectados</div>
+          <div class="text-sm">
+            <span i18n="@@allElementsConnected">Todos los elementos están conectados</span>
+          </div>
           </div>
         </div>
       </div>
@@ -73,7 +75,7 @@
         <div class="bg-white border-b border-gray-100 py-3 px-4 rounded-t-lg">
           <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
             <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-            Filtros del dashboard
+            <span i18n="@@dashboardFiltersMin">Filtros del dashboard</span>
           </h2>
         </div>
         <div class="p-3 space-y-2">
@@ -109,7 +111,9 @@
             *ngIf="getAvailableDashboardFilters().length === 0"
             class="text-center py-6 text-gray-500"
           >
-            <div class="text-sm">Todos los elementos están conectados</div>
+            <div class="text-sm">
+              <span i18n="@@allElementsConnected">Todos los elementos están conectados</span>
+            </div>
           </div>
         </div>
       </div>
@@ -184,8 +188,10 @@
       <svg class="w-10 h-10 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
       </svg>
-      <h3 class="text-base font-medium text-gray-900 mb-1">No hay conexiones activas</h3>
-      <p class="text-gray-500 max-w-md mx-auto">
+      <h3 class="text-base font-medium text-gray-900 mb-1" i18n="@@noConenction">
+        No hay conexiones activas
+      </h3>
+      <p class="text-gray-500 max-w-md mx-auto" i18n="@@select1to1">
         Selecciona un elemento del listado izquierdo y luego uno del listado derecho para crear una conexión 1:1.
       </p>
     </div>

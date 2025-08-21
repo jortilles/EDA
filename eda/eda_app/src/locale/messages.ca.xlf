@@ -3561,6 +3561,17 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Contingut del mail: </target>
   </trans-unit>
 
+  <trans-unit id="sendMailHeader">
+    <source>Configuración de los envíos por email</source>
+    <target>Configuració dels enviaments per email</target>
+  </trans-unit>
+
+  <trans-unit id="saveAsHeader" datatype="html">
+    <source>Guardar como...</source>
+    <target>Guardar com...</target>
+  </trans-unit>
+
+
   <trans-unit id="at">
     <source>A las</source>
     <target>A les</target>
@@ -3947,9 +3958,24 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Color del fons </target>
   </trans-unit> 
   
-     <trans-unit id="ChangePaneColor">
+  <trans-unit id="ChangePaneColor">
     <source>Color del panel</source>
     <target>Color del panell</target>
+  </trans-unit> 
+
+    <trans-unit id="ChangeDefaultsColors">
+    <source>Color del los gráficos</source>
+    <target>Color dels grafics</target>
+  </trans-unit> 
+
+  <trans-unit id="dialogHeaderEditStyles">
+    <source>Editar estilos</source>
+    <target>Editar estils</target>
+  </trans-unit> 
+
+  <trans-unit id="properties">
+    <source>Propiedades</source>
+    <target>Propietats</target>
   </trans-unit> 
 
   <trans-unit id="opcionEditarEstilos">
@@ -4295,6 +4321,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <trans-unit id="urlDescription">
     <source>Descripción: </source>
     <target>Descripció: </target>
+  </trans-unit> 
+
+  <trans-unit id="urlAction">
+    <source>Acciones: </source>
+    <target>Accions: </target>
+  </trans-unit> 
+
+  <trans-unit id="dialogHeaderCustomActions">
+    <source>ACCIONES PERSONALIZADAS </source>
+    <target>ACCIONS PERSONALITZADES </target>
   </trans-unit> 
 
   <trans-unit id="textLabelUrl">
@@ -4726,7 +4762,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <source>Crear DataSource</source>
   <target>Crear DataSource</target>
 </trans-unit>
-<trans-unit id="foundGroups">
+<trans-unit id="foundDatasource">
   <source>datasources encontrados</source>
   <target>datasources trobats</target>
 </trans-unit>
@@ -4825,10 +4861,217 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Mostra el valor percentual de cada segment</target>
 </trans-unit>
 
-      <trans-unit id="panelOptions6">
-        <source>Pregunte a la IA</source>
-        <target>Pregunta a la IA</target>
-      </trans-unit>
+<trans-unit id="panelOptions6">
+  <source>Pregunte a la IA</source>
+  <target>Pregunta a la IA</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP1">
+  <source>Una aplicación web de código libre que permite realizar informes gráficos e interactivos de forma sencilla.</source>
+  <target>Una aplicació web de codi lliure que permet fer informes gràfics i interactius de forma senzilla.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH1">
+  <source>Código Abierto</source>
+  <target>Codi obert</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP2">
+  <source>EDA es una aplicación que se puede instalar en tus propios servidores o disfrutar en su versión SaaS Edalitics.</source>
+  <target>EDA és una aplicació que es pot instal·lar als teus propis servidors o gaudir a la seva versió SaaS Edalitics.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA1">
+  <source>Ver en Github</source>
+  <target>Veure a Github</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH2">
+  <source>Documentación</source>
+  <target>Documentació</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP3">
+  <source>Accede a nuestra documentación completa para aprender a sacar el máximo provecho de EDA.</source>
+  <target>Accediu a la nostra documentació completa per aprendre a treure el màxim profit d'EDA.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA2">
+  <source>Ver Documentación</source>
+  <target>Veure Documentació</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP4">
+  <source>Únete a nuestra comunidad para compartir experiencias y obtener ayuda.</source>
+  <target>Uneix-te a la nostra comunitat per compartir experiències i obtenir ajuda.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA3">
+  <source>Ir al Foro</source>
+  <target>Anar al Fòrum</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP5">
+  <source>Aprende a usar EDA con nuestros tutoriales paso a paso.</source>
+  <target>Aprèn a fer servir EDA amb els nostres tutorials pas a pas.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaB1">
+  <source>Crear Modelo de Datos</source>
+  <target>Crear Model de Dades</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaB2">
+  <source>Crear Informe</source>
+  <target>Crear informe</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH4">
+  <source>¿Quieres probar EDA en el cloud?</source>
+  <target>Vols provar EDA al cloud?</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP6">
+  <source>Edalitics te permitirá estar siempre a la última sin preocuparte por nada.</source>
+  <target>Edalitics et permetrà estar sempre a l'última sense preocupar-te de res.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH5">
+  <source>Tutoriales en video</source>
+  <target>Tutorials en vídeo</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA4">
+  <source>Prueba Edalitics gratis </source>
+  <target>Prova Edalitics gratis </target>
+</trans-unit>
+
+<trans-unit id="aboutEdaA5">
+  <source>EDA ha sido desarrollado por</source>
+  <target>EDA ha estat desenvolupat per</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaP7">
+  <source>Si necesita soporte empresarial o desea solicitar nuevas funcionalidades, no dude en contactar con nosotros.</source>
+  <target>Si necessiteu suport empresarial o voleu sol·licitar noves funcionalitats, no dubteu a contactar amb nosaltres.</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+<trans-unit id="aboutEdaH3">
+  <source>Comunidad</source>
+  <target>Comunitat</target>
+</trans-unit>
+
+
+<trans-unit id="multiSelectDefaultLabel">
+  <source>Selecciona un grupo *</source>
+  <target>Selecciona un grup *</target>
+</trans-unit>
+
+<trans-unit id="allElementsConnected">
+  <source>Todos los elementos están conectados</source>
+  <target>Tots els elements estan connectats</target>
+</trans-unit>
+
+<trans-unit id="dashboardFiltersMin">
+  <source>Filtros del dashboard</source>
+  <target>Filtres del dashboard</target>
+</trans-unit>
+
+<trans-unit id="noConenction">
+  <source>No hay conexiones activas</source>
+  <target>No hi ha connexions actives</target>
+</trans-unit>
+
+<trans-unit id="select1to1">
+  <source>Selecciona un elemento del listado izquierdo y luego uno del listado derecho para crear una conexión 1:1.</source>
+  <target>Seleccioneu un element del llistat esquerre i després un del llistat dret per crear una connexió 1:1.</target>
+</trans-unit>
+
+<trans-unit id="connectDashboardPanel">
+  <source>Conecta los filtros entre el dashboard y el panel</source>
+  <target>Connecta els filtres entre el dashboard i el panell</target>
+</trans-unit>
+
+<trans-unit id="mapFilters">
+  <source>Mapear Filtros</source>
+  <target>Mapejar Filtres</target>
+</trans-unit>
+
+<trans-unit id="searcherInput">
+  <source>Buscador</source>
+  <target>Cercador</target>
+</trans-unit>
+
+<trans-unit id="searcherInput">
+  <source>Gestiona la importación y exportación de modelos</source>
+  <target>Gestiona la importació i exportació de models</target>
+</trans-unit>
+
     </body>
   </file>
 </xliff>

@@ -18,7 +18,7 @@
       @if (showGroups) {
       <!-- Multiselect de Grupos -->
       <div class="col-12">
-        <p-multiSelect formControlName="group" [options]="grups" [filter]="false" optionLabel="name" defaultLabel="Selecciona un grupo *"
+        <p-multiSelect formControlName="group" [options]="grups" [filter]="false" optionLabel="name" i18n-defaultLabel="@@multiSelectDefaultLabel" defaultLabel="Selecciona un grupo *"
           class="w-full bg-gray-100 rounded-md border text-gray-700" appendTo="body" >
         </p-multiSelect>
       </div>

@@ -1,4 +1,4 @@
-<eda-dialog2 [display]="display"
+<eda-dialog2 [display]="display"   i18n-header="@@dialogHeaderCustomActions"
   header="ACCIONES PERSONALIZADAS" width="50vw" height="50vh"
   [disableApply]="disableApply()"
   (apply)="onApply()"
@@ -15,10 +15,10 @@
             <table class="w-full">
               <thead class="bg-gray-100">
                 <tr>
-                  <th class="p-3">Url</th>
-                  <th class="p-3">Nombre</th>
-                  <th class="p-3">Descripción</th>
-                  <th class="p-3 text-right">Acciones</th>
+                  <th class="p-3" i18n="@@urlString">Url</th>
+                  <th class="p-3" i18n="@@urlName">Nombre</th>
+                  <th class="p-3" i18n="@@urlDescription">Descripción</th>
+                  <th class="p-3 text-right" i18n="@@urlAction">Acciones</th>
                 </tr>
               </thead>
               <tbody class="font-semibold">
