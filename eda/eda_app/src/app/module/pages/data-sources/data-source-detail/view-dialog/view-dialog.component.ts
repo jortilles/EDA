@@ -21,7 +21,10 @@ export class ViewDialogComponent implements OnInit {
 
   public ok: boolean = false;
   public isGenerating: boolean = false;
-
+  generateText = {
+    generating: $localize`:@@generating:Generando...`,
+    generate: $localize`:@@generateView:Generar vista`
+  };
   constructor(
     private formBuilder: UntypedFormBuilder,
     private alertService: AlertService,

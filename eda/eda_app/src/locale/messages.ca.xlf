@@ -3338,8 +3338,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="csvSep">
-    <source> Separador Decimal </source>
-    <target>  Decimal separator</target>
+    <source> Separador decimal </source>
+    <target>  Separador decimal </target>
   </trans-unit>
 
   <trans-unit id="viewOk">
@@ -5152,10 +5152,61 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Escrivint...</target>
 </trans-unit>
 
+<trans-unit id="escribeMensaje">
+  <source>Escribe tu mensaje...</source>
+  <target>Escriu el teu missatge...</target>
+</trans-unit>
+
 <trans-unit id="enviar">
   <source>Enviar</source>
-  <target>Enviar<target>
+  <target>Enviar</target>
 </trans-unit>
+
+<trans-unit id="viewName">
+  <source>Introdueix el nom de la vista</source>
+  <target>Introduzca el nombre de la vista</target>
+</trans-unit>
+
+<trans-unit id="viewDescription">
+  <source>Introduce una breve descripción</source>
+  <target>Introdueix una breu descripció</target>
+</trans-unit>
+
+<trans-unit id="viewTName">
+  <source>Nombre técnico</source>
+  <target>Nom tècnic</target>
+</trans-unit>
+
+<trans-unit id="viewTNameP">
+  <source>Introduzca el identificador técnico</source>
+  <target>Introduïu l'identificador tècnic</target>
+</trans-unit>
+
+<trans-unit id="SQLExpression">
+  <source>Expresión SQL</source>
+  <target>Expressió SQL</target>
+</trans-unit>
+
+<trans-unit id="enterSQLExpression">
+  <source>Ingrese su consulta SQL aquí</source>
+  <target>Introduïu la vostra consulta SQL aquí</target>
+</trans-unit>
+
+<trans-unit id="generating">
+  <source>Generando...</source>
+  <target>Generant...</target>
+</trans-unit>
+
+<trans-unit id="generateView">
+  <source>Generar vista</source>
+  <target>Generar vista</target>
+</trans-unit>
+
+<trans-unit id="selectedTags">
+  <source>Tags seleccionados</source>
+  <target>Tags seleccionats</target>
+</trans-unit>
+
 
 
     </body>
