@@ -399,6 +399,14 @@ body .ui-tree {
 
 /*=============*/
 
+/* ARREGLAR PROBLEMA DE COLORPICKER ==> PROVISONAL HASTA QUE LO ARREGLEN ELLOS */
+.p-colorpicker-preview {
+  border: 1px solid black !important; /* 👈 borde completo */
+  border-radius: 6px;                 /* 👈 opcional: esquinas redondeadas */
+  width: 2rem;                        /* 👈 opcional: tamaño uniforme */
+  height: 2rem;
+}
+
 /* css para el picklist de grouplist */
 .p-picklist-custom .p-picklist-filter-input {
   border: 1px solid black !important;

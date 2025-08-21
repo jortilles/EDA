@@ -11,6 +11,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { SliderModule } from 'primeng/slider';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { CommonModule } from '@angular/common'; 
 
 
 import { DashboardPageV2 } from "../../dashboard/dashboard.page";
@@ -20,7 +21,7 @@ import { DashboardPageV2 } from "../../dashboard/dashboard.page";
   standalone: true,
   templateUrl: './dashboard-edit-style.dialog.html',
   imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule,
-    MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule,RadioButtonModule]
+    MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule,RadioButtonModule,CommonModule]
 })
 export class DashboardEditStyleDialog {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
