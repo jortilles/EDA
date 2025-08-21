@@ -30,6 +30,7 @@ export class AddTagComponent implements OnInit {
 
   public emptyString: string;
   public existentString: string;
+  public emptyMessageTags: string;
 
   constructor(
     public dataSourceService: DataSourceService,
@@ -38,6 +39,7 @@ export class AddTagComponent implements OnInit {
   ) {
     this.emptyString = $localize`:@@emptyTag:Este tag esta vacío`;
     this.existentString = $localize`:@@existentTag:Este tag ya existe`;
+    this.emptyMessageTags = $localize`:@@emptyMessageTags:No se encontraron resultados`;
     this.dataSourceService.getTags()
   }
 

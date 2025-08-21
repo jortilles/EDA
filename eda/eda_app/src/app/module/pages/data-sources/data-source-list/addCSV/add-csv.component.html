@@ -6,7 +6,7 @@
     <!-- Sección del formulario -->
     <div class="w-full md:w-1/5 mt-4 space-y-4">
       <div class="w-full">
-        <label for="tablename" class="block text-sm font-medium text-gray-700 mb-1">Nombre de la tabla</label>
+        <label i18n="@@tablenameText" for="tablename" class="block text-sm font-medium text-gray-700 mb-1">Nombre de la tabla</label>
         <input
           id="tablename"
           type="text"
@@ -16,7 +16,7 @@
       </div>
 
       <div class="w-full">
-        <label for="separator" class="block text-sm font-medium text-gray-700 mb-1">Separador</label>
+        <label i18n="@@separatorText" for="separator" class="block text-sm font-medium text-gray-700 mb-1">Separador</label>
         <input
           id="separator"
           type="text"
@@ -26,7 +26,7 @@
       </div>
 
       <div class="w-full">
-        <h6 class="text-sm font-semibold text-gray-800">Subir archivo</h6>
+        <h6 i18n="@@uploadFileText"  class="text-sm font-semibold text-gray-800">Subir archivo</h6>
         <input type="file" #file class="hidden" (change)="onFilesAdded()" />
         <button
           type="button"

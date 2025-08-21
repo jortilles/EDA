@@ -1,5 +1,5 @@
 <eda-dialog2 [display]="display"
-  header="Add View" width="50vw" height="70vh"
+  header="Añadir vista" i18n-header="@@ViewDatamodel" width="50vw" height="70vh"
   (apply)="saveTags()"
   (close)="closeDialog()">
 
@@ -31,6 +31,7 @@
           [virtualScroll]="true"
           [itemSize]="30"
           [style]="{width: '100%'}"
+          [emptyMessage]="emptyMessageTags"
         ></p-multiSelect>
       </div>
     </div>

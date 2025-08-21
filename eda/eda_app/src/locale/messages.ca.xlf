@@ -1248,7 +1248,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputPassword" datatype="html">
 <source>Contraseña *</source>
-<target>Contrassenya *</target>
+<target>Contrasenya *</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">12</context>
@@ -1276,7 +1276,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="inputRepitePassword" datatype="html">
 <source>Repite la contraseña</source>
-<target>Repeteix la contrassenya</target>
+<target>Repeteix la contrasenya</target>
 <context-group purpose="location">
 <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
 <context context-type="linenumber">17</context>
@@ -2164,7 +2164,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="labelnewPass" datatype="html">
 <source>Nueva Contraseña (Si no quieres modificar tu contraseña actual deja el campo en blanco)</source>
-<target>Nova contrassenya (si no vols modificar la teva contrassenya actual deixa el camp en blanc)</target>
+<target>Nova Contrasenya (si no vols modificar la teva contrasenya actual deixa el camp en blanc)</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
   <context context-type="linenumber">27</context>
@@ -2172,7 +2172,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="namePass" datatype="html">
 <source>password</source>
-<target>contrassenya</target>
+<target>contrasenya</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
   <context context-type="linenumber">28</context>
@@ -2180,7 +2180,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="labelRepeatPass" datatype="html">
 <source>Repite la nueva contraseña </source>
-<target>Repeteix la nova contrassenya </target>
+<target>Repeteix la nova contrasenya </target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
   <context context-type="linenumber">31</context>
@@ -2188,7 +2188,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 </trans-unit>
 <trans-unit id="nameNewPass" datatype="html">
 <source>newPassword</source>
-<target>nova contrassenya</target>
+<target>nova contrasenya</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
   <context context-type="linenumber">32</context>
@@ -2214,7 +2214,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="newPassPlaceholderProfile" datatype="html">
 <source>Repite la contraseña</source>
-<target>Repeteix la contrassenya</target>
+<target>Repeteix la contrasenya</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/profile/profile.component.html</context>
   <context context-type="linenumber">32</context>
@@ -2232,7 +2232,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="passwordLogin" datatype="html">
 <source>Contraseña</source>
-<target>Contrassenya</target>
+<target>Contrasenya</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/core/pages/login/login.component.html</context>
   <context context-type="linenumber">28</context>
@@ -2268,7 +2268,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 
 <trans-unit id="newPassPlaceholderUsers" datatype="html">
 <source>Repite la contraseña</source>
-<target>Repeteix la contrassenya</target>
+<target>Repeteix la contrasenya</target>
 <context-group purpose="location">
   <context context-type="sourcefile">app/module/pages/users-management/users-detail/users-detail.component.html</context>
   <context context-type="linenumber">17</context>
@@ -5163,8 +5163,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="viewName">
-  <source>Introdueix el nom de la vista</source>
-  <target>Introduzca el nombre de la vista</target>
+  <source>Introduzca el nombre de la vista</source>
+  <target>Introdueix el nom de la vista</target>
 </trans-unit>
 
 <trans-unit id="viewDescription">
@@ -5207,6 +5207,30 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Tags seleccionats</target>
 </trans-unit>
 
+<trans-unit id="SSLConnection">
+  <source>Conexión sin SSL</source>
+  <target>Connexió sense SSL</target>
+</trans-unit>
+
+<trans-unit id="tablenameText">
+  <source>Nombre de la tabla</source>
+  <target>Nom de la taula</target>
+</trans-unit>
+
+<trans-unit id="separatorText">
+  <source>Separador</source>
+  <target>Separador</target>
+</trans-unit>
+
+<trans-unit id="uploadFileText">
+  <source>Subir archivo</source>
+  <target>Pujar fitxer</target>
+</trans-unit>
+
+<trans-unit id="emptyMessageTags">
+  <source>No se encontraron resultados</source>
+  <target>No s'ha trobat cap resultat</target>
+</trans-unit>
 
 
     </body>
