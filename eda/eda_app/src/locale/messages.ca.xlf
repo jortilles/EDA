@@ -5067,10 +5067,96 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Cercador</target>
 </trans-unit>
 
-<trans-unit id="searcherInput">
+<trans-unit id="manageModels">
   <source>Gestiona la importación y exportación de modelos</source>
   <target>Gestiona la importació i exportació de models</target>
 </trans-unit>
+
+<trans-unit id="SelectModelToExport">
+  <source>Selecciona un modelo para exportar</source>
+  <target>Selecciona un model per exportar</target>
+</trans-unit>
+
+<trans-unit id="SelectDashboardToExport">
+  <source>Selecciona un dashboard para exportar</source>
+  <target>Seleccioneu un dashboard per exportar</target>
+</trans-unit>
+
+<trans-unit id="SelectModel">
+  <source>Selecciona un modelo</source>
+  <target>Selecciona un model</target>
+</trans-unit>
+
+<trans-unit id="SelectDashboard">
+  <source>Selecciona un dashboard</source>
+  <target>Selecciona un dashboard</target>
+</trans-unit>
+
+<trans-unit id="UploadModel">
+  <source>Sube un archivo de modelo</source>
+  <target>Puja un fitxer de model</target>
+</trans-unit>
+
+<trans-unit id="UploadDashboard">
+  <source>Sube un archivo de dashboard</source>
+  <target>Puja un fitxer de dashboard</target>
+</trans-unit>
+
+<trans-unit id="export">
+  <source>Exportar</source>
+  <target>Exportar</target>
+</trans-unit>
+
+<trans-unit id="import">
+  <source>Importar</source>
+  <target>Importar</target>
+</trans-unit>
+
+<trans-unit id="clickToUpload">
+  <source>Click para subir</source>
+  <target>Click per pujar</target>
+</trans-unit>
+
+<trans-unit id="dragDrop">
+  <source> o arrastra y suelta</source>
+  <target> o arrossega i deixa anar</target>
+</trans-unit>
+
+<trans-unit id="manageModels">
+  <source>Gestiona la importación y exportación de modelos</source>
+  <target>Gestiona la importació i exportació de models</target>
+</trans-unit>
+
+<trans-unit id="manageDashboards">
+  <source>Gestiona la importación y exportación de dashboards</source>
+  <target>Gestiona la importació i exportació de dashboards</target>
+</trans-unit>
+
+<trans-unit id="askPanelData">
+  <source>Pregunta sobre los datos de tu panel ...</source>
+  <target>Pregunta sobre les dades del teu panell ...</target>
+</trans-unit>
+
+<trans-unit id="askEddie">
+  <source>Pregúntale a Eddie 😊</source>
+  <target>Pregunta-li a Eddie 😊</target>
+</trans-unit>
+
+<trans-unit id="GPTChat">
+  <source>Chat con ChatGPT</source>
+  <target>Xat amb ChatGPT</target>
+</trans-unit>
+
+<trans-unit id="escribiendo">
+  <source>Escribiendo...</source>
+  <target>Escrivint...</target>
+</trans-unit>
+
+<trans-unit id="enviar">
+  <source>Enviar</source>
+  <target>Enviar<target>
+</trans-unit>
+
 
     </body>
   </file>
