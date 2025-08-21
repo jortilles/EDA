@@ -24,7 +24,7 @@
         [ngStyle]="panelContent"
         [ngClass]="isSpecialChart(panelChartConfig.chartType) 
           ? 'h-full w-full flex justify-center content-center overflow-hidden flex-wrap' 
-          : 'h-full w-full block'"
+          : 'h-full w-full block overflow-hidden'"
           style="flex-wrap:wrap!important;"
       ></panel-chart>
     </div>
@@ -608,15 +608,15 @@
     @if(indextab == 1){
     <div class="grid grid-cols-5 gap-x-4">
       <div class="col-span-4">
-        <div class="rounded-lg border p-4 bg-muted/30" style="height:375px">
+        <div class="rounded-lg border p-4 bg-muted/30" style="height:60vh">
           <panel-chart #panelChartComponentPreview [props]="panelChartConfig" [style]="panelContent"></panel-chart>
         </div>
       </div>
       <div class="col-start-5">
         <div class="w-96 space-y-2" [ngClass]="{'w-3/6': graphicType==='crosstable'}">
           <form [formGroup]="chartForm">
-            <p-dropdown id="chartSelector" formControlName="chart" optionLabel="label" [style]="{'width':'100%'}"
-              [options]="chartTypes" [autoDisplayFirst]="false"
+            <p-dropdown id="chartSelector" formControlName="chart" optionLabel="label" 
+            [style]="{'width':'18.5vw'}" [options]="chartTypes" [autoDisplayFirst]="false"  
               (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))">
 
               <ng-template pTemplate="selectedItem">

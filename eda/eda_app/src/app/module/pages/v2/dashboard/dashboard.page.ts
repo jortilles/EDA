@@ -180,6 +180,7 @@ export class DashboardPageV2 implements OnInit {
     // Estableix els permisos d'edició i propietat...
     // this.setEditMode();
     // // Check dashboard owner
+      //TODO
     // this.checkVisibility(res.dashboard);
     // me.setDashboardCreator(res.dashboard);
     // me.dataSource = res.datasource; // DataSource del dashboard
@@ -337,7 +338,6 @@ export class DashboardPageV2 implements OnInit {
       let column: any;
       column = this.getCorrectColumnFiltered(event)
 
-      //column = event.data.filterBy
       const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
       if (column && table) {
         let config = this.setPanelsToFilter(panel);
