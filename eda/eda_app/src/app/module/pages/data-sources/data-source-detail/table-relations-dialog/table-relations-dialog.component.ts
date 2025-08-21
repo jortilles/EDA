@@ -30,6 +30,8 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
 
     public form: UntypedFormGroup;
 
+    public emptyMessageTags: string = $localize`:@@emptyMessageTags:No se encontraron resultados`;
+
     constructor(
         private dataModelService: DataSourceService,
         private formBuilder: UntypedFormBuilder,

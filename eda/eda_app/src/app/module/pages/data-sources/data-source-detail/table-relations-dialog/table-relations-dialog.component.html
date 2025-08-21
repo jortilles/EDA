@@ -4,23 +4,23 @@
       <div class="grid grid-cols-3 gap-3">
         <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true" optionLabel="label"
           i18n-placeholder="@@placeholderTargetTables" placeholder="tabla destino"
-          id="eda_add_relation_targetTable" [style]="{'width': '100%'}">
+          id="eda_add_relation_targetTable" [style]="{'width': '100%'}" [emptyMessage]="emptyMessageTags">
         </p-dropdown>
 
         <p-dropdown [options]="sourceCols" formControlName="sourceCol" filter="true"
           optionLabel="display_name.default" i18n-placeholder="@@placeholderSourceColumns"
-          placeholder="Columna origen" (onChange)="getColumnsByTable()" id="eda_add_relation_sourceCols" [style]="{'width': '100%'}">
+          placeholder="Columna origen" (onChange)="getColumnsByTable()" id="eda_add_relation_sourceCols" [style]="{'width': '100%'}" [emptyMessage]="emptyMessageTags">
         </p-dropdown>
 
         <p-dropdown [options]="targetCols" formControlName="targetCol" filter="true"
           i18n-placeholder="@@placeholderTargetColumns" placeholder="Columna destino "
-          id="eda_add_relation_targetCol" [style]="{'width': '100%'}">
+          id="eda_add_relation_targetCol" [style]="{'width': '100%'}" [emptyMessage]="emptyMessageTags">
         </p-dropdown>
       </div>
 
       <button class="flex items-center mt-4 px-4 py-2 border rounded-md" (click)="addRelation()"
         [disabled]="!form.controls.targetTable.value  ||  !form.value.sourceCol || !form.value.targetCol ">
-        <span i18n-label="@@addRelation">Añadir relación</span>
+        <span i18n="@@addRelation">Añadir relación</span>
       </button>
 
       <div class="mt-4">

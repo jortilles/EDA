@@ -5232,6 +5232,21 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>No s'ha trobat cap resultat</target>
 </trans-unit>
 
+<trans-unit id="dimensionLabel">
+  <source>Dimension</source>
+  <target>Dimensió</target>
+</trans-unit>
+
+<trans-unit id="factLabel">
+  <source>Fact</source>
+  <target>Fet</target>
+</trans-unit>
+
+<trans-unit id="viewLabel">
+  <source>View</source>
+  <target>Vista</target>
+</trans-unit>
+
 
     </body>
   </file>

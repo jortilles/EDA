@@ -102,7 +102,12 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         { label: 'coordinate', value: 'coordinate' }
     ];
     public selectedcolumnType: any;
-    public tableTypes: SelectItem[] = [{ label: 'Dimension', value: 'dimension' }, { label: 'Fact', value: 'fact' }, { label: 'View', value: 'view' }];
+
+    public dimensionLabel: string = $localize`:@@dimensionLabel:Dimension`;
+    public factLabel: string = $localize`:@@factLabel:Fact`;
+    public viewLabel: string = $localize`:@@viewLabel:View`;
+
+    public tableTypes: SelectItem[] = [{ label: this.dimensionLabel, value: 'dimension' }, { label: this.factLabel, value: 'fact' }, { label: this.viewLabel, value: 'view' }];
     public selectedTableType: string;
 
     // Aggregation Types
