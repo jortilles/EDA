@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, } from "@angular/forms";
 import { AlertService } from "@eda/services/service.index";
 import { SharedModule } from "@eda/shared/shared.module";
@@ -6,6 +6,7 @@ import { MultiSelectModule } from "primeng/multiselect";
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { SelectButtonModule } from "primeng/selectbutton";
 import * as _ from 'lodash';
+import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 
 @Component({
   selector: 'app-dashboard-tag-modal',
@@ -16,18 +17,19 @@ import * as _ from 'lodash';
 
 export class DashboardTagModal implements OnInit {
   @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Input() dashboard: DashboardPageV2;
   public display: boolean = false;
 
   public newTag: any;
   public tags: any[];
   public selectedTags: any[] = [];
-  public selectedtag: any;
 
   constructor(private alertService: AlertService) { }
 
   ngOnInit(): void {
     const tags = JSON.parse(localStorage.getItem('tags')) || [];
     this.tags = _.uniqBy(tags, 'value');
+    this.selectedTags = this.dashboard.selectedTags;
   }
 
   public setNewTag() {

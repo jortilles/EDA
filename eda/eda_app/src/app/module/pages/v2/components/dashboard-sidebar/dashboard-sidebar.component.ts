@@ -302,7 +302,6 @@ export class DashboardSidebarComponent {
   private async saveDashboard() {
     // Actualizar el refreshTime si es necesario
     this.dashboard.dashboard.config.refreshTime = this.refreshTime || null; 
-    
     // Guardar Dashboard
     await this.dashboard.saveDashboard();
     this.hidePopover();
@@ -322,9 +321,9 @@ export class DashboardSidebarComponent {
           title: newDashboard.name,
           visible: newDashboard.visible,
           ds,
-          tag: null,
+          tags: null,
           refreshTime: null,
-          styles: this.stylesProviderService.generateDefaultStyles(), //TODO ==> Done?
+          styles: this.stylesProviderService.generateDefaultStyles(), 
         },
         group: (newDashboard.group || []).map((g: any) => g._id)
       };
@@ -338,28 +337,26 @@ export class DashboardSidebarComponent {
           filters: this.dashboard.cleanFiltersData(),
           applyToAllfilter: this.dashboard.applyToAllfilter,
           visible: newDashboard.visible,
-          tags: this.dashboard.dashboard.config.tag, //TODO ==> Done?
+          tags: this.dashboard.dashboard.config.tags, //TODO ==> Done?
           refreshTime: (this.dashboard.refreshTime > 5) ? this.dashboard.refreshTime : this.dashboard.refreshTime ? 5 : null,
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
           sendViaMailConfig: this.dashboard.sendViaMailConfig, //TODO ==> Done?
           onlyIcanEdit: this.dashboard.onlyIcanEdit, //TODO ==> Done?
-          styles: this.stylesProviderService.generateDefaultStyles(), //TODO ==> Done?
+          styles: this.stylesProviderService.generateDefaultStyles(),
         },
-        group: (newDashboard.group || []).map((g: any) => g._id)
+        group: (newDashboard.group || []).map((g: any) => g._id),
+        selectedTags: this.dashboard.selectedTags,
       };
 
-      // TODO ==> Done?
       this.dashboard.edaPanels.forEach(panel => panel.savePanel());
 
       await lastValueFrom(this.dashboardService.updateDashboard(res.dashboard._id, body));
       this.dashboardService._notSaved.next(false);
-      // TODO ==> Done?
       this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
       this.router.navigate(['/dashboard/', res.dashboard._id]).then(() => {
         window.location.reload();
       });
     } catch (err) {
-      // TODO ==> Done?
       this.alertService.addError(err);
       throw err;
     }
@@ -414,6 +411,7 @@ export class DashboardSidebarComponent {
   public closeTagModal(tags: any[]) {
     this.isTagModalVisible = false;
     this.dashboard.selectedTags = tags;
+    this.dashboard.dashboard.config.tags = tags;
   }
 
   public removeDashboard() {
@@ -441,7 +439,6 @@ export class DashboardSidebarComponent {
             window.location.reload();
           });
         } catch (err) {
-          // TODO ==> Done?
           this.alertService.addError(err);
           throw err;
         }
@@ -505,26 +502,6 @@ public exportAsJPEG() {
       this.spinner.off();
     });
 }
-
-
-
-
-  // Funcion que agrega urls para acción personalizada
-  public openUrlsConfig() {
-    this.hidePopover();
-    const params = { urls: this.dashboard.urls };
-    // TODO
-    // this.urlsController = new EdaDialogController({
-    //   params,
-    //   close: (event, response) => {
-    //     if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
-    //       this.urls = response.urls;
-    //       this.dashboardService._notSaved.next(true);
-    //     }
-    //     this.urlsController = undefined;
-    //   }
-    // })
-  }
 
   public getMailingAlertsEnabled(): boolean {
 
