@@ -4,12 +4,13 @@ import { NgClass } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
 import { LogoSidebar } from '@eda/configs/index';
+import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 interface NavItem {
   path?: string;
   icon?: string;
   isActive?: boolean;
   label?: string;
-  items?: { path?: string; lang?: string; label: string; icon?: string }[];
+  items?: { path?: string; lang?: string; label: string; icon?: string, command?: () => void }[];
   showOverlay?: boolean;
   hideTimeout?: any;
 }
@@ -25,13 +26,14 @@ export class MainLeftSidebarComponent {
   private router = inject(Router);
   private userService = inject(UserService);
   public logoSidebar = LogoSidebar;
+  private createDashboardService = inject(CreateDashboardService);
 
   navItems: NavItem[] = [
     { path: '/home', icon: 'home' },
     {
       icon: 'plus',
       items: [
-        { path: '/home', label: $localize`:@@tituloNuevoInforme:Crear nuevo informe`, icon: 'plus' },
+        { path: '/home', label: $localize`:@@tituloNuevoInforme:Crear nuevo informe`, icon: 'plus', command: () => this.createDashboardService.open() },
         { path: '/admin/data-source/new', label: $localize`:@@addDatasource: Crear DataSource`, icon: 'plus' },
       ]
     },
@@ -79,11 +81,15 @@ export class MainLeftSidebarComponent {
   }
 
   menuCommand(item: any) {
-    console.log('menuCommand', item.path)
     if ((item.path||'').includes('logout')) {
         this.userService.logout();
     } else if (item.path) {
-      this.router.navigate([item.path]);
+      // Para direcciones con opcion command
+      if(item.command) {
+        item.command();
+      } else {
+        this.router.navigate([item.path]);
+      }
     } else if (item.lang) {
       this.redirectLocale(item.lang);
     }

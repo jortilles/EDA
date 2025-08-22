@@ -40,7 +40,7 @@
             <ul class="space-y-1">
               @for (subItem of item.items; track subItem.path) {
                 <li>
-                  @if (subItem.path) {
+                  @if (subItem.path && !subItem.command) {
                     <a 
                       [routerLink]="subItem.path"
                       class="flex items-center gap-2 p-2 rounded-md bg-white hover:text-[#00BFB3] transition-colors"

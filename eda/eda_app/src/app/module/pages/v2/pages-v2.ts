@@ -24,12 +24,12 @@ export class PagesV2Component implements OnInit {
     // private route: ActivatedRoute,
     // private settingSerive: SettingsService,
     // private styleProviderService: StyleProviderService
-    constructor() {
-
+    constructor(router: Router) {
+        // Desactivando la reutilización del enlace, para recargar la página a pesar de que solo hay un cambio el parametro de la url
+        router.routeReuseStrategy.shouldReuseRoute = () => false;
         // this.styleProviderService.pageBackground.subscribe((backgroundColor) => {
         //     this.backgroundColor = backgroundColor;
         // })
-
     }
 
 
