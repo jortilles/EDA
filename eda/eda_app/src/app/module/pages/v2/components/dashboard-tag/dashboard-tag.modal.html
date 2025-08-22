@@ -6,11 +6,11 @@
 
   <div content class="p-6">
       <div class="grid space-y-8">
-        <div class="flex w-full gap-2">
-          <p-floatLabel class="w-full">
+        <div class="flex w-full gap-2 items-end">
+          <div class="flex-1 flex flex-col">
+            <label i18n="@@newTag" for="floating_tag2" class="mb-1">Nueva etiqueta</label>
             <input id="floating_tag2" type="text" [(ngModel)]="newTag" class="w-full border px-2 py-2.5 rounded">
-            <label i18n="@@newTag" for="floating_tag2">Nueva etiqueta</label>
-          </p-floatLabel>
+          </div>
           <button class="flex items-center px-4 py-2.5 border rounded-md" (click)="setNewTag()" [disabled]="!newTag">
             <span i18n-label="@@guardarBtn">Confirmar</span>
           </button>
@@ -27,9 +27,6 @@
           ></p-multiSelect>
           <label i18n="@@addTagString" for="floating_tag">Añadir Etiqueta</label>
         </p-floatLabel>
-        
-
-
       </div>
   </div>
 </eda-dialog2>
