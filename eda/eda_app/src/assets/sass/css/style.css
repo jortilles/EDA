@@ -357,6 +357,10 @@ body .ui-tree {
 .p-dropdown, .p-multiselect {
     border-width: 1px!important;
 }
+#dashboard-mail-config .p-multiselect,
+#dashboard-mail-config .p-dropdown {
+    width: 100% !important;
+}
 
 .panel-heading .pi {
     /* color: var(--header-bg-color)!important; */

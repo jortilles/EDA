@@ -2,7 +2,8 @@
   header="ACCIONES PERSONALIZADAS" width="50vw" height="50vh"
   [disableApply]="disableApply()"
   (apply)="onApply()"
-  (close)="onClose()">
+  (close)="onClose()"
+  >
 
   <div content class="p-6">
     <!-- S'ha de fer scrollable -->
@@ -58,51 +59,47 @@
 
       <!-- Configuración -->
       <div class="grid space-y-8">
-        <div class="grid grid-cols-2 gap-4 ">
+        <div class="grid grid-cols-2 gap-4">
           <div class="grid grid-flow-col grid-rows-4 gap-6">
-            <div class="flex w-full gap-2">
-              <p-floatLabel class="w-full">
-                <input type="text" [(ngModel)]="urlAdd" class="w-full border px-2 py-2.5 rounded">
-                <label i18n="@@urlString">URL: </label>
-              </p-floatLabel>
+      
+            <!-- Configuración lateral -->
+            <div class="w-full">
+              <label i18n="@@urlString" class="block mb-1">URL:</label>
+              <input type="text" [(ngModel)]="urlAdd" class="w-full border px-2 py-2.5 rounded">
             </div>
-    
-            <div class="flex w-full gap-2">
-              <p-floatLabel class="w-full">
-                <input type="text" [(ngModel)]="nameAdd" class="w-full border px-2 py-2.5 rounded">
-                <label i18n="@@urlName">Nombre: </label>
-              </p-floatLabel>
+      
+            <div class="w-full">
+              <label i18n="@@urlName" class="block mb-1">Nombre:</label>
+              <input type="text" [(ngModel)]="nameAdd" class="w-full border px-2 py-2.5 rounded">
             </div>
-    
-            <div class="flex w-full gap-2">
-              <p-floatLabel class="w-full">
-                <input type="text" [(ngModel)]="descriptionAdd" class="w-full border px-2 py-2.5 rounded">
-                <label i18n="@@urlDescription" >Descripción: </label>
-              </p-floatLabel>
-            </div>     
+      
+            <div class="w-full">
+              <label i18n="@@urlDescription" class="block mb-1">Descripción:</label>
+              <input type="text" [(ngModel)]="descriptionAdd" class="w-full border px-2 py-2.5 rounded">
+            </div>
+      
             <div>
-              <button type="button" i18n="@@textLabelUrl" 
-              class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-              (click)="addUrlDashboard(urlAdd, nameAdd, descriptionAdd)">
-              >
+              <button type="button" i18n="@@textLabelUrl"
+                class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                (click)="addUrlDashboard(urlAdd, nameAdd, descriptionAdd)">
                 Agregar url
               </button>
             </div>
+      
           </div>
-          
-
-
+      
+          <!-- Descripción lateral -->
           <div class="size-full description" i18n="@@resumeTextConfiguration">
-            Puedes configurar una acción personalizada que quieras ejecutar.  
-            Te permite llamar a una URL que haga una acción que quieras invocar. 
+            Puedes configurar una acción personalizada que quieras ejecutar.
+            Te permite llamar a una URL que haga una acción que quieras invocar.
             Puede ser una llamada a una api, a un endpoint de una app
-            o incluso invocar procesos de carga desde una llamada http. 
+            o incluso invocar procesos de carga desde una llamada http.
             Una vez configurado podrás invocarlo siempre que que quieras desde el botón.
           </div>
-
+      
         </div>
-
       </div>
+
 
     </div>
 
