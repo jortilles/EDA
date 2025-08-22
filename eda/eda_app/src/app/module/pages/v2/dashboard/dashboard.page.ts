@@ -169,11 +169,9 @@ export class DashboardPageV2 implements OnInit {
         dashboard.config.stopRefresh = false;
         this.startCountdown(dashboard.config.refreshTime);
       }
-
       // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
       // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
-      // me.selectedTags = me.selectedTagsForDashboard(me.tags, config.tag)
-      // me.refreshTime = config.refreshTime;
+      this.selectedTags = this.dashboard.config.tags;
       // me.onlyIcanEdit = config.onlyIcanEdit;
     }
 
@@ -551,7 +549,7 @@ export class DashboardPageV2 implements OnInit {
         filters: this.cleanFiltersData(),
         applyToAllfilter: this.applyToAllfilter,
         visible: this.dashboard.config.visible,
-        // tag: this.saveTag(),
+        tags: this.dashboard.config.tags,
         refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
         // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
         // sendViaMailConfig: this.sendViaMailConfig,
@@ -698,6 +696,8 @@ public startCountdown(seconds: number) {
         //   text: $localize`:@@AddFiltersWarningText:Puedes borrar los paneles en blanco o configurarlos`,
         //   resolveBtnText: $localize`:@@AddFiltersWarningButton:Entendido`
         // });
+        // Comprovar con funcionamiento antiguo
+        this.alertService.addError($localize`:@@AddFiltersWarningTittle:Solo puedes añadir filtros cuando todos los paneles están configurados`)
       }
     }
 
