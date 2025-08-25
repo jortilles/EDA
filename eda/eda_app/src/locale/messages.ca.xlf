@@ -5247,6 +5247,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Vista</target>
 </trans-unit>
 
+<trans-unit id="tagCreated">
+  <source>Etiqueta creada correctamente</source>
+  <target>Etiqueta creada correctament</target>
+</trans-unit>
+
+<trans-unit id="tagAssigned">
+  <source>Etiqueta asignada correctamente</source>
+  <target>Etiqueta assignada correctament</target>
+</trans-unit>
+
 
     </body>
   </file>

@@ -266,16 +266,6 @@ export class DashboardPageV2 implements OnInit {
     this.stylesProviderService.loadedPanels = dashboard.config?.panel?.length || -1;
   }
 
-  // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
-  onItemChange(item: GridsterItem): void {
-    //console.log('Cambio en el Item:', item);
-    // console.log('Todos los valores => Dashboard:', this.dashboard);
-
-    // let valor = this.getBottomMostItem();
-    // console.log('El menor valor: ', valor);
-    // this.height = (valor.y + valor.rows + 4) * 32;
-  }
-
   showSidebar(event: Event) {
     if (this.sidebar) {
       this.sidebar.showPopover(event);
@@ -289,9 +279,7 @@ export class DashboardPageV2 implements OnInit {
       filter.panelList = filter.panelList.filter((id: string) => id !== panel);
     }
 
-    // TODO ??
     // let valor = this.getBottomMostItem();
-    // console.log('El menor valor: ', valor);
     // this.height = (valor.y + valor.rows + 4) * 32;
   }
 
@@ -725,6 +713,34 @@ public startCountdown(seconds: number) {
         //Si el evento es de un chart de la libreria D3Chart o Leaflet
         return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
     }   
-}
+  }
+  
+  //----------------------------------------//
+  //--Revisar si es necesario o se puede eliminar--//
+  // Obtiene el item que se encuentra en la parte más inferior del gridster -- Revisar si es necesario
+  getBottomMostItem(): GridsterItem | undefined {
+      let bottomMostItem: GridsterItem | undefined;
+      let maxBottom = -1; // Inicializamos con un valor bajo
+
+      for (let item of this.dashboard.panel) {
+          // Calculamos la posición final en Y (bottom) del ítem
+          const bottom = item.y + item.rows;
+
+          // Si el ítem actual es más bajo, lo actualizamos
+          if (bottom > maxBottom) {
+          maxBottom = bottom;
+          bottomMostItem = item;
+          }
+      }
+
+      return bottomMostItem; // El item de la posición mas inferior de todo el gridster
+  }
+
+  // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
+  onItemChange(item: GridsterItem): void {
+    // let valor = this.getBottomMostItem();
+    // console.log('El menor valor: ', valor);
+    // this.height = (valor.y + valor.rows + 4) * 32;
+  }
 
 }
