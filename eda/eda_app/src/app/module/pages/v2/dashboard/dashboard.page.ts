@@ -307,20 +307,34 @@ export class DashboardPageV2 implements OnInit {
     }, 500);
   }
   
-  public reloadPanels(): void {
-    this.edaPanels.forEach(async (panel) => {
-      if (panel.currentQuery.length !== 0) {
-        panel.display_v.chart = '';
-        await panel.runQueryFromDashboard(true);
-        panel.panelChart.updateComponent();
-      }
-    });
+public reloadPanels(maxRetries: number = 5): void {
+  this.edaPanels.forEach(async (panel) => {
+    if (panel.currentQuery.length > 0) {
+      panel.display_v.chart = '';
+      await panel.runQueryFromDashboard(true);
+
+      setTimeout(() => {
+        try {
+          if (panel.panelChart) {
+            console.log('panelChart encontrado, actualizando...');
+            panel.panelChart.updateComponent();
+          } else if (maxRetries > 0) {
+            console.log(`Reintentando reloadPanels... quedan ${maxRetries - 1}`);
+            this.reloadPanels(maxRetries - 1); // recursividad
+          }
+        } catch (error) {
+          console.error('Error en reloadPanels', error);
+        }
+      }, 200);
+    }
+  });
 }
 
 
-  // TODO unificar onRemovePanel(),onDuplicatePanel() a onPanelAction()
-  // TODO simplificar
+
+
   public async onPanelAction(event: IPanelAction): Promise<void> {
+    // TODO ==> REVISAR FILTROS ONCLICK
     //Check de modo
     let modeEDA = false;
     if (event?.data?.panel) {
@@ -329,7 +343,7 @@ export class DashboardPageV2 implements OnInit {
     }
 
     //Si es modo arbol o SQL no aplica filtros
-    if (modeEDA && event.code === "ADDFILTER") {
+    if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER')) {
 
 
       const data = event?.data;
@@ -447,7 +461,6 @@ export class DashboardPageV2 implements OnInit {
     this.dashboardService._notSaved.next(true);
   }
 
-  // TODO revisar funcion (al hacer click en un grafico este deberia añadir un global filter al dashboard)
   async onGlobalFilter(data: any) {
     // const data = action?.data;
     if (data && !_.isNil(data?.inx)) {
@@ -691,13 +704,6 @@ public startCountdown(seconds: number) {
       if (emptyQuery) isvalid = false;
 
       if (!isvalid) {
-        // TODO
-        // this.showSwalAlert({
-        //   title: $localize`:@@AddFiltersWarningTittle:Solo puedes añadir filtros cuando todos los paneles están configurados`,
-        //   text: $localize`:@@AddFiltersWarningText:Puedes borrar los paneles en blanco o configurarlos`,
-        //   resolveBtnText: $localize`:@@AddFiltersWarningButton:Entendido`
-        // });
-        // Comprovar con funcionamiento antiguo
         this.alertService.addError($localize`:@@AddFiltersWarningTittle:Solo puedes añadir filtros cuando todos los paneles están configurados`)
       }
     }
