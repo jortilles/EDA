@@ -272,32 +272,26 @@ export class HomePageV2 implements OnInit {
     this.dashboardService.cloneDashboard(report._id).subscribe(
       response => {
         if (response.ok && response.dashboard) {
-          // Create a deep copy of the original report
+          // Clonar el informe original
           const clonedReport = _.cloneDeep(report);
           Object.assign(clonedReport, response.dashboard);
-          // Update the cloned report data with the server response
-          
-          // Ensure type and author are correctly assigned
+
+          // Ajustar propiedades
           clonedReport.type = clonedReport.config.visible;
           clonedReport.user = this.userService.user.name;
-          
-          // Update creation and modification dates
+
+          // Fechas de creación/modificación
           const currentDate = new Date().toISOString().split("T")[0];
           clonedReport.config.createdAt = currentDate;
           clonedReport.config.modifiedAt = currentDate;
-          
-          // Assing author
-          clonedReport.config.author =  clonedReport.user; 
-          
 
+          // Autor
+          clonedReport.config.author = clonedReport.user;
 
+          // Insertar en el array correspondiente
           const targetArray = this.reportMap[clonedReport.type];
-
           if (targetArray) {
-            // Find the index of the original report in both lists
             const originalIndex = targetArray.findIndex(d => d._id === report._id);
-
-            // Insert the cloned report just after the original in both lists
             if (originalIndex !== -1) {
               targetArray.splice(originalIndex + 1, 0, clonedReport);
             } else {
@@ -305,41 +299,42 @@ export class HomePageV2 implements OnInit {
             }
           }
 
-          // Mark the report as newly cloned
+          // Ordenar informes
+          this.handleSorting();
+
+          // Marcar como recién clonado
           clonedReport.isNewlyCloned = true;
 
-          // Scroll to the cloned report
-          // setTimeout(() => {
-          //     const element = document.getElementById(`dashboard-${clonedDashboard._id}`);
-          //     if (element) {
-          //         element.scrollIntoView({
-          //             behavior: "smooth",
-          //             block: "center"
-          //         });
-          //     }
-          // }, 100);
+          // Scroll automático al nuevo dashboard
+          setTimeout(() => {
+            const element = document.getElementById(`dashboard-${clonedReport._id}`);
+            if (element) {
+              element.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+              });
+            }
+          }, 500);
 
-          // // Remove the newly cloned mark after 5 seconds
-          // setTimeout(() => {
-          //     clonedDashboard.isNewlyCloned = false;
-          // }, 5000);
-          // TODO
-          //   this.alertService.addSuccess($localize`:@@REPORTCloned:Informe clonado correctamente`);
+          // Quitar marca de nuevo a los 5s
+          setTimeout(() => {
+            clonedReport.isNewlyCloned = false;
+          }, 5000);
+
+          // Alerta de éxito
+          this.alertService.addSuccess($localize`:@@REPORTCloned:Informe clonado correctamente`);
         } else {
           throw new Error($localize`:@@InvalidServerResponse:Respuesta inválida del servidor`);
         }
       },
       error => {
-        console.error($localize`:@@ErrorCloningDashboard:Error al clonar el dashboard:`, error);
-        // TODO
-        // Swal.fire(
-        //   $localize`:@@Error:Error`,
-        //   $localize`:@@CouldNotCloneReport:No se pudo clonar el informe. Por favor, inténtalo de nuevo.`,
-        //   "error"
-        // );
+        // Alerta de error
+        this.alertService.addError($localize`:@@CouldNotCloneReport:No se pudo clonar el informe. Por favor, inténtalo de nuevo.`);
       }
     );
   }
+
+
 
 
   handleSorting() {

@@ -116,26 +116,20 @@
   <div class="space-y-4">
     <h2 class="text-lg font-semibold">{{ title }}</h2>
     @for (report of reports; track report._id) {
-      <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+      <div class="rounded-lg border bg-card text-card-foreground shadow-sm" [attr.id]="'dashboard-' + report._id">
         <div class="px-4 py-2 cursor-pointer" (click)="openReport(report)">
-
-
-
-      @if(!isEditing || editingReportId !== report._id){
-        <h3 class="text-base font-semibold">
-          {{ report.config?.title }}
-        </h3>
-      }@else {
-        <input class="edit-title-input text-base font-semibold px-2 py-1"
-        [(ngModel)]="editTitle" (blur)="handleEditing('done', report)"
-        (keydown.enter)="handleEditing('done', report)" (keydown.escape)="handleEditing('cancel', report)"
-        (click)="$event.stopPropagation()"autofocus
-        />
-      }
-
-
-
-    </div>
+          @if(!isEditing || editingReportId !== report._id){
+            <h3 class="text-base font-semibold">
+              {{ report.config?.title }}
+            </h3>
+          }@else {
+            <input class="edit-title-input text-base font-semibold px-2 py-1"
+            [(ngModel)]="editTitle" (blur)="handleEditing('done', report)"
+            (keydown.enter)="handleEditing('done', report)" (keydown.escape)="handleEditing('cancel', report)"
+            (click)="$event.stopPropagation()"autofocus
+            />
+          }
+        </div>
         <div class="flex items-center justify-between border-t px-4 py-2">
           <div class="flex items-center gap-2 text-sm text-muted-foreground">
             @if (report.config?.author && report.config?.author != 'Undefined') {
