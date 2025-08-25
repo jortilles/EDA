@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { MailService } from '@eda/services/service.index';
+import { AlertService } from "@eda/services/service.index";
 import { lastValueFrom } from 'rxjs';
 
 interface AlertItem {
@@ -27,7 +28,8 @@ interface DashboardItem {
   styles: []
 })
 export class EmailSettingsPage implements OnInit {
-	private fb = inject(FormBuilder);
+  private fb = inject(FormBuilder);
+  private alertService = inject(AlertService);
 	private mailService = inject(MailService);
   // Signals para el estado
   tlsEnabled = signal<boolean>(false);
@@ -79,8 +81,7 @@ export class EmailSettingsPage implements OnInit {
     await new Promise(resolve => setTimeout(resolve, 1000));
     this.isChecking.set(false);
     
-    // TODO Mostrar notificación
-    // this.alertService('Verificación completada', 'Las credenciales son válidas', 'success');
+    this.alertService.addSuccess($localize`:@@validCredentials:Las credenciales son válidas`);
   }
 
   async handleSubmit() {
@@ -90,8 +91,7 @@ export class EmailSettingsPage implements OnInit {
     await new Promise(resolve => setTimeout(resolve, 1000));
     this.isSubmitting.set(false);
     
-    // TODO Mostrar notificación
-    // this.alertService('Configuración guardada', 'La configuración de correo ha sido actualizada', 'success');
+    this.alertService.addSuccess($localize`:@@mailConfSaved:Configuración guardada correctamente`);
   }
 
 	public sendMailconfig() {

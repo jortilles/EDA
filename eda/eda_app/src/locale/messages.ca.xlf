@@ -5257,6 +5257,11 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Etiqueta assignada correctament</target>
 </trans-unit>
 
+<trans-unit id="validCredentials">
+  <source>Las credenciales son válidas</source>
+  <target>Les credencials són vàlides</target>
+</trans-unit>
+
 
     </body>
   </file>
