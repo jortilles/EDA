@@ -50,9 +50,6 @@ export class DashboardMailConfigModal {
     if(this.dashboard.dashboard.config && this.dashboard.dashboard.config.enabled){
       this.setConfig();
     }
-
-    console.log(this)
-
   }
 
   setConfig(){
