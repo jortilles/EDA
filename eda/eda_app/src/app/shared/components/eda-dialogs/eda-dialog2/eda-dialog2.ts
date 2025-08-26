@@ -9,9 +9,9 @@ export abstract class EdaDialog2 {
     @Input() height: string = '60vh';
 
     @Input() breakpoints: Record<string, string> = {
-        xl: '60vw',
-        lg: '70vw',
-        md: '80vw',
+        xl: '90vw',
+        lg: '90vw',
+        md: '90vw',
         sm: '90vw',
     };
 

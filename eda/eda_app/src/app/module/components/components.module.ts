@@ -23,6 +23,7 @@ import {
     EdaMapComponent,
     EdaGeoJsonMapComponent,
     MapEditDialogComponent,
+    MapCoordDialogComponent,
     KpiEditDialogComponent,
     dynamicTextDialogComponent,
     EdaD3Component,
@@ -88,6 +89,7 @@ import { FilterMapperComponent } from '../pages/v2/components/filter-mapper/filt
         EdaMapComponent,
         EdaGeoJsonMapComponent,
         MapEditDialogComponent,
+        MapCoordDialogComponent,
         KpiEditDialogComponent,
         dynamicTextDialogComponent,
         EdaD3Component,
@@ -142,7 +144,8 @@ import { FilterMapperComponent } from '../pages/v2/components/filter-mapper/filt
         SunburstDialogComponent,
         WhatIfDialogComponent,
         SunburstDialogComponent,
-        DragDropComponent
+        MapCoordDialogComponent,
+        DragDropComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

@@ -554,8 +554,8 @@ public reloadPanels(maxRetries: number = 5): void {
         tags: this.dashboard.config.tags,
         refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
         // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-        // sendViaMailConfig: this.sendViaMailConfig,
-        onlyIcanEdit: this.onlyIcanEdit,
+        // sendViaMailConfig: this.sendViaMailConfig, 
+        onlyIcanEdit: this.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
         styles: this.dashboard.config.styles,
         urls: this.dashboard.config.urls,
         author: this.dashboard.config?.author

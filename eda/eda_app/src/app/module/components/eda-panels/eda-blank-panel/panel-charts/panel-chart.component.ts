@@ -35,14 +35,11 @@ import { EdaBubblechartComponent } from '@eda/components/eda-d3-bubblechart/eda-
 import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
-import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { TreeMapConfig } from './chart-configuration-models/treeMap-config';
-import { ChartType } from 'chart.js';
 import { SunburstConfig } from './chart-configuration-models/sunburst-config';
 import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { ScatterConfig } from './chart-configuration-models/scatter-config';
 import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
-import { ChartsColors } from '@eda/configs/index'
 
 
 @Component({
@@ -741,18 +738,28 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.maps = this.props.maps;
         inject.query = this.props.query;
         inject.draggable = this.props.draggable;
-        try{
-            inject.coordinates = this.props.config['config']['coordinates'];
+        inject.zoom = this.props.zoom;
+        inject.coordinates = this.props.coordinates;
+
+        try {
+            inject.coordinates = this.props.config['config']['coordinates'];                
         }catch{
             inject.coordinates = null ;
         }
+        try {
+            if (true) {
+                inject.zoom = this.props.config["config"]["zoom"];
+            } else {}
+        }catch{}
         try{
-            inject.zoom = this.props.config['config']['zoom'];
-        }catch{
-            inject.zoom =  null ;
-        }
-        try{
-            inject.color = this.props.config['config']['color']  ;
+            if (type === "geoJsonMap") {
+                inject.color = this.props.config["config"]["color"];
+                inject.baseLayer = this.props.config['config']['baseLayer'];
+            } else {
+                inject.initialColor = this.props.config["config"]["initialColor"];
+                inject.finalColor = this.props.config["config"]["finalColor"];
+                inject.baseLayer = true;
+            }
         }catch{
             inject.color =  '#006400';
         }
@@ -761,8 +768,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }catch{
             inject.logarithmicScale =  false;
         }
-        try{
-            inject.legendPosition = this.props.config['config']['legendPosition']  ;
+        try {
+            if (type === "geoJsonMap") {
+                inject.legendPosition = this.props.config['config']['legendPosition']  ;
+            }
         }catch{
             inject.legendPosition =  'bottomleft';
         }
@@ -785,14 +794,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaMapComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
+        //this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        
     }
-
+    
     private createGeoJsonMapComponent(inject: EdaMap) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaGeoJsonMapComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
+
 
     private renderParallelSets() {
 

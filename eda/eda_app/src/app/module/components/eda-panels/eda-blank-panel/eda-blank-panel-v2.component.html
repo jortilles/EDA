@@ -41,7 +41,7 @@
   </div>
 </div>
 
-<eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="98vw" [ngStyle]="panelContent" height="100vh">
+<eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="90vw" [ngStyle]="panelContent" height="100vh">
   <!-- Header -->
   <div header class="w-full flex items-center justify-between border-b px-2 py-2">
     <div class="p-2" (click)="titleClick=true;">
@@ -704,6 +704,8 @@
 <app-chart-dialog *ngIf="chartController" [controller]="chartController"></app-chart-dialog>
 
 <app-mapedit-dialog *ngIf="mapController" [controller]="mapController"></app-mapedit-dialog>
+
+<app-mapcoordedit-dialog *ngIf="mapCoordController" [controller]="mapCoordController"></app-mapcoordedit-dialog>
 
 <app-kpi-dialog *ngIf="kpiController" [controller]="kpiController"></app-kpi-dialog>
 

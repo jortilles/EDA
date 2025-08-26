@@ -72,7 +72,23 @@ export const PanelOptions = {
               close: (event, response) => { panelComponent.onCloseMapProperties(event, response) }
             });
 
-          } else if (panelComponent.graficos.chartType.includes('kpi')) {
+          }else if (panelComponent.graficos.chartType === "coordinatesMap") {
+            panelComponent.contextMenu.hideContextMenu();
+            panelComponent.mapCoordController = new EdaDialogController({
+              params: {
+                panelID: _.get(panelComponent.panel, 'id'),
+                panelChart: panelComponent.panelChartConfig,
+                initialColor: panelComponent.panelChart.componentRef.instance.initialColor,
+                finalColor: panelComponent.panelChart.componentRef.instance.finalColor,
+                logarithmicScale: panelComponent.panelChart.componentRef.instance.logarithmicScale,
+                draggable: panelComponent.panelChart.componentRef.instance.draggable,
+                zoom: panelComponent.panelChart.componentRef.instance.inject.zoom,
+                coordinates: panelComponent.panelChart.componentRef.instance.inject.coordinates,
+              },
+              close: (event, response) => { panelComponent.onCloseMapCoordProperties(event, response) }
+            });
+           }
+          else if (panelComponent.graficos.chartType.includes('kpi')) {
             panelComponent.contextMenu.hideContextMenu();
             panelComponent.kpiController = new EdaDialogController({
               params: {
