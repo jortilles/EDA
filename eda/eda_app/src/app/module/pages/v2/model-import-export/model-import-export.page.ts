@@ -30,11 +30,12 @@ export class ModelImportExportPage implements OnInit {
   selectedModel = signal<string>('');
   selectedDashboard = signal<string>('');
   modelFile = signal<File | null>(null);
-  dashboardFile = signal<File | null>(null);
   modelFileName = signal<string>('');
+  dashboardFile = signal<File | null>(null);
   dashboardFileName = signal<string>('');
-  isDraggingModel = signal<boolean>(false);
+  dashboardData = signal<any>(null);
   isDraggingDashboard = signal<boolean>(false);
+  isDraggingModel = signal<boolean>(false);
 
   private globalDSRoute = '/datasource';
   public downloadJsonDashboardHref: any;
@@ -124,6 +125,7 @@ export class ModelImportExportPage implements OnInit {
     const files = input.files;
     if (files && files.length > 0) {
       this.handleFiles(files[0], type);
+      input.value = '';
     }
   }
 
@@ -160,7 +162,7 @@ handleModelExport() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      this.alertService.addError('Modelo exportado correctamente')
+      this.alertService.addSuccess('Modelo exportado correctamente')
     },
     err => {
       this.alertService.addError('Ocurrió un problema al exportar el modelo')
@@ -216,6 +218,7 @@ handleModelImport() {
       const tables = json.ds.model.tables;
       const modelInconsistencies: string[] = [];
       let isInconsistentDM = true;
+      
 
       // Recorremos dashboards para comprobar integridad
       this.dashboards.forEach(({ value }) => {
@@ -249,7 +252,7 @@ handleModelImport() {
 
       // Actualizamos el modelo en el servidor --> Antiguo importModel()
       this.dataSourceService.updateModelInServer(modelId, json).subscribe({
-        next: () => this.alertService.addError('Modelo importado correctamente'),
+        next: () => this.alertService.addSuccess('Modelo importado correctamente'),
         error: () => this.alertService.addError('Ha ocurrido un error al importar el modelo')
 
       });
@@ -258,6 +261,10 @@ handleModelImport() {
     }
   };
   fileReader.readAsText(this.modelFile());
+
+  // Clean fields
+  this.modelFileName.set('');
+  this.modelFile.set(null);
 }
 
 
@@ -274,7 +281,7 @@ handleDashboardImport() {
       const importedDashboard = JSON.parse(reader.result as string);
 
       // Guardamos el dashboard importado en memoria
-      this.dashboardFile = importedDashboard;
+      this.dashboardFile.set(importedDashboard);
 
       // Intentar actualizar
       this.dashboardService.updateDashboard(importedDashboard._id, importedDashboard).subscribe(
@@ -303,6 +310,10 @@ handleDashboardImport() {
   };
 
   reader.readAsText(this.dashboardFile());
+
+  // Clean fields
+  this.dashboardFile.set(null);
+  this.dashboardFileName.set('');
 }
 
   // Método para mostrar notificaciones
