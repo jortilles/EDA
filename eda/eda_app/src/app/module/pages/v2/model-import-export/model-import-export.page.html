@@ -6,7 +6,7 @@
       <div class="p-10">
         <h2 class="text-xl font-semibold" i18n="@@Models_ms">Models</h2>
         <p class="font-semibold text-gray-500 dark:text-gray-400" i18n="@@manageModels">
-          Gestiona la importación y exportación de modelos
+          Gestiona la importación y exportación de fuentes de datos
         </p>
       </div>
       <div class="p-10 pt-0">
@@ -35,7 +35,7 @@
               <div class="flex gap-4 items-center">
                 <div class="relative flex-1">
                   <p-dropdown [options]="dataSources" [autoDisplayFirst]="false" [style]="{'width':'100%'}" 
-                    i18n-placeholder="@@SelectModel"  placeholder="'Selecciona un modelo'" 
+                    i18n-placeholder="@@SelectModel"  placeholder="'Selecciona una fuente de datos'" 
                   [filter]="true" [ngModel]="selectedModel()" (ngModelChange)="setSelectedModel($event)">
                   </p-dropdown>
                 </div>

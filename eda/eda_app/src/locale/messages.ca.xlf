@@ -5068,13 +5068,13 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="manageModels">
-  <source>Gestiona la importación y exportación de modelos</source>
-  <target>Gestiona la importació i exportació de models</target>
+  <source>Gestiona la importación y exportación de fuentes de datos</source>
+  <target>Gestiona la importació i exportació de fonts de dades</target>
 </trans-unit>
 
 <trans-unit id="SelectModelToExport">
-  <source>Selecciona un modelo para exportar</source>
-  <target>Selecciona un model per exportar</target>
+  <source>Selecciona una fuente de datos para exportar</source>
+  <target>Selecciona una font de dades per exportar</target>
 </trans-unit>
 
 <trans-unit id="SelectDashboardToExport">
@@ -5083,8 +5083,8 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 <trans-unit id="SelectModel">
-  <source>Selecciona un modelo</source>
-  <target>Selecciona un model</target>
+  <source>Selecciona una fuente de datos</source>
+  <target>Selecciona una font de dades</target>
 </trans-unit>
 
 <trans-unit id="SelectDashboard">
