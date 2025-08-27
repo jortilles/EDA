@@ -336,7 +336,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             source_column: rel.target_column,
             target_table: rel.source_table,
             target_column: rel.source_column,
-            display_name: rel.display_name['default'] !== null ? rel.display_name['default'] : rel.target_table + ' - ' + rel.target_column,
+            display_name: rel.display_name['default'] !== null ? (  rel.display_name['default'] === "xx-bridge"  ? rel.display_name : rel.display_name['default'] ) : rel.target_table + ' - ' + rel.target_column,
             visible: true
         };
 
@@ -374,6 +374,9 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     /** add a value list as the source of a column */
     addValueListSource(ValueListSource: any) {
+
+        console.log('ValueListSource: ', ValueListSource);
+
        const tmp_panel = this._columnPanel.getValue();
        tmp_panel.valueListSource = ValueListSource;
        this._columnPanel.next(tmp_panel);
