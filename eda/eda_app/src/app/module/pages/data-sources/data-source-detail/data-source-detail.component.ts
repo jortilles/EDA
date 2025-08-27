@@ -746,6 +746,22 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             params: { column: this.columnPanel, table: table },
             close: (event, response) => {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+
+                    const display_name = {
+                        default: "xx-bridge",
+                        localized: [],
+                    }
+
+                    const originRelation: Relation = {
+                        target_table: response.target_table,
+                        target_column: response.target_id_column,
+                        source_table: response.source_table,
+                        source_column: response.source_column,
+                        display_name: display_name,
+                        visible: true
+                    }
+
+                    this.dataModelService.addRelation(originRelation);
                     this.dataModelService.addValueListSource(response);
                     this.updateColumn();
                 }
