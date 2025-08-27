@@ -123,7 +123,8 @@ export class EdaBlankPanelComponent implements OnInit {
         notSaved: false,
         minispinnerSQL: false,
         advancedSetting: false,
-        filterMapperDialog: false
+        filterMapperDialog: false,
+        showQueryContainer: false,
     };
 
     public index: number;
@@ -1456,10 +1457,10 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
         this.description = event.description.default;
     }
 
-    public async getQuery($event) {
-
-        this.display_v.minispinnerSQL = true;
-        this.queryFromServer = null;
+    public async getQuery($event: MouseEvent) {
+    this.display_v.showQueryContainer = true;
+    this.display_v.minispinnerSQL = true;
+    this.queryFromServer = null;
 
         // this.op.toggle($event);
 
