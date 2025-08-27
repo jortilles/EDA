@@ -177,8 +177,8 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex-1 p-6 w-4/6 overflow-y-auto">
-          <div class="space-y-6">
+        <div class="flex-1 p-3 w-4/6 overflow-y-auto">
+          <div class="space-y-4">
             <!-- Selected Attributes -->
             <div>
               <h3 i18n="@@seleccionH4" class="text-lg mb-2 font-bold" i18n-title="@@seleccionTitle"
@@ -258,33 +258,33 @@
             @if(currentQuery.length > 0){
 
             <div class="columns-4">
-              <div class="flex items-center justify-between">
-                <span class="flex items-center gap-1">
-                  <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200" [class] i18n="@@yourQuerySQL"
-                    [ngClass]="!display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
-                    (click)="display_v.advancedSetting = false">Mi
-                    consulta SQL</h3>
-                  <i class="pi pi-info-circle cursor-pointer mb-4" [pTooltip]="ptooltipViewQuery"
-                    (click)="getQuery($event)">
-                  </i>
-                </span>
+              <div class="flex items-center gap-2">
+                <h3 class="cursor-pointer text-lg font-bold font-sans transition-colors duration-200"
+                  [ngClass]="!display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                  (click)="display_v.advancedSetting = false">
+                  Mi consulta SQL
+                </h3>
+                <i class="pi pi-info-circle cursor-pointer text-gray-500" [pTooltip]="ptooltipViewQuery" (click)="getQuery($event)">
+                </i>
               </div>
-              <div>
-                <div class="mt-4">
-                  <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-fit"
-                    [ngClass]="display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'" (click)="display_v.advancedSetting = true">
-                    Opciones avanzadas
-                  </h3>
-                </div>
+            
+              <div class="mt-2">
+                <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-fit"
+                  [ngClass]="display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                  (click)="display_v.advancedSetting = true">
+                  Opciones avanzadas
+                </h3>
               </div>
             </div>
+
+
 
 
 
             <!-- Query Summary -->
 
             @if(!display_v.advancedSetting){
-            <div class="grid grid-cols-2 mt-1 ml-2 border rounded-lg bg-gray-50 min-h-[230px] ">
+            <div class="grid grid-cols-2 ml-2 border rounded-lg bg-gray-50 min-h-[25vh] overflow-y-auto">
               <div class=" ml-3">
                 <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
                 @for (attr of currentQuery; track attr.display_name.default) {
@@ -326,11 +326,11 @@
             </div>
             }
             @else {
-            <div class="grid grid-cols-8 gap-x-8">
+            <div class="grid grid-cols-8">
               <!-- Join Type -->
               <div class="col-span-3">
                 <h3 i18n="@@joinTypeH4" class="text-base font-bold inline">Tipo de intersección:</h3>
-                <button *ngFor="let type of joinTypeOptions" class="border px-3 py-1 rounded-lg ml-1 mb-4 hover:bg-gray-100"
+                <button *ngFor="let type of joinTypeOptions" class="border px-3 py-1 rounded-lg mb-4 hover:bg-gray-100"
                   (click)="onJoinTypeChange(type)">
                   {{ type.label }}
                 </button>
@@ -364,22 +364,22 @@
                 class="w-full h-64 p-3 border border-gray-300 rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                 placeholder="SELECT * FROM customers">
                         </textarea>
-              <!-- TODO Sugerir SQL -->
+              <!-- JUANJO HA DICHO QUE ESTO NO ES UN TODO Sugerir SQL, por ahora --> 
               <!-- <button 
-                          class="absolute right-2 top-2 px-2 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 mr-1">
-                            <circle cx="12" cy="12" r="5"></circle>
-                            <line x1="12" y1="1" x2="12" y2="3"></line>
-                            <line x1="12" y1="21" x2="12" y2="23"></line>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                            <line x1="1" y1="12" x2="3" y2="12"></line>
-                            <line x1="21" y1="12" x2="23" y2="12"></line>
-                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                          </svg>
-                          Sugerir
-                        </button> -->
+                class="absolute right-2 top-2 px-2 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 mr-1">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                Sugerir
+              </button>  -->
             </div>
 
             <!-- Table Selection and Filters -->
@@ -517,7 +517,7 @@
                   </svg>
                 </summary>
                 <div class="pb-4 pt-2">
-                  <div class="max-h-[400px] overflow-y-auto pr-4">
+                  <div class="max-h-[40vh] overflow-y-auto pr-4">
                     <div class="space-y-4">
                       <!-- Simple Query -->
                       <div>
@@ -623,7 +623,7 @@
               id="chartSelector" 
               formControlName="chart" 
               optionLabel="label" 
-              [style]="{'width':'18.5vw'}" 
+              [style]="{'width':'16.5vw'}" 
               [options]="chartTypes" 
               [autoDisplayFirst]="false"  
               [scrollHeight]="'52.5vh'"
