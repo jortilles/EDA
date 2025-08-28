@@ -127,6 +127,8 @@ export class DashboardPageV2 implements OnInit {
       swap: true,
       draggable: {
         enabled: true,
+        ignoreContent: true,
+        dragHandleClass: 'drag-handler' // Clase que hace que los elementos sean draggable
       },
       resizable: {
         enabled: true,
