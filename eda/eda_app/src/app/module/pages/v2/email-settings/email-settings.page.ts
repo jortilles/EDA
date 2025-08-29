@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MailService, AlertService, DashboardService } from '@eda/services/service.index';
+import { MailService, AlertService, DashboardService,SpinnerService } from '@eda/services/service.index';
 import { lastValueFrom } from 'rxjs';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 
@@ -18,7 +18,7 @@ interface AlertItem {
 interface DashboardItem {
   id: string;
   dashboard: string;
-  datamodel: string;
+  datamodel: string; 
 }
 
 interface DashboardSummary {
@@ -84,6 +84,7 @@ private fb = inject(FormBuilder);
   private alertService = inject(AlertService);
   private mailService = inject(MailService);
   private dashboardService = inject(DashboardService);
+  private spinnerService = inject(SpinnerService);
   private router = inject(Router);
 
 
@@ -97,7 +98,6 @@ private fb = inject(FormBuilder);
   dashboardsPerPage = signal<string>('10');
   alertItems = signal<AlertItem[]>([]);
   dashboardItems = signal<DashboardItem[]>([]);
-
   alertsPaged = computed(() => {
     const n = Number(this.alertsPerPage() || 10);
     return this.alertItems().slice(0, n);
@@ -127,26 +127,23 @@ private async loadEmailSettings() {
 }
 
   private async loadDashboardsData() {
-  const list = await lastValueFrom(this.dashboardService.getDashboards()) as DashboardsListResponse;
-  console.log(list)
-    
-  // Unimos todos los dashboards en un solo array
-  const allDashboards = [
-    ...(list.dashboards ?? []),
-    ...(list.group ?? []),
-    ...(list.publics ?? []),
-    ...(list.shared ?? []),
-  ];
+    // Todos los dashboards
+    const list = await lastValueFrom(this.dashboardService.getDashboards()) as DashboardsListResponse;
+      
+    // Unimos todos los dashboards en un solo array
+    const allDashboards = [
+      ...(list.dashboards ?? []),
+      ...(list.group ?? []),
+      ...(list.publics ?? []),
+      ...(list.shared ?? []),
+    ];
 
+    // IDs de los dashboards
+    const ids = allDashboards.map(d => d._id);
 
-  // Filtramos los que tienen config.haveAlerts === true
-  const dashboardsWithAlerts = allDashboards.filter(d => !('haveAlerts' in (d.config ?? {})));
-  const ids = dashboardsWithAlerts.map(d => d._id);
-
-    // Pedimos los detalles en paralelo
+    // Pedimos los detalles de dashboards
     const detailPromises = ids.map(id => lastValueFrom(this.dashboardService.getDashboard(id)));
     const details = (await Promise.all(detailPromises)) as DashboardDetailResponse[];
-    console.log('DEBUG dashboard details:', details);
 
     // Rellenamos signals
     const alerts: AlertItem[] = [];
@@ -158,32 +155,38 @@ private async loadEmailSettings() {
       const modelName = d.datasource?.name ?? '';
       const dashId = dash._id;
 
+      // Dashboard signals
       const panels = dash.config?.panel ?? [];
+        if (dash.config?.sendViaMailConfig?.enabled) {
+          dashboardsForMail.push({
+            id: dashId,
+            dashboard: title,
+            datamodel: modelName,
+          });
+      }
+      
+      this.dashboardItems.set(dashboardsForMail);
+
+      // Alerts signals
       for (const p of panels) {
         const isKpi = p?.content?.chart.startsWith('kpi');
         const limits = p?.content?.query?.output?.config?.alertLimits ?? [];
         if (!isKpi || limits.length === 0) continue;
 
-
-      for (const a of limits) {
-//    if (a?.mailing?.enabled) {
-      alerts.push({
-        id: dashId,
-        alerts: `KPI ${a.operand} ${a.value}`,
-        panel: p.title,
-        dashboard: title,
-        datamodel: modelName,
-      });
-  //  }
-  }
+        for (const a of limits) {
+          alerts.push({
+            id: dashId,
+            alerts: `KPI ${a.operand} ${a.value}`,
+            panel: p.title,
+            dashboard: title,
+            datamodel: modelName,
+          });
+        }
       }
     }
-
     this.alertItems.set(alerts);
-    this.dashboardItems.set(dashboardsForMail);
   }
 
-  /** Navegación equivalente al menú contextual antiguo */
   goToDashboardById(id: string) {
     this.router.navigate(['/dashboard', id]);
   }
@@ -193,17 +196,20 @@ private async loadEmailSettings() {
   }
 
   async handleCheckCredentials() {
-    this.isChecking.set(true);
-    try {
-      const options = this.getOptions();
-      await lastValueFrom(this.mailService.checkConfiguration(options));
-      this.alertService.addSuccess($localize`:@@mailConfOk:Credenciales  correctas`);
-    } catch (err: any) {
-      this.alertService.addError(err);
-    } finally {
-      this.isChecking.set(false);
-    }
+    this.spinnerService.on();
+    const options = this.getOptions();
+
+    this.mailService.checkConfiguration(options).subscribe(
+      res => {
+        this.spinnerService.off();
+        this.alertService.addSuccess($localize`:@@mailConfOk:Credenciales  correctas`);
+      },
+      err => {
+        this.alertService.addError(err)
+      }
+    );
   }
+
 
   async handleSubmit() {
     this.isSubmitting.set(true);

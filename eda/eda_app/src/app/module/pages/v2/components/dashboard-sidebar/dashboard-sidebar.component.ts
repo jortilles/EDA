@@ -340,7 +340,7 @@ export class DashboardSidebarComponent {
           tags: this.dashboard.dashboard.config.tags,
           refreshTime: (this.dashboard.refreshTime > 5) ? this.dashboard.refreshTime : this.dashboard.refreshTime ? 5 : null,
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-          sendViaMailConfig: this.dashboard.sendViaMailConfig, //TODO ==> Done?
+          sendViaMailConfig: this.dashboard.sendViaMailConfig,
           onlyIcanEdit: this.dashboard.onlyIcanEdit, //TODO ==> Done?
           styles: this.stylesProviderService.generateDefaultStyles(),
         },
@@ -402,9 +402,24 @@ export class DashboardSidebarComponent {
     this.isMailConfigDialogVisible = false;
   }
 
-  public saveMailConfig(mailConfig: any) {
+  public saveMailConfig(sendViaMailConfig: any) {
+    // Cerrar panel
     this.isMailConfigDialogVisible = false;
-    this.dashboard.dashboard.config.sendViaMailConfig = mailConfig;  
+
+    // Clonar info del sendViaMailConfig
+    const configToSave = {
+      enabled: true,
+      hours: sendViaMailConfig.hours,
+      lastUpdated: sendViaMailConfig.lastUpdated,
+      mailMessage: sendViaMailConfig.mailMessage,
+      minutes: sendViaMailConfig.minutes,
+      quantity: sendViaMailConfig.quantity,
+      units: sendViaMailConfig.units,
+      users: sendViaMailConfig.users
+    };
+    
+    // Asignar datos al config
+    this.dashboard.dashboard.config.sendViaMailConfig = configToSave;  
   }
 
 

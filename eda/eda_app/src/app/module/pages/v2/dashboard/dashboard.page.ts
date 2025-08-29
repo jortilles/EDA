@@ -81,9 +81,7 @@ export class DashboardPageV2 implements OnInit {
   };
 
   public urls: any[] = [];
-  public sendViaMailConfig: any = {
-    enabled: false
-  };
+  public sendViaMailConfig: any = { enabled: false};
 
   public selectedTags: any[] = [];
 
@@ -556,7 +554,7 @@ public reloadPanels(maxRetries: number = 5): void {
         tags: this.dashboard.config.tags,
         refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
         // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-        // sendViaMailConfig: this.sendViaMailConfig, 
+        sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
         onlyIcanEdit: this.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
         styles: this.dashboard.config.styles,
         urls: this.dashboard.config.urls,
@@ -564,6 +562,8 @@ public reloadPanels(maxRetries: number = 5): void {
       },
       group: this.dashboard.group ? _.map(this.dashboard.group, '_id') : undefined,
     };
+
+    console.log(body)
 
 
     body.config.panel = this.savePanels();
