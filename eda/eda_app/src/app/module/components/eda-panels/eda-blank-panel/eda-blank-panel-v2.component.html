@@ -85,7 +85,7 @@
             <input class="h-8 rounded-md w-full border px-2" placeholder="Buscar entidades..."
               (keyup)="onTableInputKey($event)">
           </div>
-          <div class="flex border-r overflow-y-auto h-[67dvh]">
+          <div class="flex border-r overflow-y-auto h-[51vh]">
             <div>
               <ng-template #entityList>
                 <div class="space-y-1 p-2">
@@ -141,7 +141,7 @@
               (keyup)="onColumnInputKey($event)">
           </div>
           }
-          <div class="flex w-full border-r overflow-y-auto h-[67dvh]">
+          <div class="flex w-full border-r overflow-y-auto h-[51vh]">
 
             <div>
               <div class="space-y-1 p-2" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
@@ -171,7 +171,7 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex-1 p-3 w-4/6 overflow-y-auto">
+        <div class="flex-1 p-3 w-4/6 overflow-y-auto h-[62.5vh]">
           <div class="space-y-4">
             <!-- Selected Attributes -->
             <div>
@@ -709,7 +709,9 @@
 
 <app-column-dialog *ngIf="configController" [controller]="configController"></app-column-dialog>
 
-<app-filter-dialog *ngIf="filterController" [controller]="filterController"></app-filter-dialog>
+@if(filterController){
+  <app-filter-dialog [controller]="filterController" [height]="'10px'"></app-filter-dialog>
+}
 
 <app-chart-dialog *ngIf="chartController" [controller]="chartController"></app-chart-dialog>
 
@@ -745,17 +747,17 @@
 
 
 @if(contextMenu){
-<eda-context-menu [inject]="contextMenu"></eda-context-menu>
+  <eda-context-menu [inject]="contextMenu"></eda-context-menu>
 }
 
 @if(isVisibleEbpChatGpt) {
-<app-ebp-chatgpt (close)="closeChatGpt($event)" [dataChatGpt]="dataChatGpt"></app-ebp-chatgpt>
+  <app-ebp-chatgpt (close)="closeChatGpt($event)" [dataChatGpt]="dataChatGpt"></app-ebp-chatgpt>
 }
 @if (display_v.whatIf_dialog) {
-<app-whatif-dialog [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>
+  <app-whatif-dialog [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>
 }
 
-@if (display_v.filterMapperDialog) {
-<app-filter-mapper-dialog [dashboard]="dashboard" [panel]="panel"
-  (close)="onCloseFilterMapperDialog($event)"></app-filter-mapper-dialog>
+@if (display_v.filterMapperDialog) {  
+  <app-filter-mapper-dialog [dashboard]="dashboard" [panel]="panel"
+    (close)="onCloseFilterMapperDialog($event)"></app-filter-mapper-dialog>
 }
