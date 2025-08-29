@@ -44,7 +44,8 @@ export const ChartsConfigUtils = {
       }
 
     } else if (ebp.panelChart.componentRef && ebp.panelChart.props.chartType.includes('kpi')) {
-      const kpiChart = ebp.panelChart.componentRef.instance.inject.edaChart;
+      console.log(ebp.panelChart)
+      const kpiChart = ebp.panelChart.componentRef.instance.inject?.edaChart;
 
       config = {
         sufix: ebp.panelChart.componentRef.instance.inject.sufix,
@@ -52,7 +53,7 @@ export const ChartsConfigUtils = {
         edaChart: {}
       }
 
-      if (kpiChart.edaChart) {
+      if (kpiChart?.edaChart) {
         config.edaChart.colors = kpiChart.chartColors;
         config.edaChart.chartType = ebp.panelChart.props.chartType;
 
