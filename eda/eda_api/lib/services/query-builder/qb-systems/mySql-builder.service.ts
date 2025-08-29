@@ -615,6 +615,7 @@ export class MySqlBuilderService extends QueryBuilderService {
    * @param filterObject 
    * @returns filter to string.  
    */
+
     public filterToString(filterObject: any): any {
       const column = this.findColumn(filterObject.filter_table, filterObject.filter_column);
       let colType = filterObject.filter_column_type;
@@ -631,6 +632,7 @@ export class MySqlBuilderService extends QueryBuilderService {
       column.joins = filterObject.joins || [];
       column.valueListSource = filterObject.valueListSource;
       const colname=this.getFilterColname(column);
+      const valueListSource = filterObject.valueListSource;
       
       switch (this.setFilterType(filterObject.filter_type)) {
         case 0:
@@ -646,7 +648,11 @@ export class MySqlBuilderService extends QueryBuilderService {
           // in values
         case 1:
           if (filterObject.filter_type === 'not_in') { filterObject.filter_type = 'not in' }
-          return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+          if(valueListSource !== undefined && this.queryTODO.queryMode === 'SQL') {
+            return `${colname}  ${filterObject.filter_type} (${this.processFilterValueList(filterObject)}) `;
+          } else {
+            return `${colname}  ${filterObject.filter_type} (${this.processFilter(filterObject.filter_elements[0].value1, colType)}) `;
+          }
         case 2:
           return `${colname}  ${filterObject.filter_type} 
                       ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
@@ -804,7 +810,19 @@ public getHavingColname(column: any){
 
 }
 
+  public processFilterValueList(filterObject: any) {
 
+    let str= 'select ';
+    const target_table = filterObject.valueListSource.target_table;
+    const target_id_column = filterObject.valueListSource.target_id_column;
+    const target_description_column = filterObject.valueListSource.target_description_column;
+    const filter_type = filterObject.filter_type;
+    const values: string = `(${filterObject.filter_elements[0].value1.map((x: any) => `'${x}'`).join(', ')})`;
+
+    str += `\`${target_table}\`.\`${target_id_column}\` from \`${target_table}\` where \`${target_description_column}\` in ${values}`;
+
+    return str;
+  }
 
   public processFilter(filter: any, columnType: string) {
     filter = filter.map(elem => {
