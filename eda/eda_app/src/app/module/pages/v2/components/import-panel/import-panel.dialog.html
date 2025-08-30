@@ -1,5 +1,5 @@
 <eda-dialog2 [display]="display"
-  header="Importar panells" width="40vw" height="80vh"
+  header="Importar panells" width="600px" height="auto"
   [disableApply]="disableApply()"
   (apply)="onApply()"
   (close)="onClose()">
@@ -8,7 +8,9 @@
     <div class="grid space-y-4">
       @if (!displayMapper) {
         <div class="mt-6">
-          <p-dropdown [(ngModel)]="_import.fromDashboard" [options]="dashboardOptions"
+          <div class="flex-1 flex flex-col">
+            <label for="dashboard" class="mb-1">Dashboard</label>
+          <p-dropdown id="dashboard" [(ngModel)]="_import.fromDashboard" [options]="dashboardOptions"
             [filter]="true" filterBy="config.title" [showClear]="true" [style]="{'minWidth':'100%'}"
             (onChange)="onSelectDashboard()" appendTo="body">
               <ng-template pTemplate="filter" let-options="options">
@@ -21,6 +23,7 @@
                       placeholder="Filter"
                       [(ngModel)]="filterValue"
                       (keyup)="filterDashboards($event, options)"
+                      class="w-full"
                       />
                       <!-- [(ngModel)]="filterValue"
                       (keyup)="customFilterFunction($event, options)" -->
@@ -46,13 +49,12 @@
               </div>
             </ng-template>
           </p-dropdown>
+          </div>
         </div>
 
-        @if (_import.fromDashboard?._id) {
-          <div class="mt-6">
-            <eda-pick-list [config]="pickListConfig" [availableItems]="dashboardPanels" (selectionChange)="onPanelsChange($event)"></eda-pick-list>
-          </div>
-        }
+        <div class="mt-6">
+           <eda-pick-list [config]="pickListConfig" [availableItems]="dashboardPanels" (selectionChange)="onPanelsChange($event)"></eda-pick-list>
+        </div>
       } @else {
         <!-- Tabs -->
         <div class="mb-6 w-full grid grid-cols-4">

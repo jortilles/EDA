@@ -68,7 +68,7 @@ export class ImportPanelDialog implements OnInit {
       this._dashboard = data;
 
       if (!!panels.length) {
-        this.dashboardPanels = panels.map((p: any) => ({ id: p.id, label: p.title }))
+        this.dashboardPanels = panels.filter((p) => !p.readonly).map((p: any) => ({ id: p.id, label: p.title }))
       }
     }
 
@@ -153,8 +153,8 @@ export class ImportPanelDialog implements OnInit {
 
     if (panel?.id) {
       const panelFilters = panel.content.query.query.filters || [];
-      console.log('initFilterMapper >>> panelFilters', panelFilters);
       const dashFilters = this.dashboard.globalFilter.globalFilters;
+
       if (!this._filterMapper[panelId]) {
         this._filterMapper[panelId] = {
           connections: [],
