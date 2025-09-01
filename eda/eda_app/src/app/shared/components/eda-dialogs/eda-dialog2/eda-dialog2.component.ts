@@ -21,6 +21,7 @@ import { ContentMarkerDirective } from '@eda/shared/directives/content.directive
 export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('dialogRef') dialogRef!: Dialog;
     @ViewChild('contentWrapper') contentWrapper!: ElementRef;
+    @Input() overflow: string = 'hidden';
 
 
     private resizeObserver!: ResizeObserver;
