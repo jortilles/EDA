@@ -364,9 +364,6 @@ export class DataSourceService extends ApiService implements OnDestroy {
 
     /** add a value list as the source of a column */
     addValueListSource(ValueListSource: any) {
-
-        console.log('ValueListSource: ', ValueListSource);
-
        const tmp_panel = this._columnPanel.getValue();
        tmp_panel.valueListSource = ValueListSource;
        this._columnPanel.next(tmp_panel);

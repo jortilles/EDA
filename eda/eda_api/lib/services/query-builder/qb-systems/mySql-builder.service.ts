@@ -657,13 +657,29 @@ export class MySqlBuilderService extends QueryBuilderService {
           return `${colname}  ${filterObject.filter_type} 
                       ${this.processFilter(filterObject.filter_elements[0].value1, colType)} and ${this.processFilterEndRange(filterObject.filter_elements[1].value2, colType)}`;
         case 3:
-          return `${colname} is not null`;
+          if(valueListSource !== undefined && this.queryTODO.queryMode === 'SQL') {
+            return `${colname}  ${filterObject.filter_type} (${this.processFilterValueList(filterObject)}) `;
+          } else {
+            return `${colname} is not null`;
+          }
         case 4:
+          if(valueListSource !== undefined && this.queryTODO.queryMode === 'SQL') {
+            return `${colname}  ${filterObject.filter_type} (${this.processFilterValueList(filterObject)}) `;
+          } else {
             return `${colname} is null`;
+          }
         case 5:
-          return `${colname} is not null and ${colname} != ''`;
+          if(valueListSource !== undefined && this.queryTODO.queryMode === 'SQL') {
+            return `${colname}  ${filterObject.filter_type} (${this.processFilterValueList(filterObject)}) `;
+          } else {
+            return `${colname} is not null and ${colname} != ''`;
+          }
         case 6:
-          return `( ${colname} is null or ${colname} = '')`;
+          if(valueListSource !== undefined && this.queryTODO.queryMode === 'SQL') {
+            return `${colname}  ${filterObject.filter_type} (${this.processFilterValueList(filterObject)}) `;
+          } else {
+            return `( ${colname} is null or ${colname} = '')`;
+          }
       }
     }
 
@@ -811,6 +827,11 @@ public getHavingColname(column: any){
 }
 
   public processFilterValueList(filterObject: any) {
+
+    // si estoy tratando nulos
+    filterObject.filter_elements[0].value1.map(elem => {
+      if (elem === null || elem === undefined || elem === 'null') return 'null'; //aqui poner 'null'
+    });
 
     let str= 'select ';
     const target_table = filterObject.valueListSource.target_table;
