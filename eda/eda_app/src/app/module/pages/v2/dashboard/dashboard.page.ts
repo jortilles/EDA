@@ -52,7 +52,10 @@ export class DashboardPageV2 implements OnInit {
   public panelTitle: any;
   public panelContent: any;
   public availableChatGpt: any = false;
-
+  public height: number = 1000;
+  public toLitle: boolean = false;
+  public toMedium: boolean = false;
+  
   titleClick: boolean = false;
   sidebarVisible = false;
   notSaved: boolean = false;
@@ -90,7 +93,8 @@ export class DashboardPageV2 implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initGridsterOptions();
+    this.initializeResponsiveSizes();
+    this.initializeGridsterOptions();
     this.loadDashboard();
     this.dashboardService.notSaved.subscribe(
       (data) => this.notSaved = data
@@ -115,35 +119,32 @@ export class DashboardPageV2 implements OnInit {
 
   
   
-  private initGridsterOptions(): void {
-    this.gridsterOptions = {
-      gridType: GridType.VerticalFixed, // Configuración general del Gridster : permite scroll vertical y los items generados son de tamaño fijo.
-      compactType: CompactType.None, // Controla la configuración de compactar en el gridster
-      displayGrid: DisplayGrid.OnDragAndResize, // Permite configurar la rejilla del gridster
-      pushItems: true, // Hace que los elementos se reorganicen automáticamente
-      avoidOverlapped: true, // Asegura que no haya solapamientos
-      swap: true,
-      draggable: {
-        enabled: true,
-        ignoreContent: true,
-        dragHandleClass: 'drag-handler' // Clase que hace que los elementos sean draggable
-      },
-      resizable: {
-        enabled: true,
-      },
-      minCols: 40,
-      maxCols: 40,
-      minRows: 30, // Se puede optimizar para diferentes pantallas, aún así, con 30 funciona bien
-      maxRows: 300,
-      margin: 2, // Reduce el margen entre celdas
-      fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
-      fixedColWidth: 50, // Ajusta también el ancho de las columnas
-      disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
-      disableScrollVertical: true, // Desactiva scroll vertical si es necesario
-      itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
-      itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
-    };
-  }
+    private initializeGridsterOptions(): void {
+        this.gridsterOptions = {
+            gridType: GridType.VerticalFixed, // Configuración general del Gridster : permite scroll vertical y los items generados son de tamaño fijo.
+            compactType: CompactType.None, // Controla la configuración de compactar en el gridster
+            displayGrid: DisplayGrid.OnDragAndResize, // Permite configurar la rejilla del gridster
+            pushItems: true,
+            swap: true,
+            draggable: {
+                enabled: true,
+            },
+            resizable: {
+                enabled: true,
+            },
+            minCols: 40,
+            maxCols: 40,
+            minRows: 30, // Se puede optimizar para diferentes pantallas, aún así, con 30 funciona bien
+            maxRows: 300,
+            margin: 2, // Reduce el margen entre celdas
+            fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
+            fixedColWidth: 50, // Ajusta también el ancho de las columnas
+            disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
+            disableScrollVertical: true, // Desactiva scroll vertical si es necesario
+            itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
+            itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
+        };
+    }
 
   public async loadDashboard() {
     const dashboardId = this.route.snapshot.paramMap.get('id');
@@ -160,7 +161,11 @@ export class DashboardPageV2 implements OnInit {
       this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
-      //this.chartUtils.MyPaletteColors = this.styles?.palette['paleta'] || [];
+
+      this.styles.palette = this.styles.palette || '';
+      this.styles.palette['paleta'] = this.styles.palette['paleta'] || [];
+      this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
+      
       if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) { 
         this.assignStyles();
         this.stylesProviderService.setStyles(this.styles, true)
@@ -192,7 +197,7 @@ export class DashboardPageV2 implements OnInit {
   public assignStyles() {
     // Panel del título del informe    
     this.reportPanel = {
-      height: 'auto',
+      height: 5 + (this.dashboard.config.styles.title.fontSize*0.25) + 'vh',
     };
     
     // Texto del título del informe
@@ -266,6 +271,19 @@ export class DashboardPageV2 implements OnInit {
     this.stylesProviderService.loadedPanels = dashboard.config?.panel?.length || -1;
   }
 
+  // Init functions
+  private initializeResponsiveSizes(): void {
+      if (window.innerWidth >= 1200) {
+          this.toLitle = false;
+          this.toMedium = false;
+      }
+
+      if (window.innerWidth < 1000) {
+          this.toLitle = true;
+          this.toMedium = false;
+      }
+  }
+
   showSidebar(event: Event) {
     if (this.sidebar) {
       this.sidebar.showPopover(event);
@@ -279,8 +297,8 @@ export class DashboardPageV2 implements OnInit {
       filter.panelList = filter.panelList.filter((id: string) => id !== panel);
     }
 
-    // let valor = this.getBottomMostItem();
-    // this.height = (valor.y + valor.rows + 4) * 32;
+    let valor = this.getBottomMostItem();
+    this.height = (valor.y + valor.rows + 2) * 32;
   }
 
   public reloadOnGlobalFilter(): void {
@@ -295,27 +313,26 @@ export class DashboardPageV2 implements OnInit {
     }, 500);
   }
   
-public reloadPanels(maxRetries: number = 5): void {
-  this.edaPanels.forEach(async (panel) => {
+public async reloadPanels(): Promise<void> {
+  const tasks = this.edaPanels.map(async (panel) => {
     if (panel.currentQuery.length > 0) {
       panel.display_v.chart = '';
+
       await panel.runQueryFromDashboard(true);
 
-      setTimeout(() => {
+      // Actualizo el panelChart si existe
+      if (panel.panelChart) {
         try {
-          if (panel.panelChart) {
-            console.log('panelChart encontrado, actualizando...');
-            panel.panelChart.updateComponent();
-          } else if (maxRetries > 0) {
-            console.log(`Reintentando reloadPanels... quedan ${maxRetries - 1}`);
-            this.reloadPanels(maxRetries - 1); // recursividad
-          }
+          panel.panelChart.updateComponent();
         } catch (error) {
-          console.error('Error en reloadPanels', error);
+          console.error('Error al actualizar panelChart', error);
         }
-      }, 200);
+      }
     }
   });
+
+  // Espero a que terminen todos en paralelo
+  await Promise.all(tasks);
 }
 
 
@@ -341,9 +358,12 @@ public reloadPanels(maxRetries: number = 5): void {
 
       const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
       if (column && table) {
+          this.edaPanels.forEach(panel => {
+            if (panel.panelChart) panel.panelChart.updateComponent();
+          });
         let config = this.setPanelsToFilter(panel);
         //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
-        if (this.globalFilter.globalFilters) {
+        if (this.globalFilter.globalFilters && this.globalFilter.globalFilters.length > 0) {
           //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla, si lo hay, hay que borrarlo
           let chartToRemove = this.globalFilter.globalFilters.find(
             (f) => f.table?.value === table.table_name && f.column?.value?.column_name === column.column_name &&
@@ -386,7 +406,7 @@ public reloadPanels(maxRetries: number = 5): void {
             this.chartFilter = {
               id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
               isGlobal: true,
-              applyToAll: config.applyToAll,
+              applyToAll: config.applyToAll || true,
               panelList: config.panelList.map((p) => p.id),
               table: {label: table.display_name.default,value: table.table_name,},
               column: {label: column.display_name.default,value: column,},
@@ -413,7 +433,7 @@ public reloadPanels(maxRetries: number = 5): void {
             this.chartFilter = {
               id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
               isGlobal: true,
-              applyToAll: config.applyToAll,
+              applyToAll: config.applyToAll || true,
               panelList: config.panelList.map((p) => p.id),
               table: { label: table.display_name.default, value: table.table_name,},
               column: { label: column.display_name.default, value: column },
@@ -424,6 +444,9 @@ public reloadPanels(maxRetries: number = 5): void {
           await this.globalFilter.onGlobalFilterAuto(this.chartFilter,table.table_name);
           this.reloadOnGlobalFilter();
         }
+        this.edaPanels.forEach(panel => {
+          if (panel.panelChart) panel.panelChart.updateComponent();
+        });
       }
     } else if (event.code === "QUERYMODE") {
       this.setPanelsQueryMode();
@@ -724,7 +747,7 @@ public startCountdown(seconds: number) {
       let bottomMostItem: GridsterItem | undefined;
       let maxBottom = -1; // Inicializamos con un valor bajo
 
-      for (let item of this.dashboard.panel) {
+      for (let item of this.dashboard.config.panel) {
           // Calculamos la posición final en Y (bottom) del ítem
           const bottom = item.y + item.rows;
 
@@ -734,15 +757,13 @@ public startCountdown(seconds: number) {
           bottomMostItem = item;
           }
       }
-
       return bottomMostItem; // El item de la posición mas inferior de todo el gridster
   }
 
   // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
   onItemChange(item: GridsterItem): void {
-    // let valor = this.getBottomMostItem();
-    // console.log('El menor valor: ', valor);
-    // this.height = (valor.y + valor.rows + 4) * 32;
+    let valor = this.getBottomMostItem();
+    this.height = ((valor.y + valor.rows + 2) * 32);
   }
 
 }

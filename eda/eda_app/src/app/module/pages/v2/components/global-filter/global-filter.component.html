@@ -1,7 +1,7 @@
-<div class="flex flex-wrap items-center gap-4">
+<div class="flex flex-wrap items-center gap-4 mt-2 mb-2 ml-1">
   @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
     <button
-      class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+      class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700  rounded-md border hover:bg-gray-300"
       [style]="styleButton"
       (click)="dashboard.refreshPanels()">
       <i class="pi pi-filter"></i>
@@ -41,26 +41,15 @@
 
           <p-multiSelect
             [style]="styleButton"
-            [panelStyle]="styleButton"
             [options]="filter.data"
             [(ngModel)]="filter.selectedItems"
             [virtualScroll]="true"
             [defaultLabel]="getFilterLabel(filter)"
             [disabled]="disableGlobalFilter(filter)"
             [itemSize]="30"
-            class="customMultiselect filters-size"
+            [loading]="loading"
             (onChange)="setGlobalFilterItems(filter)">
   
-            @if (dashboard.isEditable()) {
-                <ng-template pTemplate="footer">
-                  <button id="dashFilterConf"
-                    type="button"
-                    (click)="onShowGlobalFilter(false, filter)"
-                    class="rounded-full border p-2.5 m-2">
-                    <eda-icon name="settings"></eda-icon>
-                  </button>
-                </ng-template>
-            }
           </p-multiSelect>
       }
     }

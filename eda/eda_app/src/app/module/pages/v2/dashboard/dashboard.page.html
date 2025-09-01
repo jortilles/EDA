@@ -1,8 +1,8 @@
 <div class="min-h-screen bg-gray-50" id="myDashboard">
-  <div class="w-full p-6 space-y-6 h-max" [ngStyle]="backgroundColor">
-    <div [ngStyle]="reportPanel">
+  <div class="w-full p-3 h-max" [ngStyle]="backgroundColor">
+    <div>
       <!-- Header -->
-      <div class="flex items-center relative w-full">
+      <div class="flex items-center relative w-full items-start ml-1" [ngStyle]="reportPanel">
 
         <div class="flex-1">
           @if (!titleClick) {
@@ -21,7 +21,7 @@
       </div>
 
       <!-- Filters Section -->
-      <div class="flex justify-between items-center mt-4">
+      <div class="flex justify-between items-center">
         <app-v2-global-filter #globalFilter [dashboard]="this"></app-v2-global-filter>
 
         @if (notSaved) {
@@ -31,7 +31,7 @@
     </div>
 
 
-    <div [style.height]="'1000px'">
+    <div [style.height]="height + 'px'">
       <gridster [options]="gridsterOptions" class="dashboard-grid">
         @for (panel of panels; track panel) {
         <gridster-item class="gridster-item" [item]="panel" [dragAndDrop]="panel.dragAndDrop"

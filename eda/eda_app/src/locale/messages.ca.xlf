@@ -5262,6 +5262,11 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Les credencials són vàlides</target>
 </trans-unit>
 
+<trans-unit id="DatasourceTitle">
+  <source>Fuente de datos </source>
+  <target>Font de dades </target>
+</trans-unit>
+
 
     </body>
   </file>

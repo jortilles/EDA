@@ -29,7 +29,7 @@ export class GlobalFilterV2Component implements OnInit {
     public globalFilters: any[] = [];
     public globalFilter: any;
     public styleButton: any = {};
-    private styleSub: Subscription;
+    loading: boolean = true;
 
 
     public filterController: EdaDialogController;
@@ -513,6 +513,10 @@ export class GlobalFilterV2Component implements OnInit {
             this.alertService.addError(err);
             throw err;
         }
+
+        setTimeout(() => {
+            this.loading = false;
+        }, 2500);
     }
 
     public findGlobalFilterByUrlParams(urlParams: any): void {
