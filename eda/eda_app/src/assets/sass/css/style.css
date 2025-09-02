@@ -18,6 +18,27 @@
 
 @layer primeng {
   /* Aquí puedes incluir estilos específicos para PrimeNG si necesitas */
+
+    /* Cambiar tamaño de fuente de los labels de opciones */
+  .p-multiselect-label  {
+    padding-top: .5rem !important;
+    padding-bottom: .5rem !important;
+  }
+  /* === Buscador del multiselect === */
+  .p-multiselect-panel .p-multiselect-filter-container .p-inputtext {
+    border: 1px solid black !important;
+    height: 3vh;
+  }
+
+  /* === Checkbox vacío === */
+  .p-multiselect-panel .p-checkbox .p-checkbox-box {
+    border: 1px solid lightgray !important;
+  }
+
+  /* === Checkbox marcado === */
+  .p-multiselect-panel .p-checkbox.p-highlight .p-checkbox-box {
+    border: 1px solid lightgray !important;
+  }
 }
 
 @layer tailwind-utilities {
@@ -1690,10 +1711,6 @@ pre {
         border-radius: 5px;
         border: solid 1px;
         height: 3vh;
-    }
-
-    .p-checkbox-box .p-focus{
-        border: solid 1px;
     }
     
 
