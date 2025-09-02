@@ -339,7 +339,6 @@ public async reloadPanels(): Promise<void> {
 
 
   public async onPanelAction(event: IPanelAction): Promise<void> {
-    // TODO ==> REVISAR FILTROS ONCLICK
     //Check de modo
     let modeEDA = false;
     if (event?.data?.panel) {

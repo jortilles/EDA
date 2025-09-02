@@ -234,19 +234,29 @@ export class EdaSunburstComponent implements AfterViewInit {
         label.raise();
         
       })
-      .on('click', (mouseevent, data) => {
-        if (this.inject.linkedDashboard) {
-          const props = this.inject.linkedDashboard;
-          const value = data.data.name;
-          const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
-          window.open(url, "_blank");
-        } else {
-          //Passem aquestes dades
-          const label = data.data.name;
-          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
-          this.onClick.emit({label, filterBy });
+    .on('click', (mouseevent, data) => {
+      if (this.inject.linkedDashboard) {
+        const props = this.inject.linkedDashboard;
+        const value = data.data.name;
+        const url =
+          window.location.href.slice(0, window.location.href.indexOf('/dashboard')) +
+          `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`;
+        window.open(url, "_blank");
+      } else {
+        const label = data.data.name;
+        // buscar en todas las filas hasta encontrar coincidencia
+        let idx = -1;
+        for (const row of this.inject.data.values) {
+          const tmpIdx = row.indexOf(label);
+          if (tmpIdx !== -1) {
+            idx = tmpIdx;
+            break;
+          }
         }
-      });
+        const filterBy = idx !== -1 ? this.inject.data.labels[idx] : null;
+        this.onClick.emit({ label, filterBy });
+      }
+    })
   }
 
   formatData (data, dataDescription) {
