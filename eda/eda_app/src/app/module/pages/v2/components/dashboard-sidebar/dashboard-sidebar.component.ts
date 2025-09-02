@@ -129,7 +129,7 @@ export class DashboardSidebarComponent {
         icon: "pi pi-filter",
         command: () => this.toggleGlobalFilter(),
         items: this.dashboard.globalFilter.globalFilters.map(f => ({
-          label: f.selectedColumn.description.default,
+          label: f?.selectedColumn?.description?.default || f?.column?.value?.description?.default ,
           icon: "pi pi-check",
           command: () => this.handleSpecificFilter(f),
         }),
@@ -587,6 +587,7 @@ public exportAsJPEG() {
   
   // Llamada al filtro especifico via sidebar
   public handleSpecificFilter(filtro: any) {
+    console.log(filtro)
     this.hidePopover();
     this.toggleGlobalFilter();
     this.dashboard.globalFilter.onShowGlobalFilter(false, filtro)
