@@ -1104,15 +1104,15 @@ pre {
     .auto-height {
         min-height: 186px;
     }
-
+    /* revisar TODO */
     h1 {
-        line-height: 35px;
-        font-size: 32px;
-    }
-    
-    h2 {
         line-height: 30px;
         font-size: 20px;
+    }
+/* modificar */ 
+    h2 {
+        line-height: 25px;
+        font-size: 18px;
     }
     
     h3 {
@@ -1685,6 +1685,17 @@ pre {
     .p-datatable .p-datatable-tfoot>tr>td, .p-datatable .p-datatable-thead>tr>th{
         font-weight: 300;
     }
+
+    .p-multiselect-filter .p-inputtext .p-component {
+        border-radius: 5px;
+        border: solid 1px;
+        height: 3vh;
+    }
+
+    .p-checkbox-box .p-focus{
+        border: solid 1px;
+    }
+    
 
   }
 

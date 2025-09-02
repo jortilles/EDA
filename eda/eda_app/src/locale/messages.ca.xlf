@@ -5267,6 +5267,11 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Font de dades </target>
 </trans-unit>
 
+<trans-unit id="Cargando">
+  <source>Cargando... </source>
+  <target>Carregant... </target>
+</trans-unit>
+
 
     </body>
   </file>
