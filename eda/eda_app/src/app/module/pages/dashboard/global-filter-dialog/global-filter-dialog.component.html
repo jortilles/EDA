@@ -1,4 +1,4 @@
-<eda-dialog2 [display]="display" [header]="dialogHeader" width="60vw" height="80vh" (apply)="onApply()"
+<eda-dialog2 [display]="display" [header]="dialogHeader" width="60vw" height="80vh" (apply)="onApply()" [overflow]="'auto'"
     (close)="onClose()">
 
     <div content>
@@ -91,7 +91,7 @@
                 <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
                   [options]="columnValues" [(ngModel)]="globalFilter.selectedItems"
                   [virtualScroll]="true" [itemSize]="30"
-                  [style]="{ width: '100%' }"
+                  [style]="{ width: '100%', height:'100%', alignItems:'center'}"
                   [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" defaultLabel="Valor por defecto"
                   display="chip" appendTo="body">
                 </p-multiSelect>
