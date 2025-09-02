@@ -48,7 +48,10 @@
             [disabled]="disableGlobalFilter(filter)"
             [itemSize]="30"
             [loading]="loading"
-            (onChange)="setGlobalFilterItems(filter)">
+            i18n-placeholder="@@Cargando"
+            [placeholder]= "placeholderText"
+            (onChange)="setGlobalFilterItems(filter)"
+            >
   
           </p-multiSelect>
       }
