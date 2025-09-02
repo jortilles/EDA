@@ -100,18 +100,18 @@ export class MySqlBuilderService extends QueryBuilderService {
     
     for (const col of fields) {
       const diplayName = col.display_name;
-      const table_column = `${col.table_id}.${col.column_name}`;
+      const table_column = `${col.table_id.split('.')[0]}.${col.column_name}`;
       
       let mainQuery = `(SELECT ${table_column} ${fromQuery}) AS main`;
       
       querys[diplayName] = [];
       // Source Table
       querys[diplayName].push(
-        "SELECT \"" + `${col.table_id}` +"\" AS source_table  " 
+        "SELECT \"" + `${col.table_id.split('.')[0]}` +"\" AS source_table  " 
       );
       // COUNT ROWS
       querys[diplayName].push(
-        "SELECT COUNT(  * ) AS `count_rows` FROM " + `${col.table_id}`
+        "SELECT COUNT(  * ) AS `count_rows` FROM " + `${col.table_id.split('.')[0]}`
       );
 
       
