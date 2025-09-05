@@ -27,6 +27,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
     private resizeObserver!: ResizeObserver;
     public ifShowApply: boolean;
     public ifShowClose: boolean;
+    public ifShowReset: boolean;
 
     // Traducido automáticamente para PrimeNG
     get translatedBreakpoints(): Record<string, string> {
@@ -51,6 +52,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
 
         this.ifShowApply = this.apply.observers.length > 0 && this.showApply;
         this.ifShowClose = this.close.observers.length > 0 && this.showClose;
+        this.ifShowReset = this.close.observers.length > 0 && this.showReset;
     }
 
     ngAfterViewInit(): void {
