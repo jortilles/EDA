@@ -202,7 +202,6 @@ public async fillFiltersData(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 if (filter.isdeleted) {
-                    // TODO: Revisar comportament quan es borra 
                     filter.selectedItems = [];
                     this.applyGlobalFilter(filter);
                     this.removeGlobalFilter(filter);

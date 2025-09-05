@@ -120,30 +120,33 @@ export class DashboardPageV2 implements OnInit {
   
   
     private initializeGridsterOptions(): void {
-        this.gridsterOptions = {
-            gridType: GridType.VerticalFixed, // Configuración general del Gridster : permite scroll vertical y los items generados son de tamaño fijo.
-            compactType: CompactType.None, // Controla la configuración de compactar en el gridster
-            displayGrid: DisplayGrid.OnDragAndResize, // Permite configurar la rejilla del gridster
-            pushItems: true,
-            swap: true,
-            draggable: {
-                enabled: true,
-            },
-            resizable: {
-                enabled: true,
-            },
-            minCols: 40,
-            maxCols: 40,
-            minRows: 30, // Se puede optimizar para diferentes pantallas, aún así, con 30 funciona bien
-            maxRows: 300,
-            margin: 2, // Reduce el margen entre celdas
-            fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
-            fixedColWidth: 50, // Ajusta también el ancho de las columnas
-            disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
-            disableScrollVertical: true, // Desactiva scroll vertical si es necesario
-            itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
-            itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
-        };
+    this.gridsterOptions = {
+      gridType: GridType.VerticalFixed, // Configuración general del Gridster : permite scroll vertical y los items generados son de tamaño fijo.
+      compactType: CompactType.None, // Controla la configuración de compactar en el gridster
+      displayGrid: DisplayGrid.OnDragAndResize, // Permite configurar la rejilla del gridster
+      pushItems: true, // Hace que los elementos se reorganicen automáticamente
+      avoidOverlapped: true, // Asegura que no haya solapamientos
+      swap: true,
+      draggable: {
+        enabled: true,
+        ignoreContent: true,
+        dragHandleClass: 'drag-handler' // Clase que hace que los elementos sean draggable
+      },
+      resizable: {
+        enabled: true,
+      },
+      minCols: 40,
+      maxCols: 40,
+      minRows: 30, // Se puede optimizar para diferentes pantallas, aún así, con 30 funciona bien
+      maxRows: 300,
+      margin: 2, // Reduce el margen entre celdas
+      fixedRowHeight: 30, // Reduce el tamaño de la altura de las filas
+      fixedColWidth: 50, // Ajusta también el ancho de las columnas
+      disableScrollHorizontal: true, // Desactiva scroll horizontal si es necesario
+      disableScrollVertical: true, // Desactiva scroll vertical si es necesario
+      itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
+      itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
+    };
     }
 
   public async loadDashboard() {
@@ -746,10 +749,10 @@ public startCountdown(seconds: number) {
       let bottomMostItem: GridsterItem | undefined;
       let maxBottom = -1; // Inicializamos con un valor bajo
 
-      for (let item of this.dashboard.config.panel) {
+      for (let item of this.dashboard?.config?.panel) {
           // Calculamos la posición final en Y (bottom) del ítem
           const bottom = item.y + item.rows;
-
+  
           // Si el ítem actual es más bajo, lo actualizamos
           if (bottom > maxBottom) {
           maxBottom = bottom;
@@ -761,8 +764,10 @@ public startCountdown(seconds: number) {
 
   // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
   onItemChange(item: GridsterItem): void {
-    let valor = this.getBottomMostItem();
-    this.height = ((valor.y + valor.rows + 2) * 32);
+    if (this.dashboard.config?.panel) {
+      let valor = this.getBottomMostItem();
+      this.height = ((valor.y + valor.rows + 2) * 32);
+    } 
   }
 
 }

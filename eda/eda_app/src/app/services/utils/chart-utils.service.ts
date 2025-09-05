@@ -2021,8 +2021,9 @@ export class ChartUtilsService {
                             display: maxTicksLimitY !== 0,
                             grid: {
                                 drawBorder: false,
-                                color: colorStyle,
+                                color: this.suavizaColor(  colorStyle, 0.1 ),
                                 display: true,
+                                lineWidth:0.5,
                                 zeroLineWidth: 1
                             },
                             id: 'y-axis-0', position: 'left',
@@ -2055,7 +2056,7 @@ export class ChartUtilsService {
                     elements: {
                         point: { radius: 0, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
                         line: {
-                                borderWidth: 1 + (size.width/800),
+                                borderWidth: 1 + Math.round(size.width/800),
                                 fill:  chartSubType=='area'?true:false,
                                 tension: 0.4 }
                     },
@@ -2066,11 +2067,8 @@ export class ChartUtilsService {
                 };
             break;
         }
-
-
         return options;
     }
-
 
     // APARTADO PARA LOS D3
     hex2rgbD3(hex, opacity = 100): string {
@@ -2083,13 +2081,71 @@ export class ChartUtilsService {
       }
     
     rgb2hexD3(rgb): string {
-    rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-    return (rgb && rgb.length === 4) ? '#' +
-        ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
-        ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
-        ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
+        rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+        return (rgb && rgb.length === 4) ? '#' +
+            ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
+            ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
+            ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';  
     }
 
+    /**
+     * Reduce saturación de un color HEX
+     * @param {string} hex - Color en formato #RRGGBB
+     * @param {number} factor - Valor entre 0 y 1 (ej. 0.5 = mitad de saturación)
+     * @returns {string} Nuevo color hex
+     */
+    private  suavizaColor(hex, factor) {
+    hex = hex.replace(/^#/, "");
+    let r = parseInt(hex.substring(0, 2), 16) / 255;
+    let g = parseInt(hex.substring(2, 4), 16) / 255;
+    let b = parseInt(hex.substring(4, 6), 16) / 255;
+
+    let max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+        h = s = 0; // gris
+    } else {
+        let d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+
+    // Reducir saturación
+    s *= factor;
+
+    let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    let p = 2 * l - q;
+
+    function hue2rgb(p, q, t) {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+    }
+
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+
+        
+            console.log([r, g, b]
+        .map(x => Math.round(x * 255).toString(16).padStart(2, "0"))
+        .join(""))
+        
+    return "#" + 
+        [r, g, b]
+        .map(x => Math.round(x * 255).toString(16).padStart(2, "0"))
+        .join("");
+    }
 
 public generateChartColorsFromPalette(
   numberOfColors: number,

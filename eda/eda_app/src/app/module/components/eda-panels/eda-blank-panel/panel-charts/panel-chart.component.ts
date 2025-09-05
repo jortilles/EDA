@@ -113,13 +113,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.props.data && this.props.data.values.length !== 0
             && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
-
-            setTimeout(_ => {
-                this.NO_DATA = false;
-            });
-
-            this.changeChartType();
-
+                requestAnimationFrame(() => {                    
+                setTimeout(_ => {
+                    this.NO_DATA = false;
+                });
+    
+                this.changeChartType();
+              });
         }
         /**
          * If no data
@@ -280,7 +280,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             labelOffset: 5,
             padding: 5
         };
-      
+
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
