@@ -78,7 +78,7 @@ export const DEFAULT_PANEL_COLOR: string = '#ffffff';
 export const DEFAULT_FONT_COLOR: string = '#455a64'
 export const DEFAULT_FONT_FAMILY: string = 'Montserrat';  /* THIS MUST BE SET ALSO IN  \eda_app\src\assets\sass\css\custom.css */
 export const DEFAULT_FONT_SIZE: number = 0;
-export const DEFAULT_TITLE_ALIGN : string = 'center';
-export const DEFAULT_PANEL_TITLE_ALIGN : string = 'left';
+export const DEFAULT_TITLE_ALIGN : string = 'flex-start';
+export const DEFAULT_PANEL_TITLE_ALIGN : string = 'flex-start';
 export const NULL_VALUE : string = 'null' ;
 export const DEFAULT_PALETTE_COLOR: any = ChartsPalettes.find(palette => palette.name === "Turquesa-Rosa");
