@@ -62,7 +62,7 @@ export class DashboardEditStyleDialog {
   public panelTitleHeader: string = $localize`:@@panelTitleEdit:Título del panel`;
   public panelContentHeader: string = $localize`:@@panelContentEdit:Contenido del panel`;
   public samplePanelTitle: string = $localize`:@@samplePanelTitle:Previsualización`;
-  public samplePanelDBName: string = $localize`:@@samplePanelName:Título del informe`;
+  public samplePanelDBName: string = $localize`:@@samplePanelDBName:Título del informe`;
   public samplePanelName: string = $localize`:@@samplePanelName:Título del panel`;
   public filtrar: string = $localize`:@@filterButtonDashboard:Filtrar`;
   public css: string;
@@ -163,7 +163,6 @@ export class DashboardEditStyleDialog {
 
   public setSampleTitleStyle() {
 		this.sampleTitleStyle = {
-			'background-color': this.panelColor,
 			'font-family': this.selectedTitleFont,
 			'color': this.titleFontColor,
 			'text-align': this.alignDasboardTitle === 'flex-start' ? 'left' : this.alignDasboardTitle === 'center' ? 'center' : 'right',
@@ -172,8 +171,7 @@ export class DashboardEditStyleDialog {
 			'font-weight': '600',
 			'white-space': 'nowrap',
 			'padding': '0.1em',
-			'box-shadow': '0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%)'
-    }
+	    }
 	}
 
 	public setSampleFIltersStyle() {
@@ -190,6 +188,8 @@ export class DashboardEditStyleDialog {
 			'color': this.panelTitleFontColor,
 			'text-align': this.alignPanelTitle === 'flex-start' ? 'left' : this.alignPanelTitle === 'center' ? 'center' : 'right',
 			'font-size': `${this.panelTitleFontSize / 10 + 1.2}rem`,
+			'box-shadow': '0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%)',
+			'background-color': this.panelColor,
 		}
 	}
 
@@ -198,6 +198,8 @@ export class DashboardEditStyleDialog {
 			'font-family': this.selectedPanelFont,
 			'color': this.panelFontColor,
 			'font-size': `${this.panelFontSize / 10 + 1}rem`,
+			'box-shadow': '0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%)',
+			'background-color': this.panelColor,
 		};
 	}
 
@@ -240,17 +242,27 @@ export class DashboardEditStyleDialog {
 		this.apply.emit(response);
 	}
 
-  public onApply() {
-    this.display = false;
-    this.saveConfig();
-  }
+	public resetStyles() {
+		this.assignValues(this.stylesProviderService.generateDefaultStyles());
+		this.setSampleFIltersStyle();
+		this.setSampleGlobalStyle();
+		this.setPanelTitleStyle();
+		this.setPanelContentStyle();
+		this.setSampleTitleStyle();
+	}
 
-  public disableApply(): boolean {
-    return false;
-  }
 
-  public onClose(): void {
-    this.display = false;
-    this.close.emit();
-  }
+	public onApply() {
+		this.display = false;
+		this.saveConfig();
+	}
+
+	public disableApply(): boolean {
+		return false;
+	}
+
+	public onClose(): void {
+		this.display = false;
+		this.close.emit();
+	}
 }
