@@ -749,7 +749,7 @@ public startCountdown(seconds: number) {
       let bottomMostItem: GridsterItem | undefined;
       let maxBottom = -1; // Inicializamos con un valor bajo
 
-      for (let item of this.dashboard?.config?.panel) {
+      for (let item of this.panels) {
           // Calculamos la posición final en Y (bottom) del ítem
           const bottom = item.y + item.rows;
   
@@ -764,7 +764,7 @@ public startCountdown(seconds: number) {
 
   // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
   onItemChange(item: GridsterItem): void {
-    if (this.dashboard.config?.panel) {
+    if (this.panels) {
       let valor = this.getBottomMostItem();
       this.height = ((valor.y + valor.rows + 2) * 32);
     } 
