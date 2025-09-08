@@ -22,7 +22,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
               <div class="flex items-center gap-2">
-                <span class="text-md text-slate-500 font-mono">{{ color }}</span>
+                <input [(ngModel)]="color" (input)="handleInputColor()" class="text-md text-slate-500 font-mono">  
                 <p-colorPicker [(ngModel)]="color" (onChange)="handleInputColor()" format="hex" appendTo="body"/>
               </div>
             </div>
@@ -51,6 +51,20 @@
           </div>
         </div>
 
+        <!-- BaseLayer Active --> 
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label i18n="@@noBaseLayerH6"  class="block text-sm font-medium">Activar capa base</label>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [(ngModel)]="baseLayer" (onChange)="modifyBaseLayer()" class="sr-only peer">
+              <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+              </div>
+            </label>
+          </div>
+        </div>
+
         <!-- LegendPosition -->
         <div class="space-y-4">
           <label class="block text-sm font-medium">Posición de la leyenda</label>
@@ -60,8 +74,8 @@
                 type="radio" 
                 id="topleft" 
                 name="legendPosition" 
-                [checked]="legendPosition === 'topleft'"
-                (change)="changeLegend()" 
+                (input)="changeLegend('topleft')" 
+                [checked]="this.legendPosition === 'topleft' "
                 class="h-4 w-4 text-[#00BFB3]"
               />
               <label for="topleft" class="text-sm">Superior izquierda</label>
@@ -71,8 +85,8 @@
                 type="radio" 
                 id="topright" 
                 name="legendPosition" 
-                [checked]="legendPosition === 'topright'"
-                (change)="changeLegend()" 
+                (input)="changeLegend('topright')" 
+                [checked]="this.legendPosition === 'topright' "
                 class="h-4 w-4 text-[#00BFB3]"
               />
               <label for="topright" class="text-sm">Superior derecha</label>
@@ -82,8 +96,8 @@
                 type="radio" 
                 id="bottomleft" 
                 name="legendPosition" 
-                [checked]="legendPosition === 'bottomleft'"
-                (change)="changeLegend()" 
+                (input)="changeLegend('bottomleft')" 
+                [checked]="this.legendPosition === 'bottomleft' "
                 class="h-4 w-4 text-[#00BFB3]"
               />
               <label for="bottomleft" class="text-sm">Inferior izquierda</label>
@@ -93,8 +107,8 @@
                 type="radio" 
                 id="bottomright" 
                 name="legendPosition" 
-                [checked]="legendPosition === 'bottomright'"
-                (change)="changeLegend()" 
+                (input)="changeLegend('bottomright')" 
+                [checked]="this.legendPosition === 'bottomright' "
                 class="h-4 w-4 text-[#00BFB3]"
               />
               <label for="bottomright" class="text-sm">Inferior derecha</label>

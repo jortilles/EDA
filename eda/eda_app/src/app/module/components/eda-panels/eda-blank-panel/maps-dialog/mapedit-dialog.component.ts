@@ -89,7 +89,8 @@ export class MapEditDialogComponent extends EdaDialogAbstract {
     leafletMap.modifyBaseLayer(this.baseLayer);
   }
 
-  changeLegend() {
+  changeLegend(ubication: string) {
+    this.legendPosition = ubication;
     const leafletMap = this.myPanelChartComponent.componentRef.instance;
     leafletMap.changeLegend(this.legendPosition);
   }
