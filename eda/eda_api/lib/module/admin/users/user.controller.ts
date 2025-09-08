@@ -344,10 +344,11 @@ export class UserController {
         try {
             const img = req.params.img;
 
-            const pathImage = path.resolve(__dirname, `../../uploads/users/${img}`);
+            const ROOT_PATH = process.cwd();
+            const uploadsPath = path.join(ROOT_PATH, 'lib/module/uploads/users/images', img);
 
-            if (fs.existsSync(pathImage)) {
-                res.sendFile(pathImage);
+            if (fs.existsSync(uploadsPath)) {
+                res.sendFile(uploadsPath);
             } else {
                 const pathNoImage = path.resolve(__dirname, `../../../assets/no-img.jpg`);
                 res.sendFile(pathNoImage);

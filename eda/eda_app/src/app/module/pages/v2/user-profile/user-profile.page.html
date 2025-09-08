@@ -121,8 +121,12 @@
           <div class="p-6 pt-0 flex flex-col items-center justify-center space-y-5">
             <div class="relative">
               <div class="h-40 w-40 rounded-full overflow-hidden flex items-center justify-center bg-gray-100 dark:bg-gray-700">
-                @if (profileImage()) {
-                  <img [src]="profileImage()" alt="Foto de perfil" class="h-full w-full object-cover">
+                @if (imageTemp) {
+                  @if(profileImage() && (imageTemp!=='start')) {
+                    <img [src]="profileImage()" alt="Foto de perfil" class="h-full w-full object-cover">
+                  } @else {
+                    <img [src]="profileImage() | image" alt="Foto de perfil" class="h-full w-full object-cover">
+                  }
                 } @else {
                   <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
                     <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>

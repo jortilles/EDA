@@ -11,8 +11,6 @@ export class UploadController {
         try {
             const id = req.qs.id;
 
-            console.log('req.files => ', req.files);
-
             if (!req.files) {
                 return next(new HttpException(400, 'You must select an image'));
             }
@@ -21,10 +19,6 @@ export class UploadController {
             const file: any = req.files.img;
             const name = file.name.split('.');
             const extension = name[name.length - 1];
-
-            console.log('file => ', file)
-            console.log('name => ', name)
-            console.log('extension => ', extension)
 
             // Extensiones validas
             const validExtensions = ['png', 'jpg', 'gif', 'jpeg'];
@@ -37,17 +31,10 @@ export class UploadController {
 
             // Nombre archivo personalizado
             const randomName = `${id}-${new Date().getMilliseconds()}.${extension}`;
-            console.log('randomName => ', randomName)
             
             // Mover imagen del temporal a un path
             const ROOT_PATH = process.cwd();
-            
             const uploadsPath = path.join(ROOT_PATH, 'lib/module/uploads/users/images', randomName);
-
-            console.log('ROOT_PATH::::::::::::::::: ', ROOT_PATH);
-            console.log('uploadsPath ===> ', uploadsPath);
-
-
 
             file.mv(uploadsPath, err => {
 
@@ -55,8 +42,6 @@ export class UploadController {
                     console.log(err);
                     return next(new HttpException(500, 'Error moving the image'));
                 }
-
-                console.log('req.qs: ', req.qs);
 
                 if (req.qs.from === 'user') {
                     User.findById(id, (err, userBD) => {
@@ -67,13 +52,9 @@ export class UploadController {
 
                         // const oldPath = path.resolve(__dirname, `../../uploads/users/${userBD.img}`);
                         const oldPath = path.join(ROOT_PATH, 'lib/module/uploads/users/images', `${userBD.img}`);
-                        console.log('oldPath ===> ', oldPath);
-                        console.log('userBD ===> ', userBD);
-
 
                         // Si existe, elimina la imagen anterior
                         if (fs.existsSync(oldPath)) {
-                            console.log('holaaaaaaaaaaaaaaa ......')
                             fs.unlinkSync(oldPath);
                         }
 

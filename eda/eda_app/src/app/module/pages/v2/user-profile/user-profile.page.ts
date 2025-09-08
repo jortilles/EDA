@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common"
 import { FormBuilder, type FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
 import { UserService } from "@eda/services/service.index";
 import { User } from "@eda/models/model.index";
+import { SharedModule } from "@eda/shared/shared.module";
 
 @Component({
   selector: "app-profile-edit",
@@ -10,6 +11,7 @@ import { User } from "@eda/models/model.index";
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    SharedModule,
   ],
   templateUrl: "./user-profile.page.html",
 })
@@ -26,6 +28,7 @@ export class UserProfilePage {
   isUploading = signal(false)
   activeTab = signal("email")
   imageUpload = signal<File | null>(null);
+  imageTemp: any
 
   constructor() {
     this.initForm();
@@ -33,7 +36,11 @@ export class UserProfilePage {
 
   private initForm() {
     this.user = this.userService.getUserObject();
-    console.log('this.user: ', this.user);
+    
+    if(this.user.img) {
+      this.imageTemp='start';
+      this.profileImage.set(this.user.img);
+    }
 
     this.profileForm = this.fb.group(
       {
@@ -64,9 +71,6 @@ export class UserProfilePage {
   onSubmit() {
     if (this.profileForm.valid) {
       console.log(this.profileForm.value)
-      // Mostrar notificación de éxito
-      // TODO
-      // Swal Alert
     }
   }
 
@@ -74,18 +78,14 @@ export class UserProfilePage {
     const input = event.target as HTMLInputElement
     const file = input.files?.[0]
 
-    console.log('input: ',input);
-    console.log('file: ',file);
-
     if (file) {
       this.isUploading.set(true)
       // Simular carga
       setTimeout(() => {
         this.profileImage.set(URL.createObjectURL(file))
+        this.imageTemp = 'success';
         this.isUploading.set(false)
         this.imageUpload.set(file);
-        // console.log('profileImage: ',this.profileImage());
-        // console.log('profileImage tipo: ',typeof this.profileImage());
       }, 1000)
     }
 
@@ -93,15 +93,7 @@ export class UserProfilePage {
 
   handleImageUpload() {
     if (this.profileImage()) {
-
-      // console.log('profileImage => ', this.profileImage());
-      // console.log('imageUpload => ', this.imageUpload());
-
-      // Lógica para subir la imagen
-      // TODO Swal Alert
-      // this.showToast("Imagen actualizada", "Tu foto de perfil ha sido actualizada correctamente.")
       this.userService.changeImage( this.imageUpload(), this.user._id, 'user' );
-
     }
   }
 
