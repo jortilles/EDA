@@ -52,7 +52,10 @@ export class DashboardPageV2 implements OnInit {
   public panelTitle: any;
   public panelContent: any;
   public availableChatGpt: any = false;
-
+  public height: number = 1000;
+  public toLitle: boolean = false;
+  public toMedium: boolean = false;
+  
   titleClick: boolean = false;
   sidebarVisible = false;
   notSaved: boolean = false;
@@ -81,9 +84,7 @@ export class DashboardPageV2 implements OnInit {
   };
 
   public urls: any[] = [];
-  public sendViaMailConfig: any = {
-    enabled: false
-  };
+  public sendViaMailConfig: any = { enabled: false};
 
   public selectedTags: any[] = [];
 
@@ -92,7 +93,8 @@ export class DashboardPageV2 implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initGridsterOptions();
+    this.initializeResponsiveSizes();
+    this.initializeGridsterOptions();
     this.loadDashboard();
     this.dashboardService.notSaved.subscribe(
       (data) => this.notSaved = data
@@ -117,7 +119,7 @@ export class DashboardPageV2 implements OnInit {
 
   
   
-  private initGridsterOptions(): void {
+    private initializeGridsterOptions(): void {
     this.gridsterOptions = {
       gridType: GridType.VerticalFixed, // Configuración general del Gridster : permite scroll vertical y los items generados son de tamaño fijo.
       compactType: CompactType.None, // Controla la configuración de compactar en el gridster
@@ -127,6 +129,8 @@ export class DashboardPageV2 implements OnInit {
       swap: true,
       draggable: {
         enabled: true,
+        ignoreContent: true,
+        dragHandleClass: 'drag-handler' // Clase que hace que los elementos sean draggable
       },
       resizable: {
         enabled: true,
@@ -143,7 +147,7 @@ export class DashboardPageV2 implements OnInit {
       itemChangeCallback: (item: GridsterItem) => this.onItemChange(item),
       itemResizeCallback: (item: GridsterItem) => this.onItemChange(item)
     };
-  }
+    }
 
   public async loadDashboard() {
     const dashboardId = this.route.snapshot.paramMap.get('id');
@@ -160,7 +164,11 @@ export class DashboardPageV2 implements OnInit {
       this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
-      //this.chartUtils.MyPaletteColors = this.styles?.palette['paleta'] || [];
+
+      this.styles.palette = this.styles.palette || '';
+      this.styles.palette['paleta'] = this.styles.palette['paleta'] || [];
+      this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
+      
       if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) { 
         this.assignStyles();
         this.stylesProviderService.setStyles(this.styles, true)
@@ -192,7 +200,7 @@ export class DashboardPageV2 implements OnInit {
   public assignStyles() {
     // Panel del título del informe    
     this.reportPanel = {
-      height: 'auto',
+      height: 5 + (this.dashboard.config.styles.title.fontSize*0.25) + 'vh',
     };
     
     // Texto del título del informe
@@ -266,14 +274,17 @@ export class DashboardPageV2 implements OnInit {
     this.stylesProviderService.loadedPanels = dashboard.config?.panel?.length || -1;
   }
 
-  // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
-  onItemChange(item: GridsterItem): void {
-    //console.log('Cambio en el Item:', item);
-    // console.log('Todos los valores => Dashboard:', this.dashboard);
+  // Init functions
+  private initializeResponsiveSizes(): void {
+      if (window.innerWidth >= 1200) {
+          this.toLitle = false;
+          this.toMedium = false;
+      }
 
-    // let valor = this.getBottomMostItem();
-    // console.log('El menor valor: ', valor);
-    // this.height = (valor.y + valor.rows + 4) * 32;
+      if (window.innerWidth < 1000) {
+          this.toLitle = true;
+          this.toMedium = false;
+      }
   }
 
   showSidebar(event: Event) {
@@ -289,10 +300,8 @@ export class DashboardPageV2 implements OnInit {
       filter.panelList = filter.panelList.filter((id: string) => id !== panel);
     }
 
-    // TODO ??
-    // let valor = this.getBottomMostItem();
-    // console.log('El menor valor: ', valor);
-    // this.height = (valor.y + valor.rows + 4) * 32;
+    let valor = this.getBottomMostItem();
+    this.height = (valor.y + valor.rows + 2) * 32;
   }
 
   public reloadOnGlobalFilter(): void {
@@ -307,19 +316,31 @@ export class DashboardPageV2 implements OnInit {
     }, 500);
   }
   
-  public reloadPanels(): void {
-    this.edaPanels.forEach(async (panel) => {
-      if (panel.currentQuery.length !== 0) {
-        panel.display_v.chart = '';
-        await panel.runQueryFromDashboard(true);
-        panel.panelChart.updateComponent();
+public async reloadPanels(): Promise<void> {
+  const tasks = this.edaPanels.map(async (panel) => {
+    if (panel.currentQuery.length > 0) {
+      panel.display_v.chart = '';
+
+      await panel.runQueryFromDashboard(true);
+
+      // Actualizo el panelChart si existe
+      if (panel.panelChart) {
+        try {
+          panel.panelChart.updateComponent();
+        } catch (error) {
+          console.error('Error al actualizar panelChart', error);
+        }
       }
-    });
+    }
+  });
+
+  // Espero a que terminen todos en paralelo
+  await Promise.all(tasks);
 }
 
 
-  // TODO unificar onRemovePanel(),onDuplicatePanel() a onPanelAction()
-  // TODO simplificar
+
+
   public async onPanelAction(event: IPanelAction): Promise<void> {
     //Check de modo
     let modeEDA = false;
@@ -329,7 +350,7 @@ export class DashboardPageV2 implements OnInit {
     }
 
     //Si es modo arbol o SQL no aplica filtros
-    if (modeEDA && event.code === "ADDFILTER") {
+    if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER')) {
 
 
       const data = event?.data;
@@ -339,9 +360,12 @@ export class DashboardPageV2 implements OnInit {
 
       const table = this.dataSource.model.tables.find((table: any) => table.table_name === column?.table_id);
       if (column && table) {
+          this.edaPanels.forEach(panel => {
+            if (panel.panelChart) panel.panelChart.updateComponent();
+          });
         let config = this.setPanelsToFilter(panel);
         //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
-        if (this.globalFilter.globalFilters) {
+        if (this.globalFilter.globalFilters && this.globalFilter.globalFilters.length > 0) {
           //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla, si lo hay, hay que borrarlo
           let chartToRemove = this.globalFilter.globalFilters.find(
             (f) => f.table?.value === table.table_name && f.column?.value?.column_name === column.column_name &&
@@ -384,7 +408,7 @@ export class DashboardPageV2 implements OnInit {
             this.chartFilter = {
               id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
               isGlobal: true,
-              applyToAll: config.applyToAll,
+              applyToAll: config.applyToAll || true,
               panelList: config.panelList.map((p) => p.id),
               table: {label: table.display_name.default,value: table.table_name,},
               column: {label: column.display_name.default,value: column,},
@@ -411,7 +435,7 @@ export class DashboardPageV2 implements OnInit {
             this.chartFilter = {
               id: `${table.table_name}_${column.column_name}`, //this.fileUtils.generateUUID(),
               isGlobal: true,
-              applyToAll: config.applyToAll,
+              applyToAll: config.applyToAll || true,
               panelList: config.panelList.map((p) => p.id),
               table: { label: table.display_name.default, value: table.table_name,},
               column: { label: column.display_name.default, value: column },
@@ -422,6 +446,9 @@ export class DashboardPageV2 implements OnInit {
           await this.globalFilter.onGlobalFilterAuto(this.chartFilter,table.table_name);
           this.reloadOnGlobalFilter();
         }
+        this.edaPanels.forEach(panel => {
+          if (panel.panelChart) panel.panelChart.updateComponent();
+        });
       }
     } else if (event.code === "QUERYMODE") {
       this.setPanelsQueryMode();
@@ -447,7 +474,6 @@ export class DashboardPageV2 implements OnInit {
     this.dashboardService._notSaved.next(true);
   }
 
-  // TODO revisar funcion (al hacer click en un grafico este deberia añadir un global filter al dashboard)
   async onGlobalFilter(data: any) {
     // const data = action?.data;
     if (data && !_.isNil(data?.inx)) {
@@ -553,14 +579,16 @@ export class DashboardPageV2 implements OnInit {
         tags: this.dashboard.config.tags,
         refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
         // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-        // sendViaMailConfig: this.sendViaMailConfig,
-        onlyIcanEdit: this.onlyIcanEdit,
+        sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
+        onlyIcanEdit: this.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
         styles: this.dashboard.config.styles,
         urls: this.dashboard.config.urls,
         author: this.dashboard.config?.author
       },
       group: this.dashboard.group ? _.map(this.dashboard.group, '_id') : undefined,
     };
+
+    console.log(body)
 
 
     body.config.panel = this.savePanels();
@@ -691,13 +719,6 @@ public startCountdown(seconds: number) {
       if (emptyQuery) isvalid = false;
 
       if (!isvalid) {
-        // TODO
-        // this.showSwalAlert({
-        //   title: $localize`:@@AddFiltersWarningTittle:Solo puedes añadir filtros cuando todos los paneles están configurados`,
-        //   text: $localize`:@@AddFiltersWarningText:Puedes borrar los paneles en blanco o configurarlos`,
-        //   resolveBtnText: $localize`:@@AddFiltersWarningButton:Entendido`
-        // });
-        // Comprovar con funcionamiento antiguo
         this.alertService.addError($localize`:@@AddFiltersWarningTittle:Solo puedes añadir filtros cuando todos los paneles están configurados`)
       }
     }
@@ -719,6 +740,34 @@ public startCountdown(seconds: number) {
         //Si el evento es de un chart de la libreria D3Chart o Leaflet
         return event.data.query.find((query: any) => query?.display_name?.default.localeCompare(event.data.filterBy, undefined, { sensitivity: 'base' }) === 0);    
     }   
-}
+  }
+  
+  //----------------------------------------//
+  //--Revisar si es necesario o se puede eliminar--//
+  // Obtiene el item que se encuentra en la parte más inferior del gridster -- Revisar si es necesario
+  getBottomMostItem(): GridsterItem | undefined {
+      let bottomMostItem: GridsterItem | undefined;
+      let maxBottom = -1; // Inicializamos con un valor bajo
+
+      for (let item of this.panels) {
+          // Calculamos la posición final en Y (bottom) del ítem
+          const bottom = item.y + item.rows;
+  
+          // Si el ítem actual es más bajo, lo actualizamos
+          if (bottom > maxBottom) {
+          maxBottom = bottom;
+          bottomMostItem = item;
+          }
+      }
+      return bottomMostItem; // El item de la posición mas inferior de todo el gridster
+  }
+
+  // Función que cambia el valor de la altura del gridster cada vez que hay un cambio en el elemento
+  onItemChange(item: GridsterItem): void {
+    if (this.panels) {
+      let valor = this.getBottomMostItem();
+      this.height = ((valor.y + valor.rows + 2) * 32);
+    } 
+  }
 
 }

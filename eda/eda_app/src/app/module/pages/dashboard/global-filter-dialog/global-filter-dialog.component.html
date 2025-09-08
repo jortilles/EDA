@@ -1,4 +1,4 @@
-<eda-dialog2 [display]="display" [header]="dialogHeader" width="60vw" height="80vh" (apply)="onApply()"
+<eda-dialog2 [display]="display" [header]="dialogHeader" width="60vw" height="80vh" (apply)="onApply()" [overflow]="'auto'"
     (close)="onClose()">
 
     <div content>
@@ -81,41 +81,17 @@
                 </ng-template>
               </p-dropdown>
 
-              <input class="h-8 w-full rounded-md border px-2 py-4"
+              <input class="h-[3.2rem] w-full rounded-md border px-2 py-4"
                 [(ngModel)]="aliasValue"
                 i18n-placeholder="@@aliasValuePh"
                 placeholder="Alias del filtro (opcional)"
               />
 
-              <!-- TODO Show Alias -->
-              <!-- <div class="flex">
-                <button type="button"
-                  (click)="toggleShowAlias()"
-                  class="rounded-full p-2.5 m-2 ring-0 cursor-pointer">
-                  @if (showAlias) {
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
-                  } @else {
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
-                  }
-                </button>
-                @if (showAlias) {
-                  <input class="h-8 w-full rounded-md border px-2 py-4"
-                    [(ngModel)]="aliasValue"
-                    i18n-placeholder="@@aliasValuePh"
-                    placeholder="Alias del filtro (opcional)"
-                  />
-                }
-              </div> -->
-
               @if (globalFilter.selectedColumn?.column_type !== 'date') {
                 <p-multiSelect id="selectFilterValue" class='eda-filter-multiselect'
                   [options]="columnValues" [(ngModel)]="globalFilter.selectedItems"
                   [virtualScroll]="true" [itemSize]="30"
-                  [style]="{ width: '100%' }"
+                  [style]="{ width: '100%', height:'100%', alignItems:'center'}"
                   [panelStyle]="{minWidth:'15em'}" [maxSelectedLabels]="1" defaultLabel="Valor por defecto"
                   display="chip" appendTo="body">
                 </p-multiSelect>

@@ -35,14 +35,11 @@ import { EdaBubblechartComponent } from '@eda/components/eda-d3-bubblechart/eda-
 import { EdaSunburstComponent } from '@eda/components/eda-sunburst/eda-sunburst.component';
 import { SunBurst } from '@eda/components/eda-sunburst/eda-sunbrust';
 import { ScatterPlot } from '@eda/components/eda-scatter/eda-scatter';
-import { EdaChart } from '@eda/components/eda-chart/eda-chart';
 import { TreeMapConfig } from './chart-configuration-models/treeMap-config';
-import { ChartType } from 'chart.js';
 import { SunburstConfig } from './chart-configuration-models/sunburst-config';
 import { SankeyConfig } from './chart-configuration-models/sankey-config';
 import { ScatterConfig } from './chart-configuration-models/scatter-config';
 import { BubblechartConfig } from './chart-configuration-models/bubblechart.config';
-import { ChartsColors } from '@eda/configs/index'
 
 
 @Component({
@@ -116,13 +113,13 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.props.data && this.props.data.values.length !== 0
             && !this.props.data.values.reduce((a, b) => a && b.every(element => element === null), true)) {
-
-            setTimeout(_ => {
-                this.NO_DATA = false;
-            });
-
-            this.changeChartType();
-
+                requestAnimationFrame(() => {                    
+                setTimeout(_ => {
+                    this.NO_DATA = false;
+                });
+    
+                this.changeChartType();
+              });
         }
         /**
          * If no data
@@ -283,7 +280,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
             labelOffset: 5,
             padding: 5
         };
-      
+
         const config = this.chartUtils.initChartOptions(this.props.chartType, dataDescription.numericColumns[0]?.name,
             dataDescription.otherColumns, manySeries, isstacked, this.getDimensions(), this.props.linkedDashboardProps,
             minMax, styles, cfg.showLabels, cfg.showLabelsPercent, cfg.numberOfColumns, this.props.edaChart, ticksOptions, false, this.styleProviderService);
@@ -741,18 +738,28 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.maps = this.props.maps;
         inject.query = this.props.query;
         inject.draggable = this.props.draggable;
-        try{
-            inject.coordinates = this.props.config['config']['coordinates'];
+        inject.zoom = this.props.zoom;
+        inject.coordinates = this.props.coordinates;
+
+        try {
+            inject.coordinates = this.props.config['config']['coordinates'];                
         }catch{
             inject.coordinates = null ;
         }
+        try {
+            if (true) {
+                inject.zoom = this.props.config["config"]["zoom"];
+            } else {}
+        }catch{}
         try{
-            inject.zoom = this.props.config['config']['zoom'];
-        }catch{
-            inject.zoom =  null ;
-        }
-        try{
-            inject.color = this.props.config['config']['color']  ;
+            if (type === "geoJsonMap") {
+                inject.color = this.props.config["config"]["color"];
+                inject.baseLayer = this.props.config['config']['baseLayer'];
+            } else {
+                inject.initialColor = this.props.config["config"]["initialColor"];
+                inject.finalColor = this.props.config["config"]["finalColor"];
+                inject.baseLayer = true;
+            }
         }catch{
             inject.color =  '#006400';
         }
@@ -761,8 +768,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }catch{
             inject.logarithmicScale =  false;
         }
-        try{
-            inject.legendPosition = this.props.config['config']['legendPosition']  ;
+        try {
+            if (type === "geoJsonMap") {
+                inject.legendPosition = this.props.config['config']['legendPosition']  ;
+            }
         }catch{
             inject.legendPosition =  'bottomleft';
         }
@@ -785,14 +794,18 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaMapComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
+        //this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        
     }
-
+    
     private createGeoJsonMapComponent(inject: EdaMap) {
         this.entry.clear();
         const factory = this.resolver.resolveComponentFactory(EdaGeoJsonMapComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
+        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
+
 
     private renderParallelSets() {
 
@@ -970,12 +983,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public updateComponent() {
         if (this.componentRef && !['table', 'crosstable'].includes(this.props.chartType)) {
             try {
-                if (this.componentRef.instance.inject?.edaChart) { 
+                if (['doughnut', 'polarArea', 'bar', 'horizontalBar', 'line', 'area', 'barline', 'histogram', 'pyramid', 'radar'].includes(this.props.chartType)) {
                     this.componentRef.instance?.updateChart();
                 }
-                else
+                else if (['treeMap', 'sunburst', 'parallelSets', 'bubblechart', 'scatterPlot'].includes(this.props.chartType)) { 
                     this.updateD3ChartColors(this.props.chartType)
-                
+                }
             } catch(err) {
                 console.error(err);
             }
@@ -984,7 +997,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
     public updateD3ChartColors(chartType: string) {
         const numberOfColors = this.componentRef.instance?.colors?.length || 1;
-        const newColors = this.chartUtils.generateRGBColorGradientScaleD3(numberOfColors, this['chartUtils'].MyPaletteColors);
+        const newColors = this.chartUtils.generateRGBColorGradientScaleD3(numberOfColors, this.styleProviderService.ActualChartPalette['paleta']);
         switch (chartType) {
             case 'treeMap':
                 this.props.config.setConfig(new TreeMapConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));

@@ -17,11 +17,10 @@
       <div class="space-y-6">
         <!-- Colors -->
         <div class="space-y-4">
-          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h3>
+          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colores</h3>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
-              <span class="font-medium">{{ label }}</span>
               <div class="flex items-center gap-2">
                 <span class="text-md text-slate-500 font-mono">{{ color }}</span>
                 <p-colorPicker [(ngModel)]="color" (onChange)="handleInputColor()" format="hex" appendTo="body"/>
@@ -62,7 +61,7 @@
                 id="topleft" 
                 name="legendPosition" 
                 [checked]="legendPosition === 'topleft'"
-                (change)="changeLegend('topleft')" 
+                (change)="changeLegend()" 
                 class="h-4 w-4 text-[#00BFB3]"
               />
               <label for="topleft" class="text-sm">Superior izquierda</label>
@@ -73,7 +72,7 @@
                 id="topright" 
                 name="legendPosition" 
                 [checked]="legendPosition === 'topright'"
-                (change)="changeLegend('topright')" 
+                (change)="changeLegend()" 
                 class="h-4 w-4 text-[#00BFB3]"
               />
               <label for="topright" class="text-sm">Superior derecha</label>
@@ -84,7 +83,7 @@
                 id="bottomleft" 
                 name="legendPosition" 
                 [checked]="legendPosition === 'bottomleft'"
-                (change)="changeLegend('bottomleft')" 
+                (change)="changeLegend()" 
                 class="h-4 w-4 text-[#00BFB3]"
               />
               <label for="bottomleft" class="text-sm">Inferior izquierda</label>
@@ -95,7 +94,7 @@
                 id="bottomright" 
                 name="legendPosition" 
                 [checked]="legendPosition === 'bottomright'"
-                (change)="changeLegend('bottomright')" 
+                (change)="changeLegend()" 
                 class="h-4 w-4 text-[#00BFB3]"
               />
               <label for="bottomright" class="text-sm">Inferior derecha</label>

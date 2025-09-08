@@ -15,7 +15,8 @@ export class PanelChart {
   public addTrend: boolean;
   public noRepetitions: boolean;
   public draggable: boolean;
-
+  public coordinates: Array<Array<number>>;
+  public zoom: number;
   constructor(init?: Partial<PanelChart>) {
     Object.assign(this, init);
   }

@@ -1,5 +1,5 @@
-<eda-dialog2 [display]="display" header="Editar estilos"   i18n-header="@@dialogHeaderEditStyles"  width="80vw" height="100vh" [disableApply]="disableApply()"
-  (apply)="onApply()" (close)="onClose()">
+<eda-dialog2 [display]="display" header="Editar estilos"   i18n-header="@@dialogHeaderEditStyles"  width="80vw" height="100vh" [disableApply]="disableApply()" [overflow]="'auto'" [showReset]=true
+  (apply)="onApply()" (close)="onClose()" (reset)="resetStyles()" >
   <div content class="p-6">
     <div class="grid grid-flow-row auto-rows-auto gap-12">
       <div class="flex gap-6">
@@ -26,8 +26,14 @@
               }
           </select>
         </div>
-
-
+    
+        <div class="ml-8">
+          <h6 i18n="@@resetStylesBtn" class="mb-1">Volver a los valores por defecto</h6>
+          <button 
+            class="flex-1 px-4 py-2 text-sm font-medium rounded-t-md focus:outline-none transition-colors duration-300 ease-in-out bg-[#00BFB3] text-white border-[#00BFB3]"
+            (click)="resetStyles()" type="submit"  icon="fa fa-refresh"> Reinciar valores
+          </button>
+        </div>
       </div>
 
       <div class="flex gap-3 w-1/2">
@@ -205,7 +211,7 @@
           </div>
         </div>
 
-        <div class="bg-white border-black rounded shadow p-4 col-span-2">
+        <div class=" p-4 col-span-2">
           <h6 class="text-base font-semibold">{{ samplePanelTitle }}</h6>
           <div [style]="sampleGlobalStyle" class="div-card-body m-4 p-2">
             <h3 [style]="sampleTitleStyle">{{samplePanelDBName}}</h3>
@@ -215,7 +221,7 @@
             </div>
             <div style="display: flex; flex-direction: row">
               <div style="margin: 0.5em" class="card-simulator"
-                [style]="{'background-color':dashBoardStyles.panelColor}">
+                [style]="{'background-color':sampleTitleStyle['background-color']}">
                 <div>
                   <h6 [style]="samplePanelTitleStyle">{{samplePanelName}}</h6>
                   <p [style]="samplePanelContentStyle">
@@ -226,7 +232,7 @@
                 </div>
               </div>
               <div style="margin: 0.5em" class="card-simulator"
-                [style]="{'background-color':dashBoardStyles.panelColor}">
+                [style]="{'background-color':sampleTitleStyle['background-color']}">
                 <div>
                   <h6 [style]="samplePanelTitleStyle">{{samplePanelName}}</h6>
                   <p [style]="samplePanelContentStyle">

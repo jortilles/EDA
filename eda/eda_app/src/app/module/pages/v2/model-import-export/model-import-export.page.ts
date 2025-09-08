@@ -8,6 +8,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { AlertService } from '@eda/services/service.index';
 
 
 @Component({
@@ -20,8 +21,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class ModelImportExportPage implements OnInit {
   private dataSourceNamesService = inject(DataSourceNamesService);
   private dashboardService = inject(DashboardService);
-  private sanitizer = inject(DomSanitizer);
   private dataSourceService = inject(DataSourceService);
+  private alertService = inject(AlertService);
 
   // Signals para el estado
   modelTab = signal<'export' | 'import'>('export');
@@ -29,11 +30,12 @@ export class ModelImportExportPage implements OnInit {
   selectedModel = signal<string>('');
   selectedDashboard = signal<string>('');
   modelFile = signal<File | null>(null);
-  dashboardFile = signal<File | null>(null);
   modelFileName = signal<string>('');
+  dashboardFile = signal<File | null>(null);
   dashboardFileName = signal<string>('');
-  isDraggingModel = signal<boolean>(false);
+  dashboardData = signal<any>(null);
   isDraggingDashboard = signal<boolean>(false);
+  isDraggingModel = signal<boolean>(false);
 
   private globalDSRoute = '/datasource';
   public downloadJsonDashboardHref: any;
@@ -123,6 +125,7 @@ export class ModelImportExportPage implements OnInit {
     const files = input.files;
     if (files && files.length > 0) {
       this.handleFiles(files[0], type);
+      input.value = '';
     }
   }
 
@@ -140,7 +143,7 @@ export class ModelImportExportPage implements OnInit {
 handleModelExport() {
   const selected = this.selectedModel();
   if (!selected) {
-    this.showToast('Error', 'Por favor selecciona un modelo para exportar', 'error');
+    this.alertService.addError('Por favor selecciona un modelo para exportar')
     return;
   }
 
@@ -159,10 +162,10 @@ handleModelExport() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      this.showToast('Éxito', 'Modelo exportado correctamente', 'success');
+      this.alertService.addSuccess('Modelo exportado correctamente')
     },
     err => {
-      this.showToast('Error', 'Ocurrió un problema al exportar el modelo', 'error');
+      this.alertService.addError('Ocurrió un problema al exportar el modelo')
     }
   );
 }
@@ -171,7 +174,7 @@ handleModelExport() {
 handleDashboardExport() {
   const dashboardId = this.selectedDashboard()['_id'];
   if (!dashboardId) {
-    this.showToast('Error', 'Por favor selecciona un dashboard para exportar', 'error');
+    this.alertService.addError('Por favor selecciona un dashboard para exportar')
     return;
   }
 
@@ -189,10 +192,10 @@ handleDashboardExport() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      this.showToast('Éxito', 'Dashboard exportado correctamente', 'success');
+      this.alertService.addSuccess('Dashboard exportado correctamente')
     },
     err => {
-      this.showToast('Error', 'Por favor selecciona un dashboard para exportar', 'error');
+      this.alertService.addError('Por favor selecciona un dashboard para exportar')
     }
   );
 }
@@ -202,7 +205,7 @@ handleDashboardExport() {
 
 handleModelImport() {
   if (!this.modelFile()) {
-    this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
+      this.alertService.addError('Por favor selecciona un archivo para importar')
     return;
   }
 
@@ -215,6 +218,7 @@ handleModelImport() {
       const tables = json.ds.model.tables;
       const modelInconsistencies: string[] = [];
       let isInconsistentDM = true;
+      
 
       // Recorremos dashboards para comprobar integridad
       this.dashboards.forEach(({ value }) => {
@@ -242,27 +246,32 @@ handleModelImport() {
               });
             }
           },
-          error: () => this.showToast('Error', 'Error al verificar integridad del modelo', 'error')
+          error: () => this.alertService.addError('Error al verificar integridad del modelo')
         });
       });
 
       // Actualizamos el modelo en el servidor --> Antiguo importModel()
       this.dataSourceService.updateModelInServer(modelId, json).subscribe({
-        next: () => this.showToast('Éxito', 'Modelo importado correctamente', 'success'),
-        error: () => this.showToast('Error', 'Ha ocurrido un error al importar el modelo', 'error')
+        next: () => this.alertService.addSuccess('Modelo importado correctamente'),
+        error: () => this.alertService.addError('Ha ocurrido un error al importar el modelo')
+
       });
     } catch {
-      this.showToast('Error', 'El archivo no tiene un formato JSON válido', 'error');
+      this.alertService.addError('El archivo no tiene un formato JSON válido');
     }
   };
   fileReader.readAsText(this.modelFile());
+
+  // Clean fields
+  this.modelFileName.set('');
+  this.modelFile.set(null);
 }
 
 
 
 handleDashboardImport() {
   if (!this.dashboardFile()) {
-    this.showToast('Error', 'Por favor selecciona un archivo para importar', 'error');
+    this.alertService.addError('Por favor selecciona un archivo para importar');
     return;
   }
 
@@ -272,35 +281,39 @@ handleDashboardImport() {
       const importedDashboard = JSON.parse(reader.result as string);
 
       // Guardamos el dashboard importado en memoria
-      this.dashboardFile = importedDashboard;
+      this.dashboardFile.set(importedDashboard);
 
       // Intentar actualizar
       this.dashboardService.updateDashboard(importedDashboard._id, importedDashboard).subscribe(
         () => {
-          this.showToast('Éxito', 'Dashboard actualizado correctamente', 'success');
+          this.alertService.addSuccess('Dashboard actualizado correctamente')
         },
         () => {
           // Si falla, intentar crear
           this.dashboardService.addNewDashboard(importedDashboard).subscribe(
             () => {
-              this.showToast('Éxito', 'Dashboard creado correctamente', 'success');
+              this.alertService.addSuccess('Dashboard creado correctamente')
             },
             err => {
-              this.showToast('Error', 'No se pudo importar el dashboard: ' + err.message, 'error');
+              this.alertService.addError('No se pudo importar el dashboard: ' + err.message + 'error')
             }
           );
         }
       );
     } catch (e) {
-      this.showToast('Error', 'El archivo no tiene un formato JSON válido', 'error');
+      this.alertService.addError('El archivo no tiene un formato JSON válido: ' + e.message + 'error')
     }
   };
 
   reader.onerror = () => {
-    this.showToast('Error', 'No se pudo leer el archivo seleccionado', 'error');
+    this.alertService.addError('No se pudo leer el archivo seleccionado')
   };
 
   reader.readAsText(this.dashboardFile());
+
+  // Clean fields
+  this.dashboardFile.set(null);
+  this.dashboardFileName.set('');
 }
 
   // Método para mostrar notificaciones

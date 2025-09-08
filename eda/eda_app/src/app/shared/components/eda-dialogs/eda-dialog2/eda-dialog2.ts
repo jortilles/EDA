@@ -9,18 +9,20 @@ export abstract class EdaDialog2 {
     @Input() height: string = '60vh';
 
     @Input() breakpoints: Record<string, string> = {
-        xl: '60vw',
-        lg: '70vw',
-        md: '80vw',
+        xl: '90vw',
+        lg: '90vw',
+        md: '90vw',
         sm: '90vw',
     };
 
     @Output() apply: EventEmitter<any> = new EventEmitter();
     @Output() close: EventEmitter<any> = new EventEmitter();
+    @Output() reset: EventEmitter<any> = new EventEmitter();
 
 
     @Input() showApply: boolean = true;
     @Input() showClose: boolean = true;
+    @Input() showReset: boolean = false;
     @Input() disableApply: boolean = false;
 
     // Mapa estándar de siglas a píxeles
@@ -39,6 +41,9 @@ export abstract class EdaDialog2 {
 
     public onClose(): void {
         this.close.emit(false);
+    }
+    public onReset(): void {
+        this.reset.emit(false);
     }
 
 }

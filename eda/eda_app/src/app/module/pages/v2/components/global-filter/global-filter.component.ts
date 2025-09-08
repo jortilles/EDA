@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef } from '@angular/core';
+import '@angular/localize/init';
 
 
 @Component({
@@ -29,8 +30,8 @@ export class GlobalFilterV2Component implements OnInit {
     public globalFilters: any[] = [];
     public globalFilter: any;
     public styleButton: any = {};
-    private styleSub: Subscription;
-
+    loading: boolean = true;
+    placeholderText = this.loading ? $localize`:@@Cargando:Cargando...` : '';
 
     public filterController: EdaDialogController;
 
@@ -79,12 +80,15 @@ export class GlobalFilterV2Component implements OnInit {
         };
     }
 
-    public initGlobalFilters(filters: any[]): void {
+    public async initGlobalFilters(filters: any[]): Promise<void> {
         this.globalFilters = _.cloneDeep(filters);
         // this.isDashboardCreator = this.dashboard.isDashboardCreator;
         this.setFiltersVisibility();
         this.setFilterButtonVisibilty();
-        this.fillFiltersData();
+        await this.fillFiltersData();
+        // Datos de los filtros ya cargados
+        this.placeholderText ='';
+        this.loading = false;
     }
 
     private setFiltersVisibility(): void {
@@ -114,16 +118,18 @@ export class GlobalFilterV2Component implements OnInit {
         });
     }
 
+public async fillFiltersData(): Promise<void> {
+    const tasks: Promise<any>[] = [];
 
-    public fillFiltersData() {
-        for (const filter of this.globalFilters) {
-            if (this.getFilterType(filter) == 'date') {
-                this.loadDatesFromFilter(filter)
-            } else {
-                this.loadGlobalFiltersData(filter);
-            }
+    for (const filter of this.globalFilters) {
+        if (this.getFilterType(filter) === 'date') {
+            this.loadDatesFromFilter(filter)
+        } else {
+            tasks.push(this.loadGlobalFiltersData(filter)); // Promise para asegurarnos de que todos los datos se han cargado
         }
     }
+    await Promise.all(tasks);
+}
 
     /** Apply filter to panels when filter's selected value changes */
     public applyGlobalFilter(filter: any): void {
@@ -196,7 +202,6 @@ export class GlobalFilterV2Component implements OnInit {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 if (filter.isdeleted) {
-                    // TODO: Revisar comportament quan es borra 
                     filter.selectedItems = [];
                     this.applyGlobalFilter(filter);
                     this.removeGlobalFilter(filter);
@@ -213,7 +218,7 @@ export class GlobalFilterV2Component implements OnInit {
                     if (filter.column.value.column_type === 'date' && filter.selectedItems.length > 0) {
                         this.loadDatesFromFilter(filter);
                     } else {
-                        await this.loadGlobalFiltersData(filter);
+                        await this.loadGlobalFiltersData(filter);    
                     }
                     
                     // Apply globalFilter to linkedPanels

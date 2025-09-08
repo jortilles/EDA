@@ -75,10 +75,39 @@ export class DashboardSidebarComponent {
   refreshTime: number = null;
 
   mostrarOpciones = false;
+  mostrarFiltros = false;
+  hayFiltros = false;
 
   isImportPanelVisible = false;
 
-  sidebarItems = [
+  sidebarItems: any[] = [];
+
+  ngOnInit(): void {
+    this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
+    this.initSidebar();
+    this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
+    const methodNames: string[] = (this as any).__proto__.__exposedMethods || [];
+
+    for (const name of methodNames) {
+      const method = (this as any)[name];
+      if (typeof method === 'function') {
+        this.exposedMethods[name] = method.bind(this);
+      }
+    }
+
+    // Subscribe to method execution commands
+    this.sidebarService.command$.subscribe(({ method, args }) => {
+      const fn = this.exposedMethods[method];
+      if (fn) {
+        fn(...(args || []));
+      } else {
+        console.warn(`Method '${method}' is not exposed on DashboardSidebarComponent`);
+      }
+    }); 
+  }
+
+  initSidebar() { 
+    this.sidebarItems = [
     {
       label: "Nou panell",
       icon: "pi pi-plus-circle",
@@ -95,6 +124,17 @@ export class DashboardSidebarComponent {
       command: () => this.onAddGlobalFilter()
       
     },
+      {
+        label: "Editar filtros",
+        icon: "pi pi-filter",
+        command: () => this.toggleGlobalFilter(),
+        items: this.dashboard.globalFilter.globalFilters.map(f => ({
+          label: f?.selectedColumn?.description?.default || f?.column?.value?.description?.default ,
+          icon: "pi pi-check",
+          command: () => this.handleSpecificFilter(f),
+        }),
+        ),
+      },
     {
       label: "Importar panell",
       icon: "pi pi-plus-circle",
@@ -181,29 +221,8 @@ export class DashboardSidebarComponent {
         this.isCustomActionDialogVisible = true;
         this.hidePopover();
       }
-    },
-  ]
-
-  ngOnInit(): void {
-    this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
-    const methodNames: string[] = (this as any).__proto__.__exposedMethods || [];
-
-    for (const name of methodNames) {
-      const method = (this as any)[name];
-      if (typeof method === 'function') {
-        this.exposedMethods[name] = method.bind(this);
-      }
-    }
-
-    // Subscribe to method execution commands
-    this.sidebarService.command$.subscribe(({ method, args }) => {
-      const fn = this.exposedMethods[method];
-      if (fn) {
-        fn(...(args || []));
-      } else {
-        console.warn(`Method '${method}' is not exposed on DashboardSidebarComponent`);
-      }
-    }); 
+      },
+    ]
   }
 
   showPopover(event: Event) {
@@ -215,6 +234,7 @@ export class DashboardSidebarComponent {
     this.isPopoverVisible = false;
     this.popover.hide();
     this.mostrarOpciones = false;
+    this.mostrarFiltros = false;
   }
 
   public onAddGlobalFilter(): void {
@@ -337,10 +357,10 @@ export class DashboardSidebarComponent {
           filters: this.dashboard.cleanFiltersData(),
           applyToAllfilter: this.dashboard.applyToAllfilter,
           visible: newDashboard.visible,
-          tags: this.dashboard.dashboard.config.tags, //TODO ==> Done?
+          tags: this.dashboard.dashboard.config.tags,
           refreshTime: (this.dashboard.refreshTime > 5) ? this.dashboard.refreshTime : this.dashboard.refreshTime ? 5 : null,
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
-          sendViaMailConfig: this.dashboard.sendViaMailConfig, //TODO ==> Done?
+          sendViaMailConfig: this.dashboard.sendViaMailConfig,
           onlyIcanEdit: this.dashboard.onlyIcanEdit, //TODO ==> Done?
           styles: this.stylesProviderService.generateDefaultStyles(),
         },
@@ -402,9 +422,24 @@ export class DashboardSidebarComponent {
     this.isMailConfigDialogVisible = false;
   }
 
-  public saveMailConfig(mailConfig: any) {
+  public saveMailConfig(sendViaMailConfig: any) {
+    // Cerrar panel
     this.isMailConfigDialogVisible = false;
-    this.dashboard.dashboard.config.sendViaMailConfig = mailConfig;  
+
+    // Clonar info del sendViaMailConfig
+    const configToSave = {
+      enabled: true,
+      hours: sendViaMailConfig.hours,
+      lastUpdated: sendViaMailConfig.lastUpdated,
+      mailMessage: sendViaMailConfig.mailMessage,
+      minutes: sendViaMailConfig.minutes,
+      quantity: sendViaMailConfig.quantity,
+      units: sendViaMailConfig.units,
+      users: sendViaMailConfig.users
+    };
+    
+    // Asignar datos al config
+    this.dashboard.dashboard.config.sendViaMailConfig = configToSave;  
   }
 
 
@@ -528,19 +563,33 @@ public exportAsJPEG() {
   
 
   
+  // Metodos de creación de la sidebar
    public indiceMasOpciones(): number {
     return this.sidebarItems.findIndex(item => item.label === 'Más opciones');
   }
 
   public itemsVisibles() {
-    return this.sidebarItems.slice(0, this.indiceMasOpciones()); // antes de 'Más opciones'
+    return this.sidebarItems.slice(0, this.indiceMasOpciones());
   }
 
   public itemsDesplegables() {
-    return this.sidebarItems.slice(this.indiceMasOpciones()); // incluye 'Más opciones' y después
+    return this.sidebarItems.slice(this.indiceMasOpciones());
   }
 
+  // Cambiar estados de la sidebar
   public toggleOpciones() {
     this.mostrarOpciones = !this.mostrarOpciones;
+  }
+
+  public toggleGlobalFilter() {
+    this.mostrarFiltros = !this.mostrarFiltros;
+  }
+  
+  // Llamada al filtro especifico via sidebar
+  public handleSpecificFilter(filtro: any) {
+    console.log(filtro)
+    this.hidePopover();
+    this.toggleGlobalFilter();
+    this.dashboard.globalFilter.onShowGlobalFilter(false, filtro)
   }
 }

@@ -19,22 +19,45 @@
     <div class="bg-white px-3 pb-3 pt-2">
       <div class="flex flex-col gap-2 text-lg">
         @for (item of itemsVisibles(); track item.label) {
-        <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
-          (click)="item.command()">
-          <i [class]="item.icon + ' text-gray-600'"></i>
-          <span>{{ item.label }}</span>
-          @if (item.items) {
-          <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
+          @if (item.label === "Editar filtros") {
+            @if(hayFiltros){
+              <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="item.command()">
+                <i [class]="item.icon + ' text-gray-600'"></i>
+                <span>{{ item.label }}</span>
+                <i class="pi pi-chevron-down ml-auto text-gray-400" [style.transform]="mostrarFiltros ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
+              </button>
+  
+              @if (item.items && mostrarFiltros) {
+                <div class="ml-6 flex flex-col gap-2">
+  
+                  @for (subItem of item.items; track subItem.label) {
+                    <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="subItem.command()">
+                      <i [class]="subItem.icon + ' text-gray-600'"></i>
+                      <span>{{ subItem.label }}</span>
+                      <i class="pi" [class.pi-check]="subItem.active" [class.pi-square-o]="!subItem.active" ml-auto></i>
+                    </button>
+                  }
+                </div>
+            }
+            }
+          }@else{
+            <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="item.command()">
+              <i [class]="item.icon + ' text-gray-600'"></i>
+              <span>{{ item.label }}</span>
+              @if (item.items) {
+                <i class="pi pi-chevron-down ml-auto text-gray-400" [style.transform]="inputVisible ? 'rotate(180deg)' : 'rotate(0deg)'" style="transition: transform 0.3s"></i>
+              }
+            </button>
+            @if (item.label === "Live Dashboard" || item.label === "Nou filtre") {
+              @if (item.label === "Live Dashboard" && inputVisible) {
+                <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value" 
+                class="w-full mt-1 px-2 py-1 border rounded-md" placeholder="Seconds_to_refresh" />
+              }
+              <hr class="my-2" />
+            }
           }
-        </button>
-        @if (item.label === "Live Dashboard" || item.label === "Nou filtre") {
-        @if (item.label === "Live Dashboard" && inputVisible) {
-          <input type="number" [value]="refreshTime" (input)="refreshTime = $any($event.target).value" 
-          class="w-full mt-1 px-2 py-1 border rounded-md" placeholder="Seconds_to_refresh" />
         }
-        <hr class="my-2" />
-        }
-      }
+        
 
         <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
           (click)="toggleOpciones()">
@@ -48,12 +71,11 @@
         @if (mostrarOpciones) {
         <div class="ml-6 flex flex-col gap-2">
           @for (item of itemsDesplegables().slice(1); track item.label) {
-          <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
-            (click)="item.command()">
+          <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="item.command()">
             <i [class]="item.icon + ' text-gray-600'"></i>
             <span>{{ item.label }}</span>
             @if (item.items) {
-            <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
+              <i class="pi pi-chevron-down ml-auto text-gray-400"></i>
             }
           </button>
           }

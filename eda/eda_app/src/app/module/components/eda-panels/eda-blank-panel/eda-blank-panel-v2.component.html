@@ -1,32 +1,25 @@
-<div class="flex flex-col h-full rounded-lg p-6 shadow-sm bg-white" [ngStyle]="panelContent">
+<div class="flex flex-col h-full rounded-lg pb-6 pr-6 pl-6 shadow-sm bg-white" [ngStyle]="panelContent">
   <!-- Header -->
-<div class="flex items-center justify-between mb-2 w-full">
-  <!-- Contenedor con alineación dinámica para el título -->
-  <div class="flex-1" >
-    <h2 class="text-lg font-medium pl-3" [ngStyle]="panelText">{{ panel.title || title }}</h2>
-  </div>
+  <div class="flex items-center justify-between mb-2 w-full drag-handler">
+    <!-- Contenedor con alineación dinámica para el título -->
+    <div class="flex-1">
+      <h2 class="text-lg font-medium pt-3" [ngStyle]="panelText">{{ panel.title || title }}</h2>
+    </div>
 
-  <!-- Ícono a la derecha -->
-  <i class="pi pi-ellipsis-v cursor-pointer ml-2" (click)="contextMenu.showContextMenu($event)"></i>
-</div>
+    <!-- Ícono a la derecha -->
+    <i class="pi pi-ellipsis-v cursor-pointer ml-2" (click)="contextMenu.showContextMenu($event)"></i>
+  </div>
 
 
   <div
-    class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50 border border-dashed border-gray-300"
+    class="flex items-center justify-center flex-grow overflow-y-auto rounded-lg bg-gray-50"
     [class.spinner-panel]="display_v.minispinner">
     @if (display_v.saved_panel && !display_v.minispinner) {
     <div class="relative w-full h-full">
-      <panel-chart
-        #PanelChartComponent
-        [props]="panelChartConfig"
-        (configUpdated)="setChartProperties($event)"
-        (onChartClick)="onChartClick($event)"
-        [ngStyle]="panelContent"
-        [ngClass]="isSpecialChart(panelChartConfig.chartType) 
+      <panel-chart #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties($event)"
+        (onChartClick)="onChartClick($event)" [ngStyle]="panelContent" [ngClass]="isSpecialChart(panelChartConfig.chartType) 
           ? 'h-full w-full flex justify-center content-center overflow-hidden flex-wrap' 
-          : 'h-full w-full block overflow-hidden'"
-          style="flex-wrap:wrap!important;"
-      ></panel-chart>
+          : 'h-full w-full block overflow-hidden'" style="flex-wrap:wrap!important;"></panel-chart>
     </div>
     }
 
@@ -41,7 +34,8 @@
   </div>
 </div>
 
-<eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="98vw" [ngStyle]="panelContent" height="100vh">
+<eda-dialog2 *ngIf="display_v.page_dialog" [display]="display_v.page_dialog" width="90vw" [ngStyle]="panelContent"
+  height="100vh">
   <!-- Header -->
   <div header class="w-full flex items-center justify-between border-b px-2 py-2">
     <div class="p-2" (click)="titleClick=true;">
@@ -62,8 +56,8 @@
     <div class="flex-1 relative">
       <!-- Tabs -->
       <div class="flex border-b mb-4 space-x-4 pl-3">
-        <h3 (click)="indextab = 0" i18n="@@vistaSeleccionador" 
-        class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200"
+        <h3 (click)="indextab = 0" i18n="@@vistaSeleccionador"
+          class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200"
           [ngClass]="indextab === 0 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'">
           {{ selectedQueryMode !== 'SQL' ? editQuery : editSQLQuery }}
         </h3>
@@ -71,7 +65,7 @@
         <h3 (click)="indextab = 1" i18n="@@vistaPrevia"
           class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200"
           [ngClass]="indextab === 1 ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'">
-          Vista previa 
+          Vista previa
         </h3>
 
       </div>
@@ -91,7 +85,7 @@
             <input class="h-8 rounded-md w-full border px-2" placeholder="Buscar entidades..."
               (keyup)="onTableInputKey($event)">
           </div>
-          <div class="flex border-r overflow-y-auto h-[67dvh]">
+          <div class="flex border-r overflow-y-auto h-[51vh]">
             <div>
               <ng-template #entityList>
                 <div class="space-y-1 p-2">
@@ -147,7 +141,7 @@
               (keyup)="onColumnInputKey($event)">
           </div>
           }
-          <div class="flex w-full border-r overflow-y-auto h-[67dvh]">
+          <div class="flex w-full border-r overflow-y-auto h-[51vh]">
 
             <div>
               <div class="space-y-1 p-2" cdkDropList #columnsList="cdkDropList" [cdkDropListData]="columns"
@@ -177,17 +171,18 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex-1 p-6 w-4/6 overflow-y-auto">
-          <div class="space-y-6">
+        <div class="flex-1 p-3 w-4/6 overflow-y-auto h-[62.5vh]">
+          <div class="space-y-4">
             <!-- Selected Attributes -->
             <div>
               <h3 i18n="@@seleccionH4" class="text-lg mb-2 font-bold" i18n-title="@@seleccionTitle"
                 title="Para lanzar una consulta. Seleccione los atributos que desea ver, Clique sobre ellos para configurarlos y ejecute la consulta. Siempre podrá volver a esta vista.">
                 Mostrar los siguientes atributos:
               </h3>
-              <div class="flex gap-1 rounded-lg border p-2 min-h-[25px]  w-auto h-auto select-list bg-green-100" cdkDropList
-                #selectList="cdkDropList" cdkDropListOrientation="horizontal" [cdkDropListData]="currentQuery"
-                [cdkDropListConnectedTo]="[columnsList, filterList]" (cdkDropListDropped)="drop($event, 'select-list')">
+              <div class="flex gap-1 rounded-lg border p-2 min-h-[25px]  w-auto h-auto select-list bg-green-100"
+                cdkDropList #selectList="cdkDropList" cdkDropListOrientation="horizontal"
+                [cdkDropListData]="currentQuery" [cdkDropListConnectedTo]="[columnsList, filterList]"
+                (cdkDropListDropped)="drop($event, 'select-list')">
                 @for (attr of currentQuery; track attr) {
                 <div
                   class="flex justify-start items-center gap-2 rounded-md px-3 py-2 font-bold bg-muted/50 cursor-move z-10 bg-white p-2 select-box text-center"
@@ -258,33 +253,58 @@
             @if(currentQuery.length > 0){
 
             <div class="columns-4">
-              <div class="flex items-center justify-between">
-                <span class="flex items-center gap-1">
-                  <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200" [class] i18n="@@yourQuerySQL"
+              <div class="relative inline-block">
+                <div class="flex items-center gap-2">
+                  <h3 class="cursor-pointer text-lg font-bold font-sans transition-colors duration-200"
                     [ngClass]="!display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
-                    (click)="display_v.advancedSetting = false">Mi
-                    consulta SQL</h3>
-                  <i class="pi pi-info-circle cursor-pointer mb-4" [pTooltip]="ptooltipViewQuery"
-                    (click)="getQuery($event)">
-                  </i>
-                </span>
-              </div>
-              <div>
-                <div class="mt-4">
-                  <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-fit"
-                    [ngClass]="display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'" (click)="display_v.advancedSetting = true">
-                    Opciones avanzadas
+                    (click)="display_v.advancedSetting = false">
+                    Mi consulta SQL
                   </h3>
+                  <span>
+                    <i class="pi pi-info-circle cursor-pointer text-gray-500" [pTooltip]="ptooltipViewQuery"
+                      (click)="getQuery($event)">
+                    </i>
+                  </span>
                 </div>
+                <!-- Contenedor de query -->
+                <div *ngIf="display_v.showQueryContainer" id="query-container"
+                  class="absolute top-full left-0 mt-1 w-[35vw] h-[25vh] max-h-[80vh] bg-white z-50 shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col">
+                  <div *ngIf="display_v.minispinnerSQL" class="flex justify-center items-center w-full min-h-[15vh]">
+                    <p-progressSpinner [style]="{width:'4vw', height:'4vw'}" strokeWidth="5"
+                      fill="#EEEEEE"></p-progressSpinner>
+                  </div>
+                  <textarea *ngIf="!display_v.minispinnerSQL" class="w-full flex-1 p-2 border rounded resize-none mb-2"
+                    [(ngModel)]="queryFromServer" pInputTextarea autoResize="autoResize">
+                  </textarea>
+                  <div class="mt-2 flex gap-4">
+                    <button type="button" pButton icon="fa fa-database" class="p-button-success mt-2 w-fit"
+                      (click)="migrateQuery()" label="Abrir en modo SQL">
+                    </button>
+                    <button type="button" pButton icon="pi pi-times" class="p-button-secondary mt-2 w-fit"
+                      (click)="display_v.showQueryContainer = false" label="Cancelar">
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="mt-2">
+                <h3 class="cursor-pointer pb-2 text-lg mb-2 font-bold font-sans transition-colors duration-200 w-fit"
+                  [ngClass]="display_v.advancedSetting ? 'text-[#00bfb3] border-b-2 border-[#00bfb3]' : 'text-gray-600'"
+                  (click)="display_v.advancedSetting = true">
+                  Opciones avanzadas
+                </h3>
               </div>
             </div>
+
+
 
 
 
             <!-- Query Summary -->
 
             @if(!display_v.advancedSetting){
-            <div class="grid grid-cols-2 mt-1 ml-2 border rounded-lg bg-gray-50 min-h-[230px] ">
+            <div class="grid grid-cols-2 ml-2 border rounded-lg bg-gray-50 min-h-[25vh] overflow-y-auto">
               <div class=" ml-3">
                 <h3 class="text-base font-semibold" i18n="@@resumenAtrH6">Resumen de atributos</h3>
                 @for (attr of currentQuery; track attr.display_name.default) {
@@ -326,11 +346,11 @@
             </div>
             }
             @else {
-            <div class="grid grid-cols-8 gap-x-8">
+            <div class="grid grid-cols-8">
               <!-- Join Type -->
               <div class="col-span-3">
                 <h3 i18n="@@joinTypeH4" class="text-base font-bold inline">Tipo de intersección:</h3>
-                <button *ngFor="let type of joinTypeOptions" class="border px-3 py-1 rounded-lg ml-1 mb-4 hover:bg-gray-100"
+                <button *ngFor="let type of joinTypeOptions" class="border px-3 py-1 rounded-lg mb-4 hover:bg-gray-100"
                   (click)="onJoinTypeChange(type)">
                   {{ type.label }}
                 </button>
@@ -338,7 +358,8 @@
               <!-- Show Top -->
               <div class="col-span-3 text-center">
                 <h3 class="text-base font-bold inline"><span i18n="@@topQueryH4">Mostrar Top:</span></h3>
-                <input type="number" [(ngModel)]="queryLimit" class="w-1/6 border p-1 rounded ml-2" (input)="onTopChange()">
+                <input type="number" [(ngModel)]="queryLimit" class="w-1/6 border p-1 rounded ml-2"
+                  (input)="onTopChange()">
               </div>
 
               <div class="col-span-2">
@@ -364,22 +385,22 @@
                 class="w-full h-64 p-3 border border-gray-300 rounded-md font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#00BFB3] focus:border-[#00BFB3]"
                 placeholder="SELECT * FROM customers">
                         </textarea>
-              <!-- TODO Sugerir SQL -->
+              <!-- TBD -->
               <!-- <button 
-                          class="absolute right-2 top-2 px-2 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 mr-1">
-                            <circle cx="12" cy="12" r="5"></circle>
-                            <line x1="12" y1="1" x2="12" y2="3"></line>
-                            <line x1="12" y1="21" x2="12" y2="23"></line>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                            <line x1="1" y1="12" x2="3" y2="12"></line>
-                            <line x1="21" y1="12" x2="23" y2="12"></line>
-                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                          </svg>
-                          Sugerir
-                        </button> -->
+                class="absolute right-2 top-2 px-2 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-100 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 mr-1">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                Sugerir
+              </button>  -->
             </div>
 
             <!-- Table Selection and Filters -->
@@ -517,7 +538,7 @@
                   </svg>
                 </summary>
                 <div class="pb-4 pt-2">
-                  <div class="max-h-[400px] overflow-y-auto pr-4">
+                  <div class="max-h-[40vh] overflow-y-auto pr-4">
                     <div class="space-y-4">
                       <!-- Simple Query -->
                       <div>
@@ -609,26 +630,17 @@
     <div class="grid grid-cols-5 gap-x-4">
       <div class="col-span-4">
         <div class="rounded-lg border p-4 bg-muted/30" style="height:60vh">
-          <panel-chart 
-            #panelChartComponentPreview 
-            [props]="panelChartConfig" 
-            [style]="panelContent">
+          <panel-chart #panelChartComponentPreview [props]="panelChartConfig" [style]="panelContent">
           </panel-chart>
         </div>
       </div>
       <div class="col-start-5">
         <div class="w-96 space-y-2" [ngClass]="{'w-3/6': graphicType==='crosstable'}">
           <form [formGroup]="chartForm">
-            <p-dropdown 
-              id="chartSelector" 
-              formControlName="chart" 
-              optionLabel="label" 
-              [style]="{'width':'18.5vw'}" 
-              [options]="chartTypes" 
-              [autoDisplayFirst]="false"  
-              [scrollHeight]="'52.5vh'"
+            <p-dropdown id="chartSelector" formControlName="chart" optionLabel="label" [style]="{'width':'16.5vw'}"
+              [options]="chartTypes" [autoDisplayFirst]="false" [scrollHeight]="'52.5vh'"
               (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))">
-              
+
               <ng-template pTemplate="selectedItem">
                 @if (chartForm.value.chart) {
                 <div class="flex items-center">
@@ -683,12 +695,10 @@
 
 
   <ng-container footer>
-    <button class="execute-button"
-      [disabled]="disableRunQuery()" (click)="runManualQuery()">
+    <button class="execute-button" [disabled]="disableRunQuery()" (click)="runManualQuery()">
       Execute
     </button>
-    <button class="confirm-button" 
-      [disabled]="isCrosstableModified()" (click)="savePanel();">
+    <button class="confirm-button" [disabled]="isCrosstableModified()" (click)="savePanel();">
       Confirm
     </button>
     <button class="rounded-md px-4 py-2 border" (click)="closeEditarConsulta()">
@@ -699,11 +709,15 @@
 
 <app-column-dialog *ngIf="configController" [controller]="configController"></app-column-dialog>
 
-<app-filter-dialog *ngIf="filterController" [controller]="filterController"></app-filter-dialog>
+@if(filterController){
+  <app-filter-dialog [controller]="filterController" [height]="'10px'"></app-filter-dialog>
+}
 
 <app-chart-dialog *ngIf="chartController" [controller]="chartController"></app-chart-dialog>
 
 <app-mapedit-dialog *ngIf="mapController" [controller]="mapController"></app-mapedit-dialog>
+
+<app-mapcoordedit-dialog *ngIf="mapCoordController" [controller]="mapCoordController"></app-mapcoordedit-dialog>
 
 <app-kpi-dialog *ngIf="kpiController" [controller]="kpiController"></app-kpi-dialog>
 
@@ -743,6 +757,7 @@
   <app-whatif-dialog [(currentQuery)]="currentQuery" (close)="onCloseWhatIfDialog()"></app-whatif-dialog>
 }
 
-@if (display_v.filterMapperDialog) {
-  <app-filter-mapper-dialog [dashboard]="dashboard" [panel]="panel" (close)="onCloseFilterMapperDialog($event)"></app-filter-mapper-dialog>
+@if (display_v.filterMapperDialog) {  
+  <app-filter-mapper-dialog [dashboard]="dashboard" [panel]="panel"
+    (close)="onCloseFilterMapperDialog($event)"></app-filter-mapper-dialog>
 }

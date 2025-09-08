@@ -37,22 +37,24 @@ export class DashboardTagModal implements OnInit {
 
     if (this.newTag.length === 0) {
       this.newTag = !this.newTag;
-      this.alertService.addError("Empty tag")
+      this.alertService.addError($localize`:@@emptyTag:Este tag esta vacío`);
     } else if (repeated) {
       this.newTag = '';
-      this.alertService.addError("Tag already existing")
+      this.alertService.addError($localize`:@@existentTag:Este tag ya existe`);
     } else {
       const tag = JSON.parse(JSON.stringify({ label: this.newTag, value: this.newTag }));
       this.tags.push(tag);
-      this.selectedTags.push(tag);
       this.newTag = '';
       localStorage.setItem('tags', JSON.stringify(this.tags));
+      this.alertService.addSuccess($localize`:@@tagCreated:Etiqueta creada correctamente`);
+      (this.selectedTags ??= []).push(tag.label);
     }
   }
 
   public onApply() {
     this.display = false;
     this.close.emit(this.selectedTags);
+    this.alertService.addSuccess($localize`:@@tagAssigned:Etiqueta asignada correctamente`);
   }
 
   public disableApply(): boolean {
