@@ -25,6 +25,7 @@ export class UserProfilePage {
   profileImage = signal<string | null>(null)
   isUploading = signal(false)
   activeTab = signal("email")
+  imageUpload = signal<File | null>(null);
 
   constructor() {
     this.initForm();
@@ -32,6 +33,7 @@ export class UserProfilePage {
 
   private initForm() {
     this.user = this.userService.getUserObject();
+    console.log('this.user: ', this.user);
 
     this.profileForm = this.fb.group(
       {
@@ -72,21 +74,34 @@ export class UserProfilePage {
     const input = event.target as HTMLInputElement
     const file = input.files?.[0]
 
+    console.log('input: ',input);
+    console.log('file: ',file);
+
     if (file) {
       this.isUploading.set(true)
       // Simular carga
       setTimeout(() => {
         this.profileImage.set(URL.createObjectURL(file))
         this.isUploading.set(false)
+        this.imageUpload.set(file);
+        // console.log('profileImage: ',this.profileImage());
+        // console.log('profileImage tipo: ',typeof this.profileImage());
       }, 1000)
     }
+
   }
 
   handleImageUpload() {
     if (this.profileImage()) {
+
+      // console.log('profileImage => ', this.profileImage());
+      // console.log('imageUpload => ', this.imageUpload());
+
       // Lógica para subir la imagen
       // TODO Swal Alert
       // this.showToast("Imagen actualizada", "Tu foto de perfil ha sido actualizada correctamente.")
+      this.userService.changeImage( this.imageUpload(), this.user._id, 'user' );
+
     }
   }
 
