@@ -204,7 +204,7 @@ export class UserService extends ApiService {
 
                 }
             }).catch((err) => {
-                this.alertService.addError(err)
+                this.alertService.addError('Debe adjuntar una nueva imagen')
             });
     }
 
