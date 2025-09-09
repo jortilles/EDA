@@ -1616,7 +1616,7 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
     }
 
     public isSpecialChart(type: string): boolean {
-        return ['kpi', 'kpibar', 'knob', 'kpiline', 'dynamicText'].includes(type);
+        return ['kpi', 'knob', 'dynamicText'].includes(type);
     }
 
     public disableRunQuery(): boolean {
