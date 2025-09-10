@@ -18,14 +18,15 @@
             (onChange)="setSampleTitleStyle()" />
         </div>
         <div>
-          <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color del los gráficos:</h6>
-          <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
-            [(ngModel)]="selectedPalette">
-              @for (palette of allPalettes; track $index) {
-                <option [ngValue]="palette">{{ palette.name }}</option>
-              }
-          </select>
+          <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color de los gráficos:</h6>
+            <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
+              [(ngModel)]="selectedPalette" [compareWith]="comparePalettes">
+                @for (palette of allPalettes; track $index) {
+                  <option [ngValue]="palette">{{ palette.name }}</option>
+                }
+            </select>
         </div>
+
     
       </div>
 
