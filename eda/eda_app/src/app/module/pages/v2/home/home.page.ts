@@ -228,16 +228,16 @@ export class HomePageV2 implements OnInit {
    * @param report The report to be deleted
    */
   public deleteReport(report: any): void {
-    let text = $localize`:@@deleteDashboardWarning:You are about to delete the report:`;
+    let text = $localize`:@@deleteDashboardWarning:Estás a punto de borrar el informe:`;
     Swal.fire({
-      title: $localize`:@@Sure:Are you sure?`,
+      title: $localize`:@@Sure:¿Estás seguro?`,
       text: `${text} ${report.config.title}`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: $localize`:@@ConfirmDeleteModel:Yes, delete it!`,
-      cancelButtonText: $localize`:@@DeleteGroupCancel:Cancel`,
+      confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
+      cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`,
     }).then(deleted => {
       if (deleted.value) {
         this.dashboardService.deleteDashboard(report._id).subscribe(
@@ -256,7 +256,17 @@ export class HomePageV2 implements OnInit {
               }
             }
 
-            this.alertService.addSuccess($localize`:@@DashboardDeletedInfo:Report successfully deleted.`);
+            const listNames = ['publicReports', 'privateReports', 'roleReports', 'sharedReports'];
+
+            for (const name of listNames) {
+              const list = this[name]; // ahora TypeScript sabe que name es string
+              if (list.some(d => d._id === report._id)) {
+                this[name] = list.filter(d => d._id !== report._id);
+                break; // ya lo eliminamos
+              }
+            }
+            
+            this.alertService.addSuccess($localize`:@@DashboardDeletedInfo:Informe eliminado correctamente.`);
           },
           err => this.alertService.addError(err)
         );
