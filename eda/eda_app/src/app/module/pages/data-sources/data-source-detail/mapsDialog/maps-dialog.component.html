@@ -38,7 +38,7 @@
     <!-- Tab Content -->
     <form [formGroup]="mapForm">
       <!-- Map Properties Tab -->
-      <div *ngIf="activeTab === 'properties'" class="space-y-6">
+      <div [hidden]="activeTab !== 'properties'" class="space-y-6">
         <div class="bg-white rounded-lg border p-4">
           <div class="mb-3">
             <h3 class="text-lg font-medium flex items-center gap-2">
@@ -58,29 +58,6 @@
               <label for="geojson" class="block  font-medium" i18n="@@inputMapURL">Subir archivo GeoJson (JSON)</label>
               <div class="flex items-center gap-2">
                 <app-uploadFile #fileUploader (onFileSaved)="fileLoaded()"></app-uploadFile>
-                <!-- <div class="relative flex-1">
-                <input 
-                    type="file" 
-                    id="geojson" 
-                    accept=".json,.geojson" 
-                    class="absolute inset-0 opacity-0 cursor-pointer"
-                    (change)="handleFileUpload($event)">
-                <button class="w-full flex justify-center items-center gap-2 px-4 py-2 border rounded-md bg-white hover:bg-gray-50 ">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" x2="12" y1="3" y2="15"/>
-                    </svg>
-                    Choose File
-                </button>
-                </div> -->
-                <!-- <button class="p-2 border rounded-md hover:bg-gray-50">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" x2="12" y1="15" y2="3"/>
-                </svg>
-                </button> -->
               </div>
             </div>
 
@@ -148,7 +125,7 @@
       </div>
 
       <!-- Link Columns Tab -->
-      <div *ngIf="activeTab === 'columns'" class="space-y-6">
+      <div [hidden]="activeTab !== 'columns'" class="space-y-6">
         <div class="bg-white rounded-lg border p-4">
           <div class="mb-3">
             <h3 class="text-lg font-medium flex items-center gap-2">
@@ -245,7 +222,7 @@
       </div>
 
       <!-- Available Maps Tab -->
-      <div *ngIf="activeTab === 'available'" class="space-y-6">
+      <div [hidden]="activeTab !== 'available'" class="space-y-6">
         <div class="bg-white rounded-lg border p-4">
           <div *ngIf="serverMaps.length > 0" class="mb-3">
             <h3 class="text-lg font-medium flex items-center gap-2">
