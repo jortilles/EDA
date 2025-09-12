@@ -221,35 +221,63 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     }
     
     onPaletteSelected() {
-        const numberOfColors = this.chart.chartLabels?.length || 1;
         const paletteBase = this.selectedPalette['paleta'];
+        if (this.chart.chartType !== 'doughnut' && this.chart.chartType !== 'polarArea') { 
+            const numberOfColors = 1;
 
-        const newColors = this.chartUtils.generateChartColorsFromPalette(numberOfColors, paletteBase);
-
-        // Recoger todos los colores disponibles a usar
-        const dataset = this.chart.chartDataset[0];
-        dataset.backgroundColor = newColors.map(c => c.backgroundColor);
-        dataset.borderColor = newColors.map(c => c.borderColor);
-
-        // Aplica chartColors al componente del dashboard
-        this.chart.chartColors = [
-        {
-            backgroundColor: newColors.map(c => c.backgroundColor),
-            borderColor: newColors.map(c => c.borderColor)
+            const newColors = this.chartUtils.generateChartColorsFromPalette(numberOfColors, paletteBase);
+            // Recoger todos los colores disponibles a usar
+            const dataset = this.chart.chartDataset[0];
+            dataset.backgroundColor = newColors[0].backgroundColor;
+            dataset.borderColor = newColors[0].borderColor;
+    
+            // Aplica chartColors al componente del dashboard
+            this.chart.chartColors = [
+            {
+                backgroundColor: newColors.map(c => c.backgroundColor),
+                borderColor: newColors.map(c => c.borderColor)
+            }
+            ];
+    
+            // Actualiza los color pickers
+            this.series[0].bg = this.chart.chartColors[0].backgroundColor;
+            
+            // Refresca el chart
+            this.chart = { ...this.chart };
+            this.panelChartComponent.componentRef.instance.inject = this.chart;
+            this.panelChartComponent.updateComponent();
+        } else {
+            const numberOfColors = this.chart.chartLabels?.length || 1;
+    
+            const newColors = this.chartUtils.generateChartColorsFromPalette(numberOfColors, paletteBase);
+    
+            // Recoger todos los colores disponibles a usar
+            const dataset = this.chart.chartDataset[0];
+            dataset.backgroundColor = newColors.map(c => c.backgroundColor);
+            dataset.borderColor = newColors.map(c => c.borderColor);
+    
+            // Aplica chartColors al componente del dashboard
+            this.chart.chartColors = [
+            {
+                backgroundColor: newColors.map(c => c.backgroundColor),
+                borderColor: newColors.map(c => c.borderColor)
+            }
+            ];
+    
+            // Actualiza los color pickers
+            this.series = this.chart.chartLabels.map((label: string, i: number) => ({
+                label: label,
+                bg: newColors[i].backgroundColor
+            }));
+            
+            
+            // Refresca el chart
+            this.chart = { ...this.chart };
+            this.panelChartComponent.componentRef.instance.inject = this.chart;
+            this.panelChartComponent.updateComponent();
         }
-        ];
 
-        // Actualiza los color pickers
-        this.series = this.chart.chartLabels.map((label: string, i: number) => ({
-            label: label,
-            bg: newColors[i].backgroundColor
-        }));
-        
-        
-        // Refresca el chart
-        this.chart = { ...this.chart };
-        this.panelChartComponent.componentRef.instance.inject = this.chart;
-        this.panelChartComponent.updateComponent();
+
 
     }
 
@@ -348,7 +376,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
 
     rgb2hex(rgb): string {
-        rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+        rgb = rgb?.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
         return (rgb && rgb.length === 4) ? '#' +
             ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) +
             ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +

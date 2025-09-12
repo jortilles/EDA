@@ -638,7 +638,7 @@
         <div class="w-96 space-y-2" [ngClass]="{'w-3/6': graphicType==='crosstable'}">
           <form [formGroup]="chartForm">
             <p-dropdown id="chartSelector" formControlName="chart" optionLabel="label" [style]="{'width':'16.5vw'}"
-              [options]="chartTypes" [autoDisplayFirst]="false" [scrollHeight]="'52.5vh'"
+              [options]="chartTypes" [autoDisplayFirst]="false" [scrollHeight]="'52.5vh'" [panelStyle]="{'max-width':'16.5vw'}"
               (onChange)="changeChartType(chartForm.value.chart.value, chartForm.value.chart.subValue, getChartStyles(chartForm.value.chart.value))">
 
               <ng-template pTemplate="selectedItem">

@@ -10,24 +10,9 @@
     </div>
 
     <!-- Settings -->
-    <div class="p-6 flex-1 overflow-y-auto">
-      <!-- Tabs -->
-      <div class="mb-6 w-full grid grid-cols-2">
-        <button (click)="setActiveTab('display')" class="py-2 px-4 text-center transition-colors"
-          [class.bg-slate-100]="activeTab === 'display'" [class.border-b-2]="activeTab === 'display'"
-          [class.border-primary]="activeTab === 'display'" [class.font-medium]="activeTab === 'display'">
-          <span i18n="@@chartDisplayTitle">Visualización</span>
-        </button>
-        <button (click)="setActiveTab('colors')" class="py-2 px-4 text-center transition-colors"
-          [class.bg-slate-100]="activeTab === 'colors'" [class.border-b-2]="activeTab === 'colors'"
-          [class.border-primary]="activeTab === 'colors'" [class.font-medium]="activeTab === 'colors'">
-          <span i18n="@@colorsChartH6">Colores</span>
-        </button>
-      </div>
-
+    <div class=" flex-1 overflow-y-auto pl-6">
       <!-- Display Tab -->
-      @if (activeTab === 'display') {
-      <div class="space-y-6">
+      <div class="space-y-6 p-4 pt-0 mb-6 bg-slate-50 rounded-md">
         <div class="space-y-4">
           <h3 class="font-medium text-slate-500 uppercase" i18n="@@chartDisplayOptionsTitle">
             Opciones de visualización
@@ -167,18 +152,17 @@
           </div>
         </div>
       </div>
-      }
+      
+      
+      <!-- apartado de colores  -->
 
-      <!-- Colors Tab -->
-      @if (activeTab === 'colors') {
-      <div class="space-y-6">
+      <div class="space-y-6  p-4 pt-0 bg-slate-50 rounded-md">
         <div class="space-y-4">
-          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colors</h3>
+          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colores</h3>
 
           <div class="grid gap-4 grid-rows-auto gap-6">
             <div>
               <h6 i18n="@@ChangeDefaultsColors" class="mb-1">Color del los gráficos:</h6>
-              @if(chart.chartType === 'doughnut' || chart.chartType === 'polarArea'){
               <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
                 [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
                 <option [ngValue]="null" disabled hidden>
@@ -188,7 +172,6 @@
                 <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
                 }
               </select>
-            }
               <div class="grid grid-cols-2">
                 @for (serie of series; track serie) {
                 <div class="mb-2">
@@ -206,7 +189,6 @@
           </div>
         </div>
       </div>
-      }
     </div>
   </div>
 
