@@ -283,22 +283,6 @@ export class EdaSunburstComponent implements AfterViewInit {
     return result
   }
 
-  getColors (dataLength, colors) {
-    const colorsLength = colors.length
-    let outputColors: Array<any> = colors
-
-    if (dataLength > colorsLength) {
-      let repeat = Math.ceil(dataLength / colorsLength)
-      for (let i = 0; i < repeat - 1; i++) {
-        outputColors = [...outputColors, ...colors]
-      }
-    }
-
-    return outputColors
-      .filter((_, index) => index < dataLength)
-      .map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`)
-  }
-
   generateDomain (data) {
     // map executa la funció sobre cada element del array. Es a dir sobre cada fila.
 

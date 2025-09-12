@@ -42,7 +42,8 @@ export class EdaTreeMap implements AfterViewInit {
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
     this.data = this.formatData(this.inject.data);
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors : this.getColors(this.data.children.length, ChartsColors);
+    this.colors = this.inject.colors.length > 0 ? this.inject.colors :
+      this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);    
     this.assignedColors = this.inject.assignedColors || [];
   }
 
@@ -51,22 +52,6 @@ export class EdaTreeMap implements AfterViewInit {
       this.div.remove();
   }
 
-  getColors(dataLength, colors) {
-    const colorsLength = colors.length;
-    let outputColors: Array<any> = colors;
-
-    if (dataLength > colorsLength) {
-      let repeat = Math.ceil(dataLength / colorsLength);
-
-      for (let i = 0; i < repeat - 1; i++) {
-        outputColors = [...outputColors, ...colors];
-      }
-    }
-
-    return outputColors
-      .filter((_, index) => index < dataLength)
-      .map((color) => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
-  }
 
   ngAfterViewInit() {
     if (this.svg) this.svg.remove();
