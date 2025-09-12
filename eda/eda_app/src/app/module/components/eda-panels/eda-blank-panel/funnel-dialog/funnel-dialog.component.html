@@ -37,8 +37,8 @@
                 <span class="text-md text-slate-500 font-mono" i18n="@@Final">Final</span>
                 }                
                 <div class="flex items-center gap-2">
-                  <span class="text-md text-slate-500 font-mono">{{ colors[idx] }}</span>
-                  <p-colorPicker [(ngModel)]="colors[idx]" (onChange)="handleInputColor()" format="hex" appendTo="body"/>
+                  <input [(ngModel)]="colors[idx]" (input)="handleInputColor()" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                  <p-colorPicker [(ngModel)]="colors[idx]" (onChange)="handleInputColor()" format="hex" appendTo="body" />
                 </div>
               </div>
               }
