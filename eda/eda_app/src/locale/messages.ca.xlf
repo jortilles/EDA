@@ -5273,6 +5273,18 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 </trans-unit>
 
 
+<trans-unit id="Initial">
+  <source>Inicio</source>
+  <target>Inici</target>
+</trans-unit>
+
+
+<trans-unit id="Final">
+  <source>Final</source>
+  <target>Final</target>
+</trans-unit>
+
+
     </body>
   </file>
 </xliff>

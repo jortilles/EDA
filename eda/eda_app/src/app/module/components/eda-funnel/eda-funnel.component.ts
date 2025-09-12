@@ -1,8 +1,7 @@
 import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter } from '@angular/core';
 import * as d3 from 'd3';
 import { EdaFunnel } from './eda-funnel';
-import { ChartsColors } from '@eda/configs/index';
-import { StyleProviderService } from '@eda/services/service.index';
+import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
 
 interface FunnelData {
@@ -42,7 +41,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   div = null;
 
 
-  constructor( private styleProviderService : StyleProviderService) {
+  constructor( private styleProviderService : StyleProviderService, private chartUtils : ChartUtilsService) {
   }
 
 
@@ -50,7 +49,8 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   ngOnInit(): void {
     this.id = `funnel_${this.inject.id}`;
     this.data = this.inject.data;
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors : ChartsColors.filter((a, i) => i < 2).map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
+    this.colors = this.inject.colors.length > 0 ? this.inject.colors :
+      this.chartUtils.generateChartColorsFromPalette(2, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.labelIndex = firstNonNumericColIndex;
