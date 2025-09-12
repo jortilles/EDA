@@ -49,7 +49,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
           .map(label => colorMap[label])
           .filter((item): item is { value: string; color: string } => !!item);
         // Transformación para los colorPicker del dialog
-        this.colors = sortedAssignedColors.map(color => this.ChartUtilsService.rgb2hexD3(color.color));
+        this.colors = sortedAssignedColors.map(color => color.color);
       }, 0)
     }
   }
@@ -63,7 +63,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   }
 
   saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors.map(color => this.ChartUtilsService.hex2rgbD3(color))});
+    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors});
   }
 
   closeChartConfig() {

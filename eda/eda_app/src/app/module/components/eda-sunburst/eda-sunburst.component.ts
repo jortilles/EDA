@@ -2,7 +2,6 @@ import { ChartUtilsService, StyleProviderService } from '@eda/services/service.i
 import * as d3 from 'd3'
 import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
-import { ChartsColors } from '@eda/configs/index'
 
 @Component({
   selector: 'eda-sunburst' /* tag que jo li dono  */,
@@ -31,9 +30,9 @@ export class EdaSunburstComponent implements AfterViewInit {
     this.id = `sunburst_${this.inject.id}` ;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.data = this.formatData(this.inject.data, this.inject.dataDescription);
-    this.labels =  this.generateDomain(this.data);
+    this.labels = this.generateDomain(this.data);
     this.colors = this.inject.colors?.length > 0 ? this.inject.colors
-      : this.getColors(this.data.children?.length, ChartsColors);
+      :this.chartUtilService.generateChartColorsFromPalette(this.labels.length,this.styleProviderService.ActualChartPalette['paleta']). map(item => item.backgroundColor)
     this.assignedColors = this.inject.assignedColors || []; 
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
@@ -73,7 +72,7 @@ export class EdaSunburstComponent implements AfterViewInit {
     //Funcion de ordenación de colores de D3
     const valuesSunburst = this.assignedColors.map((item) => item.value);
     const colorsSunburst = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
-    const color = d3.scaleOrdinal(this.firstColLabels,  colorsSunburst).unknown("#ccc");
+    const color = d3.scaleOrdinal(this.firstColLabels, colorsSunburst).unknown("#ccc");
 
     let arc = d3
       .arc()
@@ -143,7 +142,6 @@ export class EdaSunburstComponent implements AfterViewInit {
         // Subimos al primer nivel para asignar color base
         while (d.depth > 1) d = d.parent;
         const rgbColor = d3.rgb(colorsSunburst[valuesSunburst.findIndex(item => d.data.name.includes(item))] || color(d.data.name)); 
-      
         // Cálculo de opacidad
         if (original.depth > 1) {
           const siblings = original.parent.children;
