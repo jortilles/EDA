@@ -172,18 +172,19 @@
                 <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
                 }
               </select>
-              <div class="grid grid-cols-2">
-                @for (serie of series; track serie) {
-                <div class="mb-2">
-                  <input type="text" pInputText [value]="serie.label" disabled="true" [style.border-color]="serie.border" />
-              
-                  <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex" appendTo="body">
-                  </p-colorPicker>
-              
-                  <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg" (input)="handleInputColor(serie)"
-                    minlength="7">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+                @for (serie of series; track serie; let idx = $index, e = $even) {
+                <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                  <span class="font-medium">{{ serie.label }}</span>
+                  <div class="flex items-center gap-2">
+                    <input [(ngModel)]="serie.bg" (input)="handleInputColor(serie)" class="text-md text-slate-500 font-mono w-[3.5vw]">
+                    <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex" appendTo="body" />
+                  </div>
                 </div>
                 }
+
               </div>
             </div>
           </div>
