@@ -364,11 +364,10 @@ export class HomePageV2 implements OnInit {
     }
   }
 
-  sortingReports(type: string, reports: any, direction: 'asc' | 'desc' = 'asc') {
+  sortingReports(type: string, reports: any, direction: string) {
     const compareFn = (a: any, b: any) => {
       const valA = a.config[type];
       const valB = b.config[type];
-
       // Si es fecha, convertir a Date
       if (type === 'createdAt') {
         const dateA = new Date(valA);
