@@ -1,8 +1,8 @@
 <eda-dialog [inject]="dialog">
   <div body class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
     <!-- Chart Preview -->
-    <div class="p-6 flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
-      <div class="relative" [ngClass]="this.controller.params.chart.edaChart === 'radar' ? 'h-fit w-fit' : 'h-full w-full'">
+    <div class="p-6 flex-1 flex justify-center border-b md:border-b-0 md:border-r bg-slate-50" >
+      <div class="relative" [ngClass]="this.controller.params.chart.edaChart === 'radar' ? 'w-[31.5vw]' : 'h-full w-full'">
           @if (display) {
         <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-full w-full block"></panel-chart>
         }
