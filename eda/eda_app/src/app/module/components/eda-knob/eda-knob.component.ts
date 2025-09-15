@@ -41,7 +41,7 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
       }else{
         val = h;
       }
-      val = parseInt((Math.min(w, h) * 1.66).toFixed());
+      val = parseInt((val/1.2).toFixed());
     }
     setTimeout(_ => { this.size = val;    this.applyTextStyle(); }, 0)
   }
