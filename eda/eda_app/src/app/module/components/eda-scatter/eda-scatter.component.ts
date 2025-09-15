@@ -41,8 +41,8 @@ export class EdaScatter implements AfterViewInit {
     this.id = `scatterPlot_${this.inject.id}`;
     this.data = this.formatData(this.inject.data);
     
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors
-      : this.getColors(this.data.children?.length, ChartsColors);
+    this.colors = this.inject.colors.length > 0 ? this.inject.colors :
+      this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);    
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
@@ -234,25 +234,6 @@ export class EdaScatter implements AfterViewInit {
       .attr("stroke", this.styleProviderService.panelFontColor.source['_value'])
       .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
   }
-
-  getColors(dataLength, colors) {
-
-    const colorsLength = colors.length;
-    let outputColors: Array<any> = colors;
-
-    if (dataLength > colorsLength) {
-      let repeat = Math.ceil(dataLength / colorsLength);
-
-      for (let i = 0; i < repeat - 1; i++) {
-        outputColors = [...outputColors, ...colors]
-      }
-    }
-
-    return outputColors.filter((_, index) => index < dataLength).map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
-
-  }
-
- 
 
   formatData(data) {
 

@@ -41,7 +41,7 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
     if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(c => this.ChartUtilsService.rgb2hexD3(c));
+        this.colors = this.myPanelChartComponent.componentRef.instance.colors;
         this.originalColors = [...this.colors]; // Guardamos copia original
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
       }, 0);
@@ -57,7 +57,7 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
   }
 
   saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors.map(color => this.ChartUtilsService.hex2rgbD3(color))});
+    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors});
   }
 
   closeChartConfig() {
@@ -68,25 +68,25 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
     this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.colors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
     this.myPanelChartComponent.changeChartType();
 
-    // Restauramos internamente el config original a la version anterior
+    // Restaurar configuración original sin modificar this.colors ni UI
     setTimeout(() => {
       this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.originalColors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
     }, 0);
   }
 
   onPaletteSelected() { 
-      // Saber numero de segmentos para interpolar colores
-      const numberOfColors = this.myPanelChartComponent.componentRef.instance.colors.length;
-      
-      // Recuperamos paleta seleccionada y creamos colores
-      this.myPanelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
-      const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(numberOfColors, this.myPanelChartComponent['chartUtils'].MyPaletteColors);
-      
-      // Actualizar los color pickers individuales al modificar la paleta
-      this.colors = newColors.map(({ color }) => color);
-      
-      // Actualizar los colores del chart
-      this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.colors.map(color => this.ChartUtilsService.hex2rgbD3(color))));
-      this.myPanelChartComponent.changeChartType();
+        // Saber numero de segmentos para interpolar colores
+        const numberOfColors = this.myPanelChartComponent.componentRef.instance.colors.length;
+        
+        // Recuperamos paleta seleccionada y creamos colores
+        this.myPanelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
+        const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(numberOfColors, this.myPanelChartComponent['chartUtils'].MyPaletteColors);
+        
+        // Actualizar los color pickers individuales al modificar la paleta
+        this.colors = newColors.map(({ color }) => color);
+        
+        // Actualizar los colores del chart
+        this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.colors.map(color => this.ChartUtilsService.hex2rgbD3(color))));
+        this.myPanelChartComponent.changeChartType();
   }
 }

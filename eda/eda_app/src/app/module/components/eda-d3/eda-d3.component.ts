@@ -41,11 +41,12 @@ export class EdaD3Component implements AfterViewInit, OnInit {
   ngOnInit(): void {
     this.id = `sankey_${this.inject.id}`;
     this.data = this.inject.data;
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors : ChartsColors.map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
-    this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
+    this.colors = this.inject.colors?.length > 0 ? this.inject.colors :
+      this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels?.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);
+    this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.assignedColors = this.inject.assignedColors || []; 
   }
 
@@ -83,8 +84,8 @@ export class EdaD3Component implements AfterViewInit, OnInit {
     const metricKey = keys.splice(this.metricIndex, 1)[0];
 
     //Valores de assignedColors separados
-    const valuesTree = this.assignedColors.map((item) => item.value);
-    const colorsTree = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
+    const valuesTree = this.assignedColors?.length > 0 ? this.assignedColors.map((item) => item.value) : this.firstColLabels;
+    const colorsTree = this.assignedColors?.length > 0 ? this.assignedColors.map(item => item.color) : this.colors;
     
     //Funcion de ordenación de colores de D3
     const color = d3.scaleOrdinal(this.firstColLabels,  colorsTree).unknown("#ccc");
