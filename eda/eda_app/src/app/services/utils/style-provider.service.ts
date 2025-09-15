@@ -40,7 +40,7 @@ export class StyleProviderService {
 	public ActualChartPalette: string;
 	public loadingFromPalette: boolean;
 	public colorCode: boolean = false;
-	public loadedPanels: number;
+	public loadedPanels: number = -1;
 	public palKnob: boolean = false;
 
 	

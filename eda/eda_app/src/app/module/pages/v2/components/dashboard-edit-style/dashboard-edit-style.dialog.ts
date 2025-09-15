@@ -36,7 +36,7 @@ export class DashboardEditStyleDialog {
   public backgroundColor: string = this.stylesProviderService.DEFAULT_BACKGROUND_COLOR;
   public panelColor: string = this.stylesProviderService.DEFAULT_PANEL_COLOR;
   public allPalettes: any = this.stylesProviderService.ChartsPalettes;
-  public selectedPalette = this.allPalettes.find(p => p.name === this.stylesProviderService.ActualChartPalette['name']) || this.allPalettes[0];
+  public selectedPalette = this.stylesProviderService.ActualChartPalette?.length !== undefined ? this.allPalettes.find(p => p?.name === this.stylesProviderService?.ActualChartPalette['name']) : this.allPalettes[0];
   public properties: boolean = true;
   
   public fonts: Array<any> =
@@ -251,7 +251,7 @@ export class DashboardEditStyleDialog {
 		this.setSampleTitleStyle();
 	}
 
-public comparePalettes = (p1: any, p2: any) => p1 && p2 && p1.name === p2.name;
+public comparePalettes = (p1: any, p2: any) => p1 && p2 && p1?.name === p2?.name;
 
 	public onApply() {
 		this.display = false;

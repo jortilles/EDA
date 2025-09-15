@@ -40,7 +40,8 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
     if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors;
+        this.colors = this.myPanelChartComponent.componentRef.instance.colors
+          .map(c => c.startsWith('#') ? this.d3ChartUtils.hex2rgbD3(c) : c);
         this.originalColors = [...this.colors]; // Guardamos la copia aquí
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
       }, 0);
@@ -57,7 +58,9 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
   }
 
   saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors});
+    this.onClose(EdaDialogCloseEvent.UPDATE, {
+      colors: this.colors.map(c => c.startsWith('#') ? this.d3ChartUtils.hex2rgbD3(c) : c)
+    });
   }
 
   closeChartConfig() {

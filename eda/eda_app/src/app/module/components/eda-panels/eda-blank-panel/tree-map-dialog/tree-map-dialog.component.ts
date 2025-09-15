@@ -49,7 +49,7 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
           .map(label => colorMap[label])
           .filter((item): item is { value: string; color: string } => !!item);
 
-        this.colors = sortedAssignedColors.map(color => color.color);
+        this.colors = sortedAssignedColors.map(c => c.color.startsWith('rgb') ? this.ChartUtilsService.rgb2hexD3(c.color) : c.color);
         this.originalColors = [...this.colors]; // Guardar estado original aquí
       }, 0)
     }
@@ -66,7 +66,9 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
   }
 
   saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors});
+    this.onClose(EdaDialogCloseEvent.UPDATE, {
+      colors: this.colors.map(c => c.startsWith('#') ? this.ChartUtilsService.hex2rgbD3(c) : c)
+    });
   }
 
   closeChartConfig() {

@@ -273,8 +273,9 @@ export class DashboardSidebarComponent {
       x: 0,
       y: 0,
     });
-
+    
     this.dashboard.panels.push(panel);
+    this.stylesProviderService.loadedPanels++;
     this.hidePopover();
   }
 

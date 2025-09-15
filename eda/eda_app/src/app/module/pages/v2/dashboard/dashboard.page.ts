@@ -109,6 +109,7 @@ export class DashboardPageV2 implements OnInit {
     })
   }
 
+
   ngOnDestroy() {
     // Poner estilos como predefinidios
     this.stylesProviderService.setStyles(this.stylesProviderService.generateDefaultStyles())
@@ -301,7 +302,8 @@ export class DashboardPageV2 implements OnInit {
     }
 
     let valor = this.getBottomMostItem();
-    this.height = (valor.y + valor.rows + 2) * 32;
+    this.height = valor !== undefined ? (valor.y + valor.rows + 2) * 32 : 750;
+    this.stylesProviderService.loadedPanels--;
   }
 
   public reloadOnGlobalFilter(): void {
@@ -472,6 +474,7 @@ public async reloadPanels(): Promise<void> {
   public onDuplicatePanel(panel: any) {
     this.panels.push(panel);
     this.dashboardService._notSaved.next(true);
+    this.stylesProviderService.loadedPanels++;
   }
 
   async onGlobalFilter(data: any) {
@@ -586,10 +589,7 @@ public async reloadPanels(): Promise<void> {
         author: this.dashboard.config?.author
       },
       group: this.dashboard.group ? _.map(this.dashboard.group, '_id') : undefined,
-    };
-
-    console.log(body)
-
+    }
 
     body.config.panel = this.savePanels();
 
