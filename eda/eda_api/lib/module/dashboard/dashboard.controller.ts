@@ -1571,7 +1571,6 @@ export class DashboardController {
             CachedQueryService.storeQuery(req.body.model_id, query, output)
           }
 
-          console.log(output);
           console.log(
             '\x1b[32m%s\x1b[0m',
             `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
