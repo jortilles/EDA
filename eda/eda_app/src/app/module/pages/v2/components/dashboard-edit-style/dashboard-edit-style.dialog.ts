@@ -205,7 +205,7 @@ export class DashboardEditStyleDialog {
 
 	public saveConfig(): void {
 		// this.dashBoardStyles.fontFamily = this.selectedFont.value;
-		this.stylesProviderService.loadedPanels = this.dashboard.dashboard.config.panel.length;
+		this.stylesProviderService.loadedPanels = this.dashboard.dashboard.config?.panel?.length;
 		this.stylesProviderService.loadingFromPalette = true;
 		const response: DashboardStyles = {
 			stylesApplied: true,

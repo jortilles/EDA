@@ -1001,10 +1001,10 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.graficos = _.cloneDeep(properties);                
             
                 //assignedColors se le modifica el color dependiendo de su label
-                this.graficos.assignedColors.forEach((e, index) => {
+                this.graficos.assignedColors.forEach((e) => {
                     if (this.graficos.chartLabels.includes(e.value)) {
                         let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
-                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor].length > 1 ?
+                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor]?.length > 1 ?
                             this.graficos.chartColors[0].backgroundColor[indexColor] : 
                             this.graficos.chartColors[0].backgroundColor    
                     }

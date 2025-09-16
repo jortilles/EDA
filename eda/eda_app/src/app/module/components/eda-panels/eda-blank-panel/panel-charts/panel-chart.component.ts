@@ -69,6 +69,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     public fontColor: string;
     public fontFamily: string;
     public fontSize: number;
+    public paletaActual 
 
 
     public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
@@ -83,7 +84,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         public styleProviderService: StyleProviderService) {
         
         this.fontColor = this.styleProviderService.panelFontColor.source['value'];
-        
+        this.paletaActual = this.styleProviderService.ActualChartPalette?.['paleta'] || this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
+
         
         this.styleProviderService.panelFontFamily.subscribe(family => {
             this.fontFamily = family;
@@ -106,6 +108,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
     ngAfterContentInit(): void {
         this.styleProviderService.checkLoadPan();
     }
+
     ngOnChanges(changes: SimpleChanges): void {
         /**
          * If data change chart type
@@ -305,100 +308,106 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         chartConfig.chartColors = this.chartUtils.recoverChartColors(this.props.chartType, this.props.config);
         chartConfig.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         
-        //Si assignedColors no existe (informes viejos), lo generamos
-        //Para una posterior versión se podria mirar de eliminar este bloque if else y solo mirar si existe el config
-        if (chartConfig.assignedColors.length === 0) {
-            // Si es doughnut o polar area, trabajamos con 400 colores
-            if (chartConfig.chartType === "doughnut" || chartConfig.chartType === "polarArea") {
-                //Este if controla si es un chart recien creado, es el único a mantener en el tiempo
-                if (!this.props.config.getConfig()["colors"]) {
-                    chartConfig.chartLabels.forEach((element, index) => {
-                        chartConfig.assignedColors.push({
-                            value: element,
-                            color: chartConfig.chartColors[0].backgroundColor[index] || chartConfig.chartColors[chartData.length + index]
-                        });
-                    });
-                } else {
-                    chartConfig.chartLabels.forEach((element, index) => {
-                        //asignamos el valor de la data y color perteniente si lo tiene
-                        chartConfig.assignedColors.push({
-                            value: element,
-                            color: this.props.config.getConfig()["colors"][0].backgroundColor[index]
-                        });
-                    });
-                }
-            } else {
-                //Graficos con colores estandard
-                chartData[0].forEach((element) => {
-                    chartConfig.assignedColors.push({
-                        value: element,
-                        color: chartConfig.chartColors[0].backgroundColor
-                    });
-                });
-            }
-        }
-
-        //Si aplicamos filtro 
-        //Seteamos variables: labels, colores, y indice del filtro
-        const configData = chartConfig.assignedColors.flatMap((item) => item.value);
-        const configColors = chartConfig.assignedColors.flatMap((item) => item.color);
-        
-
-        const paletaAplicada = this.styleProviderService.loadingFromPalette;
-        const sortByAsCol = !this.styleProviderService.loadingFromPalette;
-
-        let paletaActual = this.styleProviderService.ActualChartPalette?.['paleta'] 
-            || this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'] ;
-
+        const sortByAsCol = !this.styleProviderService.loadingFromPalette; // Ordenado por assignedColors
+        let colors = this.chartUtils.generateChartColorsFromPalette(chartConfig.chartLabels.length, this.paletaActual).flatMap((item) => item.backgroundColor);
+       
+    
         const chartColors = chartConfig.chartColors[0];
         const assignedColors = chartConfig.assignedColors;
-        //funciona
-            if (["doughnut", "polarArea"].includes(chartConfig.chartType)) {
-                chartData[0].forEach((element, index) => {
-                    const indexMatched = configData.findIndex(e => e === element);
+        const configData = chartConfig?.assignedColors.flatMap((item) => item.value);
+        const configColors = chartConfig?.assignedColors.flatMap((item) => item.color);
 
-                    if (indexMatched !== -1 && sortByAsCol) {
-                        // Usa color coincidente de configColors
-                        chartColors.backgroundColor[index] = configColors[indexMatched];
-                        chartColors.borderColor[index] = configColors[indexMatched];
-                    } else if (paletaAplicada) {
-                        // Usa color de la paleta activa
-                        const color = paletaActual[index];
-                        chartColors.backgroundColor[index] = color;
-                        chartColors.borderColor[index] = color;
-
-                        // Actualiza assignedColors para la vista previa
-                        assignedColors.forEach((item, idx) => {
-                            item.color = chartColors.backgroundColor[idx];
-                        });
-                    }
-                });
-            }
-        //funciona
-            else if (['bar', 'horizontalBar', 'radar', 'barline', 'line', 'area'].includes(chartConfig.edaChart)) {
-                if (sortByAsCol) {
+        if (["doughnut", "polarArea"].includes(chartConfig.chartType)) {
+            chartData[0].forEach((element, index) => {
+                const indexMatched = configData.findIndex(e => e === element);
+                if (indexMatched !== -1 && sortByAsCol) {
                     // Usa color coincidente de configColors
-                    chartConfig.chartColors[0].backgroundColor = chartConfig.assignedColors[0].color;
-                    chartConfig.chartColors[0].borderColor = chartConfig.assignedColors[0].color;
+                    chartColors.backgroundColor[index] = configColors[indexMatched];
+                    chartColors.borderColor[index] = configColors[indexMatched];
                 } else {
                     // Usa color de la paleta activa
-                    chartConfig.chartColors[0].backgroundColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
-                    chartConfig.chartColors[0].borderColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
-                  
-                    // Modificar los assignedColor para que la preview coincida con el cambio
-                    chartConfig.assignedColors.forEach(element => {
-                        element.color = chartConfig.chartColors[0].backgroundColor
-                    });
+                    const color = colors[index];
+                    chartColors.backgroundColor[index] = color;
+                    chartColors.borderColor[index] = color;
+
                 }
-            }
-            else if (['histogram'].includes(chartConfig.edaChart)) {
+                // Actualiza assignedColors para la vista previa
+                assignedColors.forEach((item, idx) => {
+                    item.color = chartColors.backgroundColor[idx];
+                });
+                
+            });
+
+
+            chartConfig.chartLabels.forEach((element, index) => {
+                //asignamos el valor de la data y color perteniente si lo tiene
+                chartConfig.assignedColors.push({
+                    value: element,
+                    color: chartColors.backgroundColor[index]
+                });
+            });
+        }else if (['bar', 'horizontalBar', 'radar', 'barline', 'line', 'area'].includes(chartConfig.edaChart)) {
+            if (sortByAsCol) {
+                    // Usa color coincidente de configColors + creación nuevo
+                    chartColors.backgroundColor = chartConfig?.assignedColors?.length > 0 ? chartConfig?.assignedColors[0].color : colors [0];
+                    chartColors.borderColor = chartConfig?.assignedColors?.length > 0 ? chartConfig?.assignedColors[0].color : colors [0];
+            } else {
+                    // Cargamos colores desde paleta 
+                    chartColors.backgroundColor = this.paletaActual[0];
+                    chartColors.borderColor = this.paletaActual[0];
+
+                    // Actualiza assignedColors para la vista previa
+                    assignedColors.forEach((item) => {
+                        item.color = chartColors.backgroundColor;
+                    });
+            } 
+            chartConfig.chartLabels.forEach((element) => {
+                //asignamos el valor de la data y color perteniente si lo tiene
+                chartConfig.assignedColors.push({
+                    value: element,
+                    color: chartColors.backgroundColor
+                });
+            });
+        }else if (['pyramid', 'stackedbar', 'stackedbar100'].includes(chartConfig.edaChart)) {
+            // Obtener nombres únicos
+            let uniqueNames;
+            if(this.props.config.getConfig()['assignedColors']?.length > 0 )
+                uniqueNames = this.getUniqueNamesFromDataset(this.props.config.getConfig()['assignedColors']);
+            else
+                uniqueNames = this.getUniqueNamesFromDataset(chartConfig.chartDataset);
+
+            // Generar paleta de colores del tamaño justo
+            let colors = this.chartUtils
+            .generateChartColorsFromPalette(uniqueNames.length, this.paletaActual).flatMap((item) => item.backgroundColor);
+            
+            // Asignar colores según sortByAsCol
+            const configData2 = chartConfig?.assignedColors.flatMap((item) => item.label);
+            
+            chartData[1].forEach((element, index) => {
+                const indexMatched = configData2.findIndex(e => e === element.label);
+                if(!sortByAsCol || indexMatched === -1 ) {
+                    // Usa la paleta activa
+                    chartConfig.chartColors[index].backgroundColor = colors[index];
+                    chartConfig.chartColors[index].borderColor = colors[index];
+                }else {
+                    // Usa assignedColors
+                    chartConfig.chartColors[index].backgroundColor = chartConfig.chartColors[index].backgroundColor;
+                    chartConfig.chartColors[index].borderColor = chartConfig.chartColors[index].backgroundColor;
+                }
+            });
+            chartConfig.assignedColors = uniqueNames.map((name, idx) => ({
+                label: name,
+                color: chartConfig.chartColors[idx]?.backgroundColor || colors[idx],
+            }));
+
+        } else if (['histogram'].includes(chartConfig.edaChart)) {
                 if (chartConfig.chartLabels.length === 0) {
                     chartConfig.chartLabels = [chartConfig.assignedColors[0].value];
                     chartConfig.chartDataset[0].data = [1];
                 }
                 if (sortByAsCol) {
                     // Usa color coincidente de configColors
-                    const assignedColor = chartConfig.assignedColors[0].color;
+                    const assignedColor = chartConfig?.assignedColors?.length > 0 ? chartConfig?.assignedColors[0].color : colors [0];
 
                     chartConfig.chartColors[0] = {
                         backgroundColor: assignedColor,
@@ -412,26 +421,16 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     // Usa color de la paleta activa
                     chartConfig.chartColors[0].backgroundColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
                     chartConfig.chartColors[0].borderColor = this.styleProviderService?.ActualChartPalette['paleta'][0];
-                  
+                    
                     // Modificar los assignedColor para que la preview coincida con el cambio
                     chartConfig.assignedColors.forEach(element => {
                         element.color = chartConfig.chartColors[0].backgroundColor
                     });
                 }
-            }
-            else if (chartConfig.edaChart === 'pyramid' || chartConfig.edaChart === 'stackedbar' || chartConfig.edaChart === 'stackedbar100') {
-                chartData[1].forEach((element, index) => {
-                    const indexMatched = configData.findIndex(e => e === element.label)
-                    //Si indexMatched encuentra data igual, asigna su color, sino el siguiente que no este usado
-                    if (indexMatched !== -1 && sortByAsCol) {
-                        chartConfig.chartColors[index].backgroundColor = configColors[indexMatched];
-                        chartConfig.chartColors[index].borderColor= configColors[indexMatched];
-                    } else if (paletaAplicada) { // Si la modificación de colores viene dada por cambio general de paleta de colores
-                        chartConfig.chartColors[index].backgroundColor = paletaActual[index];
-                        chartConfig.chartColors[index].borderColor = paletaActual[index];
-                    }
-                });           
-            } 
+        }
+
+        
+
 
 
             // chartColors unicamente se reflejan si estan dentro del chartDataset (esto asigna colores correctamente) 
@@ -447,12 +446,14 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     }
                 });
             }
+        
 
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
         this.createEdaChartComponent(chartConfig);
-       
-    }
-        
+    }   
+
+
+
 
     /**
      * Creates a chart component
@@ -803,12 +804,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         const factory = this.resolver.resolveComponentFactory(EdaGeoJsonMapComponent);
         this.componentRef = this.entry.createComponent(factory);
         this.componentRef.instance.inject = inject;
-        this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
+        // Revisar filtro en click 
+        //this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
     }
 
 
     private renderParallelSets() {
-
         const dataDescription = this.chartUtils.describeData(this.props.query, this.props.data.labels);
 
         let inject: EdaD3 = new EdaD3;
@@ -816,14 +817,22 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.id = this.randomID();
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
-        inject.colors = this.props.config.getConfig()['colors'];
-        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        const configColors = this.props.config.getConfig()['colors'];
 
+        
+        const palette = this.styleProviderService?.ActualChartPalette !== undefined ? this.styleProviderService?.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
+        
+        inject.colors = configColors.length > 0 ? configColors
+            : this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, palette).map(item => item.backgroundColor);
+        inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
+        
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
-        this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
+        this.props.config.setConfig(this.assignedColorsWork2(this.props.config.getConfig(), inject));
+
+        
 
         inject.linkedDashboard = this.props.linkedDashboardProps;
-
+        // aqui ya esta jodido
         this.createParallelSetsComponent(inject);
     }
 
@@ -849,7 +858,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;
         inject.colors = this.props.config.getConfig()['colors'];
         inject.linkedDashboard = this.props.linkedDashboardProps;
-
         this.createFunnelComponent(inject);
     }
 
@@ -871,7 +879,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.id = this.randomID();
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
-        inject.colors = this.props.config.getConfig()['colors'];
+        const configColors = this.props.config.getConfig()['colors'];
+        const palette = this.styleProviderService?.ActualChartPalette !== undefined ? this.styleProviderService?.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
+        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, palette)
+            .map(item => item.backgroundColor);
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
         this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
@@ -896,7 +907,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.id = this.randomID();
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
-        inject.colors = this.props.config.getConfig()['colors'];
+        const configColors = this.props.config.getConfig()['colors'];
+        const palette = this.styleProviderService?.ActualChartPalette !== undefined ? this.styleProviderService?.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
+        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, palette)
+            .map(item => item.backgroundColor);
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
         this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));        
@@ -921,8 +935,12 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.size = this.props.size;
         inject.id = this.randomID();
         inject.data = this.props.data;
-        inject.dataDescription = dataDescription;
-        inject.colors = this.props.config.getConfig()['colors'];
+        inject.dataDescription = dataDescription;        
+        
+        const configColors = this.props.config.getConfig()['colors'];
+        const palette = this.styleProviderService?.ActualChartPalette !== undefined ? this.styleProviderService?.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
+        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, palette)
+            .map(item => item.backgroundColor);
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
         this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
@@ -948,7 +966,10 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.id = this.randomID();
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
-        inject.colors = this.props.config.getConfig()['colors'];
+        const configColors = this.props.config.getConfig()['colors'];
+        const palette = this.styleProviderService?.ActualChartPalette !== undefined ? this.styleProviderService?.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
+        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, palette)
+            .map(item => item.backgroundColor);
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
         this.props.config.setConfig(this.assignedColorsWork(this.props.config.getConfig(), inject));
@@ -1055,6 +1076,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
     }
+
     private assignedColorsWork(config, inject) { 
         inject.data.values.forEach((injectValue, index) => {
             //Primer string encontrado(valor del filtro)
@@ -1073,6 +1095,45 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         return config;
     }
 
+
+    private assignedColorsWork2(config, inject) { 
+        inject.assignedColors = [];
+        const usedColors: { [key: string]: string } = {}; // mapa value → color
+        let colorIndex = 0; // solo avanza cuando aparece un nuevo valor
+
+        inject.data.values.forEach((injectValue) => {
+            // Primer string encontrado (valor del filtro)
+            const injectValueString = injectValue.find(value => typeof value === 'string');
+
+            if (!usedColors[injectValueString]) {
+                // si es la primera vez que aparece, asignar color
+                usedColors[injectValueString] = inject.colors[colorIndex] || 
+                    `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+                colorIndex++; // avanzamos el índice SOLO para nuevos valores
+            }
+
+            // añadimos al array el valor con su color ya definido
+            inject.assignedColors.push({
+                value: injectValueString,
+                color: usedColors[injectValueString]
+            });
+        });
+
+        config = inject;
+        return config;
+    }
+    
+    private getUniqueNamesFromDataset(chartDataset) {  
+        // Extraer solo los labels
+        const allNames = chartDataset.map(dataset => dataset.label);
+
+        // Crear set para obtener únicos
+        const uniqueNames = [...new Set(allNames)];
+
+        return uniqueNames;
+    }
+
+
     getColors (dataLength, colors) {
         const colorsLength = colors.length
         let outputColors: Array<any> = colors
@@ -1088,27 +1149,28 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         .map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`)
     }
 
-encontrarBackgroundColor(obj) {
-  if (!obj || typeof obj !== "object") return null;
+    encontrarBackgroundColor(obj) {
+        if (!obj || typeof obj !== "object") return null;
 
-  if (obj.backgroundColor && typeof obj.backgroundColor === "string") {
-    return obj.backgroundColor;
-  }
+        if (obj.backgroundColor && typeof obj.backgroundColor === "string") {
+            return obj.backgroundColor;
+        }
 
-  // Buscar en la propiedad backgroundColor si es otro objeto
-  if (obj.backgroundColor && typeof obj.backgroundColor === "object") {
-    return this.encontrarBackgroundColor(obj.backgroundColor);
-  }
+        // Buscar en la propiedad backgroundColor si es otro objeto
+        if (obj.backgroundColor && typeof obj.backgroundColor === "object") {
+            return this.encontrarBackgroundColor(obj.backgroundColor);
+        }
 
-  // Buscar en otras propiedades si existe
-  for (let key in obj) {
-      if (typeof obj[key] === "object") {
-      const resultado = this.encontrarBackgroundColor(obj[key]);
-      if (resultado) return resultado;
+        // Buscar en otras propiedades si existe
+        for (let key in obj) {
+            if (typeof obj[key] === "object") {
+            const resultado = this.encontrarBackgroundColor(obj[key]);
+            if (resultado) return resultado;
+            }
+        }
+
+        return null;
     }
-  }
-
-  return null;    }
 
     /**
      * @return current chart config
