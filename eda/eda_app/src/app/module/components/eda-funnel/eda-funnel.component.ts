@@ -1,4 +1,4 @@
-import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, ViewChild, OnInit, Output, EventEmitter } from '@angular/core';
 import * as d3 from 'd3';
 import { EdaFunnel } from './eda-funnel';
 import { ChartsColors } from '@eda/configs/index';
@@ -20,6 +20,7 @@ interface FunnelData {
 export class EdaFunnelComponent implements AfterViewInit, OnInit {
 
   @Input() inject: EdaFunnel;
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
 
@@ -32,6 +33,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   labelIndex: number;
   width: number;
   heigth: number;
+
 
   // div = d3.select("body").append('div')
   //   .attr('class', 'd3tooltip')
@@ -147,12 +149,10 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .datum(data2)
       .attr('fill', `url(#${this.id}_temperature-gradient)`)
       .attr('d', area);
-
     svg.append('path')
       .datum(data2)
       .attr('fill',  `url(#${this.id}_temperature-gradient)`)
       .attr('d', areaMirror);
-
     svg.selectAll('.values')
       .data(data)
       .enter()
@@ -180,7 +180,20 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
           font-family: var(--panel-font-family);
           font-size: 14px;
       `)
-      .attr("fill", 'var(--panel-font-color)');
+      .attr("fill", 'var(--panel-font-color)')
+      .on('click', (mouseevent, data) => {
+        if (this.inject.linkedDashboard) {
+          const props = this.inject.linkedDashboard;
+          const value = data?.label
+          const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+          window.open(url, "_blank");
+        }else{
+          //Passem aquestes dades
+          const label = data.label;
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({label, filterBy });
+        }
+      });
 
     svg.selectAll('.percentages')
       .data(data)
@@ -206,7 +219,6 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
       .style('stroke-width', 1)
       .style('stroke', percentages)
       .style('fill', 'none');
-
   }
 
 }

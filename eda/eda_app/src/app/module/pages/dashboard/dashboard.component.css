@@ -229,7 +229,7 @@ app-dashboard {
 #myDashboard > .p-card .p-card-body {
     padding: 0.6em;
     background-color: var(--panel-color);
-  }
+}
 
 
 .customMultiselect > ::-webkit-scrollbar {
@@ -238,23 +238,22 @@ app-dashboard {
     }
 
 
-  .canIeditClass{
-margin-top:20px;
-display:table;
+.canIeditClass{
+    margin-top:20px;
+    display:table;
+}
 
-  }
-  .canIeditClassLabel{
-
+.canIeditClassLabel{
     display:table-cell;
     vertical-align:middle;
-  }
+}
 
-  .noShow{
+.noShow{
     height:0px !important;
     visibility: hidden !important;
-  }
+}
 .noSidebar{
-margin-left:1px !important;
+    ;
 }
 .filterDialogTitles{
     font-size: medium;

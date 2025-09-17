@@ -96,11 +96,20 @@ export class GlobalFilterComponent implements OnInit {
         const formatedFilter = this.globalFilterService.formatFilter(filter);
         this.setFilterButtonVisibilty();
 
-        filter.panelList
-            .map((id: string) => this.dashboard.edaPanels.toArray().find(p => p.panel.id === id))
-            .forEach((panel: EdaBlankPanelComponent) => {
-                if (panel) panel.assertGlobalFilter(formatedFilter);
-            });
+
+        this.dashboard.edaPanels.forEach((panel: EdaBlankPanelComponent) => {
+            // If GlobalFilter is linked to Panel then assertFilter
+            if (filter.panelList.includes(panel.panel.id)) {
+                panel.assertGlobalFilter(formatedFilter);
+            } else {
+                // If in panel exists GlobalFilter but NOT linked to panel
+                const existFilter = panel.globalFilters.find((gf) => gf.filter_id == filter.id);
+                if (existFilter?.filter_id && !filter.panelList.includes(panel.panel.id)) {
+                    // Remove GlobalFilter from panel
+                    panel.globalFilters = panel.globalFilters.filter((gf) => gf.filter_id != filter.id);
+                }
+            }
+        });
     }
 
     // Adding a Global filter 
@@ -415,12 +424,12 @@ export class GlobalFilterComponent implements OnInit {
         if (globalFilter.selectedTable) {
             targetTable = globalFilter.selectedTable.table_name;
             targetColumn = globalFilter.selectedColumn;
-            targetColumn.ordenation_type = 'ASC';
-            // globalFilter.selectedColumn.ordenation_type = 'ASC';
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "Asc";
+          // globalFilter.selectedColumn.ordenation_type = 'Asc';
         } else {
             targetTable = globalFilter.table.value;
             targetColumn = globalFilter.column.value;
-            targetColumn.ordenation_type = 'ASC';
+            targetColumn.ordenation_type = targetColumn.ordenation_type || "No";
         }
 
         const queryParams = {
@@ -446,11 +455,11 @@ export class GlobalFilterComponent implements OnInit {
             
             let data : any[] ;
             if(res[1].length > 0){
-                data = res[1].filter(item => item[0].toString()  != '').map(item => ({ label: item[0].toString(), value: item[0].toString() }));
+                data = res[1].filter(item => item[0]?.toString()  != '').map(item => ({ label: item[0]?.toString(), value: item[0]?.toString() }));
             }
 
             /** IF I HAVE EMPTY VALUES I REPLACE THEM WITH THE EMPTY STRING TEXT....... THAT IS EQUIVALENT TO IS NULL OR EMPTY */
-            if( res[1].filter(item => item[0].toString() == '').length == 1 ){
+            if( res[1].filter(item => item[0]?.toString() == '').length == 1 ){
                 data.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString'  }  )
             }
 

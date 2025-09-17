@@ -54,7 +54,7 @@ h2 {
     margin-top:10px;
 }
 .infoJoin{
-    margin-top:20px;
+    margin-top:13px;
 }
 
 .buttonAndOr{
@@ -360,6 +360,12 @@ body .ui-accordion .ui-accordion-header a {
     background-color: #d6e4e8;
 } */
 
+.button-whatif {
+    border: solid 2px #ccc!important;
+    color: var(--header-bg-color)!important;
+    font-weight: 600!important;
+}
+
 .ui-dialog .ui-dialog-titlebar {
     border: 1px solid #c8c8c8;
     background-color: #e6e6e6;
@@ -567,7 +573,6 @@ body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider  {
  line-height: 22px;
  font-size: 18px;
  color: #455a64;
- /* font-family: 'Questrial'; */
  font-weight: 400;
  box-sizing: border-box;
 

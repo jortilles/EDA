@@ -633,13 +633,14 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         if (this.filter.switch) {
             const column = _.cloneDeep(this.selectedColumn);
             column.table_id = column.table_id.split('.')[0];
-            column.ordenation_type = 'ASC';
+            column.ordenation_type = 'Asc';
 
             const params = {
                 table: column.table_id,
                 dataSource: this.controller.params.inject.dataSource._id,
                 dashboard: this.controller.params.inject.dashboard_id,
                 panel: this.controller.params.panel._id,
+                connectionProperties: this.controller.params.connectionProperties,
                 forSelector: true,
                 filters: []
             };

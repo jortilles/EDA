@@ -4,13 +4,16 @@ import {
   AfterViewInit,
   ElementRef,
   ViewChild,
-  OnInit
+  OnInit,
+  Output,
+  EventEmitter
 } from '@angular/core'
 import * as d3 from 'd3'
 import { EdaBubblechart } from './eda-bubblechart'
 import { ChartsColors } from '@eda/configs/index'
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
+import { ChartUtilsService } from '@eda/services/service.index';
 
 @Component({
   selector: 'eda-bubblechart',
@@ -19,6 +22,7 @@ import * as dataUtils from '../../../services/utils/transform-data-utils';
 })
 export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   @Input() inject: EdaBubblechart
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef
 
@@ -28,6 +32,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   svg: any;
   data: any;
   colors: Array<string>;
+  assignedColors: any[];
   firstColLabels: Array<string>;
   metricIndex: number;
   width: number;
@@ -38,7 +43,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   simulation: any;
 
 
-  constructor() { }
+  constructor(private chartUtilService : ChartUtilsService) { }
 
   ngOnInit(): void {
     this.id = `bubblechart_${this.inject.id}`
@@ -52,7 +57,13 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
     this.colors = this.inject.colors.length > 0 ? this.inject.colors
       : this.getColors(this.data.children.length, ChartsColors);
+    this.assignedColors = this.inject.assignedColors || []; 
 
+  }
+
+  ngOnDestroy(): void {
+    if (this.div)
+      this.div.remove();
   }
 
   getColors(dataLength, colors) {
@@ -96,9 +107,9 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
     const thirdRow = this.inject.linkedDashboard ? `Linked to ${this.inject.linkedDashboard.dashboardName}` : '';
 
-    const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (14 / 12)]);
+    const maxLength = dataUtils.maxLengthElement([firstRow.length, secondRow.length, thirdRow.length * (18 / 12)]);
 
-    const pixelWithRate = 7;
+    const pixelWithRate = 8;
     const width = maxLength * pixelWithRate;
 
     return { firstRow: firstRow, secondRow: secondRow, thirdRow: thirdRow, width: width }
@@ -116,11 +127,11 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
     // dibujamos márgenes y color
     const width = this.svgContainer.nativeElement.clientWidth - 10, height = this.svgContainer.nativeElement.clientHeight - 10;
-    const color = d3.scaleOrdinal(this.firstColLabels, this.colors).unknown("#ccc");
-
-
-    //console.log("width: " + width + " height: " + height)
-
+    
+    //Funcion de ordenación de colores de D3
+    const valuesBubble = this.assignedColors.map((item) => item.value);
+    const colorsBubble = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsBubble).unknown("#ccc");
 
     //llamamos a la libreria de los circulos
     const treemap = data => d3.pack()
@@ -180,7 +191,8 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .attr("id", d => (d.leafUid = this.randomID())) //Crea y assigna una id al azar a cada circulo
       .attr("fill", d => {
         while (d.depth > 1) d = d.parent;
-        return color(d.data.name); //Rellena al circulo un color al azar
+        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+        return  colorsBubble[valuesBubble.findIndex((item) => d.data.name.includes(item))] || color(d.data.name);
       })
       .attr("class", "node")
       .attr("r", function (d) {
@@ -190,31 +202,38 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
       .style("fill-opacity", 1)
       .attr("stroke", "black")
       .style("stroke-width", 1)
-
-
       .on('click', (mouseevent, data) => {
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
           const value = data.data.name;
-          const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+          const url =
+            window.location.href.slice(
+              0,
+              window.location.href.indexOf("/dashboard")
+            ) +
+            `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`;
           window.open(url, "_blank");
+        } else {
+          //Passem aquestes dades
+          const label = data.data.name;
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({label, filterBy });
         }
       })
               .on('mouseover', (d, data) => { 
-                console.log(d);
-                console.log(data);
+                
 
                 //Se aumenta el tamaño del contorno de la burbuja
-                node   //TO-DO ------------> HACER QUE EL CONTORNO SEA POR BURBUJA EN VEZ DEL TOTAL DE BURBUJAS
+                //TO-DO ------------> HACER QUE EL CONTORNO SEA POR BURBUJA EN VEZ DEL TOTAL DE BURBUJAS
+                node 
                   .transition()
                   .duration(200)
                   .style("stroke-width", 3);
-
+                
                 // Se crea una etiqueta que contenga los datos de cada burbuja
                 const tooltipData = this.getToolTipData(data);
                 let text = `${tooltipData.firstRow} <br/> ${tooltipData.secondRow}`;
                 text = this.inject.linkedDashboard ? text + `<br/> <h6>  ${tooltipData.thirdRow} </h6>` : text;
-                let height = this.inject.linkedDashboard ? '5em' : '4em';
 
                 //Se crea la etiqueta tooltipData con div
                 this.div = d3.select("app-root").append('div')
@@ -228,7 +247,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
                   .style('left', (d.pageX - 81) + 'px')
                   .style('top', (d.pageY - 49) + 'px')
                   .style('width', `${tooltipData.width}px`)
-                  .style('height', height);
+                  .style('height', 'auto');
               })
       .on('mouseout', (d) => {
 
@@ -286,7 +305,8 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
 
       .join("tspan") //Aqui se junta todos los tspan dentro del "bloque texto" para evitar que las letras esten desperdigadas por todo el area SVG     
       .style("font-family", "var(--panel-font-family)")
-      .attr("fill", "white")
+      .style("pointer-events", "none")
+      .attr("fill", "white")      
       .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.9 : null)
       .text(d => d)//Cargamos el texto dentro del "bloque" tspan
 

@@ -18,6 +18,9 @@ interface IDashboardConfig {
     panel: any[];
     onlyIcanEdit: boolean;
     styles:any;
+    tag: any; //  EDA's tags
+    external?: any; // external tags  to filter the dashboard
+    urls:any; // urls to call from the dashboard.  url actions
 }
 
 const DashboardSchema = new mongoose.Schema({

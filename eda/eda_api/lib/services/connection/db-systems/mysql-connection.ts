@@ -7,6 +7,7 @@ import { PoolManagerConnectionSingleton } from '../pool-manager-connection';
 const util = require('util');
 /*SDA CUSTOM*/const SCRMConfig=require('../../../../config/sinergiacrm.config.js');
 
+
 export class MysqlConnection extends AbstractConnection {
     private static instance: MysqlConnection;
     private queryBuilder: MySqlBuilderService;
@@ -35,12 +36,16 @@ export class MysqlConnection extends AbstractConnection {
                     queueLimit: 0,
                     enableKeepAlive: true,
                     keepAliveInitialDelay: 0
-                                    };
+                };
+
+                if ( this.config.ssl  && ( this.config.ssl === true)) {
+                    mySqlConn.ssl= { rejectUnauthorized: false };
+                }
 
                 poolManager.createPool(this.config.database, mySqlConn);
                 this.pool = poolManager.getPool(this.config.database);
 
-                console.log('new pool');
+                console.log('neew pool');
             }
 
             return this.pool;
@@ -51,16 +56,26 @@ export class MysqlConnection extends AbstractConnection {
             port: this.config.port,
             database: this.config.database,
             user: this.config.user,
-            password: this.config.password
+            password: this.config.password,
         };
+
+        if ( this.config.ssl  && ( this.config.ssl === true)) {
+            mySqlConn.ssl= { rejectUnauthorized: false };
+        }
 
         return createConnection(mySqlConn);
     }
 
-    // SDA CUSTOM - Change tryConnection to use mysql2/promise
+
+        // SDA CUSTOM - Change tryConnection to use mysql2/promise
     async tryConnection(): Promise<any> {
         try {
-            const mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
+            let mySqlConn = {}
+            if (this.config.ssl && (this.config.ssl === 'true')) {
+                mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password, "ssl": { rejectUnauthorized: false }};
+            } else {
+                mySqlConn ={ "host": this.config.host,    "port": this.config.port,     "database": this.config.database, "user": this.config.user, "password": this.config.password };
+            }
             this.client = await createConnection(mySqlConn);
             console.log('\x1b[32m%s\x1b[0m', 'Connecting to MySQL database...\n');
             this.itsConnected();
@@ -76,6 +91,7 @@ export class MysqlConnection extends AbstractConnection {
         }
     }
     // END SDA CUSTOM
+
 
     async generateDataModel(optimize:number, filter:string): Promise<any> {
         try {
@@ -150,23 +166,9 @@ export class MysqlConnection extends AbstractConnection {
             throw err;
         }
     }
-    
-    
+
     // SDA CUSTOM JCH (add timeout to individual queries)
     // https://github.com/SinergiaTIC/SinergiaDA/pull/256/files
-    //  async execQuery(query: string): Promise<any> {
-    //      try {
-    //          this.client.query = util.promisify(this.client.query);
-    //          const rows = await this.client.query(query);
-    //          // console.log(this.client.itsConnected());
-    //          // if (!this.pool && this.client.itsConnected() ) this.client.end();
-    //          return rows;
-    //      } catch (err) {
-    //          console.log(err);
-    //          throw err;
-    //      }
-    //  }
-     
     /**
     * Executes a MySQL query with a timeout constraint
     * 
@@ -174,9 +176,9 @@ export class MysqlConnection extends AbstractConnection {
     * @returns Promise that resolves to the query results
     * @throws Error if query execution fails or times out after 60 seconds
     */
+
     async execQuery(query: string): Promise<any> {
         try {
-            // Convert callback-based query to promise-based
             this.client.query = util.promisify(this.client.query);
 
             let maxStatementTime = SCRMConfig.sinergiaConn.maxStatementTime ?? 60;
@@ -197,19 +199,16 @@ export class MysqlConnection extends AbstractConnection {
                 this.client.query(queryWithTimeout),
                 timeoutPromise
             ]);
-        
             return rows;
         } catch (err) {
             if (err.message === 'Query execution timed out after 60 seconds') {
                 // Log specific timeout errors
                 console.error('Query timeout:', query);
             }
-            console.log(err);
             throw err;
         }
 
     }
-    //  END SDA CUSTOM
 
     async execSqlQuery(query: string): Promise<any> {
         return this.execQuery(query);

@@ -1,6 +1,5 @@
 import { ChartUtilsService } from '@eda/services/service.index';
-
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
 import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
 import { ScatterPlot } from "./eda-scatter";
@@ -20,6 +19,7 @@ export class EdaScatter implements AfterViewInit {
 
   @Input() inject: ScatterPlot;
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef;
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   div = null;
 
@@ -27,6 +27,7 @@ export class EdaScatter implements AfterViewInit {
   svg: any;
   data: any;
   colors: Array<string>;
+  assignedColors: any[];
   firstColLabels: Array<string>;
   metricIndex: number;
   width: number;
@@ -39,14 +40,17 @@ export class EdaScatter implements AfterViewInit {
   ngOnInit(): void {
     this.id = `scatterPlot_${this.inject.id}`;
     this.data = this.formatData(this.inject.data);
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors : ChartsColors.map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
-    this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
+    this.colors = this.inject.colors && this.inject.colors.length >= this.data.length ? 
+    this.inject.colors : this.getColors();
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
-
+    this.assignedColors = this.inject.assignedColors || []; 
   }
-
+  ngOnDestroy(): void {
+    if (this.div)
+      this.div.remove();
+  }
 
   ngAfterViewInit() {
 
@@ -56,7 +60,6 @@ export class EdaScatter implements AfterViewInit {
     if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
       this.draw();
     }
-
   }
 
 
@@ -66,9 +69,13 @@ export class EdaScatter implements AfterViewInit {
     const width = this.svgContainer.nativeElement.clientWidth - 20;
     const height = this.svgContainer.nativeElement.clientHeight - 20;
     const margin = ({ top: 50, right: 50, bottom: 35, left: 100 });
-    const color = d3.scaleOrdinal(this.firstColLabels, this.colors).unknown(this.colors[0]);
 
-    // const shape = d3.scaleOrdinal(this.data.map(d => d.category), d3.symbols.map(s => d3.symbol().type(s)()));
+    //Valores de assignedColors separados
+    const valuesScatter = this.assignedColors.map((item) => item.value);
+    const colorsScatter = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
+    
+    //Funcion de ordenación de colores de D3
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsScatter).unknown("#ccc");
 
     const x_range: Array<any> = d3.extent(this.data, (d: any) => d.x);
     const y_range: Array<any> = d3.extent(this.data, (d: any) => d.y);
@@ -130,7 +137,7 @@ export class EdaScatter implements AfterViewInit {
     svg.append("g")
       .call(xAxis);
 
-    svg.append("g")
+      svg.append("g")
       .call(yAxis);
 
     svg.append("g")
@@ -147,64 +154,97 @@ export class EdaScatter implements AfterViewInit {
       .attr("cx", d => x(d.x))
       .attr("cy", d => y(d.y))
       .attr("r", d => d.radius + 1)
-      .attr("fill", d => color(d.category))
+      .attr("fill", d => { 
+        while (d.depth > 1) d = d.parent;
+        //Devolvemos SOLO EL COLOR de assignedColors que comparte la data y colors de assignedColors
+        return colorsScatter[valuesScatter.findIndex((item) => d.label.includes(item))] || color(d.label);
+      })
+      .on('click', (e, data) => {
+        if (this.inject.linkedDashboard) {
+          const props = this.inject.linkedDashboard;
+          const value = data.data.name;
+          const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+          window.open(url, "_blank");
+        }
+      })
       .on('mouseover', (d, data) => {
-
-
+        
+        
         let categoryText = data.category ? `${this.inject.dataDescription.otherColumns[0].name} : ${data.category} ` : '';
         let serieText = data.category ? `${this.inject.dataDescription.otherColumns[1].name}  : ${data.label}`
-          : `${this.inject.dataDescription.otherColumns[0].name} : ${data.label}`;
+        : `${this.inject.dataDescription.otherColumns[0].name} : ${data.label}`;
         let metricText = data.metricValue ?
-          ` ${this.inject.dataDescription.numericColumns[2].name} :  ${data.metricValue.toLocaleString(undefined, { maximumFractionDigits: 6 })}`
-          : ``;
-
+        ` ${this.inject.dataDescription.numericColumns[2].name} :  ${data.metricValue.toLocaleString(undefined, { maximumFractionDigits: 6 })}`
+        : ``;
+        
         let linkedText = this.inject.linkedDashboard ? `Linked to ${this.inject.linkedDashboard.dashboardName} </h6>` : '';
-
+        
         const maxLength = dataUtils.maxLengthElement([categoryText.length, serieText.length, metricText.length, linkedText.length]);
         const pixelWithRate = 7;
         const width = maxLength * pixelWithRate;
-
+        
         let text = categoryText ? `${categoryText}<br/>` : '';
         text = serieText ? text + `${serieText}<br/>` : text;
         text = metricText ? text + `${metricText}<br/>` : text;
         text = this.inject.linkedDashboard ? text + `<h6> ${linkedText} </h6>` : text;
-
+        
         let height: any = this.inject.linkedDashboard ? 5 : 3;
         height = data.category ? height + 1 + 'em' : height + 'em';
-
+        
         this.div = d3.select("app-root").append('div')
-          .attr('class', 'd3tooltip')
-          .attr('id', 'scatterDiv')
-          .style('opacity', 0);
-
+        .attr('class', 'd3tooltip')
+        .attr('id', 'scatterDiv')
+        .style('opacity', 0);
+        
         this.div.transition()
-          .duration(200)
+        .duration(200)
           .style('opacity', .9);
-        this.div.html(text)
+          this.div.html(text)
           .style('left', (d.pageX - 81) + 'px')
           .style('top', (d.pageY - 49) + 'px')
           .style('width', `${width}px`)
           .style('height', height)
           .style('line-height', 1.1);
-      })
-      .on('mouseout', (d) => {
-        this.div.remove();
+        })
+        .on('mouseout', (d) => {
+          this.div.remove();
       }).on("mousemove", (d, data) => {
         const sizes = this.div.node().getBoundingClientRect();
         this.div
           .style("top", (d.pageY - sizes.height - 7) + "px")
           .style("left", (d.pageX - sizes.width / 2) + "px");
-      }).on('click', (mouseevent, data) => {
-
+        }).on('click', (mouseevent, data) => {
+          
         if (this.inject.linkedDashboard) {
           const props = this.inject.linkedDashboard;
           const value = data.category ? data.category : data.label;
           const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
           window.open(url, "_blank");
+        }else {
+          //Passem aquestes dades
+          const label = data.label;
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({label, filterBy});
         }
+    
       })
   }
 
+getColors () {
+     let MAX_ITERATIONS = 1000;
+        let out = [];
+        let col = ChartsColors;
+
+        for (let i = 0; i < MAX_ITERATIONS; i += 50) {
+
+            for (let j = 0; j < col.length; j++) {
+                out.push(`rgba(${(col[j][0] + i) % 255}, ${(col[j][1] + i) % 255}, ${(Math.abs(col[j][2] + i)) % 255}, 0.8)`);
+            }
+        }
+        return out;
+  }
+
+ 
 
   formatData(data) {
 

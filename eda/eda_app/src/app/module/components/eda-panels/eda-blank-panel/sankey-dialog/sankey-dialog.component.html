@@ -1,11 +1,9 @@
 <eda-dialog [inject]="dialog">
-  <div body class="grid">
+  <div body class="grid" style=" height: 100%;">
     <div class="col-8">
-      <div class="eda-chart-panel" style="margin-top: 5em; margin-left: 2em; background-color: var(--panel-color);">
-        <div style="height: 70%; margin-top: 2em;">
-          <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig">
+      <div class="eda-tree-chart-panel" style="margin-top: 1em; margin-left: 1em; background-color: var(--panel-color);">
+          <panel-chart *ngIf="!!display" #PanelChartComponent [props]="panelChartConfig">
           </panel-chart>
-        </div>
       </div>
 
     </div>
@@ -18,19 +16,19 @@
       </h6>
 
       <div class="grid chart-color-selection" id="sankeyColorWrapper">
-        <div *ngFor="let label of labels; let i = index">
+        
 
-          <div class="p-col">
+        <ng-container *ngFor="let label of labels; let i = index">
 
-            <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor(label)" format="hex"
-              appendTo="body">
+          <div class="col-6">
+            <span> {{label}} </span>
+            <p-colorPicker [(ngModel)]="colors[i]" (onChange)="handleInputColor(label)" format="hex" appendTo="body">
             </p-colorPicker>
-
             <input type="text" pInputText class="eda-color-pick" [(ngModel)]="colors[i]"
               (input)="handleInputColor(label)" minlength="7">
-
           </div>
-        </div>
+        </ng-container>
+
       </div>
     </div>
 

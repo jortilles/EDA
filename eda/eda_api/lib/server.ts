@@ -1,11 +1,5 @@
 import app from './app';
 
-/**
- * oracle client
- */
-const oracledb = require('oracledb');
-/* SDA CUSTOM */ // const EDA_ORACLE_CLIENT = require('../config/oracle-config.js').EDA_ORACLE_CLIENT;
-
 interface IError extends Error{
     status?: any;
 }
@@ -35,15 +29,4 @@ app.listen(PORT, () => {
     console.log('\n\x1b[34m=====\x1b[0m Server start on port \x1b[32m['+PORT+'] \x1b[0m \x1b[34m=====\x1b[0m\n');
 });
 
-/**
- * Oracle client 
- */
 
-
-/*SDA CUSTOM*/ // try {
-/*SDA CUSTOM*/ //     oracledb.initOracleClient({libDir: EDA_ORACLE_CLIENT});
-/*SDA CUSTOM*/ //   } catch (err) {
-/*SDA CUSTOM*/ // 
-/*SDA CUSTOM*/     // console.log('Para usar Oracle debes instalar instant_client y especificar la ruta en el archivo de configuración');
-/*SDA CUSTOM*/     // console.error(err);
-/*SDA CUSTOM*/ //   }

@@ -1,12 +1,7 @@
 /* JJ: La meva merda  */
+import { ChartUtilsService } from '@eda/services/service.index';
 import * as d3 from 'd3'
-import {
-  Component,
-  AfterViewInit,
-  Input,
-  ViewChild,
-  ElementRef
-} from '@angular/core'
+import { Component, AfterViewInit, Input, ViewChild, ElementRef, Output, EventEmitter} from '@angular/core'
 import { SunBurst } from './eda-sunbrust'
 import { ChartsColors } from '@eda/configs/index'
 
@@ -18,6 +13,7 @@ import { ChartsColors } from '@eda/configs/index'
 export class EdaSunburstComponent implements AfterViewInit {
   @Input() inject: SunBurst
   @ViewChild('svgContainer', { static: false }) svgContainer: ElementRef
+  @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
   div = null
 
@@ -25,19 +21,24 @@ export class EdaSunburstComponent implements AfterViewInit {
   svg: any
   data: any
   colors: Array<string>
+  assignedColors: any[];
   labels: Array<string>
+  firstColLabels: Array<string>;
   width: number
   heigth: number
   metricIndex: number
-
-  ngOnInit (): void {
+  constructor(private chartUtilService : ChartUtilsService) {}
+  ngOnInit(): void {
     this.id = `sunburst_${this.inject.id}` ;
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     this.data = this.formatData(this.inject.data, this.inject.dataDescription);
     this.labels =  this.generateDomain(this.data);
     this.colors = this.inject.colors && this.inject.colors.length > 0 ? 
-                  this.inject.colors : this.getColors(this.labels.length, ChartsColors) ;
-
+      this.inject.colors : this.getColors(this.labels.length, ChartsColors);
+    this.assignedColors = this.inject.assignedColors || []; 
+    const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
+    this.firstColLabels = this.inject.data.values.map((row) => row[firstNonNumericColIndex]);
+    this.firstColLabels = [...new Set(this.firstColLabels)];
   }
 
   ngAfterViewInit () {
@@ -52,8 +53,11 @@ export class EdaSunburstComponent implements AfterViewInit {
     }
 
   }
-
-  draw () {
+  ngOnDestroy(): void {
+    if (this.div)
+      this.div.remove();
+  }
+  draw() {
     const svg = this.svg
     const width = this.svgContainer.nativeElement.clientWidth - 40
     //const height = this.svgContainer.nativeElement.clientHeight - 20
@@ -66,11 +70,11 @@ export class EdaSunburstComponent implements AfterViewInit {
           .sum(d => d.value)
           .sort((a, b) => b.value - a.value)
       );
-
-    let color = d3
-      .scaleOrdinal()
-      .domain( this.labels )
-      .range( this.colors );
+      
+    //Funcion de ordenación de colores de D3
+    const valuesSunburst = this.assignedColors.map((item) => item.value);
+    const colorsSunburst = this.assignedColors[0].color ? this.assignedColors.map(item => item.color) : this.colors;
+    const color = d3.scaleOrdinal(this.firstColLabels,  colorsSunburst).unknown("#ccc");
 
     let arc = d3
       .arc()
@@ -121,7 +125,7 @@ export class EdaSunburstComponent implements AfterViewInit {
     svg
       .attr('viewBox', `${-radius} ${-radius} ${width} ${width}`)
       .style('max-width', `${width}px`)
-     // .style('font', '12px sans-serif')
+    // .style('font', '12px sans-serif')
 
     const path = svg
       .append('g')
@@ -133,8 +137,32 @@ export class EdaSunburstComponent implements AfterViewInit {
         })
       )
       .join('path')
-      .attr('fill', d => color(d.data.name))
+      .attr('fill', d => {
+        let original = d;
+        let opacity = 1;
+        
+        // Subimos al primer nivel para asignar color base
+        while (d.depth > 1) d = d.parent;
+        const rgbColor = d3.rgb(colorsSunburst[valuesSunburst.findIndex(item => d.data.name.includes(item))] || color(d.data.name)); 
+      
+        // Cálculo de opacidad
+        if (original.depth > 1) {
+          const siblings = original.parent.children;
+          const index = siblings.indexOf(original);
+          const total = siblings.length;
+      
+          const minOpacity = 0.25;
+          const maxOpacity = 1;
+      
+          // Distribuye linealmente entre min y max, primero más opaco
+          if (total > 1) { opacity = maxOpacity - (index * (maxOpacity - minOpacity) / (total - 1)); }
+          else { opacity = maxOpacity; } // Solo un hijo
+        }
+      
+        return `rgba(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}, ${opacity})`;
+      })
       .attr('d', arc)
+      
 
     svg
       .append('g')
@@ -189,24 +217,38 @@ export class EdaSunburstComponent implements AfterViewInit {
         my_path = my_path.slice(1)
 
         label
-        .style('visibility', null)
-        .select('.values')
-        .text(
-          my_path +
+          .style('visibility', null)
+          .select('.values')
+          .text(
+            my_path +
             ': ' +
             d.value.toLocaleString(undefined, { maximumFractionDigits: 6 })
-        )
-        .attr("font-family", "var(--panel-font-family)")
-        .attr("fill", "var(--panel-font-color)")
+          )
+          .attr("font-family", "var(--panel-font-family)")
+          .attr("pointer-events", "none")
+
+          .attr("fill", "var(--panel-font-color)")
         // per posar-ho a dalt de tot
         label.raise();
         
       })
+      .on('click', (mouseevent, data) => {
+        if (this.inject.linkedDashboard) {
+          const props = this.inject.linkedDashboard;
+          const value = data.data.name;
+          const url = window.location.href.slice(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${value}`
+          window.open(url, "_blank");
+        } else {
+          //Passem aquestes dades
+          const label = data.data.name;
+          const filterBy = this.inject.data.labels[this.inject.data.values[0].findIndex((element) => typeof element === 'string')]
+          this.onClick.emit({label, filterBy });
+        }
+      });
   }
 
   formatData (data, dataDescription) {
     let result = [];
-    console.log(data);
     data.values.forEach(row => {
       let path = ''
       let element = [];

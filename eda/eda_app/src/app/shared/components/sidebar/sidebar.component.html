@@ -45,7 +45,7 @@
                             </a>
                         </li>
                         <li *ngIf="userService.isAdmin">
-                            <a routerLinkActive="active" routerLink="/users-management" (click)="ignoreNotSaved()">
+                            <a routerLinkActive="active"  routerLink="/users-management" (click)="ignoreNotSaved()">
                                 <i class="mdi mdi-settings"></i> <span i18n="@@sidebarUserManagement">Gestión de
                                     Usuarios</span>
                             </a>
@@ -61,6 +61,13 @@
                                 <i class="mdi mdi-settings"></i> <span i18n="@@mailmanagementHeader">Gestión de
                                     correo y envio de mails</span>
                             </a>
+
+                        </li>
+                        <li *ngIf="userService.isDataSourceCreator||userService.isAdmin" class="user-profile">
+                            <a routerLinkActive="active"  routerLink="/logs" (click)="ignoreNotSaved()">
+                                <i class="mdi mdi-clipboard-text"></i> <span i18n="@@logsManagement">Gestión de
+                                    Logs</span>
+                            </a>
                         </li>
                         <li>
                             <a (click)="logout()" class="pointer" (click)="ignoreNotSaved()">
@@ -73,7 +80,7 @@
                 <li class="nav-devider"></li>
 
                 <li class="user-profile">
-                    <a class="has-arrow waves-effect waves-dark" href="#"  (click)="checkNotSaved()" aria-expanded="false">
+                    <a class="has-arrow waves-effect waves-dark collapser" href="#"  (click)="checkNotSaved()" aria-expanded="false">
                         
                         <i class="mdi mdi-view-dashboard"></i>
                         <span class="hide-menu ml-2" i18n="@@Dashboards_ms"> Informes </span>
@@ -99,13 +106,13 @@
                 <li *ngIf="userService.isDataSourceCreator||userService.isAdmin"  class="nav-devider"></li>
 
                 <li *ngIf="userService.isDataSourceCreator||userService.isAdmin" class="user-profile">
-                    <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false" id="edaNewDataSource">
+                    <a class="has-arrow waves-effect waves-dark collapser" href="#" aria-expanded="false" id="edaNewDataSource">
                         <i class="mdi mdi-database"></i>
                         <span class="hide-menu ml-2" i18n="@@sidebarDataFonts">Fuente de Datos</span>
                     </a>
                     <ul aria-expanded="false" class="collapse side-datasource-list">
                         <li>
-                            <a routerLinkActive="active" routerLink="/data-source">
+                            <a routerLinkActive="active" class="collapser" routerLink="/data-source">
                                 <i class="mdi mdi-database-plus"></i> <span i18n="@@sidebarNewDb">Nueva Fuente</span>
                             </a>
                         </li>
@@ -127,9 +134,9 @@
 
                 <li class="nav-devider"></li>
                 <li  >
-                    <a class="has-arrow waves-effect waves-dark">
-                        <!-- SDA CUSTOM<i class="pi pi-globe"></i> -->
-<!-- SDA CUSTOM -->    <i class="mdi mdi-web"></i>
+                    <a class="has-arrow waves-effect waves-dark collapser">
+                         <!-- SDA CUSTOM<i class="pi pi-globe"></i> -->
+<!-- SDA CUSTOM -->     <i class="mdi mdi-web"></i>
                     </a>
                     <ul aria-expanded="false" class="collapse">
                         <li>

@@ -9,26 +9,35 @@ import formatDate from '../../services/date-format/date-format.service'
 import { CachedQueryService } from '../../services/cache-service/cached-query.service'
 import { QueryOptions } from 'mongoose'
 import ServerLogService from '../../services/server-log/server-log.service'
+import _ from 'lodash'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
+
+
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
       let admin, privates, group, publics, shared = [];
       const groups = await Group.find({ users: { $in: req.user._id } }).exec();
       const isAdmin = groups.filter(g => g.role === 'EDA_ADMIN_ROLE').length > 0;
       const isDataSourceCreator = groups.filter(g => g.name === 'EDA_DATASOURCE_CREATOR').length > 0;
+      const dataSources = await DataSource.find(
+        {},
+        'ds.metadata'
+      )
+
 
       if (isAdmin) {
-        [publics, privates, group, shared] = await DashboardController.getAllDashboardToAdmin();
+        [publics, privates, group, shared] =  await DashboardController.getAllDashboardToAdmin(req)
       } else {
-        privates = await DashboardController.getPrivateDashboards(req);
-        group = await DashboardController.getGroupsDashboards(req);
-        publics = await DashboardController.getPublicsDashboards();
-        // Hide public (shared) reports to normal users
+        privates = await DashboardController.getPrivateDashboards(req)
+        group = await DashboardController.getGroupsDashboards(req)
+        publics = await DashboardController.getPublicsDashboards(req , dataSources)
+        /*SDA CUSTOM*/ // Hide public (shared) reports to normal users
         /*SDA CUSTOM*/ // shared = await DashboardController.getSharedDashboards();
       }
-      // Ensure group information is included for ‘group’ dashboards type.
+
+      // Asegurarse de que la información del grupo esté incluida para dashboards de tipo "group"
       group = await DashboardController.addGroupInfo(group);
 
       return res.status(200).json({
@@ -70,7 +79,31 @@ export class DashboardController {
           privates.push(dashboard)
         }
       }
-      return privates
+
+      let tags: Array<any> = req.qs.tags
+      
+      if (_.isEmpty(tags)) {
+        return privates;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const privatesTags = []
+        tags.forEach(tag => {
+          privates.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  privatesTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return privatesTags;
+      }
+
+
     } catch (err) {
       throw new HttpException(400, 'Error loading privates dashboards')
     }
@@ -85,16 +118,101 @@ export class DashboardController {
         { group: { $in: userGroups.map(g => g._id) } },
         'config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.ds user'
       ).populate('user','name').exec()
-      
-      // Add group information here as well
-      return DashboardController.addGroupInfo(dashboards);
+      const groupDashboards = []
+      for (let i = 0, n = dashboards.length; i < n; i += 1) {
+        const dashboard = dashboards[i]
+        for (const dashboardGroup of dashboard.group) {
+          //dashboard.group = groups.filter(g => JSON.stringify(g._id) === JSON.stringify(group));
+          for (const userGroup of userGroups) {
+            if ( JSON.stringify(userGroup._id) === JSON.stringify(dashboardGroup) ) {
+              if( !groupDashboards.some((db) => db._id===dashboard._id) ) groupDashboards.push(dashboard)
+            }
+          }
+        }
+      }
+
+      let tags: Array<any> = req.qs.tags;
+
+      if (_.isEmpty(tags)) {
+        return groupDashboards;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const groupDashboardsTags = []
+        tags.forEach(tag => {
+          groupDashboards.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  groupDashboardsTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return  DashboardController.addGroupInfo(groupDashboardsTags);
+      }
+
+
     } catch (err) {
       console.log(err);
       throw new HttpException(400, 'Error loading groups dashboards');
     }
   }
 
-  static async getPublicsDashboards() {
+/**
+ * 
+ * @param req  request
+ * @param ds  datasource 
+ * This function returns true or false depending on if the user can see the datasource. It is used to determine if the dashboard should be added to the available dashobards list.
+ */
+    static iCanSeeTheDashboard(req: Request, ds: any ) :boolean{
+      let result = false;
+      if( ds.ds.metadata.model_granted_roles.length == 0){ // si no hay permisos puedo verlo.
+        result  =  true;
+      }
+      if( result == false ){
+                const user = req.user;
+
+                ds.ds.metadata.model_granted_roles.forEach(e => {
+                if(e.table == 'fullModel' ){
+                    if(e.users?.indexOf( user._id ) >= 0  ){ // el usuario puede ver el modelo
+                      result  = true;
+                    }
+                    if(e.type ==  'anyoneCanSee' ){ // Todos pueden ver el modelo.
+                      result  = true;
+                    }
+                    if(  e.role?.length > 0 ) { // si el rol puede verlo lo ve
+                      user.role.forEach( r=> {
+                        if (  e.role.indexOf( r ) >= 0 ){
+                            result  = true;
+                        }
+                      })
+                    } 
+                    
+                } else{  // si  veo algo.
+                    if(e.permission == true ){
+
+                        if( e.users?.some( element => JSON.stringify(element) === JSON.stringify(user._id) )   ){ // el usuario puede ver el algo de alguna tabla
+                            result  = true;
+                        }
+                        if(  e.role?.length > 0 ) { // si el rol puede ver algo de alguna tabla 
+                            user.role.forEach( r=> {
+                              if (  e.role.indexOf( r ) >= 0 ){
+                                 result  = true;
+                              }
+                            })
+                        } 
+                      }     
+                }
+            });
+      }
+      return result;
+    }
+
+
+  static async getPublicsDashboards(req: Request, dss: any[]) {
     try {
       const dashboards = await Dashboard.find(
         {},
@@ -102,21 +220,48 @@ export class DashboardController {
       ).populate('user','name').exec()
       const publics = []
 
+     
+
       for (const dashboard of dashboards) {
         if (dashboard.config.visible === 'public') {
-          // Obtain the name of the data source
-          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
-          
-          publics.push(dashboard)
+          const ds = dss.find( e=> e._id == dashboard.config.ds._id );
+          dashboard.config.ds.name =  ds.ds?.metadata?.model_name ?? 'N/A';
+          if(  this.iCanSeeTheDashboard(req, ds) == true ){
+             publics.push(dashboard);
+          }
+
         }
       }
-      return publics
+
+      let tags: Array<any> = req.qs.tags;
+
+      if (_.isEmpty(tags)) {
+        return publics;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const publicsTags = []
+        tags.forEach(tag => {
+          publics.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  publicsTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return publicsTags;
+      }
+
     } catch (err) {
       throw new HttpException(400, 'Error loading public dashboards')
     }
   }
 
-  static async getSharedDashboards() {
+  static async getSharedDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
         {},
@@ -131,17 +276,52 @@ export class DashboardController {
           shared.push(dashboard)
         }
       }
-      return shared
+
+      let tags: Array<any> = req.qs.tags;
+
+      if (_.isEmpty(tags)) {
+        return shared;
+
+      } else {
+        tags = req.qs.tags.split(',');
+        const sharedTags = []
+        tags.forEach(tag => {
+          shared.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  sharedTags.push(dbs)
+                }
+              })
+            }
+          }
+          )
+        })
+        return sharedTags;
+      }
     } catch (err) {
       throw new HttpException(400, 'Error loading shared dashboards')
     }
   }
 
-  static async getAllDashboardToAdmin() {
-    try {
-
-      
-      // Define the default date to be used for both createdAt and modifiedAt fields
+  static async getAllDashboardToAdmin(req: Request) {
+    let external;
+    if (req.qs.external) {
+      external = JSON.parse(req.qs.external);
+    }
+    // Creamos un objeto de filtro dinámico
+    let filter = {};
+    // Recorremos las claves del objeto externalObject y las añadimos al filtro
+      for (let key in external) { 
+        filter[`config.external.${key}`] = external[key];
+      }
+      filter = Object.entries(filter).reduce((acc, [clave, valor]) => {
+        acc[clave] = valor;
+        return acc;
+      }, {});
+    try { 
+    
+          // Define the default date to be used for both createdAt and modifiedAt fields
       const defaultDate = new Date('2024-01-01T00:00:00.000Z');
 
       // First, update all documents that don't have a createdAt field
@@ -167,11 +347,11 @@ export class DashboardController {
       );
 
 
-  
-      const dashboards = await Dashboard.find(
-        {},
-        'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds'
-      ).exec()
+      //si no lleva filtro, pasamos directamente a recuperarlos todos
+      const dashboards =  JSON.stringify(filter) !== '{}'  ? 
+      await Dashboard.find({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))},  'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.external').exec() : 
+      await Dashboard.find({}, 'user config.title config.visible group config.tag config.onlyIcanEdit config.description config.createdAt config.modifiedAt config.ds config.external').exec();
+      
       const publics = []
       const privates = []
       const groups = []
@@ -194,8 +374,8 @@ export class DashboardController {
           })
         }
         
-          // Obtain the name of the data source
-          dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
+        // Obtain the name of the data source
+        dashboard.config.ds.name = (await DataSource.findById(dashboard.config.ds._id, 'ds.metadata.model_name').exec())?.ds?.metadata?.model_name ?? 'N/A';
         switch (dashboard.config.visible) {
           case 'public':
             publics.push(dashboard)
@@ -212,8 +392,63 @@ export class DashboardController {
             break
         }
       }
-  
-      return [publics, privates, groups, shared]
+      
+      //apliquem filtrat per tags desde URL
+      let tags : Array<any> = req.qs.tags;
+      
+      if (_.isEmpty(tags)) {
+        return [publics, privates, groups, shared];
+      } else {
+        tags = req.qs.tags.split(',');
+        const publicsTags = []
+        const privatesTags = []
+        const groupsTags = []
+        const sharedTags = []
+
+        tags.forEach(tag => {
+          publics.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  publicsTags.push(dbs)
+                }
+              })
+            }
+          })
+          privates.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  privatesTags.push(dbs)
+                }
+              })
+            }
+          })
+          groups.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  groupsTags.push(dbs)
+                }
+              })
+            }
+          })
+          shared.forEach(dbs => {
+            if (dbs.config.tag != undefined && Array.isArray(dbs.config.tag) && dbs.config.tag.includes(tag)) {
+              dbs.config.tag.forEach(t => {
+                if (t === tag) {
+                  sharedTags.push(dbs)
+                }
+              })
+            }
+          })
+        })
+
+        return [publicsTags, privatesTags, groupsTags, sharedTags];
+      }
+
+
+
     } catch (err) {
       console.log(err);
       throw new HttpException(400, 'Error loading dashboards for admin')
@@ -286,16 +521,17 @@ export class DashboardController {
 
             // This is done in order to bypass security in case the user is anonymous and therefore
               // a public report
-            if(req.user._id == '135792467811111111111112'){
-              console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
-              uniquesForbiddenTables = [];
-            }
+            /* SDA CUSTOM */ if(req.user._id == '135792467811111111111112'){
+            /* SDA CUSTOM */   console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
+            /* SDA CUSTOM */   uniquesForbiddenTables = [];
+            /* SDA CUSTOM */ }
 			
             const includesAdmin = req.user.role.includes("135792467811111111111110")
 
             let is_filtered = false;
 
             if (!includesAdmin) {
+
               try {
                 // Set prohibited tables to false
                 if (uniquesForbiddenTables.length > 0) {
@@ -357,6 +593,19 @@ export class DashboardController {
                 console.log('no pannels in dashboard')
               }
             }
+
+            // Se agrega false a autorelation y bridge
+            toJson.ds.model.tables.forEach(table => {
+              table.relations.forEach(r => {
+                if(r.autorelation == undefined){
+                  r.autorelation = false;
+                }
+                if(r.bridge == undefined){
+                  r.bridge = false;
+                }
+              });
+            });
+
             const ds = {
               _id: datasource._id,
               model: toJson.ds.model,
@@ -369,7 +618,7 @@ export class DashboardController {
               'info',
               'DashboardAccessed',
               req.user.name,
-              ds._id + '--' + ds.name
+              dashboard._id + '--' + dashboard.config.title
             )
             return res.status(200).json({ ok: true, dashboard, datasource: ds })
           }
@@ -415,7 +664,7 @@ export class DashboardController {
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const body = req.body
+      const body = req.body;
 
       Dashboard.findById(req.params.id, (err, dashboard: IDashboard) => {
         if (err) {
@@ -539,14 +788,15 @@ export class DashboardController {
     user: string
   ) {
     let forbiddenTables = [];
-    if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.type == "anyoneCanSee" && r.permission == true ).length > 0 ){
-      // In case where any user can visualize the model and we have a benevolent scheme
-      forbiddenTables = this.getForbiddenTablesOpen( dataModelObject, userGroups, user ); 
-    }else{
-      // In case I can only see the tables for which I have explicit permissions
-      forbiddenTables = this.getForbiddenTablesClose( dataModelObject, userGroups, user ); 
-    }
-
+    if(dataModelObject.ds.metadata.model_granted_roles.length > 0 ){ /** IN CASE I HAVE SECURITY DEFINED... */
+      if( dataModelObject.ds.metadata.model_granted_roles.filter( r=>r.type == "anyoneCanSee" && r.permission == true ).length > 0 ){
+        // In case where any user can visualize the model and we have a benevolent scheme
+        forbiddenTables = this.getForbiddenTablesOpen( dataModelObject, userGroups, user ); 
+      }else{
+         // In case I can only see the tables for which I have explicit permissions
+        forbiddenTables = this.getForbiddenTablesClose( dataModelObject, userGroups, user ); 
+      }
+  }
     return forbiddenTables;
   }
 
@@ -725,6 +975,33 @@ export class DashboardController {
 
     // allowed tables by security 
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
+      // Si el usuario puede ver todo el modelo.
+      if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
+                                                                    && r.permission == true 
+                                                                    && r.users?.includes(user) 
+                                                                ).length > 0 ){
+        // El usuairo puede ver todo.
+        forbiddenTables = [];
+        return forbiddenTables;
+      }
+      // Si el grupo puede ver todo el modelo.
+      let groupCan =  0;
+      userGroups.forEach(
+        group=>{
+          if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
+            && r.permission == true 
+            && r.groups?.includes(group) 
+          ).length > 0 ){
+              // El grupo  puede ver todo.
+              groupCan = 1;
+            }
+        }
+      );
+      if(groupCan==1) {
+        forbiddenTables = [];
+        return forbiddenTables;
+      }
+   
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
         if (
           dataModelObject.ds.metadata.model_granted_roles[i].column === 'fullTable' &&
@@ -820,8 +1097,12 @@ export class DashboardController {
   static async execQuery(req: Request, res: Response, next: NextFunction) {
 
     try {
-      const connection = await ManagerConnectionService.getConnection(req.body.model_id);
-      const dataModel = await connection.getDataSource(req.body.model_id)
+      let connectionProps: any;
+      if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
+      
+      const dataModel = await connection.getDataSource(req.body.model_id, req.qs.properties)
       /**--------------------------------------------------------------------------------------------------------- */
       /**Security check */
       const allowed = DashboardController.securityCheck(dataModel, req.user)
@@ -846,14 +1127,15 @@ export class DashboardController {
         //the admin sees everything
        uniquesForbiddenTables = [];
       }
-	  
+
+
 /* SDA CUSTOM*/	  if( req.user._id == '135792467811111111111112'){
 /* SDA CUSTOM*/        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
 /* SDA CUSTOM*/        uniquesForbiddenTables = [];
 /* SDA CUSTOM*/      }
-	  
-      
-      let mylabels = [];
+
+
+      let mylabels = []
       let myQuery: any
       if (uniquesForbiddenTables.length > 0) {
         myQuery = { fields: [], filters: [] }
@@ -894,10 +1176,10 @@ export class DashboardController {
         console.log('you cannot see any data');
         return res.status(200).json([['noDataAllowed'], [[]]]);
       }
-      if( req.body.query.hasOwnProperty('forSelector') && req.body.query.forSelector===true ){
-          myQuery.forSelector = true;
-      }else{
-          myQuery.forSelector = false;
+      if (req.body.query.hasOwnProperty('forSelector') && req.body.query.forSelector === true) {
+        myQuery.forSelector = true;
+      } else {
+        myQuery.forSelector = false;
       }
 
 
@@ -964,7 +1246,10 @@ export class DashboardController {
               const nullFilter = JSON.parse(JSON.stringify(a));
               nullFilter.filter_id = 'is_null';
               nullFilter.filter_type = 'is_null';
-              nullFilter.filter_elements = [{value1:['null']}];
+              nullFilter.filter_elements = [{value1:['null']}]
+              nullFilter.isGlobal= true,
+              nullFilter.applyToAll= false;
+
               b.value1 = b.value1.filter(c => c != 'null')
               filters.push(nullFilter);
               }else  if ( ( b.value1.includes('null')||  b.value1.includes( eda_api_config.null_value )  || b.value1.includes('1900-01-01') ) 
@@ -1008,7 +1293,8 @@ export class DashboardController {
       const query = await connection.getQueryBuilded(
         myQuery,
         dataModelObject,
-        req.user
+        req.user,
+        req.body.query.queryLimit // Added dlimit 
       )
 
       /**---------------------------------------------------------------------------------------------------------*/
@@ -1020,21 +1306,20 @@ export class DashboardController {
         } and Panel:${req.body.dashboard.panel_id}  `
       )
       console.log(query)
-      console.log(
-        '\n-------------------------------------------------------------------------------\n'
-      )
+      console.log('\n-------------------------------------------------------------------------------\n');
 
       /**cached query */
-      let cacheEnabled =
-        dataModelObject.ds.metadata.cache_config &&
-        dataModelObject.ds.metadata.cache_config.enabled === true
+      let cacheEnabled = false;
+      dataModelObject.ds.metadata.cache_config &&
+      dataModelObject.ds.metadata.cache_config.enabled === true;
+
       const cachedQuery = cacheEnabled
         ? await CachedQueryService.checkQuery(req.body.model_id, query)
         : null
 
       if (!cachedQuery) {
-        connection.client = await connection.getclient()
-        const getResults = await connection.execQuery(query)
+        connection.client = await connection.getclient();
+        const getResults = await connection.execQuery(query);
 
         let numerics = []
         // If it is oracle or some mysql it will be difficult to make the numbers normal.
@@ -1147,7 +1432,10 @@ export class DashboardController {
    */
   static async execSqlQuery(req: Request, res: Response, next: NextFunction) {
     try {
-      const connection = await ManagerConnectionService.getConnection(req.body.model_id);
+      let connectionProps: any;
+      if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
       const dataModel = await connection.getDataSource(req.body.model_id)
 
       /**Security check */
@@ -1170,11 +1458,13 @@ export class DashboardController {
         req['user'].role,
         req.user._id
       )
+
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
       if(includesAdmin){
         // the admin sees everything
        uniquesForbiddenTables = [];
       }
+
 /* SDA CUSTOM */      if( req.user._id == '135792467811111111111112'){
 /* SDA CUSTOM */        console.log('ANONYMOUS USER QUERY....NO PERMISSIONS APPLY HERE.....');
 /* SDA CUSTOM */       uniquesForbiddenTables = [];
@@ -1187,8 +1477,7 @@ export class DashboardController {
         }
       })
       if (notAllowedQuery) {
-        console.log('Not allowed table in query')
-        return res.status(200).json("[['noDataAllowed'],[]]")
+         return res.status(200).json("[['noDataAllowed'],[]]")
       } else {
         const query = connection.BuildSqlQuery(
           req.body.query,
@@ -1215,11 +1504,11 @@ export class DashboardController {
 
         if (!cachedQuery) {
           connection.client = await connection.getclient()
-          const getResults = await connection.execSqlQuery(query)
-          let results = []
-          const resultsRollback = []
-          const oracleDataTypes = []
-          let oracleEval: Boolean = true
+          const getResults = await connection.execSqlQuery(query);
+          let results = [];
+          const resultsRollback = [];
+          const oracleDataTypes = [];
+          let oracleEval: Boolean = true;
           let labels: Array<string>
           if (getResults.length > 0) {
             labels = Object.keys(getResults[0]).map(i => i)
@@ -1281,7 +1570,7 @@ export class DashboardController {
             for (var i = 0; i < oracleDataTypes.length - 1; i++) {
               var e = oracleDataTypes[i]
               for (var j = 0; j < e.length; j++) {
-                if(oracleDataTypes[j][0]=='int'  ){
+                if(oracleDataTypes[0][j]=='int'  ){
                   if ( oracleDataTypes[i][j] != oracleDataTypes[i + 1][j]) {
                     oracleEval = false
                   }
@@ -1301,14 +1590,14 @@ export class DashboardController {
                   if ( results[i][j] ==  eda_api_config.null_value ) {
                     results[i][j] = null;
                   }
-                }
-              }
-            }
+				}
+              }            }
           }
           const output = [labels, results]
           if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
             CachedQueryService.storeQuery(req.body.model_id, query, output)
           }
+
 
           console.log(
             '\x1b[32m%s\x1b[0m',
@@ -1356,18 +1645,14 @@ export class DashboardController {
 
   /**Check if an user can or not see a data model. */
   static securityCheck(dataModel: any, user: any) {
-
     /** un admin  lo ve todo */
-    if( user.role.includes('135792467811111111111110') ){
+    if (user.role.includes('135792467811111111111110')) {
       return true;
     }
     /*SDA CUSTOM*/if(user._id== '135792467811111111111112'){
     /*SDA CUSTOM*/  console.log('Anonymous access');
     /*SDA CUSTOM*/  return true;
     /*SDA CUSTOM*/}
-
-
-
     if (dataModel.ds.metadata.model_granted_roles.length > 0) {
       const users = [];
       const roles = [];
@@ -1414,9 +1699,10 @@ export class DashboardController {
    */
   static async getQuery(req: Request, res: Response, next: NextFunction) {
     try {
-      const connection = await ManagerConnectionService.getConnection(
-        req.body.model_id
-      )
+      let connectionProps: any;
+      if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
       const dataModel = await connection.getDataSource(req.body.model_id)
       const dataModelObject = JSON.parse(JSON.stringify(dataModel));
 
@@ -1452,9 +1738,10 @@ export class DashboardController {
 
   static async execView(req: Request, res: Response, next: NextFunction) {
     try {
-      const connection = await ManagerConnectionService.getConnection(
-        req.body.model_id
-      )
+      let connectionProps: any;
+      if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
       const query = req.body.query
       connection.client = await connection.getclient()
       const getResults = await connection.execQuery(query)
@@ -1580,14 +1867,11 @@ export class DashboardController {
     }
 }
 
-  static async cleanDashboardCache(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    const connection = await ManagerConnectionService.getConnection(
-      req.body.model_id
-    )
+  static async cleanDashboardCache(req: Request, res: Response, next: NextFunction) {
+    let connectionProps: any;
+    if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+
+    const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
     const dataModel = await connection.getDataSource(req.body.model_id)
 
     if (dataModel.ds.metadata.cache_config.enabled) {

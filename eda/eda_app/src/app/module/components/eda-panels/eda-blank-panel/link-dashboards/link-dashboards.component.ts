@@ -79,8 +79,8 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
   }
 
   onShow(): void {
-
     this.oldLinked = this.controller.params.linkedDashboard ? this.controller.params.linkedDashboard.dashboardName : null;
+    
     if ((this.controller.params.charttype === 'parallelSets') && !this.controller.params.modeSQL) {
 
       this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
@@ -90,7 +90,6 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
     }
 
     else if ((this.controller.params.charttype === 'treeMap') && !this.controller.params.modeSQL) {
-
       this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
@@ -102,20 +101,18 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
     }
 
     else if (this.controller.params.charttype !== 'table' && !this.controller.params.modeSQL) {
-
       let column = this.controller.params.query
         .map((col, i) => { return { col: col.column_name, table: col.table_id, colname: col.display_name.default, index:i, column_type:col.column_type } })
         .filter(col => (col.column_type === 'text' || col.column_type === 'date'))[0];
-      this.column = column.index === 0 ?  column.colname : this.noValidColumn;
+    	this.column = column?column.colname : this.noValidColumn;
 
-      if(column.index === 0){
+      if(column){
         this.initDashboards(column);
       }
 
     }
 
     else if (this.controller.params.charttype === 'table' && !this.controller.params.modeSQL) {
-
       this.columns = this.controller.params.query.filter(col => (col.column_type === 'text' || col.column_type === 'date'))
         .map(col => {
           return { col: col.column_name, table: col.table_id, colname: col.display_name.default }
@@ -161,7 +158,6 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
         [].concat.apply([], [dashboardInfo.dashboards, dashboardInfo.group, dashboardInfo.publics, dashboardInfo.shared])
           .filter(d => d._id !== this.controller.params.dashboard_id);
           
-
       const filters = [];
 
 
@@ -179,13 +175,15 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
             let disable = true;
 
             if (!this.controller.params.modeSQL) {
-
               res.dashboard.config.filters.forEach(filter => {
-
-                if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
-                  disable = false;
+                if(filter.column){
+                  if (filter.column.value.column_name === column.col && filter.table.value === column.table) {
+                    disable = false;
+                  }
+                }else{
+                  console.log('NO SE HA IMPLEMENTADO TODAVÍA INFORMES VINCULADOS CON EL MODO ARBOL.');
+                  console.log(res.dashboard.config.title);
                 }
-
                 this.targetColumn = column.col;
                 this.targetTable = column.table;
 
@@ -202,15 +200,10 @@ export class LinkDashboardsComponent extends EdaDialogAbstract {
 
               this.sourceColumn = column.col;
               this.sourceTable = column.table;
-
               res.dashboard.config.filters.forEach(filter => {
-
                 filters.push({ colname: filter.column.value.column_name, dashboardID: dashboards[i]._id, table: filter.table.value });
-
               });
-
               this.dasboards.push({ label: dashboards[i].config.title, value: dashboards[i]._id });
-
             }
 
           }

@@ -1,0 +1,115 @@
+.select-list {
+    display: flex;
+    flex-direction: row;
+    padding: 2px;
+    border-radius: 4px;
+    min-height: 60px;
+    max-height: 200px;
+    /* límite de altura si tienes muchos elementos */
+    max-width: 100%;
+    /* asegura que el contenedor no se expanda más allá del ancho disponible */
+    background: #1b69822e;
+    word-break: break-word;
+    /* evita que las palabras largas se desborden */
+    margin-top: 0.5em;
+    overflow-x: auto;
+    /* Agrega scroll horizontal cuando las cajas excedan el ancho del contenedor */
+    overflow-y: hidden;
+    /* Desactiva el scroll vertical */
+}
+
+.select-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    flex-basis: 0;
+
+    margin: 1px;
+    box-sizing: border-box;
+    border: solid 1px #ccc;
+    border-radius: 4px;
+
+    background: white;
+    color: var(--header-bg-color);
+    font-size: 13px;
+
+    cursor: pointer;
+    z-index: 99999 !important;
+
+    /* Tamaño máximo y mínimo para evitar que las cajas se hagan demasiado pequeñas */
+    max-width: 200px;
+    /* Tamaño máximo de las cajas */
+    min-width: 60px;
+    /* Tamaño mínimo de las cajas */
+}
+
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.ui-button-selected {
+    color: #20914b;
+    border: 1px solid #20914b;
+    background-color: white;
+}
+
+.ui-button-unselected {
+    color: #adc8d1;
+    border: 1px solid #adc8d1;
+    background-color: white;
+}
+
+.ui-button-unvaliable {
+    color: #bd1913;
+    border: 1px solid #bd1913;
+    background-color: white;
+}
+
+.dotgreen {
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    vertical-align: middle;
+    display: inline-block;
+    background-color: #20914b;
+}
+
+.dotred {
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    vertical-align: middle;
+    display: inline-block;
+    background-color: #bd1913;
+}
+
+.dotunselected {
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    vertical-align: middle;
+    display: inline-block;
+    background-color: #adc8d1;
+}
+
+.ui-button-selected:enabled:hover {
+    color: #20914b;
+    background-color: white;
+    box-shadow: 0 0 0 1px #20914b;
+}
+
+.ui-button-unselected:enabled:hover {
+    color: #adc8d1;
+    background-color: white;
+    box-shadow: 0 0 0 1px #adc8d1;
+}
+
+.ui-button-unvaliable:enabled:hover {
+    color: #bd1913;
+    background-color: white;
+    box-shadow: 0 0 0 1px #bd1913;
+}

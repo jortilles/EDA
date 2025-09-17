@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {SelectItem} from 'primeng/api';
 import {EdaDialog, EdaDialogCloseEvent, EdaDialogAbstract} from '@eda/shared/components/shared-components.index';
 import {Relation} from '@eda/models/data-source-model/data-source-models';
@@ -22,6 +22,7 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
     public sourceCol: any;
     public targetTable: any;
     public targetCol: any;
+    public display_name: string;
 
     public selectedTargetCols : Array<any> = [];
     public selectedSourceCols : Array<any> = [];
@@ -42,12 +43,13 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
             hide: () => this.onClose(EdaDialogCloseEvent.NONE),
             title: $localize`:@@addRelationTo:Añadir relación a la tabla`
         });
-        this.dialog.style = { width: '40%', height: '50%', top:"-4em", left:'1em' };
-
+        this.dialog.style = { width: '54%', height: '50%', top:"-4em", left:'1em' };
+        
         this.form = this.formBuilder.group({
             sourceCol: [null, Validators.required],
             targetTable: [null, Validators.required],
-            targetCol: [null, Validators.required]
+            targetCol: [null, Validators.required],
+            display_name: null,
         }); //, {validators: this.checkOrder('sourceCol', 'targetTable')});
     }
 
@@ -72,16 +74,15 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
         if (this.form.invalid) {
             return this.alertService.addError('Recuerde llenar los campos obligatorios');
         } else {
-
             const rel: Relation = {
                 source_table: this.controller.params.table.technical_name,
                 source_column: this.selectedSourceCols.map(c => c.column_name),
                 target_table: this.form.controls.targetTable.value.value.table_name,
                 target_column: this.selectedTargetCols.map(c => c.column_name),
+                display_name: { "default": this.display_name, "localized": []},
                 visible: true
-            };
-          
-           this.onClose(EdaDialogCloseEvent.NEW, rel);
+            };          
+            this.onClose(EdaDialogCloseEvent.NEW, rel);
         }
     }
 
@@ -91,7 +92,6 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
         tmpTable.value.columns.filter(c => c.column_type === this.form.value.sourceCol.column_type).forEach(col => {
             this.targetCols.push({ label: col.display_name.default, value: col })
         });
-
     }
 
     addRelation(){
@@ -101,6 +101,7 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
 
         this.selectedSourceCols.push(this.form.value.sourceCol);
         this.selectedTargetCols.push(this.form.value.targetCol);
+        this.display_name = this.form.value.display_name;
 
     }
 
@@ -114,6 +115,7 @@ export class TableRelationsDialogComponent extends EdaDialogAbstract {
         this.sourceCol = '';
         this.targetTable = '';
         this.targetCol = '';
+        this.display_name = '';
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 

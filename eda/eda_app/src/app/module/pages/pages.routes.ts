@@ -9,9 +9,9 @@ import { UsersLlistaComponent } from './users-management/users-list/users-list.c
 import { DsConfigWrapperComponent } from './data-sources/dsconfig-wrapper.component'
 import { DataSourceListComponent } from './data-sources/data-source-list/data-source-list.component';
 import { ModelSettingsComponent } from './model-settings/model-settings.component';
-
 /*SDA CUSTOM*/import { HomeSdaComponent } from './home-sda/home-sda.component';
 /*SDA CUSTOM*/ import { AboutComponent } from './about/about.component';
+import { LogsComponent } from './logs/logs.component';
 
 
 // Guard
@@ -37,6 +37,7 @@ const pagesRoutes: Routes = [
     { path: 'mail-management', component: MailManagementComponent, canActivate:[VerifyTokenGuard]},
     /*SDA CUSTOM*/ { path: 'about', component: AboutComponent, canActivate: [VerifyTokenGuard] },
     /*SDA CUSTOM*/ { path: 'home', component: HomeSdaComponent, canActivate: [VerifyTokenGuard] },
+    { path: 'logs', component: LogsComponent, canActivate:[VerifyTokenGuard]},
     { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

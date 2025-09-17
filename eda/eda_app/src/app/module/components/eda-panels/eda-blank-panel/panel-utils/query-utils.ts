@@ -6,6 +6,8 @@ import { EdaBlankPanelComponent } from '../eda-blank-panel.component';
 import { ChartsConfigUtils } from './charts-config-utils';
 import { PanelInteractionUtils } from './panel-interaction-utils';
 
+import { NULL_VALUE, EMPTY_VALUE } from '../../../../../config/personalitzacio/customizables'
+
 export const QueryUtils = {
 
   /**
@@ -88,6 +90,64 @@ export const QueryUtils = {
     }
   },
 
+  analizedQuery: async (ebp: EdaBlankPanelComponent) => {
+    const query = QueryUtils.initEdaQuery(ebp);
+
+    query.query.filters = query.query.filters.filter((f) =>
+      (f.filter_elements[0]?.value1 && f.filter_elements[0].value1.length !== 0)
+      || ['not_null', 'not_null_nor_empty', 'null_or_empty'].includes(f.filter_type)
+    );
+
+    const response = await ebp.queryService.executeAnalizedQuery(query).toPromise();
+    return response;
+  },
+  
+  transformAnalizedQueryData: (ebp: EdaBlankPanelComponent, data: any) => {
+    const labels = [$localize`:@@atributoLabel:Atributo`, $localize`:@@atributoConsulta:Consulta`, $localize`:@@atributoValor:Valor`];
+    const values = [];
+
+    const i18n = {
+        "count_tables": $localize`:@@count_tablesLabel:Tablas implicadas`,
+        "source_table": $localize`:@@originTable:Tabla Origen`,
+        "count_rows": $localize`:@@count_rowsLabel:Total de registros`,
+        "count_nulls": $localize`:@@count_nullsLabel:Total nulos`,
+        "count_empty": $localize`:@@count_emptyLabel:Total cadenas vacías`,
+        "count_distinct": $localize`:@@count_distinctLabel:Total valores distintos`,
+        "most_duplicated": $localize`:@@most_duplicatedLabel:Más repetido`,
+        "least_duplicated": $localize`:@@least_duplicatedLabel:Menos repetido`,
+        "max": $localize`:@@maxLabel:Valor máximo`,
+        "min": $localize`:@@minLabel:Valor mínimo`,
+        "mode": $localize`:@@moda_countsLabel:Moda`,
+        "avg": $localize`:@@avgLabel:Media`,
+        "median": $localize`:@@medianLabel:Mediana`,
+        "median_count_bymonth": $localize`:@@median_count_bymonthLabel:Mediana por mes`,
+        "max_bymonth": $localize`:@@max_bymonthLabel:Máximos por mes`,
+        "min_bymonth": $localize`:@@min_bymonthLabel:Mínimos por mes`,
+    };
+
+    // display control for the table DataQuality
+    if( Array.isArray(data)) {
+      if(data[0][0] === 'noDataAllowed') {
+        return {
+          labels: data[0],
+          values: data[1]
+        }
+      }
+    }
+
+    for (const key in data) {
+
+      for (const valueKey in data[key]) {
+        const value = data[key][valueKey];
+        values.push([key,i18n[valueKey], value]);
+      }
+    }
+
+    return {
+      labels,
+      values
+    }
+  },
 
   getQueryFromServer: async (ebp: EdaBlankPanelComponent, query: Query): Promise<string> => {
     const serverquery = await ebp.dashboardService.getBuildedQuery(query).toPromise();
@@ -131,12 +191,10 @@ export const QueryUtils = {
     ebp.display_v.disablePreview = false;
 
     if (!globalFilters) {
-
-      ebp.spinnerService.on();
-
+        ebp.spinnerService.on();
     } else {
-      ebp.panelChart.NO_DATA = false;
-      ebp.display_v.minispinner = true;
+        ebp.panelChart.NO_DATA = false;
+        ebp.display_v.minispinner = true;
     }
 
     try {
@@ -150,29 +208,35 @@ export const QueryUtils = {
       // Execute query
       const response = await QueryUtils.switchAndRun(ebp, query);
       ebp.chartLabels = ebp.chartUtils.uniqueLabels(response[0]);   // Chart labels
-      ebp.chartData = response[1];       // Chart data
+      ebp.chartData = response[1].map(item => item.map(a => {
+        if(a === null){
+          return NULL_VALUE;
+        }
+        if(a === ''){
+          return EMPTY_VALUE;
+        }
+        return a;
+      })); // canviem els null y els '' per valor customitzable
+       
+      // ebp.chartData = response[1];       // Chart data
       ebp.ableBtnSave();                 // Button save
       /* Labels i Data - Arrays */
       if (!globalFilters) {
-
         PanelInteractionUtils.verifyData(ebp);
-
-        // This if and else statement allows to keep the previously configured chart even if the data is different.
+  		// This if and else statement allows to keep the previously configured chart even if the data is different.
         // If the query does not meet the requirements for the corresponding chart, a table will be displayed with the data.
-        if(ebp.chartForm.value.chart===null){
+        if(ebp.chartForm.value.chart===null || ebp.chartForm.value.chart.subValue==='tableanalized'){
           ebp.changeChartType('table', 'table', null);
           ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
-        }
-
-        else {
-          if(!ebp.chartForm.value.chart.ngIf && !ebp.chartForm.value.chart.tooManyData){
-            ebp.changeChartType(ebp.chartForm.value.chart.value, ebp.chartForm.value.chart.subValue, ebp.panelChartConfig.config);
-            ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.subValue === ebp.chartForm.value.chart.subValue)});
-          }
-          else {
-            ebp.changeChartType('table', 'table', null);
-            ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
-          }
+        }else {
+            if(!ebp.chartForm.value.chart.ngIf && !ebp.chartForm.value.chart.tooManyData){
+              ebp.changeChartType(ebp.chartForm.value.chart.value, ebp.chartForm.value.chart.subValue, ebp.panelChartConfig.config);
+              ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.subValue === ebp.chartForm.value.chart.subValue)});
+            }
+            else {
+              ebp.changeChartType('table', 'table', null);
+              ebp.chartForm.patchValue({chart: ebp.chartUtils.chartTypes.find(o => o.value === 'table')});
+            }
         }
 
         ebp.spinnerService.off();
@@ -186,7 +250,7 @@ export const QueryUtils = {
       ebp.index = 1;
       ebp.display_v.saved_panel = true;
     } catch (err) {
-      ebp.alertService.addError(err);
+      ebp.alertService.addError(err); 
       ebp.spinnerService.off();
     }
 
@@ -224,8 +288,10 @@ export const QueryUtils = {
     } else {
 
       // Section that initiates the initAxes if the ordering is empty in the config
-      if(ebp.chartForm.controls.chart.value!==null) {
-        // Verify a new change in axes since the edition of the cross table begins
+
+		// Check Ronald
+      if(ebp.chartForm.controls.chart.value!==null   && ebp.chartForm.controls.chart.value.subValue  == 'crosstable'  ) {
+          // Verify a new change in axes since the edition of the cross table begins
         if(!ebp.newAxesChanged && (!ebp.chartTypes.filter( grafico => grafico.subValue==='crosstable' )[0].ngIf || !ebp.chartTypes.filter( grafico => grafico.subValue==='table' )[0].ngIf)) {
 
           if(ebp.currentQuery.length>2 && (ebp.currentQuery.find( valor => valor.column_type === 'numeric') !== undefined)) {
@@ -270,6 +336,11 @@ export const QueryUtils = {
 
     ebp.newAxesChanged = false;
 
+    // Al aplicar Ejecutar el treetable de reinicia
+    if(ebp.panelChart.props.chartType==='treetable') {
+      ebp.panelChart.props.config.getConfig()['editedTreeTable'] = false;
+    }
+
   },
 
 
@@ -278,6 +349,7 @@ export const QueryUtils = {
    */
   initEdaQuery: (ebp: EdaBlankPanelComponent): Query => {
     const config = ChartsConfigUtils.setConfig(ebp);
+
     const params = {
       table: '',
       dataSource: ebp.inject.dataSource._id,
@@ -288,6 +360,7 @@ export const QueryUtils = {
       queryLimit: ebp.queryLimit,
       joinType: ebp.joinType,
       rootTable: ebp.rootTable?.table_name,
+      connectionProperties: ebp.connectionProperties,
       sortedFilters: ebp.sortedFilters,
     };
 
@@ -306,7 +379,8 @@ export const QueryUtils = {
       panel: ebp.panel.id,
       dashboard: ebp.inject.dashboard_id,
       filters: ebp.mergeFilters(ebp.selectedFilters, ebp.globalFilters),
-      config: config.getConfig()
+      config: config.getConfig(),
+      connectionProperties: ebp.connectionProperties
     };
     return ebp.queryBuilder.normalQuery(ebp.currentQuery, params, ebp.selectedQueryMode, ebp.currentSQLQuery);
 

@@ -3,25 +3,32 @@
         <form [formGroup]="form" class="form-horizontal form-material">
             <div class="grid" style="max-height: 20em;">
 
-                <div class="col-12 xl:col-4">
+                <div class="col-12 xl:col-3">
                     <p-dropdown [options]="targetTables" formControlName="targetTable" filter="true" optionLabel="label"
                         i18n-placeholder="@@placeholderTargetTables" placeholder="tabla destino"
                         id="eda_add_relation_targetTable" [style]="{width:'150px'}">
                     </p-dropdown>
                 </div>
 
-                <div class="col-12 xl:col-4">
+                <div class="col-12 xl:col-3">
                     <p-dropdown [options]="sourceCols" formControlName="sourceCol" filter="true"
                         optionLabel="display_name.default" i18n-placeholder="@@placeholderSourceColumns"
                         placeholder="Columna origen" (onChange)="getColumnsByTable()" id="eda_add_relation_sourceCols" [style]="{width:'150px'}">
                     </p-dropdown>
                 </div>
 
-                <div class="col-12 xl:col-4">
+                <div class="col-12 xl:col-3">
                     <p-dropdown [options]="targetCols" formControlName="targetCol" filter="true"
                         i18n-placeholder="@@placeholderTargetColumns" placeholder="Columna destino "
                         id="eda_add_relation_targetCol" [style]="{width:'150px'}">
                     </p-dropdown>
+                </div>
+
+                <div class="col-12 xl:col-3">
+                    <input formControlName="display_name" filter="true"
+                    i18n-placeholder="@@placeholderRelationName"
+                    placeholder="Nombre relación"
+                    id="eda_add_relation_relationName" [style]="{width:'150px', height: '100%'}">
                 </div>
 
                 <div class="col-12" style="margin: 1em;">

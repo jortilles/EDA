@@ -9,7 +9,8 @@ export interface Query {
     };
     dashboard: {
         dashboard_id: string,
-        panel_id: string
+        panel_id: string,
+        connectionProperties: any
     };
     query: {
         fields: Column[]

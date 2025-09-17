@@ -1,0 +1,39 @@
+<div class="grid">
+
+    <div class="logs-container">
+        
+        <div class="d-flex align-items-center">
+            <h3 class="logs-title">Logs: </h3>
+    
+            <button 
+                    class="logs-button"
+                    type="button" 
+                    pButton icon="fas fa-file-pdf" 
+                    iconPos="left" 
+                    i18n-label="@@logFileBtn"
+                    label="Logs" style="float:left" (click)="logsFile()"> 
+            </button>
+
+            <button 
+                    class="logs-button"
+                    type="button" 
+                    pButton icon="fas fa-file-pdf" 
+                    iconPos="left" 
+                    i18n-label="@@logErrorFileBtn"
+                    label="Logs Error" style="float:left" (click)="logsErrorFile()"> 
+            </button>
+        </div>
+    
+    
+        <div class="logs-panel" *ngIf="logFileBoolean">
+            <p class="logs-text" [innerHtml]="logs_file"> </p>
+        </div>
+
+        <div class="logs-panel" *ngIf="logErrorFileBoolean">
+            <p class="logs-text" [innerHtml]="logs_error_file"> </p>
+        </div>
+        
+    </div>
+
+
+</div>

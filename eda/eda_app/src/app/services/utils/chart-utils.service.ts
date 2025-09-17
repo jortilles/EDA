@@ -13,6 +13,7 @@ import { Injectable } from '@angular/core';
 import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component';
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
+import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/kpi-config';
 
 export interface EdaChartType {
     label: string;
@@ -47,8 +48,13 @@ export class ChartUtilsService {
 
     public chartTypes: EdaChartType[] = [
         { label: $localize`:@@chartTypes1:Tabla de Datos`, value: 'table', subValue: 'table', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesTableAnalized:Tabla DataQuality`, value: 'table', subValue: 'tableanalized', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes2:Tabla Cruzada`, value: 'crosstable', subValue: 'crosstable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesTreeTable:Tabla Árbol`, value: 'treetable', subValue: 'treetable', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: 'KPI', value: 'kpi', subValue: 'kpi', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPIBAR:KPI + Gráfico de Barras`, value: 'kpibar', subValue: 'kpibar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPILINE:KPI + Gráfico de Lineas`, value: 'kpiline', subValue: 'kpiline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesKPIAREA:KPI + Gráfico de Áreas`, value: 'kpiline', subValue: 'kpiarea', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypesDynamicText:Texto Dinámico`, value: 'dynamicText', subValue: 'dynamicText', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes15:Velocímetro`, value: 'knob', subValue: 'knob', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes3:Gráfico de Pastel`, value: 'doughnut', subValue: 'doughnut', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -70,7 +76,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypesBubblechart:Bubblechart`, value: 'bubblechart', subValue: 'bubblechart', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes10:Mapa de coordenadas`, value: 'coordinatesMap', subValue: 'coordinatesMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
         { label: $localize`:@@chartTypes11:Mapa de Capas`, value: 'geoJsonMap', subValue: 'geoJsonMap', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
-
+        { label: $localize`:@@chartTypesRadar:Radar`, value: 'radar', subValue: 'radar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: false },
     ];
 
     public filterTypes: FilterType[] = [
@@ -91,9 +97,9 @@ export class ChartUtilsService {
     ];
 
     public ordenationTypes: OrdenationType[] = [
-        { display_name: 'ASC', value: 'Asc', selected: false },
-        { display_name: 'DESC', value: 'Desc', selected: false },
-        { display_name: 'NO', value: 'No', selected: false }
+        { display_name: 'Asc', value: 'Asc', selected: false },
+        { display_name: 'Desc', value: 'Desc', selected: false },
+        { display_name: 'No', value: 'No', selected: false }
     ];
 
     public formatDates: FormatDates[] = [
@@ -108,6 +114,7 @@ export class ChartUtilsService {
         { display_name: $localize`:@@dates7:FECHA COMPLETA`, value: 'timestamp', selected: false },
         { display_name: $localize`:@@dates4:NO`, value: 'No', selected: false }
     ];
+
     public histoGramRangesTxt: string = $localize`:@@histoGramRangesTxt:Rango`;
 
 
@@ -159,9 +166,11 @@ export class ChartUtilsService {
         const label_idx = idx.label;
         const serie_idx = idx.serie;
         const number_idx = idx.numeric[0];
+
         if (type === 'doughnut' || type === 'polarArea') {
             const _labels = values.map(v => v[label_idx]);
             const _values = values.map(v => v[number_idx]).filter(elem => elem != null);
+
             // Faig push a l'array output, que sera retornat per l'inicialització del PieChart
             const _output = [[], []];
             _output[0] =  _output[0] = values.map(v => v[label_idx]);
@@ -172,17 +181,15 @@ export class ChartUtilsService {
             }
 
             output =  _output;
-            //console.log(JSON.stringify(output));
-
-        } else if (['bar' ].includes(type)  && ['pyramid' ].includes(subType) ) {
-
+        } 
+        else if (['bar' ].includes(type)  && ['pyramid' ].includes(subType) ) {
             const l = Array.from(new Set(values.map(v => v[label_idx])));
             const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
             const _output = [[], []];
             _output[0] = l;
 
-          //necesitamos dos series de datos y uno numérico para hacer una pirámide
-          if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
+            //necesitamos dos series de datos y uno numérico para hacer una pirámide
+            if (dataDescription.otherColumns.length === 2 && dataDescription.numericColumns.length === 1) {
                 let series = [];
                 s.forEach((s) => {
                     _output[1].push({ data: [], label: s });
@@ -196,8 +203,6 @@ export class ChartUtilsService {
                         t !== null ? _output[1][i].data.push(t) : _output[1][i].data.push(null);
                     });
                 });
-
-
                 //If >1 numeric series
             }
 
@@ -208,8 +213,8 @@ export class ChartUtilsService {
                 if (i==0) {
                     u[i].data.filter(a => {
                        inverData.push(a * -1)
-                    } )
-                    u[i].data = inverData
+                    })
+                    u[i].data = inverData;
                 }
             }
 
@@ -327,7 +332,7 @@ export class ChartUtilsService {
 
             output =  _output;
 
-        } else if (['bar', 'line', 'area', 'horizontalBar', 'barline', 'histogram'  ].includes(type)  &&  dataTypes.length >  1 ) {
+        } else if (['bar', 'kpibar', 'line', 'kpiline', 'area', 'kpiarea', 'horizontalBar', 'barline', 'histogram' ,'radar' ].includes(type)  &&  dataTypes.length >  1 ) {
 
             const l = Array.from(new Set(values.map(v => v[label_idx])));
             const s = serie_idx !== -1 ? Array.from(new Set(values.map(v => v[serie_idx]))) : null;
@@ -336,15 +341,14 @@ export class ChartUtilsService {
 
             //If one serie
             if (dataDescription.otherColumns.length === 1 && dataDescription.numericColumns.length === 1) {
-
                 _output[0] = values.map(v => v[label_idx]);
                 _output[1] = [{
                     data: values.map(v => v[number_idx]),
                     label: dataDescription.otherColumns[0].name
                 }];
-
                 //if two series
-            } else if (dataDescription.numericColumns.length === 1) {
+            } 
+            else if (dataDescription.numericColumns.length === 1) {
                 let series = [];
                 s.forEach((s) => {
                     _output[1].push({ data: [], label: s });
@@ -359,8 +363,8 @@ export class ChartUtilsService {
                     });
                 });
                 //If >1 numeric series
-            } else if (!isBarline) {
-
+            } 
+            else if (!isBarline) {
                 dataDescription.numericColumns.forEach((col, i) => {
                     _output[1].push(
                         {
@@ -369,8 +373,8 @@ export class ChartUtilsService {
                         });
                 });
                 // >1 numeric series and is mixed bar-line
-            } else {
-
+            } 
+            else {
                 dataDescription.numericColumns.forEach((col, i) => {
                     let isLine = i === dataDescription.numericColumns.length - 1;
                     _output[1].push(
@@ -394,10 +398,10 @@ export class ChartUtilsService {
         } else if (  ['bar'].includes(type) &&  dataTypes.length ==  1 && dataTypes[0]== 'numeric'   ) {
             let distinctNumbers  = Array.from(new Set(values.map(v => v[number_idx]))).filter(element => {
                 return element !== null;
-              });;
+            });;
             let allNumbers = values.map(v => v[number_idx]).filter(element => {
                 return element !== null;
-              });;
+            });;
             const _output = [[], []];
 
             let grupos = [];
@@ -407,8 +411,7 @@ export class ChartUtilsService {
             //Si hay nulos van a parte
             const grupo_null =  values.map(v => v[number_idx]).filter(element => {
                 return element === null;
-              });;
-
+            });;
             distinctNumbers = distinctNumbers.sort(function(a,b){
                 return a-b
             });
@@ -421,7 +424,6 @@ export class ChartUtilsService {
             if( grupo_null.length > 0 ){
                 range = range+1;
             }
-
             if(range<30){
                 num_cols=range;
             }else if(range>=30 && range<=100){
@@ -430,12 +432,10 @@ export class ChartUtilsService {
                 num_cols=50;
             }
 
-
             //No me llega el numero de columnas fijo el numero de columnas
             if(!isNaN(numberOfColumns) &&  numberOfColumns !== null ){
                 num_cols=numberOfColumns;
             }
-
 
            if( this.esEntero(distinctNumbers)){
                 salto =  Math.ceil( max/num_cols )  ;
@@ -443,7 +443,6 @@ export class ChartUtilsService {
                 num_cols<5?num_cols=5:num_cols=num_cols;
                 salto =   Math.ceil( max/num_cols * 10) / 10 ;
             }
-
             if(salto == 1 ){
                 new_data = this.generateNewDataOneForHistogram(allNumbers,num_cols,min,max , salto);
                 grupos =   this.generateGruposOneForHistogram( num_cols,min );
@@ -453,8 +452,8 @@ export class ChartUtilsService {
                     num_cols=numberOfColumns;
                 }
                 new_data = this.generateNewDataRangeForHistogram(allNumbers,distinctNumbers,num_cols,min,max , salto);
-                                                                                                                            /** array de un único elemento. Cuando tenga mas ya veré lo que hago */
-                grupos =   this.generateGruposRangeForHistogram( num_cols,min,max , salto,  this.esEntero(distinctNumbers) , dataDescription.query[0].minimumFractionDigits    );
+                /** array de un único elemento. Cuando tenga mas ya veré lo que hago */
+                grupos =   this.generateGruposRangeForHistogram( num_cols,min,max , salto, this.esEntero(distinctNumbers) , dataDescription.query[0].minimumFractionDigits);
             }
             if(grupo_null.length > 0 ){
                 new_data.push(grupo_null.length  );
@@ -462,10 +461,9 @@ export class ChartUtilsService {
             }
             _output[0]=grupos;
             _output[1] = [{
-                    data: new_data,
-                    label:  this.histoGramRangesTxt + ' - '  + dataDescription.numericColumns[0].name
-                }];
-
+                data: new_data,
+                label:  this.histoGramRangesTxt + ' - '  + dataDescription.numericColumns[0].name
+            }];
 
             output =  _output;
         } 
@@ -483,7 +481,7 @@ export class ChartUtilsService {
      * @param salto
      * @returns grupos
      */
-    private   generateGruposRangeForHistogram( num_cols,min,max, salto , esEntero , minimumFractionDigits ):any[] {
+    private generateGruposRangeForHistogram( num_cols,min,max, salto , esEntero , minimumFractionDigits ):any[] {
         let mi_salto =  0;
         let mi_min = min;
         let grupos = [];
@@ -611,52 +609,18 @@ export class ChartUtilsService {
         return uniqueLabels;
     }
 
-    public transformDataQueryForTable(noRepetitions: boolean, labels: any[], values: any[]) {
-
-        if (noRepetitions !== true) {
-
+    public transformDataQueryForTable(labels: any[], values: any[]) {
             const output = [];
             values = values.filter(row => !row.every(element => element === null));
             // Load the Table for a preview
             for (let i = 0; i < values.length; i += 1) {
                 const obj = {};
-                for (let e = 0; e < values[i].length; e += 1) {
+                for (let e = 0; e < values[i].length; e += 1) { 
                     obj[labels[e]] = values[i][e];
                 }
                 output.push(obj);
             }
             return output;
-
-        } else {
-
-            const output = [];
-            values = values.filter(row => !row.every(element => element === null));
-            // ESTO SE HACE PARA EVITAR REPETIDOS EN LA TABLA. SI UN CAMPO TIENE UNA COLUMNA QUE SE REPITE
-            let first  = _.cloneDeep(values[0]);
-            for (let i = 0; i < values.length; i += 1) {
-                const obj = [];
-                if(i == 0){
-                    for (let e = 0; e < values[i].length; e += 1) {
-                            obj[labels[e]] = values[i][e];
-                        }
-                }else{
-                    for (let e = 0; e < values[i].length; e += 1) {
-                        if (values[i][e] === first[e]    &&  isNaN(values[i][e]) ) {
-                            obj[labels[e]] = "";   // AQUI SE SUSTITUYEN LOS REPETIDOS POR UNA CADENA EN BLANCO
-                        } else {
-                            obj[labels[e]] = values[i][e];
-                        }
-                        first[e]  =  values[i][e]; //AQUI SE SUTITUYE EL PRIMER VALOR
-                        }
-                }
-                output.push(obj);
-            }
-
-            return output;
-
-        }
-
-
     }
 
     /**
@@ -669,11 +633,10 @@ export class ChartUtilsService {
         let notAllowed =
             [
                 'table', 'crosstable', 'kpi','dynamicText', 'geoJsonMap', 'coordinatesMap',
-                'doughnut', 'polarArea', 'line', 'area', 'bar', 'histogram',  'funnel', 'bubblechart',
+                'doughnut', 'polarArea', 'line', 'kpiline', 'area', 'kpiarea', 'bar', 'kpibar', 'histogram',  'funnel', 'bubblechart',
                 'horizontalBar', 'barline', 'stackedbar', 'parallelSets', 'treeMap', 'scatterPlot', 'knob' ,
-                'pyramid', 'stackedbar100'
+                'pyramid', 'radar', 'stackedbar100', 'treetable'
             ];
-
 
         //table (at least one column)
         if (dataDescription.totalColumns > 0) notAllowed.splice(notAllowed.indexOf('table'), 1);
@@ -691,17 +654,22 @@ export class ChartUtilsService {
         if (dataDescription.totalColumns === 2 && dataDescription.numericColumns.length === 1) {
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpiarea',), 1);
         }
-
         // barchart i horizontalbar  poden ser grafics normals o poden ser histograms....
         if (dataDescription.numericColumns.length >= 1 && dataDescription.totalColumns > 1 && dataDescription.otherColumns.length < 2
             || dataDescription.numericColumns.length === 1 && dataDescription.totalColumns > 1 && dataDescription.totalColumns < 4  /* && aggregation */) {
-            notAllowed.splice(notAllowed.indexOf('bar'), 1);
-            notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
-            notAllowed.splice(notAllowed.indexOf('line'), 1);
-            notAllowed.splice(notAllowed.indexOf('area'), 1);
-            notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
-            notAllowed.splice(notAllowed.indexOf('stackedbar100'), 1);
+                notAllowed.splice(notAllowed.indexOf('bar'), 1);
+                notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
+                notAllowed.splice(notAllowed.indexOf('line'), 1);
+                notAllowed.splice(notAllowed.indexOf('area'), 1);
+                notAllowed.splice(notAllowed.indexOf('stackedbar'), 1);
+                notAllowed.splice(notAllowed.indexOf('stackedbar100'), 1);
+            }
+        if(dataDescription.otherColumns.length===1 && dataDescription.numericColumns.length>=1 && dataDescription.totalColumns>=2 ){
+            notAllowed.splice(notAllowed.indexOf('radar'), 1);
         }
         // això es per els histogrames.....
         if (dataDescription.numericColumns.length == 1 && dataDescription.totalColumns == 1 ) {
@@ -780,6 +748,12 @@ export class ChartUtilsService {
             ) {
             notAllowed.splice(notAllowed.indexOf('pyramid'), 1);
         }
+
+        //treetable  at least two  text columns or two numeric (parent-child) and one text
+        if(  dataDescription.totalColumns > 2 && dataDescription.otherColumns.length >= 1) {
+            notAllowed.splice(notAllowed.indexOf('treetable'), 1);
+        }
+
         return notAllowed;
 
     }
@@ -792,8 +766,8 @@ export class ChartUtilsService {
      */
     public getTooManyDataForCharts(dataSize: number): any[] {
         let notAllowed =
-            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'doughnut', 'polarArea', 'line', 'bar','histogram',
-                'horizontalBar', 'barline', 'area', 'geoJsonMap', 'coordinateMap'];
+            ['table', 'crosstable', 'kpi', 'dynamicText', 'knob', 'doughnut', 'polarArea', 'line', 'kpiline', 'bar', 'kpibar','histogram',
+                'horizontalBar', 'barline', 'area', 'kpiarea', 'geoJsonMap', 'coordinateMap', 'radar'];
 
         //table (at least one column)
         notAllowed.splice(notAllowed.indexOf('table'), 1);
@@ -816,19 +790,23 @@ export class ChartUtilsService {
             notAllowed.splice(notAllowed.indexOf('knob'), 1);
         }
         // Pie && Polar (Only one numeric column and one char/date column)
-        if (dataSize < 50) {
+        if (dataSize < 100) {
             notAllowed.splice(notAllowed.indexOf('doughnut'), 1);
             notAllowed.splice(notAllowed.indexOf('polarArea'), 1);
         }
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
         if (dataSize < 2500) {
             notAllowed.splice(notAllowed.indexOf('bar'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpibar'), 1);
+            notAllowed.splice(notAllowed.indexOf('radar'), 1);
             notAllowed.splice(notAllowed.indexOf('horizontalBar'), 1);
         }
         // Bar && Line (case 1: multiple numeric series in one text column, case 2: multiple series in one numeric column)
-        if (dataSize < 100000) {
+        if (dataSize < 150000) {
             notAllowed.splice(notAllowed.indexOf('line'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpiline'), 1);
             notAllowed.splice(notAllowed.indexOf('area'), 1);
+            notAllowed.splice(notAllowed.indexOf('kpiarea',), 1);
             notAllowed.splice(notAllowed.indexOf('barline'), 1);
         }
         //Histogram as many as you want.
@@ -843,8 +821,13 @@ export class ChartUtilsService {
      * @param layout
      */
     public recoverChartColors(currentChartype: string, layout: ChartConfig) {
-        const config = layout.getConfig();
-        if (config && (<ChartJsConfig>config).chartType === currentChartype) {
+        let config = layout.getConfig();
+
+        if (config instanceof KpiConfig) {
+            config = config.edaChart;
+        }
+
+        if (config && (<ChartJsConfig>config).chartType.includes(currentChartype)) {
             return this.mergeColors(layout)
         } else {
             return this.generateColors(currentChartype);
@@ -852,10 +835,13 @@ export class ChartUtilsService {
     }
 
     public generateColors(type: string) {
+        type = type.replace('kpi', '');
+
         switch (type) {
             case 'doughnut': return EdaChartComponent.generatePiecolors();
             case 'polarArea': return EdaChartComponent.generatePiecolors();
             case 'bar': return EdaChartComponent.generateChartColors();
+            case 'radar': return EdaChartComponent.generateChartColors();
             case 'line': return EdaChartComponent.generateChartColors();
             case 'horizontalBar': return EdaChartComponent.generateChartColors();
             case 'histogram': return EdaChartComponent.generateChartColors();
@@ -863,12 +849,16 @@ export class ChartUtilsService {
     }
 
     public mergeColors(layout: ChartConfig) {
+        let config = layout.getConfig();
 
+        if (config instanceof KpiConfig) {
+            config = config.edaChart;
+        }
 
-        const config = layout.getConfig();
         if (!(<ChartJsConfig>config).colors) {
             return this.generateColors((<ChartJsConfig>config).chartType);
         }
+
         if ((<ChartJsConfig>config).chartType === 'doughnut' || (<ChartJsConfig>config).chartType === 'polarArea') {
             let edaColors = EdaChartComponent.generatePiecolors();
 
@@ -879,8 +869,10 @@ export class ChartUtilsService {
             (<ChartJsConfig>config).colors[0]['backgroundColor'] = edaColors[0].backgroundColor;
 
         }
+
         return (<ChartJsConfig>config).colors;
     }
+
 
     public describeData(currentQuery: any, labels: any) {
         let names = this.pretifyLabels(currentQuery, labels);
@@ -1144,16 +1136,27 @@ export class ChartUtilsService {
 
 
     /** inicialitza les opcions dels gràfics. Aqui es on posem tots els detalls del gràfic. */
-    public initChartOptions(type: string, numericColumn: string,
-        labelColum: any[], manySeries: boolean, stacked: boolean, size: any,
-        linkedDashboard: LinkedDashboardProps, minMax: { min: number, max: number }
-        , styles: StyleConfig, showLabels:boolean, showLabelsPercent:boolean, numberOfColumns:number, chartSubType:string): { chartOptions: any } {
+    public initChartOptions(
+        type: string,
+        numericColumn: string,
+        labelColum: any[],
+        manySeries: boolean,
+        stacked: boolean,
+        size: any,
+        linkedDashboard: LinkedDashboardProps,
+        minMax: { min: number, max: number },
+        styles: StyleConfig,
+        showLabels: boolean,
+        showLabelsPercent: boolean,
+        numberOfColumns: number,
+        chartSubType: string,
+        ticksOptions: any,
+        displayLegend: boolean = true
+    ): { chartOptions: any } {
 
         const t = $localize`:@@linkedTo:Vinculado con`;
         const linked = linkedDashboard ? `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
-        let options = {
-            chartOptions: {},
-        };
+        let options = { chartOptions: {} };
 
         // si la pantalla es petita faig la lletra mes petita
         let variador = 0;
@@ -1180,7 +1183,7 @@ export class ChartUtilsService {
             }
         };
         const edaBarLineLegend = {
-            display: true,
+            display: displayLegend,
             fontSize: edaFontSize,
             fontStyle: edafontStyle,
             position: 'bottom',
@@ -1196,13 +1199,12 @@ export class ChartUtilsService {
             }
         };
 
-        const maxTicksLimit = size.width < 200 ? 5 + variador : size.width < 400 ? 12 + variador : size.width < 600 ? 25 + variador : 40 + variador;
+        const maxTicksLimit = ticksOptions.xTicksLimit !== null ? ticksOptions.xTicksLimit : (size.width < 200 ? 5 + variador : size.width < 400 ? 12 + variador : size.width < 600 ? 25 + variador : 40 + variador);
         const maxTicksLimitHorizontal = size.height < 200 ? 5 + variador : size.height < 400 ? 12 + variador : size.height < 600 ? 25 + variador : 40 + variador;
-        const maxTicksLimitY = size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 4 :  size.height < 250 ? 5 :  size.height < 300 ? 6 :  size.height < 350 ? 8: 10;
-
+        const maxTicksLimitY = ticksOptions.yTicksLimit !== null ? ticksOptions.yTicksLimit : (size.height < 100 ? 1  : size.height < 150 ? 2 : size.height < 200 ? 4 :  size.height < 250 ? 5 :  size.height < 300 ? 6 :  size.height < 350 ? 8: 10);
+        
         /** Defineixo les propietats en funció del tipus de gràfic. */
         let dataLabelsObjt={}
-
         switch (type) {
             case 'doughnut':
             case 'polarArea':
@@ -1223,7 +1225,6 @@ export class ChartUtilsService {
                                     }, 0);
                                     const elem = realData[context.dataIndex];
                                     const percentage = elem / total * 100;
-                                    //console.log( percentage > 10 );
                                     if( chartWidth < 200){
                                         return  percentage > 8 ;
                                     }else{
@@ -1266,9 +1267,13 @@ export class ChartUtilsService {
                     responsive: true,
                     maintainAspectRatio: false,
                     devicePixelRatio: 2,
-
-
-
+                   
+                    onHover: (event,chartElement ) => {
+                        //Canviem el cursor de normal a tipus link
+                        chartElement.length == 1 ? 
+                        event.native.target.style.cursor = "pointer" :
+                        event.native.target.style.cursor = "default";
+                    },
                     plugins: {
                         datalabels: dataLabelsObjt,
                         tooltip: {
@@ -1293,25 +1298,22 @@ export class ChartUtilsService {
                         },
                         legend: edaPieLegend
                     },
-
-
                 };
-
-
                 break;
             case 'bar':
-                if(chartSubType!=='horizontalBar' && chartSubType!=='pyramid' && chartSubType!=='stackedbar100'){
-                    if(showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
+                if (!['horizontalBar', 'pyramid', 'stackedbar100'].includes(chartSubType)) {
+
+                    if (showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
                         dataLabelsObjt =  {
                             anchor: size.height>150?'end':'center',
                             align:  size.height>150?'top':'center',
                             display: 'auto',
                             color: function(context) {
                                 return size.height>150?context.dataset.backgroundColor:'#ffffff';
-                                },
+                            },
                             font: {
-                            weight: 'bold',
-                            size:  edaFontSize  ,
+                                weight: 'bold',
+                                size: edaFontSize,
                             },
                             padding: 2,
 
@@ -1336,8 +1338,8 @@ export class ChartUtilsService {
                             }
 
                         }
-                    }else{
-                            dataLabelsObjt =   { display: false }
+                    } else {
+                        dataLabelsObjt = { display: false };
                     }
 
                     options.chartOptions = {
@@ -1348,8 +1350,12 @@ export class ChartUtilsService {
                         responsive: true,
                         maintainAspectRatio: false,
                         devicePixelRatio: 2,
-
-
+                        onHover: (event,chartElement ) => {
+                            //Canviem el cursor de normal a tipus link
+                            chartElement.length == 1 ? 
+                            event.native.target.style.cursor = "pointer" :
+                            event.native.target.style.cursor = "default";
+                        },
                         tooltips: {
                             callbacks: {
                                 title: (tooltipItem, data) => {
@@ -1383,14 +1389,20 @@ export class ChartUtilsService {
                                 grid: { display: false },
 
                                 ticks: {
-                                    callback: function(val, index) {
-                                        if (this.getLabelForValue(val))
-                                        return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
-                                    },
-                                    fontSize: edaFontSize, fontStyle: edafontStyle,
+                                    maxRotation: ticksOptions.maxRotation || 30,
+                                    minRotation: ticksOptions.minRotation || 0,
+                                    labelOffset:  ticksOptions.labelOffset || 0, 
+                                    padding: ticksOptions.padding ||0,
+                                    maxTicksLimit: maxTicksLimit,
+                                    fontSize: edaFontSize,
+                                    fontStyle: edafontStyle,
                                     fontFamily: styles.fontFamily,
                                     fontColor: styles.fontColor,
-                                    maxTicksLimit: maxTicksLimit,
+                                    callback: function(val, index) {
+                                        if (this.getLabelForValue(val))
+                                            return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
+                                    },
+                                    
                                     autoSkip: true,
                                 }
                             },
@@ -1400,7 +1412,8 @@ export class ChartUtilsService {
                                 grid: {
                                     drawBorder: false,
                                 },
-                                display: true,
+                                display: maxTicksLimitY !== 0,
+                                beginAtZero: true,
                                 grace: (showLabels || showLabelsPercent )?'1%': '0%',
                                 ticks: {
                                     autoSkip: true,
@@ -1425,7 +1438,9 @@ export class ChartUtilsService {
 
                     };
 
-                } else if(chartSubType=='stackedbar100') {
+
+
+                } else if (chartSubType=='stackedbar100') {
                     if(showLabels || showLabelsPercent ){
                         dataLabelsObjt =  {
                             anchor: size.height>150?'end':'center',
@@ -1507,9 +1522,14 @@ export class ChartUtilsService {
                                 ticks: {
                                     callback: function(val, index) {
                                         if (this.getLabelForValue(val))
-                                        return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
+                                            return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
                                     },
-                                    fontSize: edaFontSize, fontStyle: edafontStyle,
+                                    maxRotation: ticksOptions.maxRotation || 30,
+                                    minRotation: ticksOptions.minRotation || 0,
+                                    labelOffset:  ticksOptions.labelOffset || 0, 
+                                    padding: ticksOptions.padding ||0,
+                                    fontSize: edaFontSize, 
+                                    fontStyle: edafontStyle,
                                     fontFamily: styles.fontFamily,
                                     fontColor: styles.fontColor,
                                     maxTicksLimit: maxTicksLimit,
@@ -1572,10 +1592,10 @@ export class ChartUtilsService {
                             }
                         },
                     };
-                }else{
+                } else {
                     // horizontalBar Since chart.js 3 there is no more horizontal bar. Its just  barchart with horizonal axis
                     // buscar en chart.js las opciones
-                    if(showLabels || showLabelsPercent ){
+                    if (showLabels || showLabelsPercent ){
                         /** si haig de mostrar les etiquetes ho configuro */
                         dataLabelsObjt =  {
                             anchor: function(context) {
@@ -1627,11 +1647,9 @@ export class ChartUtilsService {
 
 
                         }
-                    }else{
-                            dataLabelsObjt =   { display: false }
-
+                    } else {
+                        dataLabelsObjt =   { display: false }
                     }
-
                     options.chartOptions  = {
                         animation: {
                             duration: 3000
@@ -1641,6 +1659,12 @@ export class ChartUtilsService {
                         maintainAspectRatio: false,
                         devicePixelRatio: 2,
                         legend: edaBarLineLegend,
+                        onHover: (event,chartElement ) => {
+                            //Canviem el cursor de normal a tipus link
+                            chartElement.length == 1 ? 
+                            event.native.target.style.cursor = "pointer" :
+                            event.native.target.style.cursor = "default";
+                        },
                         tooltips: {
                             mode: 'nearest',
                             callbacks: {
@@ -1670,7 +1694,12 @@ export class ChartUtilsService {
                             x: {
                                 grid: {
                                     drawBorder: false,
-                                    display: true
+                                    display: true,
+                                    callback: function(val, index) {
+                                        if (this.getLabelForValue(val))
+                                        return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 12) + '...') : this.getLabelForValue(val);
+                                    }
+                                    
                                 },
                                 ticks: {
                                     callback: (value) => {
@@ -1689,19 +1718,12 @@ export class ChartUtilsService {
                             },
                             y: {
                                 grid: { display: false },
+                                beginAtZero: true,
                                 ticks: {
-                                    /*
-                                    callback: (value) => {
-                                        console.log(value);
-                                        if (value)
-                                            return value.length > 30 ? (value.substr(0, 17) + '...') : value;
-                                    },
-                                    */
                                     fontSize: edaFontSize,
                                     fontFamily: styles.fontFamily,
                                     fontColor: styles.fontColor,
                                     beginAtZero: true,
-                                    // maxTicksLimit: maxTicksLimitHorizontal,
                                     autoSkip: true
                                 }
                             }
@@ -1715,6 +1737,20 @@ export class ChartUtilsService {
                     };
 
                     if (chartSubType=='pyramid') {
+                        //modificamos los valores del tooltip para que sea positivo.
+                        (<any>options.chartOptions).plugins.tooltip = {
+                            callbacks :{
+                                label :  (context) =>{
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': ';  }
+                                    if (context.parsed.x !== null) {
+                                        label += Math.abs( parseFloat( context.parsed.x )).toLocaleString('de-DE', { maximumFractionDigits: 6 }) ;
+                                    }
+                                    return label;
+                                } 
+                            },
+                        };
+
                         //modificamos los valores del eje x para que sean positivos a la vista
                         (<any>options.chartOptions).scales.y.stacked = true;
                         (<any>options.chartOptions).scales.x.ticks.callback = (value, index, ticks) => {
@@ -1727,12 +1763,39 @@ export class ChartUtilsService {
                         }
                     }
                 }
-                break;
+                break;               
+            case 'radar':
+                if(showLabels || showLabelsPercent){
+                    dataLabelsObjt =  {
+                        borderColor: 'white',
+                        borderRadius: 25,
+                        borderWidth: 2,
+                        color: 'white',
+                    }
+                } else {
+                    dataLabelsObjt = { display: false };
+                }
 
-
-
-
-
+                options.chartOptions = {
+                    animation: {
+                        duration: 1500,
+                    },
+                    elements: {
+                        line: {
+                            borderWidth: 1,
+                            borderColor: '#36A2EB',
+                            backgroundColor: '#9BD0F5',                    
+                        },
+                        point: {
+                            radius: 4, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' }
+                    },
+                    maintainAspectRatio: false,
+                    plugins: {
+                        datalabels: dataLabelsObjt,
+                        legend: edaBarLineLegend
+                    },
+                };
+                break;      
             case 'line':
                 if(showLabels || showLabelsPercent ){
 
@@ -1797,6 +1860,12 @@ export class ChartUtilsService {
                     spanGaps: true,
                     responsive: true,
                     maintainAspectRatio: false,
+                    onHover: (event,chartElement ) => {
+                        //Canviem el cursor de normal a tipus link
+                        chartElement.length == 1 ? 
+                        event.native.target.style.cursor = "pointer" :
+                        event.native.target.style.cursor = "default";
+                    },
                     tooltips: {
                         mode: 'nearest',
                         intersect: false,
@@ -1830,60 +1899,60 @@ export class ChartUtilsService {
                         x: {
                             grid: { display: false, drawOnChartArea: false },
                             ticks: {
-                                maxRotation: 30,
-                                minRotation: 30,
+                                maxRotation: ticksOptions.maxRotation || 30,
+                                minRotation: ticksOptions.minRotation || 0,
+                                labelOffset:  ticksOptions.labelOffset || 0, 
+                                padding: ticksOptions.padding ||0,
+                                maxTicksLimit: maxTicksLimit,
                                 callback: function(val, index) {
                                     if (this.getLabelForValue(val))
-                                        return  this.getLabelForValue(val).length > 30 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
-                                  },
+                                        return  this.getLabelForValue(val).length > 20 ? (this.getLabelForValue(val).substr(0, 17) + '...') : this.getLabelForValue(val);
+                                },
                                 autoSkip: true,
-                                maxTicksLimit: maxTicksLimit,
                                 fontSize: edaFontSize,
                                 fontStyle: edafontStyle,
                                 fontFamily: styles.fontFamily,
                                 fontColor: styles.fontColor,
+                                includeBounds:true,
                                 beginAtZero: true
                             }
                         },
-                        y:
-                            {
-                                grid: {
-                                    drawBorder: false,
-                                    display: true,
-                                    zeroLineWidth: 1
-                                }
-                                ,
-
-                                id: 'y-axis-0', position: 'left',
-                                ticks: {
-                                    callback: (value) => {
-                                        if (value) {
-                                            return isNaN(value) ? value : this.format10thPowers(parseFloat(value))// parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 });
-                                        } else {
-                                            return 0;
-                                        }
-                                    },
-
-                                    autoSkip: true,
-                                    maxTicksLimit: maxTicksLimitY,
-                                    fontSize: edaFontSize,
-                                    fontStyle: edafontStyle,
-                                    fontFamily: styles.fontFamily,
-                                    fontColor: styles.fontColor,
-                                    beginAtZero: true,
-                                    max: minMax.max,
-                                    min: minMax.min
-
+                        y: {
+                            display: maxTicksLimitY !== 0,
+                            grid: {
+                                drawBorder: false,
+                                display: true,
+                                zeroLineWidth: 1
+                            },
+                            id: 'y-axis-0', position: 'left',
+                            beginAtZero: true,
+                            ticks: {
+                                callback: (value) => {
+                                    if (value) {
+                                        return isNaN(value) ? value : this.format10thPowers(parseFloat(value))// parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 });
+                                    } else {
+                                        return 0;
+                                    }
                                 },
-                                stacked: false
 
-                            }
+                                autoSkip: true,
+                                maxTicksLimit: maxTicksLimitY,
+                                fontSize: edaFontSize,
+                                fontStyle: edafontStyle,
+                                fontFamily: styles.fontFamily,
+                                fontColor: styles.fontColor,
+                                beginAtZero: true,
+                                max: minMax.max,
+                                min: minMax.min
 
+                            },
+                            stacked: false
+                        }
                     },
                     elements: {
                         point: { radius: 0, hitRadius: 4, hoverRadius: 3, hoverBorderWidth: 1, pointStyle: 'circle' },
                         line: {
-                                borderWidth: 1.5,
+                                borderWidth: 1 + (size.width/800),
                                 fill:  chartSubType=='area'?true:false,
                                 tension: 0.4 }
                     },
@@ -1892,9 +1961,9 @@ export class ChartUtilsService {
                         legend: edaBarLineLegend
                     },
                 };
-                break;
-
+            break;
         }
+
 
         return options;
     }

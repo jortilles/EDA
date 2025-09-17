@@ -1,17 +1,17 @@
 <eda-dialog [inject]="dialog">
 
-  <div body class="grid">
-    <div class="col-8">
+  <div body class="grid" style=" height: 100%;">
+    <div class="col-9">
 
-        <div class="eda-chart-panel" style="margin-left: 6em; margin-top: 2em; width: 60%; background-color: var(--panel-color);">
-          <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig"  style="height: 90%; width: 90%; display:block;  margin-top:5em">
+        <div class="eda-chart-panel" style=" width: 100%; background-color: var(--panel-color);">
+          <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig"  style="height: 100%; width: 100%; display:block;  margin-top:1em">
           </panel-chart>
         </div>
 
     </div>
 
 
-    <div class="col-4">
+    <div class="col-3">
 
 
       <h6 i18n="@@colorsChartH6" class="custom-border-b1">
@@ -34,7 +34,22 @@
         <p-inputSwitch [(ngModel)]="logarithmicScale" (onChange)="renderMap()">
         </p-inputSwitch>
       </div>
-
+      <h6 i18n="@@noMouseH6" class="custom-border-b1">
+        Activar funciones del mouse
+      </h6>
+      <div class="mb-1">
+        <p-inputSwitch [(ngModel)]="draggable" (onChange)="nullMouseOptions()">
+        </p-inputSwitch>
+      </div>
+      
+      <h6 i18n="@@noBaseLayerH6" class="custom-border-b1">
+        Activar capa base
+      </h6>
+      <div class="mb-1">
+        <p-inputSwitch [(ngModel)]="baseLayer" (onChange)="modifyBaseLayer()">
+        </p-inputSwitch>
+      </div>
+      
       <h6 i18n="@@LegendPosition" class="custom-border-b1">
         Posición de la leyenda
       </h6>

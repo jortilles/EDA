@@ -180,7 +180,6 @@ export class MailManagementComponent implements OnInit {
           this.dashboards.push(data.dashboard);
           /**Mailing dashbaords */
           if (data.dashboard.config.sendViaMailConfig && !!data.dashboard.config.sendViaMailConfig.enabled) {
-            console.log(data.dashboard.config)
             this.dashboardsTable.value.push({
               dashboard: dashboard.config.title,
               model: data.datasource.name,

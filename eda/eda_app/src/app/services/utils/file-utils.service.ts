@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 export class FileUtiles {
 
     connection(route: string, getParams?: {}) {
-        let url = `${URL_SERVICES}${route}?token=${sessionStorage.getItem('token')}`;
+        let url = `${URL_SERVICES}${route}?token=${localStorage.getItem('token')}`;
         if (!_.isNil(getParams)) {
             _.forEach(getParams, (value: any, key: any) => {
                 url += '&' + key + '=' + value;

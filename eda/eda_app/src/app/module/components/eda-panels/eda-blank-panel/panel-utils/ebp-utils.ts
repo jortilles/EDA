@@ -8,6 +8,18 @@ export const EbpUtils = {
         str = $localize`:@@chartInfo2:Un KPI necesita un único número`;
         description += `\n${str}`;
         break;
+      case 'kpibar':
+        str = $localize`:@@chartInfoKpibar:Un Kpi + gráfico de barras necesita una o más categorías y una serie numérica. Además, si existen más de una serie los datos numéricos deben agregarse.`;
+        description += `\n${str}`;
+        break;
+      case 'kpiline':
+        str = $localize`:@@chartInfoKpiline:Un KPI + gráfico de línea necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
+        description += `\n${str}`;
+        break;
+      case 'kpiarea':
+        str = $localize`:@@chartInfoKpiarea:Un KPI + gráfico de area necesita una o más categorías y una série numérica. Además, si hay mas de una série los datos numéricos deben agregarse.`;
+        description += `\n${str}`;
+        break;
       case 'dynamicText':
         str = $localize`:@@chartInfoDynamicText:Un texto dinámicos requiere de un único valor NO numérico`;
         description += `\n${str}`;
@@ -19,6 +31,7 @@ export const EbpUtils = {
       case 'stackedbar':
         str = $localize`:@@chartInfo4:\n Un gráfico combinado necesita una categoría y dos séries numéricas`;
         description += `\n${str}`;
+        break;
       case 'stackedbar100':
         str = $localize`:@@chartInfo4:\n Un gráfico combinado necesita una categoría y dos séries numéricas`;
         description += `\n${str}`;
@@ -43,7 +56,6 @@ export const EbpUtils = {
         str = $localize`:@@chartInfoBubble:Un gráfico de burbujas necesita una categorías y una série numérica.`;
         description += `\n${str}`;
         break;
-
       case 'polarArea':
         str = $localize`:@@chartInfo8:Un gráfico polar necesita una categoría y una série numérica`;
         description += `\n${str}`;
@@ -78,9 +90,9 @@ export const EbpUtils = {
         description += `\n${str}`;
         break;
       case 'knob':
-          str = $localize`:@@chartInfo17:El velocímetro necesita uno o dos valores numéricos, en caso de disponer de dos valores el segundo se interpretará como límite`;
-          description += `\n${str}`;
-          break;
+        str = $localize`:@@chartInfo17:El velocímetro necesita uno o dos valores numéricos, en caso de disponer de dos valores el segundo se interpretará como límite`;
+        description += `\n${str}`;
+        break;
       case 'histogram':
         str = $localize`:@@chartInfoHistogram:Un histograma necesita una única columna de valores numericos de los que se calculará la frecuencia`;
         description += `\n${str}`;
@@ -89,8 +101,18 @@ export const EbpUtils = {
         str = $localize`:@@chartInfoFunnel:Un embudo necesita una categoría y un valor numérico`;
         description += `\n${str}`;
         break;
+      case "treetable": 
+        str = $localize`:@@chartInfoTreetable:Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.`;
+        description += `\n${str}`;
+        break;
+      case "radar": 
+        str = $localize`:@@chartInfoRadar:Un radar necesita como mínimo una categoría y al menos un valor numérico.`;
+        description += `\n${str}`;
+        break;
       case 'pyramid': 
         str = $localize`:@@chartInfoPyramid:Un gráfico de piramide necesita de dos categorías y un valor numérico`;
+        description += `\n${str}`;
+        break;
       default:
         description = $localize`:@@chartInfo13:Los datos seleccionados no permiten utilizar este gráfico.`;
         break;
@@ -99,52 +121,84 @@ export const EbpUtils = {
     return description;
   },
 
+  // text for available values
+  getOptionDescriptionValid: (value: string) => {
+    let description = '';
+    let str: string; 
+    // let str2: string;
+    switch (value) {
+      case "treetable": 
+        str = $localize`:@@chartInfoTreetableAvailable:Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.`;
+        description += `\n${str}`;
+        break;
+      default:
+        description ='';
+        break;
+    }
+
+    return description;
+  },
+
+
+
   /** ICONOS PARA LOS TIPOS DE GRÁCIFOS  ICON ICONS */
   getOptionIcon: (value: string): string => {
+
     let description = '';
+
     switch (value) {
       case 'table':
+      case 'tableanalized':
         description = 'table_chart';
         break
       case 'crosstable':
         description = 'grid_on';
-        break
+        break;
       case 'kpi':
         description = 'attach_money';
-        break
+        break;
+      case 'kpibar':
+        description = 'manage_search';
+        break;
+      case 'kpiarea':
+        description = 'troubleshoot';
+        break;
+      case 'kpiline':
+        description = 'query_stats';
+        break;
       case 'dynamicText':
         description = 'text_rotation_none';
-        break
+        break;
       case 'barline':
         description = 'multiline_chart';
-        break
+        break;
       case 'line':
         description = 'timeline';
-        break
+        break;
       case 'area':
         description = 'area_chart';
-        break
+        break;
       case 'horizontalBar':
         description = 'notes';
-        break
+        break;
       case 'pyramid':
         description = 'details';
-        break
+        break;
       case 'bar':
         description = 'bar_chart';
-        break
+        break;
       case 'stackedbar':
         description = 'stacked_bar_chart';
-        break
+        break;
       case 'stackedbar100':
         description = 'view_column';
-        break
+        break;
       case 'polarArea':
         description = 'star';
-        break
+        break;
       case 'doughnut':
         description = 'pie_chart';
-        break
+        break;
       case 'coordinatesMap':
         description = 'add_location';
         break;
@@ -173,7 +227,14 @@ export const EbpUtils = {
         description = 'equalizer';
         break;
       case 'bubblechart':
-          description = 'spoke';
+          description = 'bubble_chart';
+        break;
+      case 'radar':
+        description = 'radar';
+        break;
+      case 'treetable': 
+        description = 'account_tree';
+        break;
     }
 
     return description;

@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
+import {DEFAULT_BACKGROUND_COLOR, DEFAULT_PANEL_COLOR, DEFAULT_FONT_COLOR, DEFAULT_FONT_FAMILY,DEFAULT_FONT_SIZE, DEFAULT_TITLE_ALIGN,DEFAULT_PANEL_TITLE_ALIGN  } from  "../../config/personalitzacio/customizables";
 
 
 export interface StyleConfig {
@@ -25,14 +26,16 @@ export interface DashboardStyles {
 export class StyleProviderService {
 
 
-	public DEFAULT_BACKGROUND_COLOR: string = '#f1f0f0';
-	public DEFAULT_PANEL_COLOR: string = '#ffffff';
-	public DEFAULT_FONT_COLOR: string = '#455a64'
-	public DEFAULT_FONT_FAMILY: string = 'Questrial';
-	public DEFAULT_FONT_SIZE: number = 0;
-	public DEFAULT_TITLE_ALIGN: string = 'center';
-	public DEFAULT_PANEL_TITLE_ALIGN: string = 'left';
+	public DEFAULT_BACKGROUND_COLOR: string = DEFAULT_BACKGROUND_COLOR;
+	public DEFAULT_PANEL_COLOR: string = DEFAULT_PANEL_COLOR;
+	public DEFAULT_FONT_COLOR: string = DEFAULT_FONT_COLOR;
+	public DEFAULT_FONT_FAMILY: string = DEFAULT_FONT_FAMILY;
+	public DEFAULT_FONT_SIZE: number = DEFAULT_FONT_SIZE;
+	public DEFAULT_TITLE_ALIGN: string = DEFAULT_TITLE_ALIGN;
+	public DEFAULT_PANEL_TITLE_ALIGN: string = DEFAULT_PANEL_TITLE_ALIGN;
+
 	public DEFAULT_CUSTOM_CSS: string = '';
+	
 
 	/**Page background */
 	private _pageBackground = new BehaviorSubject<string>(this.DEFAULT_BACKGROUND_COLOR);

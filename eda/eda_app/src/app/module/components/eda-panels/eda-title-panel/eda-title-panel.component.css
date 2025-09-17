@@ -28,6 +28,34 @@ p.ql-align-right {
   text-align: right !important;
 }
 
+h1.ql-align-left {
+  text-align: left !important;
+}
+h1.ql-align-center {
+  text-align: center !important;
+}
+h1.ql-align-justify {
+  text-align: justify !important;
+}
+h1.ql-align-right {
+  text-align: right !important;
+}
+
+h2.ql-align-left {
+  text-align: left !important;
+}
+h2.ql-align-center {
+  text-align: center !important;
+}
+h2.ql-align-justify {
+  text-align: justify !important;
+}
+h2.ql-align-right {
+  text-align: right !important;
+}
+
+
+
 
 strong {
 font-weight: bold !important;

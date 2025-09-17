@@ -1,11 +1,13 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { TreeNode } from 'primeng/api';
 import { ApiService } from './api.service';
 import { EditModelPanel, EditColumnPanel, EditTablePanel, Relation, ValueListSource } from '@eda/models/data-source-model/data-source-models';
 import { AlertService } from '../alerts/alert.service';
 import { aggTypes } from '../../config/aggretation-types';
+import { map } from 'rxjs/internal/operators/map';
+import { catchError } from 'rxjs/internal/operators/catchError';
 
 
 @Injectable()
@@ -22,6 +24,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             source_column: [],
             target_table: '',
             target_column: [],
+            display_name: {},
             visible: false
         }],
         table_type: '',
@@ -48,7 +51,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 type: '', host: '', database: ' ', user: ' ', password: ' ', schema : '', port:null, warehouse:''
             },
             metadata: {
-                model_name: ' ', model_granted_roles: [], cache_config:{}, filter:''
+                model_name: ' ', model_granted_roles: [], cache_config:{}, filter:'', tags:[]
             }
         }
     );
@@ -69,7 +72,12 @@ export class DataSourceService extends ApiService implements OnDestroy {
     private _maps = new BehaviorSubject<Array<Object>>([{}]);
     currentMaps = this._maps.asObservable();
 
+    private _tags = new BehaviorSubject<any>([]);
+    currentTags = this._tags.asObservable();
+
     model_id: string;
+
+    tags: string[];
 
     private globalDSRoute = '/datasource';
 
@@ -286,6 +294,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             source_column: rel.target_column,
             target_table: rel.source_table,
             target_column: rel.source_column,
+            display_name: rel.display_name,
             visible: true
         };
 
@@ -327,6 +336,7 @@ export class DataSourceService extends ApiService implements OnDestroy {
             source_column: rel.target_column,
             target_table: rel.source_table,
             target_column: rel.source_column,
+            display_name: rel.display_name['default'] !== null ? rel.display_name['default'] : rel.target_table + ' - ' + rel.target_column,
             visible: true
         };
 
@@ -338,6 +348,28 @@ export class DataSourceService extends ApiService implements OnDestroy {
         }
 
         this._databaseModel.next(tmp_model);
+    }
+
+    updateRelation(rel: Relation, newRelation: Relation) {
+        // Set new values
+        rel.display_name = newRelation.display_name;
+        rel.source_column = newRelation.source_column;
+        rel.source_table = newRelation.source_table;
+        rel.target_column = newRelation.target_column;
+        rel.target_table = newRelation.target_table;
+
+        // Update tablePanel
+        const tmp_panel = this._tablePanel.getValue();
+        const tmp_relationIndex = tmp_panel.relations.findIndex((r: { source_table: any; source_column: any; target_table: any; target_column: any; }) => {
+            return r.source_table === rel.source_table && JSON.stringify(r.source_column) === JSON.stringify(rel.source_column)
+                && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
+        });
+        if (tmp_relationIndex >= 0) {
+            tmp_panel.relations[tmp_relationIndex].visible = true;
+        } else {
+            tmp_panel.relations.push(rel);
+        }
+        this._tablePanel.next(tmp_panel);
     }
 
     /** add a value list as the source of a column */
@@ -359,6 +391,30 @@ export class DataSourceService extends ApiService implements OnDestroy {
         tmpMetadata.cache_config = config;
         this._modelMetadata.next(tmpMetadata);
     }
+    //Añadir los tags al modelMetadata 
+    addTags(tags:any){
+        let tmpMetadata = this._modelMetadata.getValue();
+        if(tmpMetadata.tags){
+            let uniqueTags = [...new Set([...tags])];
+            tmpMetadata.tags = uniqueTags;
+        }
+        if(!tmpMetadata.tags) tmpMetadata.tags = [];
+        this._modelMetadata.next(tmpMetadata);
+    }
+    //Obtener todos los tags de todos los dataSources, sin distinción
+    getTags(): void {
+         this.get(this.globalDSRoute)
+             .subscribe((data: any) => {
+                let tagArray = []
+                let dsObject = data.ds;
+                dsObject.map((datasource) =>{
+                  if(datasource.ds.metadata.tags){ 
+                    tagArray = [...tagArray,...datasource.ds.metadata.tags]
+                }
+                });
+                this._tags.next(tagArray)
+             }, err => console.log(err));
+     }
 
     getRelationIndex(rel: Relation, tableIndex: string | number) {
         return this._databaseModel.getValue()[tableIndex].relations
@@ -367,6 +423,13 @@ export class DataSourceService extends ApiService implements OnDestroy {
                 && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
             });
     }
+
+    getRelation(rel: Relation, tableIndex: string | number) {
+        return this._databaseModel.getValue()[tableIndex].relations
+            .find((r: { source_table: any; source_column: any; target_table: any; target_column: any; }) => {
+                return r.source_table === rel.source_table && JSON.stringify(r.source_column) === JSON.stringify(rel.source_column)
+                && r.target_table === rel.target_table && JSON.stringify(r.target_column) === JSON.stringify(rel.target_column);
+            });    }
 
     updateDataModel(panel: any) {
         if (panel.type === 'tabla') {

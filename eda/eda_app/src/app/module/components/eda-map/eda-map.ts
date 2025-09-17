@@ -7,11 +7,15 @@ export class EdaMap{
   zoom : number;
   data : any;
   color:string;
+  initialColor:string;
+  finalColor:string;
   legendPosition:string;
   logarithmicScale : boolean;
+  draggable : boolean;
   labels : Array<string>;
   maps : Array<Object>;
   query: Array<any>;
   linkedDashboard : LinkedDashboardProps;
+  baseLayer: boolean;
 
 }

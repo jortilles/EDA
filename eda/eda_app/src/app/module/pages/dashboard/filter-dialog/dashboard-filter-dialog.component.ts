@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 @Component({
     selector: 'dashboard-filter-dialog',
     templateUrl: './dashboard-filter-dialog.component.html',
-    styleUrls: ['../dashboard.component.css']
+    styleUrls: ['./dashboard-filter-dialog.component.css']
 })
 
 export class DashboardFilterDialogComponent extends EdaDialogAbstract {
@@ -156,7 +156,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     addPanelToFilter(panel) {
         if (panel.avaliable === false) {
             this.selectPanelToFilter(panel);
-        } else if (panel.active === true) {
+        } else if (panel.active) {
             panel.active = false;
             this.panelstoFilter = this.panelstoFilter.filter(p => p.id !== panel.id);
         } else {
@@ -167,7 +167,12 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
 
     public getColumnsByTable() {
         this.targetCols = [];
-        const table = this.params.dataSource.model.tables.filter(t => t.display_name.default === this.targetTable.label);
+        let table = this.params.dataSource.model.tables.filter(t => t.display_name.default === this.targetTable.label);
+
+        // Se cogen las tablas por su etiqueta. Pero puede ser que le hayan cambiado el nombre. En caso de que no se encuentre se busca por nombre de la tabla.
+        if(table.length == 0){
+            table = this.params.dataSource.model.tables.filter(t => t.table_name === this.targetTable.value);
+        }
 
         table[0].columns.filter(col => col.visible === true).forEach(col => {
             this.targetCols.push({ label: col.display_name.default, value: col });
@@ -248,16 +253,22 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
     }
 
     public loadGlobalFiltersData() {
+
         const params = {
             table: this.targetTable.value,
             dataSource: this.params.dataSource._id,
             dashboard: this.params.id,
+            connectionProperties: this.params.connectionProperties,
             forSelector: true,
             panel: '',
             filters: []
         };
+        
         //Recupero el alias value para restaurarlo a la hora de editarlo.
-        this.aliasValue = this.params.filter.column.label;
+        if( this.params.filter !== undefined ){
+            this.aliasValue = this.params.filter.column.label;
+        }
+
         this.dashboardService.executeQuery(
             this.queryBuilderService.normalQuery([this.targetCol.value], params)
         ).subscribe(

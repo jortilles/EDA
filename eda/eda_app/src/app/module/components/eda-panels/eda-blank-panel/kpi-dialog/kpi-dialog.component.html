@@ -1,13 +1,31 @@
 <eda-dialog [inject]="dialog">
   
-  <div body class=grid>
+  <div body class="grid h-100 p-5">
 
-    <div class="col-12" style=" background-color: var(--panel-color); margin: 2em; width: 90%; height: 15vh;">
-      <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig">
-      </panel-chart>
+    <div class="col-7" style="background-color: var(--panel-color); width: 90%; height: 15vh;">
+      <panel-chart *ngIf="display" #PanelChartComponent [props]="panelChartConfig" class="component"></panel-chart>
     </div>
 
-    <div class="col-12">
+    <div class="col-4 col-offset-1">
+
+        <div class="col-12">
+            <h6 i18n="@@colorsChartH6" class="custom-border-b1">
+                Colores
+            </h6>
+            <div class="grid chart-color-selection">
+                <ng-container *ngFor="let serie of series; let i = index">
+                    <div class=" col-6 ">
+                        <input type="text" pInputText style="width: 40%" [value]="serie.label" disabled="true" [style.border-color]="serie.border" />
+                        <p-colorPicker [(ngModel)]="serie.bg" (onChange)="handleInputColor(serie)" format="hex" appendTo="body"></p-colorPicker>
+                        <input type="text" pInputText class="eda-color-pick" [(ngModel)]="serie.bg" (input)="handleInputColor(serie)" minlength="7" >
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-12 mt-5">
       <h6 i18n="@@kpiAlertH6" class="custom-border-b1">
         Generar alerta
       </h6>
@@ -77,8 +95,8 @@
       </div>
     </div>
     <div class="col-2">
-      <button i18n="@@addAlert" class="btn-sm btn-secondary" i18n-title="@@addAlert" title="Añadir alerta"
-        (click)="addAlert()" [disabled]="color === undefined || operand === undefined"> Añadir alerta
+      <button i18n="@@addAlert" pButton class="btn-sm btn-secondary" i18n-title="@@addAlert" title="Añadir alerta"
+        (click)="addAlert()" [disabled]="!color || !operand" label="Añadir alerta">
       </button>
     </div>
   </div>
@@ -143,9 +161,10 @@
 
       </div>
 
-      <div class="col-12">
-        <h6 i18n="@@noMail">Sin alertas de correo</h6>
-        <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="disabled" tooltipPosition="left">
+      <div class="col-12"> 
+        <h6 *ngIf="!enabled" i18n="@@noMail">Sin alertas de correo</h6>
+        <h6 *ngIf="enabled" i18n="@@opcionMail">Enviar per email</h6>
+        <p-inputSwitch id="switchCache" class="col-1" [(ngModel)]="enabled" tooltipPosition="left">
         </p-inputSwitch>
       </div>
 

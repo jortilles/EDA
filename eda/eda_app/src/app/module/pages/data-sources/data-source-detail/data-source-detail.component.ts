@@ -4,11 +4,13 @@ import { Router, NavigationEnd } from '@angular/router';
 import { UntypedFormGroup } from '@angular/forms';
 import { MenuItem, SelectItem, TreeNode } from 'primeng/api';
 import { AlertService, DataSourceService, QueryParams, QueryBuilderService, SpinnerService } from '@eda/services/service.index';
-import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource } from '@eda/models/data-source-model/data-source-models';
+import { EditTablePanel, EditColumnPanel, EditModelPanel, ValueListSource, Relation } from '@eda/models/data-source-model/data-source-models';
 import { EdaDialogController, EdaDialogCloseEvent, EdaContextMenu, EdaContextMenuItem } from '@eda/shared/components/shared-components.index';
 import { aggTypes } from 'app/config/aggretation-types';
 import { EdaColumnFunction } from '@eda/components/eda-table/eda-columns/eda-column-function';
 import * as _ from 'lodash';
+import { EdaColumnEditable } from '@eda/components/eda-table/eda-columns/eda-column-editable';
+
 
 @Component({
     selector: 'app-data-source-detail',
@@ -37,6 +39,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public modelPermissionsController: EdaDialogController;
     public newColController: EdaDialogController;
     public mapController: EdaDialogController;
+    public mapCoordController: EdaDialogController;
+    public tagController: EdaDialogController;
     public viewController: EdaDialogController;
     public csvPanelController: EdaDialogController;
     public cacheController : EdaDialogController;
@@ -57,6 +61,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     public viewsecurity:string = $localize`:@@viewsecurity:Ver configuración de seguridad`;
     public addMap:string = $localize`:@@addMap:Mapas`;
     public addView:string = $localize`:@@addView:Añadir vista`;
+    public addTagDataSource:string = $localize`:@@addTagDataSource: Añadir Tag`;
     public addCSV:string = $localize`:@@addCSV:Añadir tabla desde csv`;
     public addRelation:string = $localize`:@@addRelationButton:Añadir relación`;
     public addCalculatedCol:string = $localize`:@@addCalculatedCol:Añadir columna  calculada`;
@@ -100,7 +105,8 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
       /*SDA Custom  { label: 'Oracle', value: 'oracle' },  se quita el conector de oracle. No hay conexiones a oracle*/ 
         { label: 'BigQuery', value: 'bigquery' },
         { label: 'SnowFlake', value: 'snowflake'},
-        { label: 'JsonWebService', value: 'jsonwebservice'}
+        { label: 'JsonWebService', value: 'jsonwebservice'},
+        { label: 'Mongo', value: 'mongodb'}
     ];
     public selectedTipoBD: SelectItem;
 
@@ -109,6 +115,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
 
     // model permissions
     public modelPermissions: Array<any>;
+    public selectedRelation: Relation;
 
     constructor(public dataModelService: DataSourceService,
         private alertService: AlertService,
@@ -141,7 +148,6 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                             try {
                                 elem = this.permissionsColumn.getContextMenuRow()._id?.reduce((a, b)=> a + b) ;
                             } catch (e) {
-
                             }
 
                             const dynValue = this.modelPanel.metadata.model_granted_roles.filter(r => r.value !== undefined)
@@ -179,18 +185,26 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             contextMenu: new EdaContextMenu({
                 contextMenuItems: [
                     new EdaContextMenuItem({
-                        label: 'ELIMINAR', command: () => {
-                            const elem = this.permissionTable.getContextMenuRow()._id.reduce((a, b)=> a + b) ;
-                            const users = this.modelPanel.metadata.model_granted_roles.filter(r => r.users !== undefined)
-                            .filter(r => r.users.reduce((a, b)=> a + b) !== elem);
+                        label: 'ELIMINAR', command: () => {                            
+                            let users = [];
+                            let groups = [];
 
-                            const groups = this.modelPanel.metadata.model_granted_roles.filter(r => r.groups !== undefined)
-                            .filter(r => r.groups.reduce((a, b)=> a + b) !== elem);
+                            if (this.permissionTable.getContextMenuRow().user) {
+                                const usersTmp = this.permissionTable.getContextMenuRow()._id;
+                                const table = this.tablePanel.technical_name;
+                                const mdgTmp = this.modelPanel.metadata.model_granted_roles.filter(r => r.table === table && r.users === usersTmp);
+                                users = this.modelPanel.metadata.model_granted_roles.filter(a => a != mdgTmp[0]);
+                                
 
+                            } else if (this.permissionTable.getContextMenuRow().group) {
+                                const groupTmp = this.permissionTable.getContextMenuRow()._id;
+                                const table = this.tablePanel.technical_name;
+                                const mdgTmpG = this.modelPanel.metadata.model_granted_roles.filter(r => r.table === table && r.groups === groupTmp)
+                                groups = this.modelPanel.metadata.model_granted_roles.filter(a => a != mdgTmpG[0]);
+                            }
                             let tmpPermissions = [];
-                            groups.forEach(group => tmpPermissions.push(group));
                             users.forEach(user => tmpPermissions.push(user));
-
+                            groups.forEach(group => tmpPermissions.push(group));
                             this.modelPanel.metadata.model_granted_roles = tmpPermissions;
                             this.update();
                             this.permissionTable._hideContexMenu();
@@ -249,12 +263,13 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                 ]
             }),
             cols: [
-                new EdaColumnFunction({ click: (relation) => this.deleteRelation(relation._id) }),
                 new EdaColumnText({ field: 'origin', header: $localize`:@@originRel:Origen` }),
-                new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` })
+                new EdaColumnText({ field: 'dest', header: $localize`:@@targetRel:Destino` }),
+                new EdaColumnText({ field: 'name', header: $localize`:@@nameRel:Nombre` }),
+                new EdaColumnEditable({ field: 'modify', click: (relation) => this.updateRelation(relation._id)}),
+                new EdaColumnFunction({ field: 'delete', click: (relation) => this.deleteRelation(relation._id)}),
             ]
         })
-
     }
 
     ngOnInit() {
@@ -352,6 +367,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     const row = {
                         origin: relation.source_column,
                         dest: `${relation.target_table}.${relation.target_column}`,
+                        name: relation.display_name !== undefined && relation.display_name !== null ? relation.display_name['default'] : relation.target_table + ' - ' + relation.target_column,
                         _id: relation
                     };
                     if (!this.relationsTable.value.map(value => value.dest).includes(row.dest) ) {
@@ -473,6 +489,20 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
         this.update();
     }
 
+    updateRelation(relation: Relation) {  
+        this.selectedRelation = relation;
+        this.relationController = new EdaDialogController({
+            params: { table: this.tablePanel},
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.updateRelation(relation,response);
+                }
+                this.relationController = undefined;
+                this.selectedRelation = null;
+            }
+        });
+    }
+
     deleteRelation(relation) {
         this.dataModelService.deleteRelation(relation);
     }
@@ -563,7 +593,7 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
     }
     openNewViewDialog() {
         this.viewController = new EdaDialogController({
-            params: { user: sessionStorage.getItem('user'), model_id: this.dataModelService.model_id },
+            params: { user: localStorage.getItem('user'), model_id: this.dataModelService.model_id },
             close: (event, response) => {
                 if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
                     this.dataModelService.addView(response);
@@ -588,6 +618,23 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
             }
         })
     }
+    openNewMapCoordDialog() {
+        this.mapCoordController = new EdaDialogController({
+          params: {},
+          close: (event, response) => {
+            if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+              if (response.newMap) {
+                this.dataModelService.addLinkedToMapColumns(
+                  response.linkedColumns,
+                  response.mapID
+                );
+              }
+              this.dataModelService.updateMaps(response.serverMaps);
+            }
+            this.mapCoordController = undefined;
+          },
+        });
+    }
 
     openCSVDialog() {
         this.csvPanelController = new EdaDialogController({
@@ -597,6 +644,20 @@ export class DataSourceDetailComponent implements OnInit, OnDestroy {
                     this.onTableCreated.emit();
                 }
                 this.csvPanelController = undefined;
+            }
+        })
+    }
+    
+    openTagDialog() {
+        
+        this.tagController = new EdaDialogController({
+            params: { model_id: this.dataModelService.model_id, tagArray: this.modelPanel.metadata.tags },
+            close: (event, response) => {
+                if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
+                    this.dataModelService.addTags(response);
+                    this.update();
+                }
+                this.tagController = undefined;
             }
         })
     }

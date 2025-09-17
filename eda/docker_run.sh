@@ -17,6 +17,9 @@ else
         mongod --dbpath eda/mongo/data  --fork --logpath eda/mongo/log
 fi
 
+echo "Asumiendo que los paquetes ya están descargados y instalados"
+
+
 if ! $eda_installed
 then
         mongosh --eval 'db.createCollection("users")' EDA
@@ -25,13 +28,13 @@ then
         mongosh --eval 'db.createCollection("data-source")' EDA
         mongosh --eval 'db.createCollection("files")' EDA
         mongosh --eval 'db.createCollection("features")' EDA
-        mongosh --eval 'db.groups.insert( { "_id": ObjectId("135792467811111111111110"), "role": "EDA_ADMIN_ROLE", "name" : "EDA_ADMIN",  "users":[ ObjectId("135792467811111111111111")  ] }   )' EDA
-        mongosh --eval 'db.groups.insert( { "_id": ObjectId("135792467811111111111113"), "role": "EDA_USER_ROLE", "name" : "RO",  "users":[] } )' EDA
-		mongosh --eval 'db.groups.insert( { "_id": ObjectId("135792467811111111111115"), "role": "EDA_USER_ROLE", "name" : "EDA_DATASOURCE_CREATOR",  "users":[] } )' EDA
-        mongosh --eval 'db.users.insert( { "_id" : ObjectId("135792467811111111111111"), "role" : [ ObjectId("135792467811111111111110") ], "name" : "EDA", "email" : "eda@jortilles.com", "password" : "$2a$10$J48xu5KAqobLzvD8FX1LOem7NZUMuXPHID1uSHzbzTbM.wGFPXjb2" } )' EDA
-        mongosh --eval ' db.users.insert( { "_id" : ObjectId("135792467811111111111112"),   "role" : [],    "name" : "edaanonim",    "email" : "edaanonim@jortilles.com",    "password" : "$2a$10$ziukAcgjgTe2XPmjO1xsruKJW1HlX0I2pvCiKZHQ69DdaCzgZA4/2" } ) ' EDA
+        mongosh --eval 'db.groups.insertOne( { "_id": ObjectId("135792467811111111111110"), "role": "EDA_ADMIN_ROLE", "name" : "EDA_ADMIN",  "users":[ ObjectId("135792467811111111111111")  ] }   )' EDA
+        mongosh --eval 'db.groups.insertOne( { "_id": ObjectId("135792467811111111111113"), "role": "EDA_USER_ROLE", "name" : "EDA_RO",  "users":[] } )' EDA
+	mongosh --eval 'db.groups.insertOne( { "_id": ObjectId("135792467811111111111115"), "role": "EDA_USER_ROLE", "name" : "EDA_DATASOURCE_CREATOR",  "users":[] } )' EDA
+        mongosh --eval 'db.users.insertOne( { "_id" : ObjectId("135792467811111111111111"), "role" : [ ObjectId("135792467811111111111110") ], "name" : "EDA", "email" : "eda@jortilles.com", "password" : "$2a$10$J48xu5KAqobLzvD8FX1LOem7NZUMuXPHID1uSHzbzTbM.wGFPXjb2" } )' EDA
+        mongosh --eval ' db.users.insertOne( { "_id" : ObjectId("135792467811111111111112"),   "role" : [],    "name" : "edaanonim",    "email" : "edaanonim@jortilles.com",    "password" : "$2a$10$ziukAcgjgTe2XPmjO1xsruKJW1HlX0I2pvCiKZHQ69DdaCzgZA4/2" } ) ' EDA
 
-        npm install -g forever  forever-monitor nodemon http-server
+        npm install -g pm2 nodemon http-server
 
         export LD_LIBRARY_PATH=/eda/oracle/instantclient
 
@@ -48,8 +51,8 @@ then
 
 
         cd /eda/eda_app/
-        npm install --legacy-peer-deps
-        npm run build:prod
+ #       npm install --legacy-peer-deps
+ #       npm run build:prod
         rm  -rf /var/www/html
         cp -r  /eda/eda_app/dist/app-eda  /var/www/html
         cp   /eda/000-default.conf /etc/apache2/sites-available
@@ -66,17 +69,16 @@ fi
 if ! $eda_installed
 then
         cd /eda/eda_api
-        npm install
+ #       npm install
 fi
 
-if pgrep -x "node" > /dev/null
+if [ $(pm2 pid server)  -gt 0 ]
 then
         echo "node is running"
 else
         echo "start node"
         cd /eda/eda_api
-        #npm start >/eda/eda_api/api.log 2>&1
-        npm run start:forever >/eda/eda_api/api.log 2>&1
+        npm run start:pm2  
 fi
 
 echo ""

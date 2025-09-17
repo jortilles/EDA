@@ -54,7 +54,6 @@ export function queryBuilderServiceCustomGetTreePermissions(target: Object, prop
  let columns = [];
  
  const permissions = this.getUserPermissions(modelPermissions);
- //console.log(permissions);
  
  query.fields.forEach(f => {
      columns.push( { table_name:  f.table_id,  column_name: f.column_name } )

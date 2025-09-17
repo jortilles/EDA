@@ -2,6 +2,7 @@
 @import "~leaflet/dist/leaflet.css";
 
 
+@import "/assets/sass/css/custom.css";
 
 /* .custom  .leaflet-popup-content-wrapper, .leaflet-popup-tip {
   background: rgba(47, 79, 79, 0.911);

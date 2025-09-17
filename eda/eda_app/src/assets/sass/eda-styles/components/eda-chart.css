@@ -4,20 +4,22 @@
     width: 100%;
     min-width: 0;
 }
-
-
-
-
 .eda-color-pick {
     margin-left: 1%!important;
     border: 0!important;
     border-bottom: 1px solid #c8c8c8!important;
     border-radius: 0!important;
 }
-
 .eda-chart-panel {
     position: absolute;
     width: 60%;
+    top: 30px;
+    bottom: 0;
+    left: 0;
+}
+.eda-tree-chart-panel {
+    position: absolute;
+    width: 100%;
     top: 30px;
     bottom: 0;
     left: 0;

@@ -1,4 +1,7 @@
 @charset "UTF-8";
+/* customizables variables.  */
+@import url(./../css/custom.css);
+
 :root {
   --surface-a:#ffffff;
   --surface-b:#f8f9fa;
@@ -10,7 +13,7 @@
   --text-color-secondary:#6c757d;
   --primary-color:#4CAF50;
   --primary-color-text:#ffffff;
-  --font-family:-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-family: var(--DEFAULT_FONT_FAMILY) ,-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
   --surface-0: #ffffff;
   --surface-50: #FAFAFA;
   --surface-100: #F5F5F5;
@@ -32,7 +35,7 @@
 }
 
 .p-component {
-  font-family: -apple-system, BlinkMacSystemFont, "Questrial", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family:  var(--DEFAULT_FONT_FAMILY) , -apple-system, BlinkMacSystemFont, "Questrial", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 0.9rem;
   font-weight: normal;
 }
@@ -969,7 +972,7 @@ p-inputswitch.ng-dirty.ng-invalid > .p-inputswitch {
 }
 
 .p-inputtext {
-  font-family: -apple-system, BlinkMacSystemFont, "Questrial", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family:  var(--DEFAULT_FONT_FAMILY), -apple-system, BlinkMacSystemFont, "Questrial", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 1rem;
   color: #495057;
   background: #ffffff;
@@ -2707,6 +2710,17 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 .p-picklist .p-picklist-buttons .p-button {
   margin-bottom: 0.5rem;
 }
+
+/* Oculta el botón ">>" (mover todos a la derecha) */
+.p-picklist-buttons .p-button:nth-child(2) {
+  display: none !important;
+}
+
+/* Oculta el botón "<<" (mover todos a la izquierda) */
+.p-picklist-buttons .p-button:nth-child(4) {
+  display: none !important;
+}
+
 .p-picklist .p-picklist-header {
   background: #f8f9fa;
   color: #495057;
@@ -2773,6 +2787,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
   color: #495057;
   background: #ffffff;
   margin: 0;
+  z-index: 1060 !important; /* z-index modificado para el drag-drap de la edición de la tabla árbol se superponga */
 }
 
 .p-timeline .p-timeline-event-marker {
@@ -3601,6 +3616,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 
 .p-dialog-mask.p-component-overlay {
   background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1060 !important;   /* z-index modificado para el pop up se superponga */
 }
 
 .p-overlaypanel {
@@ -5197,7 +5213,7 @@ body .d3tooltip {
   text-align: center;
   cursor: pointer;
   padding: 8px;
-  font: 12px Questrial;
+  font: 12px ;
   color: #fbfbfb;
   background: #010913ea;
   border: 0px;

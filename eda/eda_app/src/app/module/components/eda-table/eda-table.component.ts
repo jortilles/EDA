@@ -1,4 +1,4 @@
-import { Component, ViewChild, Input, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, Input, ElementRef, OnInit, Output, EventEmitter } from '@angular/core';
 import { Table } from 'primeng/table';
 // import { FilterUtils } from 'primeng/utils';
 import { EdaTable } from './eda-table';
@@ -19,6 +19,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 export class EdaTableComponent implements OnInit {
     @ViewChild('table', { static: false }) table: Table;
     @Input() inject: EdaTable;
+    @Output() onClick: EventEmitter<any> = new EventEmitter<any>();
 
     data: any;
     chartOptions: any;
@@ -33,11 +34,14 @@ export class EdaTableComponent implements OnInit {
         this.chartOptions = EdaColumnChartOptions;
     }
     ngOnInit(): void {
+        
+        
         if(this.inject.styles && !this.inject.pivot){
             this.applyStyles(this.inject.styles)
         }else if(this.inject.styles && this.inject.pivot){
             this.applyPivotSyles(this.inject.styles)
         }
+
     }
 
 
@@ -50,19 +54,22 @@ export class EdaTableComponent implements OnInit {
     }
 
     handleClick(item: any, colname: string) {
-
         if (this.inject.linkedDashboardProps && this.inject.linkedDashboardProps.sourceCol === colname) {
-
             const props = this.inject.linkedDashboardProps;
             const url = window.location.href.substr(0, window.location.href.indexOf('/dashboard')) + `/dashboard/${props.dashboardID}?${props.table}.${props.col}=${item}`;
-
+            
             window.open(url, "_blank");
-
+            
+        } else {
+            let filterBy = colname;
+            let label = item;
+            //lanzo el filtro para los dos tipos de tablas
+        if(typeof label !== 'number')
+            this.onClick.emit({ label, filterBy })
         }
     }
 
-    getTooltip = (col) => `${col.description}` || ``;
-
+    getTooltip = (col) => `${col.description}` && col.description !== undefined ? `${col.description}` : ``;
 
     getLinkTooltip(col) {
         return `${col.header} column linked to:\n${this.inject.linkedDashboardProps.dashboardName}`;
@@ -141,11 +148,13 @@ export class EdaTableComponent implements OnInit {
             });
 
         })
+
         this.styles = limits;
 
     }
 
     applyPivotSyles(styles){
+
 
         const fields = styles.map(style => style.col);
         const limits = {};
@@ -188,7 +197,6 @@ export class EdaTableComponent implements OnInit {
 
             colors.forEach((color, i) => {
                 const name = this.getNiceName(key)
-                console.log(name)
                 this.elementRef.nativeElement.style.setProperty(`--table-gradient-bg-color-${name}-${i}`, `#${color}`);
                 this.styleService.setStyles(`.table-gradient-${name}-${i}`,
                 {
@@ -199,6 +207,7 @@ export class EdaTableComponent implements OnInit {
                     backgroundColor:`var(--table-gradient-bg-color-${name}-${i})`,
                 });
             });
+
         });
         let tmpStyles = {};
 
@@ -218,6 +227,7 @@ export class EdaTableComponent implements OnInit {
 
         });
         this.styles = tmpStyles;
+
     }
 
     /**Genertate range colors =>> thanks to Euler Junior: https://stackoverflow.com/a/32257791 */
@@ -364,6 +374,14 @@ export class EdaTableComponent implements OnInit {
 
             return (event.order * result);
         });
+    }
+    public getColor(valor: number) { 
+
+        // modificar el true por una variable que se modifica en la edición de valores negativos. 
+
+        if(valor<0 && this.inject.negativeNumbers) {
+            return '#FF0000' 
+        }
     }
 
 }

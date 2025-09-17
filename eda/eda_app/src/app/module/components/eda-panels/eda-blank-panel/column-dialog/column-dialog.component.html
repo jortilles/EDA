@@ -489,10 +489,11 @@
     </div>
 
     <div footer>
+        <!-- por defecto está habilitado.  Si el botón "añadir filtro" está habilitado este se desactiva.-->
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
             <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-success"
                 i18n-label="@@guardarButton" icon="fa fa-check" label="Confirmar"
-                id="eda_column_dialog_confirmar">
+                id="eda_column_dialog_confirmar" [disabled]="!display.filterButton">
             </button>
         </div>
 

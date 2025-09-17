@@ -305,7 +305,19 @@
                         <input pInputText type="text" [(ngModel)]="modelPanel.metadata.filter" (keyup)="update()">
                     </div>
 
-
+                    <div class="col-12 " *ngIf="modelPanel.connection.ssl && (selectedTipoBD.value == 'mysql' || selectedTipoBD.value == 'postgres' || selectedTipoBD.value == 'sqlserver') "
+                        i18n-label='@@allowSSL' style=" display: flex !important; align-items: center !important;">
+                        <p-inputSwitch [(ngModel)]="modelPanel.connection.ssl" (keyup)="update()" label="Permitir SSL" >
+                        </p-inputSwitch>
+                        &nbsp; Conexión mediante SSL
+                    </div>
+                    
+                    <div class="col-12 " *ngIf="!modelPanel.connection.ssl && (selectedTipoBD.value == 'mysql' || selectedTipoBD.value == 'postgres' || selectedTipoBD.value == 'sqlserver') "
+                        i18n-label='@@allowSSL' style=" display: flex !important; align-items: center !important;">
+                        <p-inputSwitch [(ngModel)]="modelPanel.connection.ssl" (keyup)="update()" label="Permitir SSL" >
+                        </p-inputSwitch>
+                        &nbsp; Conexión sin SSL
+                    </div>
                     <div class="col-12 " *ngIf="selectedTipoBD.value !== 'bigquery'">
                         <button type="button" pButton (click)="checkConection()" class="ui-button-success ml-2"
                             i18n-label='@@checkConnection' label="Comprobar conexión"></button>
@@ -324,6 +336,8 @@
                         (click)="openNewViewDialog()" style="margin-bottom: 1px;"> </button>
                     <button pButton type="button" icon="pi pi-plus" [label]="addCSV" class="p-button-secondary"
                         (click)="openCSVDialog()" style="margin-bottom: 1px;"> </button>
+                    <button pButton type="button" (click)="openTagDialog()" icon="pi pi-plus" [label]="addTagDataSource" class="p-button-secondary"
+                         style="margin-bottom: 1px;"> </button>
                 </span>
             </div>
             <div style="margin-bottom: 1rem;" class="col-12">
@@ -358,6 +372,7 @@
 
 
 <app-table-relations-dialog *ngIf="relationController" [controller]="relationController"></app-table-relations-dialog>
+<app-table-edit-relations-dialog *ngIf="selectedRelation" [controller]="relationController" [relation]="selectedRelation"></app-table-edit-relations-dialog>
 <app-column-value-list-dialog *ngIf="valueListController" [controller]="valueListController"></app-column-value-list-dialog>
 <app-column-permission-dialog *ngIf="permissionsController" [controller]="permissionsController"></app-column-permission-dialog>
 <app-table-permission-dialog *ngIf="tablePermissionsController" [controller]="tablePermissionsController"></app-table-permission-dialog>
@@ -366,6 +381,7 @@
 <app-map-dialog *ngIf="mapController" [controller]="mapController"></app-map-dialog>
 <app-view-dialog id="viewDialog" *ngIf="viewController" [controller]="viewController"></app-view-dialog>
 <app-add-csv-dialog *ngIf="csvPanelController" [controller]="csvPanelController"></app-add-csv-dialog>
+<app-add-tag-dialog *ngIf="tagController" [controller]="tagController"></app-add-tag-dialog>
 <eda-cache-dialog *ngIf="cacheController" [controller]="cacheController"></eda-cache-dialog>
 <eda-security-dialog *ngIf="securityController" [controller]="securityController"></eda-security-dialog>
 

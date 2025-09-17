@@ -8,8 +8,7 @@
     "projects": {
         "app-eda": {
             "i18n": {
-                "sourceLocale": "es-ES"
-                ,
+                "sourceLocale": "es-ES",
                 "locales": {
                     "es": {
                         "translation": "src/locale/prod_messages.es.xlf"
@@ -80,11 +79,7 @@
                             "localize": [
                                 "ca"
                             ]
-                        },"pl": {
-                            "localize": [
-                                "pl"
-                            ]
-                        },"gl": {
+                       },"gl": {
                             "localize": [
                                 "gl"
                             ]
@@ -125,20 +120,23 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "app-eda:build"
+                        "browserTarget": "app-eda:build",
+                        "host": "0.0.0.0",
+                        "proxyConfig": "proxy.conf.json",
+                        "port": 4200
                     },
                     "configurations": {
                         "production": {
                             "browserTarget": "app-eda:build:production"
+                        },
+                        "es": {
+                            "browserTarget": "app-eda:build"
                         },
                         "en": {
                             "browserTarget": "app-eda:build:en"
                         },
                         "ca": {
                             "browserTarget": "app-eda:build:ca"
-                        },
-                        "pl": {
-                            "browserTarget": "app-eda:build:pl"
                         },
                         "gl": {
                             "browserTarget": "app-eda:build:gl"

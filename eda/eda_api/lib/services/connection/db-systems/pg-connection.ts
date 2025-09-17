@@ -17,6 +17,9 @@ export class PgConnection extends AbstractConnection {
     private AggTypes: AggregationTypes;
 
     async getclient() {
+        if (this.config.ssl) {
+            this.config.ssl= { rejectUnauthorized: false };
+        }
         try {
             const connection = new PgClient(this.config);
             return connection;
@@ -26,6 +29,9 @@ export class PgConnection extends AbstractConnection {
     }
 
     async tryConnection(): Promise<any> {
+        if (this.config.ssl) {
+            this.config.ssl= { rejectUnauthorized: false };
+        }
         try {
             this.client = await this.getclient();
             console.log('\x1b[32m%s\x1b[0m', 'Connecting to PostgreSQL database...\n');
@@ -38,7 +44,7 @@ export class PgConnection extends AbstractConnection {
         }
     }
 
-    async generateDataModel(optimize: number, filter: string): Promise<any> {
+    async generateDataModel(optimize: number, filter: string): Promise<any> {   
         try {
             this.client = await this.getclient();
             let tableNames = [];
@@ -98,11 +104,20 @@ export class PgConnection extends AbstractConnection {
                 let new_table = await this.setTable(tableNames[i]);
                 let count = 0;
                 if (optimize === 1) {
-                    const dbCount = await this.countTable(tableNames[i], `${this.config.schema || 'public'}`);
-                    count = dbCount.rows[0].count;
+                    try{
+                        const dbCount = await this.countTable(tableNames[i], `${this.config.schema || 'public'}`);
+                        count = dbCount.rows[0].count;
+                        new_table.tableCount = count;
+                        tables.push(new_table);
+                    }catch(e){
+                        console.log('la tabla ' + tableNames[i] + 'No se puede consultar. No se añade al listado' );
+                        console.log(e);
+                    }
+                }else{
+                    new_table.tableCount = count;
+                    tables.push(new_table);
                 }
-                new_table.tableCount = count;
-                tables.push(new_table);
+                
                 if(i> 500){
                     console.log('Un datasource no puede tener más de 500 tablas ');
                     i = tableNames.length + 1;
@@ -163,9 +178,7 @@ export class PgConnection extends AbstractConnection {
 
 
     private async countTable(tableName: string, schema: string): Promise<any> {
-        const query = `
-        SELECT count(*) as count from ${schema}.${tableName}
-        `;
+        const query = `SELECT count(*) as count from "${schema}"."${tableName}"  `;
         return new Promise(async (resolve, reject) => {
             try {
                 const count = await this.client.query(query);

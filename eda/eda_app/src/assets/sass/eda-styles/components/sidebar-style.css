@@ -321,6 +321,9 @@
     border-top-right-radius: 5px;
     box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.1), 0 1px 1px 0 rgba(0, 0, 0, 0.178), 0 2px 1px -1px rgba(0, 0, 0, 0.1);
   }
+  .mini-sidebar-2 .sidebar-nav #sidebarnav > li:hover > a.collapser {
+    width: 330px;
+  }
 
   .mini-sidebar-2 .sidebar-nav #sidebarnav > li:hover > a .hide-menu {
     display: inline;

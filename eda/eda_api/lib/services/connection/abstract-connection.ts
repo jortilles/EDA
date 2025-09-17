@@ -32,7 +32,7 @@ export abstract class AbstractConnection {
 
     abstract execSqlQuery(query: string): Promise<any>;
 
-    abstract getQueryBuilded(queryData: any, dataModel: any, user: any): Promise<any>;
+    abstract getQueryBuilded(queryData: any, dataModel: any, user: any, limit?: any): Promise<any>;
 
     abstract getclient(): Promise<any>;
 
@@ -333,7 +333,6 @@ export abstract class AbstractConnection {
                     if (!visited.includes(data_model[j].table_name)) {
                         // Columnes
                         for (let i = 0; i < data_model[j].columns.length; i++) {
-                            //console.log(l, k, j, i)
                             let targetColumn = { target_column: data_model[j].columns[i].column_name, column_type: data_model[j].columns[i].column_type };
                             if ((sourceColumn.source_column.toLowerCase().includes('_id') ||
                                 sourceColumn.source_column.toLowerCase().includes('id_') ||
@@ -368,8 +367,29 @@ export abstract class AbstractConnection {
         return data_model;
     }
 
-    async getDataSource(id: string) {
-        try {
+    async getDataSource(id: string, properties? : string) {
+        if (properties) {
+            let filterProperties = JSON.parse(properties);
+            let filter = {};
+            for (let key in filterProperties) { 
+                filter[`ds.metadata.external.${key}`] = filterProperties[key];
+            }
+            filter = Object.entries(filter).reduce((acc, [clave, valor]) => {
+                acc[clave] = valor;
+                return acc;
+              }, {});
+            try {
+                return await DataSource.findOne({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))  }, (err, datasource) => {
+                if (err) {
+                    throw Error(err);
+                }
+                return datasource;
+            });
+            } catch (err) {
+                console.log(err)
+            }
+        } else {
+            try {
             return await DataSource.findOne({ _id: id }, (err, datasource) => {
                 if (err) {
                     throw Error(err);
@@ -380,6 +400,8 @@ export abstract class AbstractConnection {
             console.log(err);
             throw err;
         }
+        }
+        
     }
 
 }

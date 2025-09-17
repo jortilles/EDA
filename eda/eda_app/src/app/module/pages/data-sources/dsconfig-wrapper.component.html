@@ -37,7 +37,7 @@
           </div>
         </div>
 
-        <div *ngIf="!form.value.type || !['oracle', 'bigquery', 'snowflake'].includes(form.value.type.value)"
+        <div *ngIf="!form.value.type || !['oracle', 'bigquery', 'snowflake','excel'].includes(form.value.type.value)"
           class="col-12 md:col-4">
           <div class="form-group">
             <label i18n="@@inputServidor">SERVIDOR *</label>
@@ -45,7 +45,7 @@
           </div>
         </div>
 
-        <div *ngIf="form.value.type && form.value.type.value !== 'bigquery' && form.value.type.value !== 'jsonwebservice'" class="col-12">
+        <div *ngIf="form.value.type && form.value.type.value !== 'bigquery' && form.value.type.value !== 'jsonwebservice' && form.value.type.value !== 'excel'" class="col-12">
 
           <div class="grid">
 
@@ -147,8 +147,14 @@
             </div>
           </div>
         </div>
-
-
+        <div *ngIf="form.value.type && form.value.type.value === 'excel'" class="col-12 md:col-4">
+          <div class="form-group">
+            <input type="file" #excelFile style="display: none"  (change)="excelFileLoaded($event)" />
+            <button pButton pRipple type="button" icon="pi pi-upload" class="p-button-rounded p-button-outlined mt-5" [disabled]="uploading || uploadSuccessful"
+            (click)="addExcelFile()" style="margin:0.2em"></button>
+            <label class="ml-2">{{excelFile.value !== "" ? excelFileName : "Subir archivo Excel (.xlsx & .xls)"}}</label>
+          </div>
+        </div>
 
         <div class="col-12 md:col-12">
           <p-checkbox [ngStyle]="{'border': '0ch'}" class="form-control" formControlName="optimize"
@@ -156,6 +162,9 @@
           </p-checkbox>
           <p-checkbox [ngStyle]="{'border': '0ch'}" class="form-control" formControlName="allowCache"
             [label]="allowCacheSTR" [binary]="true">
+          </p-checkbox>
+          <p-checkbox *ngIf="form.value.type && (form.value.type.value ==='postgres' || form.value.type.value ==='mysql' || form.value.type.value ==='sqlserver')" [ngStyle]="{'border': '0ch'}" class="form-control" formControlName="ssl"
+            [label]="allowSSLSTR" [binary]="true">
           </p-checkbox>
         </div>
         <div class="col-12 md:col-12" style="text-align: right;">
@@ -172,3 +181,4 @@
 
 
 </div>
+<p-confirmDialog></p-confirmDialog>

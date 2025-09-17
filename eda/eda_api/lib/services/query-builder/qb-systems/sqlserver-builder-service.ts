@@ -1,9 +1,11 @@
-import { QueryBuilderService } from '../query-builder.service';
+import { EdaQueryParams, QueryBuilderService } from '../query-builder.service';
 import * as _ from 'lodash';
 
 
 export class SQLserviceBuilderService extends QueryBuilderService {
-
+    public analizedQuery(params: EdaQueryParams) {
+        return [];
+    }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
     tables: Array<any>, limit: number,  joinType: string, valueListJoins: Array<any> ,schema: string, database: string, forSelector: any ) {
@@ -28,7 +30,16 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     }
 
     // JOINS
-    const joinString = this.getJoins(joinTree, dest, tables, joinType,valueListJoins, SCHEMA); 
+    let joinString: any[];
+    let alias: any;
+    if (this.queryTODO.joined) {
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
+      joinString = responseJoins.joinString;
+      alias = responseJoins.aliasTables;
+    } else {
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema);
+    }
+
 
     joinString.forEach(x => {
       myQuery = myQuery + '\n' + x;
@@ -62,6 +73,17 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     if (order_columns_string.length > 0) {
       myQuery = `${myQuery}\norder by ${order_columns_string}`;
     }
+
+    
+    if (alias) {
+      console.log(alias);
+      for (const key in alias) {
+        myQuery = myQuery.split(key).join(`"${alias[key]}"`);
+      }
+    }
+
+
+
     return myQuery;
   }
 
@@ -163,6 +185,87 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     return joinString;
   }
 
+
+
+  public setJoins(joinTree: any[], joinType: string, schema: string, valueListJoins: string[]) {
+    // Si no se especifica un esquema, se utiliza 'public' por defecto
+    if (!schema || schema === 'null') {
+      schema = 'public';
+    }
+
+    // Inicialización de variables
+    const joinExists = new Set();
+    const aliasTables = {};
+    const joinString = [];
+    const targetTableJoin = [];
+
+    for (const join of joinTree) {
+
+      // División de las partes de la join
+      const sourceLastDotInx = join[0].lastIndexOf('.');
+      // sourceTableAlias === join relation table_id
+      const [sourceTable, sourceColumn] = [join[0].substring(0, sourceLastDotInx), join[0].substring(sourceLastDotInx + 1)];
+      const [targetTable, targetColumn] = join[1].split('.');
+
+      // Construcción de las partes de la join
+      let sourceJoin = `"${sourceTable}"."${sourceColumn}"`;
+      let targetJoin = `"${targetTable}"."${targetColumn}"`;
+
+      // Si la join no existe ya, se añade
+      if (!joinExists.has(`${sourceJoin}=${targetJoin}`)) {
+          joinExists.add(`${sourceJoin}=${targetJoin}`);
+
+
+          let aliasSource;
+          if (sourceJoin.split('.')[0] == targetJoin.split('.')[0]) {
+              aliasSource = `"${sourceTable}.${sourceColumn}"`;
+          }
+          
+          // Construcción de los alias
+          let alias = `"${targetTable}.${targetColumn}.${sourceColumn}"`;
+
+          if (aliasSource) {
+              alias = aliasSource;
+          }
+
+          aliasTables[alias] = targetTable;
+          // aliasTables[sourceJoin] = targetTable;
+
+          let aliasTargetTable: string;
+          // targetTable and sourceTable can be the same table (autorelation)
+          if (targetTableJoin.includes(targetTable) || targetTable == sourceTable) {
+              // aliasTargetTable = `${targetTable}${targetTableJoin.indexOf(targetTable)}`;
+              aliasTargetTable = `${targetTable}${sourceColumn}`;
+              aliasTables[alias] = aliasTargetTable;
+          }
+
+          let joinStr: string;
+
+          joinType = valueListJoins.includes(targetTable) ? 'LEFT' : joinType;
+
+
+          if (aliasTargetTable) {
+              targetJoin = `"${aliasTargetTable}"."${targetColumn}"`;
+              joinStr = `${joinType} JOIN "${targetTable}" "${aliasTargetTable}" ON  ${sourceJoin}  =  ${targetJoin} `;
+          } else {
+              joinStr = `${joinType} JOIN "${targetTable}" ON  ${sourceJoin} = ${targetJoin} `;
+          }
+
+          // Si la join no se ha incluido ya, se añade al array
+          if (!joinString.includes(joinStr)) {
+              targetTableJoin.push(aliasTargetTable || targetTable);
+              joinString.push(joinStr);
+          }
+      }
+  }
+  
+    return {
+      joinString,
+      aliasTables
+    };
+  }
+
+
   public getSeparedColumns(origin: string, dest: string[]) {
     const columns = [];
     const grouping = [];
@@ -170,16 +273,25 @@ export class SQLserviceBuilderService extends QueryBuilderService {
     this.queryTODO.fields.forEach(el => {
       el.order !== 0 && el.table_id !== origin && !dest.includes(el.table_id) ? dest.push(el.table_id) : false;
 
-      if (!el.hasOwnProperty('minimumFractionDigits')) {
-        el.minimumFractionDigits = 0;
+      let table_column;
+
+      if (el.autorelation && !el.valueListSource && !this.queryTODO.forSelector ) {
+        table_column = `"${el.joins[el.joins.length-1][0]}"."${el.column_name}"`;
+      } else {
+        table_column = `"${el.table_id}"."${el.column_name}"`;
       }
+
+      let whatIfExpression = '';
+      if (el.whatif_column) whatIfExpression = `${el.whatif.operator} ${el.whatif.value}`;
+
+      el.minimumFractionDigits = el.minimumFractionDigits || 0;
 
       // Aqui se manejan las columnas calculadas
       if (el.computed_column === 'computed') {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='numeric'){
-          columns.push(` CAST( ${el.SQLexpression}  AS DECIMAL(32, ${el.minimumFractionDigits})) as "${el.display_name}"`);
+          columns.push(` CAST( ${el.SQLexpression} ${whatIfExpression} AS DECIMAL(32, ${el.minimumFractionDigits}))   as "${el.display_name}"`);
         }else if(el.column_type=='date'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='coordinate'){
@@ -217,70 +329,71 @@ export class SQLserviceBuilderService extends QueryBuilderService {
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`CAST(count( distinct "${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits||0}))as "${el.display_name}"`);
+            columns.push(`CAST(count( distinct ${table_column}) ${whatIfExpression} AS DECIMAL(32, ${el.minimumFractionDigits}))  as "${el.display_name}"`);
           } else {
-            columns.push(`CAST(${el.aggregation_type}("${el.table_id}"."${el.column_name}") AS DECIMAL(32, ${el.minimumFractionDigits||0})) as "${el.display_name}"`);
+            columns.push(`CAST(${el.aggregation_type}(${table_column}) ${whatIfExpression}  AS DECIMAL(32, ${el.minimumFractionDigits})) as "${el.display_name}"`);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`CAST("${el.table_id}"."${el.column_name}" AS DECIMAL(32, ${el.minimumFractionDigits})) "${el.display_name}"`);
+            columns.push(`CAST(${table_column} ${whatIfExpression} AS DECIMAL(32, ${el.minimumFractionDigits}))  "${el.display_name}"`);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
-                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' ) as "${el.display_name}"`);
+                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'quarter')) {
-                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-Q' ) as "${el.display_name}"`);
+                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-Q' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'month')) {
-                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' ) as "${el.display_name}"`);
+                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM' ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week')) {
-                columns.push(`DATEPART(week, CAST("${el.table_id}"."${el.column_name}" AS DATE)) as "${el.display_name}"`);
+                columns.push(`DATEPART(week, CAST(${table_column} AS DATE)) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'week_day')) {
-                columns.push(`DATEPART(weekday, CAST("${el.table_id}"."${el.column_name}" AS DATE) ) as "${el.display_name}"`);
+                columns.push(`DATEPART(weekday, CAST(${table_column} AS DATE) ) as "${el.display_name}"`);
               } else if (_.isEqual(el.format, 'day')) {
-                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
               }  else if (_.isEqual(el.format, 'day_hour')) {
-                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH' ) as "${el.display_name}"`);
+                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH' ) as "${el.display_name}"`);
               }  else if (_.isEqual(el.format, 'day_hour_minute')) {
-                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm' ) as "${el.display_name}"`);
+                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH:mm' ) as "${el.display_name}"`);
               }  else if (_.isEqual(el.format, 'timestamp')) {
-                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm:ss' ) as "${el.display_name}"`);
+                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH:mm:ss' ) as "${el.display_name}"`);
               }else if (_.isEqual(el.format, 'No')) {
-                columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+                columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
               }
             } else {
-              columns.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
+              columns.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd' ) as "${el.display_name}"`);
             }
           } else {
-            columns.push(`"${el.table_id}"."${el.column_name}" as "${el.display_name}"`);
+            columns.push(`${table_column} as "${el.display_name}"`);
           }
 
           // GROUP BY
           if (el.format) {
             if (_.isEqual(el.format, 'year')) {
-              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy' )`);
+              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy' )`);
             } else if (_.isEqual(el.format, 'quarter')) {
-              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-Q' )`);
+              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-Q' )`);
             } else if (_.isEqual(el.format, 'month')) {
-              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM' )`);
+              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM' )`);
             } else if (_.isEqual(el.format, 'week')) {
-              grouping.push(`DATEPART(week, CAST("${el.table_id}"."${el.column_name}" AS DATE))`);
+              grouping.push(`DATEPART(week, CAST(${table_column} AS DATE))`);
             } else if (_.isEqual(el.format, 'week_day')) {
-              grouping.push(`DATEPART(weekday, CAST("${el.table_id}"."${el.column_name}" AS DATE))`);
+              grouping.push(`DATEPART(weekday, CAST(${table_column} AS DATE))`);
             } else if (_.isEqual(el.format, 'day')) {
-              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd' )`);
+              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd' )`);
             }  else if (_.isEqual(el.format, 'day_hour')) {
-              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH' ) `);
+              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH' ) `);
             }  else if (_.isEqual(el.format, 'day_hour_minute')) {
-              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm' ) `);
+              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH:mm' ) `);
             }  else if (_.isEqual(el.format, 'timestamp')) {
-              grouping.push(`FORMAT(CAST("${el.table_id}"."${el.column_name}" AS DATE), 'yyyy-MM-dd HH:mm:ss' )`);
+              grouping.push(`FORMAT(CAST(${table_column} AS DATE), 'yyyy-MM-dd HH:mm:ss' )`);
             } else if (_.isEqual(el.format, 'No')) {
-              grouping.push(`"${el.table_id}"."${el.column_name}"`);
+              grouping.push(`${table_column}`);
             }
           } else {
             //  Si es una única columna numérica no se agrega.
-            if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
-              grouping.push(`"${el.table_id}"."${el.column_name}"`);
+            if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric'  ||  // las columnas numericas que no se agregan
+              ( el.column_type == 'numeric'  && el.aggregation_type == 'none' ) ){ // a no ser que se diga que no se agrega
+                grouping.push(`${table_column}`);
             }
           }
         }

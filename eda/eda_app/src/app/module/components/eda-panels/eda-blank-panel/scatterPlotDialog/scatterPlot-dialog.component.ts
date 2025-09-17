@@ -17,6 +17,7 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public colors: Array<string>;
+  private originalColors: string[] = [];
   public labels: Array<string>;
   public display:boolean=false;
 
@@ -32,14 +33,13 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
     this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
   }
   ngAfterViewChecked(): void {
-    if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
+    if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
-        this.labels = this.myPanelChartComponent.componentRef.instance.data[0].category 
-        ?  this.myPanelChartComponent.componentRef.instance.firstColLabels
-        :  [this.myPanelChartComponent.componentRef.instance.inject.dataDescription.otherColumns[0].name];
-      }, 0)
+        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(c => this.rgb2hex(c));
+        this.originalColors = [...this.colors]; // Guardamos la copia aquí
+        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
+      }, 0);
     }
   }
 
@@ -61,9 +61,13 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor(serie) {
-    this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors.map(color => this.hex2rgb(color))));
+  handleInputColor(): void {
+    this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors.map(c => this.hex2rgb(c)), []));
     this.myPanelChartComponent.changeChartType();
+    // Restauramos internamente el config original a la version anterior
+    setTimeout(() => {
+      this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.originalColors.map(c => this.hex2rgb(c)), []));
+    }, 0);
   }
 
   hex2rgb(hex, opacity = 100): string {

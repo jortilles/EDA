@@ -17,6 +17,7 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public colors: Array<string>;
+  private originalColors: string[] = [];
   public labels: Array<string>;
   public display:boolean=false;
 
@@ -32,12 +33,22 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
     this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
   }
   ngAfterViewChecked(): void {
-    if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
+    if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
-      }, 0)
+        const assignedColors = this.myPanelChartComponent.props.config.getConfig()['assignedColors'];
+        const colorMap: { [key: string]: { value: string; color: string } } = {};
+        assignedColors.forEach(item => colorMap[item.value] = item);
+
+        // Asigna color y label a cada valor del chart
+        const sortedAssignedColors = this.labels
+          .map(label => colorMap[label])
+          .filter((item): item is { value: string; color: string } => !!item);
+
+        this.colors = sortedAssignedColors.map(c => this.rgb2hex(c.color));
+        this.originalColors = [...this.colors]; // Guardar estado original aquí
+      }, 0);
     }
   }
 
@@ -58,9 +69,23 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor(serie) {
-    this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(this.colors.map(color => this.hex2rgb(color))));
+  handleInputColor(): void {
+    const rgbColors = this.colors.map(c => this.hex2rgb(c));
+    const original = JSON.parse(JSON.stringify(this.myPanelChartComponent.props.config.getConfig()['assignedColors']));
+    // Recuperar colores de assignedColor (chart)
+    this.labels.forEach((label, i) => {
+      const match = this.myPanelChartComponent.props.config.getConfig()['assignedColors'].find(c => c.value === label);
+      if (match) match.color = rgbColors[i];
+    });
+
     this.myPanelChartComponent.changeChartType();
+    // Actualiza originalColors con el nuevo estado después de cambiar el tipo de gráfico
+    this.originalColors = [...this.colors];
+    // Actualiza el componente con los valores originales por si no se guarda la modif
+    setTimeout(() => {
+      this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = original;
+    }, 0);
+
   }
 
   hex2rgb(hex, opacity = 100): string {

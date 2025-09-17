@@ -1,4 +1,4 @@
-from node:18-bullseye
+from node:23-bookworm
 
 # instalar
 ENV DEBIAN_FRONTEND noninteractive
@@ -6,8 +6,8 @@ ENV DEBIAN_FRONTEND noninteractive
 # Install mongodb
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y wget git curl apt-transport-https ca-certificates apt-utils gnupg build-essential apache2  libaio1
-RUN curl -fsSL https://pgp.mongodb.com/server-6.0.asc | gpg -o /usr/share/keyrings/mongodb-server-6.0.gpg  --dearmor
-RUN echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg] http://repo.mongodb.org/apt/debian bullseye/mongodb-org/6.0 main" |  tee /etc/apt/sources.list.d/mongodb-org-6.0.list 
+RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc |  gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg  --dearmor
+RUN echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] http://repo.mongodb.org/apt/debian bookworm/mongodb-org/8.0 main" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list
 RUN apt-get update
 RUN apt-get install -y mongodb-org 
 
@@ -23,7 +23,7 @@ RUN echo "  "
 RUN echo "export LD_LIBRARY_PATH=/eda/oracle/instantclient" >/root/.bashrc
 
 RUN echo n | npm install -g --silent @angular/cli
-RUN npm install -g forever  forever-monitor nodemon http-server   
+RUN npm install -g pm2 nodemon http-server  
 RUN npm install -g  --unsafe-perm puppeteer 
 
 

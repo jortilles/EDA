@@ -1,14 +1,12 @@
 <eda-dialog [inject]="dialog">
 
-  <div body class="grid">
+<div body class="grid" style=" height: 100%;">
     <div class="col-8">
-      <div class="eda-chart-panel"   style="margin-top: 5em; margin-left: 2em ; background-color: var(--panel-color);">
-        <div  style="height: 70%">
-          <panel-chart *ngIf="!!display"  #PanelChartComponent [props]="panelChartConfig">
+      <div class="eda-tree-chart-panel" style="margin-top: 1em; margin-left: 1em; background-color: var(--panel-color);">
+          <panel-chart *ngIf="!!display" #PanelChartComponent [props]="panelChartConfig">
           </panel-chart>
-        </div>
-
       </div>
+
     </div>
 
 

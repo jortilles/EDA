@@ -2,7 +2,7 @@ import { values } from 'd3';
 import { Component } from "@angular/core";
 import { DashboardStyles, StyleProviderService } from "@eda/services/service.index";
 import { EdaDialog, EdaDialogAbstract, EdaDialogCloseEvent } from "@eda/shared/components/shared-components.index";
-
+import { DEFAULT_FONT_FAMILY } from "../../../../config/personalitzacio/customizables";
 
 @Component({
 	selector: 'edit-styles-dialog',
@@ -16,8 +16,9 @@ export class EditStylesDialogComponent extends EdaDialogAbstract {
 	public fonts: Array<any> =
 		[
 			{ label: 'Questrial', value: 'Questrial' },
-			{ label: 'Raleway', value: 'Raleway' },
 			{ label: 'Montserrat', value: 'Montserrat' },
+			{ label: 'League Spartan', value: 'League Spartan' },
+			{ label: 'Raleway', value: 'Raleway' },
 			{ label: 'Bangers', value: 'Bangers' },
 			{ label: 'Serif', value: 'Serif' },
 			{ label: 'Sans-serif', value: 'Sans-serif' },
@@ -69,7 +70,7 @@ export class EditStylesDialogComponent extends EdaDialogAbstract {
 
 
 
-	public sampleTextFont: string = 'Questrial';
+	public sampleTextFont: string = DEFAULT_FONT_FAMILY;
 	public sampleTextStle: {} = {};
 
 	/**Sample panel */

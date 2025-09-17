@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import { EdaKpi } from './eda-kpi';
 import es from '@angular/common/locales/es';
+import { EdaChartComponent } from '../component.index';
 
 @Component({
     selector: 'eda-kpi',
@@ -11,100 +12,112 @@ import es from '@angular/common/locales/es';
 export class EdaKpiComponent implements OnInit {
     @Input() inject: EdaKpi;
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
-    @ViewChild('kpiContainer')
-    kpiContainer: ElementRef;
-    @ViewChild('sufixContainer')
-    sufixContainer: ElementRef;
+    @ViewChild('kpiContainer') kpiContainer: ElementRef;
+    @ViewChild('sufixContainer') sufixContainer: ElementRef;
+    @ViewChild('EdaChart', { static: false }) edaChartComponent: EdaChartComponent;
     sufixClick: boolean = false;
-    color : string ;
+    color: string;
     defaultColor = '#67757c';
-    warningColor =  '#ff8100';
+    warningColor = '#ff8100';
     containerHeight: number = 20;
     containerWidth: number = 20;
 
+    showChart: boolean = true;
+
     constructor() { }
 
-    ngOnInit() {
-        registerLocaleData( es );
-        try{
-            if(this.inject.alertLimits.length > 0){
+    ngAfterViewInit() {
+        this.initDimensions();
+    }
+
+    ngOnInit() {;
+        try {
+            registerLocaleData(es);
+
+            if (this.inject.alertLimits?.length > 0) {
                 this.inject.alertLimits.forEach(alert => {
                     const operand = alert.operand, warningColor = alert.color;
                     const value1 = this.inject.value, value2 = alert.value;
-                    if(this.color !== this.defaultColor) this.defaultColor = this.color;
-                    switch(operand){
-                        case '<': this.color = value1 < value2  ?  warningColor  : this.defaultColor; break;
-                        case '=': this.color = value1 === value2 ?  warningColor : this.defaultColor; break;
-                        case '>': this.color = value1 > value2   ?  warningColor : this.defaultColor; break;
-                        default : this.color = this.defaultColor;
+                    if (this.color !== this.defaultColor) this.defaultColor = this.color;
+                    switch (operand) {
+                        case '<': this.color = value1 < value2 ? warningColor : this.defaultColor; break;
+                        case '=': this.color = value1 === value2 ? warningColor : this.defaultColor; break;
+                        case '>': this.color = value1 > value2 ? warningColor : this.defaultColor; break;
+                        default: this.color = this.defaultColor;
                     }
                 });
             }
-        }catch(e){
+
+        } catch (e) {
             console.log('No alert limits defined (alertLimits)');
             console.log(e);
         }
     }
 
-    setSufix(): void {
-        this.sufixClick = !this.sufixClick;
-        this.onNotify.emit({sufix : this.inject.sufix})
+    public initDimensions() {
+        if (this.kpiContainer) {
+            const widthKpiContainer = this.kpiContainer.nativeElement.offsetWidth;
+            const heightKpiContainer = this.kpiContainer.nativeElement.offsetHeight;
+            const sufixContainerReference = this.sufixContainer.nativeElement;
+    
+            if (widthKpiContainer > 0) {
+                this.containerHeight = heightKpiContainer;
+                this.containerWidth = widthKpiContainer;
+            }
+    
+            //Auto margin
+            sufixContainerReference.style.margin = "auto"
+        }
     }
 
-    getStyle():any{
-        return { 'font-weight': 'bold','font-size': this.getFontSize(), display: 'flex','justify-content':'center',color:this.color}
+    setSufix(): void {
+        this.sufixClick = !this.sufixClick;
+        this.onNotify.emit({ sufix: this.inject.sufix })
     }
-   
+
+    getStyle(): any {
+        return { 'font-weight': 'bold', 'font-size': this.getFontSize(), display: 'flex', 'justify-content': 'center', color: this.color }
+    }
+
     /**
      * This function returns a string with the given font size (in px) based on the panel width and height 
      * @returns {string}
     */
-    getFontSize():string{
-        let resultSize:number = 1;
-        resultSize = this.containerHeight/2;
-        
+    getFontSize(): string {
+        this.initDimensions();
+
+        let resultSize: number = this.containerHeight / 2;
         let textLongitude = (this.inject.value + this.inject.sufix).length;
-        if(this.inject.sufix.length > 3){
-            // Provoco saltos de linea en sufijos largos
-            textLongitude = this.inject.value.toString().length
-        }
+        const ratio = (  this.containerHeight / this.containerWidth ) ;
 
+        const sufix = this.inject.sufix || '';
+
+        textLongitude = this.inject.value.toString().length
+
+        // Comprobaciones
         let textWidth = textLongitude * resultSize;
-        
-        if (textWidth > this.containerWidth) resultSize = ( this.containerWidth / textLongitude ) * 1.1 ;
-    
-        if (resultSize > this.containerHeight) resultSize = this.containerHeight;
-        
-        if (textLongitude * resultSize > this.containerWidth * 1.2) resultSize = resultSize / 1.5;
-        
-        if(this.inject.sufix.length > 3 &&  
-            resultSize * 4 > this.containerHeight  &&
-            textWidth >  this.containerWidth  ) resultSize = resultSize / 1.8;
-        
-        return resultSize.toFixed().toString() +'px';
-    }
-    
-     
-    
-    
-
-    ngAfterViewInit() {
-        const widthKpiContainer = this.kpiContainer.nativeElement.offsetWidth;
-        
-        const heightKpiContainer = this.kpiContainer.nativeElement.offsetHeight;
-        
-        const sufixContainerReference = this.sufixContainer.nativeElement;
-        
-        if( widthKpiContainer > 0 ){
-            this.containerHeight = heightKpiContainer  ;
-            this.containerWidth = widthKpiContainer  ;
+        // Redimensiono en funcion del ancho
+        if ( ( textWidth > this.containerWidth )  && ( sufix.length < 4 ) ) resultSize = (this.containerWidth / textLongitude) * 1.4;
+        // Redimensiono en función del alto
+        if (resultSize > this.containerHeight   && ratio < 0.4  ) resultSize = this.containerHeight;
+        // Última comprobación
+        if (textLongitude * resultSize > this.containerWidth * 1.2   && ratio < 0.4  )  resultSize = resultSize / 1.5;
+        // Si tengo un sufijo y es muy grande compruebo que no me pase
+        if (sufix.length > 4 && this.containerHeight < (resultSize * 4) && this.containerWidth < textWidth) {
+            resultSize = resultSize / 1.8;
         }
-        //Se pone en automático el ajustado del margen del texto
-        sufixContainerReference.style.margin = "auto"
-
-      }
+        // Si tengo ung gráfico lo hago más pequeño
+        if (this.showChart) {
+            resultSize = resultSize / 1.8;
+        }
       
+        return resultSize.toFixed().toString() + 'px';
+    }
 
-
+    public updateChart(): void {
+        if (this.inject.edaChart && this.edaChartComponent) {
+            this.edaChartComponent.updateChart();
+        }
+    }
 
 }

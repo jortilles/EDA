@@ -50,6 +50,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public direction: any = { label: '', value: '' };
     public stacked: any;
 
+    public originalSeries: any[] = [];
     public series: any[] = [];
     public id: any;
 
@@ -91,7 +92,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     }
 
     onShow(): void {
-
         this.panelChartConfig = this.controller.params.config;
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
@@ -134,9 +134,11 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                     bg: this.rgb2hex(dataset.backgroundColor),
                     border: dataset.borderColor
                 }));
-                this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor: s.border }));
+                this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor:  this.hex2rgb(s.border, 90) }));
                 break;
         }
+        if (!this.originalSeries || this.originalSeries.length === 0)
+            this.originalSeries = _.cloneDeep(this.series);
     }
 
     handleInputColor(event) {
@@ -326,6 +328,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     loadChartTypeProperties() {
         switch (this.chart.chartType) {
+
             case 'bar':
                 if (_.startsWith(this.chart.chartType, 'bar')) {
                     this.direction = { label: 'Vertical', value: 'bar' };
@@ -417,7 +420,20 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     //On cancel send prev state
     closeChartConfig() {
-        this.onClose(EdaDialogCloseEvent.NONE), this.oldChart;
+        if (!this.originalSeries?.length) return this.onClose(EdaDialogCloseEvent.NONE);
+
+        const type = this.chart.chartType;
+        this.series = _.cloneDeep(this.originalSeries);
+        const [restored] = this.series;
+
+        if (type === 'doughnut' || type === 'polarArea') {
+            this.chart.chartColors[0].backgroundColor = this.series.map(s => this.hex2rgb(s.bg, 90));
+        } else if (this.chart.chartDataset?.[0]) {
+            this.chart.chartDataset[0].backgroundColor = this.hex2rgb(restored.bg, 90);
+            this.chart.chartDataset[0].borderColor = restored.border ?? this.hex2rgb(restored.bg, 100);
+        }
+
+        this.onClose(EdaDialogCloseEvent.NONE);
     }
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {

@@ -1,12 +1,212 @@
-import { QueryBuilderService } from './../query-builder.service';
+import { EdaQueryParams, QueryBuilderService } from './../query-builder.service';
 import * as _ from 'lodash';
-
- /*SDA CUSTOM*/ import * as custom from '../../custom/custom';
+/*SDA CUSTOM*/ import * as custom from '../../custom/custom';
 
 
 export class MySqlBuilderService extends QueryBuilderService {
   parseSchema(tables: string[], schema: string) {
     return tables;
+  }
+
+  public analizedQuery(params: EdaQueryParams) {
+    const {fields,columns,tables,origin,dest,joinTree,grouping,filters,havingFilters,joinType,valueListJoins,schema,}= params;
+    let o = tables.filter(table => table.name === origin).map(table => { return table.query ? table.query : table.name })[0];
+
+    const fromTable = tables
+      .filter((table) => table.name === origin)
+      .map((table) => {
+        return table.query ? this.cleanViewString(table.query) : table.name;
+      })[0];
+    
+    const vista = tables
+    .filter((table) => table.name === origin)
+    .map((table) => {
+      return table.query ? true : false;
+    })[0];
+    
+    const generateQuery = () => {
+      let myQuery: string = "";
+      
+      //REVISAR VISTA
+      if (vista) {
+        myQuery += `FROM ${fromTable}`;
+      } else {
+        myQuery += `FROM ${fromTable}`;
+        //myQuery += `FROM "${schema}"."${fromTable}"`;
+      }
+      
+      // JOINS
+      let joinString: any[];
+      let alias: any;
+    if (this.queryTODO.joined) {
+      /**tree */
+      const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins, dest.length);
+      joinString = responseJoins.joinString;
+      alias = responseJoins.aliasTables;
+    } else {
+      /*Normal EDA*/
+      joinString = this.getJoins(joinTree, dest, tables, joinType,  valueListJoins, schema, dest.length);
+    }
+      
+      joinString.forEach((x) => {
+        myQuery = myQuery + "\n" + x;
+      });
+      
+      // WHERE
+      myQuery += this.getFilters(filters, dest.length, o);
+      
+      if (alias) {
+        for (const key in alias) {
+          myQuery = myQuery.split(key).join(`${alias[key]}`);
+        }
+      }
+
+      return myQuery;
+    };
+
+    const countTablesInSQL = (query: string) => {
+      const normalizedQuery = query.toUpperCase();
+
+      // Expresiones regulares para detectar FROM, JOIN
+      const fromRegex = /\bFROM\b/g;
+      const joinRegex = /\bJOIN\b/g;
+
+      // Contar
+      const fromCount = (normalizedQuery.match(fromRegex) || []).length;
+      const joinCount = (normalizedQuery.match(joinRegex) || []).length;
+
+      // Total de tablas implicadas
+      // Cada FROM indica una tabla principal, y cada JOIN indica tablas adicionales
+      const totalTables = fromCount + joinCount;
+      return totalTables;
+    };
+
+    const querys: any = {};
+    const fromQuery = generateQuery();
+
+    querys["general"] = [
+      `SELECT '${countTablesInSQL(fromQuery)}' AS "count_tables"`,
+    ];
+
+    
+    for (const col of fields) {
+      const diplayName = col.display_name;
+      const table_column = `${col.table_id.split('.')[0]}.${col.column_name}`;
+      
+      let mainQuery = `(SELECT ${table_column} ${fromQuery}) AS main`;
+      
+      querys[diplayName] = [];
+      // Source Table
+      querys[diplayName].push(
+        "SELECT \"" + `${col.table_id.split('.')[0]}` +"\" AS source_table  " 
+      );
+      // COUNT ROWS
+      querys[diplayName].push(
+        "SELECT COUNT(  * ) AS `count_rows` FROM " + `${col.table_id.split('.')[0]}`
+      );
+
+      
+      if ( col?.old_column_type == "text"  || col.column_type == "text") { // the numbers that come from text made counts also come this way.
+
+        // COUNT NULLS
+        querys[diplayName].push(
+          "SELECT SUM(CASE WHEN `main`." + `${col.column_name}` + " IS NULL THEN 1 ELSE 0 END) AS `count_nulls` FROM" + `${mainQuery}`
+        );
+        // COUNT EMPTY
+        querys[diplayName].push(
+          "SELECT SUM(CASE WHEN `main`." + `${col.column_name}` + " = '' THEN 1 ELSE 0 END) AS `count_empty` FROM" + `${mainQuery}`
+        );
+        // COUNT DISTINCT
+        querys[diplayName].push(
+          "SELECT COUNT(DISTINCT `main`." + `${col.column_name}` + ") AS `count_distinct` FROM" + `${mainQuery}`
+        );
+        // MostDuplicated
+        querys[diplayName].push(
+          "SELECT CONVERT( GROUP_CONCAT(`label_count`), CHAR) AS `most_duplicated` FROM (SELECT CONCAT(`main`." + `${col.column_name}`
+          + ", ' (', COUNT(`main`." + `${col.column_name}` + ") , ')') AS `label_count` FROM " + 
+          `${mainQuery}` + " GROUP BY `main`." + `${col.column_name}` + " ORDER BY COUNT(`main`." +
+          `${col.column_name}` + ") DESC LIMIT 5 ) sub;"
+        );
+            // LeastDuplicated
+        querys[diplayName].push(
+          "SELECT CONVERT( GROUP_CONCAT(`label_count`), CHAR)  AS `least_duplicated` FROM (SELECT CONCAT(`main`." + `${col.column_name}`
+          + ", ' (', COUNT(`main`." + `${col.column_name}` + ") , ')') AS `label_count` FROM " + 
+          `${mainQuery}` + " GROUP BY `main`." + `${col.column_name}` + " ORDER BY COUNT(`main`." +
+          `${col.column_name}` + ") ASC LIMIT 5 ) sub;"
+        );
+              
+      } else if (col.column_type == "numeric") {
+        // COUNT NULLS
+        querys[diplayName].push(
+          "SELECT SUM(CASE WHEN `main`." + `${col.column_name}` + " IS NULL THEN 1 ELSE 0 END) AS `count_nulls` FROM" + `${mainQuery}`
+        );
+        // MAX
+        querys[diplayName].push(
+          "SELECT MAX(`main`." + `${col.column_name}` + ") AS `max` FROM" + `${mainQuery}`
+        );
+        // MIN
+        querys[diplayName].push(
+          "SELECT MIN(`main`." + `${col.column_name}` + ") AS `min` FROM" + `${mainQuery}`
+        );
+        // MODA
+        querys[diplayName].push(
+          "WITH moda_counts AS (SELECT `main`." + `${col.column_name}` + " AS mode_value, COUNT(*) AS frequency FROM " +
+          `${mainQuery}` + " GROUP BY 1 ORDER BY 2 DESC LIMIT 1) SELECT mode_value || ' (total: '|| frequency ||')' AS 'mode' FROM  moda_counts;");
+        // AVG
+        querys[diplayName].push(
+          "SELECT   TRUNCATE( AVG(`main`." + `${col.column_name}` + ") ,3) AS `avg` FROM " + `${mainQuery}`
+        );
+        // MEDIAN
+        querys[diplayName].push(
+          "SELECT AVG(val) AS `median` FROM (" +
+            "SELECT `main`.`" + col.column_name + "` AS val," +
+            "       ROW_NUMBER() OVER (ORDER BY `main`.`" + col.column_name + "`) AS rn," +
+            "       COUNT(*) OVER() AS cnt " +
+            "FROM " + mainQuery +
+          ") AS ordered " +
+          "WHERE rn IN (FLOOR((cnt + 1)/2), CEIL((cnt + 1)/2));"
+        );
+      } else if (col.column_type == "date") {
+        // CountNulls
+        querys[diplayName].push(
+          "SELECT SUM(CASE WHEN `main`." + `${col.column_name}` + " IS NULL THEN 1 ELSE 0 END) AS `count_nulls` FROM" + `${mainQuery}`
+        );
+        // MAX
+        querys[diplayName].push(
+          "SELECT TO_CHAR(MAX(`main`." + `${col.column_name}` + "),'YYYY-MM-DD') AS `max` FROM" + `${mainQuery}`
+        );
+        // MIN
+        querys[diplayName].push(
+          "SELECT TO_CHAR(MIN(`main`." + `${col.column_name}` + "),'YYYY-MM-DD') AS `min` FROM" + `${mainQuery}`
+        );
+        //GROUP BY MONT
+        const queryMonth = "WITH monthly_counts AS (SELECT TO_CHAR(`main`." + `${col.column_name}` +
+          ", 'YYYY-MM') AS vmonth, COUNT(*) AS total FROM " + `${ mainQuery }` + " GROUP BY 1)";
+        // MEDIAN
+        querys[diplayName].push(
+          `${queryMonth}` +
+          `SELECT AVG(total) AS median_count_bymonth
+          FROM (
+              SELECT total,
+                      ROW_NUMBER() OVER (ORDER BY total) AS rn,
+                      COUNT(*) OVER() AS cnt
+              FROM monthly_counts
+          ) AS ordered
+          WHERE rn IN (FLOOR((cnt + 1)/2), CEIL((cnt + 1)/2));`
+        );
+        // MAX
+        querys[diplayName].push(
+          `${queryMonth}` + "SELECT (vmonth || ' (total: ' || total || ')') `max_bymonth` FROM monthly_counts ORDER BY total DESC LIMIT 1;"
+        );
+        // MIN
+        querys[diplayName].push(
+          `${queryMonth}` + "SELECT (vmonth || ' (total: ' || total || ')') `min_bymonth` FROM monthly_counts ORDER BY total ASC LIMIT 1;"
+        );
+      }
+    }
+
+
+    return querys;
   }
 
   public normalQuery(columns: string[], origin: string, dest: any[], joinTree: any[], grouping: any[], filters: any[], havingFilters: any[], 
@@ -634,6 +834,7 @@ export class MySqlBuilderService extends QueryBuilderService {
     };
   }
 
+
   /*SDA CUSTOM*/ @custom.muSqlBuilderServiceCustomGetMinFractionDigits
   public getMinFractionDigits(el:any): any{
     if (!el.hasOwnProperty('minimumFractionDigits')) {
@@ -671,7 +872,7 @@ export class MySqlBuilderService extends QueryBuilderService {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
         }else if(el.column_type=='numeric'){
-          columns.push(`cast( ${el.SQLexpression} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
+          columns.push(`cast( ${el.SQLexpression} ${whatIfExpression} as decimal(32,${el.minimumFractionDigits}))   as \`${el.display_name}\``);
         }else if(el.column_type=='date'){
           columns.push(`  ${el.SQLexpression}  as \`${el.display_name}\``);
         }else if(el.column_type=='coordinate'){
@@ -708,13 +909,13 @@ export class MySqlBuilderService extends QueryBuilderService {
       } else {
         if (el.aggregation_type !== 'none') {
           if (el.aggregation_type === 'count_distinct') {
-            columns.push(`cast( count( distinct ${table_column}) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+            columns.push(`cast( count( distinct ${table_column}) ${whatIfExpression}  as decimal(32,${el.minimumFractionDigits||0}) )  as \`${el.display_name}\``);
           } else {
-            columns.push(`cast(${el.aggregation_type}(${table_column}) as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
+            columns.push(`cast(${el.aggregation_type}(${table_column})  ${whatIfExpression} as decimal(32,${el.minimumFractionDigits||0}) ) as \`${el.display_name}\``);
           }
         } else {
           if (el.column_type === 'numeric') {
-            columns.push(`cast(${table_column} as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
+            columns.push(`cast(${table_column} ${whatIfExpression}  as decimal(32,${el.minimumFractionDigits})) as \`${el.display_name}\``);
           } else if (el.column_type === 'date') {
             if (el.format) {
               if (_.isEqual(el.format, 'year')) {
@@ -743,7 +944,7 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
           } else {
 
-              columns.push(`${table_column} as \`${el.display_name}\``);
+              columns.push(`${table_column}  as \`${el.display_name}\``);
 
           }
 
@@ -772,14 +973,16 @@ export class MySqlBuilderService extends QueryBuilderService {
             }
           } else {
             //  If it is a single numeric column it is not aggregated.
-            if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ){
+            if(  this.queryTODO.fields.length > 1  ||  el.column_type != 'numeric' ||  
+               ( el.column_type == 'numeric'  && el.aggregation_type == 'none' ) // only when we explicit say not to aggregate
+            ){
               grouping.push(`${table_column}`);
             }
           }
         }
       }
     });
-    
+
     return [columns, grouping];
   }
 
@@ -1004,7 +1207,7 @@ public getHavingColname(column: any){
       filter.forEach(value => {
         const tail = columnType === 'date'
           ? `STR_TO_DATE('${value}','%Y-%m-%d')`
-          : columnType === 'numeric' ? value : `'${value.replace(/'/g, "''")}'`;
+          : columnType === 'numeric' ? value : `'${value.toString().replace(/'/g, "''")}'`;//agregado de toString
         str = str + tail + ','
       });
 
@@ -1161,5 +1364,10 @@ public generateInserts(queryData: any) {
     return t;
   }
 
-
+  /* Se pone el alias entre comillas para revitar errores de sintaxis*/
+  private cleanViewString(query: string) {
+    const index = query.lastIndexOf('as');
+    query = query.slice(0, index) + `as "${query.slice(index + 3)}" `;
+    return query;
+  }
 }

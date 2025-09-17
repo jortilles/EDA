@@ -1,0 +1,40 @@
+<eda-dialog [inject]="dialog">
+  <div body class="grid">
+    <div *ngIf="tags" class="col-12" [formGroup]="groupForm" >
+      <p-multiSelect 
+        id="tagMultiSelect"
+        [options]="tags"
+        formControlName="selectedTags"
+        [virtualScroll]="true" itemSize="30"
+        [style]="{'vertical-align' : 'bottom', 'width':'100%'}"
+        [panelStyle]="{minWidth:'15em'}"  
+       
+        
+       >
+      </p-multiSelect>
+    </div>
+  </div>
+  <div body class="grid">
+    <div *ngIf="tags" class="col-10 ">
+      <input id="newTag" pInputText type="text" 
+      class="w-100"
+      [(ngModel)]="newTag" (keyup.enter)="addItem()" i18n-placeholder="@@newTagPlaceholder" placeholder="Agregar nuevo tag"/>
+    </div>
+    <div class="col-2">
+      <button pButton  class="w-100 btn-succ" icon="fa fa-save" iconPos="left" i18n-title="@@saveNewTag" i18n-label="@@saveNewTag"(click)="addItem()"
+        title="Añadir Tag" label="Añadir Tag" >
+      </button>
+    </div>
+  </div>
+  
+  <div footer>
+    <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix text-right">
+      <button pButton  icon="fa fa-save" iconPos="left" i18n-title="@@saveTag" i18n-label="@@saveTag" (click)="saveTags()"
+        title="Guardar Tags" label="Guardar Tags">
+      </button>
+      <button type="button" pButton (click)="closeDialog()" class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn"
+        label="Cerrar"></button>
+    </div>
+
+  </div>
+</eda-dialog>

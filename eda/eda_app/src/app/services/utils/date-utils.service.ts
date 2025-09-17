@@ -5,7 +5,7 @@ import moment from 'moment';
 
 @Injectable()
 export class DateUtils {
-
+    
     getDateFormatApp(date: any, ignoreTimeZone = true) {
 
     }
@@ -40,28 +40,25 @@ export class DateUtils {
     }
 
     public allDates(): Array<Date> {
-        return [new Date('1984-08-01'), new Date('2090-01-01')];
+        const mostOldDate = moment('1939-01-01').toDate();
+        const today = moment().toDate();
+        return [mostOldDate, today];
     }
+
     public setYesterday(): Array<Date> {
-        const d = new Date();
-        const yesterday = d.setDate(d.getDate() - 1);
-        return [new Date(yesterday), new Date(yesterday)]
+        const yesterday = moment().subtract(1,'days').toDate()
+        return [yesterday,yesterday];
     }
+
     public setBeforeYesterday(): Array<Date> {
-        const d = new Date();
-        const beforeYesterday = d.setDate(d.getDate() - 2);
-        return [new Date(beforeYesterday), new Date(beforeYesterday)]
+        const beforeYesterday = moment().subtract(2,'days').toDate();
+        return [beforeYesterday,beforeYesterday];
     }
+
     public setWeekStart(): Array<Date> {
-        const getMonday = (d: Date) => {
-            d = new Date(d);
-            var day = d.getDay(),
-                diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-            return new Date(d.setDate(diff));
-        }
-        const today = new Date();
-        const monday = getMonday(new Date());
-        return [monday, today];
+        const startOnMonday = moment().startOf('isoWeek').toDate();
+        const endOnFriday = moment().startOf('isoWeek').add(4,'days').toDate();
+        return [startOnMonday,endOnFriday];
     }
 
     /**
@@ -106,28 +103,18 @@ export class DateUtils {
         return [monday, today];
     }
 
-
-
-    public setMonthStart(): Array<Date> {
-        const today = new Date();
-        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    public setMonthStart(): Array<Date> { 
+        const today = moment().toDate();
+        const monthStart = moment().startOf('month').toDate();
         return [monthStart, today];
     }
+
     public setPastMonth(): Array<Date> {
-        const t = new Date();
-        var d = new Date();
-        var newMonth = d.getMonth() - 1;
-        if(newMonth < 0){
-            newMonth += 12;
-            d.setFullYear(d.getFullYear() - 1);
-        }
-        d.setMonth(newMonth);
-        const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
-        const monthEnd = new Date(d.getFullYear(), d.getMonth(), t.getDate() );
-
-        return [monthStart, monthEnd];
+        const monthStart = moment().subtract(1,'months').startOf('month').toDate();
+        const pastMonthDay = moment().subtract(1,'months').toDate();
+        return [monthStart, pastMonthDay];
     }
-
+    
     public setPastMonthFull(): Array<Date> {
         const t = new Date();
         var d = new Date();
@@ -145,30 +132,28 @@ export class DateUtils {
 
 
     public setMonthStartPreviousYear(): Array<Date> {
-        const t = new Date();
-        const today = new Date( t.getFullYear()-1, t.getMonth(), t.getDate());
-        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-        return [monthStart, today];
+        const monthStartPastYear = moment().subtract(1,'years').startOf('month').toDate();
+        const todayPastYear = moment().subtract(1,'years').toDate();
+        return [monthStartPastYear,todayPastYear];
     }
 
     public setMonthFullPreviousYear(): Array<Date> {
-        const t = new Date();
-        const monthStart = new Date(t.getFullYear()-1, t.getMonth(), 1);
-        const today = new Date( t.getFullYear()-1, t.getMonth(), new Date(t.getFullYear(), t.getMonth()+1, 0).getDate() );
-        return [monthStart, today];
+        const monthStartPastYear = moment().subtract(1,'years').startOf('month').toDate();
+        const monthEndPastYear = moment().subtract(1,'years').endOf('month').toDate();
+        return [monthStartPastYear,monthEndPastYear];
     }
 
     public setYearStart(): Array<Date> {
-        const today = new Date();
-        const yearStart = new Date(today.getFullYear(), 0, 1);
+       
+        const yearStart = moment().startOf('year').toDate();
+        const today = moment().toDate();
         return [yearStart, today];
     }
 
     public setYearStartPreviousYear(): Array<Date> {
-        const t = new Date();
-        const today = new Date( t.getFullYear()-1, t.getMonth(), t.getDate());
-        const yearStart = new Date(today.getFullYear(), 0, 1);
-        return [yearStart, today];
+        const pastYearStart = moment().subtract(1,'years').startOf('year').toDate();
+        const pastYearToday = moment().subtract(1,'years').toDate();
+        return [pastYearStart, pastYearToday];
     }
 
     public setYearStartPreviousYearFull(): Array<Date> {
@@ -177,40 +162,41 @@ export class DateUtils {
         return [pastYearStart, pastYearEnd];
     }
 
+
     public setLast3(): Array<Date> {
-        const today = new Date();
-        const last3 = new Date(today.getTime() - (2 * 24 * 60 * 60 * 1000));
-        return [last3, today];
+        const today = moment().toDate();
+        const lastTwoDays = moment().subtract(2,'days').toDate();
+        return [lastTwoDays, today];
     }
 
     public setLast7(): Array<Date> {
-        const today = new Date();
-        const last7 = new Date(today.getTime() - (6 * 24 * 60 * 60 * 1000));
-        return [last7, today];
+        const today = moment().toDate();
+        const lastSixDays = moment().subtract(6,'days').toDate();
+        return [lastSixDays, today];
     }
 
     public setLast15(): Array<Date> {
-        const today = new Date();
-        const last15 = new Date(today.getTime() - (14 * 24 * 60 * 60 * 1000));
-        return [last15, today];
+        const today = moment().toDate();
+        const lastFourteenDays = moment().subtract(14,'days').toDate();
+        return [lastFourteenDays, today];
     }
 
     public setLast30(): Array<Date> {
-        const today = new Date();
-        const last15 = new Date(today.getTime() - (29 * 24 * 60 * 60 * 1000));
-        return [last15, today];
+        const today = moment().toDate();
+        const lastTwentyNine = moment().subtract(29,'days').toDate();
+        return [lastTwentyNine, today];
     }
 
     public setLast60(): Array<Date> {
-        const today = new Date();
-        const last15 = new Date(today.getTime() - (59 * 24 * 60 * 60 * 1000));
-        return [last15, today];
+        const today = moment().toDate();
+        const lastFiftyNine = moment().subtract(59,'days').toDate();
+        return [lastFiftyNine, today];
     }
 
     public setLast120(): Array<Date> {
-        const today = new Date();
-        const last15 = new Date(today.getTime() - (119 * 24 * 60 * 60 * 1000));
-        return [last15, today];
+        const today = moment().toDate();
+        const lastOneHudredNineteen = moment().subtract(119,'days').toDate();
+        return [lastOneHudredNineteen, today];
     }
 
     public rangeToString(range: Array<Date>): Array<string> {

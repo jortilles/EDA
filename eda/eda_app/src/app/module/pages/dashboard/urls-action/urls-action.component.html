@@ -1,0 +1,140 @@
+<eda-dialog [inject]="dialog">
+
+    <div body>
+        <div class="card" *ngIf="urls?.length > 0">
+            <p-scrollPanel [style]="{width: '100%', height: '100%'}">
+                <p-table [value]="urls" dataKey="id" editMode="row">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th i18n="@@actionUrl" style="width:40%">Acción</th>
+                            <th i18n="@@descriptionUrl" style="width:40%">Descripción</th>
+                            <th i18n="@@editionUrl" style="width:20%">Edición</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-action let-editing="editing" let-ri="rowIndex">
+                        <tr [pEditableRow]="action">
+                            <td style="max-width: 300px;">
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" [(ngModel)]="action.name" required>
+                                        <p class="d-inline ml-1 mr-1">URL: </p>
+                                        <input pInputText type="text" [(ngModel)]="action.url" required>
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        <button pButton type="button" [label]="action.name"
+                                            class="p-button-outlined w-100" (click)="customAction(action)"></button>
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" [(ngModel)]="action.description" required>
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        <div>{{action.description}}</div>
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            <td>
+                                <div class="flex align-items-center justify-content-center gap-2">
+                                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
+                                        icon="pi pi-pencil" (click)="onRowEditInit(action)"
+                                        class="p-button-rounded p-button-text"></button>
+                                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
+                                        icon="pi pi-check" (click)="onRowEditSave(action)"
+                                        class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
+                                        icon="pi pi-refresh" (click)="onRowEditCancel(action, ri)"
+                                        class="p-button-rounded p-button-text p-button-warning"></button>
+                                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
+                                        icon="pi pi-trash" (click)="onRowEditDelete(ri)"
+                                        class="p-button-rounded p-button-text p-button-danger"></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </p-scrollPanel>
+        </div>
+
+        <div class="card mt-15 pb-3">
+            
+
+            <div class="container">
+
+
+                <div class="row">
+                    <div class="col-sm-7">
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h5 i18n="@@urlTextConfiguration" style="padding: 12px;">Configuración de url y nombre de acción personalizada: </h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label i18n="@@urlString" for="URL">URL: </label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input class="col-sm-12" pInputText id="url" type="text" [(ngModel)]="urlAdd" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label i18n="@@urlName" for="Nombre">Nombre: </label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input class="col-sm-12" pInputText id="nombre" type="text" [(ngModel)]="nameAdd" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label i18n="@@urlDescription" for="Nombre">Descripción: </label>
+                            </div>
+                            <div class="col-sm-9">
+                                <input class="col-sm-12" pInputText id="description" type="text" [(ngModel)]="descriptionAdd" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p-button i18n-label="@@textLabelUrl" label="Agregar url" styleClass="p-button-success"
+                                    (click)="addUrlDashboard(urlAdd, nameAdd, descriptionAdd)"></p-button>
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+                    <div i18n="@@resumeTextConfiguration" class="col-sm-5  description ">
+                     
+Puedes configurar una acción personalizada que quieras ejecutar.  
+Te permite llamar a una URL que haga una acción que quieras invocar. 
+Puede ser una llamada a una api, a un endpoint de una app
+o incluso invocar procesos de carga desde una llamada http. 
+Una vez configurado podrás invocarlo siempre que que quieras desde el botón.
+             
+                    </div>
+                </div>
+
+
+
+
+           
+            </div>
+        </div>
+    </div>
+
+
+    <div footer>
+        <div class="ui-dialog-buttonpanel ui-widget-content ui-helper-clearfix text-right">
+            <button [disabled]="(clonedUrls | json)!==({}|json)" type="submit" pButton icon="fa fa-save"
+                i18n-label="@@guardarBtn" label="Confirmar" icon="fa fa-check" id="eda_add_dashboard_confirmar"
+                (click)="urlsConfirmed()"></button>
+            <button type="button" pButton icon="fa fa-times" (click)="closeDialog()"
+                class="p-button-raised p-button-danger" i18n-label="@@cerrarBtn" label="Cancelar"></button>
+        </div>
+    </div>
+
+</eda-dialog>

@@ -38,6 +38,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public cols: Array<any> = [];
   public styles = [];
   public noRepetitions : boolean = false;
+  public negativeNumbers : boolean = false;
   public ordering: Array<any> = [];
 
   /**Strings */
@@ -58,6 +59,9 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   public seeRepetitions: string = $localize`:@@seeRepetitions: ver/ocultar valores repetidos`;
   public withRepetitions: string = $localize`:@@seeRepetitions: ver valores repetidos`;
   public withNoRepetitions: string = $localize`:@@seeRepetitions: ocultar valores repetidos`;
+  public withNegativeNumbers: string = $localize`:@@withNegativeNumbers: Con números negativos`;
+  public withoutNegativeNumbers: string = $localize`:@@withoutNegativeNumbers: Sin números negativos`;
+  public seeNegativeNumbers: string = $localize`:@@seeNegativeNumbers: Números negativos`;
 
   public tableTitleDialog = $localize`:@@tableTitleDialog:Propiedades de la tabla`;
 
@@ -77,7 +81,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
   setChartProperties() {
     this.setCols();
-    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || [];
+    this.styles = this.myPanelChartComponent.componentRef.instance.inject.styles || []; // si es null regresa vacio
   }
   onShow(): void {
     this.panelChartConfig = this.controller.params.panelChart;
@@ -93,9 +97,10 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
       this.sortedColumn = config.sortedColumn;
       this.noRepetitions = config.noRepetitions;
       this.ordering = config.ordering;
+      this.negativeNumbers = config.negativeNumbers;
     } else {
       this.panelChartConfig.config = new ChartConfig(
-        new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, [])
+        new TableConfig(false, false, 5, false, false, false, false, null, null, null, false, false, [])
       )
     }
 
@@ -152,6 +157,20 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.noRepetitions = currentConfig.noRepetitions;
 
+    // this.negativeNumbers = !this.negativeNumbers;
+    // currentConfig.noRepetitions = !currentConfig.negativeNumbers;
+
+    this.setItems();
+  }
+
+  private noNegativeNumbers() {
+
+    const currentConfig = this.myPanelChartComponent.currentConfig;
+
+    currentConfig.negativeNumbers = !currentConfig.negativeNumbers;
+    this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
+    this.negativeNumbers = currentConfig.negativeNumbers;
+
 
     this.setItems();
   }
@@ -192,8 +211,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
     currentConfig.withColTotals = false;
     this.col_totals = currentConfig.withColTotals;
-
-
+    
     this.myPanelChartComponent.componentRef.instance.inject.checkTotals(null);
     this.resultAsPecentage = currentConfig.resultAsPecentage;
     this.onlyPercentages = currentConfig.onlyPercentages;
@@ -224,10 +242,10 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     }
   }
 
-  private setCols() {
+  private setCols() {    
 
     if (this.controller.params.panelChart.chartType === 'table') {
-
+      
       if (this.onlyPercentages) {
         this.cols = this.myPanelChartComponent.componentRef.instance.inject.cols.filter(col => col.type === "EdaColumnPercentage");
       }
@@ -261,7 +279,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
       if (this.onlyPercentages) this.cols = [];
     }
-    this.setItems();
+    this.setItems(); // Aqui se busca la modificación de colores
   }
 
   onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -269,7 +287,6 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
   }
 
   saveChartConfig() {
-
     const config = (<TableConfig>this.panelChartConfig.config.getConfig());
     const rows = config.visibleRows;
     const sortedSerie = config.sortedSerie;
@@ -277,7 +294,8 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
     const styles = this.styles;
 
     const properties = new TableConfig(this.onlyPercentages, this.resultAsPecentage, rows,
-      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, this.noRepetitions, this.ordering);
+      this.col_subtotals, this.col_totals, this.row_totals, this.trend, sortedSerie, sortedColumn, styles, 
+      this.noRepetitions,this.negativeNumbers, this.ordering);
 
     this.onClose(EdaDialogCloseEvent.UPDATE, properties);
   }
@@ -290,7 +308,7 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
 
     if (!_.isEqual(event, EdaDialogCloseEvent.NONE)) {
 
-      this.styles = this.styles.filter(style => style.col !== response.col);
+      this.styles = this.styles.filter(style => style.col !== response.col);      
 
       if (!response.noStyle) {
         if (this.controller.params.panelChart.chartType === 'table') {
@@ -367,6 +385,16 @@ export class TableDialogComponent extends EdaDialogAbstract implements AfterView
             {
               label: this.noRepetitions !== true ? this.withNoRepetitions : this.withRepetitions,
               command: () => this.noRepeat()
+            }
+          ]
+        },
+        {
+          label: this.seeNegativeNumbers,
+          icon: "pi pi-list",
+          items: [
+            {
+              label: this.negativeNumbers !== true ? this.withoutNegativeNumbers : this.withNegativeNumbers,   
+              command: () => this.noNegativeNumbers()
             }
           ]
         }

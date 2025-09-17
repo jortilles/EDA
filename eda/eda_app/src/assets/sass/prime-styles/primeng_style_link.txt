@@ -1,7 +1,0 @@
-"node_modules/primeng/resources/themes/nova-light/theme.css"
-
-other links: 
-css?
-D:\Proyectos\EDA\eda_app\src\assets\css\style.css
-
-D:\Proyectos\EDA\eda_app\src\app\module\components\panels\blank-panel\blank-panel.component.css

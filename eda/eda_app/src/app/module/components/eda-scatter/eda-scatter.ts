@@ -6,5 +6,6 @@ export class ScatterPlot {
   data : { labels: any[], values: any[]; };
   dataDescription : any;
   colors : Array<string>;
+  assignedColors : any[];
   linkedDashboard : LinkedDashboardProps;
 }

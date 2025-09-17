@@ -15,8 +15,8 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
 
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
-  public colors: Array<string>;
-  public labels: Array<string>;
+  public colors: Array<any>;
+  public labels: Array<any>;
   public display:boolean=false;
 
   constructor() {
@@ -31,12 +31,22 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
     this.dialog.style = { width: '80%', height: '70%', top:"-4em", left:'1em'};
   }
   ngAfterViewChecked(): void {
-    if (!this.colors && this.myPanelChartComponent && this.myPanelChartComponent.componentRef) {
+    if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(color => this.rgb2hex(color));
-        this.labels = this.myPanelChartComponent.componentRef.instance.labels;
-      }, 0)
+        this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
+        let colorMap: { [key: string]: { value: string; color: string } } = {};
+        // Recuperamos valores de assignedColor {label: , color:}
+        this.myPanelChartComponent.props.config.getConfig()['assignedColors'].forEach(item => {
+          colorMap[item.value] = item;
+        });
+        // Asignamos el mismo color a los que tienen el mismo label
+        const sortedAssignedColors = this.labels
+          .map(label => colorMap[label])
+          .filter((item): item is { value: string; color: string } => !!item);
+        // Transformación para los colorPicker del dialog
+        this.colors = sortedAssignedColors.map(color => this.rgb2hex(color.color));
+      }, 0);
     }
   }
 
@@ -57,9 +67,34 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
-  handleInputColor(serie) {
-    this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(this.colors.map(color => this.hex2rgb(color))));
+  handleInputColor() {
+    // Mapeo colores únicos a valores repetidos en data.values (para sunburst)
+    const colorMap: Record<string, string> = {};
+    let colorIndex = 0;
+    this.myPanelChartComponent.props.config.getConfig()['data'].values.forEach(item => {
+      const value = item[0];
+      if (!colorMap[value]) {
+        colorMap[value] = this.colors[colorIndex++];
+      }
+    });
+  
+    // Guardar copia profunda de colores originales para restaurar luego
+    const originalColors = JSON.parse(
+      JSON.stringify(this.myPanelChartComponent.props.config.getConfig()['assignedColors'])
+    );
+  
+    // Actualizar temporalmente los colores según colorMap
+    this.myPanelChartComponent.props.config.getConfig()['assignedColors'].forEach(element => {
+      if (colorMap[element.value]) {
+        element.color = colorMap[element.value];
+      }
+    });
     this.myPanelChartComponent.changeChartType();
+  
+    // Restaurar colores originales tras refrescar el gráfico
+    setTimeout(() => {
+      this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = originalColors;
+    }, 0);
   }
 
   hex2rgb(hex, opacity = 100): string {
@@ -78,7 +113,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
       ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) +
       ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
   }
-  labePrettify( label){
+  labePrettify(label){
     return label.replaceAll('|+-+|', ' - ') + ': ';
   }
 
