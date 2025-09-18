@@ -72,26 +72,18 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
   }
 
   closeChartConfig() {
+    this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(this.originalColors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
   handleInputColor(): void {
-    const rgbColors = this.colors.map(c => this.ChartUtilsService.hex2rgbD3(c));
-    const original = JSON.parse(JSON.stringify(this.myPanelChartComponent.props.config.getConfig()['assignedColors']));
     // Recuperar colores de assignedColor (chart)
+    const rgbColors = this.colors.map(c => this.ChartUtilsService.hex2rgbD3(c));
     this.labels.forEach((label, i) => {
       const match = this.myPanelChartComponent.props.config.getConfig()['assignedColors'].find(c => c.value === label);
       if (match) match.color = rgbColors[i];
     });
-
     this.myPanelChartComponent.changeChartType();
-    // Actualiza originalColors con el nuevo estado después de cambiar el tipo de gráfico
-    this.originalColors = [...this.colors];
-    // Actualiza el componente con los valores originales por si no se guarda la modif
-    setTimeout(() => {
-      this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = original;
-    }, 0);
-
   }
 
   onPaletteSelected() { 
@@ -109,7 +101,4 @@ export class TreeMapDialog extends EdaDialogAbstract implements AfterViewChecked
     this.myPanelChartComponent.props.config.setConfig(new TreeMapConfig(this.colors.map(color => this.ChartUtilsService.hex2rgbD3(color))));
     this.myPanelChartComponent.changeChartType();
   }
-
-
-
 }

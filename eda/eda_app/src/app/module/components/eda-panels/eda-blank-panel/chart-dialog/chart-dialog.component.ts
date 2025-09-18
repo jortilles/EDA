@@ -464,8 +464,8 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
                // dataset[i].hoverBackgroundColor = this.chart.chartColors[i].backgroundColor;
                 //dataset[i].hoverBorderColor = 'rgb(255,255,255)';
-                dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
-                dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
+                dataset[i].backgroundColor = this.chart.chartColors[i]?.backgroundColor;
+                dataset[i].borderColor = this.chart.chartColors[i]?.backgroundColor;
                 this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
 
                 newDatasets.push(dataset[i]);
@@ -521,14 +521,12 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             case 'stackedbar100':
                 console.log(this)
                 this.originalSeries.forEach((color, index) => {
-                    this.chart.chartDataset[index].backgroundColor = color.bg;
-                    this.chart.chartDataset[index].borderColor = color.bg;
+                    this.chart.chartDataset[index].backgroundColor = color?.bg;
+                    this.chart.chartDataset[index].borderColor = color?.bg;
                 });
                 break;
             default:
-                console.log(this.chart.chartColors[0].backgroundColor)
-                console.log(this.originalSeries[0].bg)
-                this.chart.chartColors[0].backgroundColor = this.originalSeries[0].bg;
+                this.chart.chartColors[0].backgroundColor = this.originalSeries[0]?.bg;
                 break;
         }
     }

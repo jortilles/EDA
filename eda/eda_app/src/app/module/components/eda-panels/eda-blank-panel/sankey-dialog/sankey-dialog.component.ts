@@ -43,12 +43,10 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
       this.values = this.myPanelChartComponent?.componentRef.instance.data.values;
       this.uniqueLabels = [...new Set<string>(this.values.map(v => v[0] as string))];
       //To avoid "Expression has changed after it was checked" warning
-
       setTimeout(() => {
-      // Copiar y eliminar duplicados
+        // Copiar y eliminar duplicados
         this.colors = [...new Set<string>(this.myPanelChartComponent.componentRef.instance.colors)];
         this.originalColors = [...this.colors]; // Guardar estado original aquí
-
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
       }, 0);
     }
@@ -67,13 +65,11 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
   }
 
   closeChartConfig() {
+    this.myPanelChartComponent.props.config.setConfig(new SankeyConfig(this.originalColors));
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
   handleInputColor(): void {
-    // Alamacenar datos originales por si cancelan --> no va
-    const original = JSON.parse(JSON.stringify(this.myPanelChartComponent.props.config.getConfig()['assignedColors']));
-    
     // Recolección de todos los label / values
     const labelColorMap: { [key: string]: string } = {};
     this.uniqueLabels.forEach((label, i) => {
@@ -84,17 +80,8 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
     let colorsLabels = this.values.map(v => labelColorMap[v[0] as string]);
     
     // Este setConfig asigna los colores del chart en preview
-    this.myPanelChartComponent.props.config.setConfig({ colors: [...new Set<string>(colorsLabels)] });
-    this.myPanelChartComponent.changeChartType();
-
-    // Actualiza originalColors con el nuevo estado después de cambiar el tipo de gráfico
-    this.originalColors = [...this.colors];
-
-    // Actualiza el componente con los valores originales por si no se guarda la modif --> no funciona
-    setTimeout(() => {
-      this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = original;
-    }, 0);
-  
+    this.myPanelChartComponent.props.config.setConfig(new SankeyConfig([...new Set<string>(colorsLabels)].map(c => this.ChartUtilsService.hex2rgbD3(c))));
+    this.myPanelChartComponent.changeChartType();  
   }
 
   onPaletteSelected() {
@@ -123,7 +110,7 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
     let colorsLabels = this.values.map(v => labelColorMap[v[0] as string]);
 
     // Creación de chart
-    this.myPanelChartComponent.props.config.setConfig({ colors: [...new Set<string>(colorsLabels)] });
+    this.myPanelChartComponent.props.config.setConfig(new SankeyConfig([...new Set<string>(colorsLabels)].map(c => this.ChartUtilsService.hex2rgbD3(c))));
     this.myPanelChartComponent.changeChartType();
   }
 }
