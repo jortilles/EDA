@@ -40,8 +40,9 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
     if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors
-          .map(c => c.startsWith('#') ? this.d3ChartUtils.hex2rgbD3(c) : c);
+        this.colors =
+          this.myPanelChartComponent.componentRef.instance.colors
+         ;
         this.originalColors = [...this.colors]; // Guardamos la copia aquí
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
       }, 0);
@@ -59,21 +60,18 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
 
   saveChartConfig() {
     this.onClose(EdaDialogCloseEvent.UPDATE, {
-      colors: this.colors.map(c => c.startsWith('#') ? this.d3ChartUtils.hex2rgbD3(c) : c)
+      colors: this.colors
     });
   }
 
   closeChartConfig() {
+    this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.originalColors));
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
   handleInputColor(): void {
     this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors));
     this.myPanelChartComponent.changeChartType();
-    // Restauramos internamente el config original a la version anterior
-    setTimeout(() => {
-      this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.originalColors));
-    }, 0);
   }
 
   onPaletteSelected() { 
@@ -88,7 +86,7 @@ export class ScatterPlotDialog extends EdaDialogAbstract implements AfterViewChe
       this.colors = newColors.map(({ color }) => color);
       
       // Actualizar los colores del chart
-      this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors.map(color => this.d3ChartUtils.hex2rgbD3(color))));
+      this.myPanelChartComponent.props.config.setConfig(new ScatterConfig(this.colors));
       this.myPanelChartComponent.changeChartType();
   }
     
