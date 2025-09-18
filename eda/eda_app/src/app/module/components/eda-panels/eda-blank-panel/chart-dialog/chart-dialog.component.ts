@@ -518,14 +518,15 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 break;
             case 'pyramid':
             case 'stackedbar':
+            case 'radar' : 
             case 'stackedbar100':
-                console.log(this)
                 this.originalSeries.forEach((color, index) => {
                     this.chart.chartDataset[index].backgroundColor = color?.bg;
                     this.chart.chartDataset[index].borderColor = color?.bg;
                 });
                 break;
-            default:
+                default:
+                this.series = this.originalSeries[0]?.bg;
                 this.chart.chartColors[0].backgroundColor = this.originalSeries[0]?.bg;
                 break;
         }

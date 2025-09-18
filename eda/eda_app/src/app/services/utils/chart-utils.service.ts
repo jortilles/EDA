@@ -2137,9 +2137,7 @@ export class ChartUtilsService {
     b = hue2rgb(p, q, h - 1 / 3);
 
         
-            console.log([r, g, b]
-        .map(x => Math.round(x * 255).toString(16).padStart(2, "0"))
-        .join(""))
+
         
     return "#" + 
         [r, g, b]
