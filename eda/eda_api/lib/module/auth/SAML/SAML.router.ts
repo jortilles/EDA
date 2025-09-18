@@ -1,13 +1,16 @@
 import * as  express from 'express';
 
 import { authGuard } from '../../../guards/auth-guard';
-import { roleGuard } from '../../../guards/role-guard';
-import {originGuard} from '../../../guards/origin-guard';
 
 import { SAMLController } from './SAML.controller';
 
 const router = express.Router();
 
 router.get('/login', SAMLController.login);
+
+router.post('/acs', express.urlencoded({ extended: false }), SAMLController.acs);
+
+router.get('/metadata', SAMLController.metadata);
+
 
 export default router;

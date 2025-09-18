@@ -11,7 +11,8 @@
       "resolveJsonModule":  true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
-      "typeRoots": ["lib/types", "node_modules/@types"]
+      "typeRoots": ["lib/types", "node_modules/@types"],
+      "skipLibCheck": true
   },
   "include": [
       "lib/**/*.ts"
