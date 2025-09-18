@@ -507,11 +507,30 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     }
 
     resetSeries() { 
-        // Reset de series al cancelar
-        this.originalSeries.forEach((color, index) => {
-            this.chart.chartColors[0].backgroundColor[index] = color.bg;
-            this.chart.chartColors[0].borderColor[index] = color.bg;
-        });
+        const type = this.chart['edaChart'];
+        switch (type) {
+            case 'doughnut':
+            case 'polarArea':
+                this.originalSeries.forEach((color, index) => {
+                    this.chart.chartColors[0].backgroundColor[index] = color.bg;
+                    this.chart.chartColors[0].borderColor[index] = color.bg;
+                });
+                break;
+            case 'pyramid':
+            case 'stackedbar':
+            case 'stackedbar100':
+                console.log(this)
+                this.originalSeries.forEach((color, index) => {
+                    this.chart.chartDataset[index].backgroundColor = color.bg;
+                    this.chart.chartDataset[index].borderColor = color.bg;
+                });
+                break;
+            default:
+                console.log(this.chart.chartColors[0].backgroundColor)
+                console.log(this.originalSeries[0].bg)
+                this.chart.chartColors[0].backgroundColor = this.originalSeries[0].bg;
+                break;
+        }
     }
 
     onChangeGridLines() {
