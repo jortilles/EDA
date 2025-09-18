@@ -506,6 +506,14 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     }
 
+    resetSeries() { 
+        // Reset de series al cancelar
+        this.originalSeries.forEach((color, index) => {
+            this.chart.chartColors[0].backgroundColor[index] = color.bg;
+            this.chart.chartColors[0].borderColor[index] = color.bg;
+        });
+    }
+
     onChangeGridLines() {
 
     }
@@ -523,16 +531,15 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.chart.showLabelsPercent = this.showLabelsPercent;
         this.chart.numberOfColumns = this.numberOfColumns;
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
-
     }
 
     //On cancel send prev state
     closeChartConfig() {
+        this.resetSeries();
         this.onClose(EdaDialogCloseEvent.NONE), this.oldChart;
     }
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {
-
         return this.controller.close(event, response);
     }
 
