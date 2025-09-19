@@ -766,14 +766,17 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }catch{}
         try{
             if (type === "geoJsonMap") {
-                inject.color = this.props.config["config"]["color"];
-                inject.baseLayer = this.props.config['config']['baseLayer'];
+                inject.color = this.props.config.getConfig() !== undefined
+                    ? this.props.config["config"]["color"]
+                    : this.chartUtils.generateChartColorsFromPalette(1, this.paletaActual)[0].backgroundColor;
+                //inject.baseLayer = this.props.config['config']['baseLayer'];
             } else {
-                inject.initialColor = this.props.config["config"]["initialColor"];
-                inject.finalColor = this.props.config["config"]["finalColor"];
-                inject.baseLayer = true;
+                let fromPaleta = this.props.config.getConfig() !== undefined;
+                inject.initialColor = !fromPaleta ? this.props.config["config"]["initialColor"] : this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual)[0].backgroundColor;
+                inject.finalColor =  !fromPaleta ? this.props.config["config"]["finalColor"] :  this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual)[1].backgroundColor;
+                // inject.baseLayer = true;
             }
-        }catch{
+        } catch {
             inject.color =  '#006400';
         }
         try{
@@ -830,12 +833,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         const configColors = this.props.config.getConfig()['colors'];
-
-        
-        const palette = this.styleProviderService?.ActualChartPalette !== undefined ? this.styleProviderService?.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
-        
         inject.colors = configColors.length > 0 ? configColors
-            : this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, palette).map(item => item.backgroundColor);
+            : this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, this.paletaActual).map(item => item.backgroundColor);
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
@@ -892,8 +891,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         const configColors = this.props.config.getConfig()['colors'];
-        const palette = this.styleProviderService?.ActualChartPalette !== undefined ? this.styleProviderService?.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
-        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, palette)
+        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, this.paletaActual)
             .map(item => item.backgroundColor);
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
@@ -920,8 +918,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         const configColors = this.props.config.getConfig()['colors'];
-        const palette = this.styleProviderService?.ActualChartPalette !== undefined ? this.styleProviderService?.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
-        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, palette)
+        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, this.paletaActual)
             .map(item => item.backgroundColor);
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
@@ -950,8 +947,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.dataDescription = dataDescription;        
         
         const configColors = this.props.config.getConfig()['colors'];
-        const palette = this.styleProviderService?.ActualChartPalette !== undefined ? this.styleProviderService?.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
-        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, palette)
+        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, this.paletaActual)
             .map(item => item.backgroundColor);
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
@@ -979,8 +975,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         inject.data = this.props.data;
         inject.dataDescription = dataDescription;
         const configColors = this.props.config.getConfig()['colors'];
-        const palette = this.styleProviderService?.ActualChartPalette !== undefined ? this.styleProviderService?.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
-        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, palette)
+        inject.colors = (configColors && configColors.length > 0 && configColors) || this.chartUtils.generateChartColorsFromPalette(inject.data.values.length, this.paletaActual)
             .map(item => item.backgroundColor);
         inject.assignedColors = this.props.config.getConfig()['assignedColors'] || [];
         //Tratamiento de assignedColors, cuando no haya valores, asignara un color        
