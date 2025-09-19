@@ -33,7 +33,7 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
     this.finalColor = this.inject.finalColor ? this.inject.finalColor : this.finalColor;
 
     // Nueva definición de color dada por la paleta y sus cambios
-    this.initialColor = this.styleProviderService?.loadingFromPalette === true ? this.styleProviderService.ActualChartPalette['paleta'][1] : this.inject.initialColor   
+    this.initialColor = this.styleProviderService?.loadingFromPalette === true ? this.styleProviderService.ActualChartPalette['paleta'].at(-1) : this.inject.initialColor   
     this.finalColor = this.styleProviderService?.loadingFromPalette === true ? this.styleProviderService.ActualChartPalette['paleta'][0] : this.inject.finalColor   
 
     this.logarithmicScale = this.inject.logarithmicScale ? this.inject.logarithmicScale : false;

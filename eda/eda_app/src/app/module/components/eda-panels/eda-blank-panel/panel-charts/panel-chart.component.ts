@@ -773,8 +773,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 //inject.baseLayer = this.props.config['config']['baseLayer'];
             } else {
                 let fromPaleta = this.props.config.getConfig() === undefined;
-                inject.initialColor = !fromPaleta ? this.props.config.getConfig()["initialColor"] : this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual)[1].backgroundColor;
-                inject.finalColor =  !fromPaleta ? this.props.config.getConfig()["finalColor"] :  this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual)[0].backgroundColor;
+                inject.initialColor = !fromPaleta ? this.props.config.getConfig()["initialColor"] : this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual).at(-1).backgroundColor;
+                inject.finalColor = !fromPaleta ? this.props.config.getConfig()["finalColor"] : this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual)[0].backgroundColor;
+                
                 // inject.baseLayer = true;
             }
         } catch {

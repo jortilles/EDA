@@ -53,6 +53,7 @@ export class MapCoordDialogComponent extends EdaDialogAbstract {
   ngOnInit() {
     this.mapUtilsService.mapEditOpen();
   }
+
   ngOnDestroy(): void {
     this.mapUtilsService.mapEditClose();
   }
@@ -96,9 +97,18 @@ export class MapCoordDialogComponent extends EdaDialogAbstract {
     this.coordinates = this.controller.params.coordinates;
     this.initialColor = this.controller.params.initialColor;
     this.finalColor = this.controller.params.finalColor;
+    this.panelChartConfig = this.controller.params.panelChart;
+
+    // Revisar como mejorar esto
+    try {
+      this.panelChartConfig.config.getConfig()['initialColor'] = this.initialColor;
+      this.panelChartConfig.config.getConfig()['finalColor'] = this.finalColor;
+    } catch (error) {
+      
+    }
+
     this.logarithmicScale = this.controller.params.logarithmicScale;
     this.draggable = this.controller.params.draggable;
-    this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
