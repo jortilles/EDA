@@ -5,6 +5,7 @@ import { EdaMap } from './eda-map';
 import { Draggable, LatLngExpression } from 'leaflet';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { DomSanitizer } from '@angular/platform-browser';
+import { StyleProviderService } from '@eda/services/service.index';
 
 // Deprecated
 // const L = require('./topoJsonExtention')ç
@@ -53,7 +54,7 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
 
   private _sanitizer = inject(DomSanitizer);
 
-  constructor(private mapUtilsService: MapUtilsService) {
+  constructor(private mapUtilsService: MapUtilsService, private styleProviderService: StyleProviderService) {
     this.customOptions = { 'className': 'custom', offset: [-20, -20], autoPan: false, closeButton: false };
   }
   ngOnInit(): void {
@@ -64,7 +65,9 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       this.serverMap = this.inject.maps.filter(map => map['mapID'] === this.inject.query[this.labelIdx].linkedMap)[0];
       this.mapUtilsService.initShapes(this.serverMap['mapID']); /** to delete */
     }
-    this.color = this.inject.color ? this.inject.color : this.BASE_COLOR;
+    // Nueva definición de color dada por la paleta y sus cambios
+    this.color = !this.styleProviderService.loadingFromPalette ? this.inject.color
+      : this.styleProviderService.ActualChartPalette['paleta'][0] ?? this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'][0];
     this.logarithmicScale = this.inject.logarithmicScale ? this.inject.logarithmicScale : false;
     this.draggable = this.inject.draggable === undefined ? true: this.inject.draggable  ;
     this.legendPosition = this.inject.legendPosition ? this.inject.legendPosition : 'bottomright';
@@ -78,7 +81,6 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
       this.checkElement( '#' + this.inject.div_name) 
         .then((element) => {
             this.initMap();
-            console.log('map started');
           this.mapUtilsService.getShapes(this.serverMap['mapID']).subscribe(shapes => {
               this.shapes = shapes.file;
               this.initShapesLayer();

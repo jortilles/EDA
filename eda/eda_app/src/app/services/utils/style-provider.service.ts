@@ -229,7 +229,7 @@ export class StyleProviderService {
 
 	checkLoadPan() {
 		this.loadedPanels--;
-		if (this.loadedPanels === 0) {
+		if (this.loadedPanels === -1) {
 			this.loadingFromPalette = false;
 		}
 	}
