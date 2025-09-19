@@ -629,8 +629,9 @@
     @if(indextab == 1){
     <div class="grid grid-cols-5 gap-x-4">
       <div class="col-span-4">
-        <div class="rounded-lg border p-4 bg-muted/30" style="height:60vh">
-          <panel-chart #panelChartComponentPreview [props]="panelChartConfig" [style]="panelContent">
+        <div class="rounded-lg border p-4 bg-muted/30" style="height:60vh;">
+          <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
+            [style]="{ height: '65vh', width: '65vw', display: 'inline-block' }">
           </panel-chart>
         </div>
       </div>
