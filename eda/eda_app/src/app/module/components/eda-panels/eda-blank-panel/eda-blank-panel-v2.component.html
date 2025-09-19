@@ -631,7 +631,7 @@
       <div class="col-span-4">
         <div class="rounded-lg border p-4 bg-muted/30" style="height:60vh;">
           <panel-chart #panelChartComponentPreview [props]="panelChartConfig"
-            [style]="{ height: '65vh', width: '65vw', display: 'inline-block' }">
+            [style]="this.panel.content.chart === 'knob' ? { height: '65vh', width: '65vw', display: 'inline-block' } : {}">
           </panel-chart>
         </div>
       </div>
