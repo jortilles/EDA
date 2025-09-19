@@ -1,5 +1,5 @@
 import { StyleProviderService } from '@eda/services/service.index';
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { EdaKnob } from "./edaKnob";
 
 @Component({
@@ -14,7 +14,7 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   @ViewChild('parentDiv')
   parentDiv: ElementRef;
 
-  size: number = 100;
+  size: number;
   color: string;
   limits: Array<number>;
   value: number;
@@ -24,7 +24,7 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   paleta : any;
 
 
-  constructor(private styleProviderService : StyleProviderService) { }
+  constructor(private styleProviderService : StyleProviderService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.paleta = this.styleProviderService.ActualChartPalette  !==  undefined ? this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
@@ -54,6 +54,7 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
       val = parseInt((val / 1.2).toFixed());
       this.size = val;
       this.applyTextStyle();
+      this.cdr.detectChanges();   // Evitar error en consola
     }
   });
   // Resize 
@@ -66,6 +67,7 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
     val = parseInt((val / 1.2).toFixed());
     this.size = val;
     this.applyTextStyle();
+    this.cdr.detectChanges();   // Evitar error en consola
   }
 }
 

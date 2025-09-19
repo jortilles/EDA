@@ -297,9 +297,8 @@ export class EdaBlankPanelComponent implements OnInit {
         });
 
         this.extraStyles =
-            this.panel.content?.chart === 'knob' ? { height: '55vh', width: '55vw', display: 'inline-block' } :
-                this.panel.content?.chart === 'radar' ? { height: '27vh', width: '27vw', display: 'inline-block' } :
-                {};
+            ['knob', 'radar'].includes(this.panel.content?.chart )  ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block' } :
+                {height: '100%', width: '100%'};
     }
     
     /**

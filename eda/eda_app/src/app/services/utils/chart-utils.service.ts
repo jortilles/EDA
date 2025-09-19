@@ -1862,6 +1862,8 @@ export class ChartUtilsService {
                 }
 
                 options.chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
                     animation: {
                         duration: 1500,
                     },
