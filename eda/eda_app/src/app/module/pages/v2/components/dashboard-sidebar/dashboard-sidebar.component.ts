@@ -316,7 +316,7 @@ export class DashboardSidebarComponent {
     await lastValueFrom(this.dashboardService.cleanCache(body));
     this.hidePopover();
 
-    //this.dashboard.loadDashboard();
+    this.dashboard.loadDashboard();
     this.dashboardService._notSaved.next(false);
   }
 
