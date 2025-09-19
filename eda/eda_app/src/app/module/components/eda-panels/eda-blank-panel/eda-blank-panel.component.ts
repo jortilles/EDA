@@ -92,7 +92,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public dataSource: any;
     public isImported: boolean = false;
     public readonly: boolean = false;
-
+    public extraStyles;
     public indextab = 0;
 
     public inputs: any = {};
@@ -296,8 +296,12 @@ export class EdaBlankPanelComponent implements OnInit {
             contextMenuItems: PanelOptions.generateMenu(this)
         });
 
+        this.extraStyles =
+            this.panel.content?.chart === 'knob' ? { height: '55vh', width: '55vw', display: 'inline-block' } :
+                this.panel.content?.chart === 'radar' ? { height: '27vh', width: '27vw', display: 'inline-block' } :
+                {};
     }
-
+    
     /**
      * When selecting a node from the tree, it loads the columns to display.
      * @param event selected node. Can be rootNode (table_id) or childNode (child_id).
@@ -577,7 +581,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content = { query, chart, edaChart };
 
             /**This is to repaint on panel redimension */
-            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(chart)) {
+            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
         } else {
@@ -629,10 +633,11 @@ export class EdaBlankPanelComponent implements OnInit {
             config: chartConfig,
             edaChart: subType,
             maps: this.dataSource.model.maps,
-            size: { x: this.panel.w, y: this.panel.h },
             linkedDashboardProps: this.panel.linkedDashboardProps,
 
         });
+
+        console.log(this.panelChartConfig)
     }
 
     /**

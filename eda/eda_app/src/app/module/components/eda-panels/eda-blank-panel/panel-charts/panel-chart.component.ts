@@ -450,6 +450,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
 
         chartConfig.linkedDashboardProps = this.props.linkedDashboardProps;
         this.createEdaChartComponent(chartConfig);
+
     }   
 
 
@@ -469,6 +470,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
         this.configUpdated.emit(this.currentConfig);
+                console.log(inject)
+        console.log(this.componentRef)
     }
 
     /**
@@ -527,6 +530,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         let chartConfig: EdaKnob = new EdaKnob();
         const dataTypes = this.props.query.map(column => column.column_type);
         chartConfig.data = this.chartUtils.transformData4Knob(this.props.data, dataTypes);
+        
         chartConfig.dataDescription = this.chartUtils.describeData4Knob(this.props.query, this.chartUtils.transformData4Knob(this.props.data, dataTypes));
         chartConfig.color = this.props.config['config']['color'] ? this.props.config['config']['color'] : null;
         chartConfig.limits = this.props.config['config']['limits'] ? this.props.config['config']['limits'] : null;
@@ -612,7 +616,7 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }
         
         const dimensions = this.getDimensions();
-        dimensions.height = !dimensions.width ? 255 : dimensions.height;
+        dimensions.height = !dimensions.height ? 255 : dimensions.height;
         dimensions.width = !dimensions.width ? 1300 : dimensions.width;
  
         const ticksOptions = {

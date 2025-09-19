@@ -125,7 +125,8 @@ private applyTextStyle(): void {
 
   getStyle() {
     return {
-        'color' : this.styleProviderService.panelFontColor.source['_value'], 'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+      'color': this.styleProviderService.panelFontColor.source['_value'], 'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+      'justify-items': 'center', 'display': 'block'
     }
   }
 
