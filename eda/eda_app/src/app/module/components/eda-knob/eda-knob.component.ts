@@ -21,12 +21,14 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   comprareValue: number;
   class: string;
   resizeObserver!: ResizeObserver;
+  paleta : any;
 
 
   constructor(private styleProviderService : StyleProviderService) { }
 
   ngOnInit(): void {
-    this.color = this.inject.color ? this.inject.color : "#024873";
+    this.paleta = this.styleProviderService.ActualChartPalette  !==  undefined ? this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
+    this.color = this.inject.color ? this.inject.color : this.paleta[0];
     this.value = this.inject.data.values[0][0];
     this.limits = this.getLimits();
     this.comprareValue = this.inject.data.values[0][1] ? this.inject.data.values[0][1] : this.limits[1];
@@ -129,8 +131,7 @@ private applyTextStyle(): void {
 
   getColor() {
     if (this.styleProviderService.loadingFromPalette || this.styleProviderService.palKnob)
-      this.color = this.styleProviderService.ActualChartPalette['paleta'][0]; 
+      this.color = this.paleta[0]; 
     return this.color;
   }
-
 }

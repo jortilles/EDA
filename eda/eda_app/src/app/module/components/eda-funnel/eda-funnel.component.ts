@@ -34,6 +34,7 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   width: number;
   heigth: number;
   resizeObserver!: ResizeObserver;
+  paleta : any;
 
 
   // div = d3.select("body").append('div')
@@ -50,8 +51,9 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   ngOnInit(): void {
     this.id = `funnel_${this.inject.id}`;
     this.data = this.inject.data;
+    this.paleta = this.styleProviderService.ActualChartPalette  !==  undefined ? this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
     this.colors = this.inject.colors.length > 0 ? this.inject.colors :
-      this.chartUtils.generateChartColorsFromPalette(2, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);
+      this.chartUtils.generateChartColorsFromPalette(2, this.paleta).map(item => item.backgroundColor);
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.labelIndex = firstNonNumericColIndex;
