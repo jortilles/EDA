@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import * as _ from 'lodash';
@@ -88,7 +88,7 @@ export class DashboardPageV2 implements OnInit {
 
   public selectedTags: any[] = [];
 
-  constructor(public chatgptService: ChatgptService) {
+  constructor(public chatgptService: ChatgptService, private cdr: ChangeDetectorRef) {
 
   }
 
@@ -304,6 +304,7 @@ export class DashboardPageV2 implements OnInit {
 
     let valor = this.getBottomMostItem();
     this.height = valor !== undefined ? (valor.y + valor.rows + 2) * 32 : 750;
+    this.cdr.detectChanges();
     this.stylesProviderService.loadedPanels--;
   }
 
@@ -768,6 +769,7 @@ public startCountdown(seconds: number) {
     if (this.panels) {
       let valor = this.getBottomMostItem();
       this.height = ((valor.y + valor.rows + 2) * 32);
+      this.cdr.detectChanges();
     } 
   }
 

@@ -18,7 +18,7 @@
         <!-- Colors -->
         <div class="space-y-4">
           <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colores</h3>
-
+          
           <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
             [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
             <option [ngValue]="null" disabled hidden>
@@ -28,7 +28,6 @@
             <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
             }
           </select>
-          
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
               <div class="flex items-center gap-2">

@@ -1,11 +1,10 @@
 import { OnInit, Input, AfterViewChecked, SecurityContext, inject } from '@angular/core';
 import { Component, AfterViewInit } from '@angular/core';
-import { MapUtilsService } from '@eda/services/service.index';
+import { MapUtilsService, StyleProviderService } from '@eda/services/service.index';
 import { EdaMap } from './eda-map';
 import { Draggable, LatLngExpression } from 'leaflet';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { DomSanitizer } from '@angular/platform-browser';
-import { StyleProviderService } from '@eda/services/service.index';
 
 // Deprecated
 // const L = require('./topoJsonExtention')ç
@@ -44,10 +43,9 @@ export class EdaGeoJsonMapComponent implements OnInit, AfterViewInit, AfterViewC
   private labelIdx: number;
   private dataIndex: number;
   private serverMap: any = null;
-  public color: string = '#006400';
+  public color: string;
   public logarithmicScale: boolean;
   public draggable : boolean ;
-  public BASE_COLOR: string = '#006400';
   public loading: boolean;
   public legendPosition: string;
   public boundaries: Array<any> = [];

@@ -84,7 +84,8 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         public styleProviderService: StyleProviderService) {
         
         this.fontColor = this.styleProviderService.panelFontColor.source['value'];
-        this.paletaActual = this.styleProviderService.ActualChartPalette?.['paleta'] || this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
+        this.paletaActual = this.styleProviderService.ActualChartPalette !== undefined ?
+            this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
 
         
         this.styleProviderService.panelFontFamily.subscribe(family => {
@@ -771,9 +772,9 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                     : this.chartUtils.generateChartColorsFromPalette(1, this.paletaActual)[0].backgroundColor;
                 //inject.baseLayer = this.props.config['config']['baseLayer'];
             } else {
-                let fromPaleta = this.props.config.getConfig() !== undefined;
-                inject.initialColor = !fromPaleta ? this.props.config["config"]["initialColor"] : this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual)[0].backgroundColor;
-                inject.finalColor =  !fromPaleta ? this.props.config["config"]["finalColor"] :  this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual)[1].backgroundColor;
+                let fromPaleta = this.props.config.getConfig() === undefined;
+                inject.initialColor = !fromPaleta ? this.props.config.getConfig()["initialColor"] : this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual)[1].backgroundColor;
+                inject.finalColor =  !fromPaleta ? this.props.config.getConfig()["finalColor"] :  this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual)[0].backgroundColor;
                 // inject.baseLayer = true;
             }
         } catch {
