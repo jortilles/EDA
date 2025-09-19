@@ -20,6 +20,8 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   value: number;
   comprareValue: number;
   class: string;
+  resizeObserver!: ResizeObserver;
+
 
   constructor(private styleProviderService : StyleProviderService) { }
 
@@ -31,20 +33,39 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
     this.class = this.value > 999999 ? 'p-knob-text-small' : this.value < 1000 ? 'p-knob-text-large' : 'p-knob-text';
   }
 
-  ngAfterViewInit(): void {
-    const w = this.parentDiv.nativeElement.offsetWidth;
-    const h = this.parentDiv.nativeElement.offsetHeight;
-    let val:number = 10;
-    if( w>0 && h>0){
-      if( w<=h){
-        val = w;
-      }else{
-        val = h;
-      }
-      val = parseInt((val/1.2).toFixed());
+  ngOnDestroy(): void {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
     }
-    setTimeout(_ => { this.size = val;    this.applyTextStyle(); }, 0)
   }
+
+
+  ngAfterViewInit(): void {
+  // Subimos dos niveles para encontrar el contenedor
+  const realParent = this.parentDiv.nativeElement.parentElement.parentElement as HTMLElement;
+
+  // Crear ResizeObserver para redimensisonar el chart
+  this.resizeObserver = new ResizeObserver(entries => {
+    const { width: w, height: h } = entries[0].contentRect;
+    if (w > 0 && h > 0) {
+      let val = w <= h ? w : h;
+      val = parseInt((val / 1.2).toFixed());
+      this.size = val;
+      this.applyTextStyle();
+    }
+  });
+  // Resize 
+  this.resizeObserver.observe(realParent);
+
+  const w = realParent.offsetWidth;
+  const h = realParent.offsetHeight;
+  if (w > 0 && h > 0) {
+    let val = w <= h ? w : h;
+    val = parseInt((val / 1.2).toFixed());
+    this.size = val;
+    this.applyTextStyle();
+  }
+}
 
 private applyTextStyle(): void {
   const parent = this.parentDiv?.nativeElement;
