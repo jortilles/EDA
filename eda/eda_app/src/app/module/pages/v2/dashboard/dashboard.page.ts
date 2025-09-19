@@ -165,10 +165,11 @@ export class DashboardPageV2 implements OnInit {
       this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
-
-      this.styles.palette = this.styles.palette || '';
-      this.styles.palette['paleta'] = this.styles.palette['paleta'] || [];
-      this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
+      
+      if (this.styles.palette !== undefined) {
+        this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
+      }
+      
       
       if (this.dashboard.config.styles?.palette && this.dashboard.config.styles?.stylesApplied) { 
         this.assignStyles();

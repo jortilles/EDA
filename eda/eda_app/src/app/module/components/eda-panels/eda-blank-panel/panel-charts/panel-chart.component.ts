@@ -470,8 +470,6 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         this.componentRef.instance.inject = inject;
         this.componentRef.instance.onClick.subscribe((event) => this.onChartClick.emit({...event, query: this.props.query}));
         this.configUpdated.emit(this.currentConfig);
-                console.log(inject)
-        console.log(this.componentRef)
     }
 
     /**

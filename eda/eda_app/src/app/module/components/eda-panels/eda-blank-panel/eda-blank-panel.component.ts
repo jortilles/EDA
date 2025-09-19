@@ -635,8 +635,6 @@ export class EdaBlankPanelComponent implements OnInit {
             linkedDashboardProps: this.panel.linkedDashboardProps,
 
         });
-
-        console.log(this.panelChartConfig)
     }
 
     /**
