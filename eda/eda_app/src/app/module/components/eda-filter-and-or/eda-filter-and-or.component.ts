@@ -134,7 +134,7 @@ export class EdaFilterAndOrComponent implements OnInit {
   }
 
   initAndOrFilters () {
-
+    
     // Integration:
     this.dashboard = [];
 
@@ -150,7 +150,8 @@ export class EdaFilterAndOrComponent implements OnInit {
           filter_column: sf.filter_column, 
           filter_type: sf.filter_type, 
           filter_column_type: sf.filter_column_type, 
-          filter_elements: sf.filter_elements, 
+          filter_elements: sf.filter_elements,
+          filter_codes: sf.filter_codes, 
           filter_id: sf.filter_id, 
           isGlobal: sf.isGlobal,
           value: "and"
@@ -171,6 +172,7 @@ export class EdaFilterAndOrComponent implements OnInit {
           filter_type: gf.filter_type, 
           filter_column_type: gf.filter_column_type, 
           filter_elements: gf.filter_elements, 
+          filter_codes: gf.filter_codes, 
           filter_id: gf.filter_id,
           isGlobal: gf.isGlobal,
           value: "and"

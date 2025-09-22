@@ -45,6 +45,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     public columnValues: any[] = [];
     public tableNodes: any[] = [];
 
+    public totalValues: any [];
+
     //valors del dropdown de filtrat de visiblitat
     public publicRoHidden = [
         { label: $localize`:@@public:público`, value: `public` },
@@ -82,6 +84,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 selectedTable: {},
                 selectedColumn: {},
                 selectedItems: [],
+                selectedIdValues: [],
                 panelList: [],
                 pathList: {},
                 type: '',
@@ -92,6 +95,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
             this.initPanels();
             this.initTablesForFilter();
+
         } else {
             this.initPanels();
             this.initTablesForFilter();
@@ -224,13 +228,14 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public onChangeSelectedColumn(): void {
+        
         this.globalFilter.selectedItems = [];
         if (this.globalFilter.selectedColumn.column_type == 'date') {
             this.loadDatesFromFilter();
         } else {
             this.loadColumnValues();
         }
-
+        
         this.findPanelPathTables();
     }
 
@@ -245,6 +250,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public async loadColumnValues() {
+
+
         const params = {
             table: this.globalFilter.selectedTable.table_name,
             dataSource: this.dataSource._id,
@@ -257,14 +264,47 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             const query = this.queryBuilderService.normalQuery([this.globalFilter.selectedColumn], params);
             const response = await this.dashboardService.executeQuery(query).toPromise();
 
-            if (Array.isArray(response) && response.length > 1) {
-                const data = response[1];
-                this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
+            // only if the value is a ValueListSource
+            if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
+                // Generate all the label and id values for the valueListSource filters.
+
+                this.totalValues = response[1];
+                this.columnValues = response[1].filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
+
+                if(response[1].filter(item => item[0]?.toString() == '').length == 1) {
+                    this.columnValues = this.columnValues.filter(item => item.label !== '' && item.value !== '');
+                    this.columnValues.unshift(    { label: $localize`:@@emptyStringTxt:Vacío`  , value:  'emptyString' }  )
+                }
+
+            } else {
+                
+                if (Array.isArray(response) && response.length > 1) {
+                    const data = response[1];
+                    this.columnValues = data.filter(item => !!item[0] || item[0] === '').map(item => ({ label: item[0], value: item[0] }));
+                }
+                
             }
+
         } catch (err) {
             this.alertService.addError(err)
             throw err;
         }
+    }
+
+    onSelectedItemsChange(event: any) {
+        
+        if(this.globalFilter.selectedColumn.valueListSource !== undefined) {
+            this.globalFilter.selectedIdValues = event.map((e: any) => {
+                const value = this.totalValues.find(tv => e === tv[0]);
+                if(value) {
+                    return value[1]
+                } else {
+                    if(e === 'emptyString') return '';
+                }
+
+            })
+        }
+
     }
 
     private loadDatesFromFilter() {

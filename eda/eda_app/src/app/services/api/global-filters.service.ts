@@ -7,6 +7,15 @@ export class GlobalFiltersService {
 
     constructor() { }
 
+    /**
+     * Determines which panels should be displayed based on the reference panel and model tables.
+     * Only panels related to the reference panel's tables are marked as active and available.
+     *
+     * @param modelTables List of all model tables.
+     * @param panels List of all panels.
+     * @param refferencePanel The panel used as a reference for filtering.
+     * @returns Array of panels with their display status.
+     */
     public panelsToDisplay(modelTables: any[], panels: any[], refferencePanel: any) {
         const panelsTables = [];
         const panelsToDisplay: Array<{ title, id, active, avaliable, visible }> = [];
@@ -48,6 +57,14 @@ export class GlobalFiltersService {
         return panelsToDisplay;
     }
 
+    /**
+     * Finds all tables related to the given query tables, starting from the root table.
+     *
+     * @param queryTables List of table names to relate.
+     * @param modelTables List of all model tables.
+     * @param rootTable Optional root table name to start the search.
+     * @returns Map of related tables.
+     */
     public relatedTables(queryTables: any[], modelTables: any[], rootTable?: string): Map<string, any> {
         let visited = new Map();
         const startTable = modelTables.find(t => t.table_name === (rootTable || queryTables[0]));
@@ -67,6 +84,14 @@ export class GlobalFiltersService {
         return visited;
     }
 
+    /**
+     * Recursively finds all related tables for a given table and adds them to the visited map.
+     *
+     * @param modelTables List of all model tables.
+     * @param table The current table to find relations for.
+     * @param vMap Map of already visited tables.
+     * @returns Updated map of related tables.
+     */
     public findRelations(modelTables: any, table: any, vMap: any) {
         vMap.set(table.table_name, table);
         const tableRelations = table.relations.filter((rel: any) => rel.visible);
@@ -82,6 +107,13 @@ export class GlobalFiltersService {
         return vMap;
     }
 
+    /**
+     * Ensures that all tables in queryTables exist in modelTables, adding missing ones based on rootTable relations.
+     *
+     * @param rootTableName Name of the root table.
+     * @param queryTables List of table names to check.
+     * @param modelTables List of all model tables (will be mutated if new tables are added).
+     */
     public assertTable(rootTableName: string, queryTables: any[], modelTables: any[]): void {
         const assertTablesNames = [];
         const modelTableNames = modelTables.map((t: any) => t.table_name);
@@ -110,6 +142,13 @@ export class GlobalFiltersService {
         }
     }
 
+    /**
+     * Finds all tables related to the root panel's query tables.
+     *
+     * @param tables List of all tables.
+     * @param rootPanel The root panel to analyze.
+     * @returns Map of related tables for the root panel.
+     */
     public findRelatedTables(tables: any[], rootPanel: EdaPanel) {
         let firstPanelRelatedTables;
 
@@ -130,6 +169,15 @@ export class GlobalFiltersService {
         return firstPanelRelatedTables;
     }
 
+    /**
+     * Filters the given panels to only include those related to the root panel's tables.
+     * Updates each panel's active and available status accordingly.
+     *
+     * @param tables List of all tables.
+     * @param panels List of all panels.
+     * @param rootPanel Optional root panel to use for filtering.
+     * @returns Array of filtered panels.
+     */
     public filterPanels(tables: any[], panels: EdaPanel[], rootPanel?: any): any[] {
         const filteredPanels: any[] = panels.filter((panel) => panel.content);
 
@@ -176,6 +224,13 @@ export class GlobalFiltersService {
         return filteredPanels;
     }
 
+    /**
+     * Loads the root table and its direct relations as nodes for a tree structure.
+     *
+     * @param tables List of all tables.
+     * @param rootPanel The root panel to extract the root table from.
+     * @returns Array of nodes representing the root table and its children.
+     */
     public loadTablePaths(tables: any[], rootPanel: EdaPanel) {
         const panelQuery = rootPanel.content.query.query;
         const rootTable = panelQuery.rootTable;
@@ -205,6 +260,14 @@ export class GlobalFiltersService {
         return pathsTables;
     }
 
+    /**
+     * Expands a node in a tree structure, adding its child nodes based on table relations.
+     * Prevents duplicate paths and handles autorelations.
+     *
+     * @param tree The current tree structure.
+     * @param expandNode The node to expand.
+     * @param dataSource List of all tables (used to find relations).
+     */
     public onNodeExpand(tree: any[], expandNode: any, dataSource: any[]) {
         const table_id = expandNode.table_id || expandNode.child_id.split('.')[0];
 
@@ -285,6 +348,12 @@ export class GlobalFiltersService {
         }
     }
 
+    /**
+     * Formats a global filter object, choosing the correct format based on the presence of a pathList.
+     *
+     * @param globalFilter The global filter object to format.
+     * @returns The formatted filter object.
+     */
     public formatFilter(globalFilter: any) {
         let formatedFilter: any;
         if (globalFilter.pathList) {
@@ -296,6 +365,12 @@ export class GlobalFiltersService {
         return formatedFilter;
     }
 
+    /**
+     * Formats a global filter object for simple (non-tree) filters.
+     *
+     * @param globalFilter The global filter object to format.
+     * @returns The formatted filter object.
+     */
     private formatGlobalFilter(globalFilter: any) {
         const isDate = globalFilter.column.value.column_type === 'date';
 
@@ -314,6 +389,12 @@ export class GlobalFiltersService {
         return formatedFilter;
     }
 
+    /**
+     * Formats a global filter object for tree-based filters, removing selectedTableNodes from the pathList.
+     *
+     * @param globalFilter The global filter object to format.
+     * @returns The formatted filter object.
+     */
     private formatGlobalFilterTree(globalFilter: any) {
         const isDate = globalFilter.selectedColumn.column_type === 'date';
 
@@ -329,18 +410,67 @@ export class GlobalFiltersService {
             filter_column_type: globalFilter.selectedColumn.column_type,
             filter_type: isDate ? 'between' : 'in',
             filter_elements: this.assertGlobalFilterItems(globalFilter),
+            filter_codes: this.assertGlobalFilterCodes(globalFilter),
             pathList: pathList,
             isGlobal: true,
             applyToAll: globalFilter.applyToAll,
             autorelation: globalFilter.autorelation,
             valueListSource: globalFilter.selectedColumn.valueListSource,
-            filterBeforeGrouping: true, // Para todos los filtros globales es Where
+            filterBeforeGrouping: true, // For all global filters it is Where
             joins: globalFilter.joins
+
         }
 
         return formatedFilter;
     }
 
+
+    /**
+     * Returns the selected IDs for a global filter, formatted according to the column type.
+     * If the filter is of type 'date' and only one value is selected, adjusts the range to cover the entire year or month.
+     *
+     * @param globalFilter Object containing the global filter information and the selected items.
+     * @returns An array of objects with the selected IDs, structured depending on whether it is a date filter or not.
+     */
+    public assertGlobalFilterCodes(globalFilter: any) {
+        const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
+        const isDate = columnType === 'date';
+        const year_length = 4;
+        const year_month_length = 7;
+
+
+        if (isDate && globalFilter.selectedItems[0] && !globalFilter.selectedItems[1]) {
+            const year = globalFilter.selectedItems[0];
+            if (globalFilter.selectedItems[0].length === year_length) {
+                globalFilter.selectedItems[0] = `${year}-01-01`;
+                globalFilter.selectedItems[1] = `${year}-12-31`;
+            }
+            else if (globalFilter.selectedItems[0].length === year_month_length) {
+                const year_month = globalFilter.selectedItems[0];
+                const year = parseInt(year_month.slice(0, 5))
+                const month = parseInt(year_month.slice(5, 7));
+                let days = new Date(year, month, 0).getDate();
+                let daysstr = days < 10 ? `0${days}` : `${days}`
+                globalFilter.selectedItems[0] = `${year_month}-01`;
+                globalFilter.selectedItems[1] = `${year_month}-${daysstr}`;
+            } else {
+                globalFilter.selectedItems[1] = globalFilter.selectedItems[0]
+            }
+        }
+
+        return isDate
+            ? [{ value1: globalFilter.selectedItems[0] ? [globalFilter.selectedItems[0]] : [] }, { value2: globalFilter.selectedItems[1] ? [globalFilter.selectedItems[1]] : [] }]
+            : [{ value1: globalFilter.selectedIdValues }];
+    }
+
+
+    /**
+     * Returns the selected values (labels) for a global filter, formatted according to the column type.
+     * If the filter is of type 'date' and only one value is selected, adjusts the range to cover the entire year or month.
+     * 
+     * @param globalFilter Object containing the global filter information and the selected items.
+     * @returns An array of objects with the selected values, structured depending on whether it is a date filter or not.
+     */
     public assertGlobalFilterItems(globalFilter: any) {
         const columnType = globalFilter.column?.value?.column_type || globalFilter.selectedColumn?.column_type;
         const isDate = columnType === 'date';

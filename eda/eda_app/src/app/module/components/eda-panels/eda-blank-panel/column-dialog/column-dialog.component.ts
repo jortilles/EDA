@@ -54,7 +54,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public aggregationsTypes: any[] = [];
     public aggregationSelected: any;
     public inputType: string;
-    public dropDownFields: SelectItem[] = [];
+    public dropDownFields: any[] = [];
     public limitSelectionFields: number;
     public cumulativeSum: boolean;
     public cumulativeSumTooltip: string = $localize`:@@cumulativeSumTooltip:Si activas ésta función se calculará la suma acumulativa 
@@ -150,7 +150,6 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         } else {
             this.availableRange = true;
         }
-
     }
 
     private carregarValidacions(): void {
@@ -177,7 +176,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         const autorelation = this.selectedColumn.autorelation;
         const filterBeforeGrouping = this.filterBeforeAfter.filterBeforeGrouping;
         const aggregation_type = this.aggregationSelected ? this.aggregationSelected.value : null;
-        
+        const data = this.dropDownFields;
 
         const filter = this.columnUtils.setFilter({
             obj: this.filterValue,
@@ -191,6 +190,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
             joins,
             filterBeforeGrouping,
             aggregation_type,
+            data,
         });
 
         this.filter.selecteds.push(filter);        
@@ -212,7 +212,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         };
         
         this.updateSortedFiltersColumnDialog.emit(addToSortedFilters); // Emitting an event to the eda-blank-panel component
-
+        this.dropDownFields = [];
     }
 
     removeFilter(item: any) {
@@ -615,6 +615,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 f.filter_column === this.selectedColumn.column_name &&
                 !f.removed;
         });
+
     }
 
     resetDisplay() {
@@ -647,10 +648,15 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
 
             try {
                 const res = await this.dashboardService.executeQuery(this.queryBuilder.normalQuery([column], params)).toPromise();
+
                 if (res.length > 1) {
                     for (const item of res[1]) {
                         if (item[0] === '' || item[0] ) {
-                            this.dropDownFields.push({ label : item[0], value: item[0] });
+                            if(column.valueListSource !== undefined) {
+                                this.dropDownFields.push({ label : item[0], value: item[0], id : item[1] });
+                            } else {
+                                this.dropDownFields.push({ label : item[0], value: item[0], id : item[0] });
+                            }
                         }
                     }
                 }

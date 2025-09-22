@@ -863,7 +863,6 @@ export class EdaBlankPanelComponent implements OnInit {
      * @param isFilter is filter column or normal column
      */
     public openColumnDialog(column: Column, isFilter?: boolean): void {
-
         this.disableBtnSave();
 
         if (column.table_id !== this.rootTable?.table_name) {
@@ -951,6 +950,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 }
             });
         }
+
     }
 
     /**
@@ -1019,6 +1019,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 filter_type: _filter.filter_type,
                 filter_column_type: _filter.filter_column_type,
                 filter_elements: _filter.filter_elements,
+                filter_codes: _filter.filter_codes,
                 filter_id: _filter.filter_id,
                 isGlobal: _filter.isGlobal,
                 value: "and",
@@ -1895,6 +1896,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     filter_type: e.filter.filter_type,
                     filter_column_type: e.filter.filter_column_type,
                     filter_elements: e.filter.filter_elements,
+                    filter_codes: e.filter.filter_codes,
                     filter_id: e.filter.filter_id,
                     value: "and",
                 }
@@ -1928,6 +1930,7 @@ export class EdaBlankPanelComponent implements OnInit {
                     filter_type: e.filter.filter_type,
                     filter_column_type: e.filter.filter_column_type,
                     filter_elements: e.filter.filter_elements,
+                    filter_codes: e.filter.filter_codes,
                     filter_id: e.filter.filter_id,
                     value: "and",
                 }

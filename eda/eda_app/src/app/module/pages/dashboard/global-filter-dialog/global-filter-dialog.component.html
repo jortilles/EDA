@@ -35,7 +35,9 @@
                                 [(ngModel)]="globalFilter.selectedItems" [virtualScroll]="true" itemSize="30"
                                 [style]="{'vertical-align' : 'bottom', 'margin-left' : '15px', width: '100%' }"
                                 [panelStyle]="{minWidth:'15em'}" maxSelectedLabels="1" defaultLabel="Valor por defecto"
-                                display="chip" appendTo="body">
+                                display="chip" appendTo="body"
+                                (ngModelChange)="onSelectedItemsChange($event)"
+                                >
                             </p-multiSelect>
 
                             <eda-date-picker #myCalendar

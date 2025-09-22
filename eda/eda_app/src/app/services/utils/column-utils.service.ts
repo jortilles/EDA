@@ -14,63 +14,30 @@ interface FilterOptions {
     joins?: any[];
     filterBeforeGrouping?: boolean;
     aggregation_type?: string;
+    data?: any;
 }
 
 @Injectable()
 export class ColumnUtilsService {
     constructor(private fileUtiles: FileUtiles) { }
 
-    /**
-     * @deprecated The method should not be used. Use setFilter(options: FilterOptions) instead
-    */
-    public addFilter(obj: any, table: string, column: string, column_type: string, type: string, selectedRange:string, valueListSource?:{}): object {
-        const values = Object.keys(obj).map((key) => {
-            if (!_.isNil(Object.values(obj[key]))) {
-                //transform single values to array _-(··)-_  
-                if(!Array.isArray( obj[key])){
-                    obj[key] = [obj[key]];
-                }
-                return { [key]: obj[key] };
-            }
-        });
-
-
-        if (typeof valueListSource !== 'undefined') {
-            return {
-                filter_id: this.fileUtiles.generateUUID(),
-                filter_table: table,
-                filter_column: column,
-                filter_column_type: column_type,
-                filter_type: type,
-                filter_elements: values,
-                selectedRange:selectedRange,
-                valueListSource: valueListSource ,
-                isGlobal : false
-            };
-        }
-
-
-        return {
-            filter_id: this.fileUtiles.generateUUID(),
-            filter_table: table,
-            filter_column: column,
-            filter_column_type: column_type,
-            filter_type: type,
-            filter_elements: values,
-            selectedRange:selectedRange,
-            isGlobal : false
-        };
-    }
     
     public setFilter(options: FilterOptions): object {
-        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type } = options;
-
+        const { obj, table, column, column_type, type, selectedRange, valueListSource, autorelation, joins, filterBeforeGrouping, aggregation_type, data } = options;
     
         const values = Object.keys(obj).map((key) => {
             if (!_.isNil(obj[key])) {
                 return { [key]: Array.isArray(obj[key]) ? obj[key] : [obj[key]] };
             }
         }).filter(Boolean);
+
+        let valuesIds
+        // Adding the values Codes
+        if(data.length !== 0) {
+            valuesIds = [{value1: _.cloneDeep(values)[0].value1.map((e: any) => data.find((d: any) => d.value === e).id)}];
+        } else {
+            valuesIds = _.cloneDeep(values);
+        }
     
         const filterObject = {
             isGlobal: false,
@@ -80,6 +47,7 @@ export class ColumnUtilsService {
             filter_column_type: column_type,
             filter_type: type,
             filter_elements: values,
+            filter_codes: valuesIds,
             selectedRange: selectedRange,
             autorelation, 
             joins,
