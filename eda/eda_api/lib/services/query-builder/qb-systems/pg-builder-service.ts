@@ -196,7 +196,7 @@ export class PgBuilderService extends QueryBuilderService {
     // JOINS
     let joinString: any[];
     let alias: any;
-    if (this.queryTODO.joined) {
+    if (this.queryTODO.joined) { /** si es modo arbol */
       const responseJoins = this.setJoins(joinTree, joinType, schema, valueListJoins);
       joinString = responseJoins.joinString;
       alias = responseJoins.aliasTables;
@@ -334,7 +334,18 @@ export class PgBuilderService extends QueryBuilderService {
           if (typeof joinColumns[0] === 'string') {
             if(!view){
               //Si no es una vista
-              joinString.push(` ${myJoin} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+              // pero también puede ser que sea una columna calculada...
+               if(joinColumns[2] && joinColumns[2] === 'source' ){
+                // si la columna calculada es el source
+                 joinString.push(` ${myJoin} join "${schema}"."${t}" on  ${joinColumns[1]} = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+              }else  if(joinColumns[2] && joinColumns[2] === 'target' ){
+                // si la columna calculada es el target
+                 joinString.push(` ${myJoin} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = ${joinColumns[0]} `);
+              }else{
+                  // Si no es una columna calculada              
+                joinString.push(` ${myJoin} join "${schema}"."${t}" on "${schema}"."${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
+              }
+
             }else{
               //Si es una vista
               joinString.push(` ${myJoin} join ${t} on  "${e[j]}"."${joinColumns[1]}" = "${schema}"."${e[i]}"."${joinColumns[0]}"`);
@@ -347,12 +358,23 @@ export class PgBuilderService extends QueryBuilderService {
               //Si no es una vista
               let join = ` ${myJoin} join "${schema}"."${t}" on`;
               joinColumns[0].forEach((_, x) => {
+              // pero también puede ser que sea una columna calculada 
+              if(joinColumns[2] && joinColumns[2] === 'source' ){
+                // Si la columna calculada es el source
+                 join += `  ${joinColumns[1][x]}  =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
+              }else  if(joinColumns[2] && joinColumns[2] === 'target' ){
+                // Si la columna calculada es el source
+                 join += `  "${schema}"."${e[j]}"."${joinColumns[1][x]}" =  ${joinColumns[0][x]} and`
+              }else{
+                 // Si no es una columna calculada         
                 join += `  "${schema}"."${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
+              } 
               });
               join = join.slice(0, join.length - 'and'.length);
               joinString.push(join);
             }else{
               //Si es una vista
+              //Si tienes que hacer columnas calculadas hazlas en la vista ;)
               let join = ` ${myJoin} join  ${t}  on`;
               joinColumns[0].forEach((_, x) => {
                 join += `  "${e[j]}"."${joinColumns[1][x]}" =  "${schema}"."${e[i]}"."${joinColumns[0][x]}" and`
