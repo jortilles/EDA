@@ -1695,7 +1695,6 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
             date: 'mdi-calendar-text', //text-green-500',
             text: 'mdi-alphabetical' //'text-orange-500' 
         };
-        console.log(icons[type as keyof typeof icons])
         return icons[type as keyof typeof icons] || '';
     }
 

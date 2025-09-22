@@ -5283,6 +5283,10 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <source>Final</source>
   <target>Final</target>
 </trans-unit>
+<trans-unit id="DashboardUpdatedInfo">
+  <source>El dashboard ha sido actualizado correctamente.</source>
+  <target>El dashboard ha sigut actualitzat correctament.</target>
+</trans-unit>
 
 
     </body>

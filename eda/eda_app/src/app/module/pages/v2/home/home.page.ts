@@ -208,7 +208,7 @@ export class HomePageV2 implements OnInit {
           this.dashboardService.updateDashboardSpecific(report._id.toString(), payload).subscribe(
             () => {
               this.allDashboards[this.allDashboards.findIndex(d => d._id === report._id)].config.title = report.config.title;
-              this.alertService.addSuccess($localize`:@@DashboardUpdatedInfo:Report successfully updated.`);
+              this.alertService.addSuccess($localize`:@@DashboardUpdatedInfo:El dashboard ha sido actualizado correctamente.`);
             },
             err => this.alertService.addError(err)
           );
