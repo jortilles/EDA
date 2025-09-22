@@ -3,6 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
+import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
 import * as _ from 'lodash';
 
 
@@ -42,8 +43,11 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public edaChart: any;
     public display: boolean = false;
     public activeTab: "colors" | "alerts" = "alerts";
+    public selectedPalette: { name: string; paleta: any } | null = null;
+    public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
-    constructor(private userService: UserService,) {
+
+    constructor(private userService: UserService,private stylesProviderService: StyleProviderService,private ChartUtilsService: ChartUtilsService) {
 
         super();
 
@@ -261,6 +265,29 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
     disableMailConfirm() {
         return (!this.quantity || !this.units || !(this.selectedUsers.length > 0) || !this.mailMessage)
+    }
+
+    onPaletteSelected() { 
+        // Saber numero de segmentos para interpolar colores
+        const dataset = this.edaChart.chartDataset;
+            
+        // Recuperamos paleta seleccionada y creamos colores
+        this.panelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
+        const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(1, this.panelChartComponent['chartUtils'].MyPaletteColors);
+        
+        // Actualizar los color pickers individuales al modificar la paleta
+        this.series = this.edaChart.chartDataset.map(dataset => ({
+            label: dataset.label,
+            bg: newColors[0].color,
+            border: newColors[0].color
+        }));
+        
+        // Actualizar los colores del chart
+        dataset[0].backgroundColor = this.hex2rgb(newColors[0].color, 90);
+        dataset[0].borderColor = this.hex2rgb(newColors[0].color, 100);
+        
+        this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
+        this.panelChartComponent.componentRef.instance.updateChart();
     }
 
 }
