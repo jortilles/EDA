@@ -139,7 +139,7 @@
                     <span i18n="@@newTag"> Nueva etiqueta </span>
                  </button>
             </div>
-            <input class="ml-2" *ngIf="addTag" type="text" pInputText [(ngModel)]="applyNewTag"> 
+            <input class="ml-2" *ngIf="addTag" type="text" pInputText [(ngModel)]="applyNewTag">
             <button pButton pRipple type="button" *ngIf="addTag" class="p-button-raised p-button-success ml-2" style="background-color: #4CAF50" (click)="setNewTag(applyNewTag)">
                 <span> Confirmar </span>
             </button>
@@ -208,7 +208,7 @@
             </p-inputSwitch>
         </div>
     </div>
-    
+
     <hr>
     <div *ngIf="display_v.edit_mode" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="editStyles()">
         <div>
@@ -238,12 +238,14 @@
         </div>
     </div>
 
-    <div  *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="openUrlsConfig();">
+    <!-- SDA CUSTOM -->
+    <!-- <div  *ngIf="display_v.edit_mode && canIedit()" class="right-sidebar-blocks-options block-options-bg pointer mt-1" (click)="openUrlsConfig();">
         <div>
             <i class="fa fa-link"></i>
             <span i18n="@@opcionUrls" class="ml-2">ACCIÓN PERSONALIZADA</span>
         </div>
-    </div>
+    </div> -->
+    <!-- END SDA CUSTOM -->
 
 
 
