@@ -10,7 +10,6 @@ import {
 } from '@angular/core'
 import * as d3 from 'd3'
 import { EdaBubblechart } from './eda-bubblechart'
-import { ChartsColors } from '@eda/configs/index'
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';

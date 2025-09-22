@@ -1,6 +1,5 @@
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
-import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
 import { ScatterPlot } from "./eda-scatter";
 import * as _ from 'lodash';
@@ -32,6 +31,7 @@ export class EdaScatter implements AfterViewInit {
   metricIndex: number;
   width: number;
   heigth: number;
+  resizeObserver!: ResizeObserver;
 
   constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService){
 
@@ -51,10 +51,28 @@ export class EdaScatter implements AfterViewInit {
   ngOnDestroy(): void {
     if (this.div)
       this.div.remove();
+    if (this.resizeObserver)
+      this.resizeObserver.disconnect();
   }
 
   ngAfterViewInit() {
+    // SVG CONTAINER
+    const container = this.svgContainer.nativeElement as HTMLElement;
 
+    // Crear SVG
+    this.svg = d3.select(container).append('svg');
+
+    // Crear ResizeObserver para redimensionar el chart
+    this.resizeObserver = new ResizeObserver(entries => {
+      let id = `#${this.id}`;
+      this.svg = d3.select(id);
+      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
+        this.draw();
+      }
+    });
+    this.resizeObserver.observe(container);
+
+    
     if (this.svg) this.svg.remove();
     let id = `#${this.id}`;
     this.svg = d3.select(id);
@@ -65,7 +83,9 @@ export class EdaScatter implements AfterViewInit {
 
 
   draw() {
-
+    // Borrado inicial de otros charts 
+    this.svg.selectAll('*').remove();
+    
     const svg = this.svg;
     const width = this.svgContainer.nativeElement.clientWidth - 20;
     const height = this.svgContainer.nativeElement.clientHeight - 20;
