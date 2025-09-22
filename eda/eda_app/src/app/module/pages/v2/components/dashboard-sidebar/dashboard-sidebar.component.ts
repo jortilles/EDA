@@ -18,12 +18,13 @@ import { DashboardVisibleModal } from "../dashboard-visible/dashboard-visible.mo
 import { ImportPanelDialog } from "../import-panel/import-panel.dialog";
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { ExposeMethod } from "@eda/shared/decorators/expose-method.decorator";
+import { IconComponent } from "../../../../../shared/components/icon/icon.component";
 
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
   imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog,
-    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog],
+    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog, IconComponent],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -593,4 +594,45 @@ public exportAsJPEG() {
     this.toggleGlobalFilter();
     this.dashboard.globalFilter.onShowGlobalFilter(false, filtro)
   }
+
+  public renameDashboard() {
+    let elementName = document.getElementById('dashboardName');
+
+   console.log(JSON.stringify(elementName))
+
+    
+    
+    
+      // Crear input
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = elementName.innerText;
+
+  // remplazamos el elemento por un input 
+  elementName.replaceWith(input);
+
+
+  // Foco automático
+  input.focus();
+
+  // Cuando se pierde el foco, volver a texto
+  input.addEventListener("blur", () => {
+    const p = document.createElement("p");
+    p.id = elementName.id;
+    p.innerText = input.value;
+    input.replaceWith(p);
+    p.className = 'italic font-slate-50';
+    this.dashboard.title = p.innerText
+    p.innerText+='*'
+  });
+
+  console.log(this)
+    
+    
+    
+
+}
+    
+  
+
 }

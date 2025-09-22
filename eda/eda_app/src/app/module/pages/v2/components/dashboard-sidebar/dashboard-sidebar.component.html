@@ -4,9 +4,14 @@
     <!-- Menú gris -->
     <div class="bg-gray-100">
       <div class="px-3 pt-3">
-        <h4 class="text-lg font-bold">
-          {{ dashboard.title }}
-        </h4>
+        <div class="flex justify-between">
+          <h4 class="text-lg font-bold" id="dashboardName">
+            {{ dashboard.title }}     
+          </h4>
+          <button (click)="renameDashboard()" class="rounded-md p-2 cursor-pointer hover:bg-muted h-fit">
+            <eda-icon class="pointer-events-none" name="pencil"></eda-icon>
+          </button>
+        </div>
         <hr class="my-2" />
         <span>
   <h4 class="text-lg flex items-center">
@@ -16,7 +21,7 @@
               <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
               <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
             </svg>
-            {{ dashboard.dataSource.name }}
+            {{ dashboard.dataSource.name }} 
           </h4>
         </span>
       </div>
