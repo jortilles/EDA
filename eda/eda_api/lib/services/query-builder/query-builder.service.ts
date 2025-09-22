@@ -211,7 +211,7 @@ export abstract class QueryBuilderService {
                 }
             }
 
-            this.queryTODO.joined = false;
+            this.queryTODO.joined = false; /** consulta normal  */
             /**poso les taules de la consulta al principi del joinTree per potenciar relacions directes */
             const my_tables = [...dest ];
             const firsts = [];
@@ -282,7 +282,7 @@ export abstract class QueryBuilderService {
 
             tree = [...new Set(tree)];
             joinTree = tree;
-            this.queryTODO.joined = true;
+            this.queryTODO.joined = true; /** consulta  en modo arbol.  */
 
             dest = valueListJoins;
             /** SEPAREM ENTRE AGGREGATION COLUMNS/GROUPING COLUMNS */
@@ -699,12 +699,35 @@ export abstract class QueryBuilderService {
     }
 
     public findJoinColumns(tableA: string, tableB: string) {
-
+        let computed = 'no';
         const table = this.tables.find(x => x.table_name === tableA);
         // No needed to filter visible relations because they are stored in a different array: no_relations
-        const source_columns = table.relations.find(x => x.target_table === tableB).source_column;
-        const target_columns = table.relations.find(x => x.target_table === tableB).target_column;
-        return [target_columns, source_columns];
+        let source_columns = table.relations.find(x => x.target_table === tableB).source_column;
+        let target_columns = table.relations.find(x => x.target_table === tableB).target_column;
+
+
+        
+        //Comprobando campos calculados para usarlos en los joins en vez del nombre del campo.
+        source_columns.forEach((sc, ind) => {
+            if(table.columns.find( c=> c.column_name === sc)?.computed_column == 'computed'  ){
+                source_columns[ind] = table.columns.find( c=> c.column_name === sc).SQLexpression; 
+                computed = 'source';
+            }
+        });
+
+        const tdest = this.tables.find(x => x.table_name === tableB);
+
+        target_columns.forEach( (tc,ind) => {
+            if(tdest.columns.find( c=> c.column_name === tc)?.computed_column == 'computed'  ){
+                target_columns[ind] = tdest.columns.find( c=> c.column_name === tc).SQLexpression; 
+                 computed = 'target';
+            }
+        });
+
+
+
+
+        return [target_columns, source_columns, computed];
 
     }
 

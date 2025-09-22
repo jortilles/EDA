@@ -274,9 +274,6 @@ export class MySqlBuilderService extends QueryBuilderService {
     }    
 
     if (alias) {
-
-      console.log('alias', alias);
-
       for (const key in alias) {
         myQuery = myQuery.split(key).join(`\`${alias[key]}\``);
       }
@@ -358,16 +355,33 @@ export class MySqlBuilderService extends QueryBuilderService {
           }
           //Version compatibility string//array
           if (typeof joinColumns[0] === 'string') {
-
-            joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
-
+              // pero también puede ser que sea una columna calculada
+              if(joinColumns[2] && joinColumns[2] === 'source' ){
+                //si la columna calculada es el source
+                joinString.push(` ${myJoin} join ${t} on ${joinColumns[1]}  = \`${e[i]}\`.\`${joinColumns[0]}\``);
+              }else  if(joinColumns[2] && joinColumns[2] === 'target' ){
+                // Si la columna calculada es el target
+                joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` =  ${joinColumns[0]}`);
+              }else{       
+                // Si no es una columna calculada  
+                joinString.push(` ${myJoin} join ${t} on \`${e[j]}\`.\`${joinColumns[1]}\` = \`${e[i]}\`.\`${joinColumns[0]}\``);
+              } 
           } else {
 
             let join = ` ${myJoin} join ${t} on`;
 
             joinColumns[0].forEach((_, x) => {
-
-              join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` = \`${e[i]}\`.\`${joinColumns[0][x]}\` and`;
+              //  pero también puede ser que sea una columna calculada
+              if(joinColumns[2] && joinColumns[2] === 'source' ){
+                // Si la columna calculada es el source
+                join += `  ${joinColumns[1][x]}  = \`${e[i]}\`.\`${joinColumns[0][x]}\` and`;
+              }else  if(joinColumns[2] && joinColumns[2] === 'target' ){
+                // Si la columna calculada es el source
+                join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` =  ${joinColumns[0][x]}  and`;
+              }else{   
+                 // Si no es una columna calculada         
+                join += ` \`${e[j]}\`.\`${joinColumns[1][x]}\` = \`${e[i]}\`.\`${joinColumns[0][x]}\` and`;
+              }
 
             });
 
