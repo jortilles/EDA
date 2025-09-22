@@ -14,7 +14,12 @@ const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
 
-
+  /**
+   * Retrieves all dashboards available to the current user, classifying them as private, group, public, and shared.
+   * @param req Express Request with user information
+   * @param res Express Response to send the result
+   * @param next NextFunction for error handling
+   */
   static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
       let admin, privates, group, publics, shared = [];
@@ -53,7 +58,11 @@ export class DashboardController {
       next(new HttpException(400, 'Some error occurred loading dashboards'));
     }
   }
-
+  /**
+   * Adds group information to dashboards of type group.
+   * @param dashboards List of dashboards to process
+   * @returns Dashboards with group information added
+   */
   static async addGroupInfo(dashboards) {
     for (const dashboard of dashboards) {
       if (dashboard.group && Array.isArray(dashboard.group)) {
@@ -62,7 +71,11 @@ export class DashboardController {
     }
     return dashboards;
   }
-
+  /**
+   * Retrieves the private dashboards of the current user, filtering by tags if specified.
+   * @param req Express Request with user information and possible tags
+   * @returns List of private dashboards
+   */
   static async getPrivateDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
@@ -107,7 +120,11 @@ export class DashboardController {
       throw new HttpException(400, 'Error loading privates dashboards')
     }
   }
-
+  /**
+   * Retrieves the dashboards of the groups the user belongs to, filtering by tags if specified.
+   * @param req Express Request with user information and possible tags
+   * @returns List of group dashboards
+   */
   static async getGroupsDashboards(req: Request) {
     try {
       const userGroups = await Group.find({
@@ -161,13 +178,14 @@ export class DashboardController {
     }
   }
 
-/**
- * 
- * @param req  request
- * @param ds  datasource 
- * This function returns true or false depending on if the user can see the datasource. It is used to determine if the dashboard should be added to the available dashobards list.
- */
-    static iCanSeeTheDashboard(req: Request, ds: any ) :boolean{
+
+  /**
+   * Determines if the user can view the dashboard according to the datasource permissions.
+   * @param req Express Request with user information
+   * @param ds Datasource object to check
+   * @returns true if the user can view the dashboard, false otherwise
+   */
+  static iCanSeeTheDashboard(req: Request, ds: any ) :boolean{
       let result = false;
       if( ds.ds.metadata.model_granted_roles.length == 0){ // si no hay permisos puedo verlo.
         result  =  true;
@@ -210,7 +228,12 @@ export class DashboardController {
       return result;
     }
 
-
+  /**
+   * Retrieves the public dashboards the user has access to, filtering by tags if specified.
+   * @param req Express Request with user information and possible tags
+   * @param dss List of available datasources
+   * @returns List of public dashboards
+   */
   static async getPublicsDashboards(req: Request, dss: any[]) {
     try {
       const dashboards = await Dashboard.find(
@@ -259,7 +282,11 @@ export class DashboardController {
       throw new HttpException(400, 'Error loading public dashboards')
     }
   }
-
+  /**
+   * Retrieves the shared dashboards, filtering by tags if specified.
+   * @param req Express Request with possible tags
+   * @returns List of shared dashboards
+   */
   static async getSharedDashboards(req: Request) {
     try {
       const dashboards = await Dashboard.find(
@@ -299,7 +326,11 @@ export class DashboardController {
       throw new HttpException(400, 'Error loading shared dashboards')
     }
   }
-
+  /**
+   * Retrieves all dashboards for the administrator, allowing filtering by external properties and tags.
+   * @param req Express Request with possible filters
+   * @returns Lists of dashboards classified by visibility
+   */
   static async getAllDashboardToAdmin(req: Request) {
     let external;
     if (req.qs.external) {
@@ -404,7 +435,12 @@ export class DashboardController {
       throw new HttpException(400, 'Error loading dashboards for admin')
     }
   }
-
+  /**
+   * Retrieves a specific dashboard by ID and user permissions.
+   * @param req Express Request with dashboard ID and user
+   * @param res Express Response to send the result
+   * @param next NextFunction for error handling
+   */
   static async getDashboard(req: Request, res: Response, next: NextFunction) {
     try {
       const user = req['user']._id
