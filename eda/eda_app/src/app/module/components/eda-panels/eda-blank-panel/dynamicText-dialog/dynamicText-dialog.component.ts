@@ -4,6 +4,7 @@ import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
+import { StyleProviderService } from '@eda/services/service.index';
 
 
 
@@ -28,7 +29,7 @@ export class dynamicTextDialogComponent extends EdaDialogAbstract {
   public disabled:boolean;
   public display:boolean=false;
 
-  constructor( private userService: UserService,) {
+  constructor( private userService: UserService,private styleProviderService : StyleProviderService) {
 
     super();
 
@@ -58,19 +59,19 @@ export class dynamicTextDialogComponent extends EdaDialogAbstract {
  onShow(): void {
   const panelChart = this.controller.params.panelChart;
   this.panelChartConfig = panelChart;
-
   const colorConfig = panelChart?.config?.config;
 
   // Función para encontrar el color real sin importar la profundidad
-  function getDeepColor(obj: any): string | null {
+   function getDeepColor(obj: any): string | null {
     while (obj && typeof obj === 'object' && 'color' in obj) {
       obj = obj.color;
     }
     return typeof obj === 'string' ? obj : null;
   }
+   const extractedColor = getDeepColor(colorConfig);
 
-  const extractedColor = getDeepColor(colorConfig);
-  this.color = extractedColor || '#000000';
+   // extractedColor si acabamos de modificar el color del texto manualmente, sino el de estilos
+  this.color = extractedColor || this.styleProviderService.panelFontColor.source['_value'];
 
   this.display = true;
 }

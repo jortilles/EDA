@@ -133,7 +133,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public userSelectedTable: string;
 
     /**Strings */
-    public editQuery: string = $localize`:@@EditQuery:EDITAR CONSULTA`;
+    public editQuery: string = $localize`:@@EditQuery:Editar consulta`;
     public editSQLQuery: string = $localize`:@@EditSQLQuery:EDITAR CONSULTA SQL`;
 
     public limitRowsInfo: string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
@@ -1691,10 +1691,11 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
 
     getAttributeTypeIcon(type: string) {
         const icons = {
-            numeric: 'mdi-alphabetical',//'text-blue-500',
+            numeric: 'mdi-numeric',//'text-blue-500',
             date: 'mdi-calendar-text', //text-green-500',
             text: 'mdi-alphabetical' //'text-orange-500' 
         };
+        console.log(icons[type as keyof typeof icons])
         return icons[type as keyof typeof icons] || '';
     }
 

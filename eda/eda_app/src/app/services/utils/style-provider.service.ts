@@ -37,7 +37,7 @@ export class StyleProviderService {
 	public DEFAULT_PANEL_TITLE_ALIGN: string = DEFAULT_PANEL_TITLE_ALIGN;
 	public DEFAULT_PALETTE_COLOR: string = DEFAULT_PALETTE_COLOR;
 	public ChartsPalettes: any = ChartsPalettes;
-	public ActualChartPalette: string;
+	public ActualChartPalette: string = DEFAULT_PALETTE_COLOR;
 	public loadingFromPalette: boolean;
 	public colorCode: boolean = false;
 	public loadedPanels: number = -1;

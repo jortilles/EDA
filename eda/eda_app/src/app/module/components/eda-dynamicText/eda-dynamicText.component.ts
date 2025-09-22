@@ -28,7 +28,7 @@ export class EdadynamicTextComponent implements OnInit {
 getStyle(): any {
     let color = this.inject?.color;
     if (this.styleProviderService.loadingFromPalette) {
-        color = this.styleProviderService.ActualChartPalette['paleta'][0];
+        color = this.styleProviderService.panelFontColor.source['_value'];
     }
 
     const fontSize = this.getFontSize();
