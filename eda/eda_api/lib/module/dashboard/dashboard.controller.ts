@@ -512,9 +512,6 @@ export class DashboardController {
               req.user._id
             )
 
-console.log('Tablas prohibidas', uniquesForbiddenTables);
-
-
             const includesAdmin = req.user.role.includes("135792467811111111111110")
 
             if (!includesAdmin) {
