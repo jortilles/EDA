@@ -3900,20 +3900,22 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="ChangeFontSize">
     <source>Tamaño de fuente</source>
     <target>Font size</target>
-  </trans-unit> 
+  </trans-unit>
+  <trans-unit id="ChangeFontColor">
     <source>Color de la fuente</source>
+    <target>Font color</target>
   </trans-unit>
 
 
   <trans-unit id="ChangeBackgroundColor">
     <source>Color del fondo</source>
     <target>Background color </target>
-  </trans-unit> 
-  
+  </trans-unit>
+
   <trans-unit id="ChangePaneColor">
     <source>Color del panel</source>
     <target>Panel color</target>
-  </trans-unit> 
+  </trans-unit>
 
      <trans-unit id="ChangePaneColor">
     <source>Color del panel</source>
@@ -3923,20 +3925,20 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="opcionEditarEstilos">
     <source>EDITAR ESTILOS</source>
     <target>EDIT STYLES</target>
-  </trans-unit> 
+  </trans-unit>
 
     <trans-unit id="left">
     <source>Izquierda</source>
     <target>Left</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="center">
     <source>Centro</source>
     <target>Center</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="right">
     <source>Derecha</source>
     <target>Right</target>
-  </trans-unit> 
+  </trans-unit>
   <trans-unit id="center">
     <source>Centro</source>
     <target>Center</target>
@@ -4403,7 +4405,7 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
       <trans-unit id="CancelTablaQuality">
         <source>Cancelar</source>
-        <target>Cancel</target>       
+        <target>Cancel</target>
       </trans-unit>
       <trans-unit id="filteredReportMessage">
         <source>Por favor, espera un momento mientras procesamos la selección.</source>
@@ -4605,7 +4607,7 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Vacío</source>
         <target>(Empty)</target>
       </trans-unit>
-      <trans-unit id="filterSettingsReboot">
+              <trans-unit id="filterSettingsReboot">
         <source>La configuración de filtros se ha reiniciado</source>
         <target>Filter settings have been reset</target>
       </trans-unit>
@@ -4641,6 +4643,6 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Una tabla árbol se puede configurar de dos formas. Mediante campos que se van anidando por medio de agrupaciones o mediante la definición de dos columnas numéricas que definan una relación padre-hijo. Si las dos primeras columnas son numéricas, se asumirá que describen una relación padre hijo.</source>
         <target>A tree table can be configured in two ways: by nesting fields using groupings, or by defining two numeric columns that define a parent-child relationship. If the first two columns are numeric, they will be assumed to describe a parent-child relationship.</target>
       </trans-unit>
-    </body>
+        </body>
   </file>
 </xliff>
