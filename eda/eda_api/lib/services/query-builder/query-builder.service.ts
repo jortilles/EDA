@@ -73,7 +73,8 @@ export abstract class QueryBuilderService {
         const valueListList = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
 
-         this.permissions = this.getTreePermissions(modelPermissions,  this.queryTODO);
+        /** Check dels permisos de columna, si hi ha permisos es posen als filtres PERMISOS RECURSIVOS */
+        /*EDA*/ this.permissions = this.getPermissions(modelPermissions, this.tables, origin ,  this.queryTODO);
         
         // SI USUARIO ES ADMIN VACIAR EL ARRAY PERMISSIONS
         
@@ -428,10 +429,6 @@ export abstract class QueryBuilderService {
           
         }
 
-
-
-
-
         const goodPaths = [];
         let finalPaths = [];
         
@@ -554,10 +551,19 @@ export abstract class QueryBuilderService {
 
 
 
-    public getPermissions(modelPermissions, modelTables, originTable) {
+    public getPermissions(modelPermissions, modelTables, originTable, query) {
+        //console.log('recursively.... SE BUSCA EN LAS TABLAS RELACIONADAS');
+        let filters = [];
+        let columns = [];
+        // listo columnas para luego comporbar en la consulta si se usan para los filtros de visibilidad de columna.
+        query.fields.forEach(f => {
+            columns.push( { table_name:  f.table_id,  column_name: f.column_name } )
+        });
+        query.filters.forEach(f => {
+            columns.push( { table_name:  f.filter_table,  column_name: f.filter_column } )
+        });
       
         originTable = this.cleanOriginTable(originTable);
-        let filters = [];
         const permissions = this.getUserPermissions(modelPermissions);
 
        const relatedTables = this.checkRelatedTables(modelTables, originTable); 
@@ -570,8 +576,15 @@ export abstract class QueryBuilderService {
                 if (found >= 0) {
                     if(permission.dynamic){
                             permission.value[0] =  permission.value[0].toString().replace("EDA_USER", this.usercode) 
-                           
                     }
+                    
+                    if( permission.value[0] == '(x => None)' && 
+                     columns.findIndex((t: any) => t.table_name.split('.')[0] === permission.table && t.column_name === permission.column ) < 0    
+                    ){
+                    //console.log('No puedo ver la columna pero no se usa. No hago nada ', permission.column );  
+                    found = -1;  
+                    }else { 
+
                     let filter = {
                         filter_table: permission.table,
                         filter_column: permission.column,
@@ -584,12 +597,14 @@ export abstract class QueryBuilderService {
 
                     filters.push(filter);
                     found = -1;
+
+                    }
+
+
                 }
             });
         }
 
-
-       // console.log(filters);
         return filters;
     }
 
@@ -606,7 +621,6 @@ export abstract class QueryBuilderService {
        
         const permissions = this.getUserPermissions(modelPermissions);
         //console.log('No recursively....');
-
         query.fields.forEach(f => {
             columns.push( { table_name:  f.table_id,  column_name: f.column_name } )
 
@@ -825,7 +839,7 @@ export abstract class QueryBuilderService {
         const origin = table;
         const dest = [];
         const modelPermissions = this.dataModel.ds.metadata.model_granted_roles;
-        const permissions = this.getPermissions(modelPermissions, this.tables, origin);
+        const permissions = this.getPermissions(modelPermissions, this.tables, origin, this.queryTODO);
         const joinType = 'inner'; // es per els permisos. Ha de ser així.
         const valueListJoins = []; // anulat
 
