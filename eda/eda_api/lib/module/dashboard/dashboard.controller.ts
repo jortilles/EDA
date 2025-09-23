@@ -512,6 +512,9 @@ export class DashboardController {
               req.user._id
             )
 
+console.log('Tablas prohibidas', uniquesForbiddenTables);
+
+
             const includesAdmin = req.user.role.includes("135792467811111111111110")
 
             if (!includesAdmin) {
@@ -1116,27 +1119,15 @@ export class DashboardController {
         && r.users?.includes(user)
                                                                 ).length > 0 ){
         // El usuairo puede ver todo.
-        forbiddenTables = [];
-        // Excepto lo que le prohibo  explicitamente.                                                         
-        dataModelObject.ds.metadata.model_granted_roles.forEach(r => {
-          if(r.column == 'fullTable'   && r.users?.includes(user)  && r.permission == false   ){
-            forbiddenTables.push( r.table);
-          }
-          // Excepto lo que le prohibo  explicitamente al grupo
-          userGroups.forEach(
-                group=>{
-                  if ( r.column == 'fullTable' && r.permission == false &&  r.groups?.includes(group)  ){
-                      forbiddenTables.push( r.table);
-                    }
-                }
-          );
-
-
-
-        });;
-
-        return forbiddenTables;   
+        allowedTablesBySecurityForMe =  _.cloneDeep(allTables);
       }
+      // Excepto lo que le prohibo  explicitamente.                                                         
+      dataModelObject.ds.metadata.model_granted_roles.forEach(r => {
+        if(r.column == 'fullTable'   && r.users?.includes(user)  && r.permission == false   ){
+          forbiddenTables.push( r.table);
+        }
+      });;
+
       // Si el grupo puede ver todo el modelo.
       let groupCan =  0;
       userGroups.forEach(
@@ -1151,9 +1142,29 @@ export class DashboardController {
         }
       );
       if(groupCan==1) {
-        forbiddenTables = [];
-        return forbiddenTables;
+        allowedTablesBySecurityForMe = _.cloneDeep(allTables);
       }
+
+
+      // Excepto lo que le prohibo  explicitamente al grupo
+      userGroups.forEach(
+        group=>{
+          const  forbidden = dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.column == 'fullTable' 
+            && r.permission == false 
+            && r.groups?.includes(group) 
+          )
+          if (forbidden.length > 0 ){
+              forbidden.forEach( r=> forbiddenTables.push( r.table));
+          }
+        }
+      );
+
+
+
+
+
+
+
    
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
         if (
@@ -1229,7 +1240,8 @@ export class DashboardController {
         }
       }
     }
-
+    // puedo ver todas las tablas menos las que tengo explicitamente prohibidas
+    allowedTablesBySecurityForMe = allowedTablesBySecurityForMe.filter( t=> !forbiddenTables.includes(t) );
     forbiddenTables = allTables.filter( t => !allowedTablesBySecurityForMe.includes( t )  );
     return forbiddenTables;
   }
