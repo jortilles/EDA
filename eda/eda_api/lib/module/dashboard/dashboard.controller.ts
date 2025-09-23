@@ -1343,7 +1343,7 @@ export class DashboardController {
       dataModelObject.ds.metadata.cache_config.enabled === true;
 
       const cachedQuery = cacheEnabled
-        ? await CachedQueryService.checkQuery(req.body.model_id, query)
+        ? await CachedQueryService.checkQuery(req.body.model_id, query, 'EDA')
         : null
 
       if (!cachedQuery) {
@@ -1409,7 +1409,7 @@ export class DashboardController {
         // las etiquetas son el nombre técnico...
         const output = [mylabels, results]
         if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
-          CachedQueryService.storeQuery(req.body.model_id, query, output)
+          CachedQueryService.storeQuery(req.body.model_id, query, output, 'EDA')
         }
 
         /**SUMA ACUMULATIVA ->
@@ -1521,9 +1521,9 @@ export class DashboardController {
         let cacheEnabled =
           dataModelObject.ds.metadata.cache_config &&
           dataModelObject.ds.metadata.cache_config.enabled
-        const cachedQuery = cacheEnabled
-          ? await CachedQueryService.checkQuery(req.body.model_id, query)
-          : null
+        const cachedQuery = cacheEnabled && !req.body.cleanCache
+          ? await CachedQueryService.checkQuery(req.body.model_id, query, 'SQL')
+          : null;
 
         if (!cachedQuery) {
           connection.client = await connection.getclient()
@@ -1588,37 +1588,33 @@ export class DashboardController {
           }
 
 
-          /** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats.
+/** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats.
            * miro cada  valor amb el seguent per baix de la matriu. */
-          if (oracleDataTypes.length > 1) {
-            for (var i = 0; i < oracleDataTypes.length - 1; i++) {
-              var e = oracleDataTypes[i]
-              for (var j = 0; j < e.length; j++) {
-                if(oracleDataTypes[0][j]=='int'  ){
-                  if ( oracleDataTypes[i][j] != oracleDataTypes[i + 1][j]) {
-                    oracleEval = false
-                  }
-                }
+        if (oracleDataTypes.length > 1) {
+          for (var i = 0; i < oracleDataTypes.length - 1; i++) {
+            for (var j = 0; j < oracleDataTypes[i].length; j++) {
+              if(oracleDataTypes[j][0] === 'int' && oracleDataTypes[i][j] !== oracleDataTypes[i + 1][j]) {
+                oracleEval = false;
               }
             }
           }
+        }
+
           /** si tinc numeros barrejats. Poso el rollback */
-          if (oracleEval !== true) {
-            results = resultsRollback
-          }else{
+        if (!oracleEval) {
+          results = resultsRollback;
+        } else {
             // pongo a nulo los numeros nulos
-            for (var i = 0; i < results.length; i++) {
-              var e = results[i]
-              for (var j = 0; j < e.length; j++) {
-                  if ( results[i][j] ===  eda_api_config.null_value ) {
-                    results[i][j] = null;
-                  }
-              }
+          for (var i = 0; i < results.length; i++) {
+            for (var j = 0; j < results[i].length; j++) {
+              if (results[i][j] === eda_api_config.null_value) results[i][j] = null;
             }
           }
-          const output = [labels, results]
-          if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
-            CachedQueryService.storeQuery(req.body.model_id, query, output)
+        }
+
+        const output = [labels, results];
+        if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
+            CachedQueryService.storeQuery(req.body.model_id, query, output, 'SQL')
           }
 
           console.log(
@@ -1823,37 +1819,42 @@ export class DashboardController {
   }
   
 
-  static async cleanDashboardCache(req: Request, res: Response, next: NextFunction) {
-    let connectionProps: any;
-    if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+static async cleanDashboardCache(req: Request, res: Response, next: NextFunction) {
+      let connectionProps: any;
+      if (req.body.dashboard?.connectionProperties !== undefined)
+        connectionProps = req.body.dashboard.connectionProperties;
 
-    const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
-    const dataModel = await connection.getDataSource(req.body.model_id)
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
+      const dataModel = await connection.getDataSource(req.body.model_id);
 
-    if (dataModel.ds.metadata.cache_config.enabled) {
+      if (!dataModel.ds.metadata.cache_config.enabled) {
+        return res.status(200).json({ ok: true });
+      }
+
       /**Security check */
       const allowed = DashboardController.securityCheck(dataModel, req.user)
       if (!allowed) {
         return next(
           new HttpException(
             500,
-            `Sorry, you are not allowed here, contact your administrator`
+            'Sorry, you are not allowed here, contact your administrator'
           )
         )
       }
 
       const dataModelObject = JSON.parse(JSON.stringify(dataModel))
 
-      req.body.queries.forEach(async query => {
-        let sqlQuery = await connection.getQueryBuilded(
-          query,
-          dataModelObject,
-          req.user
-        )
-        let hashedQuery = CachedQueryService.build(req.body.model_id, sqlQuery)
-        let res = await CachedQueryService.deleteQuery(hashedQuery)
-      })
-    }
+      for (const query of req.body.queries) {
+        if (query.queryMode === 'SQL') {
+          let userSql = query.SQLexpression;
+          let hashedQuery = CachedQueryService.build(req.body.model_id, userSql, 'SQL');
+          await CachedQueryService.deleteQuery(hashedQuery);
+        } else {
+          let edaQuery = await connection.getQueryBuilded(query, dataModelObject, req.user);
+          let hashedQuery = CachedQueryService.build(req.body.model_id, edaQuery, 'EDA');
+          await CachedQueryService.deleteQuery(hashedQuery);
+        }
+      }
 
     return res.status(200).json({ ok: true })
   }
