@@ -1072,7 +1072,7 @@ export abstract class QueryBuilderService {
             if (node) {
                 node.push(filter);
                 node.forEach(filter => {
-                    if (!toRemove.includes(filter.filter_id)) {
+                    if (!toRemove.includes(filter.filter_id) && filter.filter_id.indexOf('security')<0 ) {
                         toRemove.push(filter.filter_id);
                     }
                 })
