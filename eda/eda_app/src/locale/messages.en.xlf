@@ -3195,7 +3195,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source> Todos  </source>
     <target>All  </target>
   </trans-unit>
-
   <trans-unit id="NoneTags">
     <source> Ninguno  </source>
     <target>None </target>
@@ -3485,7 +3484,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>No ha sido posible eliminar la caché</source>
     <target>Error deleting cache</target>
   </trans-unit>
-
   <trans-unit id="RefreshCacheTitle">
     <source>Actualizar los datos del modelo cada:</source>
     <target>Update model data every:  </target>
@@ -3500,7 +3498,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Día/s</source>
     <target>Day/s</target>
   </trans-unit>
-
   <trans-unit id="noCache">
     <source>Sin caché</source>
     <target>No caché</target>
@@ -3547,7 +3544,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>Configuración de seguridad</source>
     <target>Security configuration</target>
   </trans-unit>
-
   <trans-unit id="viewsecurity">
     <source>Ver configuración de seguridad</source>
     <target>View security configuration</target>
@@ -3597,7 +3593,6 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <source>PERMISOS</source>
     <target>PERMISSIONS</target>
   </trans-unit>
-
 
   <trans-unit id="visible">
     <source>VISIBLE</source>
@@ -3902,21 +3897,23 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Font type</target>
   </trans-unit>
 
-     <trans-unit id="ChangeFontSize">
+  <trans-unit id="ChangeFontSize">
     <source>Tamaño de fuente</source>
     <target>Font size</target>
-  </trans-unit>
-
-     <trans-unit id="ChangeFontColor">
+  </trans-unit> 
     <source>Color de la fuente</source>
-    <target>Font color</target>
   </trans-unit>
 
 
   <trans-unit id="ChangeBackgroundColor">
     <source>Color del fondo</source>
     <target>Background color </target>
-  </trans-unit>
+  </trans-unit> 
+  
+  <trans-unit id="ChangePaneColor">
+    <source>Color del panel</source>
+    <target>Panel color</target>
+  </trans-unit> 
 
      <trans-unit id="ChangePaneColor">
     <source>Color del panel</source>
@@ -3926,12 +3923,20 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   <trans-unit id="opcionEditarEstilos">
     <source>EDITAR ESTILOS</source>
     <target>EDIT STYLES</target>
-  </trans-unit>
+  </trans-unit> 
 
     <trans-unit id="left">
     <source>Izquierda</source>
     <target>Left</target>
-  </trans-unit>
+  </trans-unit> 
+  <trans-unit id="center">
+    <source>Centro</source>
+    <target>Center</target>
+  </trans-unit> 
+  <trans-unit id="right">
+    <source>Derecha</source>
+    <target>Right</target>
+  </trans-unit> 
   <trans-unit id="center">
     <source>Centro</source>
     <target>Center</target>
@@ -4250,7 +4255,6 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>KPI + Gráfico de Barras</source>
         <target>KPI + Bar chart</target>
       </trans-unit>
-
       <trans-unit id="chartTypesKPILINE">
         <source>KPI + Gráfico de Lineas</source>
         <target>KPI + Line chart</target>
@@ -4399,7 +4403,31 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
       <trans-unit id="CancelTablaQuality">
         <source>Cancelar</source>
-        <target>Cancel</target>
+        <target>Cancel</target>       
+      </trans-unit>
+      <trans-unit id="filteredReportMessage">
+        <source>Por favor, espera un momento mientras procesamos la selección.</source>
+        <target>Please wait a moment while we process your selection.</target>
+      </trans-unit>
+      <trans-unit id="logsManagement">
+        <source>Gestión de logs</source>
+        <target>Logs management</target>
+      </trans-unit>
+      <trans-unit id="logFileBtn">
+        <source>Logs</source>
+        <target>Logs</target>
+      </trans-unit>
+      <trans-unit id="logErrorFileBtn">
+        <source>Logs Error</source>
+        <target>Logs Error</target>
+      </trans-unit>
+      <trans-unit id="filterByTreetable">
+      <source>Filtro: </source>
+      <target>Filter: </target>
+      </trans-unit>
+      <trans-unit id="EmptyValueMessage">
+      <source>Sin Informar</source>
+      <target>Uninformed</target>
       </trans-unit>
       <trans-unit id="filteredReportMessage">
         <source>Por favor, espera un momento mientras procesamos la selección.</source>

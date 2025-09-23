@@ -547,20 +547,22 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 const panelFilters = [...panel.content.query.query.filters];
                 panel.content.query.query.filters = [];
-
                 panelFilters.forEach(pFilter => {
 
                     if (pFilter.filter_id === filter.id) {
                         // Verificar ???
                         if(pFilter.joins !== undefined) filter.joins = pFilter.joins;
                         const formatedFilter = this.globalFiltersService.formatFilter(filter);
+                        formatedFilter.joins = pFilter.joins; // the joins are added here.
                         panel.content.query.query.filters.push(formatedFilter);
                     } else {
                         panel.content.query.query.filters.push(pFilter);
                     }
+
                 });
             });
         });
+
     }
 
     private getUrlParams(): void {
