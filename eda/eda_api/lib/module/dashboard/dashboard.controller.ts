@@ -1000,6 +1000,17 @@ export class DashboardController {
     userGroups: Array<String>,
     user: string
   ) {
+
+    /**
+     * Lógica del proceso: cojo todas las tablas .
+     * Recupero las tablas que puedo ver explicitamente y quto las que por algún motivo no  puedo ver.
+     * Las tablas prohividas son las que están en el listado todas las tablas y no están permitidas explicitamente 
+     * 
+     * puedo ver todas las tablas menos las que tengo explicitamente prohibida
+     * 
+     * 
+     */
+
     const allTables = [];
     let allowedTablesBySecurityForMe = [];
     let forbiddenTables = [];
