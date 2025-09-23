@@ -24,7 +24,7 @@ export class dynamicTextDialogComponent extends EdaDialogAbstract {
   public chart: EdaChart;
   public value: number;
   public operand: string;
-  @Output() color: any = '#000000';
+  @Output() color;
   @Output() messageEvent = new EventEmitter<any>();
   public disabled:boolean;
   public display:boolean=false;

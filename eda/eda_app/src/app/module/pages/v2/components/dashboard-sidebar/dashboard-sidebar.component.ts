@@ -513,32 +513,32 @@ export class DashboardSidebarComponent {
     });
   }
   
-public exportAsJPEG() {
-  this.hidePopover();
-  this.spinner.on();
+  public exportAsJPEG() {
+    this.hidePopover();
+    this.spinner.on();
 
-  const node = document.getElementById('myDashboard');
-  if (!node) {
-    console.error('No se encontró el elemento "myDashboard" en el DOM');
-    this.spinner.off();
-    return;
+    const node = document.getElementById('myDashboard');
+    if (!node) {
+      console.error('No se encontró el elemento "myDashboard" en el DOM');
+      this.spinner.off();
+      return;
+    }
+
+    const title = this.dashboard.title;
+
+    domtoimage.toJpeg(node, { bgcolor: 'white' })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = `${title}.jpeg`;
+        link.href = dataUrl;
+        link.click();
+        this.spinner.off();
+      })
+      .catch((error) => {
+        console.error('Error exportando como JPEG:', error);
+        this.spinner.off();
+      });
   }
-
-  const title = this.dashboard.title;
-
-  domtoimage.toJpeg(node, { bgcolor: 'white' })
-    .then((dataUrl) => {
-      const link = document.createElement('a');
-      link.download = `${title}.jpeg`;
-      link.href = dataUrl;
-      link.click();
-      this.spinner.off();
-    })
-    .catch((error) => {
-      console.error('Error exportando como JPEG:', error);
-      this.spinner.off();
-    });
-}
 
   public getMailingAlertsEnabled(): boolean {
 
@@ -598,41 +598,34 @@ public exportAsJPEG() {
   public renameDashboard() {
     let elementName = document.getElementById('dashboardName');
 
-   console.log(JSON.stringify(elementName))
+    // Crear input
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = elementName.innerText;
 
+    // remplazamos el elemento por un input 
+    elementName.replaceWith(input);
     
+    // Foco del titulo
+    input.focus();
     
+    // Cuando se pierde el foco, volver a texto
+    input.addEventListener("blur", () => {
+      const p = document.createElement("p");
+      p.id = elementName.id;
+      p.innerText = input.value;
+      input.replaceWith(p);
+      p.className = 'italic font-slate-50'; // Estilo que le asignamos para diferenciar que no esta guardado
+      this.dashboard.title = p.innerText
+    });
     
-      // Crear input
-  const input = document.createElement("input");
-  input.type = "text";
-  input.value = elementName.innerText;
-
-  // remplazamos el elemento por un input 
-  elementName.replaceWith(input);
-
-
-  // Foco automático
-  input.focus();
-
-  // Cuando se pierde el foco, volver a texto
-  input.addEventListener("blur", () => {
-    const p = document.createElement("p");
-    p.id = elementName.id;
-    p.innerText = input.value;
-    input.replaceWith(p);
-    p.className = 'italic font-slate-50';
-    this.dashboard.title = p.innerText
-    p.innerText+='*'
-  });
-
-  console.log(this)
-    
-    
-    
-
-}
-    
-  
-
+    // La tecla Enter quita el focus del titulo
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault(); // evita saltos de línea
+        input.blur(); 
+      }
+    });
+    this.dashboardService._notSaved.next(true);
+  }
 }
