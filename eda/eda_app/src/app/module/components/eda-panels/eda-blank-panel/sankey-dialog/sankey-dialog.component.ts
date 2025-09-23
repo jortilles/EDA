@@ -110,7 +110,7 @@ export class SankeyDialog extends EdaDialogAbstract implements AfterViewChecked 
     let colorsLabels = this.values.map(v => labelColorMap[v[0] as string]);
 
     // Creación de chart
-    this.myPanelChartComponent.props.config.setConfig(new SankeyConfig([...new Set<string>(colorsLabels)].map(c => this.ChartUtilsService.hex2rgbD3(c))));
+    this.myPanelChartComponent.props.config.setConfig(new SankeyConfig([...new Set<string>(colorsLabels)]));
     this.myPanelChartComponent.changeChartType();
   }
 }

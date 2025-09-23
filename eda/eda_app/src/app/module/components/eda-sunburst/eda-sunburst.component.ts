@@ -122,7 +122,7 @@ export class EdaSunburstComponent implements AfterViewInit {
 
     svg
       .attr('viewBox', `${-radius} ${-radius} ${width} ${width}`)
-      .style('max-width', `${width}px`)
+     // .style('max-width', `${width}px`)
     // .style('font', '12px sans-serif')
 
     const path = svg
