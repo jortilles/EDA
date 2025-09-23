@@ -4389,29 +4389,29 @@
         <source>Entre</source>
         <target>Entre</target>
       </trans-unit>
+      <trans-unit id="emptyStringTxt">
+        <source>Vacío</source>
+        <target>(Vacío)</target>
+      </trans-unit>
       <trans-unit id="filterSettings">
         <source>Configuración de filtros</source>
         <target>Configuración de filtros</target>
       </trans-unit>
       <trans-unit id="descriptionFilterSettings">
         <source>Configuración avanzada de los todos los filtros</source>
-        <target>Configuración avanzada de los todos los filtros</target>
-      </trans-unit>
-        <trans-unit id="emptyStringTxt">
-        <source>Vacío</source>
-        <target>(Vacío)</target>
+        <target>Configuración avanzada de todos los filtros</target>
       </trans-unit>
       <trans-unit id="filterSettingsReboot">
         <source>La configuración de filtros se ha reiniciado</source>
-        <target>La configuración de filtros se ha reiniciado</target>
+        <target>La configuración de filtros se ha restablecido</target>
       </trans-unit>
       <trans-unit id="globalFilterSettingsReboot">
         <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
-        <target>La configuración de filtros del panel involucrado se ha reiniciado</target>
+        <target>La configuración de filtros del panel se ha restablecido</target>
       </trans-unit>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
-        <target>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</target>
+        <target>Aún no se ha configurado ningún filtro. Use el panel de filtros o los filtros globales.</target>
       </trans-unit>
       <trans-unit id="chartInfoTreetable">
         <source>Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.</source>

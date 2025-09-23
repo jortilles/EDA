@@ -4585,6 +4585,10 @@ Once configured you can invoke it whenever you want from the button.</target>
         <source>Entre</source>
         <target>Between</target>
       </trans-unit>
+      <trans-unit id="emptyStringTxt">
+        <source>Vacío</source>
+        <target>(Empty)</target>
+      </trans-unit>
       <trans-unit id="filterSettings">
         <source>Configuración de filtros</source>
         <target>Filter settings</target>
@@ -4607,11 +4611,11 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
       <trans-unit id="globalFilterSettingsReboot">
         <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
-        <target>The filter settings for the panel involved have been reset</target>
+        <target>Panel filter settings have been reset</target>
       </trans-unit>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
-        <target>You haven't set up filters yet. Use the filter panel or global filters.</target>
+        <target>You haven't set up any filter. Use the filter panel or global filters.</target>
       </trans-unit>
       <trans-unit id="chartInfoTreetable">
         <source>Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.</source>

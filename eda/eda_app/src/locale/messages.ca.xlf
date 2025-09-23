@@ -4424,19 +4424,19 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="descriptionFilterSettings">
         <source>Configuración avanzada de los todos los filtros</source>
-        <target>Configuració avançada dels tots els filtres</target>
+        <target>Configuració avançada de tots els filtres</target>
       </trans-unit>
       <trans-unit id="filterSettingsReboot">
         <source>La configuración de filtros se ha reiniciado</source>
-        <target>La configuració de filtres s'ha reiniciat</target>
+        <target>La configuració de filtres s'ha restablert</target>
       </trans-unit>
       <trans-unit id="globalFilterSettingsReboot">
         <source>La configuración de filtros del panel involucrado se ha reiniciado</source>
-        <target>La configuració de filtres del panell involucrat s'ha reiniciat</target>
+        <target>La configuració de filtres del panell s'ha restablert</target>
       </trans-unit>
       <trans-unit id="withoutFilters">
         <source>Aún no has configurado filtros. Usa el panel de filtros o los filtros globales</source>
-        <target>Encara no heu configurat filtres. Fes servir el panell de filtres o els filtres globals</target>
+        <target>Encara no heu configurat cap filtre. Feu servir el panell de filtres o els filtres globals.</target>
       </trans-unit>
       <trans-unit id="chartInfoTreetable">
         <source>Un Treetable necesita como mínimo una categoría y dos valores numéricos, en caso se inicie la consulta con dos valores numéricos, estos deberán ser ids con una relación hijo y padre, del cual el hijo deberá iniciar con 0.</source>
