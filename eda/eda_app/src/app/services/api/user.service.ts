@@ -119,6 +119,10 @@ export class UserService extends ApiService {
         );
     }
 
+    loginSAML() {
+        
+    }
+
     /** Token sending by the third party through an URL*/
     tokenUrl(token: string): Observable<any> {
 

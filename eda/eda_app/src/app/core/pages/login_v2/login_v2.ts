@@ -82,4 +82,9 @@ export class LoginV2Component implements OnInit {
             }
         }
     }
+
+    loginSSO() {
+        console.log('holaaaaaaaaaaaaaaaa.');
+    }
+
 }
