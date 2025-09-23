@@ -1060,12 +1060,6 @@ console.log('Tablas prohibidas', uniquesForbiddenTables);
         }
       );
 
-
-
-
-
-
-
    
       for (var i = 0; i < dataModelObject.ds.metadata.model_granted_roles.length; i++ ) {
         if (
