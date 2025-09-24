@@ -1038,11 +1038,11 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
                 this.renderSunburst();
                 break;
             case 'parallelSets':
-                this.props.config.setConfig(new SankeyConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
+                this.props.config.setConfig(new SankeyConfig(newColors.map(({ color }) => color)));
                 this.renderParallelSets();
                 break;
             case 'scatterPlot':
-                this.props.config.setConfig(new ScatterConfig(newColors.map(({ color }) => color).map(color => this.chartUtils.hex2rgbD3(color))));
+                this.props.config.setConfig(new ScatterConfig(newColors.map(({ color }) => color)));
                 this.renderScatter();
                 break;
             case 'bubblechart':
