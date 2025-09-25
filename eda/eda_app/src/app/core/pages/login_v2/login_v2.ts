@@ -8,6 +8,8 @@ import { UserService } from '@eda/services/service.index';
 import { User } from '@eda/models/model.index';
 import { lastValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
+import { jwtDecode } from 'jwt-decode';
+
 declare function init_plugins();
 @Component({
     selector: 'app-loginv2',
@@ -42,6 +44,25 @@ export class LoginV2Component implements OnInit {
     ngOnInit(): void {
         init_plugins();
 
+        // Si llega con Single Sing-On
+        const qp = this.route.snapshot.queryParamMap;
+        const token = qp.get('token');
+        const next = qp.get('next') || '/home';
+
+        if (token) {
+            
+            try {
+                const payload = jwtDecode<any>(token);
+                const userSAML: User = payload.user;    
+                this.userService.savingStorage(userSAML._id, token, userSAML);
+            } catch (error) {
+                console.log('error', error)
+            }
+            
+            this.router.navigate([next]);
+            return;
+        }
+
         this.route.queryParamMap.subscribe(params => this.urlParams = JSON.parse(JSON.stringify(params)).params.params);
 
         this.returnUrl = this.route.snapshot.queryParams["returnUrl"] || "/home";
@@ -53,6 +74,7 @@ export class LoginV2Component implements OnInit {
     }
 
     async onSubmitLogin() {
+
         if (this.loginForm.valid) {
             try {
                 const { email, password, remember } = this.loginForm.value;
@@ -75,6 +97,9 @@ export class LoginV2Component implements OnInit {
 
                     this.router.navigate([this.returnUrl], { queryParams: newParams });
                 } else {
+
+                    console.log('this.returnUrl: ', this.returnUrl);
+
                     this.router.navigate([this.returnUrl]);
                 }
             } catch (err) {
@@ -83,8 +108,14 @@ export class LoginV2Component implements OnInit {
         }
     }
 
-    loginSSO() {
-        console.log('holaaaaaaaaaaaaaaaa.');
+    // Se redirigi al enlace de login de Single Sign-On del Entity Provider
+    async loginSSO() {
+          try {
+            const loginUrl = await lastValueFrom(this.userService.loginUrlSAML());
+            window.location.assign(loginUrl); // redirige al login del Entity Provider
+        } catch (e:any) {
+            Swal.fire('SSO', e?.error?.message || 'No se pudo obtener la URL del Single Sign-On', 'error');
+        }
     }
 
 }

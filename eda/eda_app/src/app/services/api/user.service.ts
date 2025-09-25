@@ -16,6 +16,7 @@ import Swal from 'sweetalert2';
 export class UserService extends ApiService {
     private route = '/admin/user';
     private routeThirdParty = '/tp/url';
+    private authSAML = '/auth/saml';
 
     public user: User;
     public isAdmin: boolean;
@@ -119,8 +120,11 @@ export class UserService extends ApiService {
         );
     }
 
-    loginSAML() {
-        
+    loginUrlSAML(): Observable<string> {
+        const url = `${this.authSAML}/login`;
+        return this.get(url).pipe(map((r: any) => {
+            return r.url
+        }));
     }
 
     /** Token sending by the third party through an URL*/
