@@ -767,19 +767,19 @@ export class PanelChartComponent implements OnInit, OnChanges, OnDestroy {
         }catch{}
         try{
             if (type === "geoJsonMap") {
-                inject.color = this.props.config.getConfig() !== undefined
+                inject.color = this.props.config.getConfig() !== undefined && !this.styleProviderService.loadingFromPalette
                     ? this.props.config["config"]["color"]
                     : this.chartUtils.generateChartColorsFromPalette(1, this.paletaActual)[0].backgroundColor;
-                //inject.baseLayer = this.props.config['config']['baseLayer'];
+                inject.baseLayer = this.props.config['config']['baseLayer'];
             } else {
                 let fromPaleta = this.props.config.getConfig() === undefined;
                 inject.initialColor = !fromPaleta ? this.props.config.getConfig()["initialColor"] : this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual).at(-1).backgroundColor;
                 inject.finalColor = !fromPaleta ? this.props.config.getConfig()["finalColor"] : this.chartUtils.generateChartColorsFromPalette(2, this.paletaActual)[0].backgroundColor;
                 
-                // inject.baseLayer = true;
+                inject.baseLayer = true;
             }
         } catch {
-            inject.color =  '#006400';
+            inject.color =  this.styleProviderService.ActualChartPalette['paleta'][0];
         }
         try{
             inject.logarithmicScale = this.props.config['config']['logarithmicScale']  ;

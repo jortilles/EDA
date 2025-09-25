@@ -345,6 +345,7 @@ export class DashboardSidebarComponent {
           ds,
           tags: null,
           refreshTime: null,
+          author: this.dashboard.dashboard.config.author,
           styles: this.stylesProviderService.generateDefaultStyles(), 
         },
         group: (newDashboard.group || []).map((g: any) => g._id)
@@ -363,6 +364,7 @@ export class DashboardSidebarComponent {
           refreshTime: (this.dashboard.refreshTime > 5) ? this.dashboard.refreshTime : this.dashboard.refreshTime ? 5 : null,
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
           sendViaMailConfig: this.dashboard.sendViaMailConfig,
+          author: this.dashboard.dashboard.config.author,
           onlyIcanEdit: this.dashboard.onlyIcanEdit, //TODO ==> Done?
           styles: this.stylesProviderService.generateDefaultStyles(),
         },
