@@ -17,6 +17,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   public dialog: EdaDialog;
   public panelChartConfig: PanelChart = new PanelChart();
   public colors: Array<string>;
+  private originalColors: string[] = [];
   public labels: Array<string>;
   public display:boolean=false;
   public selectedPalette: { name: string; paleta: any } | null = null;
@@ -50,6 +51,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
           .filter((item): item is { value: string; color: string } => !!item);
         // Transformación para los colorPicker del dialog
         this.colors = sortedAssignedColors.map(c => c.color.startsWith('rgb') ? this.ChartUtilsService.rgb2hexD3(c.color) : c.color);
+        this.originalColors = [...this.colors]; // Guardar estado original aquí
       }, 0)
     }
   }
@@ -69,6 +71,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
   }
 
   closeChartConfig() {
+    this.myPanelChartComponent.props.config.setConfig(new SunburstConfig(this.originalColors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
@@ -82,12 +85,7 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
         colorMap[value] = this.colors[colorIndex++];
       }
     });
-  
-    // Guardar copia profunda de colores originales para restaurar luego
-    const originalColors = JSON.parse(
-      JSON.stringify(this.myPanelChartComponent.props.config.getConfig()['assignedColors'])
-    );
-  
+   
     // Actualizar temporalmente los colores según colorMap
     this.myPanelChartComponent.props.config.getConfig()['assignedColors'].forEach(element => {
       if (colorMap[element.value]) {
@@ -95,11 +93,6 @@ export class SunburstDialogComponent extends EdaDialogAbstract  {
       }
     });
     this.myPanelChartComponent.changeChartType();
-  
-    // Restaurar colores originales tras refrescar el gráfico
-    setTimeout(() => {
-      this.myPanelChartComponent.props.config.getConfig()['assignedColors'] = originalColors;
-    }, 0);
   }
 
   labePrettify(label){

@@ -41,7 +41,7 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
         this.colors = this.myPanelChartComponent.componentRef.instance.colors.map(c => this.ChartUtilsService.rgb2hexD3(c) || c);
-        this.originalColors = [...this.colors];
+        this.originalColors = [...this.colors]; // Guardar estado original aquí
         this.labels = [0, 1];
       }, 0);
     }
@@ -60,17 +60,13 @@ export class FunnelDialog extends EdaDialogAbstract implements AfterViewChecked 
   }
 
   closeChartConfig() {
+    this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(this.originalColors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
   handleInputColor(): void {
     this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(this.colors.map(c => this.ChartUtilsService.rgb2hexD3(c) || this.ChartUtilsService.hex2rgbD3(c))));
     this.myPanelChartComponent.changeChartType();
-    
-    // Restaurar configuración original tras preview
-    setTimeout(() => {
-      this.myPanelChartComponent.props.config.setConfig(new FunnelConfig(this.originalColors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
-    }, 100);
   }
 
   onPaletteSelected() { 

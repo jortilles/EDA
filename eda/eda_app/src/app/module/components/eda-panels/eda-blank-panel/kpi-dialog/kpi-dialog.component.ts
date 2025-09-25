@@ -5,6 +5,7 @@ import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
 import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
 import * as _ from 'lodash';
+import { KpiConfig } from '../panel-charts/chart-configuration-models/kpi-config';
 
 
 @Component({
@@ -24,6 +25,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public value: number;
     public operand: string;
     public color: string = '#ff0000';
+    public originalColors: string[];
     public alerts: Array<any> = [];
     public alertInfo: string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`;
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
@@ -83,10 +85,13 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     }
 
     closeChartConfig() {
+        // Modificación a datasetoriginal si este se modifica y no se guarda
+        this.edaChart.chartDataset[0].backgroundColor =  this.originalColors[0]['backgroundColor'];
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 
     onShow(): void {
+        console.log(this)
         this.panelChartConfig = this.controller.params.panelChart;
         this.edaChart = this.controller.params.edaChart;
 
@@ -94,6 +99,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
         this.loadChartColors();
         this.alerts = config.alertLimits || []; //deepcopy
+        this.originalColors = [...this.edaChart.chartColors]; // Guardar estado original aquí
         this.display = true;
     }
 
