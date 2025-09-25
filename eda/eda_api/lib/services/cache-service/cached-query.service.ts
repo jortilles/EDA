@@ -5,15 +5,11 @@ import DataSource from '../../module/datasource/model/datasource.model'
 import ManagerConnectionService from '../../services/connection/manager-connection.service'
 
 export class CachedQueryService {
-  static build(model_id: string, query: any, mode: 'SQL' | 'EDA') {
-  const hash = hasher()
-  if (mode === 'SQL') {
-    const normalized = query.replace(/\s+/g, ' ').trim()
-    return hash.hash({ model: model_id, sql: normalized })
-  } else {
-    return hash.hash({ model: model_id, eda: query })
+  static build(model_id: string, query: any) {
+    const hash = hasher()
+    return hash.hash({ model: model_id, query: query })
   }
-}
+
 
   static async getQuery(queryHash) {
     try {
@@ -27,9 +23,8 @@ export class CachedQueryService {
     }
   }
 
-  static async checkQuery(model_id: string, query: any, mode: 'SQL' | 'EDA') {
-    try {
-      const queryHash = CachedQueryService.build(model_id, query, mode);
+  static async checkQuery(model_id: string, query: any) {    try {
+      const queryHash = CachedQueryService.build(model_id, query);
       const storedQuery = await CachedQueryService.getQuery(queryHash);
       if (storedQuery) {
         const res = await CachedQuery.updateOne(
@@ -44,17 +39,17 @@ export class CachedQueryService {
       return storedQuery;
     } catch (err) {
       console.log(err);
-      throw new Error('Unable to cache query');
+      throw new Error(`Unable to cache query`);
     }
   }
 
-  static async storeQuery (model_id: string, query: any, response: Array<any>,mode: 'SQL' | 'EDA') {
-    try {
+  static async storeQuery (model_id: string, query: any, response: Array<any>) {
+        try {
       const cachedQuery: ICachedQuery = new CachedQuery({
         cachedQuery: {
           query: query,
           model_id: model_id,
-          hashedQuery: CachedQueryService.build(model_id, query, mode),
+          hashedQuery: CachedQueryService.build(model_id, query),
           response: response,
           dateAdded: SchedulerFunctions.totLocalISOTime(new Date()),
           lastLoaded: SchedulerFunctions.totLocalISOTime(new Date()),
