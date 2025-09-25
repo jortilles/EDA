@@ -136,7 +136,10 @@
               <span>{{report.config.author}}</span>
             }
             @if (report.config?.createdAt) {
-              <span>{{report.config.createdAt}}</span>
+              <span>{{report.config.createdAt}} FUNCIONA </span>
+            } @else {
+              
+              <span>NO SE HA GUARDADO LA FECHA DE CREACIÓN</span>
             }
           </div>
           <div class="flex items-center gap-2">

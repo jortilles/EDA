@@ -2398,6 +2398,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Común</source>
 <target>Comú</target>
 </trans-unit>
+<trans-unit id="publicPanel">
+<source>Publico</source>
+<target>Públic</target>
+</trans-unit>
 <trans-unit id="groupPanel">
 <source>Grupo</source>
 <target>Grup</target>

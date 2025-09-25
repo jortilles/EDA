@@ -14,7 +14,13 @@
           class="bg-gray-100 text-gray-700 rounded-md shadow-sm">
         </p-selectButton>
       </div>
-  
+
+      @if(showUrl){
+        <span (click)="copyURL()" class="cursor-pointer w-fit p-2 h-fit bg-gray-100 rounded-md border font-bold text-gray-700"> 
+          copiar URL pública
+        </span>
+      }
+
       @if (showGroups) {
       <!-- Multiselect de Grupos -->
       <div class="col-12">
