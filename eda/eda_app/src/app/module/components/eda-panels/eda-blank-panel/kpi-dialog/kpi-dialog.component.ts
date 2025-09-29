@@ -86,7 +86,8 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
     closeChartConfig() {
         // Modificación a datasetoriginal si este se modifica y no se guarda
-        this.edaChart.chartDataset[0].backgroundColor =  this.originalColors[0]['backgroundColor'];
+        if(this.panelChartConfig.edaChart !== 'kpi')
+          this.edaChart.chartDataset[0].backgroundColor = this.originalColors[0]['backgroundColor'];
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 
