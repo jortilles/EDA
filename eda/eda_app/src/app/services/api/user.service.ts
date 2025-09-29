@@ -17,6 +17,7 @@ export class UserService extends ApiService {
     private route = '/admin/user';
     private routeThirdParty = '/tp/url';
     private authSAML = '/auth/saml';
+    private authSAML_ORCL = '/auth/samlorcl';
 
     public user: User;
     public isAdmin: boolean;
@@ -121,7 +122,7 @@ export class UserService extends ApiService {
     }
 
     loginUrlSAML(): Observable<string> {
-        const url = `${this.authSAML}/login`;
+        const url = `${this.authSAML_ORCL}/login`;
         return this.get(url).pipe(map((r: any) => {
             return r.url
         }));
