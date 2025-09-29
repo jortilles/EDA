@@ -112,9 +112,43 @@ export class LoginV2Component implements OnInit {
     async loginSSO() {
           try {
             const loginUrl = await lastValueFrom(this.userService.loginUrlSAML());
+
+            const isAvailable = await this.checkUrlAvailability(loginUrl);
+
+            if(!isAvailable){
+                Swal.fire(
+                    'Single Sign-On',
+                    'El servicio de autenticación no está disponible en este momento. Intenta de nuevo más tarde.',
+                    'error'
+                );
+                return;
+            }
+
             window.location.assign(loginUrl); // redirige al login del Entity Provider
+
         } catch (e:any) {
             Swal.fire('SSO', e?.error?.message || 'No se pudo obtener la URL del Single Sign-On', 'error');
+        }
+    }
+
+    async checkUrlAvailability(url: string, timeout = 3000):Promise<boolean> {
+        try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeout);
+
+            const response = await fetch(url, {
+                method: 'HEAD',
+                mode: 'no-cors',
+                signal: controller.signal
+            })
+
+            clearTimeout(timer);
+
+            return response.ok || response.type === 'opaque';
+
+        } catch (error) {
+            console.log('No se puede acceder a la URL del Single Sign-On', error);
+            return false;
         }
     }
 
