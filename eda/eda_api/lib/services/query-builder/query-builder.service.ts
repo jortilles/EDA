@@ -719,8 +719,12 @@ export abstract class QueryBuilderService {
         let source_columns = table.relations.find(x => x.target_table === tableB).source_column;
         let target_columns = table.relations.find(x => x.target_table === tableB).target_column;
         
+        // We change to an Array if there are not Arrays.
+        if(!Array.isArray(source_columns)) source_columns = [source_columns]; 
+        if(!Array.isArray(target_columns)) target_columns = [target_columns]; 
+
         //Comprobando campos calculados para usarlos en los joins en vez del nombre del campo.
-        table.columns.forEach((sc, ind) => {
+        source_columns.forEach((sc, ind) => {
             if(table.columns.find( c=> c.column_name === sc)?.computed_column == 'computed'  ){
                 source_columns[ind] = table.columns.find( c=> c.column_name === sc).SQLexpression; 
                 computed = 'source';
@@ -729,7 +733,7 @@ export abstract class QueryBuilderService {
 
         const tdest = this.tables.find(x => x.table_name === tableB);
 
-        table.columns.forEach( (tc,ind) => {
+        target_columns.forEach( (tc,ind) => {
             if(tdest.columns.find( c=> c.column_name === tc)?.computed_column == 'computed'  ){
                 target_columns[ind] = tdest.columns.find( c=> c.column_name === tc).SQLexpression; 
                  computed = 'target';
