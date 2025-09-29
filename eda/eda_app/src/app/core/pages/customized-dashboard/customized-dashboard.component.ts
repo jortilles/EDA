@@ -27,20 +27,20 @@ export class CustomizedDashboardComponent implements OnInit {
   ngOnInit(): void {
     // Inicialización
     this.leftItems = [
-      { name: 'Portada', href: 'custom-dashboard', isStarting: true, icon: 'grafico' },
-      {name: 'Mobilitat ', href: 'custom-dashboard' ,isStarting: true, icon: 'coche'},
-      {name: 'Desplaçaments ', href: 'custom-dashboard' ,isStarting: false},
-      {name: 'Parc de vehicles ', href: 'custom-dashboard' ,isStarting: false},
-      {name: 'Medi ambient ', href: 'custom-dashboard' ,isStarting: true, icon: 'hoja'},
-      {name: 'Energia i consum ', href: 'custom-dashboard' ,isStarting: false},
-      {name: 'Externalitats ', href: 'custom-dashboard' ,isStarting: false},
-      {name: 'Seguretat ', href: 'custom-dashboard' ,isStarting: true, icon: 'cuidado'},
-      {name: 'Delinqüència ', href: 'custom-dashboard' ,isStarting: false},
-      {name: 'Viari ', href: 'custom-dashboard' ,isStarting: false},
-      {name: 'Turisme ', href: 'custom-dashboard' ,isStarting: true, icon: 'sombrilla'},
-      {name: 'Visitants ', href: 'custom-dashboard' ,isStarting: false},
-      {name: 'Hosteleria ', href: 'custom-dashboard' ,isStarting: false},
-      {name: 'Configuració ', href: 'custom-dashboard' ,isStarting: true, icon: 'engranaje'},
+      { name: 'Portada', href: 'custom', isStarting: true, icon: 'grafico' },
+      {name: 'Mobilitat ', href: 'custom' ,isStarting: true, icon: 'coche'},
+      {name: 'Desplaçaments ', href: 'custom' ,isStarting: false},
+      {name: 'Parc de vehicles ', href: 'custom' ,isStarting: false},
+      {name: 'Medi ambient ', href: 'custom' ,isStarting: true, icon: 'hoja'},
+      {name: 'Energia i consum ', href: 'custom' ,isStarting: false},
+      {name: 'Externalitats ', href: 'custom' ,isStarting: false},
+      {name: 'Seguretat ', href: 'custom' ,isStarting: true, icon: 'cuidado'},
+      {name: 'Delinqüència ', href: 'custom' ,isStarting: false},
+      {name: 'Viari ', href: 'custom' ,isStarting: false},
+      {name: 'Turisme ', href: 'custom' ,isStarting: true, icon: 'sombrilla'},
+      {name: 'Visitants ', href: 'custom' ,isStarting: false},
+      {name: 'Hosteleria ', href: 'custom' ,isStarting: false},
+      {name: 'Configuració ', href: 'custom' ,isStarting: true, icon: 'engranaje'},
     ]
   }
 
