@@ -45,9 +45,13 @@ export class CustomizedDashboardComponent implements OnInit {
   }
 
 
-  changeSrc() {
-    //document.getElementById('showDashboard')['src'] = 'http://localhost:4200/#/custom-dashboard';
+changeSrc() {
+  const iframe = document.getElementById('showDashboard') as HTMLIFrameElement;
+  if (iframe) {
+    const baseUrl = 'https://eda3.edalitics.com/es/#/public/68d54b212a5c413d371bc8ee';
+    iframe.src = baseUrl + '?refresh=' + Date.now();
   }
+}
 
 
 
