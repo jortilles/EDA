@@ -99,7 +99,6 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
         this.loadChartColors();
         this.alerts = config.alertLimits || []; //deepcopy
-        console.log(this)
         if(this.panelChartConfig.edaChart !== 'kpi')
             this.originalColors = [...this.edaChart?.chartColors]; // Guardar estado original aquí
         this.display = true;
