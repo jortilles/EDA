@@ -77,6 +77,9 @@ export class SAML_ORCL_Controller {
             const userEda = await UserController.getUserInfoByEmail(email, true);
 
             console.log('================= CONEXION ORCL =================');
+            // Recuperar los nombres de los roles de la conexion a Oracle
+            // Entrar a la base de datos de EDALITICS y recuperar los id de los roles obtenido de la anterior conexion a Oracle
+            // Una vez obtenido todos los ids de todos los roles, agregarlos al usuario en cuestion.
             console.log('name: ', name);
             console.log('email: ', email);
 
