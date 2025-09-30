@@ -1228,7 +1228,7 @@ export class ChartUtilsService {
             }
         };
         const edaBarLineLegend = {
-            display: displayLegend,
+            display: true,
             fontSize: edaFontSize,
             fontStyle: edafontStyle,
             position: 'bottom',
