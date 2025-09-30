@@ -48,7 +48,7 @@
       </div>
 
     </div>
-    <div class="p-4 bg-white rounded shadow-lg h-full">
+    <div class="p-4 bg-white rounded shadow-lg h-fit ">
       @if(properties){
       <div class="grid grid-flow-col grid-cols-6 gap-6">
         <div class="bg-white border-black rounded shadow p-4">
@@ -242,7 +242,7 @@
       </div>
       } @else {
       <div class="w-full h-full">
-        <textarea [(ngModel)]="css" class="w-full h-full"></textarea>
+        <textarea [(ngModel)]="css" class="w-full h-fit min-h-[35vh]"></textarea>
       </div>
       }
     </div>

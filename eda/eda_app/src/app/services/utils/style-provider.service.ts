@@ -154,6 +154,7 @@ export class StyleProviderService {
 		this._panelFontSize.next(styles.panelContent.fontSize);
 
 		this._customCss.next(styles.customCss);
+		this.setCustomCss(styles.customCss)
 		// this._fontSize.next(styles.fontSize);
 	}
 

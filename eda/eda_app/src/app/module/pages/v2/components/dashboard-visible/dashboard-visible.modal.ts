@@ -51,6 +51,7 @@ private initializeForm(): void {
   this.visibleTypes = [
     //{ label: $localize`:@@public:public`, value: 'public', icon: 'fa fa-fw fa-globe' },
     { label: $localize`:@@publicPanel:Publico`, value: 'public', icon: 'fa fa-fw fa-globe' },
+      { label: $localize`:@@commonPanel:Común`, value: 'public', icon: 'fa fa-fw fa-globe' },
     { label: $localize`:@@groupPanel:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
     { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
   ];
@@ -99,26 +100,26 @@ private initializeForm(): void {
 
   }
     public getsharedURL(): string {
-        const url = location.href;
-        const baseURL = url.slice(0, url.indexOf('#'));
-        return `${baseURL}#/public/${this.dashboard.dashboardId}`
+      const url = location.href;
+      const baseURL = url.slice(0, url.indexOf('#'));
+      return `${baseURL}#/public/${this.dashboard.dashboardId}`
     }
-
-      public copyURL(): void {
-        let $body = document.getElementsByTagName('body')[0];
-        const value = this.getsharedURL();
-
-        let copyToClipboard = function (value) {
-            let $tempInput = document.createElement('INPUT') as HTMLInputElement;
-            $body.appendChild($tempInput);
-            $tempInput.setAttribute('value', value)
-            $tempInput.select();
-            document.execCommand('copy');
-            $body.removeChild($tempInput);
-        }
-
-        copyToClipboard(value);
-    }
+    
+    public copyURL() {
+      let $body = document.getElementsByTagName('body')[0];
+      const value = this.getsharedURL();
+      
+      let copyToClipboard = function (value) {
+        let $tempInput = document.createElement('INPUT') as HTMLInputElement;
+        $body.appendChild($tempInput);
+        $tempInput.setAttribute('value', value)
+        $tempInput.select();
+        document.execCommand('copy');
+        $body.removeChild($tempInput);
+      }
+      copyToClipboard(value);
+      this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
+  }
 
   public onApply() {
     this.display = false;

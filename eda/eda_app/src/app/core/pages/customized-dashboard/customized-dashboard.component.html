@@ -10,7 +10,7 @@
         <div class="h-6/8 p-2 overflow-auto">
             <ul class="space-y-2 pl-[10%]">
                 @for (item of leftItems; track $index) {
-                    <li class="p-2 pt-0 text-white font-bold">
+                    <li class="p-2 pt-0 pb-0 text-white font-bold">
                         @if (item.isStarting) {
                             <div class="flex items-center">
                                 <eda-icon [name]="item.icon" class="h-6" />
