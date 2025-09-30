@@ -1,70 +1,72 @@
-<div class="flex w-[4vw] h-full flex-col items-center border-r bg-background p-2">
-  <div class="flex flex-col items-center gap-2">
-    <img id="sidebar-btn-toggle" [src]="logoSidebar" alt="logo icono" class="dark-logo mb-2 w-12 h-9" />
-
-    @for (item of navItems; track item.path) {
-      <div
-        class="relative group"
-        (mouseenter)="showOverlay(item)"
-        (mouseleave)="hideOverlay(item)"
-      >
-        <button
-          class="w-12 h-12 rounded-lg hover:bg-[#00BFB3] hover:text-white transition-colors flex items-center justify-center"
-          [ngClass]="{
-            'text-white bg-[#00BFB3]': item.isActive || item.showOverlay,
-            'bg-muted': !item.isActive && !item.showOverlay
-          }"
-          [title]="item.label || ''"
-          (click)="menuCommand(item)">
-          <eda-icon [name]="item.icon" class="h-5" />
-          <span class="sr-only">{{item.label}}</span>
-        </button>
-        <!-- <a 
-          [routerLink]="item.path"
-          class="flex h-12 w-12 items-center justify-center text-center rounded-lg transition-colors hover:bg-muted hover:text-[#00B0BA]"
-          [ngClass]="{
-            'text-white bg-[#00B0BA]': item.isActive,
-            'bg-muted': !item.isActive
-          }"
+@if(!panelMode){
+  <div class="flex w-[4vw] h-full flex-col items-center border-r bg-background p-2">
+    <div class="flex flex-col items-center gap-2">
+      <img id="sidebar-btn-toggle" [src]="logoSidebar" alt="logo icono" class="dark-logo mb-2 w-12 h-9" />
+  
+      @for (item of navItems; track item.path) {
+        <div
+          class="relative group"
+          (mouseenter)="showOverlay(item)"
+          (mouseleave)="hideOverlay(item)"
         >
-          <eda-icon [name]="item.icon" class="h-5" />
-        </a> -->
-
-        <!-- Submenu Overlay -->
-        @if (item.showOverlay && item.items?.length) {
-          <!-- bg-white rounded-lg shadow-lg py-2 w-56 transform translate-x-4 -->
-          <div class="absolute left-full top-0 ml-2 py-2 w-56 bg-white rounded-lg shadow-lg z-50"
-            (mouseenter)="showOverlay(item)"
-            (mouseleave)="hideOverlay(item)"
+          <button
+            class="w-12 h-12 rounded-lg hover:bg-[#00BFB3] hover:text-white transition-colors flex items-center justify-center"
+            [ngClass]="{
+              'text-white bg-[#00BFB3]': item.isActive || item.showOverlay,
+              'bg-muted': !item.isActive && !item.showOverlay
+            }"
+            [title]="item.label || ''"
+            (click)="menuCommand(item)">
+            <eda-icon [name]="item.icon" class="h-5" />
+            <span class="sr-only">{{item.label}}</span>
+          </button>
+          <!-- <a 
+            [routerLink]="item.path"
+            class="flex h-12 w-12 items-center justify-center text-center rounded-lg transition-colors hover:bg-muted hover:text-[#00B0BA]"
+            [ngClass]="{
+              'text-white bg-[#00B0BA]': item.isActive,
+              'bg-muted': !item.isActive
+            }"
           >
-            <ul class="space-y-1">
-              @for (subItem of item.items; track subItem.path) {
-                <li>
-                  @if (subItem.path && !subItem.command) {
-                    <a 
-                      [routerLink]="subItem.path"
-                      class="flex items-center gap-2 p-2 rounded-md bg-white hover:text-[#00BFB3] transition-colors"
-                    >
-                      @if(subItem.icon) {
-                        <eda-icon [name]="subItem.icon" class="h-4" />
-                      }
-                      {{ subItem.label }}
-                    </a>
-                  } @else {
-                    <button class="flex items-center gap-2 p-2 bg-white hover:text-[#00BFB3] transition-colors focus:outline-none" (click)="menuCommand(subItem)">
-                      @if(subItem.icon) {
-                        <eda-icon [name]="subItem.icon" class="h-4" />
-                      }
-                      {{ subItem.label }}
-                    </button>
-                  }
-
-                </li>
-              }
-            </ul>
-          </div>
-        }
-      </div>
-    }
+            <eda-icon [name]="item.icon" class="h-5" />
+          </a> -->
+  
+          <!-- Submenu Overlay -->
+          @if (item.showOverlay && item.items?.length) {
+            <!-- bg-white rounded-lg shadow-lg py-2 w-56 transform translate-x-4 -->
+            <div class="absolute left-full top-0 ml-2 py-2 w-56 bg-white rounded-lg shadow-lg z-50"
+              (mouseenter)="showOverlay(item)"
+              (mouseleave)="hideOverlay(item)"
+            >
+              <ul class="space-y-1">
+                @for (subItem of item.items; track subItem.path) {
+                  <li>
+                    @if (subItem.path && !subItem.command) {
+                      <a 
+                        [routerLink]="subItem.path"
+                        class="flex items-center gap-2 p-2 rounded-md bg-white hover:text-[#00BFB3] transition-colors"
+                      >
+                        @if(subItem.icon) {
+                          <eda-icon [name]="subItem.icon" class="h-4" />
+                        }
+                        {{ subItem.label }}
+                      </a>
+                    } @else {
+                      <button class="flex items-center gap-2 p-2 bg-white hover:text-[#00BFB3] transition-colors focus:outline-none" (click)="menuCommand(subItem)">
+                        @if(subItem.icon) {
+                          <eda-icon [name]="subItem.icon" class="h-4" />
+                        }
+                        {{ subItem.label }}
+                      </button>
+                    }
+  
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      }
+    </div>
   </div>
-</div>
+}

@@ -1,5 +1,5 @@
 import { Component, inject, ViewEncapsulation } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { UserService } from '@eda/services/service.index';
@@ -27,7 +27,11 @@ export class MainLeftSidebarComponent {
   private userService = inject(UserService);
   public logoSidebar = LogoSidebar;
   private createDashboardService = inject(CreateDashboardService);
-
+  public queryParams: any = {};
+  public hideWheel: boolean = false;
+  public panelMode: boolean = false;
+  private route = inject(ActivatedRoute);
+  
   navItems: NavItem[] = [
     { path: '/home', icon: 'home' },
     {
@@ -64,7 +68,10 @@ export class MainLeftSidebarComponent {
     },
     { path: '/logout', icon: 'logout' },
   ];
-
+  
+  ngOnInit(): void {
+    this.getUrlParams();
+  }
 
   showOverlay(item: NavItem) {
     if (item.hideTimeout) {
@@ -110,5 +117,22 @@ export class MainLeftSidebarComponent {
       case 'ES': window.location.href = baseUrl + 'es/#/home'; break;
       case 'PL'  : window.location.href = baseUrl + 'pl/#/home'; break;
     }
-}
+  }
+  private getUrlParams(): void {
+        this.route.queryParams.subscribe(params => {
+          this.queryParams = params;
+          try{
+            if(params['hideWheel'] == 'true'){
+              this.hideWheel =true;
+            }
+            if(params['panelMode'] == 'true'){
+              this.panelMode =true;
+              this.hideWheel =true;
+            }
+            
+          } catch(e){
+            console.error('getUrlParams: '+ e);
+          }
+        });
+    }
 }

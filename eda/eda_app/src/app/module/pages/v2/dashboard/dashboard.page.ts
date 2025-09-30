@@ -55,7 +55,10 @@ export class DashboardPageV2 implements OnInit {
   public height: number = 1000;
   public toLitle: boolean = false;
   public toMedium: boolean = false;
-  
+  public queryParams: any = {};
+  public hideWheel: boolean = false;
+  public panelMode: boolean = false;
+
   titleClick: boolean = false;
   sidebarVisible = false;
   notSaved: boolean = false;
@@ -151,13 +154,14 @@ export class DashboardPageV2 implements OnInit {
     }
 
   public async loadDashboard() {
+    this.getUrlParams();
     const dashboardId = this.route.snapshot.paramMap.get('id');
     const data = await lastValueFrom(this.dashboardService.getDashboard(dashboardId));
     const dashboard = data.dashboard;
     this.dataSource = data.datasource;
-
-
+    
     if (dashboard?.config) {
+      this.onlyIcanEdit = dashboard.config.visible !== 'public'
       this.dashboardId = dashboardId;
       this.dashboard = dashboard;
       this.title = dashboard.config.title;
@@ -183,7 +187,7 @@ export class DashboardPageV2 implements OnInit {
       // me.tags = me.tags.filter(tag => tag.value !== 0); //treiem del seleccionador de tags el valor "sense etiqueta"
       // me.tags = me.tags.filter(tag => tag.value !== 1); //treiem del seleccionador de tags el valor "tots"
       this.selectedTags = this.dashboard.config.tags;
-      // me.onlyIcanEdit = config.onlyIcanEdit;
+      //this.onlyIcanEdit = this.dashboard.config.onlyIcanEdit;
     }
 
     // Estableix els permisos d'edició i propietat...
@@ -772,5 +776,24 @@ public startCountdown(seconds: number) {
       this.cdr.detectChanges();
     } 
   }
+
+
+  private getUrlParams(): void {
+        this.route.queryParams.subscribe(params => {
+            this.queryParams = params;
+            try{
+                if(params['hideWheel'] == 'true'){
+                    this.hideWheel =true;
+                }
+                if(params['panelMode'] == 'true'){
+                    this.panelMode =true;
+                    this.hideWheel =true;
+                }
+
+            } catch(e){
+                console.error('getUrlParams: '+ e);
+            }
+        });
+    }
 
 }

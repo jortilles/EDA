@@ -18,13 +18,8 @@ import * as _ from 'lodash';
   templateUrl: './customized-dashboard.component.html',
 })
 export class CustomizedDashboardComponent implements OnInit {
-  private createDashboardService = inject(CreateDashboardService);
-  private dashboardService = inject(DashboardService);
-  private alertService = inject(AlertService);
-  private router = inject(Router);
-
   public leftItems: {name:string, href:string, isStarting: boolean, icon?: any}[];
-  public srcDashboard: string = "https://free.edalitics.com/es/#/dashboard/67f8ef208a7621c66552d111?panelMode=true"; 
+  public : string = "https://free.edalitics.com/es/#/dashboard/67f8ef208a7621c66552d111?panelMode=true"; 
   ngOnInit(): void {
     // Inicialización
     this.leftItems = [
@@ -49,7 +44,7 @@ export class CustomizedDashboardComponent implements OnInit {
 changeSrc() {
   const iframe = document.getElementById('showDashboard') as HTMLIFrameElement;
   if (iframe) {
-    const baseUrl = 'https://eda3.edalitics.com/es/#/public/68d54b212a5c413d371bc8ee';
+    const baseUrl = 'https://eda3.edalitics.com/es/#/public/68d54b212a5c413d371bc8ee?panelMode=true';
     iframe.src = baseUrl + '?refresh=' + Date.now();
   }
 }
