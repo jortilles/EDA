@@ -1,14 +1,15 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import { IconComponent } from '@eda/shared/components/icon/icon.component';
 import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '@eda/services/api/user.service';
-import { AlertService, DashboardService } from '@eda/services/service.index';
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, StyleProviderService, IGroup, DashboardStyles, ChartUtilsService } from '@eda/services/service.index';
 import { CreateDashboardService } from '@eda/services/utils/create-dashboard.service';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
+
 
 @Component({
   selector: 'app-customized-dashboard',
