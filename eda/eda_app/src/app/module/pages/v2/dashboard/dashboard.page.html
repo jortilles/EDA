@@ -14,10 +14,11 @@
             class="w-full max-w-md px-3 py-2 bg-gray-100 rounded-md cursor-auto focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
           }
         </div>
-
-          <button class="w-6 h-6 rounded-full flex items-center justify-center ml-2 " [ngStyle]="reportTitle" [ngClass]="{'noSidebar': hideWheel || panelMode }" (click)="showSidebar($event)">
+        @if(hideWheel || panelMode){
+          <button class="w-6 h-6 rounded-full flex items-center justify-center ml-2 " [ngStyle]="reportTitle" (click)="showSidebar($event)">
             <i class="pi pi-ellipsis-v"></i>
           </button>
+        }
       </div>
 
       <!-- Filters Section -->

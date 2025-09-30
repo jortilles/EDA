@@ -21,7 +21,3 @@
   flex-grow: 1; /* Permite que este div ocupe todo el espacio disponible */
   overflow: auto; /* (Opcional) Agrega scroll si el contenido es muy grande */
 }
-
-.noSidebar{
-  display: none;
-}
