@@ -353,7 +353,7 @@ public async reloadPanels(): Promise<void> {
     //Check de modo
     let modeEDA = false;
     if (event?.data?.panel) {
-      modeEDA = !event?.data.panel.content.query.query.modeSQL &&
+      modeEDA = !event?.data.panel.content?.query?.query.modeSQL &&
       (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA')
     }
 

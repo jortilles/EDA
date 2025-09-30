@@ -16,7 +16,7 @@ export const QueryUtils = {
   createColumn: (columnName: string, columnType: string, sqlOriginTable: any): any => {
 
     const column = {
-      table_id: sqlOriginTable.value,
+      table_id: sqlOriginTable?.value,
       column_name: columnName,
       column_type: columnType,
       description: { default: columnName, locaized: [] },
