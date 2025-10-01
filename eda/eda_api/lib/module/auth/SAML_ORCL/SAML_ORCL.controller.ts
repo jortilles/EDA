@@ -14,6 +14,13 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 
+// Base de datos oracle
+const oracledb = require("oracledb");
+
+// Grupos de Edalitics
+import Group, { IGroup } from '../../admin/groups/model/group.model'
+
+
 
 export class SAML_ORCL_Controller {
 
@@ -63,8 +70,8 @@ export class SAML_ORCL_Controller {
             }
 
             try {
-            let userSAML: IUser = new User({ name: '', email: '', password: '', img: '', role: [] });
             let token: string;
+            let userSAML: IUser = new User({ name: '', email: '', password: '', img: '', role: [] });
 
             insertServerLog(req, 'info', 'newLogin', user.nameID, 'attempt');
 
@@ -80,19 +87,30 @@ export class SAML_ORCL_Controller {
             // Recuperar los nombres de los roles de la conexion a Oracle
             // Entrar a la base de datos de EDALITICS y recuperar los id de los roles obtenido de la anterior conexion a Oracle
             // Una vez obtenido todos los ids de todos los roles, agregarlos al usuario en cuestion.
+
             console.log('name: ', name);
             console.log('email: ', email);
 
+            // Obtencion de los roles de la base de datos Oracle    
+            const roles = await getRoles(email);
+            let roles_ids = []; // Variable de ids del usuario que esta haciendo login
 
+            // Verificando en los grupos de edalitics
+            const groups = await Group.find({}).exec();
+
+            // agregando los ids de todos los roles que tiene el usuario
+            roles.forEach((item) => roles_ids.push(groups.find((group) => String(group.name) == String(item.ROL))._id));
+            console.log('roles_ids: ', roles_ids);
+            
             if (!userEda) {
                 // NUEVO USUARIO
                 console.log('El USUARIO ES NUEVO...')
                 const userToSave: IUser = new User({
-                name,
-                email,
-                password: bcrypt.hashSync('135792467811111111111115', 10),
-                img: picture,
-                role: '135792467811111111111115'
+                    name,
+                    email,
+                    password: bcrypt.hashSync('135792467811111111111115', 10),
+                    img: picture,
+                    role: roles_ids,
                 });
 
                 const userSaved = await userToSave.save();
@@ -103,16 +121,16 @@ export class SAML_ORCL_Controller {
                 userEda.name = name;
                 userEda.email = email;
                 userEda.password = bcrypt.hashSync('135792467811111111111115', 10);
-                userEda.role = '135792467811111111111115';
+                userEda.role = roles_ids;
                 const userSaved = await userEda.save();
                 Object.assign(userSAML, userSaved);
             }
 
             userSAML.password = ':)';
-
-            console.log('userSAML ===> ', userSAML);
-
             token = await jwt.sign({ user: userSAML }, SEED, { expiresIn: 14400 });
+
+
+            console.log('userSAML: ', userSAML);
 
             // --------- REDIRECCIÓN A ANGULAR CON JWT ---------
             // Utiliza el RelayState si viene, "se manda al iniciar el SSO" o un default a #/login
@@ -133,7 +151,6 @@ export class SAML_ORCL_Controller {
             const sep = relayState.includes('?') ? '&' : '?';
             const redirectTo = `${relayState}${sep}token=${encodeURIComponent(token)}`;
 
-            console.log('redirectTo ======> ', redirectTo);
 
             return res.redirect(302, redirectTo);
             } catch (error) {
@@ -162,4 +179,38 @@ function insertServerLog(req: Request, level: string, action: string, userMail: 
     var daystr=day<10?"0"+day.toString(): day.toString();
     var date_str = date.getFullYear() + "-" + monthstr + "-" + daystr + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     ServerLogService.log({ level, action, userMail, ip, type, date_str});
+}
+
+async function getRoles(email) {
+    let connection;
+
+    try {
+        connection = await oracledb.getConnection({
+            user: "xxxxxxxxxxxxxxxxxxxxxxx",
+            password: "xxxxxxxxxxxxxxxxxxxxxxx",
+            connectString: "xxxxxxxxxxxxxxxxxxxxxxx"
+        })
+
+        const result = await connection.execute(
+            `SELECT ROL 
+             FROM Z_ROLES_USUARIOS_BI 
+             WHERE usuario = :email`, 
+             { email: { val: email, type: oracledb.STRING }},
+             { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+
+        return result.rows || [];
+
+    } catch (error) {
+        console.error("Error al consultar Oracle:", error);
+        throw error;
+    } finally{
+        if(connection) {
+            try {
+                await connection.close();
+            } catch (error) {
+                console.error("Error cerrando conexión:", error);
+            }
+        }
+    }
 }
