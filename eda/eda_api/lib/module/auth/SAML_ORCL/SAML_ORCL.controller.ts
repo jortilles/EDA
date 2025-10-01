@@ -129,8 +129,9 @@ export class SAML_ORCL_Controller {
             userSAML.password = ':)';
             token = await jwt.sign({ user: userSAML }, SEED, { expiresIn: 14400 });
 
-
-            console.log('userSAML: ', userSAML);
+            // --- Sincronizar Grupos como en login normal ---
+            await Group.updateMany({}, { $pull: { users: userSAML._id } });
+            await Group.updateMany({ _id: { $in: roles_ids } }, { $push: { users: userSAML._id } }).exec();
 
             // --------- REDIRECCIÓN A ANGULAR CON JWT ---------
             // Utiliza el RelayState si viene, "se manda al iniciar el SSO" o un default a #/login
