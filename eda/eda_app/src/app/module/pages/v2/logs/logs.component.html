@@ -1,0 +1,31 @@
+<div class="grid">
+
+    <div class="logs-container">
+
+        <div class="flex align-items-center gap-6">
+            <h3 class="logs-title">Logs: </h3>
+
+            <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" i18n-label="@@logFileBtn" (click)="logsFile()"  label="Logs">
+                <i class="fas fa-file-pdf"></i> <span>Logs</span>
+            </button>
+
+            <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00B0BA] to-teal-400 text-white rounded-md" i18n-label="@@logErrorFileBtn" (click)="logsErrorFile()"  label="Logs Error">
+                <i class="fas fa-file-pdf"></i> <span>Logs Error</span>
+            </button>
+
+        </div>
+
+        @if (logFileBoolean) {
+            <div class="logs-panel">
+                <p class="logs-text" [innerHtml]="logs_file"> </p>
+            </div>
+        }
+
+        @if (logErrorFileBoolean) {
+            <div class="logs-panel">
+                <p class="logs-text" [innerHtml]="logs_error_file"> </p>
+            </div>
+        }
+
+    </div>
+</div>

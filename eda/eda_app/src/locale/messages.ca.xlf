@@ -88,6 +88,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
 <context context-type="linenumber">42</context>
 </context-group>
+<trans-unit id="logsManagement">
+  <source>Gestión de logs</source>
+  <target>Gestió de logs</target>
+</trans-unit>
 </trans-unit>
 <trans-unit id="sidebarUserManagement" datatype="html">
 <source>Gestión de

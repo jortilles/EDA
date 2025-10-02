@@ -53,6 +53,11 @@ export const pagesV2Routes: Routes = [
         loadComponent: () => import('./dashboard/dashboard.page').then(c => c.DashboardPageV2)
       },
       {
+        path: 'logs',
+        loadComponent: () => import('./logs/logs.component').then(c => c.LogsComponent)
+      },
+
+      {
         path: 'data-source/:id',
         component: DataSourceListComponent,
         canActivate: [VerifyTokenGuard],

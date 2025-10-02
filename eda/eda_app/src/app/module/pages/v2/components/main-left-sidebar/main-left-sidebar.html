@@ -39,29 +39,33 @@
               (mouseleave)="hideOverlay(item)"
             >
               <ul class="space-y-1">
-                @for (subItem of item.items; track subItem.path) {
-                  <li>
-                    @if (subItem.path && !subItem.command) {
-                      <a 
-                        [routerLink]="subItem.path"
-                        class="flex items-center gap-2 p-2 rounded-md bg-white hover:text-[#00BFB3] transition-colors"
-                      >
-                        @if(subItem.icon) {
-                          <eda-icon [name]="subItem.icon" class="h-4" />
-                        }
-                        {{ subItem.label }}
-                      </a>
-                    } @else {
-                      <button class="flex items-center gap-2 p-2 bg-white hover:text-[#00BFB3] transition-colors focus:outline-none" (click)="menuCommand(subItem)">
-                        @if(subItem.icon) {
-                          <eda-icon [name]="subItem.icon" class="h-4" />
-                        }
-                        {{ subItem.label }}
-                      </button>
-                    }
-  
-                  </li>
-                }
+
+                  @for (subItem of item.items; track subItem.path) {
+                    <li>
+                      @if (subItem.path && !subItem.command) {
+                          @if (userService.isAdmin || subItem.path === '/logs') {
+
+                            <a 
+                              [routerLink]="subItem.path"
+                              class="flex items-center gap-2 p-2 rounded-md bg-white hover:text-[#00BFB3] transition-colors"
+                            >
+                              @if(subItem.icon) {
+                                <eda-icon [name]="subItem.icon" class="h-4" />
+                              }
+                              {{ subItem.label }}
+                            </a>
+                          }
+                      } @else {
+                        <button class="flex items-center gap-2 p-2 bg-white hover:text-[#00BFB3] transition-colors focus:outline-none" (click)="menuCommand(subItem)">
+                          @if(subItem.icon) {
+                            <eda-icon [name]="subItem.icon" class="h-4" />
+                          }
+                          {{ subItem.label }}
+                        </button>
+                      }
+    
+                    </li>
+                  }
               </ul>
             </div>
           }

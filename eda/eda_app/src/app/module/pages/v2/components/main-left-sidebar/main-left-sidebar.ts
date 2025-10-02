@@ -24,7 +24,7 @@ interface NavItem {
 })
 export class MainLeftSidebarComponent {
   private router = inject(Router);
-  private userService = inject(UserService);
+  public userService = inject(UserService);
   public logoSidebar = LogoSidebar;
   private createDashboardService = inject(CreateDashboardService);
   public queryParams: any = {};
@@ -49,8 +49,10 @@ export class MainLeftSidebarComponent {
         { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de datasource`, icon: 'rectangle-group' },
         { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
         { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
+        { path: '/logs', label: $localize`:@@logsManagement:Gestión de logs`, icon: 'clipboard-document-list' },
       ]
-    },
+    }
+    ,
     {
       icon: 'settings',
       items: [
@@ -70,7 +72,12 @@ export class MainLeftSidebarComponent {
   ];
   
   ngOnInit(): void {
+    //console.log(this)
+
+
     this.getUrlParams();
+
+
   }
 
   showOverlay(item: NavItem) {

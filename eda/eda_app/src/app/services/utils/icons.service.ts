@@ -238,6 +238,14 @@ export class IconService {
     `,
 
 
+"clipboard-document-list": `
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6M9 16h6M9 8h6M7.5 3h9c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-9c-.621 0-1.125-.504-1.125-1.125V4.125C6.375 3.504 6.879 3 7.5 3z" />
+  </svg>
+`,
+
+
+
 
     // CUSTOM DASHBOARD PARA DATAPOLIS BORRAR A POSTERIOR 
     "grafico": `

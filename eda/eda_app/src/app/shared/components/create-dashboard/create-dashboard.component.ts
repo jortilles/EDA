@@ -64,7 +64,6 @@ export class CreateDashboardComponent implements OnInit {
         this.form.controls['visible'].setValue(this.visibleTypes[2].value);
 
         this.dataSourceNameService.getDataSourceNamesForDashboard().subscribe((res) => {
-            console.log(res);
             this.dataSources = res?.ds;
             this.dataSources = this.dataSources.sort((a, b) => {
                 let va = a.model_name.toLowerCase();
