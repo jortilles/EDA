@@ -77,7 +77,7 @@ export class DashboardSidebarComponent {
 
   mostrarOpciones = false;
   mostrarFiltros = false;
-  hayFiltros = false;
+  hayFiltros;
 
   isImportPanelVisible = false;
 
@@ -85,7 +85,6 @@ export class DashboardSidebarComponent {
 
   ngOnInit(): void {
     this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
-    this.initSidebar();
     this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
     const methodNames: string[] = (this as any).__proto__.__exposedMethods || [];
 
@@ -227,7 +226,9 @@ export class DashboardSidebarComponent {
   }
 
   showPopover(event: Event) {
+    this.initSidebar();
     this.isPopoverVisible = true;
+    this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
     this.popover.toggle(event);
   }
 
