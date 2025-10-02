@@ -13,6 +13,7 @@ import { UserController } from '../../admin/users/user.controller';
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
+const ORCL = require('../../../../config/bbdd_orcl').ORCL;
 
 // Base de datos oracle
 const oracledb = require("oracledb");
@@ -187,17 +188,15 @@ async function getRoles(email) {
 
     try {
         connection = await oracledb.getConnection({
-            user: "xxxxxxxxxxxxxxxxxxxxxxx",
-            password: "xxxxxxxxxxxxxxxxxxxxxxx",
-            connectString: "xxxxxxxxxxxxxxxxxxxxxxx"
+            user: ORCL.bbdd_host,
+            password: ORCL.bbdd_pass,
+            connectString:  `${ORCL.bbdd_user}:${ORCL.bbdd_port}/${ORCL.bbdd_bbdd}`
         })
 
         const result = await connection.execute(
-            `SELECT ROL 
-             FROM Z_ROLES_USUARIOS_BI 
-             WHERE usuario = :email`, 
-             { email: { val: email, type: oracledb.STRING }},
-             { outFormat: oracledb.OUT_FORMAT_OBJECT }
+            ORCL.authorization_sql, 
+            { email: { val: email, type: oracledb.STRING }},
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
         );
 
         return result.rows || [];
