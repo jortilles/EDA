@@ -43,25 +43,7 @@ export class LoginV2Component implements OnInit {
 
     ngOnInit(): void {
         init_plugins();
-
-        // Si llega con Single Sing-On
-        const qp = this.route.snapshot.queryParamMap;
-        const token = qp.get('token');
-        const next = qp.get('next') || '/home';
-
-        if (token) {
-            
-            try {
-                const payload = jwtDecode<any>(token);
-                const userSAML: User = payload.user;    
-                this.userService.savingStorage(userSAML._id, token, userSAML);
-            } catch (error) {
-                console.log('error', error)
-            }
-            
-            this.router.navigate([next]);
-            return;
-        }
+        this.verifyloginSaml();
 
         this.route.queryParamMap.subscribe(params => this.urlParams = JSON.parse(JSON.stringify(params)).params.params);
 
@@ -72,6 +54,7 @@ export class LoginV2Component implements OnInit {
           this.loginForm.patchValue({ email: savedEmail, remember: true });
         }
     }
+
 
     async onSubmitLogin() {
 
@@ -109,7 +92,7 @@ export class LoginV2Component implements OnInit {
     }
 
     // Se redirigi al enlace de login de Single Sign-On del Entity Provider
-    async loginSSO() {
+    async loginButtonSSO() {
           try {
             const loginUrl = await lastValueFrom(this.userService.loginUrlSAML());
 
@@ -128,6 +111,27 @@ export class LoginV2Component implements OnInit {
 
         } catch (e:any) {
             Swal.fire('SSO', e?.error?.message || 'No se pudo obtener la URL del Single Sign-On', 'error');
+        }
+    }
+
+    verifyloginSaml() {
+        // Si llega con Single Sing-On
+        const qp = this.route.snapshot.queryParamMap;
+        const token = qp.get('token');
+        const next = qp.get('next') || '/home';
+
+        if (token) {
+            
+            try {
+                const payload = jwtDecode<any>(token);
+                const userSAML: User = payload.user;    
+                this.userService.savingStorage(userSAML._id, token, userSAML);
+            } catch (error) {
+                console.log('error', error)
+            }
+            
+            this.router.navigate([next]);
+            return;
         }
     }
 
