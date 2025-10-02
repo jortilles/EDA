@@ -287,7 +287,7 @@ export class OracleBuilderService extends QueryBuilderService {
         if(el.column_type=='text'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='numeric'){
-          columns.push(` ROUND(  CAST( ${el.SQLexpression}  ${whatIfExpression} as numeric)  , ${el.minimumFractionDigits} )    as "${el.display_name}"`);
+          columns.push(` ROUND(  CAST( ${el.SQLexpression}  ${whatIfExpression} as NUMBER)  , ${el.minimumFractionDigits} )    as "${el.display_name}"`);
         }else if(el.column_type=='date'){
           columns.push(`  ${el.SQLexpression}  as "${el.display_name}"`);
         }else if(el.column_type=='coordinate'){
@@ -448,7 +448,7 @@ export class OracleBuilderService extends QueryBuilderService {
         colname =  `"${column.table_id}"."${column.column_name}"` ;
    }else{
       if(column.column_type == 'numeric'){
-        colname = `ROUND(  CAST( ${column.SQLexpression}  as numeric)  , ${column.minimumFractionDigits})`;
+        colname = `ROUND(  CAST( ${column.SQLexpression}  as NUMBER)  , ${column.minimumFractionDigits})`;
       }else{
         colname = `  ${column.SQLexpression}  `;
       }
@@ -509,7 +509,7 @@ export class OracleBuilderService extends QueryBuilderService {
         colname =   `\`${column.table_id}\`.\`${column.column_name}\`` ;
       }else{
         if(column.column_type == 'numeric'){
-          colname = `ROUND(  CAST( ${column.SQLexpression}  as numeric)  , ${column.minimumFractionDigits})`;
+          colname = `ROUND(  CAST( ${column.SQLexpression}  as NUMBER)  , ${column.minimumFractionDigits})`;
         }else{
           colname = `  ${column.SQLexpression}  `;
         }
