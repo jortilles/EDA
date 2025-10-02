@@ -6,7 +6,7 @@
     "scripts": {
         "start": "nodemon",
         "start:forever": "npm run build && forever start -c node ./dist/server.js",
-        "start:pm2": "npm run build && pm2 start ./dist/server.js    ",
+        "start:pm2": "npm run build && pm2 start ./dist/server.js --name eda3   ",
         "edapi": "forever start -c node ./dist/server.js",
         "build": "tsc && npm run movejpgs",
         "dev": "ts-node ./lib/server.ts",
