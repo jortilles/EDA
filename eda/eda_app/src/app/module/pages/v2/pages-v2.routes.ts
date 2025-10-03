@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { PagesV2Component } from './pages-v2';
 import { DataSourceListComponent } from '../data-sources/data-source-list/data-source-list.component';
 import { VerifyTokenGuard } from '@eda/services/service.index';
-
+import { RoleGuard } from '@eda/services/guards/role-guard.guard';
 export const pagesV2Routes: Routes = [
   {
     path: '',
@@ -26,26 +26,38 @@ export const pagesV2Routes: Routes = [
       },
       {
         path: 'admin/users',
+        data: { admin: true },
+        canActivate: [RoleGuard],
         loadComponent: () => import('./user-list/user-list.page').then(c => c.UserListPage)
       },
       {
         path: 'admin/groups',
+        data: { admin: true },
+        canActivate: [RoleGuard],
         loadComponent: () => import('./group-list/group-list.page').then(c => c.GroupListPage)
       },
       {
         path: 'admin/models/import-export',
+        data: { admin: true },
+        canActivate: [RoleGuard],
         loadComponent: () => import('./model-import-export/model-import-export.page').then(c => c.ModelImportExportPage)
       },
       {
         path: 'admin/data-source',
+        data: { admin: false, datasource: true },
+        canActivate: [RoleGuard],
         loadComponent: () => import('./datasource-list/datasource-list.page').then(c => c.DataSourceListPage)
       },
       {
         path: 'admin/data-source/new',
+        data: { admin: false, datasource: true },
+        canActivate: [RoleGuard],
         loadComponent: () => import('./datasource-connection-detail/datasource-connection-detail.page').then(c => c.DataSourceConnectionDetailPage)
       },
       {
         path: 'admin/email-settings',
+        data: { admin: true },
+        canActivate: [RoleGuard],
         loadComponent: () => import('./email-settings/email-settings.page').then(c => c.EmailSettingsPage)
       },
       {
