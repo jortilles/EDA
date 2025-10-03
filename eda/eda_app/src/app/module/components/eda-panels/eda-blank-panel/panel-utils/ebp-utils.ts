@@ -91,6 +91,8 @@ export const EbpUtils = {
         break;
       case 'pyramid': 
         str = $localize`:@@chartInfoPyramid:Un gráfico de piramide necesita de dos categorías y un valor numérico`;
+        description += `\n${str}`;
+        break;
       default:
         description = $localize`:@@chartInfo13:Los datos seleccionados no permiten utilizar este gráfico.`;
         break;
