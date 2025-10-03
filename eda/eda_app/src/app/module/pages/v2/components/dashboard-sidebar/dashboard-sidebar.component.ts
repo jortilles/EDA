@@ -324,7 +324,10 @@ export class DashboardSidebarComponent {
 
   private async saveDashboard() {
     // Actualizar el refreshTime si es necesario
-    this.dashboard.dashboard.config.refreshTime = this.refreshTime || null; 
+    this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
+    // Actualizar el autor 
+    const userObj = JSON.parse(localStorage.getItem('user')); // Lo conviertes a objeto
+    this.dashboard.dashboard.config.author = userObj.name;
     // Guardar Dashboard
     await this.dashboard.saveDashboard();
     this.hidePopover();
