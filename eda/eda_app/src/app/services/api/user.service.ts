@@ -18,6 +18,7 @@ export class UserService extends ApiService {
     private routeThirdParty = '/tp/url';
     private authSAML = '/auth/saml';
     private authSAML_ORCL = '/auth/samlorcl';
+    private auth = '/auth';
 
     public user: User;
     public isAdmin: boolean;
@@ -121,8 +122,15 @@ export class UserService extends ApiService {
         );
     }
 
-    loginUrlSAML(): Observable<string> {
+    loginUrlSAMLmixOrcl(): Observable<string> {
         const url = `${this.authSAML_ORCL}/login`;
+        return this.get(url).pipe(map((r: any) => {
+            return r.url
+        }));
+    }
+
+    loginUrlSAML(): Observable<string> {
+        const url = `${this.authSAML}/login`;
         return this.get(url).pipe(map((r: any) => {
             return r.url
         }));
@@ -224,5 +232,14 @@ export class UserService extends ApiService {
     getToken(){
         return localStorage.getItem('token');
     }
+
+    getLoginType() {
+        return this.get( `${this.auth}/typeLogin`)
+            .pipe(map((res: any) => {
+                //authentication_type
+                return res.response;
+            }))
+    }
+
 }
 
