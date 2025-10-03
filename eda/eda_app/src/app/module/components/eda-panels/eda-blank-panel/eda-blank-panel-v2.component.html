@@ -19,7 +19,7 @@
       <panel-chart #PanelChartComponent [props]="panelChartConfig" (configUpdated)="setChartProperties($event)"
         (onChartClick)="onChartClick($event)" [ngStyle]="panelContent" [ngClass]="isSpecialChart(panelChartConfig.chartType) 
           ? 'h-full w-full flex justify-center content-center overflow-hidden flex-wrap' 
-          : 'h-full w-full block overflow-hidden'" style="flex-wrap:wrap!important;"></panel-chart>
+          : 'h-full w-full block overflow-hidden content-center'" style="flex-wrap:wrap!important;"></panel-chart>
     </div>
     }
 
