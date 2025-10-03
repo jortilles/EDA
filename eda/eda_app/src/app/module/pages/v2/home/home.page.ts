@@ -350,11 +350,11 @@ export class HomePageV2 implements OnInit {
   handleSorting() {
     switch (this.sortingType) {
       case 'dateAsc':
-        this.sortingReports('createdAt', this.reportMap, 'asc');
+        this.sortingReports('modifiedAt', this.reportMap, 'asc');
         sessionStorage.setItem("homeSorting", "dateAsc");
         break;
       case 'dateDesc':
-        this.sortingReports('createdAt', this.reportMap, 'desc');
+        this.sortingReports('modifiedAt', this.reportMap, 'desc');
         sessionStorage.setItem("homeSorting", "dateDesc");
         break;
       default:
@@ -369,7 +369,7 @@ export class HomePageV2 implements OnInit {
       const valA = a.config[type];
       const valB = b.config[type];
       // Si es fecha, convertir a Date
-      if (type === 'createdAt') {
+      if (type === 'modifiedAt') {
         const dateA = new Date(valA);
         const dateB = new Date(valB);
 

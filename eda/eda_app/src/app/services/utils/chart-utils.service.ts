@@ -1498,7 +1498,7 @@ export class ChartUtilsService {
                                 },
                                 display: maxTicksLimitY !== 0,
                                 beginAtZero: true,
-                                grace: (showLabels || showLabelsPercent) ? '1%' : '0%',
+                                grace: (showLabels || showLabelsPercent) ? '3%' : '3%',
                                 ticks: {
                                 autoSkip: true,
                                 maxTicksLimit: maxTicksLimitY,

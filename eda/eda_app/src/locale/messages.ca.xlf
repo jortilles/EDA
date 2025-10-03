@@ -4666,13 +4666,13 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
 
       <trans-unit id="createdAt">
-        <source>Data creación (asc.)</source>
-        <target>Data de creació (asc.)</target>
+        <source>Fecha (asc.)</source>
+        <target>Data (asc.)</target>
       </trans-unit>
 
       <trans-unit id="createdAtDesc">
-        <source>Data creación (desc.)</source>
-        <target>Data de creació (desc.)</target>
+        <source>Fecha (desc.)</source>
+        <target>Data (desc.)</target>
       </trans-unit>
 
       <trans-unit id="name">
