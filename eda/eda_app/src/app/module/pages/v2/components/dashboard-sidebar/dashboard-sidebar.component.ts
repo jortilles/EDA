@@ -326,8 +326,7 @@ export class DashboardSidebarComponent {
     // Actualizar el refreshTime si es necesario
     this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
     // Actualizar el autor 
-    const userObj = JSON.parse(localStorage.getItem('user')); // Lo conviertes a objeto
-    this.dashboard.dashboard.config.author = userObj.name;
+    this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
     // Guardar Dashboard
     await this.dashboard.saveDashboard();
     this.hidePopover();
@@ -349,7 +348,7 @@ export class DashboardSidebarComponent {
           ds,
           tags: null,
           refreshTime: null,
-          author: this.dashboard.dashboard.config.author,
+          author: JSON.parse(localStorage.getItem('user')).name,
           styles: this.stylesProviderService.generateDefaultStyles(), 
         },
         group: (newDashboard.group || []).map((g: any) => g._id)
@@ -368,7 +367,7 @@ export class DashboardSidebarComponent {
           refreshTime: (this.dashboard.refreshTime > 5) ? this.dashboard.refreshTime : this.dashboard.refreshTime ? 5 : null,
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
           sendViaMailConfig: this.dashboard.sendViaMailConfig,
-          author: this.dashboard.dashboard.config.author,
+          author: JSON.parse(localStorage.getItem('user')).name,
           onlyIcanEdit: this.dashboard.onlyIcanEdit, //TODO ==> Done?
           styles: this.stylesProviderService.generateDefaultStyles(),
         },
