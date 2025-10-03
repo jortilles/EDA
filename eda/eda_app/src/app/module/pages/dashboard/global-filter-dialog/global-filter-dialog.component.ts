@@ -19,6 +19,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public allPanels: any[] = [];
     public filteredPanels: any[] = [];
+    public loading: boolean = true;
 
     @Output() close: EventEmitter<any> = new EventEmitter<any>();
     @Output() globalFilterChange: EventEmitter<any> = new EventEmitter<any>();
@@ -346,6 +347,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.alertService.addError(err)
             throw err;
         }
+        this.loading = false;
     }
 
     private loadDatesFromFilter() {
@@ -363,7 +365,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 config.dateRange.push(new Date(firstDate.replace(/-/g, '/')));
                 config.dateRange.push(new Date(lastDate.replace(/-/g, '/')));
             }
-        }
+        }    
     }
 
     public processPickerEvent(event): void {

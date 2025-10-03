@@ -132,6 +132,8 @@ export class EdaTreeMap implements AfterViewInit {
   }
 
   draw() {
+        // Borrado inicial de otros charts 
+    this.svg.selectAll('*').remove();
     const container = this.svgContainer.nativeElement as HTMLElement;
     const width = container.clientWidth - 20,
     height = container.clientHeight - 20;
