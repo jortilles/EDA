@@ -296,7 +296,7 @@ export class HomePageV2 implements OnInit {
           clonedReport.config.modifiedAt = currentDate;
 
           // Autor
-          clonedReport.config.author = clonedReport.user;
+          clonedReport.config.author = JSON.parse(localStorage.getItem('user')).name;
 
           // Insertar en el array correspondiente
           const targetArray = this.reportMap[clonedReport.type];
