@@ -27,8 +27,8 @@ export class DashboardController {
         group = admin[2]
         shared = admin[3]
       } else {
-        privates = await DashboardController.getPrivateDashboards(req)
         group = await DashboardController.getGroupsDashboards(req)
+        privates = await DashboardController.getPrivateDashboards(req)
         publics = await DashboardController.getPublicsDashboards(req)
         shared = await DashboardController.getSharedDashboards(req)
       }
@@ -1862,7 +1862,7 @@ async function setDasboardsAuthorDate(dashboards: any[]) {
       reportType.forEach(async (report) => {
         
         // Setear la fecha si la tiene, sino, asignarle el dia de hoy
-        report.config.createdAt = DateUtil.convertDashboardDate(report.config.createdAt);  
+        report.config.modifiedAt = DateUtil.convertDashboardDate(report.config.modifiedAt);  
         
           //Si no tiene autor le asignamos undefined, nunca deberia darse este caso 
         if (!report.config.author)
