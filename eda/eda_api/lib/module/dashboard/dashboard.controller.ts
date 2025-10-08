@@ -1857,18 +1857,21 @@ function insertServerLog(
     date.getSeconds()
   ServerLogService.log({ level, action, userMail, ip, type, date_str })
 }
+
 async function setDasboardsAuthorDate(dashboards: any[]) {
-    dashboards.forEach(reportType => {
-      reportType.forEach(async (report) => {
-        
-        // Setear la fecha si la tiene, sino, asignarle el dia de hoy
-        report.config.modifiedAt = DateUtil.convertDashboardDate(report.config.modifiedAt);  
-        
-          //Si no tiene autor le asignamos undefined, nunca deberia darse este caso 
-        if (!report.config.author)
-            report.config.author = 'Undefined';
-      
-      });
-  });
+  for (const reportType of dashboards) {
+    for (const report of reportType) {
+      console.log((report.config.modifiedAt))
+      console.log(await DateUtil.convertDashboardDate(report.config.modifiedAt))
+
+      // Setear la fecha si la tiene, sino, asignarle el día de hoy
+      report.config.modifiedAt = await DateUtil.convertDashboardDate(report.config.modifiedAt);
+
+      // Si no tiene autor le asignamos 'Undefined'
+      if (!report.config.author)
+        report.config.author = 'Undefined';
+    }
+  }
 }
+
 

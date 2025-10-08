@@ -27,12 +27,30 @@ export class DateUtil {
 
     }
 
-    public static convertDashboardDate(date: string) {
-        // Modificamos la fecha para solo mostrar YYYY/MM/DD sin la hora
-        if (date && date.length > 0) {
-            return date.split("T")[0];
-        } else {
+    public static convertDashboardDate(date: string | Date | null | undefined) {
+    
+            // Si no hay fecha, usar la actual
+        if (!date) {
             return new Date().toISOString().split("T")[0];
         }
+
+        // Si es un objeto Date
+        if (date instanceof Date) {
+            return date.toISOString().split("T")[0];
+        }
+
+        // Si es una cadena con formato ISO
+        if (typeof date === "string" && date.includes("T")) {
+            return date.split("T")[0];
+        }
+
+        // Si es una cadena simple 
+        if (typeof date === "string") {
+            return date;
+        }
+
+        // Fallback (por si acaso)
+        return new Date().toISOString().split("T")[0];
     }
+
 }
