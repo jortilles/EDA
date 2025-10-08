@@ -37,10 +37,10 @@ export class StyleProviderService {
 	public DEFAULT_PANEL_TITLE_ALIGN: string = DEFAULT_PANEL_TITLE_ALIGN;
 	public DEFAULT_PALETTE_COLOR: string = DEFAULT_PALETTE_COLOR;
 	public ChartsPalettes: any = ChartsPalettes;
-	public ActualChartPalette: string;
+	public ActualChartPalette: string = DEFAULT_PALETTE_COLOR;
 	public loadingFromPalette: boolean;
 	public colorCode: boolean = false;
-	public loadedPanels: number;
+	public loadedPanels: number = -1;
 	public palKnob: boolean = false;
 
 	
@@ -154,6 +154,7 @@ export class StyleProviderService {
 		this._panelFontSize.next(styles.panelContent.fontSize);
 
 		this._customCss.next(styles.customCss);
+		this.setCustomCss(styles.customCss)
 		// this._fontSize.next(styles.fontSize);
 	}
 
@@ -229,7 +230,7 @@ export class StyleProviderService {
 
 	checkLoadPan() {
 		this.loadedPanels--;
-		if (this.loadedPanels === 0) {
+		if (this.loadedPanels === -1) {
 			this.loadingFromPalette = false;
 		}
 	}

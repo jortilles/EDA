@@ -4,6 +4,8 @@ import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
 import { EdaChart } from '@eda/components/eda-chart/eda-chart';
+import { StyleProviderService } from '@eda/services/service.index';
+import { DynamicTextConfig } from '../panel-charts/chart-configuration-models/dynamicText-config';
 
 
 
@@ -23,12 +25,13 @@ export class dynamicTextDialogComponent extends EdaDialogAbstract {
   public chart: EdaChart;
   public value: number;
   public operand: string;
-  @Output() color: any = '#000000';
+  @Output() color;
+  public originalColors: string;
   @Output() messageEvent = new EventEmitter<any>();
   public disabled:boolean;
   public display:boolean=false;
 
-  constructor( private userService: UserService,) {
+  constructor( private userService: UserService,private styleProviderService : StyleProviderService) {
 
     super();
 
@@ -51,31 +54,32 @@ export class dynamicTextDialogComponent extends EdaDialogAbstract {
         color : this.color,
       });
   }
-  closeChartConfig() {
-    this.onClose(EdaDialogCloseEvent.NONE);
-  }
-
- onShow(): void {
-  const panelChart = this.controller.params.panelChart;
-  this.panelChartConfig = panelChart;
-
-  const colorConfig = panelChart?.config?.config;
-
-  // Función para encontrar el color real sin importar la profundidad
-  function getDeepColor(obj: any): string | null {
+  
+  onShow(): void {
+    const panelChart = this.controller.params.panelChart;
+    this.panelChartConfig = panelChart;
+    const colorConfig = panelChart?.config?.config;
+    // Función para encontrar el color real sin importar la profundidad
+    function getDeepColor(obj: any): string | null {
     while (obj && typeof obj === 'object' && 'color' in obj) {
       obj = obj.color;
     }
     return typeof obj === 'string' ? obj : null;
   }
-
   const extractedColor = getDeepColor(colorConfig);
-  this.color = extractedColor || '#000000';
 
+  // extractedColor si acabamos de modificar el color del texto manualmente, sino el de estilos
+  this.color = !this.styleProviderService.loadingFromPalette ? extractedColor : this.styleProviderService.panelFontColor.source['_value'];
+  this.originalColors = this.color;
+  
   this.display = true;
 }
 
-  onClose(event: EdaDialogCloseEvent, response?: any): void {
+closeChartConfig() {
+  this.panelChartConfig.config.setConfig(new DynamicTextConfig(this.originalColors));
+  this.onClose(EdaDialogCloseEvent.NONE);
+}
+onClose(event: EdaDialogCloseEvent, response?: any): void {
     return this.controller.close(event, response);
   }
 

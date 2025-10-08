@@ -135,10 +135,9 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 }
                 break;  
             default:
-
-                this.series = this.chart.chartDataset.map(dataset => ({
+                this.series = this.chart.chartDataset.map((dataset, index) => ({
                     label: dataset.label,
-                    bg: this.rgb2hex(dataset.backgroundColor) || dataset.backgroundColor,
+                    bg: this.resolveBackgroundColor(dataset, index),
                     border: dataset.borderColor
                 }));
                 this.chart.chartColors = this.series.map(s => ({ backgroundColor: this.hex2rgb(s.bg, 90), borderColor:  this.hex2rgb(s.border, 90) }));
@@ -148,63 +147,89 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
             this.originalSeries = _.cloneDeep(this.series);
     }
 
+
+     resolveBackgroundColor(dataset: any, index: number): string {
+        if (typeof dataset.backgroundColor === 'string') {
+            return /^rgb/i.test(dataset.backgroundColor)
+            ? this.rgb2hex(dataset.backgroundColor)
+            : dataset.backgroundColor;
+         }
+         //return this.chart.chartColors[index];
+         return this.stylesProviderService.ActualChartPalette !== undefined ? this.stylesProviderService.ActualChartPalette['paleta'][index] :
+             this.stylesProviderService.DEFAULT_PALETTE_COLOR['paleta'][index];
+    }
+
+
     handleInputColor(event) {
         if (this.chart.chartDataset) {
             const newDatasets = [];
             const dataset = this.chart.chartDataset;
-            
-            for (let i = 0, n = dataset.length; i < n; i += 1) {
-                if (dataset[i].label === event.label) {
-                    dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
-                    dataset[i].borderColor = this.hex2rgb(event.bg, 100);
-                    this.chart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
-                } else {
-                    if (!_.isArray(dataset[i].backgroundColor)) {
-                        dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
-                        dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
-                        this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
+            if (this.panelChartComponent.componentRef.instance.inject.edaChart === 'stackedbar100') {
+
+                for (let i = 0, n = dataset.length; i < n; i += 1) {
+                    if (dataset[i].label === event.label) {
+                        dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
+                        dataset[i].borderColor = this.hex2rgb(event.bg, 100);
+                        this.chart.chartColors[i] = _.pick(dataset[i], ['backgroundColor', 'borderColor']);
+                    }
+                    newDatasets.push(dataset[i]);
+                }
+                
+            }else {
+                
+                for (let i = 0, n = dataset.length; i < n; i += 1) {
+                    if (dataset[i].label === event.label) {
+                        dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
+                        dataset[i].borderColor = this.hex2rgb(event.bg, 100);
+                        this.chart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
                     } else {
-                        if (this.chart.chartLabels) {
-                            const labels = this.chart.chartLabels;
-                            for (let label of labels) {
-                                let inx = labels.indexOf(label);
-                                if (label === event.label && inx > -1) {
-                                    dataset[i].backgroundColor[inx] = this.hex2rgb(event.bg, 90);
-                                    this.chart.chartColors[0].backgroundColor[inx] = this.hex2rgb(event.bg, 90);
+                        if (!_.isArray(dataset[i].backgroundColor)) {
+                            dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
+                            dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
+                            this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
+                        } else {
+                            if (this.chart.chartLabels) {
+                                const labels = this.chart.chartLabels;
+                                for (let label of labels) {
+                                    let inx = labels.indexOf(label);
+                                    if (label === event.label && inx > -1) {
+                                        dataset[i].backgroundColor[inx] = this.hex2rgb(event.bg, 90);
+                                        this.chart.chartColors[0].backgroundColor[inx] = this.hex2rgb(event.bg, 90);
+                                    }
                                 }
                             }
                         }
                     }
+                    newDatasets.push(dataset[i]);
                 }
-
-                newDatasets.push(dataset[i]);
             }
-
-            // this.chart.chartDataset = newDatasets;
-            // let inx = this.chart.chartLabels.findIndex((label: string) => event.label === label);
-            // if (inx >= 0) {
-            //     for (let i = 0, n = dataset.length; i < n; i += 1) {
-            //         if (dataset[i].label === event.label) {
-            //             //dataset[i].hoverBackgroundColor = this.hex2rgb(event.bg, 90);
-            //             //dataset[i].hoverBorderColor = 'rgb(255,255,255)'; 
-            //             dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
-            //             dataset[i].borderColor = this.hex2rgb(event.bg, 100);
-            //             this.chart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
-            //         } else if (dataset[i].data[inx]) {
-            //             dataset[i].backgroundColor[inx] = this.hex2rgb(event.bg, 90);
-            //             dataset[i].borderColor[inx] = this.hex2rgb(event.bg, 100);
-            //             this.chart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
-            //         } else {
-            //             //dataset[i].hoverBackgroundColor = this.chart.chartColors[i].backgroundColor;
-            //             //dataset[i].hoverBorderColor = 'rgb(255,255,255)';
-            //             dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
-            //             dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
-            //             this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
-            //         }
-            //         newDatasets.push(dataset[i]);
-            //     }
-            //     this.chart.chartDataset = newDatasets;
-            // }
+            /*
+             this.chart.chartDataset = newDatasets;
+             let inx = this.chart.chartLabels.findIndex((label: string) => event.label === label);
+             if (inx >= 0) {
+                 for (let i = 0, n = dataset.length; i < n; i += 1) {
+                     if (dataset[i].label === event.label) {
+                         dataset[i].hoverBackgroundColor = this.hex2rgb(event.bg, 90);
+                         dataset[i].hoverBorderColor = 'rgb(255,255,255)'; 
+                         dataset[i].backgroundColor = this.hex2rgb(event.bg, 90);
+                         dataset[i].borderColor = this.hex2rgb(event.bg, 100);
+                         this.chart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
+                     } else if (dataset[i].data[inx]) {
+                         dataset[i].backgroundColor[inx] = this.hex2rgb(event.bg, 90);
+                         dataset[i].borderColor[inx] = this.hex2rgb(event.bg, 100);
+                         this.chart.chartColors[i] = _.pick(dataset[i], [ 'backgroundColor', 'borderColor']);
+                     } else {
+                         //dataset[i].hoverBackgroundColor = this.chart.chartColors[i].backgroundColor;
+                         //dataset[i].hoverBorderColor = 'rgb(255,255,255)';
+                         dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
+                         dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
+                         this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
+                     }
+                     newDatasets.push(dataset[i]);
+                 }
+                 this.chart.chartDataset = newDatasets;
+             }
+             */
         } else {
             if (this.chart.chartLabels) {
                 const labels = this.chart.chartLabels;
@@ -215,71 +240,87 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 }
             }
         }
-
         this.panelChartComponent.componentRef.instance.inject = this.chart;
         this.panelChartComponent.componentRef.instance.updateChart();
     }
     
     onPaletteSelected() {
         const paletteBase = this.selectedPalette['paleta'];
-        if (this.chart.chartType !== 'doughnut' && this.chart.chartType !== 'polarArea') { 
-            const numberOfColors = 1;
+        const chartType = this.chart['edaChart'];
 
-            const newColors = this.chartUtils.generateChartColorsFromPalette(numberOfColors, paletteBase);
-            // Recoger todos los colores disponibles a usar
-            const dataset = this.chart.chartDataset[0];
-            dataset.backgroundColor = newColors[0].backgroundColor;
-            dataset.borderColor = newColors[0].borderColor;
-    
-            // Aplica chartColors al componente del dashboard
-            this.chart.chartColors = [
-            {
-                backgroundColor: newColors.map(c => c.backgroundColor),
-                borderColor: newColors.map(c => c.borderColor)
-            }
-            ];
-    
-            // Actualiza los color pickers
-            this.series[0].bg = this.chart.chartColors[0].backgroundColor;
-            
-            // Refresca el chart
-            this.chart = { ...this.chart };
-            this.panelChartComponent.componentRef.instance.inject = this.chart;
-            this.panelChartComponent.updateComponent();
-        } else {
-            const numberOfColors = this.chart.chartLabels?.length || 1;
-    
-            const newColors = this.chartUtils.generateChartColorsFromPalette(numberOfColors, paletteBase);
-    
-            // Recoger todos los colores disponibles a usar
+        let numberOfColors = 1;
+
+        if (['pyramid', 'stackedbar', 'stackedbar100'].includes(chartType)) {
+            numberOfColors = this.chart.chartDataset?.length || 1;
+        } else if (['polarArea', 'doughnut'].includes(chartType)) {
+            numberOfColors = this.chart.chartLabels?.length || 1;
+        }
+
+        const newColors = this.chartUtils.generateChartColorsFromPalette(numberOfColors, paletteBase);
+
+        // Asignar colores según el tipo de gráfico
+        if (['pyramid', 'stackedbar', 'stackedbar100'].includes(chartType)) {
+            // Varios datasets
+
+            // Modificar panelChart preview
+            this.chart.chartDataset.forEach((ds, i) => {
+                ds.backgroundColor = newColors[i].backgroundColor;
+                ds.borderColor = newColors[i].borderColor;
+            });
+
+            this.chart.chartColors = this.chart.chartDataset.map(ds => ({
+                backgroundColor: ds.backgroundColor,
+                borderColor: ds.borderColor
+            }));
+
+            // Modificar series, paleta lateral
+            this.series = this.chart.chartDataset.map((ds, i) => ({
+                label: ds.label,
+                bg: newColors[i].backgroundColor
+            }));
+
+        } else if (['polarArea', 'doughnut'].includes(chartType)) {
+            // Un dataset con múltiples valores
+
+            // Modificar panelChart preview
             const dataset = this.chart.chartDataset[0];
             dataset.backgroundColor = newColors.map(c => c.backgroundColor);
             dataset.borderColor = newColors.map(c => c.borderColor);
-    
-            // Aplica chartColors al componente del dashboard
-            this.chart.chartColors = [
-            {
-                backgroundColor: newColors.map(c => c.backgroundColor),
-                borderColor: newColors.map(c => c.borderColor)
-            }
-            ];
-    
-            // Actualiza los color pickers
-            this.series = this.chart.chartLabels.map((label: string, i: number) => ({
-                label: label,
+
+            this.chart.chartColors = [{
+                backgroundColor: dataset.backgroundColor,
+                borderColor: dataset.borderColor
+            }];
+
+            // Modificar series, paleta lateral
+            this.series = this.chart.chartLabels.map((label, i) => ({
+                label,
                 bg: newColors[i].backgroundColor
             }));
-            
-            
-            // Refresca el chart
-            this.chart = { ...this.chart };
-            this.panelChartComponent.componentRef.instance.inject = this.chart;
-            this.panelChartComponent.updateComponent();
+
+        } else {
+            // Resto de graficos de Chartjs
+
+            // Modificar panelChart preview
+            const dataset = this.chart.chartDataset[0];
+            dataset.backgroundColor = newColors[0].backgroundColor;
+            dataset.borderColor = newColors[0].borderColor;
+
+            this.chart.chartColors = [{
+            backgroundColor: [dataset.backgroundColor],
+            borderColor: [dataset.borderColor]
+            }];
+
+            // Modificar series, paleta lateral
+            this.series[0].bg = dataset.backgroundColor;
         }
 
-
-
+        // Refrescar chart
+        this.chart = { ...this.chart };
+        this.panelChartComponent.componentRef.instance.inject = this.chart;
+        this.panelChartComponent.updateComponent();
     }
+
 
     SetNumberOfColumns(){
         const properties = this.panelChartConfig;
@@ -423,8 +464,8 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
                // dataset[i].hoverBackgroundColor = this.chart.chartColors[i].backgroundColor;
                 //dataset[i].hoverBorderColor = 'rgb(255,255,255)';
-                dataset[i].backgroundColor = this.chart.chartColors[i].backgroundColor;
-                dataset[i].borderColor = this.chart.chartColors[i].backgroundColor;
+                dataset[i].backgroundColor = this.chart.chartColors[i]?.backgroundColor;
+                dataset[i].borderColor = this.chart.chartColors[i]?.backgroundColor;
                 this.chart.chartColors[i] = _.pick(dataset[i], [  'backgroundColor', 'borderColor']);
 
                 newDatasets.push(dataset[i]);
@@ -465,6 +506,33 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
     }
 
+    resetSeries() { 
+        const type = this.chart['edaChart'];
+        switch (type) {
+            case 'doughnut':
+            case 'polarArea':
+                this.originalSeries.forEach((color, index) => {
+                    this.chart.chartColors[0].backgroundColor[index] = color.bg;
+                    this.chart.chartColors[0].borderColor[index] = color.bg;
+                });
+                break;
+            case 'pyramid':
+            case 'stackedbar':
+            case 'radar' : 
+            case 'stackedbar100':
+                this.originalSeries.forEach((color, index) => {
+                    this.chart.chartDataset[index].backgroundColor = color?.bg;
+                    this.chart.chartDataset[index].borderColor = color?.bg;
+                });
+                break;
+            default:
+                console.log(this)
+                this.chart.chartDataset[0].backgroundColor = this.originalSeries[0]?.bg;
+                this.chart.chartDataset[0].borderColor = this.originalSeries[0]?.bg;
+                break;
+        }
+    }
+
     onChangeGridLines() {
 
     }
@@ -482,16 +550,15 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.chart.showLabelsPercent = this.showLabelsPercent;
         this.chart.numberOfColumns = this.numberOfColumns;
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
-
     }
 
     //On cancel send prev state
     closeChartConfig() {
+        this.resetSeries();
         this.onClose(EdaDialogCloseEvent.NONE), this.oldChart;
     }
 
     onClose(event: EdaDialogCloseEvent, response?: any): void {
-
         return this.controller.close(event, response);
     }
 

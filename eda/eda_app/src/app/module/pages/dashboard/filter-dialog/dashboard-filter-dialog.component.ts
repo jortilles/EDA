@@ -26,6 +26,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
 
     public panelsToDisplay: Array<{ title, id, active, avaliable, visible }>;
     public panelstoFilter: Array<{ title, id, active, avaliable, visible }>;
+    public loading: boolean = true;
 
     // Dialog  vars
     public targetCols: any[] = [];
@@ -270,6 +271,7 @@ export class DashboardFilterDialogComponent extends EdaDialogAbstract {
             res => this.targetValues = res[1].map(item => ({ label: item[0], value: item[0] })),
             err => this.alertService.addError(err)
         );
+        this.loading = false;
     }
 
     processPickerEvent(event){

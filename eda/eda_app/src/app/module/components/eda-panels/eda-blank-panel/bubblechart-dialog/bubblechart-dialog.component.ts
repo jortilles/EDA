@@ -38,7 +38,8 @@ export class BubblechartDialog extends EdaDialogAbstract implements AfterViewChe
     if (!this.colors && this.myPanelChartComponent?.componentRef) {
       //To avoid "Expression has changed after it was checked" warning
       setTimeout(() => {
-        this.colors = this.myPanelChartComponent.componentRef.instance.colors;
+      this.colors = this.myPanelChartComponent.componentRef.instance.colors
+        .map(c => c.startsWith('rgb') ? this.ChartUtilsService.rgb2hexD3(c) : c);
         this.originalColors = [...this.colors];
         this.labels = this.myPanelChartComponent.componentRef.instance.firstColLabels;
       }, 0);
@@ -55,21 +56,19 @@ export class BubblechartDialog extends EdaDialogAbstract implements AfterViewChe
   }
 
   saveChartConfig() {
-    this.onClose(EdaDialogCloseEvent.UPDATE, {colors : this.colors});
+    this.onClose(EdaDialogCloseEvent.UPDATE, {
+      colors: this.colors.map(c => c.startsWith('#') ? this.ChartUtilsService.hex2rgbD3(c) : c)
+    });
   }
 
   closeChartConfig() {
+    this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(this.originalColors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
     this.onClose(EdaDialogCloseEvent.NONE);
   }
 
   handleInputColor(): void {
     this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(this.colors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
     this.myPanelChartComponent.changeChartType();
-
-    // Restaurar configuración original sin modificar this.colors ni UI
-    setTimeout(() => {
-      this.myPanelChartComponent.props.config.setConfig(new BubblechartConfig(this.originalColors.map(c => this.ChartUtilsService.hex2rgbD3(c))));
-    }, 0);
   }
 
   onPaletteSelected() { 

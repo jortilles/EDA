@@ -14,69 +14,80 @@ export class EdadynamicTextComponent implements OnInit {
     @Output() onNotify: EventEmitter<any> = new EventEmitter();
     @ViewChild('dynamicTextContainer', { static: false }) dynamicTextContainer!: ElementRef;
 
-
- 
     containerHeight: number = 20;
     containerWidth: number = 20;
 
     constructor(private styleProviderService : StyleProviderService) { }
 
-    ngOnInit() {
-      
+    ngOnInit() {}
+
+    getStyle(): any {
+        let color = this.inject?.color;
+        
+        if (this.styleProviderService.loadingFromPalette) {
+            color = this.styleProviderService.panelFontColor.source['_value'];
+            this.inject.color = this.styleProviderService.panelFontColor.source['_value'];
+        }
+        const fontSize = this.getFontSize();
+        color = this.findColor(color);
+        
+        return {
+            'font-weight': 'bold',
+            'font-size': fontSize,
+            'color': color,
+        };
     }
 
-getStyle(): any {
-    let color = this.inject?.color;
-    if (this.styleProviderService.loadingFromPalette) {
-        color = this.styleProviderService.ActualChartPalette['paleta'][0];
+    findColor(color) {
+        while (color) {
+            if (typeof color === "string") {
+                return color;
+            }
+            if (color && typeof color === "object" && "color" in color) {
+                color = color.color;
+            } else {
+                break;
+            }
+        }
+        return null; 
     }
 
-    const fontSize = this.getFontSize();
 
-    return {
-        'font-weight': 'bold',
-        'font-size': fontSize,
-        'color': color,
-    };
-}
+    getFontSize(): string {
+        let result = 1;
 
+        if (!this.dynamicTextContainer) {
+            return '1px';
+        }
 
+        const realContainer = this.dynamicTextContainer.nativeElement
+            ?.parentElement
+            ?.parentElement
+            ?.parentElement;
 
-getFontSize(): string {
-    let result = 1;
+        const containerWidth = realContainer.offsetWidth;
+        const containerHeight = realContainer.offsetHeight;
 
-    if (!this.dynamicTextContainer) {
-        return '1px';
+        this.containerWidth = containerWidth;
+        this.containerHeight = containerHeight;
+
+        result = containerHeight / 2;
+
+        if (result * 4 > containerWidth) {
+            result = containerWidth / 4;
+        }
+
+        const text = (this.inject?.value ?? '').toString();
+        const strlen = text.length || 1;
+
+        if (strlen * result > containerWidth * 1.5) {
+            result = result / 1.5;
+        }
+
+        result = Math.max(result, 10)-5;
+
+        return `${result.toFixed()}px`;
     }
-
-    const realContainer = this.dynamicTextContainer.nativeElement
-        ?.parentElement
-        ?.parentElement
-        ?.parentElement;
-
-    const containerWidth = realContainer.offsetWidth;
-    const containerHeight = realContainer.offsetHeight;
-
-    this.containerWidth = containerWidth;
-    this.containerHeight = containerHeight;
-
-    result = containerHeight / 2;
-
-    if (result * 4 > containerWidth) {
-        result = containerWidth / 4;
-    }
-
-    const text = (this.inject?.value ?? '').toString();
-    const strlen = text.length || 1;
-
-    if (strlen * result > containerWidth * 1.5) {
-        result = result / 1.5;
-    }
-
-    result = Math.max(result, 10)-5;
-
-    return `${result.toFixed()}px`;
-}
 
 
 
@@ -92,10 +103,5 @@ getFontSize(): string {
             this.containerWidth = width  ;
         }
           this.getFontSize();
-
       }
-
-
-
-
 }

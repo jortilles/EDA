@@ -201,13 +201,16 @@ public async fillFiltersData(): Promise<void> {
     public async onGlobalFilterAuto(filter: any, targetTable: string): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
+                this.loading = true;
                 if (filter.isdeleted) {
+                    // Borramos filter 
                     filter.selectedItems = [];
                     this.applyGlobalFilter(filter);
                     this.removeGlobalFilter(filter);
                 } else {
-                    let existFilter = this.globalFilters.find((f) => f.id === filter.id);
-
+                    // Creamos filtro
+                    let existFilter = await this.globalFilters.find((f) => f.id === filter.id);
+                    
                     if (existFilter) {
                         existFilter.selectedItems = filter.selectedItems;
                     } else {
@@ -220,7 +223,7 @@ public async fillFiltersData(): Promise<void> {
                     } else {
                         await this.loadGlobalFiltersData(filter);    
                     }
-                    
+
                     // Apply globalFilter to linkedPanels
                     this.applyGlobalFilter(filter);
 
@@ -230,8 +233,10 @@ public async fillFiltersData(): Promise<void> {
                         this.dashboard.updateApplyToAllFilterInPanels();
                     }
                 }
+                this.loading = false;
                 resolve();
             } catch (err) {
+                console.log(err)
                 reject(err);
             }
         })

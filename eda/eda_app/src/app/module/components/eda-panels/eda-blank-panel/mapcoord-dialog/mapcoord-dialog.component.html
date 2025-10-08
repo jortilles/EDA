@@ -17,18 +17,28 @@
                 <div class="space-y-4">
                     <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6 md:col-span-2"
+                            [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+                            <option [ngValue]="null" disabled hidden>
+                                -- Seleccione una paleta --
+                            </option>
+                            @for (palette of allPalettes; track $index) {
+                            <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+                            }
+                        </select>
+                    
                         <!-- Bloque Color Inicial -->
                         <div class="flex flex-col gap-2">
                             <span class="font-semibold">Color Inicial</span>
                             <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
                                 <div class="flex items-center gap-2">
                                     <span class="text-md text-slate-500 font-mono">{{ initialColor }}</span>
-                                    <p-colorPicker [(ngModel)]="initialColor" (onChange)="handleInputColor()"
-                                        format="hex" appendTo="body"></p-colorPicker>
+                                    <p-colorPicker [(ngModel)]="initialColor" (onChange)="handleInputColor()" format="hex"
+                                        appendTo="body"></p-colorPicker>
                                 </div>
                             </div>
                         </div>
-
+                    
                         <!-- Bloque Color Final -->
                         <div class="flex flex-col gap-2">
                             <span class="font-semibold">Color Final</span>
@@ -41,6 +51,7 @@
                             </div>
                         </div>
                     </div>
+
 
 
                 </div>

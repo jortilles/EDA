@@ -31,11 +31,11 @@ export * from './api/group.service'; // Group
 export * from './api/createTable.service';
 export * from './api/mail.service';
 export * from './api/excel-formatter.service';
+export * from './api/log.service';
 
 
 
 // Guards
 export { LoginGuardGuard } from './guards/login-guard.guard';
 export { VerifyTokenGuard } from './guards/verify-token.guard';
-
 

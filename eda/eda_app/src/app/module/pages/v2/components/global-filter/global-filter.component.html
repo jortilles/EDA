@@ -1,4 +1,4 @@
-<div class="flex flex-wrap items-center gap-4 mt-2 mb-2 ml-1">
+<div class="flex flex-wrap items-center gap-4 mt-2 mb-2 ml-1 w-100 h-fit" style="flex-wrap: wrap!important">
   @if (globalFilters.length > 0 && (isAdmin || isDashboardCreator || filterButtonVisibility.public)) {
     <button
       class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700  rounded-md border hover:bg-gray-300"
@@ -12,49 +12,51 @@
 
   @for (filter of globalFilters; track filter.filter_id) {
     @if (isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)) {
-      <div class="flex items-center gap-2">
-        <span class="text-sm text-gray-500"       
-          [style.color]="styleButton.color"
-          [style.font-size]="styleButton.fontSize"
-          [style.font-family]="styleButton.fontFamily"
-        >{{getFilterLabel(filter)}}:</span>
-      </div>
-
-      @if (getFilterType(filter)=='date') {
-        <eda-date-picker 
-          [autoClear]="true"
-          [inject]="datePickerConfigs[filter.id]"
-          (onRemove)="removeGlobalFilter(filter, true)"
-          (onDatesChanges)="processPickerEvent($event, filter)">
-
-          <ng-container footer>
-            <button         
-              id="dashFilterConf"
-              type="button"
-              (click)="onShowGlobalFilter(false, filter)"
-              class="rounded-full border p-2.5 m-2">
-              <eda-icon name="settings"></eda-icon>
-            </button>
-          </ng-container>
-        </eda-date-picker>
-      } @else {
-
-          <p-multiSelect
-            [style]="styleButton"
-            [options]="filter.data"
-            [(ngModel)]="filter.selectedItems"
-            [virtualScroll]="true"
-            [defaultLabel]="getFilterLabel(filter)"
-            [disabled]="disableGlobalFilter(filter)"
-            [itemSize]="30"
-            [loading]="loading"
-            i18n-placeholder="@@Cargando"
-            [placeholder]= "placeholderText"
-            (onChange)="setGlobalFilterItems(filter)"
-            >
+      <div class="flex">
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-gray-500"       
+            [style.color]="styleButton.color"
+            [style.font-size]="styleButton.fontSize"
+            [style.font-family]="styleButton.fontFamily"
+          >{{getFilterLabel(filter)}}:</span>
+        </div>
   
-          </p-multiSelect>
-      }
+        @if (getFilterType(filter)=='date') {
+          <eda-date-picker 
+            [autoClear]="true"
+            [inject]="datePickerConfigs[filter.id]"
+            (onRemove)="removeGlobalFilter(filter, true)"
+            (onDatesChanges)="processPickerEvent($event, filter)">
+  
+            <ng-container footer>
+              <button         
+                id="dashFilterConf"
+                type="button"
+                (click)="onShowGlobalFilter(false, filter)"
+                class="rounded-full border p-2.5 m-2">
+                <eda-icon name="settings"></eda-icon>
+              </button>
+            </ng-container>
+          </eda-date-picker>
+        } @else {
+  
+            <p-multiSelect
+              [style]="styleButton"
+              [options]="filter.data"
+              [(ngModel)]="filter.selectedItems"
+              [virtualScroll]="true"
+              [defaultLabel]="getFilterLabel(filter)"
+              [disabled]="disableGlobalFilter(filter)"
+              [itemSize]="30"
+              [loading]="loading"
+              i18n-placeholder="@@Cargando"
+              [placeholder]= "placeholderText"
+              (onChange)="setGlobalFilterItems(filter)"
+              >
+    
+            </p-multiSelect>
+        }
+      </div>
     }
   }
 </div>

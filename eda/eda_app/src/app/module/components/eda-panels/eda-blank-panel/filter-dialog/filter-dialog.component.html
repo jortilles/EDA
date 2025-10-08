@@ -46,7 +46,7 @@
             <span class="p-float-label">
               <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value1" [virtualScroll]="true"
                 class="h-[3.2rem]" [itemSize]="34" [filter]="false" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
-                (onChange)="handleValidForm({value1: filterValue.value1})" defaultLabel="Selecciona..."
+                (onChange)="handleValidForm({value1: filterValue.value1})" defaultLabel="Selecciona..." [loading]="loading"
                 [selectionLimit]="limitSelectionFields" id="float-input1">
               </p-multiSelect>
               <label i18n="@@valor1Label">Valor 1</label>
@@ -65,7 +65,7 @@
               <span class="p-float-label mt-4">
                 <p-multiSelect [options]="dropDownFields" [(ngModel)]="filterValue.value2" [virtualScroll]="true" [itemSize]="34"
                   [filter]="false" [style]="{width:'100%'}" [panelStyle]="{minWidth:'100%'}"
-                  (onChange)="handleValidForm({value2: filterValue.value2})" defaultLabel="Selecciona..."
+                  (onChange)="handleValidForm({value2: filterValue.value2})" defaultLabel="Selecciona..." [loading]="loading"
                   [selectionLimit]="limitSelectionFields" id="float-input2">
                 </p-multiSelect>
                 <label i18n="@@valor2Label">Valor 2</label>

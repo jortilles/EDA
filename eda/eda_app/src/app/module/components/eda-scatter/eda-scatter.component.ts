@@ -1,6 +1,5 @@
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from "@angular/core";
-import { ChartsColors } from '@eda/configs/index';
 import * as d3 from 'd3';
 import { ScatterPlot } from "./eda-scatter";
 import * as _ from 'lodash';
@@ -32,6 +31,7 @@ export class EdaScatter implements AfterViewInit {
   metricIndex: number;
   width: number;
   heigth: number;
+  resizeObserver!: ResizeObserver;
 
   constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService){
 
@@ -41,8 +41,8 @@ export class EdaScatter implements AfterViewInit {
     this.id = `scatterPlot_${this.inject.id}`;
     this.data = this.formatData(this.inject.data);
     
-    this.colors = this.inject.colors.length > 0 ? this.inject.colors
-      : this.getColors(this.data.children?.length, ChartsColors);
+    this.colors = this.inject.colors.length > 0 ? this.inject.colors :
+      this.chartUtilService.generateChartColorsFromPalette(this.firstColLabels.length, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);   
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.firstColLabels = this.inject.data.values.map(row => row[firstNonNumericColIndex]);
     this.firstColLabels = [...new Set(this.firstColLabels)];
@@ -51,10 +51,28 @@ export class EdaScatter implements AfterViewInit {
   ngOnDestroy(): void {
     if (this.div)
       this.div.remove();
+    if (this.resizeObserver)
+      this.resizeObserver.disconnect();
   }
 
   ngAfterViewInit() {
+    // SVG CONTAINER
+    const container = this.svgContainer.nativeElement as HTMLElement;
 
+    // Crear SVG
+    this.svg = d3.select(container).append('svg');
+
+    // Crear ResizeObserver para redimensionar el chart
+    this.resizeObserver = new ResizeObserver(entries => {
+      let id = `#${this.id}`;
+      this.svg = d3.select(id);
+      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
+        this.draw();
+      }
+    });
+    this.resizeObserver.observe(container);
+
+    
     if (this.svg) this.svg.remove();
     let id = `#${this.id}`;
     this.svg = d3.select(id);
@@ -65,7 +83,9 @@ export class EdaScatter implements AfterViewInit {
 
 
   draw() {
-
+    // Borrado inicial de otros charts 
+    this.svg.selectAll('*').remove();
+    
     const svg = this.svg;
     const width = this.svgContainer.nativeElement.clientWidth - 20;
     const height = this.svgContainer.nativeElement.clientHeight - 20;
@@ -234,25 +254,6 @@ export class EdaScatter implements AfterViewInit {
       .attr("stroke", this.styleProviderService.panelFontColor.source['_value'])
       .attr("font-family", this.styleProviderService.panelFontFamily.source['_value'])
   }
-
-  getColors(dataLength, colors) {
-
-    const colorsLength = colors.length;
-    let outputColors: Array<any> = colors;
-
-    if (dataLength > colorsLength) {
-      let repeat = Math.ceil(dataLength / colorsLength);
-
-      for (let i = 0; i < repeat - 1; i++) {
-        outputColors = [...outputColors, ...colors]
-      }
-    }
-
-    return outputColors.filter((_, index) => index < dataLength).map(color => `rgb(${color[0]}, ${color[1]}, ${color[2]} )`);
-
-  }
-
- 
 
   formatData(data) {
 

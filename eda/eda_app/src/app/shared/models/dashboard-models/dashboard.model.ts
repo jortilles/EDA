@@ -11,6 +11,7 @@ export class Dashboard {
     public visible: string;
     public onlyIcanEdit: boolean = false;
     public createdAt: Date;
+    public modifiedAt: Date;
     public author: string;
 
     constructor(init: Partial<Dashboard>) {

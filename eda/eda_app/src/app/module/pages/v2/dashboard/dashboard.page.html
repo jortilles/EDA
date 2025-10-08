@@ -6,7 +6,7 @@
 
         <div class="flex-1">
           @if (!titleClick) {
-          <h1 class="text-2xl font-semibold tracking-tight cursor-pointer" [ngStyle]="reportTitle">
+          <h1 class="text-2xl font-semibold tracking-tight cursor-pointer w-fit" [ngStyle]="reportTitle">
             {{ title.trim().length > 0 ? title : '\uD83D\uDD89' }}
           </h1>
           } @else {
@@ -14,10 +14,11 @@
             class="w-full max-w-md px-3 py-2 bg-gray-100 rounded-md cursor-auto focus:outline-none focus:ring-2 focus:ring-[#00bcd4]">
           }
         </div>
-
-        <button class="w-6 h-6 rounded-full flex items-center justify-center ml-2 " [ngStyle]="reportTitle" (click)="showSidebar($event)">
-          <i class="pi pi-ellipsis-v"></i>
-        </button>
+        @if(!hideWheel){
+          <button class="w-6 h-6 rounded-full flex items-center justify-center ml-2 " [ngStyle]="reportTitle" (click)="showSidebar($event)">
+            <i class="pi pi-ellipsis-v"></i>
+          </button>
+        }
       </div>
 
       <!-- Filters Section -->

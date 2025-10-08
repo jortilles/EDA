@@ -171,7 +171,7 @@ export class FilterMapperComponent {
 
   getAttributeTypeIcon(type: string) {
     const icons = {
-        numeric: 'mdi-alphabetical',
+        numeric: 'mdi-numeric',
         date: 'mdi-calendar-text',
         text: 'mdi-alphabetical'
     };

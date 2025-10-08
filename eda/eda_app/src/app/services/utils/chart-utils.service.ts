@@ -66,7 +66,7 @@ export class ChartUtilsService {
         { label: $localize`:@@chartTypes6:Gráfico de Barras Apiladas`, value: 'bar', subValue: 'stackedbar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes19:Gráfico de Barras Apiladas al 100%`, value: 'bar', subValue: 'stackedbar100', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes7:Gráfico de Barras Horizontales`, value: 'bar', subValue: 'horizontalBar', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
-        { label: $localize`:@@chartTypesPyramid:Gráfico de Barras Horizontales Contrapuestas`, value: 'bar', subValue: 'pyramid', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
+        { label: $localize`:@@chartTypesPyramid:Gráfico de Piramide`, value: 'bar', subValue: 'pyramid', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes8:Gráfico de Lineas`, value: 'line', subValue: 'line', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes18:Gráfico de Áreas`, value: 'line', subValue: 'area', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
         { label: $localize`:@@chartTypes9:Mixto: Barras y lineas`, value: 'bar', subValue: 'barline', icon: 'pi pi-exclamation-triangle', ngIf: true, tooManyData: true },
@@ -1198,6 +1198,7 @@ export class ChartUtilsService {
     ): { chartOptions: any } {
         let colorStyle : any = styleProviderService.panelFontColor.source['value'];
         let fontStyle : any = styleProviderService.panelFontFamily.source['value'];
+        let panelStyle : any = styleProviderService.panelColor.source['value'];
         const t = $localize`:@@linkedTo:Vinculado con`;
         const linked = linkedDashboard ? `${labelColum[0].name} ${t} ${linkedDashboard.dashboardName}` : '';
         let options = { chartOptions: {} };
@@ -1227,7 +1228,7 @@ export class ChartUtilsService {
             }
         };
         const edaBarLineLegend = {
-            display: displayLegend,
+            display: true,
             fontSize: edaFontSize,
             fontStyle: edafontStyle,
             position: 'bottom',
@@ -1338,7 +1339,8 @@ export class ChartUtilsService {
                             grid: gridColorConfig,
                             angleLines: gridColorConfig,
                             ticks: {
-                                backdropColor: colorStyle
+                                backdropColor: panelStyle,
+                                color: colorStyle
                             }
                         }
                     }
@@ -1380,7 +1382,6 @@ export class ChartUtilsService {
             break;
             case 'bar':
                 if (!['horizontalBar', 'pyramid', 'stackedbar100'].includes(chartSubType)) {
-
                     if (showLabels || showLabelsPercent ){ /** si mostro els datalabels els configuro */
                         dataLabelsObjt =  {
                             anchor: size.height>150?'end':'center',
@@ -1497,7 +1498,7 @@ export class ChartUtilsService {
                                 },
                                 display: maxTicksLimitY !== 0,
                                 beginAtZero: true,
-                                grace: (showLabels || showLabelsPercent) ? '1%' : '0%',
+                                grace: (showLabels || showLabelsPercent) ? '3%' : '3%',
                                 ticks: {
                                 autoSkip: true,
                                 maxTicksLimit: maxTicksLimitY,
@@ -1852,51 +1853,6 @@ export class ChartUtilsService {
             case 'radar':
                 if(showLabels || showLabelsPercent){
                     dataLabelsObjt =  {
-                        borderColor: 'white',
-                        borderRadius: 25,
-                        borderWidth: 2,
-                        color: 'white',
-                    }
-                } else {
-                    dataLabelsObjt = { display: false };
-                }
-
-                options.chartOptions = {
-                    animation: {
-                        duration: 1500,
-                    },
-                    color: colorStyle,
-                    font: {
-                        family: fontStyle,
-                    },
-                    scales: {
-                        r: {
-                        pointLabels: {
-                            color: styleProviderService.panelFontColor.source['_value'], 
-                            font: {
-                                family: fontStyle,
-                            }
-                        },
-                        ticks: {
-                            color: colorStyle, 
-                        },
-                        angleLines: {
-                            color: colorStyle
-                        },
-                        grid: {
-                            color: colorStyle
-                        }
-                        }
-                    },
-                }
-                break;      
-            case 'line':
-                if(showLabels || showLabelsPercent ){
-
-                    dataLabelsObjt = {
-                        backgroundColor: function(context) {
-                          return context.dataset.backgroundColor;
-                        },
                         anchor: 'end',
                         align: 'top',
                         display: function(context) {
@@ -1910,12 +1866,89 @@ export class ChartUtilsService {
                             }else{
                                 return true; // devuelvo todas
                             }
+                      },
+                        color: colorStyle,
+                        font: {
+                          weight: 'bold',
+                            size: edaFontSize - 2,
+                        },
+                        formatter: (value,ctx) => {
+                            const datapoints = ctx.dataset.data.map( x => x===''?0:x).map( x => x===undefined?0:x);
+                            const total = datapoints.reduce((total, datapoint) => total + datapoint, 0)
+                            const percentage = value / total * 100
+                            let res = '';
+                            if( showLabels && showLabelsPercent){
+                                res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                                if(res == 'NaN'){ res = '';}
+                                res = res  + ' - ' + percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'  ;
+                            }else if(showLabels && !showLabelsPercent){
+                                res = parseFloat(value).toLocaleString('de-DE', { maximumFractionDigits: 6 })  ;
+                            }else if(!showLabels && showLabelsPercent){
+                                res = percentage.toLocaleString('de-DE', { maximumFractionDigits: 1 })    + ' %'   ;
+                            }
+                            return   res;
+                        }
+                       }
+                } else {
+                    dataLabelsObjt = { display: false };
+                }
 
+                options.chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1500,
+                    },
+                    color: colorStyle,
+                    font: {
+                        family: fontStyle,
+                    },
+                    scales: {
+                        r: {
+                            pointLabels: {
+                                color: 'transparent', 
+                                font: {
+                                    family: fontStyle,
+                                }
+                            },
+                            ticks: {
+                                color: colorStyle, 
+                                backdropColor: panelStyle,
+                            },
+                            angleLines: {
+                                color: colorStyle
+                            },
+                            grid: {
+                                color: colorStyle
+                            }
+                        }
+                    },
+                    plugins: {
+                        datalabels: dataLabelsObjt,
+                        legend: edaBarLineLegend
+                    },
+                }
+                break;      
+            case 'line':
+                if(showLabels || showLabelsPercent ){
+                    dataLabelsObjt = {
 
+                        anchor: 'end',
+                        align: 'top',
+                        display: function(context) {
+                            const chartWidth = context.chart.width;
+                            const realData = context.dataset.data;
+
+                            if (( (chartWidth/10)  / realData.length  ) < 0.6 ){
+                                return context.dataIndex%5==0  // devuelvo uno de cada 5
+                            }else if (( (chartWidth/10)  / realData.length  ) < 1.5 ){
+                                return context.dataIndex%2==0 // devuelvo uno de cada 2
+                            }else{
+                                return true; // devuelvo todas
+                            }
                       },
 
-                        borderRadius: 4,
-                        color: 'white',
+
                         font: {
                           weight: 'bold',
                           size:  edaFontSize-2
@@ -1936,7 +1969,6 @@ export class ChartUtilsService {
                             }
                             return   res;
                         }
-
                       }
 
 
@@ -2137,9 +2169,7 @@ export class ChartUtilsService {
     b = hue2rgb(p, q, h - 1 / 3);
 
         
-            console.log([r, g, b]
-        .map(x => Math.round(x * 255).toString(16).padStart(2, "0"))
-        .join(""))
+
         
     return "#" + 
         [r, g, b]

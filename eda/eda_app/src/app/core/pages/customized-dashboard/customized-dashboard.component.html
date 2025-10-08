@@ -1,0 +1,38 @@
+<div class="flex h-screen">
+    <!-- Columna izquierda -->
+    <div class="flex pt-4 flex-col w-[15%] gap-4 bg-[#071933]">
+        <!-- Imagen superior -->
+        <div class="h-1/8 flex items-center justify-center">
+            <img src="assets/images/datapolis.svg" alt="">
+        </div>
+
+        <!-- Listado -->
+        <div class="h-6/8 p-2 overflow-auto">
+            <ul class="space-y-2 pl-[10%]">
+                @for (item of leftItems; track $index) {
+                    <li class="p-2 pt-0 pb-0 text-white font-bold">
+                        @if (item.isStarting) {
+                            <div class="flex items-center">
+                                <eda-icon [name]="item.icon" class="h-6" />
+                                <a (click)="changeSrc()" class="btn">{{ item.name }}</a>
+                            </div>
+                        }@else{
+                            <a  class="btn ml-[10%]">{{ item.name }}</a>
+                        }
+                    </li>
+                }
+
+                <!-- Agrega más items según necesites -->
+            </ul>
+        </div>
+
+        <span class="pt-6  pl-[10%] text-white font-bold"> FET AMB </span>
+        <div class="pb-4 h-1/8 w-[80%] flex self-center justify-center">
+            <img src="https://www.edalitics.com/wp-content/uploads/2023/02/Logo_Edalitics_1_trans.png" class="contrast-0" alt="">
+        </div>
+    </div>
+
+    <div class="flex-1 border">
+        <iframe src='https://eda3.edalitics.com/es/#/public/68d54b212a5c413d371bc8ee?panelMode=true' class="w-full h-full" id="showDashboard" frameborder="0"></iframe>
+    </div>
+</div>

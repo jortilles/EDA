@@ -26,7 +26,8 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
     public dialog: EdaDialog;
     public selectedColumn: Column;
     public duplicatedColumnName: string;
-
+    public loading: boolean = true;
+    
     public display = {
         calendar: false, // calendars inputs
         between: false, // between inputs
@@ -113,6 +114,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
         }
 
         this.handleInputTypes();
+        
     }
 
     public addFilter(): void {
@@ -565,6 +567,7 @@ export class ColumnDialogComponent extends EdaDialogAbstract {
                 throw err;
             }
         }
+        this.loading = false;
     }
 
     getAggName(value: string) {

@@ -1,7 +1,7 @@
 import { OnInit, ChangeDetectorRef, Input, AfterViewChecked } from "@angular/core";
 import { Component, AfterViewInit } from "@angular/core";
 import * as L from "leaflet";
-import { MapUtilsService } from "@eda/services/service.index";
+import { MapUtilsService, StyleProviderService } from "@eda/services/service.index";
 import { EdaMap } from "./eda-map";
 import { LatLngExpression } from "leaflet";
 
@@ -16,24 +16,26 @@ export class EdaMapComponent implements OnInit, AfterViewInit, AfterViewChecked 
   public loading: boolean;
   private map: any;
   private logarithmicScale: boolean;
-  private initialColor: string = "#F4C501";
-  private finalColor: string = "#FA0F25";
+  private initialColor: string;
+  private finalColor: string;
   public draggable: boolean;
   private dataIndex: number;
   private groups: Array<number>;
   private mapActualConfig = null;
 
 
-  constructor(
-    private mapUtilsService: MapUtilsService
-  ) {
-
-  }
+  constructor(private mapUtilsService: MapUtilsService, private styleProviderService: StyleProviderService) { }
+  
   ngOnInit(): void {
     this.loading = true;
     this.dataIndex = this.inject.query.findIndex((e) => e.column_type === "numeric");
     this.initialColor = this.inject.initialColor ? this.inject.initialColor: this.initialColor;
     this.finalColor = this.inject.finalColor ? this.inject.finalColor : this.finalColor;
+
+    // Nueva definición de color dada por la paleta y sus cambios
+    this.initialColor = this.styleProviderService?.loadingFromPalette === true ? this.styleProviderService.ActualChartPalette['paleta'].at(-1) : this.inject.initialColor   
+    this.finalColor = this.styleProviderService?.loadingFromPalette === true ? this.styleProviderService.ActualChartPalette['paleta'][0] : this.inject.finalColor   
+
     this.logarithmicScale = this.inject.logarithmicScale ? this.inject.logarithmicScale : false;
     this.draggable = this.inject.draggable === undefined ? true : this.inject.draggable;
   }

@@ -23,6 +23,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
 
     public dialog: EdaDialog;
     public selectedColumn: Column;
+    public loading: boolean = true;
 
     public display = {
         between: false,
@@ -107,6 +108,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
     carrega() {
         this.carregarFilters();
         this.handleInputTypes();
+
     }
 
     handleInputTypes() {
@@ -121,6 +123,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
             f.filter_column === this.selectedColumn.column_name &&
             !f.removed
         );
+        
     }
 
 
@@ -213,6 +216,7 @@ export class FilterDialogComponent extends EdaDialogAbstract {
                 throw err;
             }
         }
+        this.loading = false;
     }
 
     processPickerEvent(event){

@@ -10,7 +10,6 @@ import {
 } from '@angular/core'
 import * as d3 from 'd3'
 import { EdaBubblechart } from './eda-bubblechart'
-import { ChartsColors } from '@eda/configs/index'
 import * as _ from 'lodash';
 import * as dataUtils from '../../../services/utils/transform-data-utils';
 import { ChartUtilsService, StyleProviderService } from '@eda/services/service.index';
@@ -41,6 +40,7 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   d: any;
   value: any;
   simulation: any;
+  resizeObserver!: ResizeObserver;
 
 
   constructor(private chartUtilService : ChartUtilsService, private styleProviderService : StyleProviderService) { }
@@ -64,17 +64,34 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   ngOnDestroy(): void {
     if (this.div)
       this.div.remove();
+    if (this.resizeObserver)
+      this.resizeObserver.disconnect();
   }
 
   ngAfterViewInit() {
+    // SVG CONTAINER
+    const container = this.svgContainer.nativeElement as HTMLElement;
 
-    if (this.svg) this.svg.remove();
+    // Crear SVG
+    this.svg = d3.select(container).append('svg');
+      
+    // Crear ResizeObserver para redimensionar el chart
+    this.resizeObserver = new ResizeObserver(entries => {
+      let id = `#${this.id}`;
+      this.svg = d3.select(id);
+      if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
+        this.draw();
+      }
+    });
+    this.resizeObserver.observe(container);
+    
+    if (this.svg)
+      this.svg.remove();
     let id = `#${this.id}`;
     this.svg = d3.select(id);
     if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
       this.draw();
     }
-
   }
 
   private getToolTipData = (data) => {
@@ -104,7 +121,8 @@ export class EdaBubblechartComponent implements AfterViewInit, OnInit {
   }
 
   draw() {
-
+    // Borrado inicial de otros charts 
+    this.svg.selectAll('*').remove();
 
     // dibujamos márgenes y color
     const width = this.svgContainer.nativeElement.clientWidth - 10, height = this.svgContainer.nativeElement.clientHeight - 10;

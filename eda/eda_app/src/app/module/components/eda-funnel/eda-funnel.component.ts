@@ -33,6 +33,8 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   labelIndex: number;
   width: number;
   heigth: number;
+  resizeObserver!: ResizeObserver;
+  paleta : any;
 
 
   // div = d3.select("body").append('div')
@@ -49,8 +51,9 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   ngOnInit(): void {
     this.id = `funnel_${this.inject.id}`;
     this.data = this.inject.data;
+    this.paleta = this.styleProviderService.ActualChartPalette  !==  undefined ? this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
     this.colors = this.inject.colors.length > 0 ? this.inject.colors :
-      this.chartUtils.generateChartColorsFromPalette(2, this.styleProviderService.ActualChartPalette['paleta']).map(item => item.backgroundColor);
+      this.chartUtils.generateChartColorsFromPalette(2, this.paleta).map(item => item.backgroundColor);
     this.metricIndex = this.inject.dataDescription.numericColumns[0].index;
     const firstNonNumericColIndex = this.inject.dataDescription.otherColumns[0].index;
     this.labelIndex = firstNonNumericColIndex;
@@ -59,18 +62,44 @@ export class EdaFunnelComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
+    // SVG CONTAINER
+    const container = this.svgContainer.nativeElement as HTMLElement;
 
-    if (this.svg) this.svg.remove();
-    let id = `#${this.id}`;
-    this.svg = d3.select(id);
-    if (this.svg._groups[0][0] !== null && this.svgContainer.nativeElement.clientHeight > 0) {
-      this.draw();
-    }
+      // Crear SVG
+      this.svg = d3.select(container).append('svg');
 
+      // Crear ResizeObserver para redimensionar el chart
+      this.resizeObserver = new ResizeObserver(entries => {
+        const { width: w, height: h } = entries[0].contentRect;
+        if (w > 0 && h > 0) {
+          // Actualizar tamaño del SVG existente
+          this.svg
+            .attr('width', w)
+            .attr('height', h);
+          // Redibujar contenido
+          this.draw();
+        }
+      });
+      this.resizeObserver.observe(container);
+
+      // Primer draw inciial
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w > 0 && h > 0) {
+        this.svg
+          .attr('width', w)
+          .attr('height', h);
+        this.draw();
+      }
   }
 
+  ngOnDestroy() {
+    if (this.resizeObserver) this.resizeObserver.disconnect();
+  }
 
   draw() {
+    // Borrado inicial de otros charts 
+    this.svg.selectAll('*').remove();
 
     /**Vars */
     const width = this.svgContainer.nativeElement.clientWidth - 20, height = this.svgContainer.nativeElement.clientHeight - 20;

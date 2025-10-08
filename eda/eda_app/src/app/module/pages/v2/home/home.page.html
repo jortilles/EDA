@@ -87,8 +87,8 @@
         <div class="text-sm text-muted-foreground" i18n="@@sortReports">ORDENAR INFORMES:</div>
         <select class="w-full sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm" [(ngModel)]="sortingType" (change)="handleSorting()">
           <option value="name" i18n="@@name">Nombre</option>
-          <option value="dateAsc" i18n="@@createdAt">Data creación (asc.)</option>
-          <option value="dateDesc" i18n="@@createdAtDesc">Data creación (desc.)</option>
+          <option value="dateAsc" i18n="@@createdAt">Fecha (asc.)</option>
+          <option value="dateDesc" i18n="@@createdAtDesc">Fecha (desc.)</option>
         </select>
       </div>
     </div>
@@ -135,8 +135,8 @@
             @if (report.config?.author && report.config?.author != 'Undefined') {
               <span>{{report.config.author}}</span>
             }
-            @if (report.config?.createdAt) {
-              <span>{{report.config.createdAt}}</span>
+            @if (report.config?.modifiedAt) {
+              <span>{{report.config.modifiedAt}} </span>
             }
           </div>
           <div class="flex items-center gap-2">

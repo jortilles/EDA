@@ -6,7 +6,7 @@ import {
 import { Component, ViewChild } from "@angular/core";
 import { PanelChartComponent } from "../panel-charts/panel-chart.component";
 import { PanelChart } from "../panel-charts/panel-chart";
-import { MapUtilsService } from "@eda/services/service.index";
+import { MapUtilsService, StyleProviderService, ChartUtilsService } from "@eda/services/service.index";
 
 @Component({
   selector: "app-mapcoordedit-dialog",
@@ -24,13 +24,17 @@ export class MapCoordDialogComponent extends EdaDialogAbstract {
   public logarithmicScale: boolean = false;
   public draggable: boolean;
 
-  //Marc
+  // Memory ubication
   public zoom: number;
   public coordinates: Array<Array<number>>;
 
+  // Styles
+  public selectedPalette: { name: string; paleta: any } | null = null;
+  public allPalettes: any = this.stylesProviderService.ChartsPalettes;
+
   public display: boolean = false;
 
-  constructor(private mapUtilsService: MapUtilsService) {
+  constructor(private mapUtilsService: MapUtilsService, private stylesProviderService: StyleProviderService, private ChartUtilsService: ChartUtilsService) {
     super();
 
     this.dialog = new EdaDialog({
@@ -49,6 +53,7 @@ export class MapCoordDialogComponent extends EdaDialogAbstract {
   ngOnInit() {
     this.mapUtilsService.mapEditOpen();
   }
+
   ngOnDestroy(): void {
     this.mapUtilsService.mapEditClose();
   }
@@ -92,9 +97,18 @@ export class MapCoordDialogComponent extends EdaDialogAbstract {
     this.coordinates = this.controller.params.coordinates;
     this.initialColor = this.controller.params.initialColor;
     this.finalColor = this.controller.params.finalColor;
+    this.panelChartConfig = this.controller.params.panelChart;
+
+    // Revisar como mejorar esto
+    try {
+      this.panelChartConfig.config.getConfig()['initialColor'] = this.initialColor;
+      this.panelChartConfig.config.getConfig()['finalColor'] = this.finalColor;
+    } catch (error) {
+      
+    }
+
     this.logarithmicScale = this.controller.params.logarithmicScale;
     this.draggable = this.controller.params.draggable;
-    this.panelChartConfig = this.controller.params.panelChart;
     this.display = true;
   }
   onClose(event: EdaDialogCloseEvent, response?: any): void {
@@ -121,4 +135,23 @@ export class MapCoordDialogComponent extends EdaDialogAbstract {
 
     return "rgba(" + r + "," + g + "," + b + "," + opacity / 100 + ")";
   }
+
+
+      onPaletteSelected() { 
+        // Saber numero de segmentos para interpolar colores
+        
+        // Recuperamos paleta seleccionada y creamos colores
+        this.myPanelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
+        const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(2, this.myPanelChartComponent['chartUtils'].MyPaletteColors);
+        
+        // Actualizar los color pickers individuales al modificar la paleta
+        let colors = [newColors[0].color, newColors[newColors.length-1].color];
+        this.initialColor = colors[1];
+        this.finalColor = colors[0];
+
+        // Actualizar los colores del chart
+        const leafletMap = this.myPanelChartComponent.componentRef.instance;
+        leafletMap.reDrawCircles([this.initialColor, this.finalColor]);
+    }
+
 }

@@ -14,7 +14,7 @@ import _ from 'lodash'
 const cache_config = require('../../../config/cache.config')
 const eda_api_config = require('../../../config/eda_api_config');
 export class DashboardController {
-  static async getDashboards(req: Request, res: Response, next: NextFunction) {    
+  static async getDashboards(req: Request, res: Response, next: NextFunction) {
     try {
       let admin, privates, group, publics, shared = [];
       const groups = await Group.find({ users: { $in: req.user._id } }).exec();
@@ -27,8 +27,8 @@ export class DashboardController {
         group = admin[2]
         shared = admin[3]
       } else {
-        privates = await DashboardController.getPrivateDashboards(req)
         group = await DashboardController.getGroupsDashboards(req)
+        privates = await DashboardController.getPrivateDashboards(req)
         publics = await DashboardController.getPublicsDashboards(req)
         shared = await DashboardController.getSharedDashboards(req)
       }
@@ -250,24 +250,24 @@ export class DashboardController {
     // Creamos un objeto de filtro dinámico
     let filter = {};
     // Recorremos las claves del objeto externalObject y las añadimos al filtro
-      for (let key in external) { 
-        filter[`config.external.${key}`] = external[key];
-      }
-      filter = Object.entries(filter).reduce((acc, [clave, valor]) => {
-        acc[clave] = valor;
-        return acc;
-      }, {});
-    try { 
+    for (let key in external) {
+      filter[`config.external.${key}`] = external[key];
+    }
+    filter = Object.entries(filter).reduce((acc, [clave, valor]) => {
+      acc[clave] = valor;
+      return acc;
+    }, {});
+    try {
       //si no lleva filtro, pasamos directamente a recuperarlos todos
       const dashboards =  JSON.stringify(filter) !== '{}'  ? 
       await Dashboard.find({ $or : Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor }))}, 'user config.title config.visible group config.tag config.author config.createdAt config.modifiedAt config.onlyIcanEdit config.external').exec() : 
-      await Dashboard.find({}, 'user config.title config.visible group config.tag config.author config.createdAt config.modifiedAt config.onlyIcanEdit  config.external').exec();
+        await Dashboard.find({}, 'user config.title config.visible group config.tag config.author config.createdAt config.modifiedAt config.onlyIcanEdit  config.external').exec();
       const publics = []
       const privates = []
       const groups = []
       const shared = []
       
-      for (const dashboard of dashboards) {    
+      for (const dashboard of dashboards) {
         switch (dashboard.config.visible) {
           case 'public':
             publics.push(dashboard)
@@ -610,7 +610,7 @@ export class DashboardController {
           )
         }
         dashboard.config = body.config
-        dashboard.group = body.group        
+        dashboard.group = body.group
         /**avoid dashboards without name */
         if (dashboard.config.title === null) { dashboard.config.title = '-' };
         
@@ -629,60 +629,60 @@ export class DashboardController {
     }
   }
   
-    /**
-     * Updates a specific field of a dashboard.
-     * 
-     * @param {Request} req - Express request object
-     * @param {Response} res - Express response object
-     * @param {NextFunction} next - Express next middleware function
-     * 
-     * @description
-     * Expects 'id' in req.params and 'data' (containing 'key' and 'newValue') in req.body.
-     * If 'config.visible' is updated to a value other than 'group', 'group' is set to an empty array.
-     * 
-     * @throws {HttpException} 400 for update errors, 404 if dashboard not found
-     */
-    static async updateSpecific(req: Request, res: Response, next: NextFunction) {
-      try {
-        const { id } = req.params;
-        const { data } = req.body;
-        const { key, newValue } = data;
+  /**
+   * Updates a specific field of a dashboard.
+   * 
+   * @param {Request} req - Express request object
+   * @param {Response} res - Express response object
+   * @param {NextFunction} next - Express next middleware function
+   * 
+   * @description
+   * Expects 'id' in req.params and 'data' (containing 'key' and 'newValue') in req.body.
+   * If 'config.visible' is updated to a value other than 'group', 'group' is set to an empty array.
+   * 
+   * @throws {HttpException} 400 for update errors, 404 if dashboard not found
+   */
+  static async updateSpecific(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { data } = req.body;
+      const { key, newValue } = data;
 
-        let updateObj: any = { [key]: newValue };
+      let updateObj: any = { [key]: newValue };
 
-        if (key === 'config.visible' && newValue !== 'group') {
-          updateObj = {
-            ...updateObj,
-            group: []
-          };
-        }
-
-        Dashboard.findByIdAndUpdate(
-          id,
-          { $set: updateObj },
-          { new: true, runValidators: true },
-          (err, dashboard) => {
-            if (err) {
-              return next(
-                new HttpException(
-                  400,
-                  'Some error occurred while updating the dashboard'
-                )
-              );
-            }
-
-            if (!dashboard) {
-              return next(
-                new HttpException(404, 'Dashboard not found with this id')
-              );
-            }
-
-            return res.status(200).json({ ok: true, dashboard });
-          }
-        );
-      } catch (err) {
-        next(err);
+      if (key === 'config.visible' && newValue !== 'group') {
+        updateObj = {
+          ...updateObj,
+          group: []
+        };
       }
+
+      Dashboard.findByIdAndUpdate(
+        id,
+        { $set: updateObj },
+        { new: true, runValidators: true },
+        (err, dashboard) => {
+          if (err) {
+            return next(
+              new HttpException(
+                400,
+                'Some error occurred while updating the dashboard'
+              )
+            );
+          }
+
+          if (!dashboard) {
+            return next(
+              new HttpException(404, 'Dashboard not found with this id')
+            );
+          }
+
+          return res.status(200).json({ ok: true, dashboard });
+        }
+      );
+    } catch (err) {
+      next(err);
+    }
   }
 
   static async delete(req: Request, res: Response, next: NextFunction) {
@@ -771,7 +771,7 @@ export class DashboardController {
         // En el caso de que tan sólo pueda ver las tablas para las que tengo permiso explicito
         forbiddenTables = this.getForbiddenTablesClose( dataModelObject, userGroups, user ); 
       }
-  }
+    }
     return forbiddenTables;
   }
 
@@ -961,12 +961,12 @@ export class DashboardController {
     })
 
     // Aqui marco las tablas que si que puedo ver. El resto están prohividas
-      /** allowed tables by security */
+    /** allowed tables by security */
     if (dataModelObject.ds.metadata.model_granted_roles !== undefined) {
       // Si el usuario puede ver todo el modelo.
       if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
-                                                                    && r.permission == true 
-                                                                    && r.users?.includes(user) 
+        && r.permission == true
+        && r.users?.includes(user)
                                                                 ).length > 0 ){
         // El usuairo puede ver todo.
         forbiddenTables = [];
@@ -977,12 +977,12 @@ export class DashboardController {
       userGroups.forEach(
         group=>{
           if (dataModelObject.ds.metadata.model_granted_roles.filter(r=> r.table == 'fullModel' 
-            && r.permission == true 
-            && r.groups?.includes(group) 
+            && r.permission == true
+            && r.groups?.includes(group)
           ).length > 0 ){
-              // El grupo  puede ver todo.
-              groupCan = 1;
-            }
+            // El grupo  puede ver todo.
+            groupCan = 1;
+          }
         }
       );
       if(groupCan==1) {
@@ -1000,7 +1000,7 @@ export class DashboardController {
             for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
               if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user  ) {
                 allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
-              } 
+              }
             }
           }
         }
@@ -1020,7 +1020,7 @@ export class DashboardController {
             for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].users.length; j++ ) {
               if ( dataModelObject.ds.metadata.model_granted_roles[i].users[j] == user  ) {
                 allowedTablesBySecurityForMe.push(  dataModelObject.ds.metadata.model_granted_roles[i].table );
-              }  
+              }
             }
           }
         }
@@ -1038,7 +1038,7 @@ export class DashboardController {
             for ( var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length;  j++ ) {
               if ( userGroups.includes( dataModelObject.ds.metadata.model_granted_roles[i].groups[j] ) ) {
                 allowedTablesBySecurityForMe.push( dataModelObject.ds.metadata.model_granted_roles[i].table );
-              } 
+              }
             }
           }
         }
@@ -1058,7 +1058,7 @@ export class DashboardController {
             for (var j = 0; j < dataModelObject.ds.metadata.model_granted_roles[i].groups.length; j++) {
               if (userGroups.includes(dataModelObject.ds.metadata.model_granted_roles[i].groups[j])) {
                 allowedTablesBySecurityForMe.push(dataModelObject.ds.metadata.model_granted_roles[i].table);
-              }  
+              }
             }
           }
         }
@@ -1105,8 +1105,8 @@ export class DashboardController {
         req.user._id
       )
 
-    //console.log('uniquesForbiddenTables', uniquesForbiddenTables);
-    //console.log('req.body.query', req.body.query);
+      //console.log('uniquesForbiddenTables', uniquesForbiddenTables);
+      //console.log('req.body.query', req.body.query);
 
 
       const includesAdmin = req['user'].role.includes("135792467811111111111110")
@@ -1182,55 +1182,55 @@ export class DashboardController {
       filters.forEach(a => {
         a.filter_elements.forEach(b => {
           if( b.value1){
-            if ( 
+            if (
                 ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
-                && b.value1.length > 1  /** Si tengo varios elementos  */
+              && b.value1.length > 1  /** Si tengo varios elementos  */
                 && ( a.filter_type == '=' || a.filter_type == 'in' ||  a.filter_type == 'like' || a.filter_type == 'between')
             ) {
                 nullFilter =  {
-                              filter_id: 'is_null',
-                              filter_table: a.filter_table,
+                filter_id: 'is_null',
+                filter_table: a.filter_table,
                               filter_column: a.filter_column  ,
-                              filter_type: 'is_null',
+                filter_type: 'is_null',
                               filter_elements: [{value1:['null']}],
-                              filter_column_type: a.filter_column_type,
-                              isGlobal: true,
-                              applyToAll: false
-                            } 
-                b.value1 = b.value1.filter(c => c != 'null')
-                filters.push(nullFilter);
+                filter_column_type: a.filter_column_type,
+                isGlobal: true,
+                applyToAll: false
+              }
+              b.value1 = b.value1.filter(c => c != 'null')
+              filters.push(nullFilter);
               }else  if ( ( b.value1.includes('null') || b.value1.includes('1900-01-01') ) 
               && b.value1.length > 1  /** Si tengo varios elementos  */
               && ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like' )
-              ) {
+            ) {
                 nullFilter =  {
-                                filter_id: 'not_null',
-                                filter_table: a.filter_table,
+                filter_id: 'not_null',
+                filter_table: a.filter_table,
                                 filter_column: a.filter_column  ,
-                                filter_type: 'not_null',
+                filter_type: 'not_null',
                                 filter_elements: [{value1:['null']}],
-                                filter_column_type: a.filter_column_type,
-                                isGlobal: true,
-                                applyToAll: false
-                              }    
+                filter_column_type: a.filter_column_type,
+                isGlobal: true,
+                applyToAll: false
+              }
               b.value1 = b.value1.filter(c => c != 'null')
               filters.push(nullFilter);
-            } else if ( 
+            } else if (
               ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
-              && b.value1.length == 1  
+              && b.value1.length == 1
               && ( a.filter_type == '=' || a.filter_type == 'in' ||  a.filter_type == 'like' || a.filter_type == 'between') 
               ){
                 a.filter_type='is_null';
-            } else if ( 
+            } else if (
               ( b.value1.includes('null') || b.value1.includes('1900-01-01') )  
-              && b.value1.length == 1  
+              && b.value1.length == 1
               &&  ( a.filter_type == '!=' || a.filter_type == 'not_in' ||  a.filter_type == 'not_like') 
             ){
               a.filter_type='not_null';
-            } 
-         }
+            }
+          }
         })
-      }) 
+      })
 
       myQuery.filters = filters;
 
@@ -1263,10 +1263,10 @@ export class DashboardController {
       /**cached query */
       let cacheEnabled = false;
       dataModelObject.ds.metadata.cache_config &&
-      dataModelObject.ds.metadata.cache_config.enabled === true;
+        dataModelObject.ds.metadata.cache_config.enabled === true;
 
       const cachedQuery = cacheEnabled
-        ? await CachedQueryService.checkQuery(req.body.model_id, query)
+        ? await CachedQueryService.checkQuery(req.body.model_id, query, 'EDA')
         : null
 
       if (!cachedQuery) {
@@ -1302,7 +1302,7 @@ export class DashboardController {
               if (numerics[ind] == 'true') {
                 const res = parseFloat(r[i])
                 if (isNaN(res)) {
-                   return eda_api_config.null_value;
+                  return eda_api_config.null_value;
                 } else {
                   return res
                 }
@@ -1311,7 +1311,7 @@ export class DashboardController {
                 if (r[i] === null) {
                   return eda_api_config.null_value;
                 } else {
-                    return r[i];
+                  return r[i];
                 }
               }
             } else {
@@ -1327,12 +1327,12 @@ export class DashboardController {
 
           })
 
-          results.push(output)          
+          results.push(output)
         }
         // las etiquetas son el nombre técnico...
         const output = [mylabels, results]
         if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
-          CachedQueryService.storeQuery(req.body.model_id, query, output)
+          CachedQueryService.storeQuery(req.body.model_id, query, output, 'EDA')
         }
 
         /**SUMA ACUMULATIVA ->
@@ -1368,7 +1368,7 @@ export class DashboardController {
           '\x1b[32m%s\x1b[0m',
           `Date: ${formatDate(new Date())} Dashboard:${req.body.dashboard.dashboard_id
           } Panel:${req.body.dashboard.panel_id} DONE\n`
-        )    
+        )
         return res.status(200).json(cachedQuery.cachedQuery.response)
       }
     } catch (err) {
@@ -1424,7 +1424,8 @@ export class DashboardController {
       if (notAllowedQuery) {
         console.log('Not allowed table in query')
         return res.status(200).json("[['noDataAllowed'],[]]")
-      } else {
+      }
+
         const query = connection.BuildSqlQuery(
           req.body.query,
           dataModelObject,
@@ -1432,23 +1433,23 @@ export class DashboardController {
         )
 
         /**If query is in format select foo from a, b queryBuilder returns null */
-        if (!query) {
+      if (!query) {
           return next(new HttpException(500,'Queries in format "select x from A, B" are not suported'));
-        }
+      }
 
         console.log('\x1b[32m%s\x1b[0m', `QUERY for user ${req.user.name}, with ID: ${req.user._id},  at: ${formatDate(new Date())} `);
         console.log(query)
-        console.log('\n-------------------------------------------------------------------------------\n');
+      console.log('\n-------------------------------------------------------------------------------\n');
 
         /**cached query */
         let cacheEnabled =
-          dataModelObject.ds.metadata.cache_config &&
-          dataModelObject.ds.metadata.cache_config.enabled
-        const cachedQuery = cacheEnabled
-          ? await CachedQueryService.checkQuery(req.body.model_id, query)
-          : null
+        dataModelObject.ds.metadata.cache_config &&
+        dataModelObject.ds.metadata.cache_config.enabled
+      const cachedQuery = cacheEnabled && !req.body.cleanCache
+        ? await CachedQueryService.checkQuery(req.body.model_id, query, 'SQL')
+        : null;
 
-        if (!cachedQuery) {
+      if (!cachedQuery) {
           connection.client = await connection.getclient()
           const getResults = await connection.execSqlQuery(query)
           let results = []
@@ -1456,11 +1457,11 @@ export class DashboardController {
           const oracleDataTypes = []
           let oracleEval: Boolean = true
           let labels: Array<string>
-          if (getResults.length > 0) {
+        if (getResults.length > 0) {
             labels = Object.keys(getResults[0]).map(i => i)
-          } else {
+        } else {
             labels = ['NoData']
-          }
+        }
           // Normalize data
 
           for (let i = 0, n = getResults.length; i < n; i++) {
@@ -1475,74 +1476,70 @@ export class DashboardController {
               resultsRollback.push([...output])
               const tmpArray = []
 
-              output.forEach((val, index) => {
+            output.forEach((val, index) => {
 
-                if (DashboardController.isNotNumeric(val)) {
-                  tmpArray.push('NaN');
+              if (DashboardController.isNotNumeric(val)) {
+                tmpArray.push('NaN');
                   if(val===null  ){
                     output[index] =  eda_api_config.null_value;  // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
                     resultsRollback[i][index] =  eda_api_config.null_value; // los valores nulos  les canvio per un espai en blanc pero que si no tinc problemes
-                  }
-                } else {
+                }
+              } else {
                   tmpArray.push('int')
                   if(val !== null){
-                    output[index] = parseFloat(val);
+                  output[index] = parseFloat(val);
                   }else{
                     output[index] =  eda_api_config.null_value;
                     resultsRollback[i][index] =  eda_api_config.null_value;
                     //output[index] = null;
                   }
                   
-                }
+              }
               })
               oracleDataTypes.push(tmpArray)
               results.push(output)
-            } else {
-              const output = Object.keys(r).map(i => r[i]);
-              output.forEach((val, index) => {
+          } else {
+            const output = Object.keys(r).map(i => r[i]);
+            output.forEach((val, index) => {
                 if(val===null  ){
                   output[index] =  eda_api_config.null_value;// los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
                   resultsRollback[i][index] =   eda_api_config.null_value; // los valores nulos les canvio per un espai en blanc pero que si no tinc problemes
-                }
+              }
               })
               results.push(output)
               resultsRollback.push(output)
-            }
           }
+        }
 
 
           /** si tinc resultats de oracle evaluo la matriu de tipus de numero per verure si tinc enters i textos barrejats.
            * miro cada  valor amb el seguent per baix de la matriu. */
-          if (oracleDataTypes.length > 1) {
-            for (var i = 0; i < oracleDataTypes.length - 1; i++) {
-              var e = oracleDataTypes[i]
-              for (var j = 0; j < e.length; j++) {
-                if(oracleDataTypes[j][0]=='int'  ){
-                  if ( oracleDataTypes[i][j] != oracleDataTypes[i + 1][j]) {
-                    oracleEval = false
-                  }
-                }
+        if (oracleDataTypes.length > 1) {
+          for (var i = 0; i < oracleDataTypes.length - 1; i++) {
+            for (var j = 0; j < oracleDataTypes[i].length; j++) {
+              if(oracleDataTypes[j][0] === 'int' && oracleDataTypes[i][j] !== oracleDataTypes[i + 1][j]) {
+                oracleEval = false;
               }
             }
           }
+        }
+
           /** si tinc numeros barrejats. Poso el rollback */
-          if (oracleEval !== true) {
-            results = resultsRollback
-          }else{
+        if (!oracleEval) {
+          results = resultsRollback;
+        } else {
             // pongo a nulo los numeros nulos
-            for (var i = 0; i < results.length; i++) {
-              var e = results[i]
-              for (var j = 0; j < e.length; j++) {
-                  if ( results[i][j] ==  eda_api_config.null_value ) {
-                    results[i][j] = null;
-                  }
-              }
+          for (var i = 0; i < results.length; i++) {
+            for (var j = 0; j < results[i].length; j++) {
+              if (results[i][j] === eda_api_config.null_value) results[i][j] = null;
             }
           }
-          const output = [labels, results]
-          if (output[1].length < cache_config.MAX_STORED_ROWS && cacheEnabled) {
-            CachedQueryService.storeQuery(req.body.model_id, query, output)
-          }
+        }
+
+        const output = [labels, results];
+        if (cacheEnabled && !req.body.cleanCache && output[1].length < cache_config.MAX_STORED_ROWS) {
+          await CachedQueryService.storeQuery(req.body.model_id, query, output, 'SQL');
+        }
 
           console.log(
             '\x1b[32m%s\x1b[0m',
@@ -1552,7 +1549,7 @@ export class DashboardController {
           //console.log('Query output');
           //console.log(output);
           return res.status(200).json(output)
-        } else {
+      } else {
           console.log('\x1b[36m%s\x1b[0m', '💾 Cached query 💾')
           console.log(
             '\x1b[32m%s\x1b[0m',
@@ -1560,8 +1557,8 @@ export class DashboardController {
             } Panel:${req.body.dashboard.panel_id} DONE\n`
           )
           return res.status(200).json(cachedQuery.cachedQuery.response)
-        }
       }
+
     } catch (err) {
       console.log(err)
       next(new HttpException(500, 'Error quering database'))
@@ -1793,13 +1790,17 @@ export class DashboardController {
   
 
   static async cleanDashboardCache(req: Request, res: Response, next: NextFunction) {
-    let connectionProps: any;
-    if (req.body.dashboard?.connectionProperties !== undefined) connectionProps = req.body.dashboard.connectionProperties;
+      let connectionProps: any;
+      if (req.body.dashboard?.connectionProperties !== undefined)
+        connectionProps = req.body.dashboard.connectionProperties;
 
-    const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
-    const dataModel = await connection.getDataSource(req.body.model_id)
+      const connection = await ManagerConnectionService.getConnection(req.body.model_id, connectionProps);
+      const dataModel = await connection.getDataSource(req.body.model_id);
 
-    if (dataModel.ds.metadata.cache_config.enabled) {
+      if (!dataModel.ds.metadata.cache_config.enabled) {
+        return res.status(200).json({ ok: true });
+      }
+
       /**Security check */
       const allowed = DashboardController.securityCheck(dataModel, req.user)
       if (!allowed) {
@@ -1813,16 +1814,17 @@ export class DashboardController {
 
       const dataModelObject = JSON.parse(JSON.stringify(dataModel))
 
-      req.body.queries.forEach(async query => {
-        let sqlQuery = await connection.getQueryBuilded(
-          query,
-          dataModelObject,
-          req.user
-        )
-        let hashedQuery = CachedQueryService.build(req.body.model_id, sqlQuery)
-        let res = await CachedQueryService.deleteQuery(hashedQuery)
-      })
-    }
+      for (const query of req.body.queries) {
+        if (query.queryMode === 'SQL') {
+          let userSql = query.SQLexpression;
+          let hashedQuery = CachedQueryService.build(req.body.model_id, userSql, 'SQL');
+          await CachedQueryService.deleteQuery(hashedQuery);
+        } else {
+          let edaQuery = await connection.getQueryBuilded(query, dataModelObject, req.user);
+          let hashedQuery = CachedQueryService.build(req.body.model_id, edaQuery, 'EDA');
+          await CachedQueryService.deleteQuery(hashedQuery);
+        }
+      }
 
     return res.status(200).json({ ok: true })
   }
@@ -1855,18 +1857,19 @@ function insertServerLog(
     date.getSeconds()
   ServerLogService.log({ level, action, userMail, ip, type, date_str })
 }
+
 async function setDasboardsAuthorDate(dashboards: any[]) {
-    dashboards.forEach(reportType => {
-      reportType.forEach(async (report) => {
-        
-        // Setear la fecha si la tiene, sino, asignarle el dia de hoy
-        report.config.createdAt = DateUtil.convertDashboardDate(report.config.createdAt);  
-        
-          //Si no tiene autor le asignamos undefined, nunca deberia darse este caso 
-        if (!report.config.author)
-            report.config.author = 'Undefined';
-      
-      });
-  });
+  for (const reportType of dashboards) {
+    for (const report of reportType) {
+
+      // Setear la fecha si la tiene, sino, asignarle el día de hoy
+      report.config.modifiedAt = await DateUtil.convertDashboardDate(report.config.modifiedAt);
+
+      // Si no tiene autor le asignamos 'Undefined'
+      if (!report.config.author)
+        report.config.author = 'Undefined';
+    }
+  }
 }
+
 

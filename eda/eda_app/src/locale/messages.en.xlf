@@ -4567,12 +4567,12 @@ Once configured you can invoke it whenever you want from the button.</target>
       </trans-unit>
 
       <trans-unit id="createdAt">
-        <source>Data creación (asc.)</source>
-        <target>Created date (asc.)</target>
+        <source>Fecha (asc.)</source>
+        <target>Date (asc.)</target>
       </trans-unit>
       <trans-unit id="createdAtDesc">
-        <source>Data creación (desc.)</source>
-        <target>Created date (desc.)</target>
+        <source>Fecha (desc.)</source>
+        <target>Date (desc.)</target>
       </trans-unit>
       <trans-unit id="name">
         <source>Nombre</source>

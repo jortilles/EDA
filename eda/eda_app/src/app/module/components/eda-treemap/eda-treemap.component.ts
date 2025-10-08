@@ -24,6 +24,8 @@ export class EdaTreeMap implements AfterViewInit {
   div = null;
   id: string;
   svg: any;
+  resizeObserver!: ResizeObserver;
+
   data: any;
   colors: Array<string>;
   assignedColors: any[];
@@ -48,22 +50,45 @@ export class EdaTreeMap implements AfterViewInit {
   }
 
   ngOnDestroy(): void {
+    // Borrar contenedor
     if (this.div)
       this.div.remove();
+    // Borrar resize observer
+    if (this.resizeObserver)
+      this.resizeObserver.disconnect();
   }
 
 
   ngAfterViewInit() {
-    if (this.svg) this.svg.remove();
-    let id = `#${this.id}`;
-    this.svg = d3.select(id);
-    if (
-      this.svg._groups[0][0] !== null &&
-      this.svgContainer.nativeElement.clientHeight > 0
-    ) {
+  const container = this.svgContainer.nativeElement as HTMLElement;
+
+  // Crear SVG
+    if (!this.svg)
+     this.svg = d3.select(container).append('svg'); 
+
+  // ResizeObserver para redimensionar el chart
+  this.resizeObserver = new ResizeObserver(entries => {
+    const { width: w, height: h } = entries[0].contentRect;
+    if (w > 0 && h > 0) {
+      this.svg
+        .attr('width', w)
+        .attr('height', h);
       this.draw();
     }
+  });
+  this.resizeObserver.observe(container);
+
+  // Primer draw
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+  if (w > 0 && h > 0) {
+    this.svg
+      .attr('width', w)
+      .attr('height', h);
+    this.draw();
   }
+}
+
 
   private getToolTipData = (data) => {
     let label =
@@ -107,8 +132,11 @@ export class EdaTreeMap implements AfterViewInit {
   }
 
   draw() {
-    const width = this.svgContainer.nativeElement.clientWidth - 20,
-    height = this.svgContainer.nativeElement.clientHeight - 20;
+        // Borrado inicial de otros charts 
+    this.svg.selectAll('*').remove();
+    const container = this.svgContainer.nativeElement as HTMLElement;
+    const width = container.clientWidth - 20,
+    height = container.clientHeight - 20;
     //Valores de assignedColors separados
     const valuesTree = this.assignedColors.map((item) => item.value);
     const colorsTree = this.assignedColors[0]?.color ? this.assignedColors.map(item => item.color) : this.colors;

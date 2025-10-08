@@ -92,7 +92,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public dataSource: any;
     public isImported: boolean = false;
     public readonly: boolean = false;
-
+    public extraStyles;
     public indextab = 0;
 
     public inputs: any = {};
@@ -133,7 +133,7 @@ export class EdaBlankPanelComponent implements OnInit {
     public userSelectedTable: string;
 
     /**Strings */
-    public editQuery: string = $localize`:@@EditQuery:EDITAR CONSULTA`;
+    public editQuery: string = $localize`:@@EditQuery:Editar consulta`;
     public editSQLQuery: string = $localize`:@@EditSQLQuery:EDITAR CONSULTA SQL`;
 
     public limitRowsInfo: string = $localize`:@@limitRowsInfo:Establece un Top n para la consulta`;
@@ -296,8 +296,12 @@ export class EdaBlankPanelComponent implements OnInit {
             contextMenuItems: PanelOptions.generateMenu(this)
         });
 
+        this.extraStyles =
+            ['knob', 'radar'].includes(this.panel.content?.chart) ? { minHeight: '55vh', minWidth: '55vw', display: 'inline-block', alignItems: 'center' } :
+            ['kpi'].includes(this.panel.content?.chart) ? {height: '100%', width: '100%', alignContent: 'center'} : 
+            {height: '100%', width: '100%'};
     }
-
+    
     /**
      * When selecting a node from the tree, it loads the columns to display.
      * @param event selected node. Can be rootNode (table_id) or childNode (child_id).
@@ -577,7 +581,7 @@ export class EdaBlankPanelComponent implements OnInit {
             this.panel.content = { query, chart, edaChart };
 
             /**This is to repaint on panel redimension */
-            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst'].includes(chart)) {
+            if (['parallelSets', 'kpi','dynamicText', 'treeMap', 'scatterPlot', 'knob', 'funnel','bubblechart', 'sunburst','radar'].includes(chart)) {
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, chart, edaChart, this.panelChartConfig.config);
             }
         } else {
@@ -629,7 +633,6 @@ export class EdaBlankPanelComponent implements OnInit {
             config: chartConfig,
             edaChart: subType,
             maps: this.dataSource.model.maps,
-            size: { x: this.panel.w, y: this.panel.h },
             linkedDashboardProps: this.panel.linkedDashboardProps,
 
         });
@@ -1001,10 +1004,10 @@ export class EdaBlankPanelComponent implements OnInit {
                 this.graficos = _.cloneDeep(properties);                
             
                 //assignedColors se le modifica el color dependiendo de su label
-                this.graficos.assignedColors.forEach((e, index) => {
+                this.graficos.assignedColors.forEach((e) => {
                     if (this.graficos.chartLabels.includes(e.value)) {
                         let indexColor = this.graficos.chartLabels.findIndex(element => element === e.value)
-                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor].length > 1 ?
+                        e.color = this.graficos.chartColors[0].backgroundColor[indexColor]?.length > 1 ?
                             this.graficos.chartColors[0].backgroundColor[indexColor] : 
                             this.graficos.chartColors[0].backgroundColor    
                     }
@@ -1689,7 +1692,7 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
 
     getAttributeTypeIcon(type: string) {
         const icons = {
-            numeric: 'mdi-alphabetical',//'text-blue-500',
+            numeric: 'mdi-numeric',//'text-blue-500',
             date: 'mdi-calendar-text', //text-green-500',
             text: 'mdi-alphabetical' //'text-orange-500' 
         };

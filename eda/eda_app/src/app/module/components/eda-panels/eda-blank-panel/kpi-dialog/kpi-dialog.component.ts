@@ -3,7 +3,9 @@ import { Component, ViewChild } from '@angular/core';
 import { PanelChartComponent } from '../panel-charts/panel-chart.component';
 import { PanelChart } from '../panel-charts/panel-chart';
 import { UserService } from '@eda/services/service.index';
+import { StyleProviderService,ChartUtilsService } from '@eda/services/service.index';
 import * as _ from 'lodash';
+import { KpiConfig } from '../panel-charts/chart-configuration-models/kpi-config';
 
 
 @Component({
@@ -23,6 +25,7 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public value: number;
     public operand: string;
     public color: string = '#ff0000';
+    public originalColors: string[];
     public alerts: Array<any> = [];
     public alertInfo: string = $localize`:@@alertsInfo: Cuando el valor del kpi sea (=, <,>) que el valor definido cambiará el color del texto`;
     public ptooltipViewAlerts: string = $localize`:@@ptooltipViewAlerts:Configurar alertas`;
@@ -42,8 +45,11 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     public edaChart: any;
     public display: boolean = false;
     public activeTab: "colors" | "alerts" = "alerts";
+    public selectedPalette: { name: string; paleta: any } | null = null;
+    public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
-    constructor(private userService: UserService,) {
+
+    constructor(private userService: UserService,private stylesProviderService: StyleProviderService,private ChartUtilsService: ChartUtilsService) {
 
         super();
 
@@ -79,10 +85,14 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
     }
 
     closeChartConfig() {
+        // Modificación a datasetoriginal si este se modifica y no se guarda
+        if(this.panelChartConfig.edaChart !== 'kpi')
+          this.edaChart.chartDataset[0].backgroundColor = this.originalColors[0]['backgroundColor'];
         this.onClose(EdaDialogCloseEvent.NONE);
     }
 
     onShow(): void {
+        console.log(this)
         this.panelChartConfig = this.controller.params.panelChart;
         this.edaChart = this.controller.params.edaChart;
 
@@ -90,6 +100,8 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
         this.loadChartColors();
         this.alerts = config.alertLimits || []; //deepcopy
+        if(this.panelChartConfig.edaChart !== 'kpi')
+            this.originalColors = [...this.edaChart?.chartColors]; // Guardar estado original aquí
         this.display = true;
     }
 
@@ -261,6 +273,29 @@ export class KpiEditDialogComponent extends EdaDialogAbstract {
 
     disableMailConfirm() {
         return (!this.quantity || !this.units || !(this.selectedUsers.length > 0) || !this.mailMessage)
+    }
+
+    onPaletteSelected() { 
+        // Saber numero de segmentos para interpolar colores
+        const dataset = this.edaChart.chartDataset;
+            
+        // Recuperamos paleta seleccionada y creamos colores
+        this.panelChartComponent['chartUtils'].MyPaletteColors = this.selectedPalette['paleta']; 
+        const newColors = this.ChartUtilsService.generateRGBColorGradientScaleD3(1, this.panelChartComponent['chartUtils'].MyPaletteColors);
+        
+        // Actualizar los color pickers individuales al modificar la paleta
+        this.series = this.edaChart.chartDataset.map(dataset => ({
+            label: dataset.label,
+            bg: newColors[0].color,
+            border: newColors[0].color
+        }));
+        
+        // Actualizar los colores del chart
+        dataset[0].backgroundColor = this.hex2rgb(newColors[0].color, 90);
+        dataset[0].borderColor = this.hex2rgb(newColors[0].color, 100);
+        
+        this.panelChartComponent.componentRef.instance.inject.edaChart = this.edaChart;
+        this.panelChartComponent.componentRef.instance.updateChart();
     }
 
 }

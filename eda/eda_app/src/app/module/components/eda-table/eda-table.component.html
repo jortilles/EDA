@@ -63,12 +63,13 @@
                     <td *ngIf="col.visible===true" [class]="col.styleClass" [width]="col.width" (click)="handleClick(lodash.get(rowData, col.field), col.field )" style="cursor: pointer; height: 35px;" [ngClass]="getStyleClass(col, rowData)" [ngStyle]="getStyle()">
                         <ng-container [ngSwitch]="col.type">
                             <!-- ngSwitch TEXT -->
+                                    
                             <ng-container *ngSwitchCase="'EdaColumnText'">
-                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)">
+                                <div *ngIf="inject.linkedDashboardProps && inject.linkedDashboardProps.sourceCol === col.field" [pTooltip]="getLinkTooltip(col)" [innerHTML]="lodash.get(rowData, col.field)">
                                     {{ lodash.get(rowData, col.field) }}
                                 </div>
 
-                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field">
+                                <div *ngIf="!inject.linkedDashboardProps || inject.linkedDashboardProps.sourceCol !== col.field" [innerHTML]="lodash.get(rowData, col.field)">
                                     {{ lodash.get(rowData, col.field) }}
                                 </div>
 

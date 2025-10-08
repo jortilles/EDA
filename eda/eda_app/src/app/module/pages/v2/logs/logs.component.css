@@ -1,0 +1,20 @@
+
+.logs-container {
+    margin: 2rem;
+}
+
+.logs-title {
+    font-weight: bold;
+}
+
+.logs-button {
+    margin-left: 1rem;
+}
+
+.logs-panel{
+    margin-top: 2rem;
+}
+
+.logs-text {
+    font-weight: bold;
+}

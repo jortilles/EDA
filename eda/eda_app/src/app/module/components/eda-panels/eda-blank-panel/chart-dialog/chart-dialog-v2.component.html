@@ -1,10 +1,10 @@
 <eda-dialog [inject]="dialog">
   <div body class="flex flex-col md:flex-row flex-1 overflow-hidden h-full">
     <!-- Chart Preview -->
-    <div class="p-6 flex-1 flex items-center justify-center border-b md:border-b-0 md:border-r bg-slate-50">
-      <div class="relative" [ngClass]="this.controller.params.chart.edaChart === 'radar' ? 'h-fit w-fit' : 'h-full w-full'">
+    <div class="flex-1 flex justify-center border-b md:border-b-0 md:border-r bg-slate-50" >
+      <div class="relative" [ngClass]="this.controller.params.chart.edaChart === 'radar' ? 'w-[30vw]' : 'p-3 h-full w-full content-end'">
           @if (display) {
-        <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-full w-full block"></panel-chart>
+        <panel-chart #PanelChartComponent [props]="panelChartConfig" class="h-[95%] w-full block"></panel-chart>
         }
       </div>
     </div>
@@ -14,11 +14,11 @@
       <!-- Display Tab -->
       <div class="space-y-6 p-4 pt-0 mb-6 bg-slate-50 rounded-md">
         <div class="space-y-4">
-          <h3 class="font-medium text-slate-500 uppercase" i18n="@@chartDisplayOptionsTitle">
+          <h3 class="p-dialog-title" i18n="@@chartDisplayOptionsTitle">
             Opciones de visualización
           </h3>
 
-          <div class="space-y-4">
+          <div class="space-y-4 text-base">
             @if (panelChartConfig.edaChart !== 'histogram') {
             <!-- Tendencia -->
             @if (showTrend) {
@@ -158,7 +158,7 @@
 
       <div class="space-y-6  p-4 pt-0 bg-slate-50 rounded-md">
         <div class="space-y-4">
-          <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase tracking-wider">Colores</h3>
+          <h3 i18n="@@colorsChartH6" class="p-dialog-title">Colores</h3>
 
           <div class="grid gap-4 grid-rows-auto gap-6">
             <div>
@@ -176,7 +176,7 @@
 
 
                 @for (serie of series; track serie; let idx = $index, e = $even) {
-                <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">
+                <div class="flex items-center justify-between border rounded-lg p-3 bg-white hover:bg-slate-50">
                   <span class="font-medium">{{ serie.label }}</span>
                   <div class="flex items-center gap-2">
                     <input [(ngModel)]="serie.bg" (input)="handleInputColor(serie)" class="text-md text-slate-500 font-mono w-[3.5vw]">

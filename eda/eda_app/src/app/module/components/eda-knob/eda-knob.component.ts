@@ -1,5 +1,5 @@
 import { StyleProviderService } from '@eda/services/service.index';
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { EdaKnob } from "./edaKnob";
 
 @Component({
@@ -14,37 +14,62 @@ export class EdaKnobComponent implements OnInit, AfterViewInit {
   @ViewChild('parentDiv')
   parentDiv: ElementRef;
 
-  size: number = 100;
+  size: number;
   color: string;
   limits: Array<number>;
   value: number;
   comprareValue: number;
   class: string;
+  resizeObserver!: ResizeObserver;
+  paleta : any;
 
-  constructor(private styleProviderService : StyleProviderService) { }
+
+  constructor(private styleProviderService : StyleProviderService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.color = this.inject.color ? this.inject.color : "#024873";
+    this.paleta = this.styleProviderService.ActualChartPalette  !==  undefined ? this.styleProviderService.ActualChartPalette['paleta'] : this.styleProviderService.DEFAULT_PALETTE_COLOR['paleta'];
+    this.color = this.inject.color ? this.inject.color : this.paleta[0];
     this.value = this.inject.data.values[0][0];
     this.limits = this.getLimits();
     this.comprareValue = this.inject.data.values[0][1] ? this.inject.data.values[0][1] : this.limits[1];
     this.class = this.value > 999999 ? 'p-knob-text-small' : this.value < 1000 ? 'p-knob-text-large' : 'p-knob-text';
   }
 
-  ngAfterViewInit(): void {
-    const w = this.parentDiv.nativeElement.offsetWidth;
-    const h = this.parentDiv.nativeElement.offsetHeight;
-    let val:number = 10;
-    if( w>0 && h>0){
-      if( w<=h){
-        val = w;
-      }else{
-        val = h;
-      }
-      val = parseInt((Math.min(w, h) * 1.66).toFixed());
+  ngOnDestroy(): void {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
     }
-    setTimeout(_ => { this.size = val;    this.applyTextStyle(); }, 0)
   }
+
+
+  ngAfterViewInit(): void {
+  // Subimos dos niveles para encontrar el contenedor
+  const realParent = this.parentDiv.nativeElement.parentElement.parentElement as HTMLElement;
+
+  // Crear ResizeObserver para redimensisonar el chart
+  this.resizeObserver = new ResizeObserver(entries => {
+    const { width: w, height: h } = entries[0].contentRect;
+    if (w > 0 && h > 0) {
+      let val = w <= h ? w : h;
+      val = parseInt((val / 1.2).toFixed());
+      this.size = val;
+      this.applyTextStyle();
+      this.cdr.detectChanges();   // Evitar error en consola
+    }
+  });
+  // Resize 
+  this.resizeObserver.observe(realParent);
+
+  const w = realParent.offsetWidth;
+  const h = realParent.offsetHeight;
+  if (w > 0 && h > 0) {
+    let val = w <= h ? w : h;
+    val = parseInt((val / 1.2).toFixed());
+    this.size = val;
+    this.applyTextStyle();
+    this.cdr.detectChanges();   // Evitar error en consola
+  }
+}
 
 private applyTextStyle(): void {
   const parent = this.parentDiv?.nativeElement;
@@ -102,14 +127,14 @@ private applyTextStyle(): void {
 
   getStyle() {
     return {
-        'color' : this.styleProviderService.panelFontColor.source['_value'], 'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+      'color': this.styleProviderService.panelFontColor.source['_value'], 'font-family': this.styleProviderService.panelFontFamily.source['_value'],
+      'justify-items': 'center', 'display': 'block'
     }
   }
 
   getColor() {
     if (this.styleProviderService.loadingFromPalette || this.styleProviderService.palKnob)
-      this.color = this.styleProviderService.ActualChartPalette['paleta'][0]; 
+      this.color = this.paleta[0]; 
     return this.color;
   }
-
 }

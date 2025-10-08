@@ -14,7 +14,7 @@
     
     <!-- Settings -->
     <div class="p-6 flex-1 overflow-y-auto">
-      <div class="mb-6 grid grid-cols-2 gap-4">
+      <div  [ngClass]="edaChart !== undefined ? 'mb-6 grid grid-cols-2 gap-4': ' grid mb-6'"  >
         <button 
           [class]="'py-2 px-4 text-center rounded-md transition-all ' + (activeTab === 'alerts' ? 'bg-[#00BFB3] text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700')"
           (click)="setActiveTab('alerts')"
@@ -36,7 +36,15 @@
          <div class="space-y-6">
            <div class="grid gap-6">
              <h3 i18n="@@colorsChartH6" class="font-medium text-slate-500 uppercase">Colors</h3>
-   
+            <select class="w-100 sm:w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm mb-6"
+              [(ngModel)]="selectedPalette" (ngModelChange)="onPaletteSelected()">
+              <option [ngValue]="null" disabled hidden>
+                -- Seleccione una paleta --
+              </option>
+              @for (palette of allPalettes; track $index) {
+              <option [ngValue]="{name: palette.name, paleta:palette.paleta}">{{ palette.name }}</option>
+              }
+            </select>
              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               @for (item of series; track item.label) {
                <div class="flex items-center justify-between border rounded-lg p-3 hover:bg-slate-50">

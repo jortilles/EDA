@@ -18,12 +18,13 @@ import { DashboardVisibleModal } from "../dashboard-visible/dashboard-visible.mo
 import { ImportPanelDialog } from "../import-panel/import-panel.dialog";
 import { DashboardSidebarService } from "@eda/services/shared/dashboard-sidebar.service";
 import { ExposeMethod } from "@eda/shared/decorators/expose-method.decorator";
+import { IconComponent } from "../../../../../shared/components/icon/icon.component";
 
 @Component({
   selector: 'app-dashboard-sidebar',
   standalone: true,
   imports: [OverlayModule, OverlayPanelModule, DashboardSaveAsDialog, DashboardTagModal, DashboardEditStyleDialog,
-    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog],
+    DashboardCustomActionDialog, DashboardMailConfigModal, DashboardVisibleModal, ImportPanelDialog, IconComponent],
   templateUrl: './dashboard-sidebar.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styles: `
@@ -76,7 +77,7 @@ export class DashboardSidebarComponent {
 
   mostrarOpciones = false;
   mostrarFiltros = false;
-  hayFiltros = false;
+  hayFiltros;
 
   isImportPanelVisible = false;
 
@@ -84,7 +85,6 @@ export class DashboardSidebarComponent {
 
   ngOnInit(): void {
     this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
-    this.initSidebar();
     this.refreshTime = this.dashboard.dashboard.config.refreshTime || null;
     const methodNames: string[] = (this as any).__proto__.__exposedMethods || [];
 
@@ -226,7 +226,9 @@ export class DashboardSidebarComponent {
   }
 
   showPopover(event: Event) {
+    this.initSidebar();
     this.isPopoverVisible = true;
+    this.hayFiltros = this.dashboard.globalFilter.globalFilters.length > 0;
     this.popover.toggle(event);
   }
 
@@ -273,8 +275,9 @@ export class DashboardSidebarComponent {
       x: 0,
       y: 0,
     });
-
+    
     this.dashboard.panels.push(panel);
+    this.stylesProviderService.loadedPanels++;
     this.hidePopover();
   }
 
@@ -321,7 +324,9 @@ export class DashboardSidebarComponent {
 
   private async saveDashboard() {
     // Actualizar el refreshTime si es necesario
-    this.dashboard.dashboard.config.refreshTime = this.refreshTime || null; 
+    this.dashboard.dashboard.config.refreshTime = this.refreshTime || null;
+    // Actualizar el autor 
+    this.dashboard.dashboard.config.author = JSON.parse(localStorage.getItem('user')).name;
     // Guardar Dashboard
     await this.dashboard.saveDashboard();
     this.hidePopover();
@@ -343,6 +348,7 @@ export class DashboardSidebarComponent {
           ds,
           tags: null,
           refreshTime: null,
+          author: JSON.parse(localStorage.getItem('user')).name,
           styles: this.stylesProviderService.generateDefaultStyles(), 
         },
         group: (newDashboard.group || []).map((g: any) => g._id)
@@ -361,6 +367,7 @@ export class DashboardSidebarComponent {
           refreshTime: (this.dashboard.refreshTime > 5) ? this.dashboard.refreshTime : this.dashboard.refreshTime ? 5 : null,
           mailingAlertsEnabled: this.getMailingAlertsEnabled(),
           sendViaMailConfig: this.dashboard.sendViaMailConfig,
+          author: JSON.parse(localStorage.getItem('user')).name,
           onlyIcanEdit: this.dashboard.onlyIcanEdit, //TODO ==> Done?
           styles: this.stylesProviderService.generateDefaultStyles(),
         },
@@ -511,32 +518,32 @@ export class DashboardSidebarComponent {
     });
   }
   
-public exportAsJPEG() {
-  this.hidePopover();
-  this.spinner.on();
+  public exportAsJPEG() {
+    this.hidePopover();
+    this.spinner.on();
 
-  const node = document.getElementById('myDashboard');
-  if (!node) {
-    console.error('No se encontró el elemento "myDashboard" en el DOM');
-    this.spinner.off();
-    return;
+    const node = document.getElementById('myDashboard');
+    if (!node) {
+      console.error('No se encontró el elemento "myDashboard" en el DOM');
+      this.spinner.off();
+      return;
+    }
+
+    const title = this.dashboard.title;
+
+    domtoimage.toJpeg(node, { bgcolor: 'white' })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = `${title}.jpeg`;
+        link.href = dataUrl;
+        link.click();
+        this.spinner.off();
+      })
+      .catch((error) => {
+        console.error('Error exportando como JPEG:', error);
+        this.spinner.off();
+      });
   }
-
-  const title = this.dashboard.title;
-
-  domtoimage.toJpeg(node, { bgcolor: 'white' })
-    .then((dataUrl) => {
-      const link = document.createElement('a');
-      link.download = `${title}.jpeg`;
-      link.href = dataUrl;
-      link.click();
-      this.spinner.off();
-    })
-    .catch((error) => {
-      console.error('Error exportando como JPEG:', error);
-      this.spinner.off();
-    });
-}
 
   public getMailingAlertsEnabled(): boolean {
 
@@ -591,5 +598,39 @@ public exportAsJPEG() {
     this.hidePopover();
     this.toggleGlobalFilter();
     this.dashboard.globalFilter.onShowGlobalFilter(false, filtro)
+  }
+
+  public renameDashboard() {
+    let elementName = document.getElementById('dashboardName');
+
+    // Crear input
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = elementName.innerText;
+
+    // remplazamos el elemento por un input 
+    elementName.replaceWith(input);
+    
+    // Foco del titulo
+    input.focus();
+    
+    // Cuando se pierde el foco, volver a texto
+    input.addEventListener("blur", () => {
+      const p = document.createElement("p");
+      p.id = elementName.id;
+      p.innerText = input.value;
+      input.replaceWith(p);
+      p.className = 'italic font-slate-50'; // Estilo que le asignamos para diferenciar que no esta guardado
+      this.dashboard.title = p.innerText
+    });
+    
+    // La tecla Enter quita el focus del titulo
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault(); // evita saltos de línea
+        input.blur(); 
+      }
+    });
+    this.dashboardService._notSaved.next(true);
   }
 }

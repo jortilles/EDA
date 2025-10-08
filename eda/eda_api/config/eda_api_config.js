@@ -10,4 +10,6 @@ module.exports = {
         elements: []
       }
     },
+    log_file: "XXXXXXXXXXXXXXXXXX", // log de consoltas del servidor
+    error_log_file: "XXXXXXXXXXXXXXXXXX" // log de errores del servidor
   }

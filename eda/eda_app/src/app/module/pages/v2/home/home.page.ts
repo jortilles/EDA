@@ -208,7 +208,7 @@ export class HomePageV2 implements OnInit {
           this.dashboardService.updateDashboardSpecific(report._id.toString(), payload).subscribe(
             () => {
               this.allDashboards[this.allDashboards.findIndex(d => d._id === report._id)].config.title = report.config.title;
-              this.alertService.addSuccess($localize`:@@DashboardUpdatedInfo:Report successfully updated.`);
+              this.alertService.addSuccess($localize`:@@DashboardUpdatedInfo:El dashboard ha sido actualizado correctamente.`);
             },
             err => this.alertService.addError(err)
           );
@@ -296,7 +296,7 @@ export class HomePageV2 implements OnInit {
           clonedReport.config.modifiedAt = currentDate;
 
           // Autor
-          clonedReport.config.author = clonedReport.user;
+          clonedReport.config.author = JSON.parse(localStorage.getItem('user')).name;
 
           // Insertar en el array correspondiente
           const targetArray = this.reportMap[clonedReport.type];
@@ -350,11 +350,11 @@ export class HomePageV2 implements OnInit {
   handleSorting() {
     switch (this.sortingType) {
       case 'dateAsc':
-        this.sortingReports('createdAt', this.reportMap, 'asc');
+        this.sortingReports('modifiedAt', this.reportMap, 'asc');
         sessionStorage.setItem("homeSorting", "dateAsc");
         break;
       case 'dateDesc':
-        this.sortingReports('createdAt', this.reportMap, 'desc');
+        this.sortingReports('modifiedAt', this.reportMap, 'desc');
         sessionStorage.setItem("homeSorting", "dateDesc");
         break;
       default:
@@ -369,7 +369,7 @@ export class HomePageV2 implements OnInit {
       const valA = a.config[type];
       const valB = b.config[type];
       // Si es fecha, convertir a Date
-      if (type === 'createdAt') {
+      if (type === 'modifiedAt') {
         const dateA = new Date(valA);
         const dateB = new Date(valB);
 

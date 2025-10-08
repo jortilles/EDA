@@ -26,6 +26,8 @@ export class DashboardVisibleModal {
 
   public display: boolean = false;
   public showGroups: boolean = false;
+  public showUrl: boolean = false;
+  public url: string;
   public visibilitySelected: string;
 
 
@@ -47,13 +49,16 @@ private initializeForm(): void {
   });
 
   this.visibleTypes = [
-    { label: $localize`:@@commonPanel:Común`, value: 'public', icon: 'fa fa-fw fa-globe' },
+    //{ label: $localize`:@@public:public`, value: 'public', icon: 'fa fa-fw fa-globe' },
+    { label: $localize`:@@publicPanel:Publico`, value: 'public', icon: 'fa fa-fw fa-globe' },
+      { label: $localize`:@@commonPanel:Común`, value: 'shared', icon: 'fa fa-fw fa-globe' },
     { label: $localize`:@@groupPanel:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
     { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
   ];
 
   this.form.controls['visible'].setValue(this.dashboard.dashboard.config.visible);
   this.showGroups = this.form.controls['visible'].value === 'group';
+  this.showUrl = this.form.controls['visible'].value === 'public';
   }
 
   private loadGroups(): void {
@@ -79,9 +84,13 @@ private initializeForm(): void {
   public handleSelectedBtn(event): void {
     const groupControl = this.form.get('group');
     this.showGroups = event.value === 'group';
+    this.showUrl = event.value === 'public';
 
     if (this.showGroups) {
       groupControl.setValidators(Validators.required);
+    }
+    if (this.showUrl === true) { 
+      this.url = this.getsharedURL();
     }
 
     if (!this.showGroups) {
@@ -89,6 +98,27 @@ private initializeForm(): void {
       groupControl.setValue(null);
     }
 
+  }
+    public getsharedURL(): string {
+      const url = location.href;
+      const baseURL = url.slice(0, url.indexOf('#'));
+      return `${baseURL}#/public/${this.dashboard.dashboardId}`
+    }
+    
+    public copyURL() {
+      let $body = document.getElementsByTagName('body')[0];
+      const value = this.getsharedURL();
+      
+      let copyToClipboard = function (value) {
+        let $tempInput = document.createElement('INPUT') as HTMLInputElement;
+        $body.appendChild($tempInput);
+        $tempInput.setAttribute('value', value)
+        $tempInput.select();
+        document.execCommand('copy');
+        $body.removeChild($tempInput);
+      }
+      copyToClipboard(value);
+      this.alertService.addSuccess($localize`:@@dahsboardSaved:Informe guardado correctamente`);
   }
 
   public onApply() {

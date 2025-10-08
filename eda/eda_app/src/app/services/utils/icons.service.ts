@@ -238,6 +238,53 @@ export class IconService {
     `,
 
 
+"clipboard-document-list": `
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6M9 16h6M9 8h6M7.5 3h9c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-9c-.621 0-1.125-.504-1.125-1.125V4.125C6.375 3.504 6.879 3 7.5 3z" />
+  </svg>
+`,
+
+
+
+
+    // CUSTOM DASHBOARD PARA DATAPOLIS BORRAR A POSTERIOR 
+    "grafico": `
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7.5 14.25v3.75M12 10.5v7.5m4.5-11.25v11.25" />
+  </svg>
+`,
+
+"coche": `
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15h1.5l1.5-6h13.5l1.5 6h1.5M6.75 18.75a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm12 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+  </svg>
+`,
+
+"hoja": `
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.25 7.5-6 12-6 18 6 0 12-4.5 12-12 0-3.75-2.25-6-6-6z" />
+  </svg>
+`,
+
+"cuidado": `
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.75c-4.5-3.75-9-7.5-9-12.75A6.75 6.75 0 0112 2.25a6.75 6.75 0 019 6.75c0 5.25-4.5 9-9 12.75z" />
+  </svg>
+`,
+
+"sombrilla": `
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25c-4.5 0-9 3-9 9h18c0-6-4.5-9-9-9zm0 0v19.5" />
+  </svg>
+`,
+
+"engranaje": `
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3h4.5l.75 3h3.75v4.5l-3 1.5 3 1.5V18h-3.75l-.75 3h-4.5l-.75-3H5.25v-4.5l3-1.5-3-1.5V6h3.75l.75-3zM12 9.75a2.25 2.25 0 110 4.5 2.25 2.25 0 010-4.5z" />
+  </svg>
+`,
+
+
   };
 
   getIcon(name: string): string {
