@@ -1861,8 +1861,6 @@ function insertServerLog(
 async function setDasboardsAuthorDate(dashboards: any[]) {
   for (const reportType of dashboards) {
     for (const report of reportType) {
-      console.log((report.config.modifiedAt))
-      console.log(await DateUtil.convertDashboardDate(report.config.modifiedAt))
 
       // Setear la fecha si la tiene, sino, asignarle el día de hoy
       report.config.modifiedAt = await DateUtil.convertDashboardDate(report.config.modifiedAt);
