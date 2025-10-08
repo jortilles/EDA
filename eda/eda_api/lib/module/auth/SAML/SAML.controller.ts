@@ -14,6 +14,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 
+// Grupos de Edalitics
+import Group, { IGroup } from '../../admin/groups/model/group.model'
+
 
 export class SAMLController {
 
@@ -105,6 +108,10 @@ static async acs(req: Request, res: Response, next: NextFunction) {
         console.log('userSAML ===> ', userSAML);
 
         token = await jwt.sign({ user: userSAML }, SEED, { expiresIn: 14400 });
+
+        // --- Sincronizar Grupos como en login normal ---
+        await Group.updateMany({}, { $pull: { users: userSAML._id } });
+        await Group.updateMany({ _id: { $in: '135792467811111111111115' } }, { $push: { users: userSAML._id } }).exec();
 
         // --------- REDIRECCIÓN A ANGULAR CON JWT ---------
         // Utiliza el RelayState si viene, "se manda al iniciar el SSO" o un default a #/login
