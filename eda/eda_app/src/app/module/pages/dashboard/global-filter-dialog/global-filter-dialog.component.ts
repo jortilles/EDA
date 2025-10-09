@@ -1,7 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { EdaPanel } from "@eda/models/model.index";
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService } from "@eda/services/service.index";
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, StyleProviderService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import * as _ from 'lodash';
 
@@ -64,6 +64,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     constructor(
         private globalFilterService: GlobalFiltersService,
+        private styleProviderService: StyleProviderService,
         private dashboardService: DashboardService,
         private queryBuilderService: QueryBuilderService,
         private alertService: AlertService,
@@ -606,8 +607,8 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public onDelete() {
+            this.styleProviderService.loadedPanels = this.allPanels.length;
         // Nombre del filtro seleccionado
-        console.log(this)
         const filterNameID = this.globalFilter.id;
         
         // Indice en el que se encuentra el filtro de la lista
@@ -625,19 +626,15 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
             this.globalFilterChange.emit(this.globalFilter);
             this.display = false;
             this.close.emit(true);
+            
+            const interval = setInterval(() => {
+                if (this.styleProviderService.loadedPanels === 0) {
+                    this.globalFilterList.splice(index, 1);
+                    clearInterval(interval); // detener el intervalo
+                }
+            }, 100);
 
-            // Acabar de mejorar ==> trackear cuando se ha relizado la query y luego borrar esto
-            setTimeout(() => {
-                this.globalFilterList.splice(index, 1);
-            }, 1000);
 
-            // const interval = setInterval(() => {
-            //     console.log(this)
-            //     if (this.loading === false) {
-            //         this.globalFilterList.splice(index, 1);
-            //         clearInterval(interval); // detener el intervalo
-            //     }
-            // }, 100);
         }
     }
 
