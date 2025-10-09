@@ -5,11 +5,11 @@ import { samlStrategy } from './SAML_ORCL.passport';
 import ServerLogService from '../../../services/server-log/server-log.service';
 import { parseStringPromise } from 'xml2js';
 
-// Importaciones necesarias
+// Importaciones necesarias 
 import User, { IUser } from '../../admin/users/model/user.model';
 import { UserController } from '../../admin/users/user.controller';
 
-// Constantes necesarias
+// Constantes necesarias 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
