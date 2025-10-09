@@ -605,6 +605,42 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
         this.showAlias = !this.showAlias;
     }
 
+    public onDelete() {
+        // Nombre del filtro seleccionado
+        console.log(this)
+        const filterNameID = this.globalFilter.id;
+        
+        // Indice en el que se encuentra el filtro de la lista
+        const index = this.globalFilterList.findIndex(f => f.id === filterNameID);
+        this.globalFilter.selectedItems = []
+        
+
+
+        if (this.validateGlobalFilter()) {
+            if (this.globalFilter.queryMode != 'EDA2') {
+                this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
+                this.globalFilter.applyToAll = this.applyToAll;
+            }
+            
+            this.globalFilterChange.emit(this.globalFilter);
+            this.display = false;
+            this.close.emit(true);
+
+            // Acabar de mejorar ==> trackear cuando se ha relizado la query y luego borrar esto
+            setTimeout(() => {
+                this.globalFilterList.splice(index, 1);
+            }, 1000);
+
+            // const interval = setInterval(() => {
+            //     console.log(this)
+            //     if (this.loading === false) {
+            //         this.globalFilterList.splice(index, 1);
+            //         clearInterval(interval); // detener el intervalo
+            //     }
+            // }, 100);
+        }
+    }
+
     public onApply(): void {
         if (this.validateGlobalFilter()) {
 

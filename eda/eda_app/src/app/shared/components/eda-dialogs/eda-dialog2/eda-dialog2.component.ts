@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, Input, AfterViewInit, ViewChild, ElementRef, ContentChild, AfterContentInit, ChangeDetectorRef } from '@angular/core';
 import { EdaDialog2 } from './eda-dialog2';
 import { Dialog } from 'primeng/dialog';
-import { ContentMarkerDirective } from '@eda/shared/directives/content.directive';
 
 @Component({
     selector: 'eda-dialog2',
@@ -28,6 +27,7 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
     public ifShowApply: boolean;
     public ifShowClose: boolean;
     public ifShowReset: boolean;
+    public ifShowDeleteFilter: boolean;
 
     // Traducido automáticamente para PrimeNG
     get translatedBreakpoints(): Record<string, string> {
@@ -52,21 +52,19 @@ export class EdaDialog2Component extends EdaDialog2 implements OnInit, AfterView
 
         this.ifShowApply = this.apply.observers.length > 0 && this.showApply;
         this.ifShowClose = this.close.observers.length > 0 && this.showClose;
-        this.ifShowReset = this.close.observers.length > 0 && this.showReset;
+        this.ifShowReset = this.reset.observers.length > 0 && this.showReset;
+        this.ifShowDeleteFilter = this.delete.observers.length > 0 && this.showDelete;
     }
 
     ngAfterViewInit(): void {
-        // console.log('ngAfterViewInit', this.contentWrapper)
-        // console.log('ngAfterViewInit', this.dialogRef)
         if (this.contentWrapper?.nativeElement) {
             this.resizeObserver = new ResizeObserver(() => {
                 setTimeout(() => {
+                    // Algo peta al eliminar un filtro
                     console.log('obersavando...')
                     this.dialogRef.center();
                     this.cd.detectChanges();
                 }, 1000);
-                // this.dialogRef?.center();
-                // this.dialogRef?.resetPosition();
             });
 
             this.resizeObserver.observe(this.contentWrapper.nativeElement);
