@@ -69,16 +69,11 @@ export class LoginV2Component implements OnInit {
                     this.verifyloginSamlMixOrcl();
                     return
                 }
-
-                console.log('resp.type: ', resp.type);
-
                 if(resp.type === "sso") {
                     this.singleSignOnAvailable = true;
                     this.verifyloginSaml();
                     return
                 }
-
-                console.log('respuesta: ',resp);
         }))
     }
 
@@ -106,9 +101,6 @@ export class LoginV2Component implements OnInit {
 
                     this.router.navigate([this.returnUrl], { queryParams: newParams });
                 } else {
-
-                    console.log('this.returnUrl: ', this.returnUrl);
-
                     this.router.navigate([this.returnUrl]);
                 }
             } catch (err) {
