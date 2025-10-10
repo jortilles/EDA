@@ -332,6 +332,8 @@ export class DataSourceController {
 
         } else {
             try {
+                req.qs.ssl === "false" ? req.qs.ssl = false : req.qs.ssl = true;
+
                 const cn = req.qs.type !== 'bigquery' ? new ConnectionModel(req.qs.user, req.qs.host, req.qs.database,
                     req.qs.password, req.qs.port, req.qs.type,
                     req.body.poolLimit, req.qs.schema, req.qs.sid, req.qs.warehouse, req.qs.ssl)
@@ -341,7 +343,7 @@ export class DataSourceController {
                 return res.status(200).json({ ok: true });
             } catch (err) {
                 console.log(err)
-                next(new HttpException(500, `Can't connect to database`));
+                next(new HttpException(500, `Can't connect to database ${err}`));
             }
 
         }
