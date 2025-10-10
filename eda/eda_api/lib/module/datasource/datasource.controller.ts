@@ -343,7 +343,7 @@ export class DataSourceController {
                 return res.status(200).json({ ok: true });
             } catch (err) {
                 console.log(err)
-                next(new HttpException(500, `Can't connect to database ${err}`));
+                next(new HttpException(500, `Can't connect to database, ${err}`));
             }
 
         }
