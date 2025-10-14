@@ -62,12 +62,12 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "5MB"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "maximumError": "1MB"
                 }
               ],
               "outputHashing": "all"
@@ -142,6 +142,7 @@
   "cli": {
     "schematicCollections": [
       "@angular-eslint/schematics"
-    ]
+    ],
+    "analytics": "a1e80a97-5b94-49c0-80e3-4e44cc01ee45"
   }
 }

@@ -67,16 +67,16 @@
   <div content>
     <div class="mt-4">
       <label class="block text-sm font-medium" i18n="@@name">Nombre</label>
-      <input [(ngModel)]="selectedUser.name" class="w-full border p-2 rounded mt-1" />
+      <input [(ngModel)]="selectedUserApply.name" class="w-full border p-2 rounded mt-1" />
 
       <label class="block text-sm font-medium mt-2" i18n="@@email">Email</label>
-      <input [(ngModel)]="selectedUser.email" class="w-full border p-2 rounded mt-1" />
+      <input [(ngModel)]="selectedUserApply.email" class="w-full border p-2 rounded mt-1" />
 
       <label class="block text-sm font-medium mt-2" i18n="@@password">Contraseña</label>
-      <input type="password" [(ngModel)]="selectedUser.password" class="w-full border p-2 rounded mt-1" />
+      <input type="password" [(ngModel)]="selectedUserApply.password" class="w-full border p-2 rounded mt-1" />
 
       <label class="block text-sm font-medium mt-2" i18n="@@group">Grupo</label>
-      <p-multiSelect [(ngModel)]="selectedUser.role" [options]="groups" optionLabel="name" optionValue="name"
+      <p-multiSelect [(ngModel)]="selectedUserApply.role" [options]="groups" optionLabel="name" optionValue="name"
         defaultLabel="Selecciona..."
         [style]="{width: '100%'}"
         class="w-full border rounded mt-2">

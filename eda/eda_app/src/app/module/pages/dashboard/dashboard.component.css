@@ -134,13 +134,13 @@ app-dashboard {
 
 .block-options-bg {
     color: var(--header-font-color);
-    background: #414344;/*var(--header-bg-color);*/
+    background: #414344; 
     border: 1px solid #414344 ;
 }
 
 .block-options-bg:hover {
-    color: #d5d8cc;/* var(--main-font-color);*/
-    background: #414344; /*var(--main-button-color);*/
+    color: #d5d8cc; 
+    background: #414344;  
     border: 1px solid #d5d8cc;
 }
 
@@ -148,8 +148,6 @@ app-dashboard {
     color: rgb(11, 139, 101);
 }
 .edaWarning {
-    /* border: 1px solid orange;
-  border-radius: 2px; */
     margin: 2px;
     color: #000;
     background-color: #eee;
@@ -280,7 +278,6 @@ margin-left:1px !important;
 }
 
 .dashboard-grid {
-    /* height: 20rem; */
     overflow: visible !important; 
     background-color: transparent; 
 }
