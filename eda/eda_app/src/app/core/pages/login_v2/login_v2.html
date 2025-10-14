@@ -73,7 +73,7 @@
         </form>
 
 
-        @if (singleSignOnMixOrclAvailable) {
+        @if (singleSignOnSamlMixOrclAvailable) {
             <button 
                 class="w-full py-2 text-white rounded-md bg-[#5FA7ED] hover:bg-[#3E8BD8] transition-colors focus:outline-none focus:ring-0"
                 (click)="loginButtonSSOMixOrcl()"
@@ -82,7 +82,7 @@
             </button>
         }
 
-        @if (singleSignOnAvailable) {
+        @if (singleSignOnSamlAvailable) {
             <button 
                 class="w-full py-2 text-white rounded-md bg-[#5FA7ED] hover:bg-[#3E8BD8] transition-colors focus:outline-none focus:ring-0"
                 (click)="loginButtonSSO()"
@@ -90,6 +90,13 @@
                 Single Sign-On
             </button>
         }
+
+        @if(singleSignOnGoogleAvailable) {
+            <div *ngIf="singleSignOnGoogleAvailable" class="botones-login">
+                <div #googleBtn id="google-btn" style="margin-bottom: 15px; "></div>
+            </div>
+        }
+
 
 
         <!-- Copyright -->

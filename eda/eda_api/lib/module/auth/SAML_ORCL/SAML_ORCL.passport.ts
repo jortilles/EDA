@@ -11,12 +11,14 @@ MIICpzCCAY8CBgGZlcYibzANBgkqhkiG9w0BAQsFADAXMRUwEwYDVQQDDAxDQVNBX01BUlFVRVMwHhcN
 ];
 
 const entryPointValue = 'http://localhost:8080/realms/CASA_MARQUES/protocol/saml';
+const singleLogoutUrl = 'https://edalitics.com/unizarapi/auth/samlorcl/logout'; 
 
 const samlConfig: SamlConfig = {
   issuer: process.env.SAML_SP_ENTITY_ID || 'edalitics',
   callbackUrl: process.env.SAML_ACS_URL || 'http://localhost:8666/auth/samlorcl/acs',
   entryPoint: entryPointValue,
   idpCert: idpCertValue,
+  logoutUrl: singleLogoutUrl,
   identifierFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
   wantAssertionsSigned: true,
   wantAuthnResponseSigned: false,

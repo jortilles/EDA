@@ -31,3 +31,12 @@
 .animation-delay-4000 {
     animation-delay: 4s;
 }
+
+.botones-login {
+    transform: scale(0.9);
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    position: relative;
+    height: 48px; /* altura fija para el botón de google*/
+}

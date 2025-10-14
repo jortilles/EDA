@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, AfterViewChecked, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -9,6 +9,12 @@ import { User } from '@eda/models/model.index';
 import { lastValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';
+import { GOOGLE_CLIENT_ID } from '@eda/configs/config';
+
+
+// Variable Google
+declare var google: any;
+
 
 declare function init_plugins();
 @Component({
@@ -18,7 +24,11 @@ declare function init_plugins();
     templateUrl: './login_v2.html',
     styleUrls: ["./login_v2.scss"],
 })
-export class LoginV2Component implements OnInit {
+export class LoginV2Component implements OnInit, AfterViewChecked {
+
+
+    @ViewChild('googleBtn', { static: false }) googleBtn?: ElementRef<HTMLDivElement>;
+
     readonly logo = LogoImage
     readonly subLogo = SubLogoImage
     readonly backgroundImage = BackgroundImage
@@ -27,13 +37,18 @@ export class LoginV2Component implements OnInit {
     loginForm: FormGroup;
     urlParams: any;
     returnUrl: string;
-    singleSignOnMixOrclAvailable : boolean = false;
-    singleSignOnAvailable : boolean = false;
+    singleSignOnSamlMixOrclAvailable : boolean = false;
+    singleSignOnSamlAvailable : boolean = false;
+    singleSignOnGoogleAvailable : boolean = false;
+
+    private googleInitialized = false;        // Inicia google.accounts.id una sola vez
+    private googleButtonRendered = false;     // Evita multiple renderizado
 
     private fb = inject(FormBuilder);
     private userService = inject(UserService);
     private router = inject(Router);
     private route = inject(ActivatedRoute);
+    private ngZone = inject(NgZone)
 
     constructor() {
         this.loginForm = this.fb.group({
@@ -46,9 +61,8 @@ export class LoginV2Component implements OnInit {
     ngOnInit(): void {
         init_plugins();
 
-        // Iniciando la caracteristica que tendra el login
-        this.getInitLotinType();
-
+        // Iniciando el Login multiple
+        this.getInitLoginType();
 
         this.route.queryParamMap.subscribe(params => this.urlParams = JSON.parse(JSON.stringify(params)).params.params);
         this.returnUrl = this.route.snapshot.queryParams["returnUrl"] || "/home";
@@ -60,23 +74,50 @@ export class LoginV2Component implements OnInit {
 
     }
 
-    getInitLotinType() {
+    ngAfterViewChecked(): void {
+
+        // Verificación del botón de google
+        if(this.singleSignOnGoogleAvailable && this.googleBtn && !this.googleButtonRendered) {
+            this.googleButtonRendered = true;
+            this.initGoogleSignIn(); // Inicializa y renderiza el botón de google
+        }
+    }
+
+    // Función de inicialización de todos los login alternativos
+    getInitLoginType() {
         this.userService.getLoginType()
             .subscribe((resp => {
 
-                if(resp.type === "sso_mixto") {
-                    this.singleSignOnMixOrclAvailable = true;
+                console.log('resp:::: ', resp);
+
+                if(resp?.type === "sso_mixto") {
+                    this.singleSignOnSamlMixOrclAvailable = true;
                     this.verifyloginSamlMixOrcl();
                     return
                 }
-                if(resp.type === "sso") {
-                    this.singleSignOnAvailable = true;
-                    this.verifyloginSaml();
+
+                if(resp?.type === "sso") {
+
+                    // Metodos de login => saml google microsoft
+                    const loginMethods = resp.options.elements;
+
+                    if(loginMethods.includes("saml")) {
+                        this.singleSignOnSamlAvailable = true;
+                        this.verifyloginSaml();
+                    }
+                    
+                    if(loginMethods.includes("google")) {
+                        // Other functions
+                        this.singleSignOnGoogleAvailable = true;
+                        console.log('google also works...')
+                    }
+                    
                     return
                 }
         }))
     }
 
+    // Login Nativo
     async onSubmitLogin() {
 
         if (this.loginForm.valid) {
@@ -109,10 +150,52 @@ export class LoginV2Component implements OnInit {
         }
     }
 
+    // Login Google
+    loginGoogle(respGoogle:any) {
+        this.userService.credentialGoogle(respGoogle).subscribe(
+            () => {
+                // utilizamos el ngZone debido al callback generado por google
+                // es una función que esta fuera del entorno de Angular.
+                // console.log('respGoogle: ',respGoogle)
+                this.ngZone.run(() => this.router.navigate([this.returnUrl]))
+            }, err => {
+                console.log('err: ',err);
+            }
+        )
+    }
 
+    // Inicialización y diseño del botón de google
+    private initGoogleSignIn(){
+        if(!this.googleInitialized) this.googleInitialized = true;
+        try {
+            // callback de google
+            google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID, // ocultar en Angular
+            callback: (dataGoogle:any) => {this.loginGoogle(dataGoogle);}
+        });
+        } catch (error) {
+            console.error('Error al inicializar elGoogle ID:', error);
+        }
 
+        if(this.googleBtn?.nativeElement) {
+            try {
+                // configuración del boton de google
+                google.accounts.id.renderButton(document.getElementById("google-btn"), 
+                {
+                    theme: 'filled_white',
+                    size: 'medium',
+                    shape: 'square',
+                    text: 'continue_with',
+                    width: 387
+                });
+            } catch (error) {
+                console.error('Error al renderizar el botón de google:', error);
+            }
+        }
 
-    // Redirección al enlace de login de Single Sign-On del Entity Provider con Orcl
+    }
+
+    // Redirección al Entity Provider => Login de Single Sign-On SAML & Orcle
     async loginButtonSSOMixOrcl() {
           try {
             const loginUrl = await lastValueFrom(this.userService.loginUrlSAMLmixOrcl());
@@ -135,6 +218,7 @@ export class LoginV2Component implements OnInit {
         }
     }
 
+    // (Verificación) => Redirección al Entity Provider => Login de Single Sign-On SAML & Orcle
     verifyloginSamlMixOrcl() {
         // Si llega con Single Sing-On
         const qp = this.route.snapshot.queryParamMap;
@@ -156,7 +240,7 @@ export class LoginV2Component implements OnInit {
         }
     }
 
-    // Redirección al enlace de login de Single Sign-On del Entity Provider
+    // Redirección al Entity Provider => Login de Single Sign-On SAML
     async loginButtonSSO() {
           try {
             const loginUrl = await lastValueFrom(this.userService.loginUrlSAML());
@@ -179,6 +263,7 @@ export class LoginV2Component implements OnInit {
         }
     }
 
+    // (Verificación) => Redirección al Entity Provider => Login de Single Sign-On SAML
     verifyloginSaml() {
         // Si llega con Single Sing-On
         const qp = this.route.snapshot.queryParamMap;

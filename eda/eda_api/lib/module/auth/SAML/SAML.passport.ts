@@ -89,7 +89,7 @@ OkDayBfWVX+aWb+KxAgC3roAM3sNyIYHaY=
 
 
 const entryPointValue = 'https://sir3.unizar.es/simplesamlphp/saml2/idp/SSOService.php';
-const singleLogoutUrl = 'https://sir3.unizar.es/simplesamlphp/saml2/idp/SingleLogoutService.php';
+const singleLogoutUrl = 'https://edalitics.com/unizarapi/auth/saml/logout'; 
 
 const samlConfig: SamlConfig = {
   issuer: process.env.SAML_SP_ENTITY_ID || 'edalitics',

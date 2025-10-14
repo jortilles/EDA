@@ -18,6 +18,7 @@ export class UserService extends ApiService {
     private routeThirdParty = '/tp/url';
     private authSAML = '/auth/saml';
     private authSAML_ORCL = '/auth/samlorcl';
+    private authGOOGLE = '/auth/google';
     private auth = '/auth';
 
     public user: User;
@@ -135,6 +136,14 @@ export class UserService extends ApiService {
             return r.url
         }));
     }
+
+    credentialGoogle(respGoogle: any): Observable<any> {
+        return this.post(`${this.authGOOGLE}/login`, {respGoogle: respGoogle}, true)
+            .pipe(map((res:any) => {
+                this.savingStorage(res.id, res.token, res.user);
+                return true;
+            }, (err) => this.alertService.addError(err)))
+    }    
 
     /** Token sending by the third party through an URL*/
     tokenUrl(token: string): Observable<any> {
