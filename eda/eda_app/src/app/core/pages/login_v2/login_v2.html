@@ -72,6 +72,26 @@
             </a> -->
         </form>
 
+
+        @if (singleSignOnMixOrclAvailable) {
+            <button 
+                class="w-full py-2 text-white rounded-md bg-[#5FA7ED] hover:bg-[#3E8BD8] transition-colors focus:outline-none focus:ring-0"
+                (click)="loginButtonSSOMixOrcl()"
+                >
+                Single Sign-On mixto Orcl
+            </button>
+        }
+
+        @if (singleSignOnAvailable) {
+            <button 
+                class="w-full py-2 text-white rounded-md bg-[#5FA7ED] hover:bg-[#3E8BD8] transition-colors focus:outline-none focus:ring-0"
+                (click)="loginButtonSSO()"
+                >
+                Single Sign-On
+            </button>
+        }
+
+
         <!-- Copyright -->
         <div class="mt-6 text-center text-xs text-gray-500">
             <span i18n="@@loginCopyright">Copyright ©{{currentYear}} Jortilles S.L.</span>

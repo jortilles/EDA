@@ -54,8 +54,18 @@ export class UploadController {
                         const oldPath = path.join(ROOT_PATH, 'lib/module/uploads/users/images', `${userBD.img}`);
 
                         // Si existe, elimina la imagen anterior
-                        if (fs.existsSync(oldPath)) {
-                            fs.unlinkSync(oldPath);
+                        try {
+                            if (fs.existsSync(oldPath)) {
+                                const stat = fs.lstatSync(oldPath);
+                                if (stat.isFile()) {
+                                    fs.unlinkSync(oldPath);
+                                    console.log('Archivo anterior eliminado correctamente');
+                                } else {
+                                    console.warn('El path no es un archivo, no se elimina:', oldPath);
+                                }
+                            }
+                        } catch (err) {
+                            console.error('Error eliminando archivo anterior:', err);
                         }
 
                         userBD.img = randomName;

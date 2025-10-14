@@ -423,6 +423,8 @@ export class DashboardSidebarComponent {
       this.dashboard.dashboard.group = privacity.group.map(grup => grup._id);
     else
       this.dashboard.dashboard.group = []
+
+    this.dashboard.saveDashboard();
   }
 
   public closeMailConfig() {

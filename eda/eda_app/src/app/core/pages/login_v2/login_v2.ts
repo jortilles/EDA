@@ -8,6 +8,8 @@ import { UserService } from '@eda/services/service.index';
 import { User } from '@eda/models/model.index';
 import { lastValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
+import { jwtDecode } from 'jwt-decode';
+
 declare function init_plugins();
 @Component({
     selector: 'app-loginv2',
@@ -25,6 +27,8 @@ export class LoginV2Component implements OnInit {
     loginForm: FormGroup;
     urlParams: any;
     returnUrl: string;
+    singleSignOnMixOrclAvailable : boolean = false;
+    singleSignOnAvailable : boolean = false;
 
     private fb = inject(FormBuilder);
     private userService = inject(UserService);
@@ -42,17 +46,39 @@ export class LoginV2Component implements OnInit {
     ngOnInit(): void {
         init_plugins();
 
-        this.route.queryParamMap.subscribe(params => this.urlParams = JSON.parse(JSON.stringify(params)).params.params);
+        // Iniciando la caracteristica que tendra el login
+        this.getInitLotinType();
 
+
+        this.route.queryParamMap.subscribe(params => this.urlParams = JSON.parse(JSON.stringify(params)).params.params);
         this.returnUrl = this.route.snapshot.queryParams["returnUrl"] || "/home";
 
         const savedEmail = localStorage.getItem("email");
         if (savedEmail) {
           this.loginForm.patchValue({ email: savedEmail, remember: true });
         }
+
+    }
+
+    getInitLotinType() {
+        this.userService.getLoginType()
+            .subscribe((resp => {
+
+                if(resp.type === "sso_mixto") {
+                    this.singleSignOnMixOrclAvailable = true;
+                    this.verifyloginSamlMixOrcl();
+                    return
+                }
+                if(resp.type === "sso") {
+                    this.singleSignOnAvailable = true;
+                    this.verifyloginSaml();
+                    return
+                }
+        }))
     }
 
     async onSubmitLogin() {
+
         if (this.loginForm.valid) {
             try {
                 const { email, password, remember } = this.loginForm.value;
@@ -82,4 +108,117 @@ export class LoginV2Component implements OnInit {
             }
         }
     }
+
+
+
+
+    // Redirección al enlace de login de Single Sign-On del Entity Provider con Orcl
+    async loginButtonSSOMixOrcl() {
+          try {
+            const loginUrl = await lastValueFrom(this.userService.loginUrlSAMLmixOrcl());
+
+            const isAvailable = await this.checkUrlAvailability(loginUrl);
+
+            if(!isAvailable){
+                Swal.fire(
+                    'Single Sign-On',
+                    'El servicio de autenticación no está disponible en este momento. Intenta de nuevo más tarde.',
+                    'error'
+                );
+                return;
+            }
+
+            window.location.assign(loginUrl); // redirige al login del Entity Provider
+
+        } catch (e:any) {
+            Swal.fire('SSO', e?.error?.message || 'No se pudo obtener la URL del Single Sign-On', 'error');
+        }
+    }
+
+    verifyloginSamlMixOrcl() {
+        // Si llega con Single Sing-On
+        const qp = this.route.snapshot.queryParamMap;
+        const token = qp.get('token');
+        const next = qp.get('next') || '/home';
+
+        if (token) {
+            
+            try {
+                const payload = jwtDecode<any>(token);
+                const userSAML: User = payload.user;    
+                this.userService.savingStorage(userSAML._id, token, userSAML);
+            } catch (error) {
+                console.log('error', error)
+            }
+            
+            this.router.navigate([next]);
+            return;
+        }
+    }
+
+    // Redirección al enlace de login de Single Sign-On del Entity Provider
+    async loginButtonSSO() {
+          try {
+            const loginUrl = await lastValueFrom(this.userService.loginUrlSAML());
+
+            const isAvailable = await this.checkUrlAvailability(loginUrl);
+
+            if(!isAvailable){
+                Swal.fire(
+                    'Single Sign-On',
+                    'El servicio de autenticación no está disponible en este momento. Intenta de nuevo más tarde.',
+                    'error'
+                );
+                return;
+            }
+
+            window.location.assign(loginUrl); // redirige al login del Entity Provider
+
+        } catch (e:any) {
+            Swal.fire('SSO', e?.error?.message || 'No se pudo obtener la URL del Single Sign-On', 'error');
+        }
+    }
+
+    verifyloginSaml() {
+        // Si llega con Single Sing-On
+        const qp = this.route.snapshot.queryParamMap;
+        const token = qp.get('token');
+        const next = qp.get('next') || '/home';
+
+        if (token) {
+            
+            try {
+                const payload = jwtDecode<any>(token);
+                const userSAML: User = payload.user;    
+                this.userService.savingStorage(userSAML._id, token, userSAML);
+            } catch (error) {
+                console.log('error', error)
+            }
+            
+            this.router.navigate([next]);
+            return;
+        }
+    }
+
+    async checkUrlAvailability(url: string, timeout = 3000):Promise<boolean> {
+        try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeout);
+
+            const response = await fetch(url, {
+                method: 'HEAD',
+                mode: 'no-cors',
+                signal: controller.signal
+            })
+
+            clearTimeout(timer);
+
+            return response.ok || response.type === 'opaque';
+
+        } catch (error) {
+            console.log('No se puede acceder a la URL del Single Sign-On', error);
+            return false;
+        }
+    }
+
 }

@@ -27,8 +27,8 @@ export class DashboardController {
         group = admin[2]
         shared = admin[3]
       } else {
-        privates = await DashboardController.getPrivateDashboards(req)
         group = await DashboardController.getGroupsDashboards(req)
+        privates = await DashboardController.getPrivateDashboards(req)
         publics = await DashboardController.getPublicsDashboards(req)
         shared = await DashboardController.getSharedDashboards(req)
       }
@@ -1857,18 +1857,19 @@ function insertServerLog(
     date.getSeconds()
   ServerLogService.log({ level, action, userMail, ip, type, date_str })
 }
+
 async function setDasboardsAuthorDate(dashboards: any[]) {
-    dashboards.forEach(reportType => {
-      reportType.forEach(async (report) => {
-        
-        // Setear la fecha si la tiene, sino, asignarle el dia de hoy
-        report.config.createdAt = DateUtil.convertDashboardDate(report.config.createdAt);  
-        
-          //Si no tiene autor le asignamos undefined, nunca deberia darse este caso 
-        if (!report.config.author)
-            report.config.author = 'Undefined';
-      
-      });
-  });
+  for (const reportType of dashboards) {
+    for (const report of reportType) {
+
+      // Setear la fecha si la tiene, sino, asignarle el día de hoy
+      report.config.modifiedAt = await DateUtil.convertDashboardDate(report.config.modifiedAt);
+
+      // Si no tiene autor le asignamos 'Undefined'
+      if (!report.config.author)
+        report.config.author = 'Undefined';
+    }
+  }
 }
+
 

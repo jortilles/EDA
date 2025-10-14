@@ -4009,6 +4009,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Tornar als valors per defecte</target>
   </trans-unit> 
 
+   <trans-unit id="deleteFilters">
+    <source>Eliminar filtros</source>
+    <target>Eliminar filtres</target>
+  </trans-unit> 
+
   <trans-unit id="samplePanelTitle">
     <source>Previsualización</source>
     <target>Previsualització</target>

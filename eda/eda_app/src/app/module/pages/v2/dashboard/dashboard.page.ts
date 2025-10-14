@@ -58,6 +58,8 @@ export class DashboardPageV2 implements OnInit {
   public queryParams: any = {};
   public hideWheel: boolean = false;
   public panelMode: boolean = false;
+  public connectionProperties: any;
+
 
   titleClick: boolean = false;
   sidebarVisible = false;
@@ -154,12 +156,11 @@ export class DashboardPageV2 implements OnInit {
     }
 
   public async loadDashboard() {
-    this.getUrlParams();
     const dashboardId = this.route.snapshot.paramMap.get('id');
     const data = await lastValueFrom(this.dashboardService.getDashboard(dashboardId));
     const dashboard = data.dashboard;
     this.dataSource = data.datasource;
-    
+
     if (dashboard?.config) {
       this.onlyIcanEdit = dashboard.config.visible !== 'public'
       this.dashboardId = dashboardId;
@@ -169,6 +170,9 @@ export class DashboardPageV2 implements OnInit {
       this.globalFilter?.initGlobalFilters(dashboard.config.filters || []);// Filtres del dashboard
       this.initPanels(dashboard);
       this.styles = dashboard.config.styles || this.stylesProviderService.generateDefaultStyles();
+      this.getUrlParams();
+      this.globalFilter.findGlobalFilterByUrlParams(this.queryParams);
+      this.globalFilter.fillFiltersData();
       
       if (this.styles.palette !== undefined) {
         this.chartUtils.MyPaletteColors = this.styles.palette['paleta'];
@@ -782,21 +786,24 @@ public startCountdown(seconds: number) {
 
 
   private getUrlParams(): void {
-        this.route.queryParams.subscribe(params => {
-            this.queryParams = params;
-            try{
-                if(params['hideWheel'] == 'true'){
-                    this.hideWheel =true;
-                }
-                if(params['panelMode'] == 'true'){
-                    this.panelMode =true;
-                    this.hideWheel =true;
-                }
-
-            } catch(e){
-                console.error('getUrlParams: '+ e);
-            }
-        });
-    }
+    this.route.queryParams.subscribe(params => {
+      this.queryParams = params;
+      try{
+        if(params['hideWheel'] == 'true'){
+          this.hideWheel =true;
+        }
+        if(params['panelMode'] == 'true'){
+          this.panelMode =true;
+          this.hideWheel =true;
+        }
+        if (params['cnproperties']) {
+          this.connectionProperties = JSON.parse(decodeURIComponent(params['cnproperties'])); 
+        }
+        
+      } catch(e){
+        console.error('getUrlParams: '+ e);
+      }
+    });
+  }
 
 }

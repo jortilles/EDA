@@ -16,6 +16,9 @@ import Swal from 'sweetalert2';
 export class UserService extends ApiService {
     private route = '/admin/user';
     private routeThirdParty = '/tp/url';
+    private authSAML = '/auth/saml';
+    private authSAML_ORCL = '/auth/samlorcl';
+    private auth = '/auth';
 
     public user: User;
     public isAdmin: boolean;
@@ -119,6 +122,20 @@ export class UserService extends ApiService {
         );
     }
 
+    loginUrlSAMLmixOrcl(): Observable<string> {
+        const url = `${this.authSAML_ORCL}/login`;
+        return this.get(url).pipe(map((r: any) => {
+            return r.url
+        }));
+    }
+
+    loginUrlSAML(): Observable<string> {
+        const url = `${this.authSAML}/login`;
+        return this.get(url).pipe(map((r: any) => {
+            return r.url
+        }));
+    }
+
     /** Token sending by the third party through an URL*/
     tokenUrl(token: string): Observable<any> {
 
@@ -215,5 +232,14 @@ export class UserService extends ApiService {
     getToken(){
         return localStorage.getItem('token');
     }
+
+    getLoginType() {
+        return this.get( `${this.auth}/typeLogin`)
+            .pipe(map((res: any) => {
+                //authentication_type
+                return res.response;
+            }))
+    }
+
 }
 

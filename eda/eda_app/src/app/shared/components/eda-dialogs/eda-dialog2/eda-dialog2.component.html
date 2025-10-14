@@ -33,6 +33,12 @@
                <i class="fa fa-refresh"></i>
                <span i18n="@@resetStylesBtn">Volver a los valores por defecto</span>
             </button>
+            @if (ifShowDeleteFilter) {
+                <button class="flex items-center gap-2 px-4 py-2 bg-red-200 text-gray-600 rounded-md" (click)="onDelete()">
+                   <i class="fa fa-refresh"></i>
+                   <span i18n="@@deleteFilters">Eliminar filtro</span>
+                </button>
+            }
             
             <button *ngIf="ifShowClose" class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="onClose()">
                <i class="fa fa-times"></i>

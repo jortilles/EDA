@@ -1,4 +1,4 @@
-<eda-dialog2 [display]="display" i18n-header="@@newDashboardtitle" header="CREA UN NUEVO INFORME" width="50vw" height="70vh" (close)="onClose()"
+<eda-dialog2 [display]="display" i18n-header="@@newDashboardtitle" header="CREA UN NUEVO INFORME" width="45vw" height="62vh" (close)="onClose()"
   (apply)="createNewDashboard()">
   <div content>
     <form [formGroup]="form" class="form-horizontal form-material" (ngSubmit)="createNewDashboard()">
@@ -15,7 +15,7 @@
           </p-dropdown>
         </div>
 
-        <div class="mt-6">
+        <div class="mt-9">
           <p-selectButton [options]="visibleTypes" formControlName="visible" (onChange)="handleSelectedBtn($event)"></p-selectButton>
         </div>
 

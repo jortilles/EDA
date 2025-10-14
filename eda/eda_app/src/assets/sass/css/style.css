@@ -38,8 +38,20 @@
   /* === Checkbox marcado === */
   .p-multiselect-panel .p-checkbox.p-highlight .p-checkbox-box {
     border: 1px solid lightgray !important;
+    
   }
+
+
+
+/* Panel del multiselect */
+.multiselect-auto-width {
+  width: max-content !important;
+  min-width: max-content !important;
+  max-width: none !important;
+  height: auto;
 }
+}
+
 
 @layer tailwind-utilities {
   @tailwind components;
@@ -1723,5 +1735,10 @@ pre {
 	background: linear-gradient(0deg, red 0, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, red) !important;
 }
 
-  }
+
+
+
+
+
+}
 

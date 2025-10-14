@@ -17,12 +17,14 @@ export abstract class EdaDialog2 {
 
     @Output() apply: EventEmitter<any> = new EventEmitter();
     @Output() close: EventEmitter<any> = new EventEmitter();
+    @Output() delete: EventEmitter<any> = new EventEmitter();
     @Output() reset: EventEmitter<any> = new EventEmitter();
 
 
     @Input() showApply: boolean = true;
     @Input() showClose: boolean = true;
     @Input() showReset: boolean = false;
+    @Input() showDelete: boolean = false;
     @Input() disableApply: boolean = false;
 
     // Mapa estándar de siglas a píxeles
@@ -43,7 +45,10 @@ export abstract class EdaDialog2 {
         this.close.emit(false);
     }
     public onReset(): void {
-        this.reset.emit(false);
+        this.reset.emit(true);
+    }
+    public onDelete(): void {
+        this.delete.emit(true);
     }
 
 }

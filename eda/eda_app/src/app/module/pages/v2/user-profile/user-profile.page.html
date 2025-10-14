@@ -9,7 +9,7 @@
     
     <div class="h-px bg-gray-200 dark:bg-gray-700 w-full"></div>
     
-    <div class="grid gap-6 md:grid-cols-2">
+    <div class="grid gap-6 md:grid-cols-2 h-[55vh]">
       <!-- Información Personal -->
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
         <div class="p-6">
@@ -108,9 +108,9 @@
         </div>
       </div>
 
-      <div class="space-y-6">
+      <div class="space-y-6 ">
         <!-- Foto de perfil -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm h-[55vh]">
           <div class="p-6">
             <h2 class="text-xl font-semibold" i18n="@@profileImage">Foto de perfil</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileImageSubtitle">
@@ -118,7 +118,7 @@
             </p>
           </div>
           
-          <div class="p-6 pt-0 flex flex-col items-center justify-center space-y-5">
+          <div class="p-6 pt-0 flex flex-col items-center justify-center space-y-5 mt-9">
             <div class="relative">
               <div class="h-40 w-40 rounded-full overflow-hidden flex items-center justify-center bg-gray-100 dark:bg-gray-700">
                 @if (imageTemp) {
@@ -164,79 +164,6 @@
             >
               {{ isUploading() ? "Subiendo..." : "Actualizar foto" }}
             </button>
-          </div>
-        </div>
-
-        <!-- Preferencias de cuenta -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-          <div class="p-6">
-            <h2 class="text-xl font-semibold" i18n="@@profilePreferences">Preferencias de cuenta</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileNotificationsPrefrences">
-              Administra tus preferencias de notificaciones
-            </p>
-          </div>
-          
-          <div class="p-6 pt-0">
-            <div class="border-b border-gray-200 dark:border-gray-700">
-              <div class="flex space-x-2">
-                <button 
-                  class="px-4 py-2 text-sm font-medium border-b-2 transition-colors focus:outline-none"
-                  [class.border-[#00BFB3]]="activeTab() === 'email'"
-                  [class.text-[#00BFB3]]="activeTab() === 'email'"
-                  [class.border-transparent]="activeTab() !== 'email'"
-                  (click)="setActiveTab('email')"
-                >
-                  Email
-                </button>
-                <button 
-                  class="px-4 py-2 text-sm font-medium border-b-2 transition-colors focus:outline-none"
-                  [class.border-[#00BFB3]]="activeTab() === 'push'"
-                  [class.text-[#00BFB3]]="activeTab() === 'push'"
-                  [class.border-transparent]="activeTab() !== 'push'"
-                  (click)="setActiveTab('push')"
-                >
-                  <span i18n="@@profileNotifications">Notificaciones</span>
-                </button>
-              </div>
-            </div>
-            
-            @if (activeTab() === 'email') {
-              <div class="space-y-4 pt-4">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="font-medium" i18n="@@profileUpdates">Actualizaciones</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileUpdatesSubtitle">Recibe actualizaciones sobre nuevas funciones</p>
-                  </div>
-                  <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] border border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 h-9 px-3">
-                    <span i18n="@@activated">Activado</span>
-                  </button>
-                </div>
-                <div class="h-px bg-gray-200 dark:bg-gray-700 w-full"></div>
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="font-medium" i18n="@@newsletter">Boletín</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@newsletterDescription">Recibe nuestro boletín mensual</p>
-                  </div>
-                  <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] border border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 h-9 px-3">
-                    <span i18n="@@inactivated">Desactivado</span>
-                  </button>
-                </div>
-              </div>
-            }
-            
-            @if (activeTab() === 'push') {
-              <div class="space-y-4 pt-4">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="font-medium" i18n="@@profileMessages">Mensajes</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@profileMessagesDescription">Recibe notificaciones de nuevos mensajes</p>
-                  </div>
-                  <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00BFB3] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-800 dark:focus-visible:ring-[#00BFB3] border border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 h-9 px-3">
-                    <span i18n="@@activated">Activado</span>
-                  </button>
-                </div>
-              </div>
-            }
           </div>
         </div>
       </div>

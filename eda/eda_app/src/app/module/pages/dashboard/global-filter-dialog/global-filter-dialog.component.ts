@@ -1,7 +1,7 @@
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import { EdaPanel } from "@eda/models/model.index";
-import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService } from "@eda/services/service.index";
+import { AlertService, DashboardService, FileUtiles, GlobalFiltersService, QueryBuilderService, StyleProviderService } from "@eda/services/service.index";
 import { EdaDatePickerConfig } from "@eda/shared/components/eda-date-picker/datePickerConfig";
 import * as _ from 'lodash';
 
@@ -64,6 +64,7 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     constructor(
         private globalFilterService: GlobalFiltersService,
+        private styleProviderService: StyleProviderService,
         private dashboardService: DashboardService,
         private queryBuilderService: QueryBuilderService,
         private alertService: AlertService,
@@ -603,6 +604,38 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
 
     public toggleShowAlias() {
         this.showAlias = !this.showAlias;
+    }
+
+    public onDelete() {
+            this.styleProviderService.loadedPanels = this.allPanels.length;
+        // Nombre del filtro seleccionado
+        const filterNameID = this.globalFilter.id;
+        
+        // Indice en el que se encuentra el filtro de la lista
+        const index = this.globalFilterList.findIndex(f => f.id === filterNameID);
+        this.globalFilter.selectedItems = []
+        
+
+
+        if (this.validateGlobalFilter()) {
+            if (this.globalFilter.queryMode != 'EDA2') {
+                this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
+                this.globalFilter.applyToAll = this.applyToAll;
+            }
+            
+            this.globalFilterChange.emit(this.globalFilter);
+            this.display = false;
+            this.close.emit(true);
+            
+            const interval = setInterval(() => {
+                if (this.styleProviderService.loadedPanels === 0) {
+                    this.globalFilterList.splice(index, 1);
+                    clearInterval(interval); // detener el intervalo
+                }
+            }, 100);
+
+
+        }
     }
 
     public onApply(): void {

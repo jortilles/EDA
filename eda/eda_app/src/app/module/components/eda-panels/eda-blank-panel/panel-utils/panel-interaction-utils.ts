@@ -135,7 +135,8 @@ export const PanelInteractionUtils = {
 
     const dataSource = ebp.dataSource.model.tables;
     // Tablas visibles para el usuario. Visibles una vez aplicada la seguridad
-    const visibleTables = dataSource.model.tables.filter(t => t.visible == true).map(t=>t.table_name);
+    // const visibleTables = dataSource.model.tables.filter(t => t.visible == true).map(t=>t.table_name); revisar cambio
+    const visibleTables = dataSource.filter(t => t.visible == true).map(t=>t.table_name);
     /** @rootNode have table_id @childNode have child_id ("table_name.column_name")  */
     const table_id = expandNode.table_id || expandNode.child_id.split('.')[0];
     
