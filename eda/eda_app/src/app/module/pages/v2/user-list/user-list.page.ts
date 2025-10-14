@@ -38,6 +38,7 @@ export class UserListPage implements OnInit {
   searchTerm: string = '';
   sortConfig: { key: keyof User; direction: 'asc' | 'desc' } | null = null;
   selectedUser: User = {name:'',email:'',password:''};
+  selectedUserApply: User = {name:'',email:'',password:''};
   showUserDetail: boolean = false;
 
   currentPage: number = 1;
@@ -102,8 +103,16 @@ export class UserListPage implements OnInit {
 
   handleEditUser(user: User) {
     this.selectedUser = user;
-    this.selectedUser.role = Array.isArray(this.selectedUser.role) ?
-      this.selectedUser.role : this.selectedUser.role.split(','); 
+    this.selectedUserApply = { ...user };
+    // Comprovar si podemos coger roles
+    if (typeof this.selectedUserApply.role === 'string') {
+      this.selectedUserApply.role = this.selectedUser.role.split(',');
+    }
+    // Si los roles estan vacios quitar todo valor
+    if (this.selectedUserApply.role[0] === '') {
+      this.selectedUserApply.role = '';
+    }
+
     this.showUserDetail = true;
   }
 
@@ -171,13 +180,12 @@ export class UserListPage implements OnInit {
 
     else { //Estamos modificando usuario
       let userToModify = this.users.find(user => user._id === this.selectedUser._id);
-      userToModify.name = this.selectedUser.name; 
-      userToModify.email =  this.selectedUser.email,
+      this.selectedUser = this.selectedUserApply;
       userToModify.password = this.selectedUser.password; 
-      userToModify.role = this.groups
-        .filter(group => this.selectedUser.role.includes(group.name))
-        .map(group => group._id);
       if (userToModify.password && userToModify.password !== '') {
+        userToModify.name = this.selectedUser.name; 
+        userToModify.email = this.selectedUser.email;
+        userToModify.role = this.groups.filter(group => this.selectedUser.role.includes(group.name))
         this.userService.manageUpdateUsers(userToModify).subscribe(
           res => {
             Swal.fire($localize`:@@UpdatedUser:Usuario actualizado`, res.email, 'success');
