@@ -123,7 +123,7 @@ export class DataSourceConnectionDetailPage implements OnInit {
   async onSubmit() {
     const type = this.connectionForm.get('type')?.value;
 
-    if (this.connectionForm.invalid) {
+    if (this.connectionForm.invalid && type !== 'excel' && type !== 'bigquery' ) {
       this.alertService.addError('Formulario incorrecto, revise los campos obligatorios.');
     } else if (type === 'excel') {
       this.saveExcelDataSource();
@@ -358,8 +358,8 @@ export class DataSourceConnectionDetailPage implements OnInit {
       this.bigQueryFileName.set(file.name);
       this.bigQueryFile.set(file);
     } else if (type === 'excel') {
-      // this.dashboardFileName.set(file.name);
-      // this.dashboardFile.set(file);
+      this._excelFileName.set(file.name);
+      this._excelFile.set(file);
     }
   }
 

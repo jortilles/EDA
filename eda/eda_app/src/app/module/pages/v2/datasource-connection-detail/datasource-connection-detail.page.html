@@ -332,7 +332,7 @@
             [class.border-[#00BFB3]]="isDraggingExcelFile()" [class.bg-[#00BFB3]]="isDraggingExcelFile()"
             [class.border-gray-300]="!isDraggingExcelFile()" [class.hover:border-[#00BFB3]]="!isDraggingExcelFile()">
             <input type="file" (change)="handleFileSelect($event, 'excel')"
-              class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0" />
+              class="absolute inset-0 z-50 h-full w-full cursor-pointer opacity-0"  (change)="excelFileLoaded($event)" accept=".xlsx" />
             <div class="flex flex-col items-center justify-center text-sm">
               @if (_excelFileName()) {
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -351,7 +351,7 @@
               <p class="mb-1 font-medium text-gray-600">
                 <span class="text-[#00BFB3]">Click para subir</span> o arrastra y suelta
               </p>
-              <p class="text-xs text-gray-500">CSV (max. 10MB)</p>
+              <p class="text-xs text-gray-500">EXCEL (max. 10MB)</p>
               }
             </div>
           </div>
