@@ -13,12 +13,12 @@
   @for (filter of globalFilters; track filter.filter_id) {
     @if (isAdmin || isDashboardCreator || ['public', 'readOnly'].includes(filter.visible)) {
       <div class="flex">
-        <div class="flex items-center gap-2">
+        <div class="filter-label flex items-center gap-2">
           <span class="text-sm text-gray-500"       
             [style.color]="styleButton.color"
             [style.font-size]="styleButton.fontSize"
             [style.font-family]="styleButton.fontFamily"
-          >{{getFilterLabel(filter)}}:</span>
+          >{{getFilterLabel(filter)}}: </span>
         </div>
   
         @if (getFilterType(filter)=='date') {
