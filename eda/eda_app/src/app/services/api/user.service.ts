@@ -19,6 +19,7 @@ export class UserService extends ApiService {
     private authSAML = '/auth/saml';
     private authSAML_ORCL = '/auth/samlorcl';
     private authGOOGLE = '/auth/google';
+    private authMICROSOFT = '/auth/microsoft';
     private auth = '/auth';
 
     public user: User;
@@ -144,6 +145,14 @@ export class UserService extends ApiService {
                 return true;
             }, (err) => this.alertService.addError(err)))
     }    
+
+    responseMicrosoft(respMicrosoft: any): Observable<any> {
+        return this.post(`${this.authMICROSOFT}/login`, {respMicrosoft: respMicrosoft}, true)
+            .pipe(map((res:any) => {
+                this.savingStorage(res.id, res.token, res.user);
+                return true;
+            }, (err) => this.alertService.addError(err)))
+    }
 
     /** Token sending by the third party through an URL*/
     tokenUrl(token: string): Observable<any> {

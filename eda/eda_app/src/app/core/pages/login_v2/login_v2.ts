@@ -7,9 +7,11 @@ import { ParticlesBackgroundComponent } from '@eda/shared/components/particles-b
 import { UserService } from '@eda/services/service.index';
 import { User } from '@eda/models/model.index';
 import { lastValueFrom } from 'rxjs';
-import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';
 import { GOOGLE_CLIENT_ID } from '@eda/configs/config';
+import { MsalModule, MsalService } from '@azure/msal-angular';
+import Swal from 'sweetalert2';
+
 
 
 // Variable Google
@@ -20,7 +22,7 @@ declare function init_plugins();
 @Component({
     selector: 'app-loginv2',
     standalone: true,
-    imports: [CommonModule, RouterModule, ReactiveFormsModule, ParticlesBackgroundComponent],
+    imports: [CommonModule, RouterModule, ReactiveFormsModule, ParticlesBackgroundComponent, MsalModule],
     templateUrl: './login_v2.html',
     styleUrls: ["./login_v2.scss"],
 })
@@ -40,6 +42,7 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     singleSignOnSamlMixOrclAvailable : boolean = false;
     singleSignOnSamlAvailable : boolean = false;
     singleSignOnGoogleAvailable : boolean = false;
+    singleSignOnMicrosoftAvailable : boolean = false;
 
     private googleInitialized = false;        // Inicia google.accounts.id una sola vez
     private googleButtonRendered = false;     // Evita multiple renderizado
@@ -49,6 +52,7 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private ngZone = inject(NgZone)
+    private msalService = inject(MsalService);
 
     constructor() {
         this.loginForm = this.fb.group({
@@ -75,7 +79,6 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
     }
 
     ngAfterViewChecked(): void {
-
         // Verificación del botón de google
         if(this.singleSignOnGoogleAvailable && this.googleBtn && !this.googleButtonRendered) {
             this.googleButtonRendered = true;
@@ -107,9 +110,11 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
                     }
                     
                     if(loginMethods.includes("google")) {
-                        // Other functions
                         this.singleSignOnGoogleAvailable = true;
-                        console.log('google also works...')
+                    }
+
+                    if(loginMethods.includes("microsoft")) {
+                        this.singleSignOnMicrosoftAvailable = true;
                     }
                     
                     return
@@ -148,6 +153,30 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
                 Swal.fire('Error al iniciar sesión', err.error?.message || 'Ha ocurrido un error inesperado', 'error');
             }
         }
+    }
+
+    // Login Microsoft
+    async loginMicrosoft() {
+        try {
+            await this.msalService.instance.initialize();
+
+            this.msalService.loginPopup({
+                    scopes: ['User.Read'] // Configuración en la aplicación de - Jortilles Web EDA
+                }).subscribe({
+                    next: (respMicrosoft) => {
+                    this.userService.responseMicrosoft(respMicrosoft).subscribe((res) => {
+                        this.ngZone.run(() => this.router.navigate([this.returnUrl]))
+                    }, err => {
+                        console.log('err: ',err)
+                    })
+                    },
+                    error: (error) => console.log('error: ',error)
+                });
+            
+        } catch (error) {
+            console.error('MSAL Initialization Error:', error);
+        }
+
     }
 
     // Login Google

@@ -4,6 +4,7 @@ import express from 'express';
 // Opciones de autenticaciones
 import SAMLRouter from './SAML/SAML.router';
 import GOOGLERouter from './GOOGLE/GOOGLE.router';
+import MICROSOFTRouter from './MICROSOFT/MICROSOFT.router';
 import SAML_ORCL_Router from './SAML_ORCL/SAML_ORCL.router';
 
 // LoginType
@@ -38,14 +39,12 @@ if(EDA_API_CONFIG.authentication_type?.type === 'sso'){
         EDA_API_CONFIG.authentication_type.options.authorization === "sso" 
       ) 
     {
-        // Autenticación con SAML
+        // Autenticaciones con SAML
         if(EDA_API_CONFIG.authentication_type.options.elements.some((item: any) => item === 'saml')) router.use('/saml', SAMLRouter);
 
         if(EDA_API_CONFIG.authentication_type.options.elements.some((item: any) => item === 'google')) router.use('/google', GOOGLERouter);
 
-        // if(EDA_API_CONFIG.authentication_type.options.elements.some((item: any) => item === 'microsoft')) router.use('/microsoft', SAMLRouter);
-
-        // ====> Falta agregar Microsoft ...
+        if(EDA_API_CONFIG.authentication_type.options.elements.some((item: any) => item === 'microsoft')) router.use('/microsoft', MICROSOFTRouter);
 
     }  
 
