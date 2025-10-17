@@ -14,6 +14,7 @@ export class KpiConfig {
             init?.edaChart?.showLabelsPercent || false,
             init?.edaChart?.numberOfColumns || 0,
             init?.edaChart?.assignedColors || [],
+            init?.edaChart?.showPointLines || false,
         );
         
         Object.assign(this, init);

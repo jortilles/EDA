@@ -113,6 +113,7 @@ export const ChartsConfigUtils = {
         addComparative: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['addComparative'] : false,
         showLabels: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabels'] : false,
         showLabelsPercent: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showLabelsPercent'] : false,
+        showPointLines: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['showPointLines'] : false,
         numberOfColumns: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['numberOfColumns'] : null,
         assignedColors: ebp.panelChart.props.config && ebp.panelChart.props.config.getConfig() ? ebp.panelChart.props.config.getConfig()['assignedColors'] : [], // o null?
       };
@@ -129,7 +130,7 @@ export const ChartsConfigUtils = {
         if (['table', 'crosstable'].includes(type)) {
           return new TableConfig(false, false, 10, false, false, false, false, null, null, null, false, false ,  []);
         }else if (['bar', 'line', 'area', 'pie', 'doughnut', 'polarArea', 'barline', 'horizontalBar', 'pyramid', 'histogram', 'radar'].includes(type)) {
-            return new ChartJsConfig(null, type, false, false, false, false, null,[]);
+            return new ChartJsConfig(null, type, false, false, false, false, null,[], false);
         } else if (type === 'parallelSets') {
             return new SankeyConfig([]);
         } else if (type === 'treeMap') {
@@ -148,7 +149,7 @@ export const ChartsConfigUtils = {
             return new KpiConfig();
         } else if (['kpibar', 'kpiline', 'kpiarea'].includes(type)) {
             return new KpiConfig({
-                edaChart:  new ChartJsConfig(null, type, false, false, false, false, null,[])
+                edaChart:  new ChartJsConfig(null, type, false, false, false, false, null,[], false)
             });
         } else if (type === 'dynamicText') {
             return new DynamicTextConfig(null);

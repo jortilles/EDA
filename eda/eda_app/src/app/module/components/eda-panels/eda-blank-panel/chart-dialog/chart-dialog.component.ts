@@ -32,6 +32,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
     public display: boolean = false;
     public showLabels: boolean = false;
     public showLabelsPercent: boolean = false;
+    public showPointLines: boolean = false;
     public selectedPalette: { name: string; paleta: any } | null = null;
     public allPalettes: any = this.stylesProviderService.ChartsPalettes;
 
@@ -103,6 +104,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.addTrend = this.controller.params.config.config.getConfig()['addTrend'] || false;
         this.showLabels = this.controller.params.config.config.getConfig()['showLabels'] || false;
         this.showLabelsPercent = this.controller.params.config.config.getConfig()['showLabelsPercent'] || false;
+        this.showPointLines = this.controller.params.config.config.getConfig()['showPointLines'] || false;
         this.numberOfColumns = this.controller.params.config.config.getConfig()['numberOfColumns'] ||false;
         this.addComparative = this.controller.params.config.config.getConfig()['addComparative'] || false;      
         this.oldChart = _.cloneDeep(this.controller.params.chart);
@@ -328,6 +330,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showPointLines = this.showPointLines;
         config.numberOfColumns = this.numberOfColumns;
         config.colors = this.chart.chartColors;
         properties.config = c;
@@ -365,6 +368,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         config.numberOfColumns = this.numberOfColumns;
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showPointLines = this.showPointLines;
         properties.config = c;
         /**Update chart */
         this.panelChartConfig = new PanelChart(this.panelChartConfig);
@@ -383,6 +387,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showPointLines = this.showPointLines;
         config.numberOfColumns = this.numberOfColumns;
         config.colors = this.chart.chartColors;
         properties.config = c;
@@ -402,6 +407,27 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         let config: any = c.getConfig();
         config.showLabels = this.showLabels;
         config.showLabelsPercent = this.showLabelsPercent;
+        config.showPointLines = this.showPointLines;
+        config.numberOfColumns = this.numberOfColumns;
+        config.colors = this.chart.chartColors;
+        properties.config = c;
+        /**Update chart */
+        this.panelChartConfig = new PanelChart(this.panelChartConfig);
+        setTimeout(_ => {
+            this.chart = this.panelChartComponent.componentRef.instance.inject;
+            this.load();
+        });
+
+    }
+
+    setShowLines(){
+
+        const properties = this.panelChartConfig;
+        let c: ChartConfig = properties.config;
+        let config: any = c.getConfig();
+        config.showLabels = this.showLabels;
+        config.showLabelsPercent = this.showLabelsPercent;
+        config.showPointLines = this.showPointLines;
         config.numberOfColumns = this.numberOfColumns;
         config.colors = this.chart.chartColors;
         properties.config = c;
@@ -547,7 +573,7 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         this.chart.addTrend = this.addTrend;
         this.chart.addComparative = this.addComparative;
         this.chart.showLabels = this.showLabels;
-        this.chart.showLabelsPercent = this.showLabelsPercent;
+        this.chart.showPointLines = this.showPointLines;
         this.chart.numberOfColumns = this.numberOfColumns;
         this.onClose(EdaDialogCloseEvent.UPDATE, this.chart);
     }
