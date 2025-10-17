@@ -252,18 +252,18 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
 
         let numberOfColors = 1;
 
-        if (['pyramid', 'stackedbar', 'stackedbar100'].includes(chartType)) {
+        if (['pyramid', 'stackedbar', 'stackedbar100', 'line'].includes(chartType)) {
             numberOfColors = this.chart.chartDataset?.length || 1;
         } else if (['polarArea', 'doughnut'].includes(chartType)) {
             numberOfColors = this.chart.chartLabels?.length || 1;
         }
+        console.log(this.chart)
 
         const newColors = this.chartUtils.generateChartColorsFromPalette(numberOfColors, paletteBase);
 
         // Asignar colores según el tipo de gráfico
-        if (['pyramid', 'stackedbar', 'stackedbar100'].includes(chartType)) {
+        if (['pyramid', 'stackedbar', 'stackedbar100', 'line'].includes(chartType)) {
             // Varios datasets
-
             // Modificar panelChart preview
             this.chart.chartDataset.forEach((ds, i) => {
                 ds.backgroundColor = newColors[i].backgroundColor;
