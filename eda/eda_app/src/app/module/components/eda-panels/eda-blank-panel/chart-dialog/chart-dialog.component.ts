@@ -552,7 +552,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
                 });
                 break;
             default:
-                console.log(this)
                 this.chart.chartDataset[0].backgroundColor = this.originalSeries[0]?.bg;
                 this.chart.chartDataset[0].borderColor = this.originalSeries[0]?.bg;
                 break;

@@ -8,7 +8,6 @@ export class ChartJsConfig {
   showPointLines:boolean;
   numberOfColumns: number;
   assignedColors: any[];
-  //assignedColors2: any[];
 
   constructor(colors: Array<{}>, chartType:string, addTrend:boolean, addComparative:boolean, showLabels:boolean, showLabelsPercent:boolean, numberOfColumns:number, assignedColors: any[], showPointLines:boolean) {
     this.colors = colors;

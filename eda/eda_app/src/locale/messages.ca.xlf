@@ -3864,8 +3864,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit> 
 
   <trans-unit id="showPointLines">
-    <source>Mostrar Puntos</source>
-    <target>Mostra Puntos en Lineas</target>
+    <source>Mostrar Puntos en Líneas</source>
+    <target>Mostra Punts en Línies</target>
   </trans-unit> 
 
        <trans-unit id="histogramColum">
