@@ -32,11 +32,35 @@
     animation-delay: 4s;
 }
 
-.botones-login {
+.container-google {
     transform: scale(0.9);
     display: flex; 
     flex-direction: column; 
     align-items: center;
     position: relative;
     height: 48px; /* altura fija para el botón de google*/
+    filter: brightness(100%);
 }
+
+.container-google:hover{
+    filter: brightness(94%);
+}
+
+.container-microsoft {
+    display: flex; 
+    justify-content: center;
+}
+
+.microsoft {
+    max-width: 100%;
+    background-color: rgb(166, 192, 243);
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.microsoft:hover {
+    background-color: rgb(204, 216, 248);
+}
+
+
+

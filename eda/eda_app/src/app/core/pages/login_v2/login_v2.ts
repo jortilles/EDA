@@ -117,7 +117,7 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
                         this.singleSignOnMicrosoftAvailable = true;
                     }
                     
-                    return
+                    return;
                 }
         }))
     }
