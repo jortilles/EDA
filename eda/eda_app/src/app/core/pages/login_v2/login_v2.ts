@@ -91,8 +91,6 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
         this.userService.getLoginType()
             .subscribe((resp => {
 
-                console.log('resp:::: ', resp);
-
                 if(resp?.type === "sso_mixto") {
                     this.singleSignOnSamlMixOrclAvailable = true;
                     this.verifyloginSamlMixOrcl();

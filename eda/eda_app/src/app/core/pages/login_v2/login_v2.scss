@@ -43,7 +43,7 @@
 }
 
 .container-google:hover{
-    filter: brightness(94%);
+    filter: brightness(96%);
 }
 
 .container-microsoft {
@@ -53,13 +53,14 @@
 
 .microsoft {
     max-width: 100%;
-    background-color: rgb(166, 192, 243);
+    background-color: rgb(255, 255, 255);
     cursor: pointer;
     border-radius: 5px;
+    border: 1px solid #dadce0;
 }
 
 .microsoft:hover {
-    background-color: rgb(204, 216, 248);
+    background-color: rgb(225, 233, 255);
 }
 
 
