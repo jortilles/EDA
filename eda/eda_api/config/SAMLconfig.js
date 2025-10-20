@@ -11,9 +11,11 @@ module.exports = {
     issuer: 'xxxxxxxxxx',
     callbackUrl: 'xxxxxxxxxx',
     entryPointValue: 'xxxxxxxxxx',
-    identifierFormat: 'xxxxxxxxxx',
     idpCert: CertValue,
+    logoutUrl: 'xxxxxxxxxx',
+    identifierFormat: 'xxxxxxxxxx',
     wantAssertionsSigned: false,
     wantAuthnResponseSigned: false,
     acceptedClockSkewMs: 3*6*9,
+    urlRedirection: 'xxxxxxxxxx'
 };
