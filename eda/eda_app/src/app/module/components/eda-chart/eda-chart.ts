@@ -21,6 +21,7 @@ export class EdaChart {
     addComparative: boolean;
     showLabels:boolean;
     showLabelsPercent:boolean;
+    showPointLines:boolean;
     numberOfColumns: number;
 
     constructor() { }

@@ -14,7 +14,7 @@ import { EdaChartComponent } from '@eda/components/eda-chart/eda-chart.component
 import * as _ from 'lodash';
 import { StyleConfig } from './style-provider.service';
 import { KpiConfig } from '@eda/components/eda-panels/eda-blank-panel/panel-charts/chart-configuration-models/kpi-config';
-import { DEFAULT_PALETTE_COLOR } from '@eda/configs/index';
+import { ChartsColors, DEFAULT_PALETTE_COLOR } from '@eda/configs/index';
 import { StyleProviderService } from '@eda/services/service.index';
 import { color } from 'd3';
 
@@ -1190,6 +1190,7 @@ export class ChartUtilsService {
         styles: StyleConfig,
         showLabels: boolean,
         showLabelsPercent: boolean,
+        showPointLines: boolean,
         numberOfColumns: number,
         chartSubType: string,
         ticksOptions: any,
@@ -1930,9 +1931,9 @@ export class ChartUtilsService {
                 }
                 break;      
             case 'line':
-                if(showLabels || showLabelsPercent ){
+                if(showLabels || showLabelsPercent){
                     dataLabelsObjt = {
-
+                        
                         anchor: 'end',
                         align: 'top',
                         display: function(context) {
@@ -1946,7 +1947,7 @@ export class ChartUtilsService {
                             }else{
                                 return true; // devuelvo todas
                             }
-                      },
+                        },
 
 
                         font: {
@@ -1970,19 +1971,27 @@ export class ChartUtilsService {
                             return   res;
                         }
                       }
-
-
-
                 }else{
                         dataLabelsObjt =   { display: false }
-
                 }
 
+                console.log();
+                let pointRadius = 0;
+                let pointHoverRadius = 3;
+                let pointColor = '';
+                if(showPointLines){
+                    pointRadius = 5;
+                    pointHoverRadius = 15;
+                }
                 options.chartOptions = {
                     animation: {
                         duration: 3000
                     },
                     showLines: true,
+                    pointRadius: pointRadius,
+                    pointHoverRadius: pointHoverRadius,
+                    pointBackgroundColor : (ctx) => ctx.dataset.borderColor,
+                    pointBorderColor :  (ctx) => ctx.dataset.borderColor, // revisar
                     spanGaps: true,
                     responsive: true,
                     maintainAspectRatio: false,

@@ -1017,7 +1017,7 @@ export class EdaBlankPanelComponent implements OnInit {
                 const layout =
                     new ChartConfig(new ChartJsConfig(this.graficos.chartColors, this.graficos.chartType,
                     this.graficos.addTrend, this.graficos.addComparative, this.graficos.showLabels,
-                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors));
+                    this.graficos.showLabelsPercent, this.graficos.numberOfColumns, this.graficos.assignedColors, this.graficos.showPointLines));
 
                 this.renderChart(this.currentQuery, this.chartLabels, this.chartData, this.graficos.chartType, this.graficos.edaChart, layout);
             }
@@ -1290,7 +1290,8 @@ public onCloseMapProperties(event, response: { color: string, logarithmicScale: 
                     response.edaChart.showLabels,
                     response.edaChart.showLabelsPercent,
                     response.edaChart.numberOfColumns,
-                    response.edaChart.assignedColors
+                    response.edaChart.assignedColors,
+                    response.edaChart.showPointLines
                 );
             }
             
