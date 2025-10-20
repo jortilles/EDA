@@ -19,7 +19,7 @@ import Group, { IGroup } from '../../admin/groups/model/group.model'
 
 
 // URL de Redirección
-const origen ='https://edalitics.com/unizar'; // http://localhost:4200
+const origen ='https://edalitics.com/unizar/es'; // http://localhost:4200
 
 
 export class SAMLController {
