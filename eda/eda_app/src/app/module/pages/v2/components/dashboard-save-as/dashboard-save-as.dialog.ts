@@ -42,13 +42,14 @@ export class DashboardSaveAsDialog implements OnInit {
       group: [null]
     });
 
-    this.visibleTypes = [
-      { label: $localize`:@@commonPanel:Común`, value: 'public', icon: 'fa fa-fw fa-globe' },
-      { label: $localize`:@@groupPanel:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
-      { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
-    ];
+        this.visibleTypes = [
+            { label: $localize`:@@publicPanel:Publico`, value: 'public', icon: 'fa fa-fw fa-globe' },
+            { label: $localize`:@@commonPanel:Común`, value: 'shared', icon: 'fa fa-fw fa-globe' },
+            { label: $localize`:@@groupPanel:Grupo`, value: 'group', icon: 'fa fa-fw fa-users' },
+            { label: $localize`:@@privatePanel:Privado`, value: 'private', icon: 'fa fa-fw fa-lock' },
+        ];
 
-    this.form.controls['visible'].setValue(this.visibleTypes[2].value);
+        this.form.controls['visible'].setValue(this.visibleTypes[3].value);
   }
 
   private loadGroups(): void {
