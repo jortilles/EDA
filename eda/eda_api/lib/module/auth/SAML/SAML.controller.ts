@@ -18,6 +18,10 @@ const SEED = require('../../../../config/seed').SEED;
 import Group, { IGroup } from '../../admin/groups/model/group.model'
 
 
+// URL de Redirección
+const origen ='https://edalitics.com/unizar'; // http://localhost:4200
+
+
 export class SAMLController {
 
 
@@ -26,7 +30,7 @@ export class SAMLController {
         try {
             const rawReturn = (req.query as any)?.returnUrl
                         || (req.body as any)?.returnUrl
-                        || `${req.headers.origin || (req.get('host') ? `http://${req.get('host')}` : 'http://localhost:4200')}/#/home`;
+                        || `${req.headers.origin || (req.get('host') ? `http://${req.get('host')}` : `${origen}`)}/#/home`;
 
             // valida que sea una URL absoluta
             let relay: string;
@@ -34,11 +38,11 @@ export class SAMLController {
             try {
                 const u = new URL(String(rawReturn));
                 // Lista permitida
-                const allowed = ['http://localhost:4200', 'https://tu-dominio.app'];
+                const allowed = [`${origen}`, 'https://tu-dominio.app'];
                 if (!allowed.some(a => u.origin === a)) throw new Error('returnUrl no permitido');
                 relay = u.toString();
             } catch {
-                relay = 'http://localhost:4200/#/home';
+                relay = `${origen}/#/home`;
             }
 
             const loginUrl = await (samlStrategy as any)._saml.getAuthorizeUrlAsync({
@@ -115,14 +119,14 @@ static async acs(req: Request, res: Response, next: NextFunction) {
 
         // --------- REDIRECCIÓN A ANGULAR CON JWT ---------
         // Utiliza el RelayState si viene, "se manda al iniciar el SSO" o un default a #/login
-        const defaultRelay = 'http://localhost:4200/#/login?next=%2Fhome';
+        const defaultRelay = `${origen}/#/login?next=%2Fhome`;
         const relayRaw = (req.body as any)?.RelayState || defaultRelay;
 
         // (Opcional) Lista accesible de orígenes para evitar open redirect
         let relayState = relayRaw;
         try {
             const u = new URL(relayRaw);
-            const allowed = ['http://localhost:4200']; // Dominio para producción
+            const allowed = [`${origen}`]; // Dominio para producción
             if (!allowed.includes(u.origin)) relayState = defaultRelay;
         } catch {
             relayState = defaultRelay;
