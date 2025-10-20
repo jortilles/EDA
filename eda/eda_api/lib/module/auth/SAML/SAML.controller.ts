@@ -13,13 +13,15 @@ import { UserController } from '../../admin/users/user.controller';
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
+const SAMLconfig = require('../../../../config/SAMLconfig');
+
 
 // Grupos de Edalitics
 import Group, { IGroup } from '../../admin/groups/model/group.model'
 
 
 // URL de Redirección
-const origen ='https://edalitics.com/unizar/es'; // http://localhost:4200
+const origen = SAMLconfig.urlRedirection; // http://localhost:4200
 
 
 export class SAMLController {
