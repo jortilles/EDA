@@ -169,7 +169,7 @@ export class EdaTableComponent implements OnInit {
 
         const fields = styles.map(style => style.col);
         const limits = {};
-        console.log(fields);
+        //console.log(fields);
         //Initialize 
         fields.forEach(field => {
             limits[field] = { min: Infinity, max: -Infinity, rangeValue: 0, ranges: [], cols:styles.filter(s => s.col === field)[0].cols  };

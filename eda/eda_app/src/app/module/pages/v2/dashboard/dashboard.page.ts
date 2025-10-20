@@ -80,6 +80,7 @@ export class DashboardPageV2 implements OnInit {
 
   //Filter control variables
   public lastFilters: any[] = [];
+  public lastMultipleFilters: any[] = [];
   public chartFilter: any;
 
   public applyToAllfilter: {
@@ -380,23 +381,58 @@ public async reloadPanels(): Promise<void> {
           });
           let config = this.setPanelsToFilter(panel);
           //TENEMOS ALGUN FILTRO APLICADO EN LOS FILTROS GLOBALES DEL DASHBOARD
+          
           if (this.globalFilter.globalFilters && this.globalFilter.globalFilters.length > 0) {
             //Buscamos si hay un filtro que existe igual al que acabamos de clicar, y de la misma tabla, si lo hay, hay que borrarlo
-            let chartToRemove = this.globalFilter.globalFilters.find(
-              (f) => f.table?.value === table.table_name && f.column?.value?.column_name === column.column_name &&
-                f.selectedItems.includes(event?.data.label) && f.selectedItems.length === 1 && f.hasOwnProperty("fromChart")
+            let chartToRemove = this.globalFilter.globalFilters.find(f =>
+              this.getChartClicked(f, table.table_name, column.column_name, event?.data.label)
             );
+            // Control origen de los datos 
+            let filterName;
+            if (chartToRemove !== undefined) {
+              filterName = chartToRemove.column?.label ?? chartToRemove.selectedColumn?.colum ?? "default";
+            }
+            
+            
+            
             if (chartToRemove) {
-              let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label &&
-                element.filter.table.label === chartToRemove.table.label)
-              // Borramos del global filter el filtro a borrar fromChart
-              this.globalFilter.removeGlobalFilterOnClick(chartToRemove, true);
-              // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
-              if (filterToAddIndx !== -1 ) { 
-                await this.globalFilter.onGlobalFilterAuto(this.lastFilters[filterToAddIndx].filter, table.table_name)
-                this.lastFilters.splice(filterToAddIndx, 1);
+              if(chartToRemove.selectedItems.length === 1){
+              // Buscar si existe el filtro con el mismo filterName
+              const existingFilter = this.lastMultipleFilters.find(f => f.filterName === filterName);
+
+              if (existingFilter) {
+                // Restaurar selectedItems desde el filtro guardado
+                chartToRemove.selectedItems = [...existingFilter.filter.selectedItems];
+
+                // Eliminar ese filtro del array
+                this.lastMultipleFilters = this.lastMultipleFilters.filter(f => f.filterName !== filterName);
+
+                // Aplicar filtro global
+                this.globalFilter.applyGlobalFilter(chartToRemove);
               }
-              
+              else {
+                  // Borramos el filtro existente
+                  let filterToAddIndx = this.lastFilters.findIndex(element => element.filterName === chartToRemove.column.label &&
+                    element.filter.table.label === chartToRemove.table.label)
+                  // Borramos del global filter el filtro a borrar fromChart
+                  this.globalFilter.removeGlobalFilterOnClick(chartToRemove, true);
+                  // Recuperamos el filtro correspondiente y lo eliminamos de los filtros guardados
+                  if (filterToAddIndx !== -1 ) { 
+                    await this.globalFilter.onGlobalFilterAuto(this.lastFilters[filterToAddIndx].filter, table.table_name)
+                    this.lastFilters.splice(filterToAddIndx, 1);
+                  }
+                }
+              }else{
+                // Aun tengo varios valores seleccionados, cambio por el que he clicado
+
+                this.lastMultipleFilters.push({
+                    filterName: filterName,
+                    filter: { ...chartToRemove }
+                });
+                
+                chartToRemove.selectedItems = await chartToRemove.selectedItems.filter((item) => item === data.label);
+                this.globalFilter.applyGlobalFilter(chartToRemove);
+              }
             // Actualizamos global filter
               this.reloadOnGlobalFilter(); 
             } else {
@@ -432,7 +468,9 @@ public async reloadPanels(): Promise<void> {
               };
               
               //Borramos filtros activos del global filter, pero los mantenemos guardados
-            this.lastFilters.forEach((element) => { this.globalFilter.removeGlobalFilter(element.filter, true);});
+              for (const element of this.lastFilters) {
+                await this.globalFilter.removeGlobalFilter(element.filter, true);
+              }             
               //Añadimos filtros nuevos
               try {
               await this.globalFilter.onGlobalFilterAuto(this.chartFilter, table.table_name);
@@ -805,5 +843,47 @@ public startCountdown(seconds: number) {
       }
     });
   }
+
+
+// --- Función para detectar el filtro clicado ---
+private getChartClicked(f: any, tableName: string, columnName: string, label: any): boolean {
+  const norm = (val: any) =>
+    val?.toString()
+      ?.normalize("NFD")
+      ?.replace(/[\u0300-\u036f]/g, "")
+      ?.toLowerCase()
+      ?.trim();
+
+  const newTable = norm(f.selectedTable?.table_name);
+  const newColumn = norm(f.selectedColumn?.column_name);
+  const oldTable = norm(f.table?.value);
+  const oldColumn = norm(f.column?.value?.column_name);
+
+  const targetTable = norm(tableName);
+  const targetColumn = norm(columnName);
+  const targetLabel = norm(label);
+
+  const tableMatch = newTable === targetTable || oldTable === targetTable;
+  const columnMatch = newColumn === targetColumn || oldColumn === targetColumn;
+
+  let labelMatch = false;
+
+
+
+  if (Array.isArray(f.selectedItems)) {
+    f.selectedItems.forEach((item, i) => {
+      const normItem = norm(item);
+      const includes = normItem?.includes(targetLabel);
+      if (includes) labelMatch = true;
+    });
+  } 
+
+  return tableMatch && columnMatch && labelMatch;
+}
+
+
+
+
+
 
 }
