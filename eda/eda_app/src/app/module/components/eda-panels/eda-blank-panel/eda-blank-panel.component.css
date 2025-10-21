@@ -339,7 +339,7 @@ eda-blank-panel :root {
 }
 
 .select-box:hover {
-  background: #f0f0f0;
+  background: rgba(0, 191, 179, 0.30);
   transform: scale(1.03);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border-color: var(--header-bg-color);
