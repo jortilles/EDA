@@ -117,7 +117,9 @@ export class UserListPage implements OnInit {
   }
 
   handleCreateUser() {
+      // REVISAR QUE PASA CON LAS INICIALES DE USER cache
     this.selectedUser = {name:'',email:'',password:'', isnew: true };
+    this.selectedUserApply = {name:'',email:'',password:'', isnew: true };
     this.showUserDetail = true;
   }
 

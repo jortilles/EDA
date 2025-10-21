@@ -581,7 +581,7 @@ public async reloadPanels(): Promise<void> {
   isFilterAppliedToChart(anyChartToRemove: any, data: any) : boolean {
 
     let filterInPanel = data.panel.content.query.query?.filters.find((f: any) =>
-      (f.filter_elements?.some((fe: any) => fe.value1.includes(data.label))) ||
+      (f.filter_elements?.some((fe: any) => fe.value1?.includes(data.label))) ||
       (data.label.includes(f.selectedItems))) 
       !== undefined;
 
@@ -722,7 +722,7 @@ public async reloadPanels(): Promise<void> {
         urls: this.dashboard.config.urls,
         author: this.dashboard.config?.author
       },
-      group: this.dashboard.group ? _.map(this.dashboard.group, '_id') : undefined,
+      group: this.dashboard.group ? _.map(this.dashboard.group) : undefined,
     }
 
     body.config.panel = this.savePanels();

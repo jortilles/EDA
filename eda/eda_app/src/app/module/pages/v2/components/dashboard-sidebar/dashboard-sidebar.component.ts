@@ -363,7 +363,7 @@ export class DashboardSidebarComponent {
           author: JSON.parse(localStorage.getItem('user')).name,
           styles: this.stylesProviderService.generateDefaultStyles(), 
         },
-        group: (newDashboard.group || []).map((g: any) => g._id)
+        group: (newDashboard.group || []).map((g: any) => g)
       };
 
       const res = await lastValueFrom(this.dashboardService.addNewDashboard(bodyNew));
@@ -432,11 +432,15 @@ export class DashboardSidebarComponent {
   public saveVisibleModal(privacity: any) {
     this.isVisibleModalVisible = false;
     this.dashboard.dashboard.config.visible = privacity.visible;
+    console.log(privacity)
     if (privacity.visible === 'group')
       this.dashboard.dashboard.group = privacity.group.map(grup => grup._id);
     else
       this.dashboard.dashboard.group = []
 
+    console.log(
+    this.dashboard.dashboard.group
+    )
     this.dashboard.saveDashboard();
   }
 
