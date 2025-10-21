@@ -27,7 +27,7 @@ if(EDA_API_CONFIG.authentication_type?.type === 'sso_mixto'){
       ) 
     {
         // Autenticación con SAML y bbdd oracle para la autorización
-        router.use('/samlorcl', SAML_ORCL_Router);
+        router.use('/saml', SAML_ORCL_Router); // samlorcl
     }   
 
 }

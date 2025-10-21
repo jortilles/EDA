@@ -1,6 +1,6 @@
 import passport from 'passport';
 import { Strategy as SamlStrategy, type Profile, type SamlConfig, type VerifiedCallback } from '@node-saml/passport-saml';
-const SAMLconfig = require('../../../../config/SAMLconfig');
+const SAMLconfig = require('../../../config/SAMLconfig');
 
 
 const samlConfig: SamlConfig = {

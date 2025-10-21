@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../global/model/index';
-import passport from './SAML.passport';
-import { samlStrategy } from './SAML.passport';
+import passport from '../SAML.passport';
+import { samlStrategy } from '../SAML.passport';
 import ServerLogService from '../../../services/server-log/server-log.service';
 import { parseStringPromise } from 'xml2js';
 
