@@ -5,9 +5,11 @@
     <div class="flex-1">
       <h2 class="text-lg font-medium pt-3" [ngStyle]="panelText">{{ panel.title || title }}</h2>
     </div>
-
     <!-- Ícono a la derecha -->
-    <i class="pi pi-ellipsis-v cursor-pointer ml-2" (click)="contextMenu.showContextMenu($event)"></i>
+    <i  
+    [ngClass]="{'edit-blink': lodash.isEmpty(panel.content)}"
+     class="pi pi-ellipsis-v cursor-pointer ml-2  w-[28px] h-[28px] flex items-center justify-center text-center rounded-full content-center" (click)="contextMenu.showContextMenu($event)">
+    </i>
   </div>
 
 

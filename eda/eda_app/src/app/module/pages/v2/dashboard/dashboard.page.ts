@@ -75,6 +75,7 @@ export class DashboardPageV2 implements OnInit {
 
   public onlyIcanEdit: boolean = false;
   public refreshTime: number;
+  public clickFiltersEnabled: boolean = true;
   public stopRefresh: boolean = false;
 
 
@@ -364,9 +365,8 @@ public async reloadPanels(): Promise<void> {
       modeEDA = !event?.data.panel.content?.query?.query.modeSQL &&
       (!event?.data.panel.content.query.query.queryMode || event?.data.panel.content.query.query.queryMode === 'EDA')
     }
-
     //Si es modo arbol o SQL no aplica filtros
-    if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER')) {
+    if (modeEDA && event.code === "ADDFILTER" && this.validateDashboard('GLOBALFILTER') && this.dashboard.config.clickFiltersEnabled) {
 
 
         const data = event?.data;
@@ -632,6 +632,7 @@ public async reloadPanels(): Promise<void> {
         visible: this.dashboard.config.visible,
         tags: this.dashboard.config.tags,
         refreshTime: (this.dashboard.config.refreshTime > 5) ? this.dashboard.config.refreshTime : this.dashboard.config.refreshTime ? 5 : null,
+        clickFiltersEnabled: this.dashboard.config.clickFiltersEnabled,
         // mailingAlertsEnabled: this.getMailingAlertsEnabled(),
         sendViaMailConfig: this.dashboard.config.sendViaMailConfig || this.sendViaMailConfig, 
         onlyIcanEdit: this.onlyIcanEdit, // NO puedo Editar dashboard --> publico con enlace
