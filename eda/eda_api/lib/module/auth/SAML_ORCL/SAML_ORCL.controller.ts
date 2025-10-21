@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../../global/model/index';
-import passport from './SAML_ORCL.passport';
-import { samlStrategy } from './SAML_ORCL.passport';
+// import passport from './SAML_ORCL.passport';
+import passport from '../SAML.passport';
+import { samlStrategy } from '../SAML.passport';
 import ServerLogService from '../../../services/server-log/server-log.service';
 import { parseStringPromise } from 'xml2js';
 
@@ -76,6 +77,8 @@ export class SAML_ORCL_Controller {
             let userSAML: IUser = new User({ name: '', email: '', password: '', img: '', role: [] });
 
             insertServerLog(req, 'info', 'newLogin', user.nameID, 'attempt');
+
+            console.log('user: ', user);
 
             const email = user.nameID;
             const name = user.nameID;
