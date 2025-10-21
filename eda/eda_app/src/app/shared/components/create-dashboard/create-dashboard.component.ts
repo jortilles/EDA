@@ -114,6 +114,7 @@ export class CreateDashboardComponent implements OnInit {
                     visible: this.form.value.visible,
                     tag: null, 
                     refreshTime:null, 
+                    clickFiltersEnabled:true, 
                     styles: this.stylesProviderService.generateDefaultStyles(),
                     external: null
                 },

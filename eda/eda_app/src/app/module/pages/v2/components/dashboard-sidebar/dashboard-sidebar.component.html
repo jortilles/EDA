@@ -51,9 +51,10 @@
                     </button>
                   }
                 </div>
+              }
             }
-            }
-          }@else{
+          }
+          @else{
             <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors" (click)="item.command()">
               <i [class]="item.icon + ' text-gray-600'"></i>
               <span>{{ item.label }}</span>
@@ -70,7 +71,6 @@
             }
           }
         }
-        
 
         <button class="flex items-center gap-3 p-2 w-full text-left hover:bg-gray-100 rounded-md transition-colors"
           (click)="toggleOpciones()">

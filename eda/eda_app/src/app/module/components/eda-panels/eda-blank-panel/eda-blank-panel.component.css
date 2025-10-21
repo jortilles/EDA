@@ -59,6 +59,46 @@ eda-blank-panel :root {
   margin-bottom: 0.2em;
 }
 
+
+
+@-webkit-keyframes yellow-fade {
+    from {
+      background: #d3d2d2;
+      color:white;
+    }
+    to {
+      background:#ffffff;
+      color:#67757c;
+    }
+  }
+  @-moz-keyframes yellow-fade {
+    from {
+        background:#d3d2d2;
+        color:white;
+      }
+      to {
+        background:#ffffff;
+        color:#67757c;
+      }
+  }
+  @keyframes yellow-fade {
+    from {
+        background:#d3d2d2;
+        color:white;
+      }
+      to {
+        background:#ffffff;
+        color:#67757c;
+      }
+  }
+
+.edit-blink {
+  display: inline-block;   
+  padding: 0.2em;         
+  animation: yellow-fade 1.5s 2 ease-in-out 0s;
+}
+
+
 .tab-view .input-icons {
   padding: 2px;
   background: white;
