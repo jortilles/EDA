@@ -1,17 +1,10 @@
 module.exports = {
     // Para un nuevo cliente se debe agregar el nuevo certificado a continuación del ultimo certificado
-    CertValue: [
-    `-----BEGIN CERTIFICATE-----
-    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    -----END CERTIFICATE-----`,
-    `-----BEGIN CERTIFICATE-----
-    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    -----END CERTIFICATE-----`
-    ],
+
     issuer: 'xxxxxxxxxx',
     callbackUrl: 'xxxxxxxxxx',
     entryPointValue: 'xxxxxxxxxx',
-    idpCert: CertValue,
+    idpCert: 'xxxxxxxxxx',
     logoutUrl: 'xxxxxxxxxx',
     identifierFormat: 'xxxxxxxxxx',
     wantAssertionsSigned: false,
