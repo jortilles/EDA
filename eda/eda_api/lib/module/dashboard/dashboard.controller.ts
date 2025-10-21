@@ -1763,11 +1763,20 @@ export class DashboardController {
         return next(new HttpException(404, 'Dashboard not found'));
       }
 
+      const dashboards = await Dashboard.find({},
+        'config.title config.visible config.tag config.onlyIcanEdit config.author config.createdAt config.modifiedAt'
+      ).populate('user','name').exec()     
+      
+      let newName = originalDashboard.config.title + ' copy';
+      while (dashboards.find(d => d.config.title === newName)) {
+        newName += ' copy';
+      }
+
       // Create a new dashboard object with cloned properties
       const clonedDashboard: IDashboard = new Dashboard({
         config: {
           ...originalDashboard.config,
-          title: `${originalDashboard.config.title} copy`, // Append 'copy' to the title
+          title: newName, // Append 'copy' to the title
           createdAt: new Date().toISOString(),
           modifiedAt: new Date().toISOString(),
           author:  req.user.name
