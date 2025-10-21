@@ -157,14 +157,14 @@ export class UserListPage implements OnInit {
     this.showUserDetail = false;
     if (this.selectedUser.isnew) { //Estamos creando usuario
       
-      let roleIds = (this.selectedUser?.role ?? [])
+      let roleIds = (this.selectedUserApply?.role ?? [])
         .map(name => this.groups.find(group => group.name === name)?._id)
         .filter(id => id);
 
       let user: User = {
-        name: this.selectedUser.name,
-        email: this.selectedUser.email,
-        password: this.selectedUser.password,
+        name: this.selectedUserApply.name,
+        email: this.selectedUserApply.email,
+        password: this.selectedUserApply.password,
         ...(roleIds.length ? { role: roleIds } : {}) // solo incluye role si hay 
       };
 
