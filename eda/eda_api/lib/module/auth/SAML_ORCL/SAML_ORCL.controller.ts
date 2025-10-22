@@ -15,10 +15,11 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const SEED = require('../../../../config/seed').SEED;
 const ORCL = require('../../../../config/bbdd_orcl').ORCL;
+const SAMLconfig = require('../../../../config/SAMLconfig');
 
 // Base de datos oracle
 const oracledb = require("oracledb");
-const origen ='https://edalitics.com/unizar'; // http://localhost:4200
+const origen = SAMLconfig.urlRedirection;; // http://localhost:4200
 
 // Grupos de Edalitics
 import Group, { IGroup } from '../../admin/groups/model/group.model'
