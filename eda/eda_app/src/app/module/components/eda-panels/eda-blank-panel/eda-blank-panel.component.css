@@ -62,41 +62,80 @@ eda-blank-panel :root {
 
 
 @-webkit-keyframes yellow-fade {
-    from {
-      background: #d3d2d2;
-      color:white;
-    }
-    to {
-      background:#ffffff;
-      color:#67757c;
-    }
+  0% {
+    background-color: #d3d2d2;
+    color: #ffffff;
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
   }
-  @-moz-keyframes yellow-fade {
-    from {
-        background:#d3d2d2;
-        color:white;
-      }
-      to {
-        background:#ffffff;
-        color:#67757c;
-      }
+  50% {
+    background-color: #f3f3f3;
+    color: #4e5a61;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(103, 117, 124, 0.3);
   }
-  @keyframes yellow-fade {
-    from {
-        background:#d3d2d2;
-        color:white;
-      }
-      to {
-        background:#ffffff;
-        color:#67757c;
-      }
+  100% {
+    background-color: #ffffff;
+    color: #67757c;
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
   }
+}
+
+@-moz-keyframes yellow-fade {
+  0% {
+    background-color: #d3d2d2;
+    color: #ffffff;
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+  50% {
+    background-color: #f3f3f3;
+    color: #4e5a61;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(103, 117, 124, 0.3);
+  }
+  100% {
+    background-color: #ffffff;
+    color: #67757c;
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+@keyframes yellow-fade {
+  0% {
+    background-color: #d3d2d2;
+    color: #ffffff;
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+  50% {
+    background-color: #f3f3f3;
+    color: #4e5a61;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(103, 117, 124, 0.3);
+  }
+  100% {
+    background-color: #ffffff;
+    color: #67757c;
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
 
 .edit-blink {
-  display: inline-block;   
-  padding: 0.2em;         
-  animation: yellow-fade 1.5s 2 ease-in-out 0s;
+  display: inline-block;
+  padding: 0.3em 0.6em;
+  border-radius: 30px;
+  background-color: #d3d2d2;
+  color: #ffffff;
+  font-weight: 500;
+  -webkit-animation: yellow-fade 1.8s ease-in-out 0s 2 forwards;
+  animation: yellow-fade 1.8s ease-in-out 0s 2 forwards;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
+
 
 
 .tab-view .input-icons {
