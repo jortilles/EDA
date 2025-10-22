@@ -75,10 +75,19 @@
 
         @if (singleSignOnSamlMixOrclAvailable) {
             <button 
-                class="w-full py-2 text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
+                class="w-full py-2 xl:py-1 text-black rounded-md bg-white border-[0.5px] border-[#dadce0] hover:bg-[#E1E9FF] transition-colors focus:outline-none focus:ring-0"
                 (click)="loginButtonSSOMixOrcl()"
                 >
-                Single Sign-On mixto Orcl
+                <div class="flex items-center">
+                    <img 
+                        src="assets/images/logos/unizarLogo2.png" 
+                        alt="SSO" 
+                        class="w-7 h-7 ml-3 xl:ml-1" 
+                    />
+                    <span class="block text-center w-full mr-10">
+                        Unizar & Orcl
+                    </span>
+                </div>
             </button>
         }
 
