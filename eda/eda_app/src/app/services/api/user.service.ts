@@ -17,7 +17,7 @@ export class UserService extends ApiService {
     private route = '/admin/user';
     private routeThirdParty = '/tp/url';
     private authSAML = '/auth/saml';
-    private authSAML_ORCL = '/auth/samlorcl';
+    private authSAML_ORCL = '/auth/saml'; // ===> /auth/samlorcl
     private authGOOGLE = '/auth/google';
     private authMICROSOFT = '/auth/microsoft';
     private auth = '/auth';
