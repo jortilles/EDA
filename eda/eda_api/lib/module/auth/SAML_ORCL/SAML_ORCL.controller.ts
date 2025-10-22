@@ -76,12 +76,12 @@ export class SAML_ORCL_Controller {
             let token: string;
             let userSAML: IUser = new User({ name: '', email: '', password: '', img: '', role: [] });
 
-            insertServerLog(req, 'info', 'newLogin', user.nameID, 'attempt');
+            insertServerLog(req, 'info', 'newLogin', user.email, 'attempt');
 
             console.log('user: ', user);
 
-            const email = user.nameID;
-            const name = user.nameID;
+            const email = user.email;
+            const name = email.split('@')[0];
             const picture = '';
 
             if (!email) return next(new HttpException(400, 'Usuario no verificado por la Entidad SSO'));
