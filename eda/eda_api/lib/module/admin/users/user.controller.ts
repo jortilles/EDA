@@ -345,7 +345,7 @@ export class UserController {
             const img = req.params.img;
 
             const ROOT_PATH = process.cwd();
-            const uploadsPath = path.join(ROOT_PATH, 'lib/module/uploads/users/images', img);
+            const uploadsPath = path.join(ROOT_PATH, 'lib/module/uploads/images', img);
 
             if (fs.existsSync(uploadsPath)) {
                 res.sendFile(uploadsPath);
