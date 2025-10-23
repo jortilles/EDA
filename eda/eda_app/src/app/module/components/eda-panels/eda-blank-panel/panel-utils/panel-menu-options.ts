@@ -270,7 +270,7 @@ export const PanelOptions = {
   },
   askToIA : (panelComponent: EdaBlankPanelComponent) => {
     return new EdaContextMenuItem({
-      label: $localize`:@@panelOptions6:Pregunte a la IA`,
+      label: $localize`:@@askEddieNoIcon:Pregúntale a Eddie`,
       icon: 'fas fa-brain',
       command: () => {
         // Entregamos la data al componente de ChatGpt

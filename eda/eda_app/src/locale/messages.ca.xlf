@@ -5166,6 +5166,11 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Pregunta-li a Eddie 😊</target>
 </trans-unit>
 
+<trans-unit id="askEddieNoIcon">
+  <source>Pregúntale a Eddie</source>
+  <target>Pregunta-li a Eddie</target>
+</trans-unit>
+
 <trans-unit id="GPTChat">
   <source>Chat con ChatGPT</source>
   <target>Xat amb ChatGPT</target>
