@@ -213,7 +213,7 @@ export class LoginV2Component implements OnInit, AfterViewChecked {
                     size: 'medium',
                     shape: 'square',
                     text: 'continue_with',
-                    width: 387
+                    width: 389
                 });
             } catch (error) {
                 console.error('Error al renderizar el botón de google:', error);
