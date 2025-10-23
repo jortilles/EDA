@@ -65,10 +65,6 @@ export class ProfileComponent implements OnInit {
     }
 
     changeImage() {
-
-        console.log('user: ',this.user);
-        console.log('imageUpload: ',this.imageUpload);
-
         this.userService.changeImage( this.imageUpload, this.user._id, 'user' );
     }
     private checkNewPasswords(a:string, b:string){
