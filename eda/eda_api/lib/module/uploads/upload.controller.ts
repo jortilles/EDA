@@ -34,7 +34,7 @@ export class UploadController {
             
             // Mover imagen del temporal a un path
             const ROOT_PATH = process.cwd();
-            const uploadsPath = path.join(ROOT_PATH, 'lib/module/uploads/users/images', randomName);
+            const uploadsPath = path.join(ROOT_PATH, 'lib/module/uploads/images', randomName);
 
             file.mv(uploadsPath, err => {
 
@@ -50,8 +50,8 @@ export class UploadController {
                             return next(new HttpException(500, 'User not exists'));
                         }
 
-                        // const oldPath = path.resolve(__dirname, `../../uploads/users/${userBD.img}`);
-                        const oldPath = path.join(ROOT_PATH, 'lib/module/uploads/users/images', `${userBD.img}`);
+                        // const oldPath = path.resolve(__dirname, `../../uploads/${userBD.img}`);
+                        const oldPath = path.join(ROOT_PATH, 'lib/module/uploads/images', `${userBD.img}`);
 
                         // Si existe, elimina la imagen anterior
                         try {
