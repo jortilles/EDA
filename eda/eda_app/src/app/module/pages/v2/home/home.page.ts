@@ -91,9 +91,22 @@ export class HomePageV2 implements OnInit {
     this.filterByTags();
   }
 
-  public openReport(report: any) {
+  public openReport(report: any, event: MouseEvent) {
+    // Crear la URL completa del informe    
+    const urlTree = this.router.createUrlTree(['/dashboard', report._id]);
+    const relativeUrl = this.router.serializeUrl(urlTree);
+    const absoluteUrl = window.location.origin + relativeUrl;
+
+    // Manejar clic medio o Ctrl+clic para abrir en nueva pestaña
+    if (event.button === 1 || event.ctrlKey) {
+      window.open('#/' + relativeUrl);
+      return;
+    }
+
+    // Navegar en la misma pestaña
     this.router.navigate(['/dashboard', report._id]);
   }
+
 
   public handleTagSelect(option: any): void {
     const currentFilters = this.selectedTags(); // Filtros de tags 

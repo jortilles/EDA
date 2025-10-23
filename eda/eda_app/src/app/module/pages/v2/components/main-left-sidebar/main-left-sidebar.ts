@@ -124,20 +124,28 @@ export class MainLeftSidebarComponent {
     }, 100); // Espera 200ms antes de ocultar
   }
 
-  menuCommand(item: any) {
-    if ((item.path||'').includes('logout')) {
-        this.userService.logout();
-    } else if (item.path) {
-      // Para direcciones con opcion command
-      if(item.command) {
-        item.command();
-      } else {
-        this.router.navigate([item.path]);
-      }
-    } else if (item.lang) {
-      this.redirectLocale(item.lang);
-    }
+menuCommand(item: any, event: MouseEvent) {
+  const path = item.path || '';
+  const urlTree = this.router.createUrlTree([path]);
+  const relativeUrl = this.router.serializeUrl(urlTree);
+
+
+  // Si es clic medio y hay ruta, abrir en nueva pestaña
+  if (event.button === 1 && path) {
+    event.preventDefault();
+    window.open('#/' +  relativeUrl);
+    return;
   }
+
+  if (path.includes('logout')) {
+    this.userService.logout();
+  } else if (path) {
+    item.command ? item.command() : this.router.navigate([path]);
+  } else if (item.lang) {
+    this.redirectLocale(item.lang);
+
+  }
+}
 
   public redirectLocale(lan: string) {
     let baseUrl = window.location.href.split('#')[0];
