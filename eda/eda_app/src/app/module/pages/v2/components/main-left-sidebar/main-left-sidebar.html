@@ -15,10 +15,8 @@
               'text-white bg-[#00BFB3]': item.isActive || item.showOverlay,
               'bg-muted': !item.isActive && !item.showOverlay
             }"
-            [title]="item.label || ''"
-            (click)="menuCommand(item)">
-            <eda-icon [name]="item.icon" class="h-5" />
-            <span class="sr-only">{{item.label}}</span>
+            [title]="item.label || ''" (mousedown)="menuCommand(item, $event)" >
+            <eda-icon style="pointer-events: none;" [name]="item.icon" class="h-5" />
           </button>
           <!-- <a 
             [routerLink]="item.path"
@@ -53,7 +51,7 @@
                               {{ subItem.label }}
                             </a>
                       } @else {
-                        <button class="flex items-center gap-2 p-2 bg-white hover:text-[#00BFB3] transition-colors focus:outline-none" (click)="menuCommand(subItem)">
+                        <button class="flex items-center gap-2 p-2 bg-white hover:text-[#00BFB3] transition-colors focus:outline-none" (click)="menuCommand(subItem, $event)">
                           @if(subItem.icon) {
                             <eda-icon [name]="subItem.icon" class="h-4" />
                           }
@@ -71,3 +69,4 @@
     </div>
   </div>
 }
+ 
