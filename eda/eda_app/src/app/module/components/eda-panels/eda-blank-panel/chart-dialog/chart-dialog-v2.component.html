@@ -151,21 +151,22 @@
             </div>
             
             <!-- Mostrar Puntos -->   
-            <div class="flex items-center justify-between">
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <label i18n="@@showPointLines" class="font-medium">
-                    Mostrar Puntos en Lineas
-                  </label>
-                  <div class="relative group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="text-slate-400">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <path d="M12 16v-4"></path>
-                      <path d="M12 8h.01"></path>
-                    </svg>
-                    <div
+             @if(panelChartConfig.edaChart === 'line'){
+               <div class="flex items-center justify-between">
+                 <div class="space-y-0.5">
+                   <div class="flex items-center gap-2">
+                     <label i18n="@@showPointLines" class="font-medium">
+                       Mostrar Puntos en Lineas
+                      </label>
+                      <div class="relative group">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-slate-400">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                      </svg>
+                      <div
                       class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-60 p-2 bg-slate-800 text-white text-md rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity">
                       <span i18n="@@chartLabelLinesOptionDescription">Muestra las líneas en los puntos</span>
                     </div>
@@ -175,12 +176,13 @@
               </div>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" [(ngModel)]="showPointLines" class="sr-only peer"
-                  (ngModelChange)="setShowLines()">
+                (ngModelChange)="setShowLines()">
                 <div
-                  class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
-                </div>
-              </label>
-            </div>
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#00BFB3] rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00BFB3]">
+              </div>
+            </label>
+          </div>
+        }
           </div>
         </div>
       </div>

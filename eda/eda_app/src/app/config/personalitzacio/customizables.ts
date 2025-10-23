@@ -24,8 +24,8 @@ export const ChartsColors = [
 export const ChartsPalettes = [
     {
         paleta: [
-            '#10B4BD', '#50B0BA', '#6BB1BA', '#81B0BA', '#96B1BA',
-            '#AAB1BB', '#C3B0BB', '#D6B2BB', '#EAB1BB', '#FDB0BA'
+            '#10B4BD', '#299FC4', '#438ACB', '#5C75D3', '#755FDA',
+            '#8969D9', '#9D73D8', '#B27CD7', '#D691C7', '#FDB0BA'
         ]
         , name: 'Turquesa-Rosa'
     },{
