@@ -229,6 +229,9 @@ export class UserService extends ApiService {
     /** Change the user profile image */
     changeImage(file: File, id: string, from?: string) {
         const params = {file, id, from};
+        
+        console.log('params: ', params);
+
         this.globalService.uploadFile(params)
             .then((res: any) => {
                 if (from === 'user') {
