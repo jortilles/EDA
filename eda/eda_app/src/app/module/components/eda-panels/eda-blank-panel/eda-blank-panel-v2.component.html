@@ -111,19 +111,35 @@
               }
               <!-- EDA JOINS TREE MODE -->
               @if (selectedQueryMode=='EDA2') {
-              @if (currentQuery.length > 0) {
-              <p-tree selectionMode="single" [value]="tableNodes" [loading]="loadingNodes"
-                (onNodeExpand)="tableNodeExpand($event)" (onNodeSelect)="tableNodeSelect($event)">
-                <ng-template let-node pTemplate="child">
-                  <span [ngClass]="checkNodeSelected(node) ? 'font-weight-bold' : ''"> {{node.label}} </span>
-                </ng-template>
-                <ng-template let-node pTemplate="default">
-                  <b>{{node.label}}</b>
-                </ng-template>
-              </p-tree>
-              } @else {
-              <ng-container *ngTemplateOutlet="entityList"></ng-container>
-              }
+                @if (currentQuery.length > 0) {
+                  <p-tree [value]="tableNodes" selectionMode="single" [loading]="loadingNodes"
+                          (onNodeExpand)="tableNodeExpand($event)" (onNodeSelect)="tableNodeSelect($event)">
+                    
+
+                    <!-- ESTE TEMPLATE CONTEMPLA AL PADRE -->
+                    <ng-template let-node let-options="options" pTemplate="default">
+                      <div class="p-treenode-content"
+                          [ngStyle]="{'padding-left.px': (node.level || 0) * 20}"
+                          [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''"
+                          style="display:flex; align-items:center;">
+                        {{node.label}}
+                      </div>
+                    </ng-template>
+                    
+                    <!-- ESTE TEMPLATE TRATA A LOS HIJOS -->
+                      <ng-template let-node let-options="options" pTemplate="child">
+                        <div class="p-treenode-content"
+                        [ngStyle]="{'padding-left.px': (node.level || 0) * 20}"
+                        [ngClass]="checkNodeSelected(node) ? 'font-bold' : ''"
+                        style="display:flex; align-items:center;">
+                          {{node.label}}
+                        </div>
+                      </ng-template>
+
+                  </p-tree>
+                } @else {
+                <ng-container *ngTemplateOutlet="entityList"></ng-container>
+                }
               }
               <!-- ----------- -->
             </div>
@@ -703,14 +719,26 @@
 
   <ng-container footer>
     <button class="execute-button" [disabled]="disableRunQuery()" (click)="runManualQuery()">
-      Execute
+      <i class="fa fa-cogs"></i>
+      <span i18n="@@ejecutarBtn"> 
+        Ejecutar
+      </span>
     </button>
-    <button class="confirm-button" [disabled]="isCrosstableModified()" (click)="savePanel();">
-      Confirm
+
+    <button class="confirm-button" [disabled]="isCrosstableModified()" (click)="savePanel();" >
+      <i class="fa fa-check"></i>
+      <span i18n="@@guardarButton"> 
+        Confirmar
+      </span>
     </button>
-    <button class="rounded-md px-4 py-2 border" (click)="closeEditarConsulta()">
-      Cancel
+
+    <button class="cancel-button" (click)="closeEditarConsulta()"  >
+      <i class="fa fa-times"></i>
+      <span i18n="@@cancelarButton"> 
+        Cancelar
+      </span>
     </button>
+
   </ng-container>
 </eda-dialog2>
 
