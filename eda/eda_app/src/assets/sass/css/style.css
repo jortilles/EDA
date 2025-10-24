@@ -976,6 +976,26 @@ html body .waves-notransition {
   color: #6b7280;     
   cursor: not-allowed;
 }
+.cancel-button,
+.execute-button,
+.confirm-button {
+  transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+}
+
+/* Hover general sin movimiento */
+.cancel-button:hover {
+  background: linear-gradient(to right, #d30026, #ff4b2b);
+}
+
+.execute-button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.confirm-button:hover {
+  background: linear-gradient(to right, #00c8d1, #2dd4bf);
+}
 
 
 
