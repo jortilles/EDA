@@ -65,9 +65,22 @@ export class DataSourceController {
         const filter = DataSourceController.returnExternalFilter(req);
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos
-            const datasources = JSON.stringify(filter) !== '{}' ? 
-            await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options ).exec() :
-            await DataSource.find({}, '_id ds.metadata.model_name ds.security', options ).exec();
+            /*EDA const datasources = JSON.stringify(filter) !== '{}' ? */
+            /*EDA     await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options ).exec() :*/
+            /*EDA     await DataSource.find({}, '_id ds.metadata.model_name ds.security', options ).exec();*/
+
+            /*Edalitics Free */const userID = req.user._id;
+            /*Edalitics Free */const filters = JSON.stringify(filter) 
+            /*Edalitics Free */let datasources;
+            /*Edalitics Free */if( filters !== '{}'){
+            /*Edalitics Free */    datasources = await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.security', options).exec() ;
+            /*Edalitics Free */}else{                
+            /*Edalitics Free */ if (userID == '135792467811111111111111' ){
+            /*Edalitics Free */    datasources = await DataSource.find( {} , '_id ds.metadata.model_name ds.security', options).exec();
+            /*Edalitics Free */  }else{
+            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[ '135792467811111111111111', userID ] } } , '_id ds.metadata.model_name ds.security', options).exec();
+            /*Edalitics Free */  }
+            /*Edalitics Free */}
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
@@ -91,16 +104,29 @@ export class DataSourceController {
 
     /* Aquesta funció retorna els datasources disponibles per fer un dashboard.
     Un cop filtrats els permisos de grup i de usuari. */
-    static async GetDataSourcesNamesForDashboard(req: Request, res: Response, next: NextFunction) {
+     static async GetDataSourcesNamesForDashboard(req: Request, res: Response, next: NextFunction) {
         const userID = req.user._id;
         let options: QueryOptions = {};
         // Esto es pare recuperar los filtros externos.
         const filter = DataSourceController.returnExternalFilter(req);
         try {
             //si no lleva filtro, pasamos directamente a recuperarlos todos
-            const datasources = JSON.stringify(filter) !== '{}' ? 
-            await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() : 
-            await DataSource.find({}, '_id ds.metadata.model_name ds.melettadata.model_granted_roles ds.metadata.model_owner', options).exec(); 
+            
+            /*EDA const datasources = JSON.stringify(filter) !== '{}' ? */
+            /*EDA await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() : */
+            /*EDA await DataSource.find({}, '_id ds.metadata.model_name ds.melettadata.model_granted_roles ds.metadata.model_owner', options).exec(); */ 
+            /*Edalitics Free */const filters = JSON.stringify(filter) 
+            let datasources;
+            /*Edalitics Free */if( filters !== '{}'){
+            /*Edalitics Free */    datasources = await DataSource.find({ $or: Object.entries(filter).map(([clave, valor]) => ({ [clave]: valor })) }, '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec() ;
+            /*Edalitics Free */}else{                
+            /*Edalitics Free */ if (userID == '135792467811111111111111' ){
+            /*Edalitics Free */    datasources = await DataSource.find( {} , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+            /*Edalitics Free */  }else{
+            /*Edalitics Free */    datasources = await DataSource.find(  { 'ds.metadata.model_owner': { $in:[  userID ] } } , '_id ds.metadata.model_name ds.metadata.model_granted_roles ds.metadata.model_owner', options).exec();
+            /*Edalitics Free */  }
+            /*Edalitics Free */}
+
             if (!datasources) {
                 return next(new HttpException(500, 'Error loading DataSources'));
             }
@@ -135,19 +161,23 @@ export class DataSourceController {
                         }
                     });
                     if (users.includes(userID) || roles.length > 0 || allCanSee == 'true' || req.user.role.includes('135792467811111111111110') /* admin role  los admin lo ven todo*/) {
-                        /**   edalitics free       if (   e.ds.metadata.model_owner == userID   ||   req.user.role.includes('135792467811111111111110')   )  { */
                         output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
                     }
 
                 } else {
-                    /**  // edalitics free     if (   e.ds.metadata.model_owner ==  userID ||   req.user.role.includes('135792467811111111111110')  )  {*/
                     output.push({ _id: e._id, model_name: e.ds.metadata.model_name });
-                    /**  // edalitics free   } */
-
                 }
             }
             output.sort((a, b) => (upperCase(a.model_name) > upperCase(b.model_name)) ? 1 :
                 ((upperCase(b.model_name) > upperCase(a.model_name)) ? -1 : 0))
+
+
+            /*Edalitics Free */if(output.filter(e=> e._id=='222222222222222222222222').length == 0  ){
+            /*Edalitics Free */    output.push(  { _id: '222222222222222222222222', model_name: 'Demo' } );
+            /*Edalitics Free */ }
+            
+
+
             return res.status(200).json({ ok: true, ds: output });
         } catch (e) {
             console.log('Error loading DataSources');
