@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
+import { DateUtils } from '@eda/services/utils/date-utils.service';
 import * as _ from 'lodash';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
@@ -40,6 +41,7 @@ export class DashboardPageV2 implements OnInit {
   private fileUtils = inject(FileUtiles);
   private route = inject(ActivatedRoute);
   private chartUtils = inject(ChartUtilsService);
+  private dateUtilsService = inject(DateUtils);
 
   public title: string = $localize`:@@loading:Cargando informe...`;
   public styles: DashboardStyles;
@@ -162,7 +164,6 @@ export class DashboardPageV2 implements OnInit {
     const data = await lastValueFrom(this.dashboardService.getDashboard(dashboardId));
     const dashboard = data.dashboard;
     this.dataSource = data.datasource;
-
     if (dashboard?.config) {
       this.onlyIcanEdit = dashboard.config.visible !== 'public'
       this.dashboardId = dashboardId;
@@ -205,8 +206,63 @@ export class DashboardPageV2 implements OnInit {
     // me.dataSource = res.datasource; // DataSource del dashboard
     // me.datasourceName = res.datasource.name;
     // me.form.controls['visible'].setValue(config.visible);
-
+    this.updateFilterDatesInPanels();
   }
+
+
+
+
+  private updateFilterDatesInPanels(): void {
+
+        /**Set ranges for dates in panel filters */
+        this.panels.filter(panel => panel.content).forEach(panel => {
+
+            let panelFilters = [...panel.content.query.query.filters];
+            panel.content.query.query.filters = [];
+
+            panelFilters.forEach(pFilter => {
+
+                if (!!pFilter.selectedRange) {
+
+                    let range = this.dateUtilsService.getRange(pFilter.selectedRange);
+                    let stringRange = this.dateUtilsService.rangeToString(range);
+
+                    pFilter.filter_elements[0] = { value1: [stringRange[0]] }
+                    pFilter.filter_elements[1] = { value2: [stringRange[1]] }
+
+                }
+
+                panel.content.query.query.filters.push(pFilter);
+
+            });
+
+        });
+
+        /**Set ranges for dates in global filters */
+        this.globalFilter?.globalFilters.filter(f => f.selectedRange).forEach(filter => {
+
+            let range = this.dateUtilsService.getRange(filter.selectedRange);
+            let stringRange = this.dateUtilsService.rangeToString(range);
+            filter.selectedItems = stringRange;
+
+            this.panels.filter(panel => panel.content).forEach(panel => {
+
+                const panelFilters = [...panel.content.query.query.filters];
+                panel.content.query.query.filters = [];
+
+                panelFilters.forEach(pFilter => {
+
+                    if (pFilter.filter_id === filter.id) {
+                        const formatedFilter = this.globalFiltersService.formatFilter(filter);
+                        panel.content.query.query.filters.push(formatedFilter);
+                    } else {
+                        panel.content.query.query.filters.push(pFilter);
+                    }
+                });
+            });
+        });
+    }
+    
 
   // Método que asigna los estilos
   public assignStyles() {
