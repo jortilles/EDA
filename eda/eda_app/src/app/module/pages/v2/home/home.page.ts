@@ -247,8 +247,8 @@ export class HomePageV2 implements OnInit {
       text: `${text} ${report.config.title}`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "#14B8A6",
+      cancelButtonColor: " #ff2802",
       confirmButtonText: $localize`:@@ConfirmDeleteModel:Si, ¡Eliminalo!`,
       cancelButtonText: $localize`:@@DeleteGroupCancel:Cancelar`,
     }).then(deleted => {

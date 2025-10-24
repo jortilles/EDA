@@ -19,6 +19,7 @@ import { DashboardPageV2 } from "../../dashboard/dashboard.page";
 @Component({
   selector: 'app-dashboard-edit-style',
   standalone: true,
+  styleUrls: ['./dashboard-edit-style.dialog.css'],
   templateUrl: './dashboard-edit-style.dialog.html',
   imports: [SharedModule, ReactiveFormsModule, FormsModule, SelectButtonModule,
     MultiSelectModule, FloatLabelModule, SliderModule, ColorPickerModule,RadioButtonModule,CommonModule]
