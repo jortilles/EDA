@@ -228,8 +228,6 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
                 // const targetCheck = globalFilterMap.some((gf: any) => gf.targetId === this.globalFilter.id);
             }
         }
-        
-        console.log('initPanelsLegacy', this.allPanels)
 
         this.filteredPanels = this.allPanels.filter(p => (p.avaliable && p.active) || (p.active_readonly));
 
@@ -607,34 +605,33 @@ export class GlobalFilterDialogComponent implements OnInit, OnDestroy {
     }
 
     public onDelete() {
-            this.styleProviderService.loadedPanels = this.allPanels.length;
+        this.styleProviderService.loadedPanels = this.allPanels.length;
         // Nombre del filtro seleccionado
         const filterNameID = this.globalFilter.id;
         
         // Indice en el que se encuentra el filtro de la lista
         const index = this.globalFilterList.findIndex(f => f.id === filterNameID);
+        // Quitamos los valores de la lista
         this.globalFilter.selectedItems = []
         
-
-
         if (this.validateGlobalFilter()) {
             if (this.globalFilter.queryMode != 'EDA2') {
                 this.globalFilter.panelList = this.filteredPanels.map((p: any) => p.id);
                 this.globalFilter.applyToAll = this.applyToAll;
             }
             
+            // Aplicamos filtros de lista
             this.globalFilterChange.emit(this.globalFilter);
             this.display = false;
             this.close.emit(true);
             
+            // Intervalo para borrar el filtro visualmente
             const interval = setInterval(() => {
                 if (this.styleProviderService.loadedPanels === 0) {
                     this.globalFilterList.splice(index, 1);
                     clearInterval(interval); // detener el intervalo
                 }
             }, 100);
-
-
         }
     }
 

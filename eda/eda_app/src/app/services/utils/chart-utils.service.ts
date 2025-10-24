@@ -1975,7 +1975,6 @@ export class ChartUtilsService {
                         dataLabelsObjt =   { display: false }
                 }
 
-                console.log();
                 let pointRadius = 0;
                 let pointHoverRadius = 3;
                 let pointColor = '';

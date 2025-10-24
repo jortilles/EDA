@@ -363,7 +363,7 @@ export class DashboardSidebarComponent {
           author: JSON.parse(localStorage.getItem('user')).name,
           styles: this.stylesProviderService.generateDefaultStyles(), 
         },
-        group: (newDashboard.group || []).map((g: any) => g)
+        group: (newDashboard.group || []).map((g: any) => g._id)
       };
 
       const res = await lastValueFrom(this.dashboardService.addNewDashboard(bodyNew));
@@ -432,15 +432,11 @@ export class DashboardSidebarComponent {
   public saveVisibleModal(privacity: any) {
     this.isVisibleModalVisible = false;
     this.dashboard.dashboard.config.visible = privacity.visible;
-    console.log(privacity)
     if (privacity.visible === 'group')
       this.dashboard.dashboard.group = privacity.group.map(grup => grup._id);
     else
       this.dashboard.dashboard.group = []
 
-    console.log(
-    this.dashboard.dashboard.group
-    )
     this.dashboard.saveDashboard();
   }
 
@@ -602,18 +598,18 @@ export class DashboardSidebarComponent {
     return this.sidebarItems.slice(this.indiceMasOpciones());
   }
 
-  // Cambiar estados de la sidebar
   public toggleOpciones() {
+    // Cambiar estados de la sidebar
     this.mostrarOpciones = !this.mostrarOpciones;
   }
 
   public toggleGlobalFilter() {
+    // Abrimos desplegable de filtros
     this.mostrarFiltros = !this.mostrarFiltros;
   }
   
   // Llamada al filtro especifico via sidebar
   public handleSpecificFilter(filtro: any) {
-    console.log(filtro)
     this.hidePopover();
     this.toggleGlobalFilter();
     this.dashboard.globalFilter.onShowGlobalFilter(false, filtro)
