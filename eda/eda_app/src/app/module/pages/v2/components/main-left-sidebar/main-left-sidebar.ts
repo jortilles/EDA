@@ -77,7 +77,7 @@ export class MainLeftSidebarComponent {
   };
 
   if (this.userService.isAdmin || this.userService.isDataSourceCreator) {
-    plusSection.items.push({ path: '/admin/data-source/new', label: $localize`:@@addDatasource: Crear DataSource`, icon: 'plus' });
+    plusSection.items.push({ path: '/admin/data-source/new', label: $localize`:@@addDatasource: Crear fuente de datos`, icon: 'plus' });
   }
 
   const moleculaSection: NavItem = {
@@ -91,13 +91,13 @@ export class MainLeftSidebarComponent {
     moleculaSection.items.unshift(
       { path: '/admin/users', label: $localize`:@@adminUsers:Gestión de usuarios`, icon: 'users' },
       { path: '/admin/groups', label: $localize`:@@adminGroupsTitle:Gestión de grupos`, icon: 'rectangle-group' },
-      { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de datasource`, icon: 'rectangle-group' },
+      { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
       { path: '/admin/models/import-export', label: $localize`:@@dataExportImport:Data Export/Import`, icon: 'arrow-down-on-square-stack' },
       { path: '/admin/email-settings', label: $localize`:@@adminEmail:Gestión de email`, icon: 'at-symbol' },
     );
   } else if (this.userService.isDataSourceCreator) {
     moleculaSection.items.unshift(
-      { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de datasource`, icon: 'rectangle-group' },
+      { path: '/admin/data-source', label: $localize`:@@adminDatasource:Gestión de fuentes de datos`, icon: 'rectangle-group' },
     );
   }
 

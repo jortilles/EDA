@@ -141,10 +141,12 @@ export class DataSourceConnectionDetailPage implements OnInit {
 			if (this.connectionForm.invalid) {
 				this.alertService.addError('Formulario incorrecto, revise los campos obligatorios.');
 			} else {
-				await lastValueFrom(this.dataSourceService.testConnection(this.connectionForm.value));
+        await lastValueFrom(this.dataSourceService.testConnection(this.connectionForm.value));
 				this.alertService.addSuccess('Conectado con el servidor');
 			}
 		} catch (err) {
+      this.alertService.addError($localize`:@@dsConnectionRefused:No se ha podido conectar a la base de datos.`);
+
 			throw err;
 		} finally {
 			this.spinnerService.off();

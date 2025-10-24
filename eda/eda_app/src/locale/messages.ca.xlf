@@ -3228,8 +3228,8 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="DataModelHeader">
-    <source> Configurar nuevo orígen de datos  </source>
-    <target> Configurar nou origen de dades  </target>
+    <source> Configurar nueva fuente de datos  </source>
+    <target> Configurar nova font de dades  </target>
   </trans-unit>
 
   <trans-unit id="OptimizeQuery">
@@ -4774,16 +4774,16 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Grup</target>
 </trans-unit>
 <trans-unit id="adminDatasource">
-  <source>Gestión de DataSources</source>
-  <target>Gestió de DataSources</target>
+  <source>Gestión de fuentes de datos</source>
+  <target>Gestió de fonts de dades</target>
 </trans-unit>
 <trans-unit id="addDatasource">
-  <source>Crear DataSource</source>
-  <target>Crear DataSource</target>
+  <source>Crear fuente de datos</source>
+  <target>Crear font de dades</target>
 </trans-unit>
 <trans-unit id="foundDatasource">
-  <source>datasources encontrados</source>
-  <target>datasources trobats</target>
+  <source>fuentes de datos encontradas</source>
+  <target>font de dades trobades</target>
 </trans-unit>
 <trans-unit id="profileTitle"><source>Perfil del usuario</source><target>Perfil de l'usuari</target></trans-unit>
 <trans-unit id="profileSubtitle"><source>Administra tu información personal y preferencias de cuenta</source><target>Administra la teva informació personal i preferències del compte</target></trans-unit>
@@ -5316,6 +5316,20 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <source>El dashboard ha sido actualizado correctamente.</source>
   <target>El dashboard ha sigut actualitzat correctament.</target>
 </trans-unit>
+
+<trans-unit id="dsConnectionRefused">
+  <source>No se ha podido conectar a la base de datos.</source>
+  <target>No s'ha pogut connectar a la base de dades.</target>
+</trans-unit>
+
+<trans-unit id="searchDatasource">
+  <source>Buscar fuente de datos</source>
+  <target>Buscar font de dades</target>
+</trans-unit>
+
+
+
+
 
 
     </body>

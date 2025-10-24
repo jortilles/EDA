@@ -1,6 +1,6 @@
 <div class="container mx-auto my-10 py-10 px-4 bg-background rounded-lg">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold tracking-tight" i18n="@@adminDatasource">Gestión de DataSources</h1>
+    <h1 class="text-3xl font-bold tracking-tight" i18n="@@adminDatasource">Gestión de fuentes de datos</h1>
     <button (click)="handleCreateDataSource()" class="bg-[#00BFB3] hover:bg-[#00BFB3]/90 px-4 py-2 rounded font-semibold text-white flex items-center">
       <eda-icon name="plus" class="mr-2"></eda-icon>
       <span i18n="@@addDatasource">Crear DataSource</span>
@@ -8,7 +8,7 @@
   </div>
 
   <div class="flex items-center mb-6">
-    <input [(ngModel)]="searchTerm" (ngModelChange)="currentPage = 1" i18n-placeholder="@@searchDatasource" placeholder="Buscar datasources..." class="border p-2 rounded w-full" />
+    <input [(ngModel)]="searchTerm" (ngModelChange)="currentPage = 1" placeholder="Buscar fuente de datos" i18n-placeholder="@@searchDatasource"  class="border p-2 rounded w-full" />
   </div>
 
   <div class="border rounded-lg overflow-hidden">

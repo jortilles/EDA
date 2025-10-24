@@ -4662,7 +4662,7 @@ Once configured you can invoke it whenever you want from the button.</target>
   <target>Group</target>
 </trans-unit>
 <trans-unit id="adminDatasource">
-  <source>Gestión de DataSources</source>
+  <source>Gestión de fuentes de datos</source>
   <target>DataSource Management</target>
 </trans-unit>
 <trans-unit id="addDatasource">
