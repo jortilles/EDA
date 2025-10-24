@@ -4459,7 +4459,7 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
       </trans-unit>
       <trans-unit id="DataModelHeader">
         <source>Configurar nuevo orígen de datos</source>
-        <target>Configurar nou origen de dades</target>
+        <target>Configurar nouva font de dades</target>
       </trans-unit>
       <trans-unit id="newDataSourceDescription">
         <source>Conéctese a su base de datos para comenzar a consultar y visualizar sus datos</source>

@@ -3195,7 +3195,7 @@ Login<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
   </trans-unit>
 
   <trans-unit id="DataModelHeader">
-    <source> Configurar nuevo orígen de datos  </source>
+    <source> Configurar nueva fuente de datos  </source>
     <target> Nowe źródło danych  </target>
   </trans-unit>
 
