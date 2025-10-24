@@ -36,7 +36,7 @@ export class DsConfigWrapperComponent implements OnInit {
 	public form: UntypedFormGroup;
 	public type: any;
 	public name: string;
-	public header: string = $localize`:@@DataModelHeader:Configurar nuevo orígen de datos`;
+	public header: string = $localize`:@@DataModelHeader:Configurar nueva fuente de datos`;
 	public optimizeString: string = $localize`:@@OptimizeQuery:Optimizar consultas`;
 	public allowCacheSTR: string = $localize`:@@allowCache: Habilitar caché`;
 	public filterTooltip: string = $localize`:@@filterTooltip:Puedes añadir palabras separadas por comas, que se aplicarán como filtros de tipo LIKE a la hora de recuperar las tablas de tu base de datos`;
@@ -234,7 +234,7 @@ export class DsConfigWrapperComponent implements OnInit {
 			case 'sqlserver':
 				this.form.patchValue({ port: 1433 });
 				break;
-			case 'mongo' && 'excel':
+			case 'mongo' : case  'excel':
 				this.form.patchValue({ port: 27017 });
 				break;
 			case 'mysql':
