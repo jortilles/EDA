@@ -550,6 +550,10 @@ span.state-label {
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;
+  padding: 8px;
+  font-weight: bold;
+  width: 16rem;
+  border: 2px solid rgba(240, 237, 237, 0.61);
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
     0 8px 10px 1px rgba(0, 0, 0, 0.14),
     0 3px 14px 2px rgba(0, 0, 0, 0.12);
