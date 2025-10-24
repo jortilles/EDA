@@ -117,7 +117,9 @@ static async acs(req: Request, res: Response, next: NextFunction) {
 
         // --- Sincronizar Grupos como en login normal ---
         await Group.updateMany({}, { $pull: { users: userSAML._id } });
-        await Group.updateMany({ _id: { $in: '135792467811111111111115' } }, { $push: { users: userSAML._id } }).exec();
+        
+        console.log('la autenticación con SAML no recupera los grupos...... de momento. ');
+        //await Group.updateMany({ _id: { $in: '135792467811111111111115' } }, { $push: { users: userSAML._id } }).exec();
 
         // --------- REDIRECCIÓN A ANGULAR CON JWT ---------
         // Utiliza el RelayState si viene, "se manda al iniciar el SSO" o un default a #/login
@@ -137,8 +139,6 @@ static async acs(req: Request, res: Response, next: NextFunction) {
         // Anexa ?token= al query del hash "#/login?token=..."
         const sep = relayState.includes('?') ? '&' : '?';
         const redirectTo = `${relayState}${sep}token=${encodeURIComponent(token)}`;
-
-        console.log('redirectTo ======> ', redirectTo);
 
         return res.redirect(302, redirectTo);
         } catch (error) {
