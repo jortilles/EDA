@@ -609,6 +609,10 @@
 
     <p-footer class="footer" appendTo="body" style="z-index: 10000;">
         <div class="p-dialog-buttonpanel p-widget-content p-helper-clearfix text-right">
+            <button type="button" pButton (click)="closeEditarConsulta()" icon="fa fa-times"
+                class="p-button-danger ml-2" i18n-label="@@cancelarBtn" label="Cancelar" id="eda_blak_panel_cancelar">
+            </button>
+
             <button type="button" pButton (click)="runManualQuery()" [disabled]="disableRunQuery()"
                 icon="fa fa-flask" class="p-button-success ml-2" i18n-label="@@ejecutarBtn" label="Ejecutar">
             </button>
@@ -617,9 +621,7 @@
                 class="p-button ml-2" i18n-label="@@guardarBtn" label="Confirmar" id="eda_blak_panel_confirmar">
             </button>
 
-            <button type="button" pButton (click)="closeEditarConsulta()" icon="fa fa-times"
-                class="p-button-danger ml-2" i18n-label="@@cancelarBtn" label="Cancelar" id="eda_blak_panel_cancelar">
-            </button>
+
         </div>
     </p-footer>
 
