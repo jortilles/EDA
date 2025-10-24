@@ -29,7 +29,7 @@
             <!-- <button *ngIf="ifShowApply" [disabled]="disableApply"  pButton icon="fa fa-check" class="p-button-raised p-button-success" label="Confirmar" i18n-label="@@guardarBtn" (click)="onApply()"></button>  -->
             <!-- <button *ngIf="ifShowClose" pButton icon="fa fa-times" class="p-button-raised p-button-danger" label="Cerrar" i18n-label="@@cerrarBtn" (click)="onClose()"></button> -->
             
-            <button *ngIf="ifShowReset" class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="onReset()">
+            <button *ngIf="ifShowReset" class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 bg-white text-black rounded-md border border-gray-200 cursor-pointer" (click)="onReset()">
                <i class="fa fa-refresh"></i>
                <span i18n="@@resetStylesBtn">Volver a los valores por defecto</span>
             </button>
@@ -40,7 +40,7 @@
                 </button>
             }
             
-            <button *ngIf="ifShowClose" class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-md" (click)="onClose()">
+            <button *ngIf="ifShowClose" class="flex items-center gap-[7%] px-4 py-2 bg-gradient-to-r from-[#ba001f] to-[#ff2802] text-white rounded-md border-0 cursor-pointer" (click)="onClose()">
                <i class="fa fa-times"></i>
                <span i18n="@@cancelarBtn">Cancelar</span>
             </button>

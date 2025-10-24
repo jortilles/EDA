@@ -255,7 +255,8 @@ export class EdaBlankPanelComponent implements OnInit {
     async ngOnInit() {
         this.index = 0;
         this.readonly = this.panel.readonly;
-        
+        this.tableNodes.forEach(node => node.level = 0);
+
         await this.setTablesData();
         
         /**If panel comes from server */
@@ -335,19 +336,40 @@ export class EdaBlankPanelComponent implements OnInit {
      * Expand table relations
      * @param event node to expand. Empty for nodes without more paths.
     */
-    public tableNodeExpand(event: any): void {
-        this.loadingNodes = true;
+public tableNodeExpand(event: any): void {
 
-        const node = event?.node;
 
-        if (node) {
-            PanelInteractionUtils.expandTableNode(this, node);
-        }
 
-        this.loadingNodes = false;
-    }
+    const node = event?.node;
+    if (!node) return;
+
+    this.loadingNodes = true;
+
+    PanelInteractionUtils.expandTableNode(this, node);
+
+
+    // Intentamos asignar niveles
+    const assignLevels = (parent: any, level: number) => {
+        if (!parent.children) return;
+        parent.children.forEach(child => {
+            child.level = level + 1;
+            assignLevels(child, child.level);
+        });
+    };
+
+    assignLevels(node, node.level || 0);
+
+
+    this.loadingNodes = false;
+}
+
+
 
     public checkNodeSelected(node: any) {
+        // Si es el padre siempre tendra un valor seleccionado
+        if(node?.parent === undefined)
+            return true
+
         if (node?.child_id) {
             const nodeJoins = JSON.stringify((node.joins || ['root'])[0]);
             const nodeTableId = node.child_id;
@@ -476,26 +498,26 @@ export class EdaBlankPanelComponent implements OnInit {
     async loadChartsData(panelContent: any) {
         try {
             if (!panelContent?.query) return;
-
+            
             this.display_v.minispinner = true;
             
             PanelInteractionUtils.handleGlobalFilterMapper(this);
-
-
-                const response = await QueryUtils.switchAndRun(this, panelContent.query);
-
+            
+            
+            const response = await QueryUtils.switchAndRun(this, panelContent.query);
+            
             const [labels, values] = response;
-
+            
             this.chartLabels = this.chartUtils.uniqueLabels(labels);
             this.chartData = values.map(row =>
                 row.map(value => value == null ? NULL_VALUE : value)
             );
-
-                this.buildGlobalconfiguration(panelContent);
-            } catch (err) {
-                this.alertService.addError(err);
-                throw err;
-            }
+            
+            this.buildGlobalconfiguration(panelContent);
+        } catch (err) {
+            this.alertService.addError(err);
+            throw err;
+        }
     }
 
     /**

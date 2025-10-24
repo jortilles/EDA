@@ -25,11 +25,8 @@ export class LogsComponent implements OnInit {
   }
 
   logsFile() {
-    console.log('logs file')
-    
-    // Aca agrego el servicio para mostrar los logs. 
+    // Aquí agrego el servicio para mostrar los logs. 
     this.logService.getLogFile().subscribe((resp: any) => {
-      console.log('data:  ',resp.content);
       this.logs_file = resp.content.replace(/(?:\r\n|\r|\n)/g, '<br>');
         this.logErrorFileBoolean = false;
         this.logFileBoolean = true;
@@ -37,10 +34,8 @@ export class LogsComponent implements OnInit {
     }
     
     logsErrorFile() {
-    console.log('logs file error')
-    // Aca agrego el servicio para mostrar los logs de error. 
+    // Aquí agrego el servicio para mostrar los logs de error. 
     this.logService.getLogErrorFile().subscribe((resp: any) => {
-      console.log('data:  ',resp.content);
       this.logs_error_file = resp.content.replace(/(?:\r\n|\r|\n)/g, '<br>');
       this.logFileBoolean = false;
       this.logErrorFileBoolean = true;

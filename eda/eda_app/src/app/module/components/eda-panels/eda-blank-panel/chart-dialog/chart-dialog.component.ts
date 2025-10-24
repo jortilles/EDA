@@ -257,7 +257,6 @@ export class ChartDialogComponent extends EdaDialogAbstract  {
         } else if (['polarArea', 'doughnut'].includes(chartType)) {
             numberOfColors = this.chart.chartLabels?.length || 1;
         }
-        console.log(this.chart)
 
         const newColors = this.chartUtils.generateChartColorsFromPalette(numberOfColors, paletteBase);
 
