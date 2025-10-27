@@ -19,7 +19,7 @@ const SAMLconfig = require('../../../../config/SAMLconfig');
 
 // Base de datos oracle
 const oracledb = require("oracledb");
-const origen = SAMLconfig.urlRedirection;; // http://localhost:4200
+const origen = SAMLconfig.urlRedirection; // http://localhost:4200
 
 // Grupos de Edalitics
 import Group, { IGroup } from '../../admin/groups/model/group.model'
@@ -41,7 +41,7 @@ export class SAML_ORCL_Controller {
 
             try {
                 const u = new URL(String(rawReturn));
-                // Lista permitida
+                // Lista de urls permitidas
                 const allowed = [`${origen}`, 'https://tu-dominio.app'];
                 if (!allowed.some(a => u.origin === a)) throw new Error('returnUrl no permitido');
                 relay = u.toString();
@@ -50,7 +50,7 @@ export class SAML_ORCL_Controller {
             }
 
             const loginUrl = await (samlStrategy as any)._saml.getAuthorizeUrlAsync({
-            additionalParams: { RelayState: relay },
+            additionalParams: { RelayState: relay, ForceAuthn: true  },
             });
 
             return res.json({ url: loginUrl });

@@ -48,7 +48,7 @@ export class SAMLController {
             }
 
             const loginUrl = await (samlStrategy as any)._saml.getAuthorizeUrlAsync({
-            additionalParams: { RelayState: relay },
+            additionalParams: { RelayState: relay, ForceAuthn: true },
             });
 
             return res.json({ url: loginUrl });
