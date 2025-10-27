@@ -57,29 +57,45 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <p-dropdown [options]="tables" [style]="{'width': '100%'}"
-                [(ngModel)]="globalFilter.selectedTable" filter="true"
-                i18n-placeholder="@@placeholderTables" placeholder="Entidades"
-                (onChange)="onChangeSelectedTable()" appendTo="body">
-                <ng-template pTemplate="selectedItem" let-selectedOption>
-                    <div>{{ selectedOption?.display_name?.default }}</div>
-                </ng-template>
-                <ng-template let-table pTemplate="item">
-                    <div>{{ table?.display_name?.default }}</div>
-                </ng-template>
-              </p-dropdown>
+            <p-dropdown
+              [options]="tables"
+              optionLabel="display_name.default"
+              [style]="{ width: '100%' }"
+              [(ngModel)]="globalFilter.selectedTable"
+              filter="true"
+              i18n-placeholder="@@placeholderTables"
+              placeholder="Entidades"
+              (onChange)="onChangeSelectedTable()"
+              appendTo="body"
+            >
+              <ng-template pTemplate="selectedItem" let-selectedOption>
+                <div>{{ selectedOption?.display_name?.default }}</div>
+              </ng-template>
+              <ng-template let-table pTemplate="item">
+                <div>{{ table?.display_name?.default }}</div>
+              </ng-template>
+            </p-dropdown>
+
   
-              <p-dropdown [options]="columns" [style]="{'width': '100%'}"
-                [(ngModel)]="globalFilter.selectedColumn" filter="true"
-                i18n-placeholder="@@placeholderColumns" placeholder="Atributos"
-                (onChange)="onChangeSelectedColumn()" appendTo="body">
+              <p-dropdown
+                [options]="columns"
+                optionLabel="display_name.default"
+                [style]="{ width: '100%' }"
+                [(ngModel)]="globalFilter.selectedColumn"
+                filter="true"
+                i18n-placeholder="@@placeholderColumns"
+                placeholder="Atributos"
+                (onChange)="onChangeSelectedColumn()"
+                appendTo="body"
+              >
                 <ng-template pTemplate="selectedItem" let-selectedOption>
-                    <div>{{ selectedOption?.display_name?.default }}</div>
+                  <div>{{ selectedOption?.display_name?.default }}</div>
                 </ng-template>
                 <ng-template let-column pTemplate="item">
-                    <div>{{ column?.display_name?.default }}</div>
+                  <div>{{ column?.display_name?.default }}</div>
                 </ng-template>
               </p-dropdown>
+
 
               <input class="h-[3.2rem] w-full rounded-md border px-2 py-4"
                 [(ngModel)]="aliasValue"
