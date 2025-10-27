@@ -4,6 +4,7 @@ import { FormBuilder, type FormGroup, ReactiveFormsModule, Validators } from "@a
 import { UserService } from "@eda/services/service.index";
 import { User } from "@eda/models/model.index";
 import { SharedModule } from "@eda/shared/shared.module";
+import Swal from 'sweetalert2';
 
 @Component({
   selector: "app-profile-edit",
@@ -45,7 +46,7 @@ export class UserProfilePage {
     this.profileForm = this.fb.group(
       {
         username: [this.user.name||"", [Validators.required, Validators.minLength(2)]],
-        email: this.user.google ?? [this.user.email||"", [Validators.required, Validators.email]],
+        email: this.user.google ?? [this.user.email||"", [Validators.required]],
         password: [""],
         confirmPassword: [""],
       },
@@ -68,11 +69,40 @@ export class UserProfilePage {
     return null
   }
 
-  onSubmit() {
-    if (this.profileForm.valid) {
-      console.log(this.profileForm.value)
+onSubmit() {
+  this.userService.getUsers().subscribe(users => {
+    const userToModifyID = users.find(
+      user => user._id === localStorage.getItem('id')
+    );
+
+    if (!userToModifyID) {
+      Swal.fire('Error', 'Usuario no encontrado', 'error');
+      return;
     }
-  }
+
+    userToModifyID.name = this.profileForm.value.username;
+    userToModifyID.email = this.profileForm.value.email;
+    userToModifyID.password = this.profileForm.value.password;
+
+    this.userService.manageUpdateUsers(userToModifyID).subscribe(
+      res => {
+        Swal.fire(
+          $localize`:@@UpdatedUser:Usuario actualizado`,
+          res.email,
+          'success'
+        );
+      },
+      err => {
+        Swal.fire(
+          $localize`:@@UpdatedUserError:Error al actualizar el usuario`,
+          err.text,
+          'error'
+        );
+      }
+    );
+  });
+}
+
 
   handleImageChange(event: Event) {
     const input = event.target as HTMLInputElement
