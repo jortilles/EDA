@@ -113,22 +113,26 @@ export class DashboardSidebarComponent {
   initSidebar() { 
     this.sidebarItems = [
     {
-      label: "Nou panell",
+      id: 'newPanel',
+      label: $localize`:@@dashboardNewPanel:Nuevo Panel`,
       icon: "pi pi-plus-circle",
       command: () => this.onAddWidget()
     },
     {
+      id: 'newText',
       label: "Nou text",
       icon: "pi pi-file-edit",
       command: () => this.onAddTitle()
     },
     {
+      id: 'newFilter',
       label: "Nou filtre",
       icon: "pi pi-filter",
       command: () => this.onAddGlobalFilter()
       
     },
       {
+        id: 'editFilters',
         label: "Editar filtros",
         icon: "pi pi-filter",
         command: () => this.toggleGlobalFilter(),
@@ -140,17 +144,20 @@ export class DashboardSidebarComponent {
         ),
       },
     {
+      id: 'importPanel',
       label: "Importar panell",
       icon: "pi pi-plus-circle",
       command: () => this.onImportPanel()
       
     },
     {
+      id: 'refreshDashboard',
       label: "Recargar informe",
       icon: "pi pi-refresh",
       command: () => this.cleanPanelsCache()
     },
     {
+      id: 'dashboardPrivacity',
       label: "Privacitat informe",
       icon: "pi pi-lock",
       command: () => { 
@@ -158,6 +165,7 @@ export class DashboardSidebarComponent {
         this.hidePopover();
       }
     },{
+      id: 'addTag',
       label: "Afegir etiqueta",
       icon: "pi pi-tag",
       command: () => {
@@ -166,6 +174,7 @@ export class DashboardSidebarComponent {
       }
     },
     {
+      id: 'enableFilters',
       label: this.clickFiltersEnabled ? "Click en filtros habilitado" : "Click en filtros deshabilitado",
       icon: this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock",
       command: () => {
@@ -173,6 +182,7 @@ export class DashboardSidebarComponent {
       }
     },
     {
+      id: 'liveDashboard',
       label: "Live Dashboard",
       icon: "pi pi-desktop",
       items: [],
@@ -180,11 +190,13 @@ export class DashboardSidebarComponent {
         this.inputVisible = !this.inputVisible;
       },
     },{
+      id: 'save',
       label: "Guardar",
       icon: "pi pi-save",
       command: () => this.saveDashboard()
     },
     {
+      id: 'saveAs',
       label: "Guardar com",
       icon: "pi pi-copy",
       command: () => {
@@ -193,12 +205,15 @@ export class DashboardSidebarComponent {
       }
     },
     {
+      id: 'deleteDashboard',
       label: "Eliminar informe",
       icon: "pi pi-trash",
       command: () => this.removeDashboard()
     },
-      { label: 'Más opciones'},
+      { id: 'moreOptions',
+        label: 'Más opciones'},
     {
+      id: 'editStyles',
       label: "Editar estils",
       icon: "pi pi-palette",
       command: () => {
@@ -207,16 +222,19 @@ export class DashboardSidebarComponent {
       }
     },
     {
+      id: 'downloadPDF',
       label: "Descargar PDF",
       icon: "pi pi-file-pdf",
       command: () => this.exportAsPDF()
     },
     {
+      id: 'downloadImage',
       label: "Descargar imatge",
       icon: "pi pi-image",
       command: () => this.exportAsJPEG()
     },
     {
+      id: 'sendEmail',
       label: "Enviar per email",
       icon: "pi pi-envelope",
       command: () => { 
@@ -225,6 +243,7 @@ export class DashboardSidebarComponent {
       }
     },
     {
+      id: 'customAction',
       label: "Acció personalitzada",
       icon: "pi pi-cog",
       command: () => {
@@ -587,7 +606,7 @@ export class DashboardSidebarComponent {
   
   // Metodos de creación de la sidebar
    public indiceMasOpciones(): number {
-    return this.sidebarItems.findIndex(item => item.label === 'Más opciones');
+    return this.sidebarItems.findIndex(item => item.id === 'moreOptions');
   }
 
   public itemsVisibles() {
@@ -651,13 +670,13 @@ export class DashboardSidebarComponent {
 
   toggleClickFilters() {
       // Buscar el objeto una sola vez
-      const clickItem = this.sidebarItems.find(item => item.label === "Click en filtros habilitado" || item.label === "Click en filtros deshabilitado");
+      const clickItem = this.sidebarItems.find(item => item.label === $localize`:@@enableFilters:Click en filtros habilitado` || $localize`:@@disableFilters:Click en filtros deshabilitado`);
       
       // Alternar el estado
       this.clickFiltersEnabled = !this.clickFiltersEnabled;
       
       // Actualizar label e icono según estado
-      clickItem.label = this.clickFiltersEnabled ? "Click en filtros habilitado" : "Click en filtros deshabilitado";
+      clickItem.label = this.clickFiltersEnabled ? $localize`:@@enableFilters:Click en filtros habilitado` : $localize`:@@disableFilters:Click en filtros deshabilitado`;
       clickItem.icon = this.clickFiltersEnabled ? "pi pi-lock-open" : "pi pi-lock";
       
       // Actualizar dashboard

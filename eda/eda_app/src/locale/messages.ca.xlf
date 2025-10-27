@@ -5378,6 +5378,21 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
 <target>Configureu una alerta usant el formulari de dalt per visualitzar canvis al gràfic.</target>
 </trans-unit>
 
+<trans-unit id="dashboardNewPanel">
+  <source>Nuevo Panel</source>
+  <target>New Panel</target>
+</trans-unit>
+
+
+<trans-unit id="enableFilters">
+  <source>Click en filtros habilitado</source>
+  <target>Clic en filtres habilitat</target>
+</trans-unit>
+
+<trans-unit id="disableFilters">
+  <source>Click en filtros deshabilitado</source>
+  <target>Clic en filtres deshabilitat</target>
+</trans-unit>
 
     </body>
   </file>
