@@ -88,7 +88,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <context context-type="sourcefile">app/shared/components/sidebar/sidebar.component.html</context>
 <context context-type="linenumber">42</context>
 </context-group>
-<trans-unit id="logsManagement">
+<trans-unit id="logsManagement" datatype="html">
   <source>Gestión de logs</source>
   <target>Gestió de logs</target>
 </trans-unit>
@@ -1909,8 +1909,6 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <source>Gráfico Solar</source>
 <target>Gràfic solar</target>
 </trans-unit>
-
-
 <trans-unit id="chartTypesDynamicText">
 <source>Texto Dinámico</source>
 <target>Text Dinàmic</target>
@@ -1924,6 +1922,10 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
 <trans-unit id="chartTypes6">
 <source>Gráfico de Barras Apliadas</source>
 <target>Gràfic de barres apilades</target>
+</trans-unit>
+<trans-unit id="chartTypes19">
+<source>Gráfico de Barras Apiladas al 100%</source>
+<target>Gràfic de Barres Apilades al 100%</target>
 </trans-unit>
 <trans-unit id="chartTypes7">
 <source>Gráfico de Barras Horizontales</source>
@@ -3492,6 +3494,26 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Codi de color</target>
   </trans-unit>
 
+  <trans-unit id="seeRepetitions">
+    <source>Ver/ocultar valores repetidos</source>
+    <target>Veure/amagar valors repetits</target>
+  </trans-unit>
+
+  <trans-unit id="seeNegativeNumbers">
+    <source>Números negativos</source>
+    <target>Números negatius</target>
+  </trans-unit>
+
+  <trans-unit id="withNegativeNumbers">
+    <source>Con números negativos</source>
+    <target>Amb números negatius</target>
+  </trans-unit>
+
+  <trans-unit id="withoutNegativeNumbers">
+    <source>Sin números negativos</source>
+    <target>Sense números negatius</target>
+  </trans-unit>
+
   <trans-unit id="tableTitleDialog">
     <source>Propiedades de la tabla</source>
     <target>Propietats de la taula</target>
@@ -3832,6 +3854,11 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Configurar alertes</target>
   </trans-unit> 
 
+   <trans-unit id="setNewAlert">
+    <source>Configurar nueva alerta</source>
+    <target>Configurar nova alerta</target>
+  </trans-unit> 
+
      <trans-unit id="inputFilter">
     <source>Filtros</source>
     <target>Filtres</target>
@@ -3977,7 +4004,7 @@ Entrar<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>
     <target>Color del panell</target>
   </trans-unit> 
 
-    <trans-unit id="ChangeDefaultsColors">
+  <trans-unit id="ChangeDefaultsColors">
     <source>Color del los gráficos</source>
     <target>Color dels grafics</target>
   </trans-unit> 
@@ -4985,72 +5012,6 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Si necessiteu suport empresarial o voleu sol·licitar noves funcionalitats, no dubteu a contactar amb nosaltres.</target>
 </trans-unit>
 
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-<trans-unit id="aboutEdaH3">
-  <source>Comunidad</source>
-  <target>Comunitat</target>
-</trans-unit>
-
-
 <trans-unit id="multiSelectDefaultLabel">
   <source>Selecciona un grupo *</source>
   <target>Selecciona un grup *</target>
@@ -5327,9 +5288,95 @@ Un cop configurat podràs invocar-lo sempre que vulguis des del botó.</target>
   <target>Buscar font de dades</target>
 </trans-unit>
 
+<trans-unit id="selectPalette">
+  <source>-- Seleccione una paleta --</source>
+  <target>-- Seleccioneu una paleta --</target>
+</trans-unit>
 
+<trans-unit id="scenarios">
+  <source>Escenarios</source>
+  <target>Escenaris</target>
+</trans-unit>
 
+<trans-unit id="AdvanceOptions">
+  <source>Opciones avanzadas</source>
+  <target>Opcions avançades</target>
+</trans-unit>
 
+<trans-unit id="condition">
+  <source>Condición</source>
+  <target>Condició</target>
+</trans-unit>
+
+<trans-unit id="alertColor">
+  <source>Color de la alerta</source>
+  <target>Color d'alerta</target>
+</trans-unit>
+
+<trans-unit id="noAlertsConfigured">
+  <source>No hay alertas configuradas </source>
+  <target>No hi ha alertes configurades</target>
+</trans-unit>
+
+<trans-unit id="alertsConfigured">
+  <source>Alertas configuradas </source>
+  <target>Alertes configurades</target>
+</trans-unit>
+
+<trans-unit id="lessThan">
+  <source>Menor que </source>
+  <target>Menor que</target>
+</trans-unit>
+
+<trans-unit id="equalTo">
+  <source>Igual a </source>
+  <target>Igual a</target>
+</trans-unit>
+
+<trans-unit id="greaterThan">
+  <source>Mayor que</source>
+  <target>Major que</target>
+</trans-unit>
+
+<trans-unit id="thresholdValue">
+  <source>Valor umbral</source>
+  <target>Valor llindar</target>
+</trans-unit>
+
+<trans-unit id="numValTrigAlert">
+  <source>Valor numérico que activará la alerta</source>
+  <target>Valor numèric que activarà l'alerta</target>
+</trans-unit>
+
+<trans-unit id="textChangeColor">
+  <source>el texto cambiará a este color</source>
+  <target>el text canviarà a aquest color</target>
+</trans-unit>
+
+<trans-unit id="value">
+<source>Valor</source>
+<target>Valor</target>
+</trans-unit>
+
+<trans-unit id="colour">
+<source>Color</source>
+<target>Color</target>
+</trans-unit>
+
+<trans-unit id="actions">
+<source>Acciones</source>
+<target>Accions</target>
+</trans-unit>
+
+<trans-unit id="orderAlerts">
+<source>Las alertas se aplicarán en orden de creación. Haga clic en el botón X para eliminar una alerta.</source>
+<target>Les alertes s'han d'aplicar en ordre de creació. Feu clic al botó X per eliminar una alerta.</target>
+</trans-unit>
+
+<trans-unit id="useFormAlertConfigure">
+<source>Configure una alerta usando el formulario de arriba para visualizar cambios en el gráfico.</source>
+<target>Configureu una alerta usant el formulari de dalt per visualitzar canvis al gràfic.</target>
+</trans-unit>
 
 
     </body>
